@@ -1052,8 +1052,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 static const char *
 qemuDomainDefaultNetModel(const virDomainDef *def)
 {
-    if (def->os.arch == VIR_ARCH_S390 ||
-        def->os.arch == VIR_ARCH_S390X)
+    if (ARCH_IS_S390(def->os.arch))
         return "virtio";
 
     if (def->os.arch == VIR_ARCH_ARMV7L ||
@@ -1132,7 +1131,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
-        (def->os.arch == VIR_ARCH_S390 || def->os.arch == VIR_ARCH_S390X))
+        ARCH_IS_S390(def->os.arch))
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
 
     /* set the default USB model to none for s390 unless an address is found */
@@ -1140,7 +1139,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
         dev->data.controller->model == -1 &&
         dev->data.controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        (def->os.arch == VIR_ARCH_S390 || def->os.arch == VIR_ARCH_S390X))
+        ARCH_IS_S390(def->os.arch))
         dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
 
     /* auto generate unix socket path */
