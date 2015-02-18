@@ -8252,6 +8252,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virArch hostarch = virArchFromHost();
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
+    char *boot_order_str = NULL, *boot_opts_str = NULL;
     int boot_nparams = 0;
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
@@ -8814,7 +8815,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         boot[def->os.nBootDevs] = '\0';
 
         virBufferAsprintf(&boot_buf, "%s", boot);
-        boot_nparams++;
+        if (virBufferCheckError(&boot_buf) < 0)
+            goto error;
+        boot_order_str = virBufferContentAndReset(&boot_buf);
     }
 
     if (def->os.bootmenu) {
@@ -8870,23 +8873,23 @@ qemuBuildCommandLine(virConnectPtr conn,
         virBufferAddLit(&boot_buf, "strict=on");
     }
 
-    if (boot_nparams > 0) {
+    if (virBufferCheckError(&boot_buf) < 0)
+        goto error;
+
+    boot_opts_str = virBufferContentAndReset(&boot_buf);
+    if (boot_order_str || boot_opts_str) {
         virCommandAddArg(cmd, "-boot");
 
-        if (virBufferCheckError(&boot_buf) < 0)
-            goto error;
-
-        if (boot_nparams < 2 || emitBootindex) {
-            virCommandAddArgBuffer(cmd, &boot_buf);
-            virBufferFreeAndReset(&boot_buf);
-        } else {
-            char *str = virBufferContentAndReset(&boot_buf);
-            virCommandAddArgFormat(cmd,
-                                   "order=%s",
-                                   str);
-            VIR_FREE(str);
+        if (boot_order_str && boot_opts_str) {
+            virCommandAddArgFormat(cmd, "order=%s,%s",
+                                   boot_order_str, boot_opts_str);
+        } else if (boot_order_str) {
+            virCommandAddArg(cmd, boot_order_str);
+        } else if (boot_opts_str) {
+            virCommandAddArg(cmd, boot_opts_str);
         }
     }
+    VIR_FREE(boot_opts_str);
 
     if (def->os.kernel)
         virCommandAddArgList(cmd, "-kernel", def->os.kernel, NULL);
@@ -10374,6 +10377,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     return cmd;
 
  error:
+    VIR_FREE(boot_order_str);
     virBufferFreeAndReset(&boot_buf);
     virObjectUnref(cfg);
     /* free up any resources in the network driver
