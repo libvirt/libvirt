@@ -1,5 +1,5 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/kvm -S -M pc -m 24104 -smp 32 \
+/usr/bin/kvm -S -M pc -m 24105 -smp 32 \
 -object memory-backend-ram,id=ram-node0,size=20971520,host-nodes=3,\
 policy=preferred \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \

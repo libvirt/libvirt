@@ -6985,6 +6985,12 @@ virDomainParseMemoryLimit(const char *xpath,
 unsigned long long
 virDomainDefGetMemoryInitial(virDomainDefPtr def)
 {
+    unsigned long long ret;
+
+    /* return NUMA memory size total in case numa is enabled */
+    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0)
+        return ret;
+
     return def->mem.max_balloon;
 }
 
