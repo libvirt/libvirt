@@ -785,6 +785,11 @@ static void daemonReloadHandler(virNetServerPtr srv ATTRIBUTE_UNUSED,
                                 siginfo_t *sig ATTRIBUTE_UNUSED,
                                 void *opaque ATTRIBUTE_UNUSED)
 {
+    if (!driversInitialized) {
+        VIR_WARN("Drivers are not initialized, reload ignored");
+        return;
+    }
+
     VIR_INFO("Reloading configuration on SIGHUP");
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                 VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL, NULL);
@@ -1519,8 +1524,10 @@ int main(int argc, char **argv) {
 
     daemonConfigFree(config);
 
-    if (driversInitialized)
+    if (driversInitialized) {
+        driversInitialized = false;
         virStateCleanup();
+    }
 
     return ret;
 }
