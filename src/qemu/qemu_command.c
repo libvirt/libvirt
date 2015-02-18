@@ -7270,9 +7270,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
     for (i = 0; i < ncells; i++) {
-        unsigned long long cellmem = virDomainNumaGetNodeMemorySize(def->numa, i);
-        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(cellmem, 1024));
-
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             if ((rc = qemuBuildMemoryCellBackendStr(def, qemuCaps, cfg, i,
@@ -8490,13 +8487,15 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
+    if (qemuDomainAlignMemorySizes(def) < 0)
+        goto error;
+
     /* Set '-m MB' based on maxmem, because the lower 'memory' limit
      * is set post-startup using the balloon driver. If balloon driver
      * is not supported, then they're out of luck anyway.  Update the
      * XML to reflect our rounding.
      */
     virCommandAddArg(cmd, "-m");
-    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(virDomainDefGetMemoryInitial(def), 1024));
     virCommandAddArgFormat(cmd, "%llu", virDomainDefGetMemoryInitial(def)  / 1024);
 
     if (def->mem.nhugepages && !virDomainNumaGetNodeCount(def->numa)) {

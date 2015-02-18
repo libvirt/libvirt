@@ -2875,3 +2875,24 @@ qemuDomObjEndAPI(virDomainObjPtr *vm)
     virObjectUnref(*vm);
     *vm = NULL;
 }
+
+
+int
+qemuDomainAlignMemorySizes(virDomainDefPtr def)
+{
+    unsigned long long mem;
+    size_t ncells = virDomainNumaGetNodeCount(def->numa);
+    size_t i;
+
+    /* align NUMA cell sizes if relevant */
+    for (i = 0; i < ncells; i++) {
+        mem = virDomainNumaGetNodeMemorySize(def->numa, i);
+        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(mem, 1024));
+    }
+
+    /* align initial memory size */
+    mem = virDomainDefGetMemoryInitial(def);
+    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(mem, 1024));
+
+    return 0;
+}
