@@ -8,8 +8,7 @@
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='network'/>
   </os>
-  <cpu mode='host-passthrough'>
-  </cpu>
+  <cpu mode='host-passthrough'/>
   <clock offset='utc'>
     <timer name='kvmclock' present='no'/>
   </clock>

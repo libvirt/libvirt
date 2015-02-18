@@ -435,6 +435,8 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                        bool updateCPU)
 {
     int ret = -1;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int indent = virBufferGetIndent(buf, false);
 
     if (!def)
         return 0;
@@ -464,23 +466,28 @@ virCPUDefFormatBufFull(virBufferPtr buf,
             virBufferAsprintf(buf, " match='%s'", tmp);
         }
     }
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
 
+    virBufferAdjustIndent(&childrenBuf, indent + 2);
     if (def->arch)
-        virBufferAsprintf(buf, "<arch>%s</arch>\n",
+        virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
-    if (virCPUDefFormatBuf(buf, def, updateCPU) < 0)
+    if (virCPUDefFormatBuf(&childrenBuf, def, updateCPU) < 0)
         goto cleanup;
 
-    if (virDomainNumaDefCPUFormat(buf, numa) < 0)
+    if (virDomainNumaDefCPUFormat(&childrenBuf, numa) < 0)
         goto cleanup;
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</cpu>\n");
+    if (virBufferUse(&childrenBuf)) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childrenBuf);
+        virBufferAddLit(buf, "</cpu>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
 
     ret = 0;
  cleanup:
+    virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
 
