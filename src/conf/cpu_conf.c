@@ -434,6 +434,8 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                        virDomainNumaPtr numa,
                        bool updateCPU)
 {
+    int ret = -1;
+
     if (!def)
         return 0;
 
@@ -445,7 +447,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
             if (!(tmp = virCPUModeTypeToString(def->mode))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU mode %d"), def->mode);
-                return -1;
+                goto cleanup;
             }
             virBufferAsprintf(buf, " mode='%s'", tmp);
         }
@@ -457,7 +459,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU match policy %d"),
                                def->match);
-                return -1;
+                goto cleanup;
             }
             virBufferAsprintf(buf, " match='%s'", tmp);
         }
@@ -469,15 +471,17 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         virBufferAsprintf(buf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
     if (virCPUDefFormatBuf(buf, def, updateCPU) < 0)
-        return -1;
+        goto cleanup;
 
     if (virDomainNumaDefCPUFormat(buf, numa) < 0)
-        return -1;
+        goto cleanup;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</cpu>\n");
 
-    return 0;
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 int
