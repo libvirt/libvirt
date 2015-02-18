@@ -39,3 +39,10 @@
 # restoring guests, even though this may give slower operation for
 # some file systems.
 #BYPASS_CACHE=0
+
+# If non-zero, try to sync guest time on domain resume. Be aware, that
+# this requires guest agent with support for time synchronization
+# running in the guest. For instance, qemu-ga doesn't support guest time
+# synchronization on Windows guests, but Linux ones. By default, this
+# functionality is turned off.
+#SYNC_TIME=1
