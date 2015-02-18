@@ -4716,13 +4716,13 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST)) {
         if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
-            goto cleanup;
+            goto endjob;
 
         if (!(all_nodes = virNumaGetHostNodeset()))
-            goto cleanup;
+            goto endjob;
 
         if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-            goto cleanup;
+            goto endjob;
 
         if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
