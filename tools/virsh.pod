@@ -422,10 +422,6 @@ current domain is in.
 
 =over 4
 
-=item B<cpu-models> I<arch>
-
-Print the list of CPU models known for the specified architecture.
-
 =item B<running>
 
 The domain is currently running on a CPU
@@ -595,6 +591,10 @@ L<http://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
 incompatibility will be printed out.
+
+=item B<cpu-models> I<arch>
+
+Print the list of CPU models known for the specified architecture.
 
 =item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
 
