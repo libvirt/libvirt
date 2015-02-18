@@ -9006,7 +9006,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (usbcontroller == 0 && !qemuDomainMachineIsQ35(def))
+    if (usbcontroller == 0 &&
+        !qemuDomainMachineIsQ35(def) &&
+        !ARCH_IS_S390(def->os.arch))
         virCommandAddArg(cmd, "-usb");
 
     for (i = 0; i < def->nhubs; i++) {
