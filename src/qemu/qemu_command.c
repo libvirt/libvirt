@@ -8253,7 +8253,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
     char *boot_order_str = NULL, *boot_opts_str = NULL;
-    int boot_nparams = 0;
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateFrom=%s migrateFD=%d "
@@ -8822,13 +8821,10 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->os.bootmenu) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU)) {
-            if (boot_nparams++)
-                virBufferAddChar(&boot_buf, ',');
-
             if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
-                virBufferAddLit(&boot_buf, "menu=on");
+                virBufferAddLit(&boot_buf, "menu=on,");
             else
-                virBufferAddLit(&boot_buf, "menu=off");
+                virBufferAddLit(&boot_buf, "menu=off,");
         } else {
             /* We cannot emit an error when bootmenu is enabled but
              * unsupported because of backward compatibility */
@@ -8845,11 +8841,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        if (boot_nparams++)
-            virBufferAddChar(&boot_buf, ',');
-
         virBufferAsprintf(&boot_buf,
-                          "reboot-timeout=%d",
+                          "reboot-timeout=%d,",
                           def->os.bios.rt_delay);
     }
 
@@ -8861,17 +8854,13 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
         }
 
-        if (boot_nparams++)
-            virBufferAddChar(&boot_buf, ',');
-
-        virBufferAsprintf(&boot_buf, "splash-time=%u", def->os.bm_timeout);
+        virBufferAsprintf(&boot_buf, "splash-time=%u,", def->os.bm_timeout);
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT)) {
-        if (boot_nparams++)
-            virBufferAddChar(&boot_buf, ',');
-        virBufferAddLit(&boot_buf, "strict=on");
-    }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT))
+        virBufferAddLit(&boot_buf, "strict=on,");
+
+    virBufferTrim(&boot_buf, ",", -1);
 
     if (virBufferCheckError(&boot_buf) < 0)
         goto error;
