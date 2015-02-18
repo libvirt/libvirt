@@ -84,10 +84,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto fail;
     }
 
-    if (virQEMUCapsGet(extraFlags, QEMU_CAPS_DOMID))
-        vmdef->id = 6;
-    else
-        vmdef->id = -1;
+    vmdef->id = -1;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
     monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;

@@ -8449,10 +8449,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
         STREQ(def->os.type, "xen") ||
         STREQ(def->os.type, "linux")) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DOMID)) {
-            virCommandAddArg(cmd, "-domid");
-            virCommandAddArgFormat(cmd, "%d", def->id);
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_XEN_DOMID)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_XEN_DOMID)) {
             virCommandAddArg(cmd, "-xen-attach");
             virCommandAddArg(cmd, "-xen-domid");
             virCommandAddArgFormat(cmd, "%d", def->id);
