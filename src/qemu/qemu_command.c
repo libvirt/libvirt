@@ -8251,6 +8251,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     };
     virArch hostarch = virArchFromHost();
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
+    int boot_nparams = 0;
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateFrom=%s migrateFD=%d "
@@ -8769,148 +8771,140 @@ qemuBuildCommandLine(virConnectPtr conn,
                                def->pm.s4 == VIR_TRISTATE_BOOL_NO);
     }
 
-    if (!def->os.bootloader) {
-        int boot_nparams = 0;
-        virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
-        /*
-         * We prefer using explicit bootindex=N parameters for predictable
-         * results even though domain XML doesn't use per device boot elements.
-         * However, we can't use bootindex if boot menu was requested.
+    /*
+     * We prefer using explicit bootindex=N parameters for predictable
+     * results even though domain XML doesn't use per device boot elements.
+     * However, we can't use bootindex if boot menu was requested.
+     */
+    if (!def->os.nBootDevs) {
+        /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
+         * configuration is used
          */
-        if (!def->os.nBootDevs) {
-            /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
-             * configuration is used
-             */
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("hypervisor lacks deviceboot feature"));
-                goto error;
-            }
-            emitBootindex = true;
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
-                   (def->os.bootmenu != VIR_TRISTATE_BOOL_YES ||
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU))) {
-            emitBootindex = true;
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("hypervisor lacks deviceboot feature"));
+            goto error;
         }
+        emitBootindex = true;
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
+               (def->os.bootmenu != VIR_TRISTATE_BOOL_YES ||
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU))) {
+        emitBootindex = true;
+    }
 
-        if (!emitBootindex) {
-            char boot[VIR_DOMAIN_BOOT_LAST+1];
+    if (!emitBootindex) {
+        char boot[VIR_DOMAIN_BOOT_LAST+1];
 
-            for (i = 0; i < def->os.nBootDevs; i++) {
-                switch (def->os.bootDevs[i]) {
-                case VIR_DOMAIN_BOOT_CDROM:
-                    boot[i] = 'd';
-                    break;
-                case VIR_DOMAIN_BOOT_FLOPPY:
-                    boot[i] = 'a';
-                    break;
-                case VIR_DOMAIN_BOOT_DISK:
-                    boot[i] = 'c';
-                    break;
-                case VIR_DOMAIN_BOOT_NET:
-                    boot[i] = 'n';
-                    break;
-                default:
-                    boot[i] = 'c';
-                    break;
-                }
-            }
-            boot[def->os.nBootDevs] = '\0';
-
-            virBufferAsprintf(&boot_buf, "%s", boot);
-            boot_nparams++;
-        }
-
-        if (def->os.bootmenu) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU)) {
-                if (boot_nparams++)
-                    virBufferAddChar(&boot_buf, ',');
-
-                if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
-                    virBufferAddLit(&boot_buf, "menu=on");
-                else
-                    virBufferAddLit(&boot_buf, "menu=off");
-            } else {
-                /* We cannot emit an error when bootmenu is enabled but
-                 * unsupported because of backward compatibility */
-                VIR_WARN("bootmenu is enabled but not "
-                         "supported by this QEMU binary");
+        for (i = 0; i < def->os.nBootDevs; i++) {
+            switch (def->os.bootDevs[i]) {
+            case VIR_DOMAIN_BOOT_CDROM:
+                boot[i] = 'd';
+                break;
+            case VIR_DOMAIN_BOOT_FLOPPY:
+                boot[i] = 'a';
+                break;
+            case VIR_DOMAIN_BOOT_DISK:
+                boot[i] = 'c';
+                break;
+            case VIR_DOMAIN_BOOT_NET:
+                boot[i] = 'n';
+                break;
+            default:
+                boot[i] = 'c';
+                break;
             }
         }
+        boot[def->os.nBootDevs] = '\0';
 
-        if (def->os.bios.rt_set) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("reboot timeout is not supported "
-                                 "by this QEMU binary"));
-                virBufferFreeAndReset(&boot_buf);
-                goto error;
-            }
+        virBufferAsprintf(&boot_buf, "%s", boot);
+        boot_nparams++;
+    }
 
+    if (def->os.bootmenu) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU)) {
             if (boot_nparams++)
                 virBufferAddChar(&boot_buf, ',');
 
-            virBufferAsprintf(&boot_buf,
-                              "reboot-timeout=%d",
-                              def->os.bios.rt_delay);
+            if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
+                virBufferAddLit(&boot_buf, "menu=on");
+            else
+                virBufferAddLit(&boot_buf, "menu=off");
+        } else {
+            /* We cannot emit an error when bootmenu is enabled but
+             * unsupported because of backward compatibility */
+            VIR_WARN("bootmenu is enabled but not "
+                     "supported by this QEMU binary");
+        }
+    }
+
+    if (def->os.bios.rt_set) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("reboot timeout is not supported "
+                             "by this QEMU binary"));
+            goto error;
         }
 
-        if (def->os.bm_timeout_set) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("splash timeout is not supported "
-                                 "by this QEMU binary"));
-                virBufferFreeAndReset(&boot_buf);
-                goto error;
-            }
+        if (boot_nparams++)
+            virBufferAddChar(&boot_buf, ',');
 
-            if (boot_nparams++)
-                virBufferAddChar(&boot_buf, ',');
+        virBufferAsprintf(&boot_buf,
+                          "reboot-timeout=%d",
+                          def->os.bios.rt_delay);
+    }
 
-            virBufferAsprintf(&boot_buf, "splash-time=%u", def->os.bm_timeout);
+    if (def->os.bm_timeout_set) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("splash timeout is not supported "
+                             "by this QEMU binary"));
+            goto error;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT)) {
-            if (boot_nparams++)
-                virBufferAddChar(&boot_buf, ',');
-            virBufferAddLit(&boot_buf, "strict=on");
+        if (boot_nparams++)
+            virBufferAddChar(&boot_buf, ',');
+
+        virBufferAsprintf(&boot_buf, "splash-time=%u", def->os.bm_timeout);
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT)) {
+        if (boot_nparams++)
+            virBufferAddChar(&boot_buf, ',');
+        virBufferAddLit(&boot_buf, "strict=on");
+    }
+
+    if (boot_nparams > 0) {
+        virCommandAddArg(cmd, "-boot");
+
+        if (virBufferCheckError(&boot_buf) < 0)
+            goto error;
+
+        if (boot_nparams < 2 || emitBootindex) {
+            virCommandAddArgBuffer(cmd, &boot_buf);
+            virBufferFreeAndReset(&boot_buf);
+        } else {
+            char *str = virBufferContentAndReset(&boot_buf);
+            virCommandAddArgFormat(cmd,
+                                   "order=%s",
+                                   str);
+            VIR_FREE(str);
         }
+    }
 
-        if (boot_nparams > 0) {
-            virCommandAddArg(cmd, "-boot");
-
-            if (virBufferCheckError(&boot_buf) < 0)
-                goto error;
-
-            if (boot_nparams < 2 || emitBootindex) {
-                virCommandAddArgBuffer(cmd, &boot_buf);
-                virBufferFreeAndReset(&boot_buf);
-            } else {
-                char *str = virBufferContentAndReset(&boot_buf);
-                virCommandAddArgFormat(cmd,
-                                       "order=%s",
-                                       str);
-                VIR_FREE(str);
-            }
+    if (def->os.kernel)
+        virCommandAddArgList(cmd, "-kernel", def->os.kernel, NULL);
+    if (def->os.initrd)
+        virCommandAddArgList(cmd, "-initrd", def->os.initrd, NULL);
+    if (def->os.cmdline)
+        virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
+    if (def->os.dtb) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DTB)) {
+            virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("dtb is not supported with this QEMU binary"));
+            goto error;
         }
-
-        if (def->os.kernel)
-            virCommandAddArgList(cmd, "-kernel", def->os.kernel, NULL);
-        if (def->os.initrd)
-            virCommandAddArgList(cmd, "-initrd", def->os.initrd, NULL);
-        if (def->os.cmdline)
-            virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
-        if (def->os.dtb) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DTB)) {
-                virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("dtb is not supported with this QEMU binary"));
-                goto error;
-            }
-        }
-    } else {
-        virCommandAddArgList(cmd, "-bootloader", def->os.bootloader, NULL);
     }
 
     for (i = 0; i < def->ncontrollers; i++) {
@@ -10383,6 +10377,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     return cmd;
 
  error:
+    virBufferFreeAndReset(&boot_buf);
     virObjectUnref(cfg);
     /* free up any resources in the network driver
      * but don't overwrite the original error */

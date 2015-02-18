@@ -925,6 +925,12 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
 
+    if (def->os.bootloader || def->os.bootloaderArgs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bootloader is not supported by QEMU"));
+        return -1;
+    }
+
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))

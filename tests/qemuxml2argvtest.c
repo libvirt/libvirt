@@ -647,7 +647,6 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_BOOT_STRICT,
             QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
-    DO_TEST("bootloader", QEMU_CAPS_DOMID, QEMU_CAPS_KVM);
 
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
@@ -970,7 +969,6 @@ mymain(void)
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
-    DO_TEST("input-xen", QEMU_CAPS_DOMID, QEMU_CAPS_KVM, QEMU_CAPS_VNC);
     DO_TEST("misc-acpi", NONE);
     DO_TEST("misc-disable-s3", QEMU_CAPS_DISABLE_S3);
     DO_TEST("misc-disable-suspends", QEMU_CAPS_DISABLE_S3, QEMU_CAPS_DISABLE_S4);

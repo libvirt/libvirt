@@ -178,7 +178,6 @@ mymain(void)
     DO_TEST("boot-menu-disable");
     DO_TEST_DIFFERENT("boot-menu-disable-with-timeout");
     DO_TEST("boot-order");
-    DO_TEST("bootloader");
 
     DO_TEST("reboot-timeout-enabled");
     DO_TEST("reboot-timeout-disabled");
@@ -259,7 +258,6 @@ mymain(void)
     DO_TEST("graphics-spice-qxl-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
-    DO_TEST("input-xen");
     DO_TEST("misc-acpi");
     DO_TEST("misc-disable-s3");
     DO_TEST("misc-disable-suspends");
