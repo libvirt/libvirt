@@ -206,7 +206,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto free_vol;
     }
 
-    if (virStorageBackendUpdateVolInfo(vol, true, true,
+    if (virStorageBackendUpdateVolInfo(vol, true,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
         retval = -1;
         goto free_vol;

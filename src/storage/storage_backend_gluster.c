@@ -268,7 +268,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     if (VIR_ALLOC(vol) < 0)
         goto cleanup;
 
-    if (virStorageBackendUpdateVolTargetInfoFD(&vol->target, -1, st, true) < 0)
+    if (virStorageBackendUpdateVolTargetInfoFD(&vol->target, -1, st) < 0)
         goto cleanup;
 
     if (virStorageBackendGlusterSetMetadata(state, vol, name) < 0)

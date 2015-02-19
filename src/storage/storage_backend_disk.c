@@ -152,14 +152,14 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
      * -1 was returned indicating some other error than an open error.
      */
     if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
-        if (virStorageBackendUpdateVolInfo(vol, true, false,
+        if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT |
                                            VIR_STORAGE_VOL_OPEN_NOERROR) == -1)
             return -1;
         vol->target.allocation = vol->target.capacity =
             (vol->source.extents[0].end - vol->source.extents[0].start);
     } else {
-        if (virStorageBackendUpdateVolInfo(vol, true, false,
+        if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
             return -1;
     }
