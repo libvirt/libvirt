@@ -1030,12 +1030,12 @@ virStorageFileGetMetadataFromFD(const char *path,
     }
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
-        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->relPath);
+        virReportSystemError(errno, _("cannot seek to start of '%s'"), meta->path);
         goto cleanup;
     }
 
     if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
-        virReportSystemError(errno, _("cannot read header '%s'"), meta->relPath);
+        virReportSystemError(errno, _("cannot read header '%s'"), meta->path);
         goto cleanup;
     }
 
