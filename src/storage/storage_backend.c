@@ -1514,6 +1514,9 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 {
     int ret, fd = -1;
     struct stat sb;
+    virStorageSourcePtr meta = NULL;
+    char *buf = NULL;
+    ssize_t len = VIR_STORAGE_MAX_HEADER;
 
     if ((ret = virStorageBackendVolOpen(target->path, &sb, openflags)) < 0)
         goto cleanup;
@@ -1523,14 +1526,41 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
                                                       updateCapacity)) < 0)
         goto cleanup;
 
+    if (target->type == VIR_STORAGE_VOL_FILE &&
+        target->format != VIR_STORAGE_FILE_NONE) {
+        if (S_ISDIR(sb.st_mode)) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+            virReportSystemError(errno, _("cannot seek to start of '%s'"), target->path);
+            goto cleanup;
+        }
+
+        if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
+            virReportSystemError(errno, _("cannot read header '%s'"), target->path);
+            goto cleanup;
+        }
+
+        if (!(meta = virStorageFileGetMetadataFromBuf(target->path, buf, len, target->format,
+                                                      NULL))) {
+            goto cleanup;
+        }
+
+        if (meta->capacity)
+            target->capacity = meta->capacity;
+    }
+
     if (withBlockVolFormat) {
         if ((ret = virStorageBackendDetectBlockVolFormatFD(target, fd)) < 0)
             goto cleanup;
     }
 
  cleanup:
+    virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
-
+    VIR_FREE(buf);
     return ret;
 }
 
