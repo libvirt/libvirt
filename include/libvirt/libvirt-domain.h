@@ -182,12 +182,34 @@ typedef enum {
                                         monitored by virDomainGetJobInfo); only
                                         limited set of commands may be allowed */
     VIR_DOMAIN_CONTROL_OCCUPIED = 2, /* occupied by a running command */
-    VIR_DOMAIN_CONTROL_ERROR = 3,    /* unusable, domain cannot be fully operated */
+    VIR_DOMAIN_CONTROL_ERROR = 3,    /* unusable, domain cannot be fully
+                                        operated, possible reason is provided
+                                        in the details field */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_CONTROL_LAST
 # endif
 } virDomainControlState;
+
+/**
+ * virDomainControlErrorReason:
+ *
+ * Reason for the error state.
+ */
+typedef enum {
+    VIR_DOMAIN_CONTROL_ERROR_REASON_NONE = 0,     /* server didn't provide a
+                                                     reason */
+    VIR_DOMAIN_CONTROL_ERROR_REASON_UNKNOWN = 1,  /* unknown reason for the
+                                                     error */
+    VIR_DOMAIN_CONTROL_ERROR_REASON_MONITOR = 2,  /* monitor connection is
+                                                     broken */
+    VIR_DOMAIN_CONTROL_ERROR_REASON_INTERNAL = 3, /* error caused due to
+                                                     internal failure in libvirt
+                                                  */
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_CONTROL_ERROR_REASON_LAST
+# endif
+} virDomainControlErrorReason;
 
 /**
  * virDomainControlInfo:
@@ -198,7 +220,8 @@ typedef enum {
 typedef struct _virDomainControlInfo virDomainControlInfo;
 struct _virDomainControlInfo {
     unsigned int state;     /* control state, one of virDomainControlState */
-    unsigned int details;   /* state details, currently 0 */
+    unsigned int details;   /* state details, currently 0 except for ERROR
+                               state (one of virDomainControlErrorReason) */
     unsigned long long stateTime; /* for how long (in msec) control interface
                                      has been in current state (except for OK
                                      and ERROR states) */

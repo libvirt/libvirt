@@ -128,6 +128,21 @@ vshDomainControlStateToString(int state)
     return str ? _(str) : _("unknown");
 }
 
+VIR_ENUM_DECL(vshDomainControlErrorReason)
+VIR_ENUM_IMPL(vshDomainControlErrorReason,
+              VIR_DOMAIN_CONTROL_ERROR_REASON_LAST,
+              "",
+              N_("unknown"),
+              N_("monitor failure"),
+              N_("internal (locking) error"))
+
+static const char *
+vshDomainControlErrorReasonToString(int reason)
+{
+    const char *ret = vshDomainControlErrorReasonTypeToString(reason);
+    return ret ? _(ret) : _("unknown");
+}
+
 VIR_ENUM_DECL(vshDomainState)
 VIR_ENUM_IMPL(vshDomainState,
               VIR_DOMAIN_LAST,
@@ -815,6 +830,10 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s (%0.3fs)\n",
                  vshDomainControlStateToString(info.state),
                  info.stateTime / 1000.0);
+    } else if (info.state == VIR_DOMAIN_CONTROL_ERROR && info.details > 0) {
+        vshPrint(ctl, "%s: %s\n",
+                 vshDomainControlStateToString(info.state),
+                 vshDomainControlErrorReasonToString(info.details));
     } else {
         vshPrint(ctl, "%s\n",
                  vshDomainControlStateToString(info.state));

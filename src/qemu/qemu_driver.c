@@ -2701,6 +2701,7 @@ qemuDomainGetControlInfo(virDomainPtr dom,
 
     if (priv->monError) {
         info->state = VIR_DOMAIN_CONTROL_ERROR;
+        info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_MONITOR;
     } else if (priv->job.active) {
         if (virTimeMillisNow(&info->stateTime) < 0)
             goto cleanup;
@@ -2708,8 +2709,18 @@ qemuDomainGetControlInfo(virDomainPtr dom,
             info->state = VIR_DOMAIN_CONTROL_JOB;
             info->stateTime -= priv->job.current->started;
         } else {
-            info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
-            info->stateTime -= priv->monStart;
+            if (priv->monStart > 0) {
+                info->state = VIR_DOMAIN_CONTROL_OCCUPIED;
+                info->stateTime -= priv->monStart;
+            } else {
+                /* At this point the domain has an active job, but monitor was
+                 * not entered and the domain object lock is not held thus we
+                 * are stuck in the job forever due to a programming error.
+                 */
+                info->state = VIR_DOMAIN_CONTROL_ERROR;
+                info->details = VIR_DOMAIN_CONTROL_ERROR_REASON_INTERNAL;
+                info->stateTime = 0;
+            }
         }
     } else {
         info->state = VIR_DOMAIN_CONTROL_OK;
