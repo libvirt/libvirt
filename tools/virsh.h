@@ -1,7 +1,7 @@
 /*
  * virsh.h: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -359,7 +359,7 @@ char *vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
 char *vshEditWriteToTempFile(vshControl *ctl, const char *doc);
 int vshEditFile(vshControl *ctl, const char *filename);
 char *vshEditReadBackFile(vshControl *ctl, const char *filename);
-int vshAskReedit(vshControl *ctl, const char *msg);
+int vshAskReedit(vshControl *ctl, const char *msg, bool relax_avail);
 int vshStreamSink(virStreamPtr st, const char *bytes, size_t nbytes,
                   void *opaque);
 double vshPrettyCapacity(unsigned long long val, const char **unit);

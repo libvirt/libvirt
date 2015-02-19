@@ -1,7 +1,7 @@
 /*
  * virsh-edit.c: Implementation of generic virsh *-edit intelligence
  *
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012, 2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,6 +62,7 @@ do {
     char *doc_reread = NULL;
     const char *msg = NULL;
     bool edit_success = false;
+    bool relax_avail = false;
 
     /* Get the XML configuration of the object. */
     doc = (EDIT_GET_XML);
@@ -74,6 +75,11 @@ do {
         goto edit_cleanup;
 
  reedit:
+
+#ifdef EDIT_RELAX
+    relax_avail = true;
+#endif
+
     /* Start the editor. */
     if (vshEditFile(ctl, tmp) == -1)
         goto edit_cleanup;
@@ -112,7 +118,7 @@ do {
         msg = _("Failed.");
 
     if (msg) {
-        int c = vshAskReedit(ctl, msg);
+        int c = vshAskReedit(ctl, msg, relax_avail);
         switch (c) {
         case 'y':
             goto reedit;
@@ -125,6 +131,17 @@ do {
         case 'n':
             goto edit_cleanup;
             break;
+
+#ifdef EDIT_RELAX
+        case 'i':
+            if (relax_avail) {
+                EDIT_RELAX;
+                relax_avail = false;
+                goto redefine;
+                break;
+            }
+            /* fall-through */
+#endif
 
         default:
             vshError(ctl, "%s", msg);

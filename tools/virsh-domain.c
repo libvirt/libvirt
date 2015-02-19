@@ -11265,7 +11265,13 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     } while (0)
 #define EDIT_DEFINE \
     (dom_edited = vshDomainDefine(ctl->conn, doc_edited, define_flags))
+#define EDIT_RELAX                                      \
+    do {                                                \
+        define_flags &= ~VIR_DOMAIN_DEFINE_VALIDATE;    \
+    } while (0);
+
 #include "virsh-edit.c"
+#undef EDIT_RELAX
 
     vshPrint(ctl, _("Domain %s XML configuration edited.\n"),
              virDomainGetName(dom_edited));
