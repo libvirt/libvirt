@@ -72,6 +72,7 @@ int virBufferCheckErrorInternal(const virBuffer *buf,
     __LINE__)
 unsigned int virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);
+void virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd);
 void virBufferAddChar(virBufferPtr buf, char c);
 void virBufferAsprintf(virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FMT_PRINTF(2, 3);

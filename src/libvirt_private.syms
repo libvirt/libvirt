@@ -1081,6 +1081,7 @@ virBitmapToData;
 
 # util/virbuffer.h
 virBufferAdd;
+virBufferAddBuffer;
 virBufferAddChar;
 virBufferAdjustIndent;
 virBufferAsprintf;

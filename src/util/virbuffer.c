@@ -162,14 +162,50 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
         len = strlen(str);
 
     needSize = buf->use + indent + len + 2;
-    if (needSize > buf->size &&
-        virBufferGrow(buf, needSize - buf->use) < 0)
+    if (virBufferGrow(buf, needSize - buf->use) < 0)
         return;
 
     memset(&buf->content[buf->use], ' ', indent);
     memcpy(&buf->content[buf->use + indent], str, len);
     buf->use += indent + len;
     buf->content[buf->use] = '\0';
+}
+
+/**
+ * virBufferAddBuffer:
+ * @buf: the buffer to append to
+ * @toadd: the buffer to append
+ *
+ * Add a buffer into another buffer without need to go through:
+ * virBufferContentAndReset(), virBufferAdd(). Auto indentation
+ * is (intentionally) NOT applied!
+ *
+ * Moreover, be aware that @toadd is eaten with hair. IOW, the
+ * @toadd buffer is reset after this.
+ */
+void
+virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
+{
+    unsigned int needSize;
+
+    if (!buf || !toadd)
+        return;
+
+    if (buf->error || toadd->error) {
+        if (!buf->error)
+            buf->error = toadd->error;
+        virBufferFreeAndReset(toadd);
+        return;
+    }
+
+    needSize = buf->use + toadd->use;
+    if (virBufferGrow(buf, needSize - buf->use) < 0)
+        return;
+
+    memcpy(&buf->content[buf->use], toadd->content, toadd->use);
+    buf->use += toadd->use;
+    buf->content[buf->use] = '\0';
+    virBufferFreeAndReset(toadd);
 }
 
 /**

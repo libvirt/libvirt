@@ -199,6 +199,117 @@ static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
+static int testBufAddBuffer(const void *data ATTRIBUTE_UNUSED)
+{
+    virBuffer buf1 = VIR_BUFFER_INITIALIZER;
+    virBuffer buf2 = VIR_BUFFER_INITIALIZER;
+    virBuffer buf3 = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+    char *result = NULL;
+    const char *expected = \
+"  A long time ago, in a galaxy far,\n" \
+"  far away...\n"                       \
+"    It is a period of civil war.\n"    \
+"    Rebel spaceships, striking\n"      \
+"    from a hidden base, have won\n"    \
+"    their first victory against\n"     \
+"    the evil Galactic Empire.\n"       \
+"  During the battle, rebel\n"          \
+"  spies managed to steal secret\n"     \
+"  plans to the Empire's\n"             \
+"  ultimate weapon, the DEATH\n"        \
+"  STAR, an armored space\n"            \
+"  station with enough power to\n"      \
+"  destroy an entire planet.\n";
+
+    if (virBufferUse(&buf1)) {
+        TEST_ERROR("buf1 already in use");
+        goto cleanup;
+    }
+
+    if (virBufferUse(&buf2)) {
+        TEST_ERROR("buf2 already in use");
+        goto cleanup;
+    }
+
+    if (virBufferUse(&buf3)) {
+        TEST_ERROR("buf3 already in use");
+        goto cleanup;
+    }
+
+    virBufferAdjustIndent(&buf1, 2);
+    virBufferAddLit(&buf1, "A long time ago, in a galaxy far,\n");
+    virBufferAddLit(&buf1, "far away...\n");
+
+    virBufferAdjustIndent(&buf2, 4);
+    virBufferAddLit(&buf2, "It is a period of civil war.\n");
+    virBufferAddLit(&buf2, "Rebel spaceships, striking\n");
+    virBufferAddLit(&buf2, "from a hidden base, have won\n");
+    virBufferAddLit(&buf2, "their first victory against\n");
+    virBufferAddLit(&buf2, "the evil Galactic Empire.\n");
+
+    virBufferAdjustIndent(&buf3, 2);
+    virBufferAddLit(&buf3, "During the battle, rebel\n");
+    virBufferAddLit(&buf3, "spies managed to steal secret\n");
+    virBufferAddLit(&buf3, "plans to the Empire's\n");
+    virBufferAddLit(&buf3, "ultimate weapon, the DEATH\n");
+    virBufferAddLit(&buf3, "STAR, an armored space\n");
+    virBufferAddLit(&buf3, "station with enough power to\n");
+    virBufferAddLit(&buf3, "destroy an entire planet.\n");
+
+    if (!virBufferUse(&buf1)) {
+        TEST_ERROR("Error adding to buf1");
+        goto cleanup;
+    }
+
+    if (!virBufferUse(&buf2)) {
+        TEST_ERROR("Error adding to buf2");
+        goto cleanup;
+    }
+
+    if (!virBufferUse(&buf3)) {
+        TEST_ERROR("Error adding to buf3");
+        goto cleanup;
+    }
+
+    virBufferAddBuffer(&buf2, &buf3);
+
+    if (!virBufferUse(&buf2)) {
+        TEST_ERROR("buf2 cleared mistakenly");
+        goto cleanup;
+    }
+
+    if (virBufferUse(&buf3)) {
+        TEST_ERROR("buf3 is not clear even though it should be");
+        goto cleanup;
+    }
+
+    virBufferAddBuffer(&buf1, &buf2);
+
+    if (!virBufferUse(&buf1)) {
+        TEST_ERROR("buf1 cleared mistakenly");
+        goto cleanup;
+    }
+
+    if (virBufferUse(&buf2)) {
+        TEST_ERROR("buf2 is not clear even though it should be");
+        goto cleanup;
+    }
+
+    result = virBufferContentAndReset(&buf1);
+    if (STRNEQ_NULLABLE(result, expected)) {
+        virtTestDifference(stderr, expected, result);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf1);
+    virBufferFreeAndReset(&buf2);
+    VIR_FREE(result);
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -217,6 +328,7 @@ mymain(void)
     DO_TEST("VSprintf infinite loop", testBufInfiniteLoop, 0);
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
+    DO_TEST("AddBuffer", testBufAddBuffer, 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
