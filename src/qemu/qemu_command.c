@@ -3003,7 +3003,7 @@ qemuNetworkDriveGetPort(int protocol,
     int ret = 0;
 
     if (port) {
-        if (virStrToLong_i(port, NULL, 10, &ret) < 0) {
+        if (virStrToLong_i(port, NULL, 10, &ret) < 0 || ret < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse port number '%s'"),
                            port);
