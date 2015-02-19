@@ -5734,8 +5734,8 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
 
     if (!(newdef_migr = qemuDomainDefCopy(driver,
                                           newdef,
-                                          VIR_DOMAIN_XML_MIGRATABLE |
-                                          VIR_DOMAIN_XML_SECURE)))
+                                          QEMU_DOMAIN_FORMAT_LIVE_FLAGS ||
+                                          VIR_DOMAIN_XML_MIGRATABLE)))
         goto cleanup;
 
     if (!virDomainDefCheckABIStability(def, newdef_migr)) {
