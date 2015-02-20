@@ -1267,6 +1267,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->wwn);
     VIR_FREE(def->vendor);
     VIR_FREE(def->product);
+    VIR_FREE(def->domain_name);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
@@ -1449,6 +1450,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     VIR_FREE(def->backend.vhost);
     VIR_FREE(def->virtPortProfile);
     VIR_FREE(def->script);
+    VIR_FREE(def->domain_name);
     VIR_FREE(def->ifname);
     VIR_FREE(def->ifname_guest);
     VIR_FREE(def->ifname_guest_actual);
@@ -5887,6 +5889,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *discard = NULL;
     char *mirrorFormat = NULL;
     char *mirrorType = NULL;
+    char *domain_name = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
     int ret = 0;
@@ -5952,6 +5955,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (target &&
                     STRPREFIX(target, "ioemu:"))
                     memmove(target, target+6, strlen(target)-5);
+            } else if (!domain_name &&
+                       xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
+                domain_name = virXMLPropString(cur, "name");
             } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
                 if (virXPathUInt("string(./geometry/@cyls)",
                                  ctxt, &def->geometry.cylinders) < 0) {
@@ -6676,6 +6682,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     driverName = NULL;
     def->src->encryption = encryption;
     encryption = NULL;
+    def->domain_name = domain_name;
+    domain_name = NULL;
     def->serial = serial;
     serial = NULL;
     def->wwn = wwn;
@@ -6738,6 +6746,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(product);
     VIR_FREE(mirrorType);
     VIR_FREE(mirrorFormat);
+    VIR_FREE(domain_name);
 
     ctxt->node = save_ctxt;
     return def;
@@ -7527,6 +7536,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *mode = NULL;
     char *linkstate = NULL;
     char *addrtype = NULL;
+    char *domain_name = NULL;
     char *vhostuser_mode = NULL;
     char *vhostuser_path = NULL;
     char *vhostuser_type = NULL;
@@ -7666,6 +7676,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (!script &&
                        xmlStrEqual(cur->name, BAD_CAST "script")) {
                 script = virXMLPropString(cur, "path");
+            } else if (!domain_name &&
+                       xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
+                domain_name = virXMLPropString(cur, "name");
             } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
                 model = virXMLPropString(cur, "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
@@ -7965,6 +7978,10 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->script = script;
         script = NULL;
     }
+    if (domain_name != NULL) {
+        def->domain_name = domain_name;
+        domain_name = NULL;
+    }
     if (ifname != NULL) {
         def->ifname = ifname;
         ifname = NULL;
@@ -8234,6 +8251,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(mode);
     VIR_FREE(linkstate);
     VIR_FREE(addrtype);
+    VIR_FREE(domain_name);
     VIR_FREE(trustGuestRxFilters);
     VIR_FREE(ips);
     VIR_FREE(vhost_path);
@@ -17162,6 +17180,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
                                         def->src->backingStoreRaw, 1) < 0)
         return -1;
 
+    virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
+
     virDomainDiskGeometryDefFormat(buf, def);
     virDomainDiskBlockIoDefFormat(buf, def);
 
@@ -18136,6 +18156,7 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
+    virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
     if (def->ifname &&
         !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
           (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {

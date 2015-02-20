@@ -1174,6 +1174,14 @@
         <ref name="deviceBoot"/>
       </optional>
       <optional>
+        <element name="backenddomain">
+          <attribute name="name">
+            <ref name="domainName"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
         <element name="readonly">
           <empty/>
         </element>
@@ -2367,6 +2375,14 @@
         <element name="script">
           <attribute name="path">
             <ref name="filePath"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="backenddomain">
+          <attribute name="name">
+            <ref name="domainName"/>
           </attribute>
           <empty/>
         </element>

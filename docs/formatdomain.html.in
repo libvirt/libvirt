@@ -2372,6 +2372,12 @@
           </li>
         </ul>
       </dd>
+      <dt><code>backenddomain</code></dt>
+      <dd>The optional <code>backenddomain</code> element allows specifying a
+          backend domain (aka driver domain) hosting the disk.  Use the
+          <code>name</code> attribute to specify the backend domain name.
+          <span class="since">Since 1.2.13 (Xen only)</span>
+      </dd>
       <dt><code>boot</code></dt>
       <dd>Specifies that the disk is bootable. The <code>order</code>
         attribute determines the order in which devices will be tried during
@@ -4255,6 +4261,29 @@ qemu-kvm -net nic,model=? /dev/null
       BIOS. This can be useful to provide an alternative boot ROM for a
       network device.
       <span class="since">Since 0.9.10 (QEMU and KVM only)</span>.
+    </p>
+    <h5><a name="elementDomain">Setting up a network backend in a driver domain</a></h5>
+<pre>
+  ...
+  &lt;devices&gt;
+    ...
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='br0'/&gt;
+      <b>&lt;backenddomain name='netvm'/&gt;</b>
+    &lt;/interface&gt;
+    ...
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      The optional <code>backenddomain</code> element allows specifying a
+      backend domain (aka driver domain) for the interface. Use the
+      <code>name</code> attribute to specify the backend domain name. You
+      can use it to create a direct network link between domains (so data
+      will not go through host system). Use with type 'ethernet' to create
+      plain network link, or with type 'bridge' to connect to a bridge inside
+      the backend domain.
+      <span class="since">Since 1.2.13 (Xen only)</span>
     </p>
 
     <h5><a name="elementQoS">Quality of service</a></h5>

@@ -700,6 +700,7 @@ struct _virDomainDiskDef {
     int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
+    char *domain_name; /* backend domain name */
 };
 
 
@@ -996,6 +997,7 @@ struct _virDomainNetDef {
         unsigned long sndbuf;
     } tune;
     char *script;
+    char *domain_name; /* backend domain name */
     char *ifname;
     char *ifname_guest;
     char *ifname_guest_actual;
