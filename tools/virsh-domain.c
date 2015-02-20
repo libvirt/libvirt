@@ -6450,20 +6450,17 @@ vshParseCPUList(vshControl *ctl, const char *cpulist,
 static bool
 cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainInfo info;
     virDomainPtr dom;
     unsigned int vcpu = 0;
     const char *cpulist = NULL;
     bool ret = false;
     unsigned char *cpumap = NULL;
-    unsigned char *cpumaps = NULL;
     size_t cpumaplen;
     int maxcpu, ncpus;
     size_t i;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
-    bool query = false; /* Query mode if no cpulist */
     int got_vcpu;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
@@ -6481,48 +6478,47 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0)
         return false;
 
-    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    query = !cpulist;
+    if (!cpulist)
+        VSH_EXCLUSIVE_OPTIONS_VAR(live, config);
 
     if ((got_vcpu = vshCommandOptUInt(cmd, "vcpu", &vcpu)) < 0) {
         vshError(ctl, "%s", _("vcpupin: Invalid vCPU number."));
-        goto cleanup;
+        return false;
     }
 
     /* In pin mode, "vcpu" is necessary */
-    if (!query && got_vcpu == 0) {
+    if (cpulist && got_vcpu == 0) {
         vshError(ctl, "%s", _("vcpupin: Missing vCPU number in pin mode."));
-        goto cleanup;
-    }
-
-    if (virDomainGetInfo(dom, &info) != 0) {
-        vshError(ctl, "%s", _("vcpupin: failed to get domain information."));
-        goto cleanup;
-    }
-
-    if (vcpu >= info.nrVirtCpu) {
-        vshError(ctl, "%s", _("vcpupin: vCPU index out of range."));
-        goto cleanup;
+        return false;
     }
 
     if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
-        goto cleanup;
-
+        return false;
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
     /* Query mode: show CPU affinity information then exit.*/
-    if (query) {
+    if (!cpulist) {
         /* When query mode and neither "live", "config" nor "current"
          * is specified, set VIR_DOMAIN_AFFECT_CURRENT as flags */
         if (flags == -1)
             flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-        cpumaps = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
-        if ((ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
-                                             cpumaps, cpumaplen, flags)) >= 0) {
+        if ((ncpus = vshCPUCountCollect(ctl, dom, flags, true)) < 0) {
+            if (ncpus == -1) {
+                if (flags & VIR_DOMAIN_AFFECT_LIVE)
+                    vshError(ctl, "%s", _("cannot get vcpupin for offline domain"));
+                else
+                    vshError(ctl, "%s", _("cannot get vcpupin for transient domain"));
+            }
+            goto cleanup;
+        }
 
+        cpumap = vshMalloc(ctl, ncpus * cpumaplen);
+        if ((ncpus = virDomainGetVcpuPinInfo(dom, ncpus, cpumap,
+                                             cpumaplen, flags)) >= 0) {
             vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
             vshPrintExtra(ctl, "----------------------------------\n");
             for (i = 0; i < ncpus; i++) {
@@ -6530,30 +6526,27 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                    continue;
 
                vshPrint(ctl, "%4zu: ", i);
-               ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, i);
+               ret = vshPrintPinInfo(cpumap, cpumaplen, maxcpu, i);
                vshPrint(ctl, "\n");
                if (!ret)
                    break;
             }
         }
-
-        VIR_FREE(cpumaps);
-        goto cleanup;
-    }
-
-    /* Pin mode: pinning specified vcpu to specified physical cpus*/
-    if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
-        goto cleanup;
-
-    if (flags == -1) {
-        if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
-            goto cleanup;
     } else {
-        if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0)
+        /* Pin mode: pinning specified vcpu to specified physical cpus*/
+        if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
             goto cleanup;
+
+        if (flags == -1) {
+            if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
+                goto cleanup;
+        } else {
+            if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0)
+                goto cleanup;
+        }
+        ret = true;
     }
 
-    ret = true;
  cleanup:
     VIR_FREE(cpumap);
     virDomainFree(dom);
