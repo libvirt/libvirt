@@ -6447,8 +6447,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     size_t i;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
-    size_t nnicindexes = 0;
-    int *nicindexes = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -6634,14 +6632,12 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                      &buildCommandLineCallbacks,
                                      true,
                                      qemuCheckFips(),
-                                     NULL,
-                                     &nnicindexes, &nicindexes)))
+                                     NULL, NULL, NULL)))
         goto cleanup;
 
     ret = virCommandToString(cmd);
 
  cleanup:
-    VIR_FREE(nicindexes);
     virObjectUnref(qemuCaps);
     virCommandFree(cmd);
     virDomainDefFree(def);

@@ -289,8 +289,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virDomainNetDefPtr net,
                         virQEMUCapsPtr qemuCaps,
                         int *tapfd,
-                        size_t *tapfdSize,
-                        int *nicindex)
+                        size_t *tapfdSize)
 {
     const char *brname;
     int ret = -1;
@@ -337,8 +336,6 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;
         }
-        if (virNetDevGetIndex(net->ifname, nicindex) < 0)
-            goto cleanup;
         if (virDomainNetGetActualBridgeMACTableManager(net)
             == VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LIBVIRT) {
             /* libvirt is managing the FDB of the bridge this device
@@ -7757,7 +7754,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               int bootindex,
                               virNetDevVPortProfileOp vmop,
                               bool standalone,
-                              int *nicindex)
+                              size_t *nnicindexes,
+                              int **nicindexes)
 {
     int ret = -1;
     char *nic = NULL, *host = NULL;
@@ -7770,8 +7768,6 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     int actualType = virDomainNetGetActualType(net);
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
-
-    *nicindex = -1;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
         return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps);
@@ -7819,7 +7815,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
         if (qemuNetworkIfaceConnect(def, driver, net,
                                     qemuCaps, tapfd,
-                                    &tapfdSize, nicindex) < 0)
+                                    &tapfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0)
@@ -7829,6 +7825,49 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                                         qemuCaps, vmop);
         if (tapfd[0] < 0)
             goto cleanup;
+    }
+
+    /* For types whose implementations use a netdev on the host, add
+     * an entry to nicindexes for passing on to systemd.
+    */
+    switch ((virDomainNetType)actualType) {
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    {
+        int nicindex;
+
+        /* network and bridge use a tap device, and direct uses a
+         * macvtap device
+         */
+        if (nicindexes && nnicindexes && net->ifname) {
+            if (virNetDevGetIndex(net->ifname, &nicindex) < 0 ||
+                VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex) < 0)
+                goto cleanup;
+        }
+        break;
+    }
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+       /* These types don't use a network device on the host, but
+        * instead use some other type of connection to the emulated
+        * device in the qemu process.
+        *
+        * (Note that hostdev can't be considered as "using a network
+        * device", because by the time it is being used, it has been
+        * detached from the hostside network driver so it doesn't show
+        * up in the list of interfaces on the host - it's just some
+        * PCI device.)
+        */
+       break;
     }
 
     /* Set bandwidth or warn if requested and not supported. */
@@ -8220,9 +8259,6 @@ qemuBuildCommandLine(virConnectPtr conn,
               qemuCaps, migrateFrom, migrateFd, snapshot, vmop);
 
     virUUIDFormat(def->uuid, uuid);
-
-    *nnicindexes = 0;
-    *nicindexes = NULL;
 
     emulator = def->emulator;
 
@@ -9282,13 +9318,9 @@ qemuBuildCommandLine(virConnectPtr conn,
             else
                 vlan = i;
 
-            if (VIR_EXPAND_N(*nicindexes, *nnicindexes, 1) < 0)
-                goto error;
-
             if (qemuBuildInterfaceCommandLine(cmd, driver, def, net,
                                               qemuCaps, vlan, bootNet, vmop,
-                                              standalone,
-                                              &((*nicindexes)[*nnicindexes - 1])) < 0)
+                                              standalone, nnicindexes, nicindexes) < 0)
                 goto error;
 
             last_good_net = i;

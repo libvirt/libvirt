@@ -1,7 +1,7 @@
 /*
  * qemu_command.h: QEMU command generation
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -208,8 +208,7 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virDomainNetDefPtr net,
                             virQEMUCapsPtr qemuCaps,
                             int *tapfd,
-                            size_t *tapfdSize,
-                            int *nicindex)
+                            size_t *tapfdSize)
     ATTRIBUTE_NONNULL(2);
 
 int qemuPhysIfaceConnect(virDomainDefPtr def,
