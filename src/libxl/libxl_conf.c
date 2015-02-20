@@ -975,6 +975,18 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
         return -1;
     }
 
+    if (l_disk->domain_name) {
+#ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
+        if (VIR_STRDUP(x_disk->backend_domname, l_disk->domain_name) < 0)
+            return -1;
+#else
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                _("this version of libxenlight does not "
+                  "support backend domain name"));
+        return -1;
+#endif
+    }
+
     return 0;
 }
 
@@ -1111,6 +1123,18 @@ libxlMakeNic(virDomainDefPtr def,
                     _("unsupported interface type %s"),
                     virDomainNetTypeToString(l_nic->type));
             return -1;
+    }
+
+    if (l_nic->domain_name) {
+#ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
+        if (VIR_STRDUP(x_nic->backend_domname, l_nic->domain_name) < 0)
+            return -1;
+#else
+        virReportError(VIR_ERR_XML_DETAIL, "%s",
+                _("this version of libxenlight does not "
+                  "support backend domain name"));
+        return -1;
+#endif
     }
 
     return 0;
