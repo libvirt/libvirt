@@ -8266,6 +8266,13 @@ virDomainAttachDeviceFlags(virDomainPtr domain,
  * into S4 state (also known as hibernation) unless you also modify the
  * persistent domain definition.
  *
+ * The supplied XML description of the device should be as specific
+ * as its definition in the domain XML. The set of attributes used
+ * to match the device are internal to the drivers. Using a partial definition,
+ * or attempting to detach a device that is not present in the domain XML,
+ * but shares some specific attributes with one that is present,
+ * may lead to unexpected results.
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
@@ -8340,6 +8347,13 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
  * Be aware that hotplug changes might not persist across a domain going
  * into S4 state (also known as hibernation) unless you also modify the
  * persistent domain definition.
+ *
+ * The supplied XML description of the device should be as specific
+ * as its definition in the domain XML. The set of attributes used
+ * to match the device are internal to the drivers. Using a partial definition,
+ * or attempting to detach a device that is not present in the domain XML,
+ * but shares some specific attributes with one that is present,
+ * may lead to unexpected results.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
