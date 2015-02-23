@@ -2728,3 +2728,131 @@ int virNetDevGetRxFilter(const char *ifname,
     *filter = fil;
     return ret;
 }
+
+#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
+
+/**
+ * virNetDevFeatureAvailable
+ * This function checks for the availability of a network device feature
+ *
+ * @ifname: name of the interface
+ * @cmd: reference to an ethtool command structure
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
+virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
+{
+    int ret = -1;
+    int sock = -1;
+    virIfreq ifr;
+
+    sock = socket(AF_LOCAL, SOCK_DGRAM, 0);
+    if (sock < 0) {
+        virReportSystemError(errno, "%s", _("Cannot open control socket"));
+        goto cleanup;
+    }
+
+    strcpy(ifr.ifr_name, ifname);
+    ifr.ifr_data = (void*) cmd;
+
+    if (ioctl(sock, SIOCETHTOOL, &ifr) != 0) {
+        switch (errno) {
+            case EPERM:
+                VIR_DEBUG("ethtool ioctl: permission denied");
+                break;
+            case EINVAL:
+                VIR_DEBUG("ethtool ioctl: invalid request");
+                break;
+            case EOPNOTSUPP:
+                VIR_DEBUG("ethtool ioctl: request not supported");
+                break;
+            default:
+                virReportSystemError(errno, "%s", _("ethtool ioctl error"));
+                goto cleanup;
+        }
+    }
+
+    ret = cmd->data > 0 ? 1: 0;
+ cleanup:
+    if (sock)
+        VIR_FORCE_CLOSE(sock);
+
+    return ret;
+}
+
+
+/**
+ * virNetDevGetFeatures:
+ * This function gets the nic offloads features available for ifname
+ *
+ * @ifname: name of the interface
+ * @features: network device feature structures
+ * @nfeatures: number of features available
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virNetDevGetFeatures(const char *ifname,
+                     virBitmapPtr *out)
+{
+    int ret = -1;
+    size_t i = -1;
+    size_t j = -1;
+    struct ethtool_value cmd = { 0 };
+
+    struct elem{
+        const int cmd;
+        const virNetDevFeature feat;
+    };
+    /* legacy ethtool getters */
+    struct elem cmds[] = {
+        {ETHTOOL_GRXCSUM, VIR_NET_DEV_FEAT_GRXCSUM},
+        {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
+        {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
+        {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
+        {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
+        {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
+    };
+    /* ethtool masks */
+    struct elem flags[] = {
+        {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
+        {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
+        {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
+        {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
+        {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
+    };
+
+    if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
+        goto cleanup;
+
+    for (i = 0; i < ARRAY_CARDINALITY(cmds); i++) {
+        cmd.cmd = cmds[i].cmd;
+        if (virNetDevFeatureAvailable(ifname, &cmd))
+            ignore_value(virBitmapSetBit(*out, cmds[i].feat));
+    }
+
+    cmd.cmd = ETHTOOL_GFLAGS;
+    if (virNetDevFeatureAvailable(ifname, &cmd)) {
+        for (j = 0; j < ARRAY_CARDINALITY(flags); j++) {
+            if (cmd.data & flags[j].cmd)
+                ignore_value(virBitmapSetBit(*out, flags[j].feat));
+        }
+    }
+
+    ret = 0;
+ cleanup:
+
+    return ret;
+
+}
+#else
+int
+virNetDevGetFeatures(const char *ifname ATTRIBUTE_UNUSED,
+                     virBitmapPtr *out ATTRIBUTE_UNUSED)
+{
+    VIR_DEBUG("Getting network device features on %s is not implemented on this platform",
+              ifname);
+    return 0;
+}
+#endif

@@ -719,6 +719,9 @@ static int udevProcessNetworkInterface(struct udev_device *device,
     if (virNetDevGetLinkInfo(data->net.ifname, &data->net.lnk) < 0)
         goto out;
 
+    if (virNetDevGetFeatures(data->net.ifname, &data->net.features) < 0)
+        goto out;
+
     ret = 0;
 
  out:

@@ -39,6 +39,20 @@ VIR_ENUM_IMPL(virInterfaceState,
               "down", "lowerlayerdown",
               "testing", "dormant", "up")
 
+VIR_ENUM_IMPL(virNetDevFeature,
+              VIR_NET_DEV_FEAT_LAST,
+              "rx",
+              "tx",
+              "sg",
+              "tso",
+              "gso",
+              "gro",
+              "lro",
+              "rxvlan",
+              "txvlan",
+              "ntuple",
+              "rxhash")
+
 int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr)
 {
     /* PCI bus has 32 slots and 8 functions per slot */

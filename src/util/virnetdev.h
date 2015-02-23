@@ -25,12 +25,14 @@
 
 # include <net/if.h>
 
+# include "virbitmap.h"
 # include "virsocketaddr.h"
 # include "virnetlink.h"
 # include "virmacaddr.h"
 # include "virpci.h"
 # include "device_conf.h"
 
+# include <linux/ethtool.h>
 # ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
 # else
@@ -181,6 +183,10 @@ int virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
 int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
                                     int *vf)
     ATTRIBUTE_NONNULL(1);
+
+int virNetDevGetFeatures(const char *ifname,
+                         virBitmapPtr *out)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevGetLinkInfo(const char *ifname,
                          virInterfaceLinkPtr lnk)

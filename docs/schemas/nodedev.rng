@@ -275,8 +275,22 @@
     <ref name="link-speed-state"/>
 
     <zeroOrMore>
+      <element name='feature'>
+        <attribute name='name'>
+          <ref name='netfeaturename'/>
+        </attribute>
+      </element>
+    </zeroOrMore>
+
+    <zeroOrMore>
       <ref name='subcapnet'/>
     </zeroOrMore>
+  </define>
+
+  <define name='netfeaturename'>
+    <data type='string'>
+      <param name='pattern'>[a-zA-Z\-_]+</param>
+    </data>
   </define>
 
   <define name='subcapnet'>

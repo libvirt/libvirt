@@ -1669,6 +1669,7 @@ virNetDevAddRoute;
 virNetDevClearIPAddress;
 virNetDevDelMulti;
 virNetDevExists;
+virNetDevGetFeatures;
 virNetDevGetIndex;
 virNetDevGetIPv4Address;
 virNetDevGetLinkInfo;

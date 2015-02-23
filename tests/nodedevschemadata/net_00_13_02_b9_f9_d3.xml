@@ -4,6 +4,15 @@
   <capability type='net'>
     <interface>eth0</interface>
     <address>00:13:02:b9:f9:d3</address>
+    <feature name='rx'/>
+    <feature name='tx'/>
+    <feature name='sg'/>
+    <feature name='tso'/>
+    <feature name='gso'/>
+    <feature name='gro'/>
+    <feature name='rxvlan'/>
+    <feature name='txvlan'/>
+    <feature name='rxhash'/>
     <capability type='80211'/>
   </capability>
 </device>

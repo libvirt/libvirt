@@ -62,6 +62,23 @@ struct _virInterfaceLink {
     unsigned int speed;      /* link speed in Mbits per second */
 };
 
+typedef enum {
+    VIR_NET_DEV_FEAT_GRXCSUM,
+    VIR_NET_DEV_FEAT_GTXCSUM,
+    VIR_NET_DEV_FEAT_GSG,
+    VIR_NET_DEV_FEAT_GTSO,
+    VIR_NET_DEV_FEAT_GGSO,
+    VIR_NET_DEV_FEAT_GGRO,
+    VIR_NET_DEV_FEAT_LRO,
+    VIR_NET_DEV_FEAT_RXVLAN,
+    VIR_NET_DEV_FEAT_TXVLAN,
+    VIR_NET_DEV_FEAT_NTUPLE,
+    VIR_NET_DEV_FEAT_RXHASH,
+    VIR_NET_DEV_FEAT_LAST
+} virNetDevFeature;
+
+VIR_ENUM_DECL(virNetDevFeature)
+
 int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr);
 
 int virDevicePCIAddressParseXML(xmlNodePtr node,

@@ -26,6 +26,7 @@
 # define __VIR_NODE_DEVICE_CONF_H__
 
 # include "internal.h"
+# include "virbitmap.h"
 # include "virutil.h"
 # include "virthread.h"
 # include "virpci.h"
@@ -141,6 +142,7 @@ struct _virNodeDevCapsDef {
             char *ifname;
             virInterfaceLink lnk;
             virNodeDevNetCapType subtype;  /* LAST -> no subtype */
+            virBitmapPtr features; /* enum virNetDevFeature */
         } net;
         struct {
             unsigned int host;

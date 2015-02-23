@@ -183,6 +183,24 @@
                 link. So far, the whole element is just for output,
                 not setting.
               </dd>
+              <dt><code>feature</code></dt>
+              <dd>If present, the hw offloads supported by this network
+                interface. Possible features are:
+                <dl>
+                    <dt><code>rx</code></dt><dd>rx-checksumming</dd>
+                    <dt><code>tx</code></dt><dd>tx-checksumming</dd>
+                    <dt><code>sg</code></dt><dd>scatter-gather</dd>
+                    <dt><code>tso</code></dt><dd>tcp-segmentation-offload</dd>
+                    <dt><code>ufo</code></dt><dd>udp-fragmentation-offload</dd>
+                    <dt><code>gso</code></dt><dd>generic-segmentation-offload</dd>
+                    <dt><code>gro</code></dt><dd>generic-receive-offload</dd>
+                    <dt><code>lro</code></dt><dd>large-receive-offload</dd>
+                    <dt><code>rxvlan</code></dt><dd>rx-vlan-offload</dd>
+                    <dt><code>txvlan</code></dt><dd>tx-vlan-offload</dd>
+                    <dt><code>ntuple</code></dt><dd>ntuple-filters</dd>
+                    <dt><code>rxhash</code></dt><dd>receive-hashing</dd>
+                </dl>
+              </dd>
               <dt><code>capability</code></dt>
               <dd>A network protocol exposed by the device, where the
                 attribute <code>type</code> can be "80203" for IEEE

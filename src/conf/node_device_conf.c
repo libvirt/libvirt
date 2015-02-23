@@ -437,6 +437,16 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                 virBufferEscapeString(&buf, "<address>%s</address>\n",
                                   data->net.address);
             virInterfaceLinkFormat(&buf, &data->net.lnk);
+            if (data->net.features) {
+                for (i = 0; i < VIR_NET_DEV_FEAT_LAST; i++) {
+                    bool b;
+                    ignore_value(virBitmapGetBit(data->net.features, i, &b));
+                    if (b) {
+                        virBufferAsprintf(&buf, "<feature name='%s'/>\n",
+                                          virNetDevFeatureTypeToString(i));
+                    }
+                }
+            }
             if (data->net.subtype != VIR_NODE_DEV_CAP_NET_LAST) {
                 const char *subtyp =
                     virNodeDevNetCapTypeToString(data->net.subtype);
@@ -927,8 +937,10 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
                          union _virNodeDevCapData *data)
 {
     xmlNodePtr orignode, lnk;
-    int ret = -1;
+    size_t i = -1;
+    int ret = -1, n = -1;
     char *tmp;
+    xmlNodePtr *nodes = NULL;
 
     orignode = ctxt->node;
     ctxt->node = node;
@@ -942,6 +954,31 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     }
 
     data->net.address = virXPathString("string(./address[1])", ctxt);
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0)
+        goto out;
+
+    if (n > 0) {
+        if (!(data->net.features = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
+            goto out;
+    }
+
+    for (i = 0; i < n; i++) {
+        int val;
+        if (!(tmp = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing network device feature name"));
+            goto out;
+        }
+
+        if ((val = virNetDevFeatureTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown network device feature '%s'"),
+                           tmp);
+            goto out;
+        }
+        ignore_value(virBitmapSetBit(data->net.features, val));
+    }
 
     data->net.subtype = VIR_NODE_DEV_CAP_NET_LAST;
 
@@ -1679,6 +1716,8 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_NET:
         VIR_FREE(data->net.ifname);
         VIR_FREE(data->net.address);
+        virBitmapFree(data->net.features);
+        data->net.features = NULL;
         break;
     case VIR_NODE_DEV_CAP_SCSI_HOST:
         VIR_FREE(data->scsi_host.wwnn);
