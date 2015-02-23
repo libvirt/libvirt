@@ -451,6 +451,14 @@ typedef int (*virNetworkObjListIterator)(virNetworkObjPtr net,
 int virNetworkObjListForEach(virNetworkObjListPtr nets,
                              virNetworkObjListIterator callback,
                              void *opaque);
+
+int virNetworkObjListGetNames(virNetworkObjListPtr nets,
+                              bool active,
+                              char **names,
+                              int nnames,
+                              virNetworkObjListFilter filter,
+                              virConnectPtr conn);
+
 /* for testing */
 int
 virNetworkDefUpdateSection(virNetworkDefPtr def,

@@ -4317,3 +4317,41 @@ virNetworkObjListForEach(virNetworkObjListPtr nets,
 
     return ret;
 }
+
+int
+virNetworkObjListGetNames(virNetworkObjListPtr nets,
+                          bool active,
+                          char **names,
+                          int nnames,
+                          virNetworkObjListFilter filter,
+                          virConnectPtr conn)
+{
+    int got = 0;
+    size_t i;
+
+    for (i = 0; i < nets->count && got < nnames; i++) {
+        virNetworkObjPtr obj = nets->objs[i];
+        virNetworkObjLock(obj);
+        if (filter && !filter(conn, obj->def)) {
+            virNetworkObjUnlock(obj);
+            continue;
+        }
+
+        if ((active && virNetworkObjIsActive(obj)) ||
+            (!active && !virNetworkObjIsActive(obj))) {
+            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
+                virNetworkObjUnlock(obj);
+                goto error;
+            }
+            got++;
+        }
+        virNetworkObjUnlock(obj);
+    }
+
+    return got;
+
+ error:
+    for (i = 0; i < got; i++)
+        VIR_FREE(names[i]);
+    return -1;
+}
