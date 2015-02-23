@@ -130,7 +130,7 @@ networkObjFromNetwork(virNetworkPtr net)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     networkDriverLock();
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
     networkDriverUnlock();
 
     if (!network) {
@@ -2476,7 +2476,7 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
     virNetworkPtr ret = NULL;
 
     networkDriverLock();
-    network = virNetworkFindByUUID(driver->networks, uuid);
+    network = virNetworkObjFindByUUID(driver->networks, uuid);
     networkDriverUnlock();
     if (!network) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -3071,7 +3071,7 @@ networkUndefine(virNetworkPtr net)
 
     networkDriverLock();
 
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
@@ -3144,7 +3144,7 @@ networkUpdate(virNetworkPtr net,
 
     networkDriverLock();
 
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
@@ -3301,7 +3301,7 @@ static int networkCreate(virNetworkPtr net)
     virObjectEventPtr event = NULL;
 
     networkDriverLock();
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -3336,7 +3336,7 @@ static int networkDestroy(virNetworkPtr net)
     virObjectEventPtr event = NULL;
 
     networkDriverLock();
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -3462,7 +3462,7 @@ static int networkSetAutostart(virNetworkPtr net,
     int ret = -1;
 
     networkDriverLock();
-    network = virNetworkFindByUUID(driver->networks, net->uuid);
+    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,

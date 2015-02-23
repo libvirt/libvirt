@@ -86,8 +86,8 @@ virNetworkObjTaint(virNetworkObjPtr obj,
     return true;
 }
 
-virNetworkObjPtr virNetworkFindByUUID(virNetworkObjListPtr nets,
-                                      const unsigned char *uuid)
+virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
+                                         const unsigned char *uuid)
 {
     size_t i;
 
@@ -4150,7 +4150,7 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
     virNetworkObjPtr net = NULL;
 
     /* See if a network with matching UUID already exists */
-    net = virNetworkFindByUUID(nets, def->uuid);
+    net = virNetworkObjFindByUUID(nets, def->uuid);
     if (net) {
         /* UUID matches, but if names don't match, refuse it */
         if (STRNEQ(net->def->name, def->name)) {

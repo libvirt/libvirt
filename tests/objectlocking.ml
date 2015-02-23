@@ -61,7 +61,7 @@ let lockedObjMethods = [
    "virDomainFindByName";
    "virDomainAssignDef";
 
-   "virNetworkFindByUUID";
+   "virNetworkObjFindByUUID";
    "virNetworkFindByName";
    "virNetworkAssignDef";
 

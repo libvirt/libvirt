@@ -3499,7 +3499,7 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
     virNetworkPtr ret = NULL;
 
     testDriverLock(privconn);
-    net = virNetworkFindByUUID(privconn->networks, uuid);
+    net = virNetworkObjFindByUUID(privconn->networks, uuid);
     testDriverUnlock(privconn);
 
     if (net == NULL) {
@@ -3654,7 +3654,7 @@ static int testNetworkIsActive(virNetworkPtr net)
     int ret = -1;
 
     testDriverLock(privconn);
-    obj = virNetworkFindByUUID(privconn->networks, net->uuid);
+    obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
     testDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
@@ -3675,7 +3675,7 @@ static int testNetworkIsPersistent(virNetworkPtr net)
     int ret = -1;
 
     testDriverLock(privconn);
-    obj = virNetworkFindByUUID(privconn->networks, net->uuid);
+    obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
     testDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
@@ -3812,7 +3812,7 @@ testNetworkUpdate(virNetworkPtr net,
 
     testDriverLock(privconn);
 
-    network = virNetworkFindByUUID(privconn->networks, net->uuid);
+    network = virNetworkObjFindByUUID(privconn->networks, net->uuid);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));

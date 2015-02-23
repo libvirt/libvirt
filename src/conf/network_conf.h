@@ -301,8 +301,8 @@ virNetworkObjIsActive(const virNetworkObj *net)
 bool virNetworkObjTaint(virNetworkObjPtr obj,
                         virNetworkTaintFlags taint);
 
-virNetworkObjPtr virNetworkFindByUUID(virNetworkObjListPtr nets,
-                                      const unsigned char *uuid);
+virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
+                                         const unsigned char *uuid);
 virNetworkObjPtr virNetworkFindByName(virNetworkObjListPtr nets,
                                       const char *name);
 
