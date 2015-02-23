@@ -34,7 +34,7 @@
 struct _virNetworkDriverState {
     virMutex lock;
 
-    virNetworkObjList networks;
+    virNetworkObjListPtr networks;
 
     char *networkConfigDir;
     char *networkAutostartDir;
