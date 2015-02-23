@@ -569,6 +569,7 @@ virNetworkObjFree;
 virNetworkObjGetPersistentDef;
 virNetworkObjIsDuplicate;
 virNetworkObjListExport;
+virNetworkObjListForEach;
 virNetworkObjListFree;
 virNetworkObjLock;
 virNetworkObjReplacePersistentDef;

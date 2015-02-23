@@ -4290,3 +4290,30 @@ virNetworkObjListExport(virConnectPtr conn,
     VIR_FREE(tmp_nets);
     return ret;
 }
+
+/**
+ * virNetworkObjListForEach:
+ * @nets: a list of network objects
+ * @callback: function to call over each of object in the list
+ * @opaque: pointer to pass to the @callback
+ *
+ * Function iterates over the list of network objects and calls
+ * passed callback over each one of them.
+ *
+ * Returns: 0 on success, -1 otherwise.
+ */
+int
+virNetworkObjListForEach(virNetworkObjListPtr nets,
+                         virNetworkObjListIterator callback,
+                         void *opaque)
+{
+    int ret = 0;
+    size_t i = 0;
+
+    for (i = 0; i < nets->count; i++) {
+        if (callback(nets->objs[i], opaque) < 0)
+            ret = -1;
+    }
+
+    return ret;
+}

@@ -445,6 +445,12 @@ int virNetworkObjListExport(virConnectPtr conn,
                             virNetworkObjListFilter filter,
                             unsigned int flags);
 
+typedef int (*virNetworkObjListIterator)(virNetworkObjPtr net,
+                                         void *opaque);
+
+int virNetworkObjListForEach(virNetworkObjListPtr nets,
+                             virNetworkObjListIterator callback,
+                             void *opaque);
 /* for testing */
 int
 virNetworkDefUpdateSection(virNetworkDefPtr def,
