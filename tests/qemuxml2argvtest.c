@@ -897,6 +897,11 @@ mymain(void)
             QEMU_CAPS_DEVICE,
             QEMU_CAPS_SCSI_BLOCK, QEMU_CAPS_VIRTIO_BLK_SG_IO,
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-serial",
+            QEMU_CAPS_KVM,
+            QEMU_CAPS_DEVICE,
+            QEMU_CAPS_DRIVE,
+            QEMU_CAPS_DRIVE_SERIAL);
 
     DO_TEST("graphics-vnc", QEMU_CAPS_VNC);
     DO_TEST("graphics-vnc-socket", QEMU_CAPS_VNC);

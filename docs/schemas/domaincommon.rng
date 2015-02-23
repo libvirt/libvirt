@@ -5089,7 +5089,7 @@
   </define>
   <define name="diskSerial">
     <data type="string">
-      <param name="pattern">[A-Za-z0-9_\.\+\-]+</param>
+      <param name="pattern">[A-Za-z0-9_\.\+\- ]+</param>
     </data>
   </define>
   <define name="bridgeMode">

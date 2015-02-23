@@ -2630,7 +2630,7 @@ qemuBuildIoEventFdStr(virBufferPtr buf,
 }
 
 #define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ "
 
 static int
 qemuSafeSerialParamValue(const char *value)
@@ -3613,7 +3613,8 @@ qemuBuildDriveStr(virConnectPtr conn,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
         if (qemuSafeSerialParamValue(disk->serial) < 0)
             goto error;
-        virBufferAsprintf(&opt, ",serial=%s", disk->serial);
+        virBufferAddLit(&opt, ",serial=");
+        virBufferEscape(&opt, '\\', " ", "%s", disk->serial);
     }
 
     if (disk->cachemode) {
