@@ -2640,7 +2640,7 @@ networkConnectListAllNetworks(virConnectPtr conn,
         goto cleanup;
 
     networkDriverLock();
-    ret = virNetworkObjListExport(conn, driver->networks, nets,
+    ret = virNetworkObjListExport(conn, &driver->networks, nets,
                                   virConnectListAllNetworksCheckACL,
                                   flags);
     networkDriverUnlock();

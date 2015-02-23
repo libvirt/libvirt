@@ -4239,7 +4239,7 @@ virNetworkMatch(virNetworkObjPtr netobj,
 
 int
 virNetworkObjListExport(virConnectPtr conn,
-                        virNetworkObjList netobjs,
+                        virNetworkObjListPtr netobjs,
                         virNetworkPtr **nets,
                         virNetworkObjListFilter filter,
                         unsigned int flags)
@@ -4250,11 +4250,11 @@ virNetworkObjListExport(virConnectPtr conn,
     int ret = -1;
     size_t i;
 
-    if (nets && VIR_ALLOC_N(tmp_nets, netobjs.count + 1) < 0)
+    if (nets && VIR_ALLOC_N(tmp_nets, netobjs->count + 1) < 0)
         goto cleanup;
 
-    for (i = 0; i < netobjs.count; i++) {
-        virNetworkObjPtr netobj = netobjs.objs[i];
+    for (i = 0; i < netobjs->count; i++) {
+        virNetworkObjPtr netobj = netobjs->objs[i];
         virNetworkObjLock(netobj);
         if ((!filter || filter(conn, netobj->def)) &&
             virNetworkMatch(netobj, flags)) {

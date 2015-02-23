@@ -440,7 +440,7 @@ VIR_ENUM_DECL(virNetworkForward)
                  VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)
 
 int virNetworkObjListExport(virConnectPtr conn,
-                            virNetworkObjList netobjs,
+                            virNetworkObjListPtr netobjs,
                             virNetworkPtr **nets,
                             virNetworkObjListFilter filter,
                             unsigned int flags);

@@ -3636,7 +3636,7 @@ testConnectListAllNetworks(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
     testDriverLock(privconn);
-    ret = virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
+    ret = virNetworkObjListExport(conn, &privconn->networks, nets, NULL, flags);
     testDriverUnlock(privconn);
 
     return ret;
