@@ -353,10 +353,11 @@ networkUpdateAllState(void)
     for (i = 0; i < driver->networks.count; i++) {
         virNetworkObjPtr obj = driver->networks.objs[i];
 
-        if (!obj->active)
-            continue;
-
         virNetworkObjLock(obj);
+        if (!virNetworkObjIsActive(obj)) {
+            virNetworkObjUnlock(obj);
+            continue;
+        }
 
         switch (obj->def->forward.type) {
         case VIR_NETWORK_FORWARD_NONE:
