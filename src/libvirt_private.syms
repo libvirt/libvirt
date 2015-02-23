@@ -1759,6 +1759,11 @@ virNetDevMacVLanRestartWithVPortProfile;
 virNetDevMacVLanVPortProfileRegisterCallback;
 
 
+# util/virnetdevmidonet.h
+virNetDevMidonetBindPort;
+virNetDevMidonetUnbindPort;
+
+
 # util/virnetdevopenvswitch.h
 virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;

@@ -35,6 +35,7 @@ enum virNetDevVPortProfile {
     VIR_NETDEV_VPORT_PROFILE_8021QBG,
     VIR_NETDEV_VPORT_PROFILE_8021QBH,
     VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH,
+    VIR_NETDEV_VPORT_PROFILE_MIDONET,
 
     VIR_NETDEV_VPORT_PROFILE_LAST,
 };
@@ -73,7 +74,7 @@ struct _virNetDevVPortProfile {
     /* this is a null-terminated character string */
     char          profileID[LIBVIRT_IFLA_VF_PORT_PROFILE_MAX];
 
-    /* this member is used when virtPortType == openvswitch */
+    /* this member is used when virtPortType == openvswitch|midonet */
     unsigned char interfaceID[VIR_UUID_BUFLEN];
     bool          interfaceID_specified;
     /* NB - if virtPortType == NONE, any/all of the items could be used */

@@ -431,6 +431,8 @@ AC_PATH_PROG([MODPROBE], [modprobe], [modprobe],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([RMMOD], [rmmod], [rmmod],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl],
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
 	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
 AC_PATH_PROG([SCRUB], [scrub], [scrub],
@@ -446,6 +448,8 @@ AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
         [Location or name of the radvd program])
 AC_DEFINE_UNQUOTED([TC],["$TC"],
         [Location or name of the tc program (see iproute2)])
+AC_DEFINE_UNQUOTED([MMCTL],["$MMCTL"],
+        [Location or name of the mm-ctl program])
 AC_DEFINE_UNQUOTED([OVSVSCTL],["$OVSVSCTL"],
         [Location or name of the ovs-vsctl program])
 

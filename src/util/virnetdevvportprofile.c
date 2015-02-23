@@ -33,7 +33,8 @@ VIR_ENUM_IMPL(virNetDevVPort, VIR_NETDEV_VPORT_PROFILE_LAST,
               "none",
               "802.1Qbg",
               "802.1Qbh",
-              "openvswitch")
+              "openvswitch",
+              "midonet")
 
 VIR_ENUM_IMPL(virNetDevVPortProfileOp, VIR_NETDEV_VPORT_PROFILE_OP_LAST,
               "create",

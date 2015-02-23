@@ -195,6 +195,7 @@ src/util/virnetdev.c
 src/util/virnetdevbandwidth.c
 src/util/virnetdevbridge.c
 src/util/virnetdevmacvlan.c
+src/util/virnetdevmidonet.c
 src/util/virnetdevopenvswitch.c
 src/util/virnetdevtap.c
 src/util/virnetdevveth.c
