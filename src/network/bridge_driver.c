@@ -2474,8 +2474,11 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
     network = virNetworkFindByUUID(&driver->networks, uuid);
     networkDriverUnlock();
     if (!network) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+                       _("no network with matching uuid '%s'"),
+                       uuidstr);
         goto cleanup;
     }
 
