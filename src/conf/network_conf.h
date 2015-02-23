@@ -459,6 +459,11 @@ int virNetworkObjListGetNames(virNetworkObjListPtr nets,
                               virNetworkObjListFilter filter,
                               virConnectPtr conn);
 
+int virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
+                                   bool active,
+                                   virNetworkObjListFilter filter,
+                                   virConnectPtr conn);
+
 /* for testing */
 int
 virNetworkDefUpdateSection(virNetworkDefPtr def,

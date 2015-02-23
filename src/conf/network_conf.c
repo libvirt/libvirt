@@ -4355,3 +4355,29 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
         VIR_FREE(names[i]);
     return -1;
 }
+
+int
+virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
+                               bool active,
+                               virNetworkObjListFilter filter,
+                               virConnectPtr conn)
+{
+    int count = 0;
+    size_t i;
+
+    for (i = 0; i < nets->count; i++) {
+        virNetworkObjPtr obj = nets->objs[i];
+        virNetworkObjLock(obj);
+        if (filter && !filter(conn, obj->def)) {
+            virNetworkObjUnlock(obj);
+            continue;
+        }
+
+        if ((active && virNetworkObjIsActive(obj)) ||
+            (!active && !virNetworkObjIsActive(obj)))
+            count++;
+        virNetworkObjUnlock(obj);
+    }
+
+    return count;
+}
