@@ -189,6 +189,11 @@ virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
             }
         }
         break;
+
+    case VIR_NETDEV_VPORT_PROFILE_MIDONET:
+       if (!virtport->interfaceID_specified)
+          missing = "interfaceid";
+       break;
     }
 
     if (missing) {

@@ -3667,6 +3667,40 @@
   &lt;/devices&gt;
   ...</pre>
 
+    <p>
+      On hosts that support Open vSwitch on the kernel side and have the
+      Midonet Host Agent configured, it is also possible to connect to the
+      'midonet' bridge device by adding a
+      <code>&lt;virtualport type='midonet'/&gt;</code> to the
+      interface definition.  (<span class="since">Since
+      1.2.13</span>). The Midonet virtualport type requires an
+      <code>interfaceid</code> attribute in its
+      <code>&lt;parameters&gt;</code> element. This interface id is the UUID
+      that specifies which port in the virtual network topology will be bound
+      to the interface.
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    ...
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='br0'/&gt;
+    &lt;/interface&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='br1'/&gt;
+      &lt;target dev='vnet7'/&gt;
+      &lt;mac address="00:11:22:33:44:55"/&gt;
+    &lt;/interface&gt;
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='midonet'/&gt;
+      &lt;virtualport type='midonet'&gt;
+        &lt;parameters interfaceid='0b2d64da-3d0e-431e-afdd-804415d6ebbb'/&gt;
+      &lt;/virtualport&gt;
+    &lt;/interface&gt;
+    ...
+  &lt;/devices&gt;
+  ...</pre>
+
     <h5><a name="elementsNICSSlirp">Userspace SLIRP stack</a></h5>
 
     <p>

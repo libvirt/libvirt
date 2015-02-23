@@ -260,7 +260,8 @@ virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
         virBufferAsprintf(buf, " instanceid='%s'", uuidstr);
     }
     if (virtPort->interfaceID_specified &&
-        (type == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH ||
+        (type == VIR_NETDEV_VPORT_PROFILE_MIDONET ||
+         type == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH ||
          type == VIR_NETDEV_VPORT_PROFILE_NONE)) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 

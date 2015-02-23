@@ -79,6 +79,18 @@
         </element>
       </group>
       <group>
+        <element name="virtualport">
+          <attribute name="type">
+            <value>midonet</value>
+          </attribute>
+          <element name="parameters">
+            <attribute name="interfaceid">
+              <ref name="UUID"/>
+            </attribute>
+          </element>
+        </element>
+      </group>
+      <group>
         <!-- use this when no type attribute is present -->
         <element name="virtualport">
           <optional>
