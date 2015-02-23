@@ -101,8 +101,8 @@ virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
     return NULL;
 }
 
-virNetworkObjPtr virNetworkFindByName(virNetworkObjListPtr nets,
-                                      const char *name)
+virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
+                                         const char *name)
 {
     size_t i;
 
@@ -370,7 +370,7 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
 {
     virNetworkObjPtr network;
 
-    if ((network = virNetworkFindByName(nets, def->name))) {
+    if ((network = virNetworkObjFindByName(nets, def->name))) {
         virNetworkObjAssignDef(network, def, live);
         return network;
     }
@@ -4175,7 +4175,7 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
         ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        net = virNetworkFindByName(nets, def->name);
+        net = virNetworkObjFindByName(nets, def->name);
         if (net) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(net->def->uuid, uuidstr);

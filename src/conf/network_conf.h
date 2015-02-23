@@ -303,8 +303,8 @@ bool virNetworkObjTaint(virNetworkObjPtr obj,
 
 virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
                                          const unsigned char *uuid);
-virNetworkObjPtr virNetworkFindByName(virNetworkObjListPtr nets,
-                                      const char *name);
+virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
+                                         const char *name);
 
 
 void virNetworkDefFree(virNetworkDefPtr def);

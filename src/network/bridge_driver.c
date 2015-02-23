@@ -2505,7 +2505,7 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
     virNetworkPtr ret = NULL;
 
     networkDriverLock();
-    network = virNetworkFindByName(driver->networks, name);
+    network = virNetworkObjFindByName(driver->networks, name);
     networkDriverUnlock();
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -3792,7 +3792,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     iface->data.network.actual = NULL;
 
     networkDriverLock();
-    network = virNetworkFindByName(driver->networks, iface->data.network.name);
+    network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     networkDriverUnlock();
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -4201,7 +4201,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
         return 0;
 
     networkDriverLock();
-    network = virNetworkFindByName(driver->networks, iface->data.network.name);
+    network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     networkDriverUnlock();
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -4401,7 +4401,7 @@ networkReleaseActualDevice(virDomainDefPtr dom,
         return 0;
 
     networkDriverLock();
-    network = virNetworkFindByName(driver->networks, iface->data.network.name);
+    network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     networkDriverUnlock();
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
@@ -4560,7 +4560,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
 
     *netaddr = NULL;
     networkDriverLock();
-    network = virNetworkFindByName(driver->networks, netname);
+    network = virNetworkObjFindByName(driver->networks, netname);
     networkDriverUnlock();
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,

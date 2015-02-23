@@ -496,7 +496,7 @@ static virNetworkPtr parallelsNetworkLookupByName(virConnectPtr conn,
     virNetworkPtr ret = NULL;
 
     parallelsDriverLock(privconn);
-    network = virNetworkFindByName(privconn->networks, name);
+    network = virNetworkObjFindByName(privconn->networks, name);
     parallelsDriverUnlock(privconn);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
