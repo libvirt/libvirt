@@ -62,6 +62,7 @@
 #include "virprocess.h"
 #include "virtime.h"
 #include "virnetdevtap.h"
+#include "virnetdevmidonet.h"
 #include "virbitmap.h"
 #include "viratomic.h"
 #include "virnuma.h"
@@ -5235,10 +5236,15 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         /* release the physical device (or any other resources used by
          * this interface in the network driver
          */
-        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH)
-            ignore_value(virNetDevOpenvswitchRemovePort(
-                                       virDomainNetGetActualBridgeName(net),
-                                       net->ifname));
+        if (vport) {
+            if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
+                ignore_value(virNetDevMidonetUnbindPort(vport));
+            } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+                ignore_value(virNetDevOpenvswitchRemovePort(
+                                 virDomainNetGetActualBridgeName(net),
+                                 net->ifname));
+            }
+        }
 
         /* kick the device out of the hostdev list too */
         virDomainNetRemoveHostdev(def, net);

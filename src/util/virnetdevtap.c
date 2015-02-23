@@ -26,6 +26,7 @@
 #include "virnetdevtap.h"
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
+#include "virnetdevmidonet.h"
 #include "virnetdevopenvswitch.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -580,9 +581,13 @@ int virNetDevTapCreateInBridgePort(const char *brname,
         goto error;
 
     if (virtPortProfile) {
-        if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr, vmuuid,
-                                        virtPortProfile, virtVlan) < 0) {
-            goto error;
+        if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
+            if (virNetDevMidonetBindPort(*ifname, virtPortProfile) < 0)
+                goto error;
+        } else if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+            if (virNetDevOpenvswitchAddPort(brname, *ifname, macaddr, vmuuid,
+                                            virtPortProfile, virtVlan) < 0)
+                goto error;
         }
     } else {
         if (virNetDevBridgeAddPort(brname, *ifname) < 0)
