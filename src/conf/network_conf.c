@@ -279,6 +279,9 @@ void virNetworkObjListFree(virNetworkObjListPtr nets)
 {
     size_t i;
 
+    if (!nets)
+        return;
+
     for (i = 0; i < nets->count; i++)
         virNetworkObjFree(nets->objs[i]);
 
