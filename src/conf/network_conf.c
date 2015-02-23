@@ -1057,15 +1057,17 @@ virNetworkDNSTxtDefParseXML(const char *networkName,
                             virNetworkDNSTxtDefPtr def,
                             bool partialOkay)
 {
+    const char *bad = " ,";
+
     if (!(def->name = virXMLPropString(node, "name"))) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("missing required name attribute in DNS TXT record "
                          "of network %s"), networkName);
         goto error;
     }
-    if (strchr(def->name, ' ') != NULL) {
+    if (strcspn(def->name, bad) != strlen(def->name)) {
         virReportError(VIR_ERR_XML_DETAIL,
-                       _("prohibited space character in DNS TXT record "
+                       _("prohibited character in DNS TXT record "
                          "name '%s' of network %s"), def->name, networkName);
         goto error;
     }
