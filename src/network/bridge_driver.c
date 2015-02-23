@@ -342,105 +342,87 @@ networkBridgeDummyNicName(const char *brname)
     return nicname;
 }
 
-/* Update the internal status of all allegedly active networks
- * according to external conditions on the host (i.e. anything that
- * isn't stored directly in each network's state file). */
-static void
-networkUpdateAllState(void)
+static int
+networkUpdateState(virNetworkObjPtr obj,
+                   void *opaque ATTRIBUTE_UNUSED)
 {
-    size_t i;
+    int ret = -1;
 
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
+    virNetworkObjLock(obj);
+    if (!virNetworkObjIsActive(obj)) {
+        virNetworkObjUnlock(obj);
+        return 0;
+    }
 
-        virNetworkObjLock(obj);
-        if (!virNetworkObjIsActive(obj)) {
-            virNetworkObjUnlock(obj);
-            continue;
-        }
+    switch (obj->def->forward.type) {
+    case VIR_NETWORK_FORWARD_NONE:
+    case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_ROUTE:
+        /* If bridge doesn't exist, then mark it inactive */
+        if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
+            obj->active = 0;
+        break;
 
-        switch (obj->def->forward.type) {
-        case VIR_NETWORK_FORWARD_NONE:
-        case VIR_NETWORK_FORWARD_NAT:
-        case VIR_NETWORK_FORWARD_ROUTE:
-            /* If bridge doesn't exist, then mark it inactive */
-            if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
+    case VIR_NETWORK_FORWARD_BRIDGE:
+        if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1)) {
                 obj->active = 0;
             break;
-
-        case VIR_NETWORK_FORWARD_BRIDGE:
-            if (obj->def->bridge) {
-                if (virNetDevExists(obj->def->bridge) != 1)
-                    obj->active = 0;
-                break;
-            }
-            /* intentionally drop through to common case for all
-             * macvtap networks (forward='bridge' with no bridge
-             * device defined is macvtap using its 'bridge' mode)
-             */
-        case VIR_NETWORK_FORWARD_PRIVATE:
-        case VIR_NETWORK_FORWARD_VEPA:
-        case VIR_NETWORK_FORWARD_PASSTHROUGH:
-            /* so far no extra checks */
-            break;
-
-        case VIR_NETWORK_FORWARD_HOSTDEV:
-            /* so far no extra checks */
-            break;
         }
+        /* intentionally drop through to common case for all
+         * macvtap networks (forward='bridge' with no bridge
+         * device defined is macvtap using its 'bridge' mode)
+         */
+    case VIR_NETWORK_FORWARD_PRIVATE:
+    case VIR_NETWORK_FORWARD_VEPA:
+    case VIR_NETWORK_FORWARD_PASSTHROUGH:
+        /* so far no extra checks */
+        break;
 
-        /* Try and read dnsmasq/radvd pids of active networks */
-        if (obj->active && obj->def->ips && (obj->def->nips > 0)) {
-            char *radvdpidbase;
-
-            ignore_value(virPidFileReadIfAlive(driver->pidDir,
-                                               obj->def->name,
-                                               &obj->dnsmasqPid,
-                                               dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
-            radvdpidbase = networkRadvdPidfileBasename(obj->def->name);
-            if (!radvdpidbase)
-                break;
-            ignore_value(virPidFileReadIfAlive(driver->pidDir,
-                                               radvdpidbase,
-                                               &obj->radvdPid, RADVD));
-            VIR_FREE(radvdpidbase);
-        }
-
-        virNetworkObjUnlock(obj);
+    case VIR_NETWORK_FORWARD_HOSTDEV:
+        /* so far no extra checks */
+        break;
     }
 
-    /* remove inactive transient networks */
-    i = 0;
-    while (i < driver->networks->count) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
-        virNetworkObjLock(obj);
+    /* Try and read dnsmasq/radvd pids of active networks */
+    if (obj->active && obj->def->ips && (obj->def->nips > 0)) {
+        char *radvdpidbase;
 
-        if (!obj->persistent && !obj->active) {
-            networkRemoveInactive(obj);
-            continue;
-        }
+        ignore_value(virPidFileReadIfAlive(driver->pidDir,
+                                           obj->def->name,
+                                           &obj->dnsmasqPid,
+                                           dnsmasqCapsGetBinaryPath(driver->dnsmasqCaps)));
+        radvdpidbase = networkRadvdPidfileBasename(obj->def->name);
+        if (!radvdpidbase)
+            goto cleanup;
 
-        virNetworkObjUnlock(obj);
-        i++;
+        ignore_value(virPidFileReadIfAlive(driver->pidDir,
+                                           radvdpidbase,
+                                           &obj->radvdPid, RADVD));
+        VIR_FREE(radvdpidbase);
     }
+
+    ret = 0;
+ cleanup:
+    virNetworkObjUnlock(obj);
+    return ret;
 }
 
-
-static void
-networkAutostartConfigs(void)
+static int
+networkAutostartConfig(virNetworkObjPtr net,
+                       void *opaque ATTRIBUTE_UNUSED)
 {
-    size_t i;
+    int ret = -1;
 
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjLock(driver->networks->objs[i]);
-        if (driver->networks->objs[i]->autostart &&
-            !virNetworkObjIsActive(driver->networks->objs[i])) {
-            if (networkStartNetwork(driver->networks->objs[i]) < 0) {
-                /* failed to start but already logged */
-            }
-        }
-        virNetworkObjUnlock(driver->networks->objs[i]);
-    }
+    virNetworkObjLock(net);
+    if (net->autostart &&
+        !virNetworkObjIsActive(net) &&
+        networkStartNetwork(net) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virNetworkObjUnlock(net);
+    return ret;
 }
 
 #if HAVE_FIREWALLD
@@ -650,7 +632,17 @@ networkStateInitialize(bool privileged,
                                  driver->networkAutostartDir) < 0)
         goto error;
 
-    networkUpdateAllState();
+
+    /* Update the internal status of all allegedly active
+     * networks according to external conditions on the host
+     * (i.e. anything that isn't stored directly in each
+     * network's state file). */
+    virNetworkObjListForEach(driver->networks,
+                             networkUpdateState,
+                             NULL);
+    virNetworkObjListPrune(driver->networks,
+                           VIR_CONNECT_LIST_NETWORKS_INACTIVE |
+                           VIR_CONNECT_LIST_NETWORKS_TRANSIENT);
     networkReloadFirewallRules();
     networkRefreshDaemons();
 
@@ -709,7 +701,9 @@ networkStateAutoStart(void)
         return;
 
     networkDriverLock();
-    networkAutostartConfigs();
+    virNetworkObjListForEach(driver->networks,
+                             networkAutostartConfig,
+                             NULL);
     networkDriverUnlock();
 }
 
@@ -733,7 +727,9 @@ networkStateReload(void)
                              driver->networkAutostartDir);
     networkReloadFirewallRules();
     networkRefreshDaemons();
-    networkAutostartConfigs();
+    virNetworkObjListForEach(driver->networks,
+                             networkAutostartConfig,
+                             NULL);
     networkDriverUnlock();
     return 0;
 }
@@ -1745,62 +1741,70 @@ networkRestartRadvd(virNetworkObjPtr network)
 }
 #endif /* #if 0 */
 
+static int
+networkRefreshDaemonsHelper(virNetworkObjPtr net,
+                            void *opaque ATTRIBUTE_UNUSED)
+{
+
+    virNetworkObjLock(net);
+    if (virNetworkObjIsActive(net) &&
+        ((net->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+         (net->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+         (net->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
+        /* Only the three L3 network types that are configured by
+         * libvirt will have a dnsmasq or radvd daemon associated
+         * with them.  Here we send a SIGHUP to an existing
+         * dnsmasq and/or radvd, or restart them if they've
+         * disappeared.
+         */
+        networkRefreshDhcpDaemon(net);
+        networkRefreshRadvd(net);
+    }
+    virNetworkObjUnlock(net);
+    return 0;
+}
+
 /* SIGHUP/restart any dnsmasq or radvd daemons.
  * This should be called when libvirtd is restarted.
  */
 static void
 networkRefreshDaemons(void)
 {
-    size_t i;
-
     VIR_INFO("Refreshing network daemons");
+    virNetworkObjListForEach(driver->networks,
+                             networkRefreshDaemonsHelper,
+                             NULL);
+}
 
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjPtr network = driver->networks->objs[i];
+static int
+networkReloadFirewallRulesHelper(virNetworkObjPtr net,
+                                 void *opaque ATTRIBUTE_UNUSED)
+{
 
-        virNetworkObjLock(network);
-        if (virNetworkObjIsActive(network) &&
-            ((network->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
-             (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-             (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
-            /* Only the three L3 network types that are configured by
-             * libvirt will have a dnsmasq or radvd daemon associated
-             * with them.  Here we send a SIGHUP to an existing
-             * dnsmasq and/or radvd, or restart them if they've
-             * disappeared.
-             */
-            networkRefreshDhcpDaemon(network);
-            networkRefreshRadvd(network);
+    virNetworkObjLock(net);
+    if (virNetworkObjIsActive(net) &&
+        ((net->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+         (net->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+         (net->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
+        /* Only the three L3 network types that are configured by libvirt
+         * need to have iptables rules reloaded.
+         */
+        networkRemoveFirewallRules(net->def);
+        if (networkAddFirewallRules(net->def) < 0) {
+            /* failed to add but already logged */
         }
-        virNetworkObjUnlock(network);
     }
+    virNetworkObjUnlock(net);
+    return 0;
 }
 
 static void
 networkReloadFirewallRules(void)
 {
-    size_t i;
-
     VIR_INFO("Reloading iptables rules");
-
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjPtr network = driver->networks->objs[i];
-
-        virNetworkObjLock(network);
-        if (virNetworkObjIsActive(network) &&
-            ((network->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
-             (network->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-             (network->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
-            /* Only the three L3 network types that are configured by libvirt
-             * need to have iptables rules reloaded.
-             */
-            networkRemoveFirewallRules(network->def);
-            if (networkAddFirewallRules(network->def) < 0) {
-                /* failed to add but already logged */
-            }
-        }
-        virNetworkObjUnlock(network);
-    }
+    virNetworkObjListForEach(driver->networks,
+                             networkReloadFirewallRulesHelper,
+                             NULL);
 }
 
 /* Enable IP Forwarding. Return 0 for success, -1 for failure. */
@@ -2526,21 +2530,16 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
 
 static int networkConnectNumOfNetworks(virConnectPtr conn)
 {
-    int nactive = 0;
-    size_t i;
+    int nactive;
 
     if (virConnectNumOfNetworksEnsureACL(conn) < 0)
         return -1;
 
     networkDriverLock();
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
-        virNetworkObjLock(obj);
-        if (virConnectNumOfNetworksCheckACL(conn, obj->def) &&
-            virNetworkObjIsActive(obj))
-            nactive++;
-        virNetworkObjUnlock(obj);
-    }
+    nactive = virNetworkObjListNumOfNetworks(driver->networks,
+                                             true,
+                                             virConnectNumOfNetworksCheckACL,
+                                             conn);
     networkDriverUnlock();
 
     return nactive;
@@ -2548,53 +2547,32 @@ static int networkConnectNumOfNetworks(virConnectPtr conn)
 
 static int networkConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     int got = 0;
-    size_t i;
 
     if (virConnectListNetworksEnsureACL(conn) < 0)
         return -1;
 
     networkDriverLock();
-    for (i = 0; i < driver->networks->count && got < nnames; i++) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
-        virNetworkObjLock(obj);
-        if (virConnectListNetworksCheckACL(conn, obj->def) &&
-            virNetworkObjIsActive(obj)) {
-            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
-                virNetworkObjUnlock(obj);
-                goto cleanup;
-            }
-            got++;
-        }
-        virNetworkObjUnlock(obj);
-    }
+    got = virNetworkObjListGetNames(driver->networks,
+                                    true, names, nnames,
+                                    virConnectListNetworksCheckACL,
+                                    conn);
     networkDriverUnlock();
 
     return got;
-
- cleanup:
-    networkDriverUnlock();
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    return -1;
 }
 
 static int networkConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
     int ninactive = 0;
-    size_t i;
 
     if (virConnectNumOfDefinedNetworksEnsureACL(conn) < 0)
         return -1;
 
     networkDriverLock();
-    for (i = 0; i < driver->networks->count; i++) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
-        virNetworkObjLock(obj);
-        if (virConnectNumOfDefinedNetworksCheckACL(conn, obj->def) &&
-            !virNetworkObjIsActive(obj))
-            ninactive++;
-        virNetworkObjUnlock(obj);
-    }
+    ninactive = virNetworkObjListNumOfNetworks(driver->networks,
+                                               false,
+                                               virConnectNumOfDefinedNetworksCheckACL,
+                                               conn);
     networkDriverUnlock();
 
     return ninactive;
@@ -2602,33 +2580,17 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn)
 
 static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     int got = 0;
-    size_t i;
 
     if (virConnectListDefinedNetworksEnsureACL(conn) < 0)
         return -1;
 
     networkDriverLock();
-    for (i = 0; i < driver->networks->count && got < nnames; i++) {
-        virNetworkObjPtr obj = driver->networks->objs[i];
-        virNetworkObjLock(obj);
-        if (virConnectListDefinedNetworksCheckACL(conn, obj->def) &&
-            !virNetworkObjIsActive(obj)) {
-            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
-                virNetworkObjUnlock(obj);
-                goto cleanup;
-            }
-            got++;
-        }
-        virNetworkObjUnlock(obj);
-    }
+    got = virNetworkObjListGetNames(driver->networks,
+                                    false, names, nnames,
+                                    virConnectListDefinedNetworksCheckACL,
+                                    conn);
     networkDriverUnlock();
     return got;
-
- cleanup:
-    networkDriverUnlock();
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    return -1;
 }
 
 static int
