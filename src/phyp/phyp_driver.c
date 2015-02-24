@@ -3486,15 +3486,15 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
 
     if (!def->mem.cur_balloon) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Field <memory> on the domain XML file is missing or has "
-                         "invalid value."));
+                       _("Field <currentMemory> on the domain XML file is "
+                         "missing or has invalid value"));
         goto cleanup;
     }
 
     if (!def->mem.max_balloon) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Field <currentMemory> on the domain XML file is missing or "
-                         "has invalid value."));
+                       _("Field <memory> on the domain XML file is missing or "
+                         "has invalid value"));
         goto cleanup;
     }
 
