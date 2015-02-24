@@ -3543,16 +3543,11 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
 static int testConnectNumOfNetworks(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-    int numActive = 0;
-    size_t i;
+    int numActive;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->networks->count; i++) {
-        virNetworkObjLock(privconn->networks->objs[i]);
-        if (virNetworkObjIsActive(privconn->networks->objs[i]))
-            numActive++;
-        virNetworkObjUnlock(privconn->networks->objs[i]);
-    }
+    numActive = virNetworkObjListNumOfNetworks(privconn->networks,
+                                               true, NULL, conn);
     testDriverUnlock(privconn);
 
     return numActive;
@@ -3560,44 +3555,24 @@ static int testConnectNumOfNetworks(virConnectPtr conn)
 
 static int testConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0;
-    size_t i;
+    int n;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; i < privconn->networks->count && n < nnames; i++) {
-        virNetworkObjLock(privconn->networks->objs[i]);
-        if (virNetworkObjIsActive(privconn->networks->objs[i]) &&
-            VIR_STRDUP(names[n++], privconn->networks->objs[i]->def->name) < 0) {
-            virNetworkObjUnlock(privconn->networks->objs[i]);
-            goto error;
-        }
-        virNetworkObjUnlock(privconn->networks->objs[i]);
-    }
+    n = virNetworkObjListGetNames(privconn->networks,
+                                  true, names, nnames, NULL, conn);
     testDriverUnlock(privconn);
 
     return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
 }
 
 static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
     testConnPtr privconn = conn->privateData;
-    int numInactive = 0;
-    size_t i;
+    int numInactive;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->networks->count; i++) {
-        virNetworkObjLock(privconn->networks->objs[i]);
-        if (!virNetworkObjIsActive(privconn->networks->objs[i]))
-            numInactive++;
-        virNetworkObjUnlock(privconn->networks->objs[i]);
-    }
+    numInactive = virNetworkObjListNumOfNetworks(privconn->networks,
+                                                 false, NULL, conn);
     testDriverUnlock(privconn);
 
     return numInactive;
@@ -3605,29 +3580,14 @@ static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
 
 static int testConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     testConnPtr privconn = conn->privateData;
-    int n = 0;
-    size_t i;
+    int n;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; i < privconn->networks->count && n < nnames; i++) {
-        virNetworkObjLock(privconn->networks->objs[i]);
-        if (!virNetworkObjIsActive(privconn->networks->objs[i]) &&
-            VIR_STRDUP(names[n++], privconn->networks->objs[i]->def->name) < 0) {
-            virNetworkObjUnlock(privconn->networks->objs[i]);
-            goto error;
-        }
-        virNetworkObjUnlock(privconn->networks->objs[i]);
-    }
+    n = virNetworkObjListGetNames(privconn->networks,
+                                  false, names, nnames, NULL, conn);
     testDriverUnlock(privconn);
 
     return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
 }
 
 static int
