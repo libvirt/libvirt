@@ -40,6 +40,7 @@
 # include "device_conf.h"
 # include "virbitmap.h"
 # include "networkcommon_conf.h"
+# include "virobject.h"
 
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -277,6 +278,8 @@ struct _virNetworkObj {
 typedef struct _virNetworkObjList virNetworkObjList;
 typedef virNetworkObjList *virNetworkObjListPtr;
 struct _virNetworkObjList {
+    virObject parent;
+
     size_t count;
     virNetworkObjPtr *objs;
 };
@@ -298,19 +301,17 @@ virNetworkObjIsActive(const virNetworkObj *net)
     return net->active;
 }
 
-bool virNetworkObjTaint(virNetworkObjPtr obj,
-                        virNetworkTaintFlags taint);
+virNetworkObjListPtr virNetworkObjListNew(void);
 
 virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
                                          const unsigned char *uuid);
 virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
                                          const char *name);
-
+bool virNetworkObjTaint(virNetworkObjPtr obj,
+                        virNetworkTaintFlags taint);
 
 void virNetworkDefFree(virNetworkDefPtr def);
 void virNetworkObjFree(virNetworkObjPtr net);
-void virNetworkObjListFree(virNetworkObjListPtr nets);
-
 
 typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
                                         virNetworkDefPtr def);

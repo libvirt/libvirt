@@ -725,7 +725,7 @@ testOpenDefault(virConnectPtr conn)
         goto error;
 
     if (!(privconn->domains = virDomainObjListNew()) ||
-        VIR_ALLOC(privconn->networks) < 0)
+        !(privconn->networks = virNetworkObjListNew()))
         goto error;
 
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
@@ -830,8 +830,7 @@ testOpenDefault(virConnectPtr conn)
 
  error:
     virObjectUnref(privconn->domains);
-    virNetworkObjListFree(privconn->networks);
-    VIR_FREE(privconn->networks);
+    virObjectUnref(privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     virNodeDeviceObjListFree(&privconn->devs);
@@ -1414,7 +1413,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     conn->privateData = privconn;
 
     if (!(privconn->domains = virDomainObjListNew()) ||
-        VIR_ALLOC(privconn->networks) < 0)
+        !(privconn->networks = virNetworkObjListNew()))
         goto error;
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
@@ -1466,8 +1465,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
     virObjectUnref(privconn->domains);
-    virNetworkObjListFree(privconn->networks);
-    VIR_FREE(privconn->networks);
+    virObjectUnref(privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     VIR_FREE(privconn->path);
@@ -1593,8 +1591,7 @@ static int testConnectClose(virConnectPtr conn)
     virObjectUnref(privconn->xmlopt);
     virObjectUnref(privconn->domains);
     virNodeDeviceObjListFree(&privconn->devs);
-    virNetworkObjListFree(privconn->networks);
-    VIR_FREE(privconn->networks);
+    virObjectUnref(privconn->networks);
     virInterfaceObjListFree(&privconn->ifaces);
     virStoragePoolObjListFree(&privconn->pools);
     virObjectEventStateFree(privconn->eventState);

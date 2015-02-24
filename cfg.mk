@@ -250,7 +250,6 @@ useless_free_options =				\
 # n virNetworkFree (returns int)
 # n virNetworkFreeName (returns int)
 # y virNetworkObjFree
-# n virNetworkObjListFree FIXME
 # n virNodeDevCapsDefFree FIXME
 # y virNodeDeviceDefFree
 # n virNodeDeviceFree (returns int)

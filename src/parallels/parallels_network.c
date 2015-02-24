@@ -329,7 +329,7 @@ parallelsNetworkOpen(virConnectPtr conn,
     if (STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
-    if (VIR_ALLOC(privconn->networks) < 0)
+    if (!(privconn->networks = virNetworkObjListNew()))
         goto error;
 
     if (parallelsLoadNetworks(conn->privateData) < 0)
@@ -337,7 +337,7 @@ parallelsNetworkOpen(virConnectPtr conn,
 
     return VIR_DRV_OPEN_SUCCESS;
  error:
-    VIR_FREE(privconn->networks);
+    virObjectUnref(privconn->networks);
     return VIR_DRV_OPEN_DECLINED;
 }
 
@@ -349,8 +349,7 @@ int parallelsNetworkClose(virConnectPtr conn)
         return 0;
 
     parallelsDriverLock(privconn);
-    virNetworkObjListFree(privconn->networks);
-    VIR_FREE(privconn->networks);
+    virObjectUnref(privconn->networks);
     parallelsDriverUnlock(privconn);
     return 0;
 }

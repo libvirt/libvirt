@@ -620,7 +620,7 @@ networkStateInitialize(bool privileged,
     /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
     driver->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
 
-    if (VIR_ALLOC(driver->networks) < 0)
+    if (!(driver->networks = virNetworkObjListNew()))
         goto error;
 
     if (virNetworkLoadAllState(driver->networks,
@@ -751,8 +751,7 @@ networkStateCleanup(void)
     virObjectEventStateFree(driver->networkEventState);
 
     /* free inactive networks */
-    virNetworkObjListFree(driver->networks);
-    VIR_FREE(driver->networks);
+    virObjectUnref(driver->networks);
 
     VIR_FREE(driver->networkConfigDir);
     VIR_FREE(driver->networkAutostartDir);

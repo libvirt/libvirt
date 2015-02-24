@@ -73,17 +73,33 @@ VIR_ENUM_IMPL(virNetworkForwardDriverName,
 VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
               "hook-script");
 
-bool
-virNetworkObjTaint(virNetworkObjPtr obj,
-                   virNetworkTaintFlags taint)
+static virClassPtr virNetworkObjListClass;
+static void virNetworkObjListDispose(void *obj);
+
+static int virNetworkObjOnceInit(void)
 {
-    unsigned int flag = (1 << taint);
+    if (!(virNetworkObjListClass = virClassNew(virClassForObject(),
+                                               "virNetworkObjList",
+                                               sizeof(virNetworkObjList),
+                                               virNetworkObjListDispose)))
+        return -1;
+    return 0;
+}
 
-    if (obj->taint & flag)
-        return false;
 
-    obj->taint |= flag;
-    return true;
+VIR_ONCE_GLOBAL_INIT(virNetworkObj)
+
+virNetworkObjListPtr virNetworkObjListNew(void)
+{
+    virNetworkObjListPtr nets;
+
+    if (virNetworkObjInitialize() < 0)
+        return NULL;
+
+    if (!(nets = virObjectNew(virNetworkObjListClass)))
+        return NULL;
+
+    return nets;
 }
 
 virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
@@ -114,6 +130,19 @@ virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
     }
 
     return NULL;
+}
+
+bool
+virNetworkObjTaint(virNetworkObjPtr obj,
+                   virNetworkTaintFlags taint)
+{
+    unsigned int flag = (1 << taint);
+
+    if (obj->taint & flag)
+        return false;
+
+    obj->taint |= flag;
+    return true;
 }
 
 
@@ -275,18 +304,16 @@ void virNetworkObjFree(virNetworkObjPtr net)
     VIR_FREE(net);
 }
 
-void virNetworkObjListFree(virNetworkObjListPtr nets)
+static void
+virNetworkObjListDispose(void *obj)
 {
+    virNetworkObjListPtr nets = obj;
     size_t i;
-
-    if (!nets)
-        return;
 
     for (i = 0; i < nets->count; i++)
         virNetworkObjFree(nets->objs[i]);
 
     VIR_FREE(nets->objs);
-    nets->count = 0;
 }
 
 /*
