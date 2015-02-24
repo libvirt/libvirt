@@ -772,7 +772,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     if ((state = virXPathString("string(./link/@state)", ctxt)))
         vshPrint(ctl, "%s %s", iface, state);
     else
-        vshPrint(ctl, "%s default", iface);
+        vshPrint(ctl, "%s up", iface);
 
     ret = true;
 
