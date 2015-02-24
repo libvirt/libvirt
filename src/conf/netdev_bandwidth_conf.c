@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -285,7 +285,8 @@ virDomainClearNetBandwidth(virDomainObjPtr vm)
 
     for (i = 0; i < vm->def->nnets; i++) {
         type = virDomainNetGetActualType(vm->def->nets[i]);
-        if (virNetDevSupportBandwidth(type))
+        if (virDomainNetGetActualBandwidth(vm->def->nets[i]) &&
+            virNetDevSupportBandwidth(type))
             virNetDevBandwidthClear(vm->def->nets[i]->ifname);
     }
 }

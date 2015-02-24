@@ -4650,7 +4650,8 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     actualType = virDomainNetGetActualType(detach);
 
     /* clear network bandwidth */
-    if (virNetDevSupportBandwidth(actualType) &&
+    if (virDomainNetGetActualBandwidth(detach) &&
+        virNetDevSupportBandwidth(actualType) &&
         virNetDevBandwidthClear(detach->ifname))
         goto cleanup;
 

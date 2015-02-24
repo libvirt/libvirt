@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.c: QEMU device hotplug management
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3750,7 +3750,8 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (virNetDevSupportBandwidth(virDomainNetGetActualType(detach)) &&
+    if (virDomainNetGetActualBandwidth(detach) &&
+        virNetDevSupportBandwidth(virDomainNetGetActualType(detach)) &&
         virNetDevBandwidthClear(detach->ifname) < 0)
         VIR_WARN("cannot clear bandwidth setting for device : %s",
                  detach->ifname);

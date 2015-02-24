@@ -2096,7 +2096,8 @@ networkStartNetworkVirtual(virNetworkObjPtr network)
     return 0;
 
  err5:
-    virNetDevBandwidthClear(network->def->bridge);
+    if (network->def->bandwidth)
+       virNetDevBandwidthClear(network->def->bridge);
 
  err4:
     if (!save_err)
@@ -2142,7 +2143,8 @@ networkStartNetworkVirtual(virNetworkObjPtr network)
 
 static int networkShutdownNetworkVirtual(virNetworkObjPtr network)
 {
-    virNetDevBandwidthClear(network->def->bridge);
+    if (network->def->bandwidth)
+        virNetDevBandwidthClear(network->def->bridge);
 
     if (network->radvdPid > 0) {
         char *radvdpidbase;
