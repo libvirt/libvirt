@@ -1067,6 +1067,7 @@ qemuMonitorFindObjectPath(qemuMonitorPtr mon,
             }
 
             ret = qemuMonitorFindObjectPath(mon, nextpath, name, path);
+            VIR_FREE(nextpath);
         }
     }
 
