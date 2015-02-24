@@ -83,6 +83,13 @@ virNetDevBandwidthSet(const char *ifname,
         return -1;
     }
 
+    if (!ifname) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Unable to set bandwidth for interface because "
+                         "device name is unknown"));
+        return -1;
+    }
+
     virNetDevBandwidthClear(ifname);
 
     if (bandwidth->in && bandwidth->in->average) {
