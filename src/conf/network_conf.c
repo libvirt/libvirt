@@ -51,6 +51,13 @@
 /* currently, /sbin/tc implementation allows up to 16 bits for minor class size */
 #define CLASS_ID_BITMAP_SIZE (1<<16)
 
+struct _virNetworkObjList {
+    virObject parent;
+
+    size_t count;
+    virNetworkObjPtr *objs;
+};
+
 VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
               "none", "nat", "route", "bridge", "private", "vepa", "passthrough", "hostdev")

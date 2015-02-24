@@ -277,12 +277,6 @@ struct _virNetworkObj {
 
 typedef struct _virNetworkObjList virNetworkObjList;
 typedef virNetworkObjList *virNetworkObjListPtr;
-struct _virNetworkObjList {
-    virObject parent;
-
-    size_t count;
-    virNetworkObjPtr *objs;
-};
 
 typedef enum {
     VIR_NETWORK_TAINT_HOOK,                 /* Hook script was executed over
