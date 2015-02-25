@@ -3835,6 +3835,8 @@ testNetworkUpdate(virNetworkPtr net,
 
     ret = 0;
  cleanup:
+    if (network)
+        virNetworkObjUnlock(network);
     testDriverUnlock(privconn);
     return ret;
 }
