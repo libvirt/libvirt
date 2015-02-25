@@ -4562,7 +4562,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
                        netname);
-        goto error;
+        goto cleanup;
     }
     netdef = network->def;
 
@@ -4576,7 +4576,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have an IPv4 address"),
                            netdef->name);
-            break;
+            goto cleanup;
         }
         addrptr = &ipdef->address;
         break;
@@ -4598,19 +4598,20 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' has no associated interface or bridge"),
                            netdef->name);
+            goto cleanup;
         }
         break;
     }
 
     if (dev_name) {
         if (virNetDevGetIPv4Address(dev_name, &addr) < 0)
-            goto error;
+            goto cleanup;
         addrptr = &addr;
     }
 
     if (!(addrptr &&
           (*netaddr = virSocketAddrFormat(addrptr)))) {
-        goto error;
+        goto cleanup;
     }
 
     ret = 0;
@@ -4618,9 +4619,6 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     if (network)
         virNetworkObjUnlock(network);
     return ret;
-
- error:
-    goto cleanup;
 }
 
 /**
