@@ -238,8 +238,8 @@
       <ref name="bootloader"/>
     </optional>
     <element name="os">
-      <ref name="ostypehvm"/>
       <interleave>
+        <ref name="ostypehvm"/>
         <optional>
           <element name="loader">
             <optional>
