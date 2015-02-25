@@ -1,7 +1,7 @@
 /*
  * libvirt-network.c: entry points for virNetworkPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -433,7 +433,8 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the network, preferably in UTF-8
  *
- * Define a network, but does not create it
+ * Define an inactive persistent virtual network or modify an existing
+ * persistent one from the XML description.
  *
  * virNetworkFree should be used to free the resources after the
  * network object is no longer needed.

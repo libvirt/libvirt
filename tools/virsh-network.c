@@ -1,7 +1,7 @@
 /*
  * virsh-network.c: Commands to manage network
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -189,10 +189,11 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_network_define[] = {
     {.name = "help",
-     .data = N_("define (but don't start) a network from an XML file")
+     .data = N_("define an inactive persistent virtual network or modify "
+                "an existing persistent one from an XML file")
     },
     {.name = "desc",
-     .data = N_("Define a network.")
+     .data = N_("Define or modify a persistent virtual network.")
     },
     {.name = NULL}
 };

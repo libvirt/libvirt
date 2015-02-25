@@ -2701,8 +2701,8 @@ to get a description of the XML network format used by libvirt.
 
 =item B<net-define> I<file>
 
-Define a persistent virtual network from an XML I<file>, the network is just
-defined but not instantiated (started).
+Define an inactive persistent virtual network or modify an existing persistent
+one from the XML I<file>.
 
 =item B<net-destroy> I<network>
 
