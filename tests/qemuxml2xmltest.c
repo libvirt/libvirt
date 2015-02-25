@@ -417,6 +417,7 @@ mymain(void)
     DO_TEST("numatune-memnode-no-memory");
 
     DO_TEST("bios-nvram");
+    DO_TEST_DIFFERENT("bios-nvram-os-interleave");
 
     DO_TEST("tap-vhost");
     DO_TEST_DIFFERENT("tap-vhost-incorrect");
