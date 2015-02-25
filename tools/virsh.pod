@@ -736,7 +736,7 @@ Get network interface stats for a running domain.
 =item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
 
 Modify link state of the domain's virtual interface. Possible values for
-state are "up" and "down. If I<--config> is specified, only the persistent
+state are "up" and "down". If I<--config> is specified, only the persistent
 configuration of the domain is modified, for compatibility purposes,
 I<--persistent> is alias of I<--config>.
 I<interface-device> can be the interface's target name or the MAC address.
