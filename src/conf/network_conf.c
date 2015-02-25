@@ -4130,7 +4130,7 @@ virNetworkObjUpdate(virNetworkObjPtr network,
 
 /*
  * virNetworkObjIsDuplicate:
- * @doms : virNetworkObjListPtr to search
+ * @nets : virNetworkObjListPtr to search
  * @def  : virNetworkDefPtr definition of network to lookup
  * @check_active: If true, ensure that network is not active
  *
@@ -4139,32 +4139,32 @@ virNetworkObjUpdate(virNetworkObjPtr network,
  *          1 if network is a duplicate
  */
 int
-virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
+virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
                          virNetworkDefPtr def,
                          bool check_active)
 {
     int ret = -1;
-    virNetworkObjPtr vm = NULL;
+    virNetworkObjPtr net = NULL;
 
-    /* See if a VM with matching UUID already exists */
-    vm = virNetworkFindByUUID(doms, def->uuid);
-    if (vm) {
+    /* See if a network with matching UUID already exists */
+    net = virNetworkFindByUUID(nets, def->uuid);
+    if (net) {
         /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(vm->def->name, def->name)) {
+        if (STRNEQ(net->def->name, def->name)) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
+            virUUIDFormat(net->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("network '%s' is already defined with uuid %s"),
-                           vm->def->name, uuidstr);
+                           net->def->name, uuidstr);
             goto cleanup;
         }
 
         if (check_active) {
-            /* UUID & name match, but if VM is already active, refuse it */
-            if (virNetworkObjIsActive(vm)) {
+            /* UUID & name match, but if network is already active, refuse it */
+            if (virNetworkObjIsActive(net)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("network is already active as '%s'"),
-                               vm->def->name);
+                               net->def->name);
                 goto cleanup;
             }
         }
@@ -4172,10 +4172,10 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
         ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        vm = virNetworkFindByName(doms, def->name);
-        if (vm) {
+        net = virNetworkFindByName(nets, def->name);
+        if (net) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(vm->def->uuid, uuidstr);
+            virUUIDFormat(net->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("network '%s' already exists with uuid %s"),
                            def->name, uuidstr);
@@ -4185,8 +4185,8 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
     }
 
  cleanup:
-    if (vm)
-        virNetworkObjUnlock(vm);
+    if (net)
+        virNetworkObjUnlock(net);
     return ret;
 }
 

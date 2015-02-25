@@ -309,7 +309,7 @@ virNetworkObjPtr virNetworkFindByName(virNetworkObjListPtr nets,
 
 void virNetworkDefFree(virNetworkDefPtr def);
 void virNetworkObjFree(virNetworkObjPtr net);
-void virNetworkObjListFree(virNetworkObjListPtr vms);
+void virNetworkObjListFree(virNetworkObjListPtr nets);
 
 
 typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
@@ -413,7 +413,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
                     const char *xml,
                     unsigned int flags);  /* virNetworkUpdateFlags */
 
-int virNetworkObjIsDuplicate(virNetworkObjListPtr doms,
+int virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
                              virNetworkDefPtr def,
                              bool check_active);
 
