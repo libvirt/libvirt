@@ -2496,8 +2496,7 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 }
 
@@ -2522,8 +2521,7 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
     ret = virGetNetwork(conn, network->def->name, network->def->uuid);
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 }
 
@@ -2670,8 +2668,7 @@ static int networkIsActive(virNetworkPtr net)
     ret = virNetworkObjIsActive(obj);
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virNetworkObjEndAPI(&obj);
     return ret;
 }
 
@@ -2689,8 +2686,7 @@ static int networkIsPersistent(virNetworkPtr net)
     ret = obj->persistent;
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virNetworkObjEndAPI(&obj);
     return ret;
 }
 
@@ -2959,8 +2955,7 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkDefFree(def);
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3016,8 +3011,7 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
         virObjectEventStateQueue(driver->networkEventState, event);
     if (freeDef)
         virNetworkDefFree(def);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3076,8 +3070,7 @@ networkUndefine(virNetworkPtr net)
  cleanup:
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3248,8 +3241,7 @@ networkUpdate(virNetworkPtr net,
     }
     ret = 0;
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3283,8 +3275,7 @@ static int networkCreate(virNetworkPtr net)
  cleanup:
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3334,8 +3325,7 @@ static int networkDestroy(virNetworkPtr net)
  cleanup:
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3363,8 +3353,7 @@ static char *networkGetXMLDesc(virNetworkPtr net,
     ret = virNetworkDefFormat(def, flags);
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 }
 
@@ -3388,8 +3377,7 @@ static char *networkGetBridgeName(virNetworkPtr net) {
     ignore_value(VIR_STRDUP(bridge, network->def->bridge));
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return bridge;
 }
 
@@ -3409,8 +3397,7 @@ static int networkGetAutostart(virNetworkPtr net,
     ret = 0;
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 }
 
@@ -3477,8 +3464,7 @@ static int networkSetAutostart(virNetworkPtr net,
  cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     networkDriverUnlock();
     return ret;
 }
@@ -3650,8 +3636,7 @@ networkGetDHCPLeases(virNetworkPtr network,
     VIR_FREE(custom_lease_file);
     virJSONValueFree(leases_array);
 
-    if (obj)
-        virObjectUnlock(obj);
+    virNetworkObjEndAPI(&obj);
 
     return rv;
 
@@ -4123,8 +4108,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     ret = 0;
 
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 
  error:
@@ -4326,8 +4310,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
 
     ret = 0;
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 
  error:
@@ -4476,8 +4459,7 @@ networkReleaseActualDevice(virDomainDefPtr dom,
     }
     ret = 0;
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         virDomainActualNetDefFree(iface->data.network.actual);
         iface->data.network.actual = NULL;
@@ -4580,8 +4562,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
 
     ret = 0;
  cleanup:
-    if (network)
-        virObjectUnlock(network);
+    virNetworkObjEndAPI(&network);
     return ret;
 }
 
