@@ -84,7 +84,6 @@ let lockedObjMethods = [
  *)
 let objectLockMethods = [
    "virDomainObjLock";
-   "virNetworkObjLock";
    "virStoragePoolObjLock";
    "virNodeDevObjLock"
 ]
@@ -99,7 +98,6 @@ let objectLockMethods = [
  *)
 let objectUnlockMethods = [
    "virDomainObjUnlock";
-   "virNetworkObjUnlock";
    "virStoragePoolObjUnlock";
    "virNodeDevObjUnlock"
 ]

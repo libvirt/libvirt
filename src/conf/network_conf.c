@@ -79,11 +79,19 @@ VIR_ENUM_IMPL(virNetworkForwardDriverName,
 VIR_ENUM_IMPL(virNetworkTaint, VIR_NETWORK_TAINT_LAST,
               "hook-script");
 
+static virClassPtr virNetworkObjClass;
 static virClassPtr virNetworkObjListClass;
+static void virNetworkObjDispose(void *obj);
 static void virNetworkObjListDispose(void *obj);
 
 static int virNetworkObjOnceInit(void)
 {
+    if (!(virNetworkObjClass = virClassNew(virClassForObjectLockable(),
+                                           "virNetworkObj",
+                                           sizeof(virNetworkObj),
+                                           virNetworkObjDispose)))
+        return -1;
+
     if (!(virNetworkObjListClass = virClassNew(virClassForObject(),
                                                "virNetworkObjList",
                                                sizeof(virNetworkObjList),
@@ -95,11 +103,30 @@ static int virNetworkObjOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetworkObj)
 
-static void
-virNetworkObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+virNetworkObjPtr
+virNetworkObjNew(void)
 {
-    virNetworkObjPtr obj = payload;
-    virNetworkObjFree(obj);
+    virNetworkObjPtr net;
+
+    if (virNetworkObjInitialize() < 0)
+        return NULL;
+
+    if (!(net = virObjectLockableNew(virNetworkObjClass)))
+        return NULL;
+
+    if (!(net->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
+        goto error;
+
+    /* The first three class IDs are already taken */
+    ignore_value(virBitmapSetBit(net->class_id, 0));
+    ignore_value(virBitmapSetBit(net->class_id, 1));
+    ignore_value(virBitmapSetBit(net->class_id, 2));
+
+    return net;
+
+ error:
+    virObjectUnref(net);
+    return NULL;
 }
 
 virNetworkObjListPtr virNetworkObjListNew(void)
@@ -112,7 +139,7 @@ virNetworkObjListPtr virNetworkObjListNew(void)
     if (!(nets = virObjectNew(virNetworkObjListClass)))
         return NULL;
 
-    if (!(nets->objs = virHashCreate(50, virNetworkObjListDataFree))) {
+    if (!(nets->objs = virHashCreate(50, virObjectFreeHashData))) {
         virObjectUnref(nets);
         return NULL;
     }
@@ -130,7 +157,7 @@ virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
 
     ret = virHashLookup(nets->objs, uuidstr);
     if (ret)
-        virNetworkObjLock(ret);
+        virObjectLock(ret);
     return ret;
 }
 
@@ -142,10 +169,10 @@ virNetworkObjSearchName(const void *payload,
     virNetworkObjPtr net = (virNetworkObjPtr) payload;
     int want = 0;
 
-    virNetworkObjLock(net);
+    virObjectLock(net);
     if (STREQ(net->def->name, (const char *)data))
         want = 1;
-    virNetworkObjUnlock(net);
+    virObjectUnlock(net);
     return want;
 }
 
@@ -156,7 +183,7 @@ virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
 
     ret = virHashSearch(nets->objs, virNetworkObjSearchName, name);
     if (ret)
-        virNetworkObjLock(ret);
+        virObjectLock(ret);
     return ret;
 }
 
@@ -318,18 +345,14 @@ virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def);
 }
 
-void virNetworkObjFree(virNetworkObjPtr net)
+static void
+virNetworkObjDispose(void *obj)
 {
-    if (!net)
-        return;
+    virNetworkObjPtr net = obj;
 
     virNetworkDefFree(net->def);
     virNetworkDefFree(net->newDef);
     virBitmapFree(net->class_id);
-
-    virMutexDestroy(&net->lock);
-
-    VIR_FREE(net);
 }
 
 static void
@@ -427,35 +450,21 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
         return network;
     }
 
-    if (VIR_ALLOC(network) < 0)
+    if (!(network = virNetworkObjNew()))
         return NULL;
-    if (virMutexInit(&network->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(network);
-        return NULL;
-    }
-    virNetworkObjLock(network);
-
-    if (!(network->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
-        goto error;
+    virObjectLock(network);
 
     virUUIDFormat(def->uuid, uuidstr);
     if (virHashAddEntry(nets->objs, uuidstr, network) < 0)
         goto error;
-
-    /* The first three class IDs are already taken */
-    ignore_value(virBitmapSetBit(network->class_id, 0));
-    ignore_value(virBitmapSetBit(network->class_id, 1));
-    ignore_value(virBitmapSetBit(network->class_id, 2));
 
     network->def = def;
     network->persistent = !live;
     return network;
 
  error:
-    virNetworkObjUnlock(network);
-    virNetworkObjFree(network);
+    virObjectUnlock(network);
+    virObjectUnref(network);
     return NULL;
 
 }
@@ -624,7 +633,7 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(net->def->uuid, uuidstr);
-    virNetworkObjUnlock(net);
+    virObjectUnlock(net);
     virHashRemoveEntry(nets->objs, uuidstr);
 }
 
@@ -3026,7 +3035,7 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
             continue;
 
         if ((net = virNetworkLoadState(nets, stateDir, entry->d_name)))
-            virNetworkObjUnlock(net);
+            virObjectUnlock(net);
     }
 
     closedir(dir);
@@ -3067,7 +3076,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                                    autostartDir,
                                    entry->d_name);
         if (net)
-            virNetworkObjUnlock(net);
+            virObjectUnlock(net);
     }
 
     closedir(dir);
@@ -3129,12 +3138,12 @@ virNetworkBridgeInUseHelper(const void *payload,
     virNetworkObjPtr net = (virNetworkObjPtr) payload;
     const struct virNetworkBridgeInUseHelperData *data = opaque;
 
-    virNetworkObjLock(net);
+    virObjectLock(net);
     if (net->def->bridge &&
         STREQ(net->def->bridge, data->bridge) &&
         !(data->skipname && STREQ(net->def->name, data->skipname)))
         ret = 1;
-    virNetworkObjUnlock(net);
+    virObjectUnlock(net);
     return ret;
 }
 
@@ -4252,20 +4261,10 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
 
  cleanup:
     if (net)
-        virNetworkObjUnlock(net);
+        virObjectUnlock(net);
     return ret;
 }
 
-
-void virNetworkObjLock(virNetworkObjPtr obj)
-{
-    virMutexLock(&obj->lock);
-}
-
-void virNetworkObjUnlock(virNetworkObjPtr obj)
-{
-    virMutexUnlock(&obj->lock);
-}
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool
@@ -4321,7 +4320,7 @@ virNetworkObjListPopulate(void *payload,
     if (data->error)
         return;
 
-    virNetworkObjLock(obj);
+    virObjectLock(obj);
 
     if (data->filter &&
         !data->filter(data->conn, obj->def))
@@ -4343,7 +4342,7 @@ virNetworkObjListPopulate(void *payload,
     data->nets[data->nnets++] = net;
 
  cleanup:
-    virNetworkObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 int
@@ -4443,7 +4442,7 @@ virNetworkObjListGetHelper(void *payload,
         data->got == data->nnames)
         return;
 
-    virNetworkObjLock(obj);
+    virObjectLock(obj);
 
     if (data->filter &&
         !data->filter(data->conn, obj->def))
@@ -4460,7 +4459,7 @@ virNetworkObjListGetHelper(void *payload,
     }
 
  cleanup:
-    virNetworkObjUnlock(obj);
+    virObjectUnlock(obj);
 }
 
 int
@@ -4517,9 +4516,9 @@ virNetworkObjListPruneHelper(const void *payload,
     virNetworkObjPtr obj = (virNetworkObjPtr) payload;
     int want = 0;
 
-    virNetworkObjLock(obj);
+    virObjectLock(obj);
     want = virNetworkMatch(obj, data->flags);
-    virNetworkObjUnlock(obj);
+    virObjectUnlock(obj);
     return want;
 }
 

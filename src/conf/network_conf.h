@@ -258,7 +258,7 @@ struct _virNetworkDef {
 typedef struct _virNetworkObj virNetworkObj;
 typedef virNetworkObj *virNetworkObjPtr;
 struct _virNetworkObj {
-    virMutex lock;
+    virObjectLockable parent;
 
     pid_t dnsmasqPid;
     pid_t radvdPid;
@@ -274,6 +274,8 @@ struct _virNetworkObj {
 
     unsigned int taint;
 };
+
+virNetworkObjPtr virNetworkObjNew(void);
 
 typedef struct _virNetworkObjList virNetworkObjList;
 typedef virNetworkObjList *virNetworkObjListPtr;
@@ -305,7 +307,6 @@ bool virNetworkObjTaint(virNetworkObjPtr obj,
                         virNetworkTaintFlags taint);
 
 void virNetworkDefFree(virNetworkDefPtr def);
-void virNetworkObjFree(virNetworkObjPtr net);
 
 typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
                                         virNetworkDefPtr def);
@@ -411,9 +412,6 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
 int virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
                              virNetworkDefPtr def,
                              bool check_active);
-
-void virNetworkObjLock(virNetworkObjPtr obj);
-void virNetworkObjUnlock(virNetworkObjPtr obj);
 
 VIR_ENUM_DECL(virNetworkForward)
 

@@ -40,7 +40,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     if (!(dev = virNetworkDefParseString(inXmlData)))
         goto fail;
 
-    if (VIR_ALLOC(obj) < 0)
+    if (!(obj = virNetworkObjNew()))
         goto fail;
 
     obj->def = dev;
@@ -66,7 +66,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
-    virNetworkObjFree(obj);
+    virObjectUnref(obj);
     dnsmasqContextFree(dctx);
     return ret;
 }

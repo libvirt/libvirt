@@ -160,7 +160,6 @@ useless_free_options =				\
   --name=virNWFilterRuleDefFree			\
   --name=virNWFilterRuleInstFree		\
   --name=virNetworkDefFree			\
-  --name=virNetworkObjFree			\
   --name=virNodeDeviceDefFree			\
   --name=virNodeDeviceObjFree			\
   --name=virObjectUnref                         \
@@ -249,7 +248,6 @@ useless_free_options =				\
 # y virNetworkDefFree
 # n virNetworkFree (returns int)
 # n virNetworkFreeName (returns int)
-# y virNetworkObjFree
 # n virNodeDevCapsDefFree FIXME
 # y virNodeDeviceDefFree
 # n virNodeDeviceFree (returns int)

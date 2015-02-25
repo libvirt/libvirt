@@ -787,7 +787,7 @@ testOpenDefault(virConnectPtr conn)
         goto error;
     }
     netobj->active = 1;
-    virNetworkObjUnlock(netobj);
+    virObjectUnlock(netobj);
 
     if (!(interfacedef = virInterfaceDefParseString(defaultInterfaceXML)))
         goto error;
@@ -1155,7 +1155,7 @@ testParseNetworks(testConnPtr privconn,
         }
 
         obj->active = 1;
-        virNetworkObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     ret = 0;
@@ -3508,7 +3508,7 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
 
  cleanup:
     if (net)
-        virNetworkObjUnlock(net);
+        virObjectUnlock(net);
     return ret;
 }
 
@@ -3532,7 +3532,7 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
 
  cleanup:
     if (net)
-        virNetworkObjUnlock(net);
+        virObjectUnlock(net);
     return ret;
 }
 
@@ -3621,7 +3621,7 @@ static int testNetworkIsActive(virNetworkPtr net)
 
  cleanup:
     if (obj)
-        virNetworkObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -3642,7 +3642,7 @@ static int testNetworkIsPersistent(virNetworkPtr net)
 
  cleanup:
     if (obj)
-        virNetworkObjUnlock(obj);
+        virObjectUnlock(obj);
     return ret;
 }
 
@@ -3675,7 +3675,7 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
     if (event)
         testObjectEventQueue(privconn, event);
     if (net)
-        virNetworkObjUnlock(net);
+        virObjectUnlock(net);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3708,7 +3708,7 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     if (event)
         testObjectEventQueue(privconn, event);
     if (net)
-        virNetworkObjUnlock(net);
+        virObjectUnlock(net);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3746,7 +3746,7 @@ static int testNetworkUndefine(virNetworkPtr network)
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3796,7 +3796,7 @@ testNetworkUpdate(virNetworkPtr net,
     ret = 0;
  cleanup:
     if (network)
-        virNetworkObjUnlock(network);
+        virObjectUnlock(network);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3833,7 +3833,7 @@ static int testNetworkCreate(virNetworkPtr network)
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     return ret;
 }
 
@@ -3866,7 +3866,7 @@ static int testNetworkDestroy(virNetworkPtr network)
     if (event)
         testObjectEventQueue(privconn, event);
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3893,7 +3893,7 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
 
  cleanup:
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     return ret;
 }
 
@@ -3922,7 +3922,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
 
  cleanup:
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     return bridge;
 }
 
@@ -3947,7 +3947,7 @@ static int testNetworkGetAutostart(virNetworkPtr network,
 
  cleanup:
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     return ret;
 }
 
@@ -3972,7 +3972,7 @@ static int testNetworkSetAutostart(virNetworkPtr network,
 
  cleanup:
     if (privnet)
-        virNetworkObjUnlock(privnet);
+        virObjectUnlock(privnet);
     return ret;
 }
 
