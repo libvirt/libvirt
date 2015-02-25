@@ -276,6 +276,7 @@ struct _virNetworkObj {
 };
 
 virNetworkObjPtr virNetworkObjNew(void);
+void virNetworkObjEndAPI(virNetworkObjPtr *net);
 
 typedef struct _virNetworkObjList virNetworkObjList;
 typedef virNetworkObjList *virNetworkObjListPtr;

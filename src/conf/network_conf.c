@@ -129,6 +129,16 @@ virNetworkObjNew(void)
     return NULL;
 }
 
+void
+virNetworkObjEndAPI(virNetworkObjPtr *net)
+{
+    if (!*net)
+        return;
+
+    virObjectUnlock(*net);
+    *net = NULL;
+}
+
 virNetworkObjListPtr virNetworkObjListNew(void)
 {
     virNetworkObjListPtr nets;
@@ -3034,8 +3044,8 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
-        if ((net = virNetworkLoadState(nets, stateDir, entry->d_name)))
-            virObjectUnlock(net);
+        net = virNetworkLoadState(nets, stateDir, entry->d_name);
+        virNetworkObjEndAPI(&net);
     }
 
     closedir(dir);
@@ -3075,8 +3085,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
                                    configDir,
                                    autostartDir,
                                    entry->d_name);
-        if (net)
-            virObjectUnlock(net);
+        virNetworkObjEndAPI(&net);
     }
 
     closedir(dir);
@@ -4260,8 +4269,7 @@ virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
     }
 
  cleanup:
-    if (net)
-        virObjectUnlock(net);
+    virNetworkObjEndAPI(&net);
     return ret;
 }
 

@@ -563,6 +563,7 @@ virNetworkIpDefPrefix;
 virNetworkLoadAllConfigs;
 virNetworkLoadAllState;
 virNetworkObjAssignDef;
+virNetworkObjEndAPI;
 virNetworkObjFindByName;
 virNetworkObjFindByUUID;
 virNetworkObjGetPersistentDef;
