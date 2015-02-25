@@ -1320,7 +1320,7 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
     case VIR_DOMAIN_VIDEO_TYPE_VGA:
         if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           _("QOM Object '%s' has no property 'vgamem_mb'"),
                            path);
             return -1;
         }
@@ -1329,21 +1329,21 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
     case VIR_DOMAIN_VIDEO_TYPE_QXL:
         if (qemuMonitorJSONGetObjectProperty(mon, path, "vram_size", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QOM Objext '%s' has no property 'vram_size'"),
+                           _("QOM Object '%s' has no property 'vram_size'"),
                            path);
             return -1;
         }
         video->vram = prop.val.ul / 1024;
         if (qemuMonitorJSONGetObjectProperty(mon, path, "ram_size", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QOM Objext '%s' has no property 'ram_size'"),
+                           _("QOM Object '%s' has no property 'ram_size'"),
                            path);
             return -1;
         }
         video->ram = prop.val.ul / 1024;
         if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           _("QOM Object '%s' has no property 'vgamem_mb'"),
                            path);
             return -1;
         }
@@ -1352,7 +1352,7 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
     case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
         if (qemuMonitorJSONGetObjectProperty(mon, path, "vgamem_mb", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("QOM Objext '%s' has no property 'vgamem_mb'"),
+                           _("QOM Object '%s' has no property 'vgamem_mb'"),
                            path);
             return -1;
         }

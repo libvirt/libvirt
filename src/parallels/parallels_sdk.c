@@ -2307,7 +2307,7 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only hard disks and cdroms are supported "
-                         "supported by parallels driver."));
+                         "by parallels driver."));
         return -1;
     }
 
