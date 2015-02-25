@@ -2954,16 +2954,49 @@ pools are similar to the ones used for domains.
 
 =item B<find-storage-pool-sources> I<type> [I<srcSpec>]
 
-Returns XML describing all storage pools of a given I<type> that could
-be found.  If I<srcSpec> is provided, it is a file that contains XML
-to further restrict the query for pools.
+Returns XML describing all possible available storage pool sources that
+could be used to create or define a storage pool of a given I<type>. If
+I<srcSpec> is provided, it is a file that contains XML to further restrict
+the query for pools.
+
+Not all storage pools support discovery in this manner. Furthermore, for
+those that do support discovery, only specific XML elements are required
+in order to return valid data, while other elements and even attributes
+of some elements are ignored since they are not necessary to find the pool
+based on the search criteria. The following lists the supported I<type>
+options and the expected minimal XML elements used to perform the search.
+
+For a "netfs" or "gluster" pool, the minimal expected XML required is the
+<host> element with a "name" attribute describing the IP address or hostname
+to be used to find the pool. The "port" attribute will be ignored as will
+any other provided XML elements in I<srcSpec>.
+
+For a "logical" pool, the contents of the I<srcSpec> file are ignored,
+although if provided the file must at least exist.
+
+For an "iscsi" pool, the minimal expect XML required is the <host> element
+with a "name" attribute describing the IP address or hostname to be used to
+find the pool (the iSCSI server address). Optionally, the "port" attribute
+may be provided, although it will default to 3260. Optionally, an <initiator>
+XML element with a "name" attribute may be provided to further restrict the
+iSCSI target search to a specific initiator for multi-iqn iSCSI storage pools.
 
 =item B<find-storage-pool-sources-as> I<type> [I<host>] [I<port>]
 [I<initiator>]
 
-Returns XML describing all storage pools of a given I<type> that could
-be found.  If I<host>, I<port>, or I<initiator> are provided, they control
-where the query is performed.
+Rather than providing I<srcSpec> XML file for B<find-storage-pool-sources>
+use this command option in order to have virsh generate the query XML file
+using the optional arguments. The command will return the same output
+XML as B<find-storage-pool-sources>.
+
+Use I<host> to describe a specific host to use for networked storage, such
+as netfs, gluster, and iscsi I<type> pools.
+
+Use I<port> to further restrict which networked port to utilize for the
+connection if required by the specific storage backend, such as iscsi.
+
+Use I<initiator> to further restrict the iscsi I<type> pool searches to
+specific target initiators.
 
 =item B<pool-autostart> I<pool-or-uuid> [I<--disable>]
 
