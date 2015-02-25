@@ -52,7 +52,7 @@
 #define CLASS_ID_BITMAP_SIZE (1<<16)
 
 struct _virNetworkObjList {
-    virObject parent;
+    virObjectLockable parent;
 
     virHashTablePtr objs;
 };
@@ -92,7 +92,7 @@ static int virNetworkObjOnceInit(void)
                                            virNetworkObjDispose)))
         return -1;
 
-    if (!(virNetworkObjListClass = virClassNew(virClassForObject(),
+    if (!(virNetworkObjListClass = virClassNew(virClassForObjectLockable(),
                                                "virNetworkObjList",
                                                sizeof(virNetworkObjList),
                                                virNetworkObjListDispose)))
@@ -146,7 +146,7 @@ virNetworkObjListPtr virNetworkObjListNew(void)
     if (virNetworkObjInitialize() < 0)
         return NULL;
 
-    if (!(nets = virObjectNew(virNetworkObjListClass)))
+    if (!(nets = virObjectLockableNew(virNetworkObjListClass)))
         return NULL;
 
     if (!(nets->objs = virHashCreate(50, virObjectFreeHashData))) {
