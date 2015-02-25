@@ -1,7 +1,7 @@
 /*
  * libvirt-storage.c: entry points for virStorage{Pool,Vol}Ptr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -551,8 +551,8 @@ virStoragePoolCreateXML(virConnectPtr conn,
  * @xml: XML description for new pool
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Define a new inactive storage pool based on its XML description. The
- * pool is persistent, until explicitly undefined.
+ * Define an inactive persistent storage pool or modify an existing persistent
+ * one from the XML description.
  *
  * virStoragePoolFree should be used to free the resources after the
  * storage pool object is no longer needed.

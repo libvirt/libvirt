@@ -1,7 +1,7 @@
 /*
  * virsh-pool.c: Commands to manage storage pool
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -397,10 +397,11 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_pool_define[] = {
     {.name = "help",
-     .data = N_("define (but don't start) a pool from an XML file")
+     .data = N_("define an inactive persistent storage pool or modify "
+                "an existing persistent one from an XML file")
     },
     {.name = "desc",
-     .data = N_("Define a pool.")
+     .data = N_("Define or modify a persistent storage pool.")
     },
     {.name = NULL}
 };

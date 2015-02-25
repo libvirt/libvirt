@@ -3089,7 +3089,8 @@ the vHBA.
 
 =item B<pool-define> I<file>
 
-Create, but do not start, a pool object from the XML I<file>.
+Define an inactive persistent storage pool or modify an existing persistent one
+from the XML I<file>.
 
 =item B<pool-define-as> I<name> I<type> [I<--print-xml>]
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
