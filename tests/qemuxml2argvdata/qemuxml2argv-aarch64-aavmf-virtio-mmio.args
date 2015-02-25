@@ -1,0 +1,15 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 -S -M virt -cpu cortex-a53 \
+-m 1024 -smp 1 -nographic \
+-nodefconfig -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-boot c -kernel /aarch64.kernel -initrd /aarch64.initrd -append \
+'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
+-dtb /aarch64.dtb -device virtio-serial-device,id=virtio-serial0 -usb \
+-drive file=/aarch64.raw,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
+-device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \
+-net user,vlan=0,name=hostnet0 -chardev pty,id=charconsole0 \
+-device virtconsole,chardev=charconsole0,id=console0 \
+-device virtio-balloon-device,id=balloon0 \
+-object rng-random,id=objrng0,filename=/dev/random \
+-device virtio-rng-device,rng=objrng0,id=rng0

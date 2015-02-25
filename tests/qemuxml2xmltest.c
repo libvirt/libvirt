@@ -422,6 +422,7 @@ mymain(void)
     DO_TEST_DIFFERENT("tap-vhost-incorrect");
     DO_TEST("shmem");
     DO_TEST("smbios");
+    DO_TEST("aarch64-aavmf-virtio-mmio");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
