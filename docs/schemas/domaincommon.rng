@@ -4415,6 +4415,11 @@
           </attribute>
           <ref name="isaaddress"/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>virtio-mmio</value>
+          </attribute>
+        </group>
       </choice>
     </element>
   </define>
