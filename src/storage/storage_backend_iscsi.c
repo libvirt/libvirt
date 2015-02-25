@@ -178,9 +178,8 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(0, NULL);
 
     if (!srcSpec) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("hostname and device path "
-                               "must be specified for iscsi sources"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("hostname must be specified for iscsi sources"));
         return NULL;
     }
 
