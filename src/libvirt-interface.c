@@ -1,7 +1,7 @@
 /*
  * libvirt-interface.c: entry points for virInterfacePtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -443,7 +443,8 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
  * @xml: the XML description for the interface, preferably in UTF-8
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Define an interface (or modify existing interface configuration).
+ * Define an inactive persistent physical host interface or modify an existing
+ * persistent one from the XML description.
  *
  * Normally this change in the interface configuration is immediately
  * permanent/persistent, but if virInterfaceChangeBegin() has been

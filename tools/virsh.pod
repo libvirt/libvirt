@@ -2861,8 +2861,8 @@ See also B<iface-unbridge> for undoing this operation.
 
 =item B<iface-define> I<file>
 
-Define a host interface from an XML I<file>, the interface is just defined but
-not started.
+Define an inactive persistent physical host interface or modify an existing
+persistent one from the XML I<file>.
 
 =item B<iface-destroy> I<interface>
 
