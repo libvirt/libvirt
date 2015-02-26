@@ -2163,6 +2163,13 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         char *tmp;
+
+        if (!src->path) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("missing volume name and path for gluster volume"));
+            goto cleanup;
+        }
+
         if (!(tmp = strchr(src->path, '/')) ||
             tmp == src->path) {
             virReportError(VIR_ERR_XML_ERROR,
