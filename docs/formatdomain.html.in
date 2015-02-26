@@ -4190,6 +4190,11 @@ qemu-kvm -net nic,model=? /dev/null
         <span class="since">Since 1.0.5 (QEMU and KVM only, requires
         kernel 3.6 or newer)</span>
       </dd>
+      <dd>
+        For interfaces of type='vhostuser', the <code>name</code>
+        attribute is ignored. The backend driver used is always
+        vhost-user.
+      </dd>
 
       <dt><code>txmode</code></dt>
       <dd>
