@@ -9614,12 +9614,16 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                         break;
                     }
                 }
-                if (!matched) {
+                if (found && !matched) {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("graphics listen attribute %s must match address "
                                      "attribute of first listen element (found %s)"),
-                                   listenAddr, found ? found : "none");
+                                   listenAddr, found);
                     goto error;
+                } else if (!found) {
+                    /* quietly ignore listen address if none of the listens
+                     * are of type address */
+                    VIR_FREE(listenAddr);
                 }
             }
         }
