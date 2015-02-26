@@ -3495,10 +3495,7 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
-    testDriverLock(privconn);
     net = virNetworkObjFindByUUID(privconn->networks, uuid);
-    testDriverUnlock(privconn);
-
     if (net == NULL) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -3518,10 +3515,7 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
-    testDriverLock(privconn);
     net = virNetworkObjFindByName(privconn->networks, name);
-    testDriverUnlock(privconn);
-
     if (net == NULL) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -3540,11 +3534,8 @@ static int testConnectNumOfNetworks(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     int numActive;
 
-    testDriverLock(privconn);
     numActive = virNetworkObjListNumOfNetworks(privconn->networks,
                                                true, NULL, conn);
-    testDriverUnlock(privconn);
-
     return numActive;
 }
 
@@ -3552,11 +3543,8 @@ static int testConnectListNetworks(virConnectPtr conn, char **const names, int n
     testConnPtr privconn = conn->privateData;
     int n;
 
-    testDriverLock(privconn);
     n = virNetworkObjListGetNames(privconn->networks,
                                   true, names, nnames, NULL, conn);
-    testDriverUnlock(privconn);
-
     return n;
 }
 
@@ -3565,11 +3553,8 @@ static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     int numInactive;
 
-    testDriverLock(privconn);
     numInactive = virNetworkObjListNumOfNetworks(privconn->networks,
                                                  false, NULL, conn);
-    testDriverUnlock(privconn);
-
     return numInactive;
 }
 
@@ -3577,11 +3562,8 @@ static int testConnectListDefinedNetworks(virConnectPtr conn, char **const names
     testConnPtr privconn = conn->privateData;
     int n;
 
-    testDriverLock(privconn);
     n = virNetworkObjListGetNames(privconn->networks,
                                   false, names, nnames, NULL, conn);
-    testDriverUnlock(privconn);
-
     return n;
 }
 
@@ -3591,15 +3573,10 @@ testConnectListAllNetworks(virConnectPtr conn,
                            unsigned int flags)
 {
     testConnPtr privconn = conn->privateData;
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
-    testDriverLock(privconn);
-    ret = virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
-    testDriverUnlock(privconn);
-
-    return ret;
+    return virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
 }
 
 static int testNetworkIsActive(virNetworkPtr net)
@@ -3608,9 +3585,7 @@ static int testNetworkIsActive(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    testDriverLock(privconn);
     obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    testDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -3628,9 +3603,7 @@ static int testNetworkIsPersistent(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    testDriverLock(privconn);
     obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    testDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -3651,7 +3624,6 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkPtr ret = NULL;
     virObjectEventPtr event = NULL;
 
-    testDriverLock(privconn);
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
@@ -3671,7 +3643,6 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
     if (event)
         testObjectEventQueue(privconn, event);
     virNetworkObjEndAPI(&net);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3684,7 +3655,6 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     virNetworkPtr ret = NULL;
     virObjectEventPtr event = NULL;
 
-    testDriverLock(privconn);
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
@@ -3703,7 +3673,6 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     if (event)
         testObjectEventQueue(privconn, event);
     virNetworkObjEndAPI(&net);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3714,7 +3683,6 @@ static int testNetworkUndefine(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
 
     if (privnet == NULL) {
@@ -3739,7 +3707,6 @@ static int testNetworkUndefine(virNetworkPtr network)
     if (event)
         testObjectEventQueue(privconn, event);
     virNetworkObjEndAPI(&privnet);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3758,8 +3725,6 @@ testNetworkUpdate(virNetworkPtr net,
     virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
                   -1);
-
-    testDriverLock(privconn);
 
     network = virNetworkObjFindByUUID(privconn->networks, net->uuid);
     if (!network) {
@@ -3788,7 +3753,6 @@ testNetworkUpdate(virNetworkPtr net,
     ret = 0;
  cleanup:
     virNetworkObjEndAPI(&network);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3799,10 +3763,7 @@ static int testNetworkCreate(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    testDriverUnlock(privconn);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
@@ -3834,9 +3795,7 @@ static int testNetworkDestroy(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
@@ -3855,7 +3814,6 @@ static int testNetworkDestroy(virNetworkPtr network)
     if (event)
         testObjectEventQueue(privconn, event);
     virNetworkObjEndAPI(&privnet);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3868,10 +3826,7 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
 
     virCheckFlags(0, NULL);
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    testDriverUnlock(privconn);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
@@ -3889,10 +3844,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
     char *bridge = NULL;
     virNetworkObjPtr privnet;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    testDriverUnlock(privconn);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
@@ -3919,10 +3871,7 @@ static int testNetworkGetAutostart(virNetworkPtr network,
     virNetworkObjPtr privnet;
     int ret = -1;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    testDriverUnlock(privconn);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
@@ -3943,10 +3892,7 @@ static int testNetworkSetAutostart(virNetworkPtr network,
     virNetworkObjPtr privnet;
     int ret = -1;
 
-    testDriverLock(privconn);
     privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    testDriverUnlock(privconn);
-
     if (privnet == NULL) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
         goto cleanup;
