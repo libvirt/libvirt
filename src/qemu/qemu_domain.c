@@ -2819,6 +2819,13 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
         }
         return false;
     }
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        if (reportError) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+        }
+        return false;
+    }
     return true;
 }
 
