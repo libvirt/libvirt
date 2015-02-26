@@ -2172,7 +2172,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
         if (!(tmp = strchr(src->path, '/')) ||
             tmp == src->path) {
-            virReportError(VIR_ERR_XML_ERROR,
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("missing volume name or file name in "
                              "gluster source path '%s'"), src->path);
             goto cleanup;
