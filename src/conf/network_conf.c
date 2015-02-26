@@ -136,6 +136,7 @@ virNetworkObjEndAPI(virNetworkObjPtr *net)
         return;
 
     virObjectUnlock(*net);
+    virObjectUnref(*net);
     *net = NULL;
 }
 
@@ -157,6 +158,15 @@ virNetworkObjListPtr virNetworkObjListNew(void)
     return nets;
 }
 
+/**
+ * virNetworkObjFindByUUIDLocked:
+ * @nets: list of network objects
+ * @uuid: network uuid to find
+ *
+ * This functions requires @nets to be locked already!
+ *
+ * Returns: not locked, but ref'd network object.
+ */
 virNetworkObjPtr
 virNetworkObjFindByUUIDLocked(virNetworkObjListPtr nets,
                               const unsigned char *uuid)
@@ -168,10 +178,20 @@ virNetworkObjFindByUUIDLocked(virNetworkObjListPtr nets,
 
     ret = virHashLookup(nets->objs, uuidstr);
     if (ret)
-        virObjectLock(ret);
+        virObjectRef(ret);
     return ret;
 }
 
+/**
+ * virNetworkObjFindByUUID:
+ * @nets: list of network objects
+ * @uuid: network uuid to find
+ *
+ * This functions locks @nets and find network object which
+ * corresponds to @uuid.
+ *
+ * Returns: locked and ref'd network object.
+ */
 virNetworkObjPtr
 virNetworkObjFindByUUID(virNetworkObjListPtr nets,
                         const unsigned char *uuid)
@@ -181,6 +201,8 @@ virNetworkObjFindByUUID(virNetworkObjListPtr nets,
     virObjectLock(nets);
     ret = virNetworkObjFindByUUIDLocked(nets, uuid);
     virObjectUnlock(nets);
+    if (ret)
+        virObjectLock(ret);
     return ret;
 }
 
@@ -199,6 +221,15 @@ virNetworkObjSearchName(const void *payload,
     return want;
 }
 
+/*
+ * virNetworkObjFindByNameLocked:
+ * @nets: list of network objects
+ * @name: network name to find
+ *
+ * This functions requires @nets to be locked already!
+ *
+ * Returns: not locked, but ref'd network object.
+ */
 virNetworkObjPtr
 virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
                               const char *name)
@@ -207,10 +238,20 @@ virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
 
     ret = virHashSearch(nets->objs, virNetworkObjSearchName, name);
     if (ret)
-        virObjectLock(ret);
+        virObjectRef(ret);
     return ret;
 }
 
+/**
+ * virNetworkObjFindByName:
+ * @nets: list of network objects
+ * @name: network name to find
+ *
+ * This functions locks @nets and find network object which
+ * corresponds to @name.
+ *
+ * Returns: locked and ref'd network object.
+ */
 virNetworkObjPtr
 virNetworkObjFindByName(virNetworkObjListPtr nets,
                         const char *name)
@@ -220,6 +261,8 @@ virNetworkObjFindByName(virNetworkObjListPtr nets,
     virObjectLock(nets);
     ret = virNetworkObjFindByNameLocked(nets, name);
     virObjectUnlock(nets);
+    if (ret)
+        virObjectLock(ret);
     return ret;
 }
 
@@ -484,6 +527,7 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     virObjectLock(nets);
     if ((network = virNetworkObjFindByNameLocked(nets, def->name))) {
         virObjectUnlock(nets);
+        virObjectLock(network);
         virNetworkObjAssignDef(network, def, live);
         return network;
     }
@@ -500,13 +544,13 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
 
     network->def = def;
     network->persistent = !live;
+    virObjectRef(network);
     virObjectUnlock(nets);
     return network;
 
  error:
     virObjectUnlock(nets);
-    virObjectUnlock(network);
-    virObjectUnref(network);
+    virNetworkObjEndAPI(&network);
     return NULL;
 
 }
@@ -680,7 +724,6 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
     virObjectLock(nets);
     virObjectLock(net);
     virHashRemoveEntry(nets->objs, uuidstr);
-    virObjectUnlock(net);
     virObjectUnlock(nets);
     virObjectUnref(net);
 }

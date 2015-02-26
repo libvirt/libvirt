@@ -2939,7 +2939,6 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     if (networkStartNetwork(network) < 0) {
         virNetworkRemoveInactive(driver->networks,
                                  network);
-        network = NULL;
         goto cleanup;
     }
 
@@ -2988,7 +2987,6 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
         if (!virNetworkObjIsActive(network)) {
             virNetworkRemoveInactive(driver->networks, network);
-            network = NULL;
             goto cleanup;
         }
         /* if network was active already, just undo new persistent
@@ -3052,11 +3050,8 @@ networkUndefine(virNetworkPtr net)
 
     VIR_INFO("Undefining network '%s'", network->def->name);
     if (!active) {
-        if (networkRemoveInactive(network) < 0) {
-            network = NULL;
+        if (networkRemoveInactive(network) < 0)
             goto cleanup;
-        }
-        network = NULL;
     } else {
 
         /* if the network still exists, it was active, and we need to make
@@ -3313,13 +3308,10 @@ static int networkDestroy(virNetworkPtr net)
                                         VIR_NETWORK_EVENT_STOPPED,
                                         0);
 
-    if (!network->persistent) {
-        if (networkRemoveInactive(network) < 0) {
-            network = NULL;
-            ret = -1;
-            goto cleanup;
-        }
-        network = NULL;
+    if (!network->persistent &&
+        networkRemoveInactive(network) < 0) {
+        ret = -1;
+        goto cleanup;
     }
 
  cleanup:
