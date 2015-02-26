@@ -531,7 +531,8 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         source = virXPathString("string(./source/@file"
                                 "|./source/@dev"
                                 "|./source/@dir"
-                                "|./source/@name)", ctxt);
+                                "|./source/@name"
+                                "|./source/@volume)", ctxt);
         if (details) {
             vshPrint(ctl, "%-10s %-10s %-10s %s\n", type, device,
                      target, source ? source : "-");
