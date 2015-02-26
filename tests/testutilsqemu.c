@@ -86,6 +86,33 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
     return -1;
 }
 
+static int testQemuAddPPC64LEGuest(virCapsPtr caps)
+{
+    static const char *machine[] = { "pseries" };
+    virCapsGuestMachinePtr *machines = NULL;
+    virCapsGuestPtr guest;
+
+    machines = virCapabilitiesAllocMachines(machine, 1);
+    if (!machines)
+        goto error;
+
+    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC64LE,
+                                    "/usr/bin/qemu-system-ppc64", NULL,
+                                     1, machines);
+    if (!guest)
+        goto error;
+
+    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+        goto error;
+
+    return 0;
+
+ error:
+    /* No way to free a guest? */
+    virCapabilitiesFreeMachines(machines, 1);
+    return -1;
+}
+
 static int testQemuAddPPCGuest(virCapsPtr caps)
 {
     static const char *machine[] = { "g3beige",
@@ -326,6 +353,9 @@ virCapsPtr testQemuCapsInit(void)
         goto cleanup;
 
     if (testQemuAddPPC64Guest(caps))
+        goto cleanup;
+
+    if (testQemuAddPPC64LEGuest(caps))
         goto cleanup;
 
     if (testQemuAddPPCGuest(caps))
