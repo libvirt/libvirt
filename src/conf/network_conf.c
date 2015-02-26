@@ -481,13 +481,17 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
     virNetworkObjPtr network;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if ((network = virNetworkObjFindByName(nets, def->name))) {
+    virObjectLock(nets);
+    if ((network = virNetworkObjFindByNameLocked(nets, def->name))) {
+        virObjectUnlock(nets);
         virNetworkObjAssignDef(network, def, live);
         return network;
     }
 
-    if (!(network = virNetworkObjNew()))
+    if (!(network = virNetworkObjNew())) {
+        virObjectUnlock(nets);
         return NULL;
+    }
     virObjectLock(network);
 
     virUUIDFormat(def->uuid, uuidstr);
@@ -496,9 +500,11 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
 
     network->def = def;
     network->persistent = !live;
+    virObjectUnlock(nets);
     return network;
 
  error:
+    virObjectUnlock(nets);
     virObjectUnlock(network);
     virObjectUnref(network);
     return NULL;
@@ -669,8 +675,14 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(net->def->uuid, uuidstr);
+    virObjectRef(net);
     virObjectUnlock(net);
+    virObjectLock(nets);
+    virObjectLock(net);
     virHashRemoveEntry(nets->objs, uuidstr);
+    virObjectUnlock(net);
+    virObjectUnlock(nets);
+    virObjectUnref(net);
 }
 
 /* return ips[index], or NULL if there aren't enough ips */
@@ -3189,7 +3201,9 @@ int virNetworkBridgeInUse(virNetworkObjListPtr nets,
     virNetworkObjPtr obj;
     struct virNetworkBridgeInUseHelperData data = {bridge, skipname};
 
+    virObjectLock(nets);
     obj = virHashSearch(nets->objs, virNetworkBridgeInUseHelper, &data);
+    virObjectUnlock(nets);
 
     return obj != NULL;
 }
@@ -4389,6 +4403,7 @@ virNetworkObjListExport(virConnectPtr conn,
     int ret = -1;
     struct virNetworkObjListData data = { conn, NULL, filter, flags, 0, false};
 
+    virObjectLock(netobjs);
     if (nets && VIR_ALLOC_N(data.nets, virHashSize(netobjs->objs) + 1) < 0)
         goto cleanup;
 
@@ -4406,6 +4421,7 @@ virNetworkObjListExport(virConnectPtr conn,
 
     ret = data.nnets;
  cleanup:
+    virObjectUnlock(netobjs);
     while (data.nets && data.nnets)
         virObjectUnref(data.nets[--data.nnets]);
 
@@ -4437,7 +4453,9 @@ virNetworkObjListForEachHelper(void *payload,
  * @opaque: pointer to pass to the @callback
  *
  * Function iterates over the list of network objects and calls
- * passed callback over each one of them.
+ * passed callback over each one of them. You should avoid
+ * calling those virNetworkObjList APIs, which lock the list
+ * again in favor of their virNetworkObj*Locked variants.
  *
  * Returns: 0 on success, -1 otherwise.
  */
@@ -4447,7 +4465,9 @@ virNetworkObjListForEach(virNetworkObjListPtr nets,
                          void *opaque)
 {
     struct virNetworkObjListForEachHelperData data = {callback, opaque, 0};
+    virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListForEachHelper, &data);
+    virObjectUnlock(nets);
     return data.ret;
 }
 
@@ -4509,7 +4529,9 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
     struct virNetworkObjListGetHelperData data = {
         conn, filter, names, nnames, active, 0, false};
 
+    virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
+    virObjectUnlock(nets);
 
     if (data.error)
         goto cleanup;
@@ -4532,7 +4554,9 @@ virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
     struct virNetworkObjListGetHelperData data = {
         conn, filter, NULL, -1, active, 0, false};
 
+    virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
+    virObjectUnlock(nets);
 
     return data.got;
 }
@@ -4570,5 +4594,7 @@ virNetworkObjListPrune(virNetworkObjListPtr nets,
 {
     struct virNetworkObjListPruneHelperData data = {flags};
 
+    virObjectLock(nets);
     virHashRemoveSet(nets->objs, virNetworkObjListPruneHelper, &data);
+    virObjectUnlock(nets);
 }
