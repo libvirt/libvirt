@@ -1926,6 +1926,13 @@ For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 For Xen, you can only adjust the memory of a running domain if the domain is
 paravirtualized or running the PV balloon driver.
 
+For LXC, the value being set is the cgroups value for limit_in_bytes or the
+maximum amount of user memory (including file cache). When viewing memory
+inside the container, this is the /proc/meminfo "MemTotal" value. When viewing
+the value from the host, use the B<virsh memtune> command. In order to view
+the current memory in use and the maximum value allowed to set memory, use
+the B<virsh dominfo> command.
+
 =item B<setmaxmem> I<domain> B<size> [[I<--config>] [I<--live>] |
 [I<--current>]]
 
@@ -1976,6 +1983,9 @@ For QEMU/KVM, the parameters are applied to the QEMU process as a whole.
 Thus, when counting them, one needs to add up guest RAM, guest video RAM, and
 some memory overhead of QEMU itself.  The last piece is hard to determine so
 one needs guess and try.
+
+For LXC, the displayed hard_limit value is the current memory setting
+from the XML or the results from a B<virsh setmem> command.
 
 =over 4
 
