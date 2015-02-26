@@ -737,6 +737,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
                              "must be specified for static host definition "
                              "in network '%s' "),
                            networkName);
+            goto cleanup;
         }
     } else {
         /* normal usage - you need at least name (IPv6) or one of MAC
