@@ -708,6 +708,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid character '%c' in id '%s' of network '%s'"),
                            *cp, id, networkName);
+            goto cleanup;
         }
     }
 
