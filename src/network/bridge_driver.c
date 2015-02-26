@@ -110,7 +110,9 @@ static dnsmasqCapsPtr
 networkGetDnsmasqCaps(virNetworkDriverStatePtr driver)
 {
     dnsmasqCapsPtr ret;
+    networkDriverLock(driver);
     ret = virObjectRef(driver->dnsmasqCaps);
+    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -122,8 +124,10 @@ networkDnsmasqCapsRefresh(virNetworkDriverStatePtr driver)
     if (!(caps = dnsmasqCapsNewFromBinary(DNSMASQ)))
         return -1;
 
+    networkDriverLock(driver);
     virObjectUnref(driver->dnsmasqCaps);
     driver->dnsmasqCaps = caps;
+    networkDriverUnlock(driver);
     return 0;
 }
 
@@ -163,9 +167,7 @@ networkObjFromNetwork(virNetworkPtr net)
     virNetworkObjPtr network;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-    networkDriverUnlock(driver);
 
     if (!network) {
         virUUIDFormat(net->uuid, uuidstr);
@@ -676,6 +678,7 @@ networkStateInitialize(bool privileged,
                                  network_driver->networkAutostartDir) < 0)
         goto error;
 
+    networkDriverUnlock(network_driver);
 
     /* Update the internal status of all allegedly active
      * networks according to external conditions on the host
@@ -691,8 +694,6 @@ networkStateInitialize(bool privileged,
     networkRefreshDaemons(network_driver);
 
     network_driver->networkEventState = virObjectEventStateNew();
-
-    networkDriverUnlock(network_driver);
 
 #ifdef HAVE_FIREWALLD
     if (!(sysbus = virDBusGetSystemBus())) {
@@ -744,11 +745,9 @@ networkStateAutoStart(void)
     if (!network_driver)
         return;
 
-    networkDriverLock(network_driver);
     virNetworkObjListForEach(network_driver->networks,
                              networkAutostartConfig,
                              network_driver);
-    networkDriverUnlock(network_driver);
 }
 
 /**
@@ -763,7 +762,6 @@ networkStateReload(void)
     if (!network_driver)
         return 0;
 
-    networkDriverLock(network_driver);
     virNetworkLoadAllState(network_driver->networks,
                            network_driver->stateDir);
     virNetworkLoadAllConfigs(network_driver->networks,
@@ -774,7 +772,6 @@ networkStateReload(void)
     virNetworkObjListForEach(network_driver->networks,
                              networkAutostartConfig,
                              NULL);
-    networkDriverUnlock(network_driver);
     return 0;
 }
 
@@ -790,8 +787,6 @@ networkStateCleanup(void)
     if (!network_driver)
         return -1;
 
-    networkDriverLock(network_driver);
-
     virObjectEventStateFree(network_driver->networkEventState);
 
     /* free inactive networks */
@@ -806,7 +801,6 @@ networkStateCleanup(void)
 
     virObjectUnref(network_driver->dnsmasqCaps);
 
-    networkDriverUnlock(network_driver);
     virMutexDestroy(&network_driver->lock);
 
     VIR_FREE(network_driver);
@@ -2545,9 +2539,7 @@ static virNetworkPtr networkLookupByUUID(virConnectPtr conn,
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByUUID(driver->networks, uuid);
-    networkDriverUnlock(driver);
     if (!network) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
@@ -2574,9 +2566,7 @@ static virNetworkPtr networkLookupByName(virConnectPtr conn,
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByName(driver->networks, name);
-    networkDriverUnlock(driver);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"), name);
@@ -2601,12 +2591,10 @@ static int networkConnectNumOfNetworks(virConnectPtr conn)
     if (virConnectNumOfNetworksEnsureACL(conn) < 0)
         return -1;
 
-    networkDriverLock(driver);
     nactive = virNetworkObjListNumOfNetworks(driver->networks,
                                              true,
                                              virConnectNumOfNetworksCheckACL,
                                              conn);
-    networkDriverUnlock(driver);
 
     return nactive;
 }
@@ -2621,12 +2609,10 @@ static int networkConnectListNetworks(virConnectPtr conn,
     if (virConnectListNetworksEnsureACL(conn) < 0)
         return -1;
 
-    networkDriverLock(driver);
     got = virNetworkObjListGetNames(driver->networks,
                                     true, names, nnames,
                                     virConnectListNetworksCheckACL,
                                     conn);
-    networkDriverUnlock(driver);
 
     return got;
 }
@@ -2639,12 +2625,10 @@ static int networkConnectNumOfDefinedNetworks(virConnectPtr conn)
     if (virConnectNumOfDefinedNetworksEnsureACL(conn) < 0)
         return -1;
 
-    networkDriverLock(driver);
     ninactive = virNetworkObjListNumOfNetworks(driver->networks,
                                                false,
                                                virConnectNumOfDefinedNetworksCheckACL,
                                                conn);
-    networkDriverUnlock(driver);
 
     return ninactive;
 }
@@ -2657,12 +2641,10 @@ static int networkConnectListDefinedNetworks(virConnectPtr conn, char **const na
     if (virConnectListDefinedNetworksEnsureACL(conn) < 0)
         return -1;
 
-    networkDriverLock(driver);
     got = virNetworkObjListGetNames(driver->networks,
                                     false, names, nnames,
                                     virConnectListDefinedNetworksCheckACL,
                                     conn);
-    networkDriverUnlock(driver);
     return got;
 }
 
@@ -2679,11 +2661,9 @@ networkConnectListAllNetworks(virConnectPtr conn,
     if (virConnectListAllNetworksEnsureACL(conn) < 0)
         goto cleanup;
 
-    networkDriverLock(driver);
     ret = virNetworkObjListExport(conn, driver->networks, nets,
                                   virConnectListAllNetworksCheckACL,
                                   flags);
-    networkDriverUnlock(driver);
 
  cleanup:
     return ret;
@@ -2998,8 +2978,6 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkPtr ret = NULL;
     virObjectEventPtr event = NULL;
 
-    networkDriverLock(driver);
-
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
 
@@ -3036,7 +3014,6 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3048,8 +3025,6 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     virNetworkObjPtr network = NULL;
     virNetworkPtr ret = NULL;
     virObjectEventPtr event = NULL;
-
-    networkDriverLock(driver);
 
     if (!(def = virNetworkDefParseString(xml)))
         goto cleanup;
@@ -3092,7 +3067,6 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     if (freeDef)
         virNetworkDefFree(def);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3104,8 +3078,6 @@ networkUndefine(virNetworkPtr net)
     int ret = -1;
     bool active = false;
     virObjectEventPtr event = NULL;
-
-    networkDriverLock(driver);
 
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
     if (!network) {
@@ -3149,7 +3121,6 @@ networkUndefine(virNetworkPtr net)
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3173,8 +3144,6 @@ networkUpdate(virNetworkPtr net,
     virCheckFlags(VIR_NETWORK_UPDATE_AFFECT_LIVE |
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
                   -1);
-
-    networkDriverLock(driver);
 
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
     if (!network) {
@@ -3321,7 +3290,6 @@ networkUpdate(virNetworkPtr net,
     ret = 0;
  cleanup:
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3332,7 +3300,6 @@ static int networkCreate(virNetworkPtr net)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
@@ -3356,7 +3323,6 @@ static int networkCreate(virNetworkPtr net)
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3367,7 +3333,6 @@ static int networkDestroy(virNetworkPtr net)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
@@ -3404,7 +3369,6 @@ static int networkDestroy(virNetworkPtr net)
     if (event)
         virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3487,7 +3451,6 @@ static int networkSetAutostart(virNetworkPtr net,
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
     if (!network) {
@@ -3544,7 +3507,6 @@ static int networkSetAutostart(virNetworkPtr net,
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
     virNetworkObjEndAPI(&network);
-    networkDriverUnlock(driver);
     return ret;
 }
 
@@ -3817,9 +3779,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
     virDomainActualNetDefFree(iface->data.network.actual);
     iface->data.network.actual = NULL;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
-    networkDriverUnlock(driver);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
@@ -4226,9 +4186,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return 0;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
-    networkDriverUnlock(driver);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
@@ -4426,9 +4384,7 @@ networkReleaseActualDevice(virDomainDefPtr dom,
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return 0;
 
-    networkDriverLock(driver);
     network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
-    networkDriverUnlock(driver);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
@@ -4585,9 +4541,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     char *dev_name = NULL;
 
     *netaddr = NULL;
-    networkDriverLock(driver);
     network = virNetworkObjFindByName(driver->networks, netname);
-    networkDriverUnlock(driver);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"),
