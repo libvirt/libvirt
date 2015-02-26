@@ -349,9 +349,7 @@ int parallelsNetworkClose(virConnectPtr conn)
     if (!privconn)
         return 0;
 
-    parallelsDriverLock(privconn);
     virObjectUnref(privconn->networks);
-    parallelsDriverUnlock(privconn);
     return 0;
 }
 
@@ -360,11 +358,8 @@ static int parallelsConnectNumOfNetworks(virConnectPtr conn)
     int nactive;
     parallelsConnPtr privconn = conn->privateData;
 
-    parallelsDriverLock(privconn);
     nactive = virNetworkObjListNumOfNetworks(privconn->networks,
                                              true, NULL, conn);
-    parallelsDriverUnlock(privconn);
-
     return nactive;
 }
 
@@ -375,11 +370,8 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
     parallelsConnPtr privconn = conn->privateData;
     int got;
 
-    parallelsDriverLock(privconn);
     got = virNetworkObjListGetNames(privconn->networks,
                                     true, names, nnames, NULL, conn);
-    parallelsDriverUnlock(privconn);
-
     return got;
 }
 
@@ -388,11 +380,8 @@ static int parallelsConnectNumOfDefinedNetworks(virConnectPtr conn)
     int ninactive;
     parallelsConnPtr privconn = conn->privateData;
 
-    parallelsDriverLock(privconn);
     ninactive = virNetworkObjListNumOfNetworks(privconn->networks,
                                                false, NULL, conn);
-    parallelsDriverUnlock(privconn);
-
     return ninactive;
 }
 
@@ -403,10 +392,8 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
     parallelsConnPtr privconn = conn->privateData;
     int got;
 
-    parallelsDriverLock(privconn);
     got = virNetworkObjListGetNames(privconn->networks,
                                     false, names, nnames, NULL, conn);
-    parallelsDriverUnlock(privconn);
     return got;
 }
 
@@ -415,15 +402,10 @@ static int parallelsConnectListAllNetworks(virConnectPtr conn,
                                            unsigned int flags)
 {
     parallelsConnPtr privconn = conn->privateData;
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
-    parallelsDriverLock(privconn);
-    ret = virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
-    parallelsDriverUnlock(privconn);
-
-    return ret;
+    return virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
 }
 
 static virNetworkPtr parallelsNetworkLookupByUUID(virConnectPtr conn,
@@ -433,9 +415,7 @@ static virNetworkPtr parallelsNetworkLookupByUUID(virConnectPtr conn,
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
-    parallelsDriverLock(privconn);
     network = virNetworkObjFindByUUID(privconn->networks, uuid);
-    parallelsDriverUnlock(privconn);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
@@ -456,9 +436,7 @@ static virNetworkPtr parallelsNetworkLookupByName(virConnectPtr conn,
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
-    parallelsDriverLock(privconn);
     network = virNetworkObjFindByName(privconn->networks, name);
-    parallelsDriverUnlock(privconn);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        _("no network with matching name '%s'"), name);
@@ -481,10 +459,7 @@ static char *parallelsNetworkGetXMLDesc(virNetworkPtr net,
 
     virCheckFlags(VIR_NETWORK_XML_INACTIVE, NULL);
 
-    parallelsDriverLock(privconn);
     network = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    parallelsDriverUnlock(privconn);
-
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
@@ -504,9 +479,7 @@ static int parallelsNetworkIsActive(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    parallelsDriverLock(privconn);
     obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    parallelsDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -524,9 +497,7 @@ static int parallelsNetworkIsPersistent(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    parallelsDriverLock(privconn);
     obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    parallelsDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_NETWORK, NULL);
         goto cleanup;
@@ -545,9 +516,7 @@ static int parallelsNetworkGetAutostart(virNetworkPtr net,
     virNetworkObjPtr network;
     int ret = -1;
 
-    parallelsDriverLock(privconn);
     network = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    parallelsDriverUnlock(privconn);
     if (!network) {
         virReportError(VIR_ERR_NO_NETWORK,
                        "%s", _("no network with matching uuid"));
