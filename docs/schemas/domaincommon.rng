@@ -412,13 +412,18 @@
     <group>
       <optional>
         <attribute name="arch">
-          <value>ppc64</value>
+          <choice>
+            <value>ppc64</value>
+            <value>ppc64le</value>
+          </choice>
         </attribute>
       </optional>
       <optional>
         <attribute name="machine">
           <choice>
             <value>pseries</value>
+            <value>pseries-2.1</value>
+            <value>pseries-2.2</value>
           </choice>
         </attribute>
       </optional>
