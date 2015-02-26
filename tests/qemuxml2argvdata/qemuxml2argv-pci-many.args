@@ -6,10 +6,10 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -drive file=/var/lib/libvirt/images/test.img,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0 \
--drive file=/var/lib/libvirt/images/test1.img,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,id=virtio-disk0 \
--drive file=/var/lib/libvirt/images/disk-a-a.img,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,id=virtio-disk0 \
+-drive file=/var/lib/libvirt/images/test1.img,if=none,id=drive-virtio-disk1 \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 \
+-drive file=/var/lib/libvirt/images/disk-a-a.img,if=none,id=drive-virtio-disk26 \
+-device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk26,id=virtio-disk26 \
 -drive file=/var/lib/libvirt/images/disk-a-b.img,if=none,id=drive-virtio-disk27 \
 -device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk27,id=virtio-disk27 \
 -drive file=/var/lib/libvirt/images/disk-a-c.img,if=none,id=drive-virtio-disk28 \

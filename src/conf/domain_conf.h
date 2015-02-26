@@ -2574,6 +2574,7 @@ int virDomainEmulatorPinDel(virDomainDefPtr def);
 
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
+bool virDomainDiskDefDstDuplicates(virDomainDefPtr def);
 int virDomainDiskIndexByAddress(virDomainDefPtr def,
                                 virDevicePCIAddressPtr pci_controller,
                                 unsigned int bus, unsigned int target,

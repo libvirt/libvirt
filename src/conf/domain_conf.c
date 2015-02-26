@@ -11680,6 +11680,33 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
     return false;
 }
 
+/* Return true if there's a duplicate disk[]->dst name for the same bus */
+bool
+virDomainDiskDefDstDuplicates(virDomainDefPtr def)
+{
+    size_t i, j;
+
+    /* optimization */
+    if (def->ndisks <= 1)
+        return false;
+
+    for (i = 1; i < def->ndisks; i++) {
+        for (j = 0; j < i; j++) {
+            if (def->disks[i]->bus == def->disks[j]->bus &&
+                STREQ(def->disks[i]->dst, def->disks[j]->dst)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("target '%s' duplicated for disk sources "
+                                 "'%s' and '%s'"),
+                               def->disks[i]->dst,
+                               NULLSTR(virDomainDiskGetSource(def->disks[i])),
+                               NULLSTR(virDomainDiskGetSource(def->disks[j])));
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 int
 virDomainDiskIndexByAddress(virDomainDefPtr def,
                             virDevicePCIAddressPtr pci_address,

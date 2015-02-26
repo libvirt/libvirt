@@ -21,7 +21,7 @@
     </disk>
     <disk type='block' device='lun'>
       <source dev='/dev/HostVG/QEMUGuest2'/>
-      <target dev='hda' bus='scsi'/>
+      <target dev='hdb' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='1' unit='1'/>
     </disk>
     <controller type='scsi' index='0' model='virtio-scsi'/>

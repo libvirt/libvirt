@@ -29,7 +29,7 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='/var/lib/libvirt/images/disk-a-a.img'/>
-      <target dev='vda' bus='virtio'/>
+      <target dev='vdaa' bus='virtio'/>
     </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>

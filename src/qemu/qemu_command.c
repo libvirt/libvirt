@@ -3882,6 +3882,9 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     int controllerModel;
 
+    if (virDomainDiskDefDstDuplicates(def))
+        goto error;
+
     if (qemuCheckDiskConfig(disk) < 0)
         goto error;
 
