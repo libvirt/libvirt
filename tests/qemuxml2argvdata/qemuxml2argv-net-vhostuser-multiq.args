@@ -1,0 +1,16 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 \
+-chardev socket,id=charnet0,path=/tmp/vhost0.sock,server \
+-netdev type=vhost-user,id=hostnet0,chardev=charnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:ee:96:6b,bus=pci.0,addr=0x3 \
+-chardev socket,id=charnet1,path=/tmp/vhost1.sock \
+-netdev type=vhost-user,id=hostnet1,chardev=charnet1 \
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:ee:96:6c,bus=pci.0,addr=0x4 \
+-netdev socket,listen=:2015,id=hostnet2 \
+-device rtl8139,netdev=hostnet2,id=net2,mac=52:54:00:95:db:c0,bus=pci.0,addr=0x5 \
+-chardev socket,id=charnet3,path=/tmp/vhost2.sock \
+-netdev type=vhost-user,id=hostnet3,chardev=charnet3,queues=4 \
+-device virtio-net-pci,mq=on,vectors=10,netdev=hostnet3,id=net3,mac=52:54:00:ee:96:6d,\
+bus=pci.0,addr=0x6

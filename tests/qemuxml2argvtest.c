@@ -980,6 +980,9 @@ mymain(void)
     DO_TEST("misc-uuid", QEMU_CAPS_NAME, QEMU_CAPS_UUID);
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV);
+    DO_TEST("net-vhostuser-multiq",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV, QEMU_CAPS_VHOSTUSER_MULTIQ);
+    DO_TEST_FAILURE("net-vhostuser-multiq", QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV);
     DO_TEST("net-user", NONE);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device",

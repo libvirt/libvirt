@@ -8102,6 +8102,7 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
 {
     virBuffer chardev_buf = VIR_BUFFER_INITIALIZER;
     virBuffer netdev_buf = VIR_BUFFER_INITIALIZER;
+    unsigned int queues = net->driver.virtio.queues;
     char *nic = NULL;
 
     if (!qemuDomainSupportsNetdev(def, qemuCaps, net)) {
@@ -8139,13 +8140,24 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
     virBufferAsprintf(&netdev_buf, "type=vhost-user,id=host%s,chardev=char%s",
                       net->info.alias, net->info.alias);
 
+    if (queues > 1) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQ)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("multi-queue is not supported for vhost-user "
+                             "with this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&netdev_buf, ",queues=%u", queues);
+    }
+
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArgBuffer(cmd, &chardev_buf);
 
     virCommandAddArg(cmd, "-netdev");
     virCommandAddArgBuffer(cmd, &netdev_buf);
 
-    if (!(nic = qemuBuildNicDevStr(def, net, -1, bootindex, 0, qemuCaps))) {
+    if (!(nic = qemuBuildNicDevStr(def, net, -1, bootindex,
+                                   queues, qemuCaps))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Error generating NIC -device string"));
         goto error;

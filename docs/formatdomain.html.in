@@ -4254,13 +4254,16 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
       <dt><code>queues</code></dt>
       <dd>
-        The optional <code>queues</code> attribute controls the number of
-        queues to be used for the<a href="http://www.linux-kvm.org/page/Multiqueue">
-        Multiqueue virtio-net</a> feature. If the interface has <code>&lt;model
-        type='virtio'/&gt;</code>, multiple packet processing queues can be
-        created; each queue will potentially be handled by a different
+        The optional <code>queues</code> attribute controls the number
+        of queues to be used for either
+        <a href="http://www.linux-kvm.org/page/Multiqueue"> Multiqueue
+        virtio-net</a> or <a href="#elementVhostuser">vhost-user</a> network
+        interfaces.  Use of multiple packet processing queues requires the
+        interface having the <code>&lt;model type='virtio'/&gt;</code>
+        element.  Each queue will potentially be handled by a different
         processor, resulting in much higher throughput.
-        <span class="since">Since 1.0.6 (QEMU and KVM only)</span>
+        <span class="since">virtio-net since 1.0.6 (QEMU and KVM only)</span>
+        <span class="since">vhost-user since 1.2.17 (QEMU and KVM only)</span>
       </dd>
       <dt><code>host</code> offloading options</dt>
       <dd>
@@ -4581,8 +4584,14 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;interface type='vhostuser'&gt;
       &lt;mac address='52:54:00:3b:83:1a'/&gt;
-      &lt;source type='unix' path='/tmp/vhost.sock' mode='server'/&gt;
+      &lt;source type='unix' path='/tmp/vhost1.sock' mode='server'/&gt;
       &lt;model type='virtio'/&gt;
+    &lt;/interface&gt;
+    &lt;interface type='vhostuser'&gt;
+      &lt;mac address='52:54:00:3b:83:1b'/&gt;
+      &lt;source type='unix' path='/tmp/vhost2.sock' mode='client'/&gt;
+      &lt;model type='virtio'/&gt;
+      &lt;driver queues='5'/&gt;
     &lt;/interface&gt;
   &lt;/devices&gt;
   ...</pre>
