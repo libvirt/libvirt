@@ -18840,13 +18840,21 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 static int virDomainPanicDefFormat(virBufferPtr buf,
                                    virDomainPanicDefPtr def)
 {
-    virBufferAddLit(buf, "<panic>\n");
-    virBufferAdjustIndent(buf, 2);
-    if (virDomainDeviceInfoFormat(buf, &def->info, 0) < 0)
-        return -1;
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</panic>\n");
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int indent = virBufferGetIndent(buf, false);
 
+    virBufferAddLit(buf, "<panic");
+    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
+        return -1;
+    if (virBufferUse(&childrenBuf)) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childrenBuf);
+        virBufferAddLit(buf, "</panic>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+    virBufferFreeAndReset(&childrenBuf);
     return 0;
 }
 

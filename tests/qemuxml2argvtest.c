@@ -1522,6 +1522,9 @@ mymain(void)
     DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
 
+    DO_TEST("panic-no-address", QEMU_CAPS_DEVICE_PANIC,
+            QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
+
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
     DO_TEST("shmem", QEMU_CAPS_PCIDEVICE,

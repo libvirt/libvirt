@@ -401,6 +401,7 @@ mymain(void)
     DO_TEST("pcihole64-q35");
 
     DO_TEST("panic");
+    DO_TEST("panic-no-address");
 
     DO_TEST_DIFFERENT("disk-backing-chains");
 
