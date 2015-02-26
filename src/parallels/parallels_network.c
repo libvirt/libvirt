@@ -344,6 +344,10 @@ parallelsNetworkOpen(virConnectPtr conn,
 int parallelsNetworkClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
+
+    if (!privconn)
+        return 0;
+
     parallelsDriverLock(privconn);
     virNetworkObjListFree(privconn->networks);
     VIR_FREE(privconn->networks);

@@ -72,8 +72,14 @@ parallelsStorageClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
 
+    if (!privconn)
+        return 0;
+
     virStorageDriverStatePtr storageState = privconn->storageState;
     privconn->storageState = NULL;
+
+    if (!storageState)
+        return 0;
 
     parallelsStorageLock(storageState);
     virStoragePoolObjListFree(&privconn->pools);

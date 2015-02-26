@@ -264,8 +264,10 @@ parallelsConnectOpen(virConnectPtr conn,
 
     if ((ret = parallelsOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS ||
         (ret = parallelsStorageOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS ||
-        (ret = parallelsNetworkOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS)
+        (ret = parallelsNetworkOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS) {
+        parallelsConnectClose(conn);
         return ret;
+    }
 
     return VIR_DRV_OPEN_SUCCESS;
 }
@@ -274,6 +276,9 @@ static int
 parallelsConnectClose(virConnectPtr conn)
 {
     parallelsConnPtr privconn = conn->privateData;
+
+    if (!privconn)
+        return 0;
 
     parallelsNetworkClose(conn);
     parallelsStorageClose(conn);
