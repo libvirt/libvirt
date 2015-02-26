@@ -5378,6 +5378,11 @@ qemu-kvm -net nic,model=? /dev/null
       under a channel name specified in the <code>channel</code>
       attribute.  <span class="since">Since 1.2.2</span>
     </p>
+    <p>
+      Note: depending on the hypervisor, spiceports might (or might not)
+      be enabled on domains with or without <a href="#elementsGraphics">spice
+      graphics</a>.
+    </p>
 
 <pre>
   ...
