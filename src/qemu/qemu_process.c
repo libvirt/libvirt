@@ -4019,10 +4019,11 @@ qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
     return 0;
 }
 
-static int
+int
 qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                               virQEMUDriverConfigPtr cfg,
-                              virDomainGraphicsDefPtr graphics)
+                              virDomainGraphicsDefPtr graphics,
+                              bool allocate)
 {
     unsigned short port = 0;
     unsigned short tlsPort;
@@ -4063,6 +4064,16 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                 break;
             }
         }
+    }
+
+    if (!allocate) {
+        if (needPort || graphics->data.spice.port == -1)
+            graphics->data.spice.port = 5901;
+
+        if (needTLSPort || graphics->data.spice.tlsPort == -1)
+            graphics->data.spice.tlsPort = 5902;
+
+        return 0;
     }
 
     if (needPort || graphics->data.spice.port == -1) {
@@ -4573,7 +4584,7 @@ int qemuProcessStart(virConnectPtr conn,
             if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
                 goto cleanup;
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics) < 0)
+            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
                 goto cleanup;
         }
 

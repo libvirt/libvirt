@@ -107,4 +107,9 @@ int qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar);
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParamPtr sp);
 
+int qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
+                                  virQEMUDriverConfigPtr cfg,
+                                  virDomainGraphicsDefPtr graphics,
+                                  bool allocate);
+
 #endif /* __QEMU_PROCESS_H__ */
