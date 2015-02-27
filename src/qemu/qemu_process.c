@@ -4046,23 +4046,24 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                 break;
 
             case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-                switch (defaultMode) {
-                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-                    needTLSPort = true;
-                    break;
-
-                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-                    needPort = true;
-                    break;
-
-                case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-                    if (cfg->spiceTLS)
-                        needTLSPort = true;
-                    needPort = true;
-                    break;
-                }
+                /* default mode will be used */
                 break;
             }
+        }
+        switch (defaultMode) {
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+            needTLSPort = true;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+            needPort = true;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+            if (cfg->spiceTLS)
+                needTLSPort = true;
+            needPort = true;
+            break;
         }
     }
 
