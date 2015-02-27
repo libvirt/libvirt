@@ -395,7 +395,7 @@ bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                     virDomainDefPtr src,
                                     virDomainDefPtr dst);
 
-bool qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
+bool qemuDomainAgentAvailable(virDomainObjPtr vm,
                               bool reportError);
 
 int qemuDomainJobInfoUpdateTime(qemuDomainJobInfoPtr jobInfo)

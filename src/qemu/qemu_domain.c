@@ -2799,9 +2799,11 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 }
 
 bool
-qemuDomainAgentAvailable(qemuDomainObjPrivatePtr priv,
+qemuDomainAgentAvailable(virDomainObjPtr vm,
                          bool reportError)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     if (priv->agentError) {
         if (reportError) {
             virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
