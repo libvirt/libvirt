@@ -346,6 +346,7 @@
       on the size and placement of volumes. The 'free extents'
       information will detail the regions which are available for creating
       new volumes. A volume cannot span across 2 different free extents.
+      It will default to using <code>msdos</code> as the pool source format.
     </p>
 
     <h3>Example pool input</h3>
