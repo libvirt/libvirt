@@ -3110,6 +3110,12 @@
             then this setting not required.
           </dd>
         </dl>
+        <p>
+          Note: The <code>managed</code> attribute is only used with PCI devices
+          and is ignored by all the other device types, thus setting
+          <code>managed</code> explicitly with other than PCI device has the same
+          effect as omitting it.
+        </p>
       </dd>
       <dt><code>source</code></dt>
       <dd>The source element describes the device as seen from the host using
