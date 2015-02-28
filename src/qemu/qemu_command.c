@@ -7294,12 +7294,9 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                        "network driver not present"));
                 goto error;
             }
-            if (ret < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("listen network '%s' had no usable address"),
-                               listenNetwork);
+            if (ret < 0)
                 goto error;
-            }
+
             listenAddr = netAddr;
             /* store the address we found in the <graphics> element so it will
              * show up in status. */
@@ -7458,12 +7455,9 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                    "network driver not present"));
             goto error;
         }
-        if (ret < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("listen network '%s' had no usable address"),
-                           listenNetwork);
+        if (ret < 0)
             goto error;
-        }
+
         listenAddr = netAddr;
         /* store the address we found in the <graphics> element so it will
          * show up in status. */
