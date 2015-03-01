@@ -371,6 +371,9 @@ libxlDomainShutdownThread(void *opaque)
 
     cfg = libxlDriverConfigGet(driver);
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
@@ -384,7 +387,7 @@ libxlDomainShutdownThread(void *opaque)
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_LAST:
-            goto cleanup;
+            goto endjob;
         }
     } else if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
         dom_event = virDomainEventLifecycleNewFromObj(vm,
@@ -399,7 +402,7 @@ libxlDomainShutdownThread(void *opaque)
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
-            goto cleanup;
+            goto endjob;
         case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
             libxlDomainAutoCoreDump(driver, vm);
             goto destroy;
@@ -420,11 +423,11 @@ libxlDomainShutdownThread(void *opaque)
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_LAST:
-            goto cleanup;
+            goto endjob;
         }
     } else {
         VIR_INFO("Unhandled shutdown_reason %d", xl_reason);
-        goto cleanup;
+        goto endjob;
     }
 
  destroy:
@@ -433,13 +436,11 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = NULL;
     }
     libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
-    if (libxlDomainCleanupJob(driver, vm, reason)) {
-        if (!vm->persistent) {
-            virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
-        }
-    }
-    goto cleanup;
+    libxlDomainCleanup(driver, vm, reason);
+    if (!vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
+
+    goto endjob;
 
  restart:
     if (dom_event) {
@@ -447,12 +448,16 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = NULL;
     }
     libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
-    libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     if (libxlDomainStart(driver, vm, false, -1) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to restart VM '%s': %s"),
                   vm->def->name, err ? err->message : _("unknown error"));
     }
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
@@ -691,26 +696,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 }
 
 /*
- * Cleanup function for domain that has reached shutoff state.
- * Executed in the context of a job.
- *
- * virDomainObjPtr should be locked on invocation
- * Returns true if references remain on virDomainObjPtr, false otherwise.
- */
-bool
-libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
-                      virDomainObjPtr vm,
-                      virDomainShutoffReason reason)
-{
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_DESTROY) < 0)
-        return true;
-
-    libxlDomainCleanup(driver, vm, reason);
-
-    return libxlDomainObjEndJob(driver, vm);
-}
-
-/*
  * Core dump domain to default dump path.
  *
  * virDomainObjPtr must be locked on invocation
@@ -735,15 +720,11 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
                     timestr) < 0)
         goto cleanup;
 
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
-        goto cleanup;
-
     /* Unlock virDomainObj while dumping core */
     virObjectUnlock(vm);
     libxl_domain_core_dump(cfg->ctx, vm->def->id, dumpfile, NULL);
     virObjectLock(vm);
 
-    ignore_value(libxlDomainObjEndJob(driver, vm));
     ret = 0;
 
  cleanup:

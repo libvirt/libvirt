@@ -108,10 +108,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
                    virDomainObjPtr vm,
                    virDomainShutoffReason reason);
 
-bool
-libxlDomainCleanupJob(libxlDriverPrivatePtr driver,
-                      virDomainObjPtr vm,
-                      virDomainShutoffReason reason);
 /*
  * Note: Xen 4.3 removed the const from the event handler signature.
  * Detect which signature to use based on

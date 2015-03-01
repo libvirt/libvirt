@@ -1240,10 +1240,13 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
@@ -1252,17 +1255,18 @@ libxlDomainDestroyFlags(virDomainPtr dom,
     if (libxl_domain_destroy(cfg->ctx, vm->def->id, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to destroy domain '%d'"), vm->def->id);
-        goto cleanup;
+        goto endjob;
     }
 
-    if (libxlDomainCleanupJob(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED)) {
-        if (!vm->persistent) {
-            virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
-        }
-    }
+    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    if (!vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
 
     ret = 0;
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
