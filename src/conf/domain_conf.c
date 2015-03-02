@@ -772,13 +772,6 @@ VIR_ENUM_IMPL(virDomainLoader,
               "rom",
               "pflash")
 
-VIR_ENUM_IMPL(virDomainThreadSched, VIR_DOMAIN_THREAD_SCHED_LAST,
-              "other", /* default */
-              "batch",
-              "idle",
-              "fifo",
-              "rr")
-
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
 VIR_ENUM_DECL(virDomainBlockJob)
@@ -12867,7 +12860,7 @@ virDomainThreadSchedParse(xmlNodePtr node,
                           virDomainThreadSchedParamPtr sp)
 {
     char *tmp = NULL;
-    int sched = 0;
+    int pol = 0;
 
     tmp = virXMLPropString(node, name);
     if (!tmp) {
@@ -12892,16 +12885,17 @@ virDomainThreadSchedParse(xmlNodePtr node,
 
     tmp = virXMLPropString(node, "scheduler");
     if (tmp) {
-        if ((sched = virDomainThreadSchedTypeFromString(tmp)) <= 0) {
+        if ((pol = virProcessSchedPolicyTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid scheduler attribute: '%s'"),
                            tmp);
             goto error;
         }
-        sp->scheduler = sched;
+        sp->policy = pol;
 
         VIR_FREE(tmp);
-        if (sp->scheduler >= VIR_DOMAIN_THREAD_SCHED_FIFO) {
+        if (sp->policy == VIR_PROC_POLICY_FIFO ||
+            sp->policy == VIR_PROC_POLICY_RR) {
             tmp = virXMLPropString(node, "priority");
             if (!tmp) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -19892,7 +19886,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (!(ids = virBitmapFormat(sp->ids)))
             goto error;
         virBufferAsprintf(buf, "<vcpusched vcpus='%s' scheduler='%s'",
-                          ids, virDomainThreadSchedTypeToString(sp->scheduler));
+                          ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
         if (sp->priority)
@@ -19907,7 +19901,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (!(ids = virBitmapFormat(sp->ids)))
             goto error;
         virBufferAsprintf(buf, "<iothreadsched iothreads='%s' scheduler='%s'",
-                          ids, virDomainThreadSchedTypeToString(sp->scheduler));
+                          ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
         if (sp->priority)
