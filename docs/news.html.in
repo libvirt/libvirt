@@ -9,6 +9,246 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+    <h3>1.2.13: Mar 2 2015</h3>
+    <ul>
+      <li>Features:<br/>
+      a lot of NUMA updates and improvments (Peter Krempa)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Add mist.io as libvirt-based application (Michal Privoznik),<br/>
+      Fix typos in messages (Yuri Chornoivan),<br/>
+      Clarify behavior or virDomainDetachDevice (Ján Tomko),<br/>
+      virsh: Add missing parenthesis into man page (Martin Kletzander),<br/>
+      man: moved virsh command cpu-models (Daniel Hansel),<br/>
+      clarify nat range behavior (Ján Tomko),<br/>
+      add page about virtlockd setup (Daniel P. Berrange),<br/>
+      split out sanlock setup docs (Daniel P. Berrange),<br/>
+      Fix version reference in vcpu/iothread scheduling (Martin Kletzander),<br/>
+      S390: Documentation for ccw address type (Stefan Zimmermann),<br/>
+      conf: fix a minor typo (Erik Skultety),<br/>
+      virsh: man: Document behavior of some blkdeviotune's flags when querying (Peter Krempa)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      virprocess: fix MinGW build and RHEL-5 build (Pavel Hrdina),<br/>
+      virutil: fix MinGW build (Pavel Hrdina),<br/>
+      Make tests independant of system page size (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      Really fix XML formatting flags in SaveImageUpdateDef (Ján Tomko),<br/>
+      Ignore listen attribute of &lt;graphics&gt; for type network listens (Ján Tomko),<br/>
+      util: storage: Fix error type in virStorageSourceParseBackingURI (Peter Krempa),<br/>
+      util: storagefile: Don't crash on gluster URIs without path (Peter Krempa),<br/>
+      conf: error out on invalid host id (Luyao Huang),<br/>
+      qemu: fix ifindex array reported to systemd (Laine Stump),<br/>
+      util: check for null ifname inside virNetDevBandwidthSet() (Laine Stump),<br/>
+      network: only clear bandwidth if it has been set (Laine Stump),<br/>
+      Fix error messages in virStorageFileGetMetadataFromFD (Ján Tomko),<br/>
+      Assign default SCSI controller model before checking attribute validity (Ján Tomko),<br/>
+      qemu: Use correct flags for ABI stability check in SaveImageUpdateDef (Michal Privoznik),<br/>
+      qemu: fix memory leak while starting a guest (Pavel Hrdina),<br/>
+      network_conf: Forbid commas in DNS TXT (Michal Privoznik),<br/>
+      qemuMigrationDriveMirror: Listen to events (Michal Privoznik),<br/>
+      qemu: Exit job on error path of qemuDomainSetVcpusFlags() (Peter Krempa),<br/>
+      daemon: Fix segfault by reloading daemon right after start (Pavel Hrdina),<br/>
+      qemu_cgroup: initialize mem_mask to NULL (Pavel Hrdina),<br/>
+      PowerPC : Forbid NULL CPU model with 'host-model' mode. (Prerna Saxena),<br/>
+      qemu: fix vm deadlock when try to use numatune in session mode (Luyao Huang),<br/>
+      virsh: fix IP address in vncdisplay for listen type='network' (Luyao Huang),<br/>
+      libxl: Resolve Coverity CHECKED_RETURN (John Ferlan),<br/>
+      security: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      lxc: Fix container cleanup for LXCProcessStart (Luyao Huang),<br/>
+      lxc: Move console checks in LXCProcessStart (Luyao Huang),<br/>
+      security: Refactor virSecurityManagerGenLabel (Erik Skultety),<br/>
+      security: introduce virSecurityManagerCheckAllLabel function (Erik Skultety),<br/>
+      Fix a syntax error in the description text of libvirtd.conf (Zhang Bo),<br/>
+      Allow shrinking of file based volumes (Daniel P. Berrange),<br/>
+      qemu: do upfront check for vcpupids being null when querying pinning (Daniel P. Berrange),<br/>
+      qemu: fix setting of VM CPU affinity with TCG (Daniel P. Berrange),<br/>
+      libxl: disable VNC and SDL until explicitly enabled (Marek Marczykowski-Górecki),<br/>
+      libxl: pass ipaddr to libxl toolstack (Marek Marczykowski-Górecki),<br/>
+      domain: avoid potential memory leak in virDomainGraphicsListenSet*() (Laine Stump),<br/>
+      domain: backfill listen address to parent &lt;graphics&gt; listen attribute (Laine Stump),<br/>
+      virsh: fix IP address in domdisplay for listen type='network' (Luyao Huang),<br/>
+      bhyvexml2argvmock: change int to size_t for tapfdSize (Pavel Hrdina),<br/>
+      qemu: fix crash when migrateuri has no scheme (Luyao Huang),<br/>
+      conf: Fix libvirtd crash and memory leak caused by virDomainVcpuPinDel() (Zhang Bo),<br/>
+      conf: forbid seclabel duplicates for domain devices (Erik Skultety),<br/>
+      Fix qemu job handling in SetSchedulerParameters (Ján Tomko),<br/>
+      conf: disallow invalid values for video attributes (Martin Kletzander),<br/>
+      Clear dynamic seclabels on LXCProcessStart failure (Cédric Bosdonnat),<br/>
+      network: don't allow multiple portgroups with the same name in a network (Laine Stump),<br/>
+      Error out when custom tap device path makes no sense (Ján Tomko),<br/>
+      Only parse custom vhost path for virtio interfaces (Ján Tomko),<br/>
+      Trivially support DomainHasManagedSaveImage (Ján Tomko),<br/>
+      libxl: update dom-&gt;id in libxlDomainCreateWithFlags (Marek Marczykowski-Górecki),<br/>
+      qemu: Properly report error on uuid mismatch in the migration cookie (Luyao Huang),<br/>
+      lxc: fix double close handshakefds[1] (Luyao Huang),<br/>
+      util: storage: Fix parsing of nbd:// URI without path (Peter Krempa),<br/>
+      conf: Properly report error of unsupported input bus type (Luyao Huang),<br/>
+      conf: Properly report error when an unsupported chr device name is passed (Luyao Huang),<br/>
+      virnetdev: fix some issues found by coverity and mingw builds (Pavel Hrdina),<br/>
+      storage: Need to clear pool prior to refreshPool during Autostart (John Ferlan),<br/>
+      qemu: command: Don't combine old and modern NUMA node creation (Peter Krempa),<br/>
+      xend: Don't crash in virDomainXMLDevID (Michal Privoznik),<br/>
+      conf: Don't mangle vcpu placement randomly (Michal Privoznik),<br/>
+      qemu: Don't unconditionally delete file in qemuOpenFileAs (John Ferlan),<br/>
+      virfile: Need to check for ENOTCONN from recvfd failure (John Ferlan),<br/>
+      Remove flag checking in MacVLanCreate helper stub (Ján Tomko),<br/>
+      storage: Check the partition name against provided name (John Ferlan),<br/>
+      storage: Fix check for partition type for disk backing volumes (John Ferlan),<br/>
+      qemu: fix cannot set graphic passwd via qemuDomainSaveImageDefineXML (Luyao Huang),<br/>
+      hotplug: only add a chardev to vmdef after monitor call (Ján Tomko),<br/>
+      systemd: don't report an error if the guest is already terminated (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      conf: error out on missing dhcp host attributes (Ján Tomko),<br/>
+      schema: Allow interleaving the /domain/os/type element (Peter Krempa),<br/>
+      schema: Add virtio-mmio address type into RNG (Martin Kletzander),<br/>
+      cpu: Format &lt;cpu/&gt; properly (Michal Privoznik),<br/>
+      virCPUDefFormatBufFull: Use our general error handling pattern (Michal Privoznik),<br/>
+      util: Introduce virBufferAddBuffer (Michal Privoznik),<br/>
+      Rework s390 architecture checking (Stefan Zimmermann),<br/>
+      Prevent default creation of usb controller on s390 and s390x (Stefan Zimmermann),<br/>
+      po: Add config file for zanata (Daniel P. Berrange),<br/>
+      libvirt-guests: Allow time sync on guests resume (Michal Privoznik),<br/>
+      qemu: Fix AAVMF/OVMF #define names (Cole Robinson),<br/>
+      libxl: support backend domain setting for disk and net devices (Marek Marczykowski),<br/>
+      conf: support backend domain name in disk and network devices (Marek Marczykowski),<br/>
+      network: allow &lt;pf&gt; together with &lt;interface&gt;lt;address&gt; in network status (Laine Stump),<br/>
+      qemu: caps: Add capability bit for the "pc-dimm" device (Peter Krempa),<br/>
+      conf: Hoist validation of memory size into the post parse callback (Peter Krempa),<br/>
+      conf: numa: Check ABI stability of NUMA configuration (Peter Krempa),<br/>
+      conf: ABI: Hugepage backing definition is not guest ABI (Peter Krempa),<br/>
+      conf: Move all NUMA configuration to virDomainNuma (Peter Krempa),<br/>
+      conf: numa: Add setter/getter for NUMA node memory size (Peter Krempa),<br/>
+      conf: numa: Add accessor to NUMA node's memory access mode (Peter Krempa),<br/>
+      conf: numa: Add accessor for the NUMA node cpu mask (Peter Krempa),<br/>
+      conf: numa: Add helper to get guest NUMA node count and refactor users (Peter Krempa),<br/>
+      qemu: command: Unify retrieval of NUMA cell count in qemuBuildNumaArgStr (Peter Krempa),<br/>
+      conf: numa: Don't pass double pointer to virDomainNumatuneParseXML (Peter Krempa),<br/>
+      numa: conf: Tweak parameters of virDomainNumatuneSet (Peter Krempa),<br/>
+      conf: numa: Always allocate the NUMA config (Peter Krempa),<br/>
+      conf: Allocate domain definition with the new helper (Peter Krempa),<br/>
+      conf: Separate helper for creating domain objects (Peter Krempa),<br/>
+      conf: numa: Format &lt;numatune&gt; XML only if necessary (Peter Krempa),<br/>
+      conf: numa: Refactor logic in virDomainNumatuneParseXML (Peter Krempa),<br/>
+      conf: numa: Reformat virDomainNumatuneParseXML (Peter Krempa),<br/>
+      conf: numa: Improve error message in case a numa node doesn't have cpus (Peter Krempa),<br/>
+      conf: numa: Recalculate rather than remember total NUMA cpu count (Peter Krempa),<br/>
+      conf: Move enum virMemAccess to the NUMA code and rename it (Peter Krempa),<br/>
+      conf: numa: Rename virDomainNumatune to virDomainNuma (Peter Krempa),<br/>
+      conf: Move NUMA cell formatter to numa_conf (Peter Krempa),<br/>
+      conf: numa: Don't duplicate NUMA cell cpumask (Peter Krempa),<br/>
+      conf: Refactor virDomainNumaDefCPUParseXML (Peter Krempa),<br/>
+      conf: Move NUMA cell parsing code from cpu conf to numa conf (Peter Krempa),<br/>
+      conf: Move numatune_conf to numa_conf (Peter Krempa),<br/>
+      virsh: fix vcpupin info (Pavel Hrdina),<br/>
+      virQEMUCapsCacheLookupCopy: Filter qemuCaps based on machineType (Michal Privoznik),<br/>
+      virQEMUCapsCacheLookupCopy: Pass machine type (Michal Privoznik),<br/>
+      virsh-edit: Make force editing usable (Martin Kletzander),<br/>
+      parallels: Set the first HDD from XML as bootable (Mikhail Feoktistov),<br/>
+      parallels: Use IS_CT() macro instead of STREQ("exe") (Mikhail Feoktistov),<br/>
+      parallels: code aligment (Mikhail Feoktistov),<br/>
+      Search for schemas and cpu_map.xml in source tree (Jiri Denemark),<br/>
+      qemuProcessHandleBlockJob: Take status into account (Michal Privoznik),<br/>
+      qemuProcessHandleBlockJob: Set disk-&gt;mirrorState more often (Michal Privoznik),<br/>
+      PowerPC : Make 'qemu-system-ppc64' the default emulator on ppc64[le]. (Prerna Saxena),<br/>
+      qemuBuildMemoryBackendStr: Report backend requirement more appropriately (Michal Privoznik),<br/>
+      qemuxml2argvtest: Fake response from numad (Michal Privoznik),<br/>
+      numatune_conf: Expose virDomainNumatuneNodeSpecified (Michal Privoznik),<br/>
+      lxc: Modify/add some debug messages (John Ferlan),<br/>
+      Wire up mrg_rxbuf option for qemu (Ján Tomko),<br/>
+      Add mrg_rxbuf option to virtio interfaces (Ján Tomko),<br/>
+      virsh attach-interface: Allow macvtap hotplug (Michal Privoznik),<br/>
+      virsh attach-interface: Use virDomainNetType{From,To}String() (Michal Privoznik),<br/>
+      virsh attach-interface: Use enum instead of arbitrary integers (Michal Privoznik),<br/>
+      libvirt_private.syms: Expose virDomainNetTypeFromString (Michal Privoznik),<br/>
+      qemu: Add support for setting vCPU and I/O thread scheduler setting (Martin Kletzander),<br/>
+      docs, schema, conf: Add support for setting scheduler parameters of guest threads (Martin Kletzander),<br/>
+      util: Add virProcessSetScheduler() function for scheduler settings (Martin Kletzander),<br/>
+      domain: include portgroup in interface status xml (Laine Stump),<br/>
+      qemu: qemuOpenFileAs - set flag VIR_FILE_OPEN_FORCE_MODE (John Ferlan),<br/>
+      virfile: Adjust error path for virFileOpenForked (John Ferlan),<br/>
+      schema: allow multiple seclabel for devices in domaincommon.rng (Erik Skultety),<br/>
+      qemu: Implement random number generator hotunplug (Luyao Huang),<br/>
+      qemu: Implement random number generator hotplug (Luyao Huang),<br/>
+      qemu: Implement random number generator cold (un)plug (Peter Krempa),<br/>
+      conf: Add helpers to insert/remove/find RNG devices in domain def (Luyao Huang),<br/>
+      audit: export virDomainAuditRNG (Luyao Huang),<br/>
+      qemu: command: Refactor creation of RNG device commandline (Peter Krempa),<br/>
+      qemu: command: Break some very long lines in qemuBuildRNGDevStr() (Peter Krempa),<br/>
+      qemu: command: Shuffle around formatting of alias for RNG device backend (Peter Krempa),<br/>
+      qemu: command: Make RNG backend device IDs unique (Luyao Huang),<br/>
+      qemu: refactor qemuBuildRNGDeviceArgs to allow reuse in RNG hotplug (Luyao Huang),<br/>
+      qemu: Add helper to assign RNG device aliases (Luyao Huang),<br/>
+      conf: Introduce helper to find duplicate device address (Peter Krempa),<br/>
+      S390: ccw support for virsh attach-disk address parameter (Stefan Zimmermann),<br/>
+      maint: improve usage of autogen's --no-git (Stefan Zimmermann),<br/>
+      qemu: include libvirt &amp; QEMU versions in QEMU log files (Daniel P. Berrange),<br/>
+      nodedev: check/add for scsi_host caps for NumOfCaps and ListCaps (John Ferlan),<br/>
+      nodedev: check/add for scsi_host caps for ListDevices (Shivaprasad G Bhat),<br/>
+      cpu: add Freescale ppc64 CPU models (Olivia Yin),<br/>
+      tests: virstoragetest: Switch backing chain test to use automatic numbering (Peter Krempa),<br/>
+      virsh-volume: add support for --reflink (Chen Hanxiao),<br/>
+      util: make virNetDev(Get|Set)IFFlags() static (Laine Stump),<br/>
+      qemu: command: Refactor NUMA backend object formatting to use JSON objs (Peter Krempa),<br/>
+      qemu: command: Switch to bytes when formatting size for memory backends (Peter Krempa),<br/>
+      qemu: command: Unify values for boolean values when formating memory backends (Peter Krempa),<br/>
+      qemu: command: Shuffle around formating of alias for memory backend objs (Peter Krempa),<br/>
+      qemu: Extract code to setup memory backing objects (Peter Krempa),<br/>
+      qemu: command: Add helper to format -object strings from JSON representation (Peter Krempa),<br/>
+      util: json: add helper to iterate JSON object key=value pairs (Peter Krempa),<br/>
+      util: json: Add functions to convert JSON arrays from/to virBitmaps (Peter Krempa),<br/>
+      util: bitmap: Add option to allocate bitmap without reporting error (Peter Krempa),<br/>
+      util: json: make value object creator universal by supporting adding (Peter Krempa),<br/>
+      test: utils: Add helpers for automatic numbering of test cases (Peter Krempa),<br/>
+      conf: numatune: Extract code for requesting memory nodeset from formatting (Peter Krempa),<br/>
+      qemu: change macvtap device options in response to NIC_RX_FILTER_CHANGED (Tony Krowiak),<br/>
+      util: Functions for getting/setting device options (Tony Krowiak),<br/>
+      qemu: Adjust EndAsyncJob for qemuDomainSaveInternal error path (John Ferlan),<br/>
+      schemas: Allow all generic elements and attributes for all interfaces (Michal Privoznik),<br/>
+      qemu: Add AAVMF to the list of known UEFIs (Michal Privoznik),<br/>
+      qemu: Allow UEFI paths to be specified at compile time (Michal Privoznik),<br/>
+      Fix syntax-check (Ján Tomko),<br/>
+      util: bitmap: Tolerate NULL bitmaps in virBitmapEqual (Peter Krempa),<br/>
+      storage: When delete extended partition, need to refresh pool (John Ferlan),<br/>
+      storage: Adjust how to refresh extended partition disk data (John Ferlan),<br/>
+      storage: Attempt error recovery in virStorageBackendDiskCreateVol (John Ferlan),<br/>
+      storage: Move virStorageBackendDiskDeleteVol (John Ferlan),<br/>
+      libvirt.spec: remove vbox storage and network .so files (Pavel Hrdina),<br/>
+      Split qemuDomainChrInsert into two parts (Ján Tomko),<br/>
+      lxc: report veth device indexes to systemd (Daniel P. Berrange),<br/>
+      lxc: more logging during startup paths (Daniel P. Berrange),<br/>
+      lxc: delay setup of cgroup until we have the init pid (Daniel P. Berrange),<br/>
+      lxc: only write XML once for lxc controller (Daniel P. Berrange),<br/>
+      lxc: re-arrange startup synchronization sequence with controller (Daniel P. Berrange),<br/>
+      lxc: don't build pidfile string multiple times (Daniel P. Berrange),<br/>
+      qemu: report TAP device indexes to systemd (Daniel P. Berrange),<br/>
+      Fix shadowed variable warning (Ján Tomko),<br/>
+      storage: add a flag to clone files on btrfs (Chen Hanxiao),<br/>
+      storage: introduce btrfsCloneFile() for COW copy (Chen Hanxiao),<br/>
+      Removing probing of secondary drivers (Daniel P. Berrange),<br/>
+      don't disable state driver when libvirtd is not built (Daniel P. Berrange),<br/>
+      Remove all secondary driver private data fields (Daniel P. Berrange),<br/>
+      Remove use of interfacePrivateData from udev driver (Daniel P. Berrange),<br/>
+      Remove use of nodeDevicePrivateData from nodeDev driver (Daniel P. Berrange),<br/>
+      Remove use of storagePrivateData/networkPrivateData from vbox (Daniel P. Berrange),<br/>
+      Remove use of nwfilterPrivateData from nwfilter driver (Daniel P. Berrange),<br/>
+      Remove use of secretPrivateData from secret driver (Daniel P. Berrange),<br/>
+      qemu: Fix job handling in qemuDomainSetMetadata (Peter Krempa),<br/>
+      qemu: Fix job type in qemuDomainGetBlockIoTune (Peter Krempa),<br/>
+      qemu: Fix job handling in qemuDomainSetSchedulerParametersFlags (Peter Krempa),<br/>
+      qemu: Fix job handling in qemuDomainSetMemoryParameters (Peter Krempa),<br/>
+      qemu: Fix job handling in qemuDomainSetAutostart (Peter Krempa),<br/>
+      qemu: Fix job handling in qemuDomainPinEmulator (Peter Krempa),<br/>
+      qemu: Fix job handling in qemuDomainPinVcpuFlags (Peter Krempa)<br/>
+      </li>
+    </ul>
+
     <h3>1.2.12: Jan 27 2015</h3>
     <ul>
       <li>Security:<br/>
