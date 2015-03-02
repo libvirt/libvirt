@@ -168,7 +168,6 @@ networkObjFromNetwork(virNetworkPtr net)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-
     if (!network) {
         virUUIDFormat(net->uuid, uuidstr);
         virReportError(VIR_ERR_NO_NETWORK,
@@ -3079,12 +3078,8 @@ networkUndefine(virNetworkPtr net)
     bool active = false;
     virObjectEventPtr event = NULL;
 
-    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = networkObjFromNetwork(net)))
         goto cleanup;
-    }
 
     if (virNetworkUndefineEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
@@ -3145,12 +3140,8 @@ networkUpdate(virNetworkPtr net,
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
                   -1);
 
-    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = networkObjFromNetwork(net)))
         goto cleanup;
-    }
 
     if (virNetworkUpdateEnsureACL(net->conn, network->def, flags) < 0)
         goto cleanup;
@@ -3300,13 +3291,8 @@ static int networkCreate(virNetworkPtr net)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = networkObjFromNetwork(net)))
         goto cleanup;
-    }
 
     if (virNetworkCreateEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
@@ -3333,13 +3319,8 @@ static int networkDestroy(virNetworkPtr net)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
-
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = networkObjFromNetwork(net)))
         goto cleanup;
-    }
 
     if (virNetworkDestroyEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
@@ -3451,13 +3432,9 @@ static int networkSetAutostart(virNetworkPtr net,
     char *configFile = NULL, *autostartLink = NULL;
     int ret = -1;
 
-    network = virNetworkObjFindByUUID(driver->networks, net->uuid);
 
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = networkObjFromNetwork(net)))
         goto cleanup;
-    }
 
     if (virNetworkSetAutostartEnsureACL(net->conn, network->def) < 0)
         goto cleanup;
