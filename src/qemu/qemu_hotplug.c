@@ -437,6 +437,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool releaseaddr = false;
+    bool addedToAddrSet = false;
 
     if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -475,6 +476,12 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
+        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
+            virDomainVirtioSerialAddrSetAddController(priv->vioserialaddrs,
+                                                      controller) < 0)
+            goto cleanup;
+        addedToAddrSet = true;
+
         if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
             goto cleanup;
     }
@@ -503,6 +510,9 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     }
 
  cleanup:
+    if (ret != 0 && addedToAddrSet)
+        virDomainVirtioSerialAddrSetRemoveController(priv->vioserialaddrs,
+                                                     controller);
     if (ret != 0 && releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
 
