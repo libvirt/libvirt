@@ -15460,7 +15460,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
 
             if (vm->def->channels[i]->targetType == \
                 VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-                STREQ(name, vm->def->channels[i]->target.name))
+                STREQ_NULLABLE(name, vm->def->channels[i]->target.name))
                 chr = vm->def->channels[i];
         }
     } else {
