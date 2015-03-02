@@ -39,6 +39,7 @@
       <mac address='52:54:00:e5:48:58'/>
       <model type='virtio'/>
       <driver ioeventfd='on' event_idx='on' queues='5'/>
+      <link state='up'/>
     </interface>
     <serial type='pty'>
       <target port='0'/>
