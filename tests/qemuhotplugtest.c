@@ -86,7 +86,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
-    if (qemuDomainAssignPCIAddresses((*vm)->def, priv->qemuCaps, *vm) < 0)
+    if (qemuDomainAssignAddresses((*vm)->def, priv->qemuCaps, *vm) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceAliases((*vm)->def, priv->qemuCaps) < 0)
