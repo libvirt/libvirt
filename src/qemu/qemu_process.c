@@ -2614,7 +2614,7 @@ qemuProcessSetSchedParams(int id,
     if (!s)
         return 0;
 
-    return virProcessSetScheduler(pid, s->scheduler, s->priority);
+    return virProcessSetScheduler(pid, s->policy, s->priority);
 }
 
 static int

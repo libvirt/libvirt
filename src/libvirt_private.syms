@@ -416,8 +416,6 @@ virDomainStateTypeFromString;
 virDomainStateTypeToString;
 virDomainTaintTypeFromString;
 virDomainTaintTypeToString;
-virDomainThreadSchedTypeFromString;
-virDomainThreadSchedTypeToString;
 virDomainTimerModeTypeFromString;
 virDomainTimerModeTypeToString;
 virDomainTimerNameTypeFromString;
