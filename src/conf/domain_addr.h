@@ -173,4 +173,63 @@ int virDomainCCWAddressReleaseAddr(virDomainCCWAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 virDomainCCWAddressSetPtr virDomainCCWAddressSetCreate(void);
+
+struct _virDomainVirtioSerialController {
+    unsigned int idx;
+    virBitmapPtr ports;
+};
+
+typedef struct _virDomainVirtioSerialController virDomainVirtioSerialController;
+typedef virDomainVirtioSerialController *virDomainVirtioSerialControllerPtr;
+
+struct _virDomainVirtioSerialAddrSet {
+    virDomainVirtioSerialControllerPtr *controllers;
+    size_t ncontrollers;
+};
+typedef struct _virDomainVirtioSerialAddrSet virDomainVirtioSerialAddrSet;
+typedef virDomainVirtioSerialAddrSet *virDomainVirtioSerialAddrSetPtr;
+
+virDomainVirtioSerialAddrSetPtr
+virDomainVirtioSerialAddrSetCreate(void);
+int
+virDomainVirtioSerialAddrSetAddController(virDomainVirtioSerialAddrSetPtr addrs,
+                                          virDomainControllerDefPtr cont)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void
+virDomainVirtioSerialAddrSetRemoveController(virDomainVirtioSerialAddrSetPtr addrs,
+                                             virDomainControllerDefPtr cont)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
+virDomainVirtioSerialAddrSetAddControllers(virDomainVirtioSerialAddrSetPtr addrs,
+                                           virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+void
+virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs);
+bool
+virDomainVirtioSerialAddrIsComplete(virDomainDeviceInfoPtr info);
+int
+virDomainVirtioSerialAddrAutoAssign(virDomainVirtioSerialAddrSetPtr addrs,
+                                    virDomainDeviceInfoPtr info,
+                                    bool allowZero)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+virDomainVirtioSerialAddrAssign(virDomainVirtioSerialAddrSetPtr addrs,
+                                virDomainDeviceInfoPtr info,
+                                bool allowZero,
+                                bool portOnly)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+virDomainVirtioSerialAddrReserve(virDomainDefPtr def,
+                                 virDomainDeviceDefPtr dev,
+                                 virDomainDeviceInfoPtr info,
+                                 void *data)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
+int
+virDomainVirtioSerialAddrRelease(virDomainVirtioSerialAddrSetPtr addrs,
+                                 virDomainDeviceInfoPtr info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 #endif /* __DOMAIN_ADDR_H__ */

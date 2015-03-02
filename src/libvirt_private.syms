@@ -108,6 +108,16 @@ virDomainPCIAddressSetFree;
 virDomainPCIAddressSetGrow;
 virDomainPCIAddressSlotInUse;
 virDomainPCIAddressValidate;
+virDomainVirtioSerialAddrAssign;
+virDomainVirtioSerialAddrAutoAssign;
+virDomainVirtioSerialAddrIsComplete;
+virDomainVirtioSerialAddrRelease;
+virDomainVirtioSerialAddrReserve;
+virDomainVirtioSerialAddrSetAddController;
+virDomainVirtioSerialAddrSetAddControllers;
+virDomainVirtioSerialAddrSetCreate;
+virDomainVirtioSerialAddrSetFree;
+virDomainVirtioSerialAddrSetRemoveController;
 
 
 # conf/domain_audit.h
