@@ -874,7 +874,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         if (set_hard_limit)
             mem_limit = hard_limit;
 
-        if (virCompareLimitUlong(mem_limit, swap_limit) > 0) {
+        if (mem_limit > swap_limit) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("memory hard_limit tunable value must be lower "
                              "than or equal to swap_hard_limit"));
@@ -902,7 +902,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     LXC_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
     /* set hard limit before swap hard limit if decreasing it */
-    if (virCompareLimitUlong(vm->def->mem.hard_limit, hard_limit) > 0) {
+    if (vm->def->mem.hard_limit > hard_limit) {
         LXC_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
         /* inhibit changing the limit a second time */
         set_hard_limit = false;
@@ -983,7 +983,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         case 0: /* fill memory hard limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 val = vmdef->mem.hard_limit;
-                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
             } else if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }
@@ -994,7 +993,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         case 1: /* fill memory soft limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 val = vmdef->mem.soft_limit;
-                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
             } else if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }
@@ -1005,7 +1003,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         case 2: /* fill swap hard limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
                 val = vmdef->mem.swap_hard_limit;
-                val = val ? val : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
             } else if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }

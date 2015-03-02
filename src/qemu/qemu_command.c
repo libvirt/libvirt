@@ -8409,8 +8409,10 @@ qemuBuildCommandLine(virConnectPtr conn,
         /* If we have no cgroups then we can have no tunings that
          * require them */
 
-        if (def->mem.hard_limit || def->mem.soft_limit ||
-            def->mem.min_guarantee || def->mem.swap_hard_limit) {
+        if (virMemoryLimitIsSet(def->mem.hard_limit) ||
+            virMemoryLimitIsSet(def->mem.soft_limit) ||
+            def->mem.min_guarantee ||
+            virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory tuning is not available in session mode"));
             goto error;
@@ -10483,7 +10485,7 @@ qemuBuildCommandLine(virConnectPtr conn,
          * space just to be safe (some finer tuning might be
          * nice, though).
          */
-        memKB = def->mem.hard_limit ?
+        memKB = virMemoryLimitIsSet(def->mem.hard_limit) ?
             def->mem.hard_limit : def->mem.max_balloon + 1024 * 1024;
         virCommandSetMaxMemLock(cmd, memKB * 1024);
     }

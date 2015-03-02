@@ -773,7 +773,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
             return -1;
         size = size / 1024;
         def->mem.max_balloon = size;
-        def->mem.hard_limit = size;
+        def->mem.hard_limit = virMemoryLimitTruncate(size);
     }
 
     if ((value = virConfGetValue(properties,
@@ -782,7 +782,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
         if (lxcConvertSize(value->str, &size) < 0)
             return -1;
 
-        def->mem.soft_limit = size / 1024;
+        def->mem.soft_limit = virMemoryLimitTruncate(size / 1024);
     }
 
     if ((value = virConfGetValue(properties,
@@ -791,7 +791,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
         if (lxcConvertSize(value->str, &size) < 0)
             return -1;
 
-       def->mem.swap_hard_limit = size / 1024;
+        def->mem.swap_hard_limit = virMemoryLimitTruncate(size / 1024);
     }
     return 0;
 }

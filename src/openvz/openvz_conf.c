@@ -479,12 +479,12 @@ openvzReadMemConf(virDomainDefPtr def, int veid)
             goto error;
         }
         if (barrier == LONG_MAX)
-            def->mem.soft_limit = 0ull;
+            def->mem.soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         else
             def->mem.soft_limit = barrier * kb_per_pages;
 
         if (limit == LONG_MAX)
-            def->mem.hard_limit = 0ull;
+            def->mem.hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         else
             def->mem.hard_limit = limit * kb_per_pages;
     }

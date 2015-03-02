@@ -471,9 +471,9 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        if (vm->def->mem.hard_limit != 0 ||
-            vm->def->mem.soft_limit != 0 ||
-            vm->def->mem.swap_hard_limit != 0) {
+        if (virMemoryLimitIsSet(vm->def->mem.hard_limit) ||
+            virMemoryLimitIsSet(vm->def->mem.soft_limit) ||
+            virMemoryLimitIsSet(vm->def->mem.swap_hard_limit)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory cgroup is not available on this host"));
             return -1;
@@ -482,17 +482,17 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
         }
     }
 
-    if (vm->def->mem.hard_limit != 0 &&
-        virCgroupSetMemoryHardLimit(priv->cgroup, vm->def->mem.hard_limit) < 0)
-        return -1;
+    if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
+        if (virCgroupSetMemoryHardLimit(priv->cgroup, vm->def->mem.hard_limit) < 0)
+            return -1;
 
-    if (vm->def->mem.soft_limit != 0 &&
-        virCgroupSetMemorySoftLimit(priv->cgroup, vm->def->mem.soft_limit) < 0)
-        return -1;
+    if (virMemoryLimitIsSet(vm->def->mem.soft_limit))
+        if (virCgroupSetMemorySoftLimit(priv->cgroup, vm->def->mem.soft_limit) < 0)
+            return -1;
 
-    if (vm->def->mem.swap_hard_limit != 0 &&
-        virCgroupSetMemSwapHardLimit(priv->cgroup, vm->def->mem.swap_hard_limit) < 0)
-        return -1;
+    if (virMemoryLimitIsSet(vm->def->mem.swap_hard_limit))
+        if (virCgroupSetMemSwapHardLimit(priv->cgroup, vm->def->mem.swap_hard_limit) < 0)
+            return -1;
 
     return 0;
 }

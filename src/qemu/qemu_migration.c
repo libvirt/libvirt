@@ -2986,7 +2986,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                        QEMU_MIGRATION_COOKIE_NBD)))
         goto cleanup;
 
-    if (STREQ_NULLABLE(protocol, "rdma") && !vm->def->mem.hard_limit) {
+    if (STREQ_NULLABLE(protocol, "rdma") &&
+        !virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot start RDMA migration with no memory hard "
                          "limit set"));
@@ -4102,7 +4103,7 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
                              "with this QEMU binary"));
             goto cleanup;
         }
-        if (!vm->def->mem.hard_limit) {
+        if (!virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot start RDMA migration with no memory hard "
                              "limit set"));

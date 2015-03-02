@@ -2075,6 +2075,9 @@ virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
  * Change all or a subset of the memory tunables.
  * This function may require privileged access to the hypervisor.
  *
+ * Possible values for all *_limit memory tunables are in range from 0 to
+ * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED.
+ *
  * Returns -1 in case of error, 0 in case of success.
  */
 int

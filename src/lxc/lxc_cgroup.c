@@ -149,17 +149,17 @@ static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
     if (virCgroupSetMemory(cgroup, def->mem.max_balloon) < 0)
         goto cleanup;
 
-    if (def->mem.hard_limit &&
-        virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit) < 0)
-        goto cleanup;
+    if (virMemoryLimitIsSet(def->mem.hard_limit))
+        if (virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit) < 0)
+            goto cleanup;
 
-    if (def->mem.soft_limit &&
-        virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit) < 0)
-        goto cleanup;
+    if (virMemoryLimitIsSet(def->mem.soft_limit))
+        if (virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit) < 0)
+            goto cleanup;
 
-    if (def->mem.swap_hard_limit &&
-        virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit) < 0)
-        goto cleanup;
+    if (virMemoryLimitIsSet(def->mem.swap_hard_limit))
+        if (virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit) < 0)
+            goto cleanup;
 
     ret = 0;
  cleanup:

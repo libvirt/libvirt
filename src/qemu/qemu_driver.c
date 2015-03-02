@@ -9143,8 +9143,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
 #undef VIR_GET_LIMIT_PARAMETER
 
-    /* Swap hard limit must be greater than hard limit.
-     * Note that limit of 0 denotes unlimited */
+    /* Swap hard limit must be greater than hard limit. */
     if (set_swap_hard_limit || set_hard_limit) {
         unsigned long long mem_limit = vm->def->mem.hard_limit;
         unsigned long long swap_limit = vm->def->mem.swap_hard_limit;
@@ -9155,7 +9154,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         if (set_hard_limit)
             mem_limit = hard_limit;
 
-        if (virCompareLimitUlong(mem_limit, swap_limit) > 0) {
+        if (mem_limit > swap_limit) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("memory hard_limit tunable value must be lower "
                              "than or equal to swap_hard_limit"));
@@ -9183,7 +9182,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     QEMU_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
     /* set hard limit before swap hard limit if decreasing it */
-    if (virCompareLimitUlong(vm->def->mem.hard_limit, hard_limit) > 0) {
+    if (vm->def->mem.hard_limit > hard_limit) {
         QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
         /* inhibit changing the limit a second time */
         set_hard_limit = false;
@@ -9279,7 +9278,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
             switch (i) {
             case 0: /* fill memory hard limit here */
                 value = persistentDef->mem.hard_limit;
-                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
                 if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
                                             VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;
@@ -9287,7 +9285,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
             case 1: /* fill memory soft limit here */
                 value = persistentDef->mem.soft_limit;
-                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
                 if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
                                             VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;
@@ -9295,7 +9292,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
             case 2: /* fill swap hard limit here */
                 value = persistentDef->mem.swap_hard_limit;
-                value = value ? value : VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
                 if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
                                             VIR_TYPED_PARAM_ULLONG, value) < 0)
                     goto cleanup;

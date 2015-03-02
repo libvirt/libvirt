@@ -2320,6 +2320,10 @@ virDomainDefNew(void)
     if (!(ret->numa = virDomainNumaNew()))
         goto error;
 
+    ret->mem.hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+    ret->mem.soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+    ret->mem.swap_hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+
     return ret;
 
  error:
@@ -6923,6 +6927,50 @@ virDomainParseMemory(const char *xpath,
     ret = 0;
  cleanup:
     return ret;
+}
+
+
+/**
+ * virDomainParseMemoryLimit:
+ *
+ * @xpath: XPath to memory amount
+ * @units_xpath: XPath to units attribute
+ * @ctxt: XPath context
+ * @mem: scaled memory amount is stored here
+ *
+ * Parse a memory element or attribute located at @xpath within @ctxt, and
+ * store the result into @mem, in blocks of 1024.  The  value is scaled by
+ * units located at @units_xpath (or the 'unit' attribute under @xpath if
+ * @units_xpath is NULL).  If units are not present, he default scale of 1024
+ * is used.  The value must not exceed VIR_DOMAIN_MEMORY_PARAM_UNLIMITED
+ * once scaled.
+ *
+ * This helper should be used only on *_limit memory elements.
+ *
+ * Return 0 on success, -1 on failure after issuing error.
+ */
+static int
+virDomainParseMemoryLimit(const char *xpath,
+                          const char *units_xpath,
+                          xmlXPathContextPtr ctxt,
+                          unsigned long long *mem)
+{
+    int ret;
+    unsigned long long bytes;
+
+    ret = virDomainParseScaledValue(xpath, units_xpath, ctxt, &bytes, 1024,
+                                    VIR_DOMAIN_MEMORY_PARAM_UNLIMITED << 10,
+                                    false);
+
+    if (ret < 0)
+        return -1;
+
+    if (ret == 0)
+        *mem = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+    else
+        *mem = virMemoryLimitTruncate(VIR_DIV_UP(bytes, 1024));
+
+    return 0;
 }
 
 
@@ -13227,20 +13275,20 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* Extract other memory tunables */
-    if (virDomainParseMemory("./memtune/hard_limit[1]", NULL, ctxt,
-                             &def->mem.hard_limit, false, false) < 0)
+    if (virDomainParseMemoryLimit("./memtune/hard_limit[1]", NULL, ctxt,
+                                  &def->mem.hard_limit) < 0)
         goto error;
 
-    if (virDomainParseMemory("./memtune/soft_limit[1]", NULL, ctxt,
-                             &def->mem.soft_limit, false, false) < 0)
+    if (virDomainParseMemoryLimit("./memtune/soft_limit[1]", NULL, ctxt,
+                                  &def->mem.soft_limit) < 0)
         goto error;
 
     if (virDomainParseMemory("./memtune/min_guarantee[1]", NULL, ctxt,
                              &def->mem.min_guarantee, false, false) < 0)
         goto error;
 
-    if (virDomainParseMemory("./memtune/swap_hard_limit[1]", NULL, ctxt,
-                             &def->mem.swap_hard_limit, false, false) < 0)
+    if (virDomainParseMemoryLimit("./memtune/swap_hard_limit[1]", NULL, ctxt,
+                                  &def->mem.swap_hard_limit) < 0)
         goto error;
 
     n = virXPathULong("string(./vcpu[1])", ctxt, &count);
@@ -19809,20 +19857,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     /* add memtune only if there are any */
-    if ((def->mem.hard_limit &&
-         def->mem.hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
-        (def->mem.soft_limit &&
-         def->mem.soft_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
-        (def->mem.swap_hard_limit &&
-         def->mem.swap_hard_limit != VIR_DOMAIN_MEMORY_PARAM_UNLIMITED) ||
+    if (virMemoryLimitIsSet(def->mem.hard_limit) ||
+        virMemoryLimitIsSet(def->mem.soft_limit) ||
+        virMemoryLimitIsSet(def->mem.swap_hard_limit) ||
         def->mem.min_guarantee) {
         virBufferAddLit(buf, "<memtune>\n");
         virBufferAdjustIndent(buf, 2);
-        if (def->mem.hard_limit) {
+        if (virMemoryLimitIsSet(def->mem.hard_limit)) {
             virBufferAsprintf(buf, "<hard_limit unit='KiB'>"
                               "%llu</hard_limit>\n", def->mem.hard_limit);
         }
-        if (def->mem.soft_limit) {
+        if (virMemoryLimitIsSet(def->mem.soft_limit)) {
             virBufferAsprintf(buf, "<soft_limit unit='KiB'>"
                               "%llu</soft_limit>\n", def->mem.soft_limit);
         }
@@ -19830,7 +19875,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAsprintf(buf, "<min_guarantee unit='KiB'>"
                               "%llu</min_guarantee>\n", def->mem.min_guarantee);
         }
-        if (def->mem.swap_hard_limit) {
+        if (virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
             virBufferAsprintf(buf, "<swap_hard_limit unit='KiB'>"
                               "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
         }

@@ -1850,7 +1850,7 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
             if (openvzDomainGetBarrierLimit(domain, name, &barrier, &limit) < 0)
                 goto cleanup;
 
-            val = (limit == LONG_MAX) ? 0ull : limit * kb_per_pages;
+            val = (limit == LONG_MAX) ? VIR_DOMAIN_MEMORY_PARAM_UNLIMITED : limit * kb_per_pages;
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
                 goto cleanup;
@@ -1861,7 +1861,7 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
             if (openvzDomainGetBarrierLimit(domain, name, &barrier, &limit) < 0)
                 goto cleanup;
 
-            val = (barrier == LONG_MAX) ? 0ull : barrier * kb_per_pages;
+            val = (barrier == LONG_MAX) ? VIR_DOMAIN_MEMORY_PARAM_UNLIMITED : barrier * kb_per_pages;
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
                 goto cleanup;

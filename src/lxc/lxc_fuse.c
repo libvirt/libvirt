@@ -165,11 +165,13 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             *ptr = '\0';
 
             if (STREQ(line, "MemTotal") &&
-                (def->mem.hard_limit || def->mem.max_balloon)) {
+                (virMemoryLimitIsSet(def->mem.hard_limit) ||
+                 def->mem.max_balloon)) {
                 virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
                                   meminfo.memtotal);
             } else if (STREQ(line, "MemFree") &&
-                       (def->mem.hard_limit || def->mem.max_balloon)) {
+                       (virMemoryLimitIsSet(def->mem.hard_limit) ||
+                        def->mem.max_balloon)) {
                 virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                                   (meminfo.memtotal - meminfo.memusage));
             } else if (STREQ(line, "Buffers")) {
@@ -198,10 +200,12 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             } else if (STREQ(line, "Unevictable")) {
                 virBufferAsprintf(new_meminfo, "Unevictable:    %8llu kB\n",
                                   meminfo.unevictable);
-            } else if (STREQ(line, "SwapTotal") && def->mem.swap_hard_limit) {
+            } else if (STREQ(line, "SwapTotal") &&
+                       virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
                 virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal));
-            } else if (STREQ(line, "SwapFree") && def->mem.swap_hard_limit) {
+            } else if (STREQ(line, "SwapFree") &&
+                       virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
                 virBufferAsprintf(new_meminfo, "SwapFree:       %8llu kB\n",
                                   (meminfo.swaptotal - meminfo.memtotal -
                                    meminfo.swapusage + meminfo.memusage));

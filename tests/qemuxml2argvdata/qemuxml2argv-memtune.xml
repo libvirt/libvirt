@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <memtune>
     <hard_limit unit='KiB'>512000</hard_limit>
-    <soft_limit unit='bytes'>131071999</soft_limit>
+    <soft_limit unit='bytes'>0</soft_limit>
     <swap_hard_limit unit='KB'>1048576</swap_hard_limit>
   </memtune>
   <vcpu placement='static'>1</vcpu>

@@ -2233,7 +2233,6 @@ virUSBDeviceSetUsedBy;
 
 
 # util/virutil.h
-virCompareLimitUlong;
 virDoubleToStr;
 virEnumFromString;
 virEnumToString;
