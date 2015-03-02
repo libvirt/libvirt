@@ -878,7 +878,7 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
 /*
  * Start a domain through libxenlight.
  *
- * virDomainObjPtr must be locked on invocation
+ * virDomainObjPtr must be locked and a job acquired on invocation
  */
 int
 libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
@@ -903,16 +903,13 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     libxl_domain_config_init(&d_config);
 
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
-        return ret;
-
     cfg = libxlDriverConfigGet(driver);
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
     if (restore_fd < 0) {
         managed_save_path = libxlDomainManagedSavePath(driver, vm);
         if (managed_save_path == NULL)
-            goto endjob;
+            goto cleanup;
 
         if (virFileExists(managed_save_path)) {
 
@@ -920,7 +917,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                                        managed_save_path,
                                                        &def, &hdr);
             if (managed_save_fd < 0)
-                goto endjob;
+                goto cleanup;
 
             restore_fd = managed_save_fd;
 
@@ -934,7 +931,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                _("cannot restore domain '%s' uuid %s from a file"
                                  " which belongs to domain '%s' uuid %s"),
                                vm->def->name, vm_uuidstr, def->name, def_uuidstr);
-                goto endjob;
+                goto cleanup;
             }
 
             virDomainObjAssignDef(vm, def, true, NULL);
@@ -951,14 +948,14 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     if (libxlBuildDomainConfig(driver->reservedVNCPorts, vm->def,
                                cfg->ctx, &d_config) < 0)
-        goto endjob;
+        goto cleanup;
 
     if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
-        goto endjob;
+        goto cleanup;
 
     if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                        vm->def, VIR_HOSTDEV_SP_PCI) < 0)
-        goto endjob;
+        goto cleanup;
 
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
@@ -990,7 +987,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to restore domain '%s'"),
                            d_config.c_info.name);
-        goto endjob;
+        goto cleanup;
     }
 
     /*
@@ -1037,7 +1034,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         libxlDomainEventQueue(driver, event);
 
     ret = 0;
-    goto endjob;
+    goto cleanup;
 
  cleanup_dom:
     if (priv->deathW) {
@@ -1048,10 +1045,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
- endjob:
-    if (!libxlDomainObjEndJob(driver, vm))
-        vm = NULL;
-
+ cleanup:
     libxl_domain_config_dispose(&d_config);
     VIR_FREE(dom_xml);
     VIR_FREE(managed_save_path);

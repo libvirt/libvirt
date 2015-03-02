@@ -303,18 +303,26 @@ libxlAutostartDomain(virDomainObjPtr vm,
     virObjectLock(vm);
     virResetLastError();
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
+        virObjectUnlock(vm);
+        return ret;
+    }
+
     if (vm->autostart && !virDomainObjIsActive(vm) &&
         libxlDomainStart(driver, vm, false, -1) < 0) {
         err = virGetLastError();
         VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                   vm->def->name,
                   err ? err->message : _("unknown error"));
-        goto cleanup;
+        goto endjob;
     }
 
     ret = 0;
- cleanup:
-    virObjectUnlock(vm);
+
+ endjob:
+    if (libxlDomainObjEndJob(driver, vm))
+        virObjectUnlock(vm);
+
     return ret;
 }
 
@@ -885,16 +893,27 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     def = NULL;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
+        goto cleanup;
+    }
+
     if (libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0,
                      -1) < 0) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-        goto cleanup;
+        goto endjob;
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     virDomainDefFree(def);
@@ -1681,7 +1700,7 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
 
     fd = libxlDomainSaveImageOpen(driver, cfg, from, &def, &hdr);
     if (fd < 0)
-        return -1;
+        goto cleanup;
 
     if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
@@ -1695,11 +1714,20 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
 
     def = NULL;
 
-    ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_SAVE_PAUSED) != 0, fd);
-    if (ret < 0 && !vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
+        goto cleanup;
     }
+
+    ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_SAVE_PAUSED) != 0, fd);
+    if (ret < 0 && !vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
+
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (VIR_CLOSE(fd) < 0)
@@ -2567,16 +2595,23 @@ libxlDomainCreateWithFlags(virDomainPtr dom,
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is already running"));
-        goto cleanup;
+        goto endjob;
     }
 
     ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0, -1);
     if (ret < 0)
-        goto cleanup;
+        goto endjob;
     dom->id = vm->def->id;
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
