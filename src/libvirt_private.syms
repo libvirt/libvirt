@@ -184,6 +184,7 @@ virDomainClockOffsetTypeToString;
 virDomainConfigFile;
 virDomainControllerDefFree;
 virDomainControllerFind;
+virDomainControllerFindByType;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
 virDomainControllerModelPCITypeToString;

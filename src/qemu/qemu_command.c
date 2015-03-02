@@ -1403,6 +1403,65 @@ qemuAssignSpaprVIOAddress(virDomainDefPtr def, virDomainDeviceInfoPtr info,
     return 0;
 }
 
+
+static int
+qemuDomainAssignVirtioSerialAddresses(virDomainDefPtr def,
+                                      virDomainObjPtr obj)
+{
+    int ret = -1;
+    size_t i;
+    virDomainVirtioSerialAddrSetPtr addrs = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+
+    if (virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) == -1)
+        return 0;
+
+    if (!(addrs = virDomainVirtioSerialAddrSetCreate()))
+        goto cleanup;
+
+    if (virDomainVirtioSerialAddrSetAddControllers(addrs, def) < 0)
+        goto cleanup;
+
+    if (virDomainDeviceInfoIterate(def, virDomainVirtioSerialAddrReserve,
+                                   addrs) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Finished reserving existing ports");
+
+    for (i = 0; i < def->nconsoles; i++) {
+        virDomainChrDefPtr chr = def->consoles[i];
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO &&
+            !virDomainVirtioSerialAddrIsComplete(&chr->info) &&
+            virDomainVirtioSerialAddrAutoAssign(addrs, &chr->info, true) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDefPtr chr = def->channels[i];
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+            chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+            !virDomainVirtioSerialAddrIsComplete(&chr->info) &&
+            virDomainVirtioSerialAddrAutoAssign(addrs, &chr->info, false) < 0)
+            goto cleanup;
+    }
+
+    if (obj && obj->privateData) {
+        priv = obj->privateData;
+        /* if this is the live domain object, we persist the addresses */
+        virDomainVirtioSerialAddrSetFree(priv->vioserialaddrs);
+        priv->persistentAddrs = 1;
+        priv->vioserialaddrs = addrs;
+        addrs = NULL;
+    }
+    ret = 0;
+
+ cleanup:
+    virDomainVirtioSerialAddrSetFree(addrs);
+    return ret;
+}
+
+
 int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
                                       virQEMUCapsPtr qemuCaps)
 {
@@ -1648,6 +1707,10 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virDomainObjPtr obj)
 {
     int rc;
+
+    rc = qemuDomainAssignVirtioSerialAddresses(def, obj);
+    if (rc)
+        return rc;
 
     rc = qemuDomainAssignSpaprVIOAddresses(def, qemuCaps);
     if (rc)

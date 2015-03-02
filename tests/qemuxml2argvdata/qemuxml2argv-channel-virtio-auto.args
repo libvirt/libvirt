@@ -15,7 +15,7 @@ virtserialport,bus=virtio-serial1.0,nr=3,chardev=charchannel2,id=channel2,\
 name=org.linux-kvm.port.bar -chardev pty,id=charchannel3 -device \
 virtserialport,bus=virtio-serial0.0,nr=2,chardev=charchannel3,id=channel3,\
 name=org.linux-kvm.port.wizz -chardev pty,id=charchannel4 -device \
-virtserialport,bus=virtio-serial1.0,nr=4,chardev=charchannel4,id=channel4,\
+virtserialport,bus=virtio-serial1.0,nr=2,chardev=charchannel4,id=channel4,\
 name=org.linux-kvm.port.ooh -chardev pty,id=charchannel5 -device \
 virtserialport,bus=virtio-serial2.0,nr=1,chardev=charchannel5,id=channel5,\
 name=org.linux-kvm.port.lla -device virtio-balloon-pci,id=balloon0,\

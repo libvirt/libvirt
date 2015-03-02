@@ -3512,21 +3512,6 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
 
             chr->target.port = maxport + 1;
         }
-
-        if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
-            chr->info.addr.vioserial.port == 0) {
-            int maxport = 0;
-
-            for (i = 0; i < cnt; i++) {
-                const virDomainChrDef *thischr = arrPtr[i];
-                if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
-                    thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
-                    thischr->info.addr.vioserial.bus == chr->info.addr.vioserial.bus &&
-                    (int)thischr->info.addr.vioserial.port > maxport)
-                    maxport = thischr->info.addr.vioserial.port;
-            }
-            chr->info.addr.vioserial.port = maxport + 1;
-        }
     }
 
     /* set default path for virtio-rng "random" backend to /dev/random */
@@ -12500,6 +12485,20 @@ virDomainControllerFind(virDomainDefPtr def,
 }
 
 int
+virDomainControllerFindByType(virDomainDefPtr def,
+                              int type)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == type)
+            return i;
+    }
+
+    return -1;
+}
+
+int
 virDomainControllerFindByPCIAddress(virDomainDefPtr def,
                                     virDevicePCIAddressPtr addr)
 {
@@ -14935,25 +14934,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
 
         def->channels[def->nchannels++] = chr;
-
-        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-            chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-            chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            chr->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
-
-        if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
-            chr->info.addr.vioserial.port == 0) {
-            int maxport = 0;
-            for (j = 0; j < i; j++) {
-                virDomainChrDefPtr thischr = def->channels[j];
-                if (thischr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
-                    thischr->info.addr.vioserial.controller == chr->info.addr.vioserial.controller &&
-                    thischr->info.addr.vioserial.bus == chr->info.addr.vioserial.bus &&
-                    (int)thischr->info.addr.vioserial.port > maxport)
-                    maxport = thischr->info.addr.vioserial.port;
-            }
-            chr->info.addr.vioserial.port = maxport + 1;
-        }
     }
     VIR_FREE(nodes);
 

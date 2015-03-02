@@ -163,6 +163,7 @@ struct _qemuDomainObjPrivate {
 
     virDomainPCIAddressSetPtr pciaddrs;
     virDomainCCWAddressSetPtr ccwaddrs;
+    virDomainVirtioSerialAddrSetPtr vioserialaddrs;
     int persistentAddrs;
 
     virQEMUCapsPtr qemuCaps;
