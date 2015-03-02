@@ -263,6 +263,7 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
                                   unsigned int flags)
 {
     int ret = -1;
+    virCommandPtr cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -272,7 +273,7 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
+    cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     if (virCommandRun(cmd, NULL) < 0)
