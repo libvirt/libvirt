@@ -1464,17 +1464,17 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
 
     fd = libxlDomainSaveImageOpen(driver, cfg, from, &def, &hdr);
     if (fd < 0)
-        goto cleanup_unlock;
+        return -1;
 
     if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
-        goto cleanup_unlock;
+        goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
-        goto cleanup_unlock;
+        goto cleanup;
 
     def = NULL;
 
@@ -1492,10 +1492,6 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
         virObjectUnlock(vm);
     virObjectUnref(cfg);
     return ret;
-
- cleanup_unlock:
-    libxlDriverUnlock(driver);
-    goto cleanup;
 }
 
 static int
