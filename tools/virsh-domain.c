@@ -8255,6 +8255,22 @@ static const vshCmdOptDef opts_memtune[] = {
     {.name = NULL}
 };
 
+/**
+ * vshMemtuneGetSize
+ *
+ * @cmd: pointer to vshCmd
+ * @name: name of a parameter for which we would like to get a value
+ * @value: pointer to variable where the value will be stored
+ *
+ * This function will parse virsh command line in order to load a value of
+ * specified parameter. If the value is -1 we will handle it as unlimited and
+ * use VIR_DOMAIN_MEMORY_PARAM_UNLIMITED instead.
+ *
+ * Returns:
+ *  >0 if option found and valid
+ *  0 if option not found and not required
+ *  <0 in all other cases
+ */
 static int
 vshMemtuneGetSize(const vshCmd *cmd, const char *name, long long *value)
 {
@@ -8276,17 +8292,17 @@ vshMemtuneGetSize(const vshCmd *cmd, const char *name, long long *value)
     if (virScaleInteger(&tmp, end, 1024, LLONG_MAX) < 0)
         return -1;
     *value = VIR_DIV_UP(tmp, 1024);
-    return 0;
+    return 1;
 }
 
 static bool
 cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    long long hard_limit = 0, soft_limit = 0, swap_hard_limit = 0;
-    long long min_guarantee = 0;
+    long long tmpVal;
     int nparams = 0;
     int maxparams = 0;
+    int rc;
     size_t i;
     virTypedParameterPtr params = NULL;
     bool ret = false;
@@ -8306,50 +8322,24 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshMemtuneGetSize(cmd, "hard-limit", &hard_limit) < 0 ||
-        vshMemtuneGetSize(cmd, "soft-limit", &soft_limit) < 0 ||
-        vshMemtuneGetSize(cmd, "swap-hard-limit", &swap_hard_limit) < 0 ||
-        vshMemtuneGetSize(cmd, "min-guarantee", &min_guarantee) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter"));
-        goto cleanup;
-    }
+#define PARSE_MEMTUNE_PARAM(NAME, FIELD)                                    \
+    if ((rc = vshMemtuneGetSize(cmd, NAME, &tmpVal)) < 0) {                 \
+        vshError(ctl, "%s", _("Unable to parse integer parameter 'NAME'")); \
+        goto cleanup;                                                       \
+    }                                                                       \
+    if (rc == 1) {                                                          \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,          \
+                                    FIELD, tmpVal) < 0)                     \
+            goto save_error;                                                \
+    }                                                                       \
 
-    if (hard_limit) {
-        if (hard_limit == -1)
-            hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                    hard_limit) < 0)
-            goto save_error;
-    }
 
-    if (soft_limit) {
-        if (soft_limit == -1)
-            soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                    soft_limit) < 0)
-            goto save_error;
-    }
+    PARSE_MEMTUNE_PARAM("hard-limit", VIR_DOMAIN_MEMORY_HARD_LIMIT);
+    PARSE_MEMTUNE_PARAM("soft-limit", VIR_DOMAIN_MEMORY_SOFT_LIMIT);
+    PARSE_MEMTUNE_PARAM("swap-hard-limit", VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT);
+    PARSE_MEMTUNE_PARAM("min-guarantee", VIR_DOMAIN_MEMORY_MIN_GUARANTEE);
 
-    if (swap_hard_limit) {
-        if (swap_hard_limit == -1)
-            swap_hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                    swap_hard_limit) < 0)
-            goto save_error;
-    }
-
-    if (min_guarantee) {
-        if (min_guarantee == -1)
-            min_guarantee = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
-                                    min_guarantee) < 0)
-            goto save_error;
-    }
+#undef PARSE_MEMTUNE_PARAM
 
     if (nparams == 0) {
         /* get the number of memory parameters */
