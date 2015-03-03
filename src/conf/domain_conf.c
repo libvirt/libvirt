@@ -3148,6 +3148,45 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
 }
 
 
+/**
+ * virDomainDefRemoveDuplicateMetadata:
+ * @def: Remove duplicate metadata for this def
+ *
+ * This function removes metadata elements in @def that share the namespace.
+ * The first metadata entry of every duplicate namespace is kept.
+ */
+static void
+virDomainDefRemoveDuplicateMetadata(virDomainDefPtr def)
+{
+    xmlNodePtr child;
+    xmlNodePtr next;
+
+    if (!def || !def->metadata)
+        return;
+
+    for (child = def->metadata->children; child; child = child->next) {
+        /* check that every other child of @root doesn't share the namespace of
+         * the current one and delete them possibly */
+        next = child->next;
+        while (next) {
+            xmlNodePtr dupl = NULL;
+
+            if (child->ns && next->ns &&
+                STREQ_NULLABLE((const char *) child->ns->href,
+                               (const char *) next->ns->href))
+                dupl = next;
+
+            next = next->next;
+
+            if (dupl) {
+                xmlUnlinkNode(dupl);
+                xmlFreeNode(dupl);
+            }
+        }
+    }
+}
+
+
 static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
                               virCapsPtr caps ATTRIBUTE_UNUSED)
@@ -3315,6 +3354,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
             }
         }
     }
+
+    /* clean up possibly duplicated metadata entries */
+    virDomainDefRemoveDuplicateMetadata(def);
 
     return 0;
 }
