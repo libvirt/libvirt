@@ -3762,6 +3762,11 @@ qemuProcessReconnect(void *opaque)
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
 
+    /* XXX If we ever gonna change pid file pattern, come up with
+     * some intelligence here to deal with old paths. */
+    if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, obj->def->name)))
+        goto killvm;
+
     if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
         goto killvm;
 
