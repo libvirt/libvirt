@@ -157,8 +157,9 @@ virNetworkObjListPtr virNetworkObjListNew(void)
     return nets;
 }
 
-virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
-                                         const unsigned char *uuid)
+virNetworkObjPtr
+virNetworkObjFindByUUIDLocked(virNetworkObjListPtr nets,
+                              const unsigned char *uuid)
 {
     virNetworkObjPtr ret = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -168,6 +169,18 @@ virNetworkObjPtr virNetworkObjFindByUUID(virNetworkObjListPtr nets,
     ret = virHashLookup(nets->objs, uuidstr);
     if (ret)
         virObjectLock(ret);
+    return ret;
+}
+
+virNetworkObjPtr
+virNetworkObjFindByUUID(virNetworkObjListPtr nets,
+                        const unsigned char *uuid)
+{
+    virNetworkObjPtr ret;
+
+    virObjectLock(nets);
+    ret = virNetworkObjFindByUUIDLocked(nets, uuid);
+    virObjectUnlock(nets);
     return ret;
 }
 
@@ -186,14 +199,27 @@ virNetworkObjSearchName(const void *payload,
     return want;
 }
 
-virNetworkObjPtr virNetworkObjFindByName(virNetworkObjListPtr nets,
-                                         const char *name)
+virNetworkObjPtr
+virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
+                              const char *name)
 {
     virNetworkObjPtr ret = NULL;
 
     ret = virHashSearch(nets->objs, virNetworkObjSearchName, name);
     if (ret)
         virObjectLock(ret);
+    return ret;
+}
+
+virNetworkObjPtr
+virNetworkObjFindByName(virNetworkObjListPtr nets,
+                        const char *name)
+{
+    virNetworkObjPtr ret;
+
+    virObjectLock(nets);
+    ret = virNetworkObjFindByNameLocked(nets, name);
+    virObjectUnlock(nets);
     return ret;
 }
 
