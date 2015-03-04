@@ -2598,3 +2598,27 @@ long virGetSystemPageSizeKB(void)
         return val;
     return val / 1024;
 }
+
+/**
+ * virMemoryLimitTruncate
+ *
+ * Return truncated memory limit to VIR_DOMAIN_MEMORY_PARAM_UNLIMITED as maximum
+ * which means that the limit is not set => unlimited.
+ */
+unsigned long long
+virMemoryLimitTruncate(unsigned long long value)
+{
+    return value < VIR_DOMAIN_MEMORY_PARAM_UNLIMITED ? value :
+        VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+}
+
+/**
+ * virMemoryLimitIsSet
+ *
+ * Returns true if the limit is set and false for unlimited value.
+ */
+bool
+virMemoryLimitIsSet(unsigned long long value)
+{
+    return value < VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+}

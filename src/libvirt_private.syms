@@ -2270,6 +2270,8 @@ virIsCapableVport;
 virIsDevMapperDevice;
 virIsSUID;
 virManageVport;
+virMemoryLimitIsSet;
+virMemoryLimitTruncate;
 virParseNumber;
 virParseOwnershipIds;
 virParseVersionString;

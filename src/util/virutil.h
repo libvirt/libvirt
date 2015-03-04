@@ -247,4 +247,7 @@ unsigned int virGetListenFDs(void);
 long virGetSystemPageSize(void);
 long virGetSystemPageSizeKB(void);
 
+unsigned long long virMemoryLimitTruncate(unsigned long long value);
+bool virMemoryLimitIsSet(unsigned long long value);
+
 #endif /* __VIR_UTIL_H__ */
