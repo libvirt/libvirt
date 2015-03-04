@@ -582,14 +582,16 @@
     -->
   <define name="resources">
     <interleave>
-      <element name="memory">
-        <ref name='scaledInteger'/>
-        <optional>
-          <attribute name="dumpCore">
-            <ref name="virOnOff"/>
-          </attribute>
-        </optional>
-      </element>
+      <optional>
+        <element name="memory">
+          <ref name='scaledInteger'/>
+          <optional>
+            <attribute name="dumpCore">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
       <optional>
         <element name="currentMemory">
           <ref name='scaledInteger'/>

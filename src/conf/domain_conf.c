@@ -3208,6 +3208,13 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
+    if (virDomainDefGetMemoryInitial(def) == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Memory size must be specified via <memory> or in the "
+                         "<numa> configuration"));
+        return -1;
+    }
+
     if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def)) {
         /* Older libvirt could get into this situation due to
          * rounding; if the discrepancy is less than 4MiB, we silently
@@ -13245,7 +13252,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* Extract domain memory */
     if (virDomainParseMemory("./memory[1]", NULL, ctxt,
-                             &def->mem.max_balloon, true, true) < 0)
+                             &def->mem.max_balloon, false, true) < 0)
         goto error;
 
     if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
