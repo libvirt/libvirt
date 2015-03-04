@@ -10533,7 +10533,8 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                           virDomainChrSerialTargetTypeToString(serial->targetType),
                           serial->info.alias, serial->info.alias);
 
-        if (serial->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+        switch (serial->targetType) {
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_SERIAL)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("usb-serial is not supported in this QEMU binary"));
@@ -10549,6 +10550,15 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
 
             if (qemuBuildDeviceAddressStr(&cmd, def, &serial->info, qemuCaps) < 0)
                 goto error;
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("no addresses are suported for isa-serial"));
+                goto error;
+            }
+            break;
         }
     }
 
