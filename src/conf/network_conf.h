@@ -464,6 +464,9 @@ int virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
                                    virNetworkObjListFilter filter,
                                    virConnectPtr conn);
 
+void virNetworkObjListPrune(virNetworkObjListPtr nets,
+                            unsigned int flags);
+
 /* for testing */
 int
 virNetworkDefUpdateSection(virNetworkDefPtr def,

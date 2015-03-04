@@ -4381,3 +4381,34 @@ virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
 
     return count;
 }
+
+/**
+ * virNetworkObjListPrune:
+ * @nets: a list of network objects
+ * @flags: bitwise-OR of virConnectListAllNetworksFlags
+ *
+ * Iterate over list of network objects and remove the desired
+ * ones from it.
+ */
+void
+virNetworkObjListPrune(virNetworkObjListPtr nets,
+                       unsigned int flags)
+{
+    size_t i = 0;
+
+    while (i < nets->count) {
+        virNetworkObjPtr obj = nets->objs[i];
+
+        virNetworkObjLock(obj);
+
+        if (virNetworkMatch(obj, flags)) {
+            virNetworkObjUnlock(obj);
+            virNetworkObjFree(obj);
+
+            VIR_DELETE_ELEMENT(nets->objs, i, nets->count);
+        } else {
+            virNetworkObjUnlock(obj);
+            i++;
+        }
+    }
+}

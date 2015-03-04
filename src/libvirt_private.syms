@@ -573,6 +573,7 @@ virNetworkObjListForEach;
 virNetworkObjListFree;
 virNetworkObjListGetNames;
 virNetworkObjListNumOfNetworks;
+virNetworkObjListPrune;
 virNetworkObjLock;
 virNetworkObjReplacePersistentDef;
 virNetworkObjSetDefTransient;
