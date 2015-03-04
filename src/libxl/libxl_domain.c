@@ -435,7 +435,7 @@ libxlDomainShutdownThread(void *opaque)
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
     }
-    libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
+    libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm, reason);
     if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
@@ -447,7 +447,7 @@ libxlDomainShutdownThread(void *opaque)
         libxlDomainEventQueue(driver, dom_event);
         dom_event = NULL;
     }
-    libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
+    libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
     if (libxlDomainStart(driver, vm, false, -1) < 0) {
         virErrorPtr err = virGetLastError();
@@ -623,6 +623,29 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return -1;
+}
+
+/*
+ * Internal domain destroy function.
+ *
+ * virDomainObjPtr must be locked on invocation
+ */
+int
+libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
+                           virDomainObjPtr vm)
+{
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    int ret = -1;
+
+    /* Unlock virDomainObj during destroy, which can take considerable
+     * time on large memory domains.
+     */
+    virObjectUnlock(vm);
+    ret = libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
+    virObjectLock(vm);
+
+    virObjectUnref(cfg);
+    return ret;
 }
 
 /*
@@ -1022,7 +1045,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
     }
-    libxl_domain_destroy(cfg->ctx, domid, NULL);
+    libxlDomainDestroyInternal(driver, vm);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
