@@ -108,7 +108,7 @@
 %define with_storage_iscsi    0%{!?_without_storage_iscsi:%{server_drivers}}
 %define with_storage_disk     0%{!?_without_storage_disk:%{server_drivers}}
 %define with_storage_mpath    0%{!?_without_storage_mpath:%{server_drivers}}
-%if 0%{?fedora} >= 16
+%if 0%{?fedora} >= 16 || 0%{?rhel} >= 7
     %define with_storage_rbd      0%{!?_without_storage_rbd:%{server_drivers}}
 %else
     %define with_storage_rbd      0
@@ -179,6 +179,13 @@
 %ifnarch x86_64
     %if 0%{?rhel} >= 6
         %define with_storage_gluster 0
+    %endif
+%endif
+
+# librados and librbd are built only on x86_64 on rhel
+%ifnarch x86_64
+    %if 0%{?rhel} >= 7
+        %define with_storage_rbd 0
     %endif
 %endif
 
@@ -566,7 +573,12 @@ BuildRequires: device-mapper-devel
     %endif
 %endif
 %if %{with_storage_rbd}
+    %if 0%{?rhel} >= 7
+BuildRequires: librados2-devel
+BuildRequires: librbd1-devel
+    %else
 BuildRequires: ceph-devel
+    %endif
 %endif
 %if %{with_storage_gluster}
     %if 0%{?rhel} >= 6
