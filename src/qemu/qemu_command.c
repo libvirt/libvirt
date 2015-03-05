@@ -161,6 +161,58 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "interleave");
 
 /**
+ * qemuVirCommandGetFDSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU -add-fd command line option
+ * for the given file descriptor. The file descriptor must previously
+ * have been 'transferred' in a virCommandPassFD() call.
+ * This function for example returns "set=10,fd=20".
+ */
+static char *
+qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
+
+    return result;
+}
+
+/**
+ * qemuVirCommandGetDevSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU path= parameter where a file
+ * descriptor is accessed via a file descriptor set, for example
+ * /dev/fdset/10. The file descriptor must previously have been
+ * 'transferred' in a virCommandPassFD() call.
+ */
+static char *
+qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
+    return result;
+}
+
+
+/**
  * qemuPhysIfaceConnect:
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @driver: pointer to the driver instance
@@ -6322,14 +6374,19 @@ qemuBuildRNGDevStr(virDomainDefPtr def,
 
 
 static char *qemuBuildTPMBackendStr(const virDomainDef *def,
+                                    virCommandPtr cmd,
                                     virQEMUCapsPtr qemuCaps,
-                                    const char *emulator)
+                                    const char *emulator,
+                                    int *tpmfd, int *cancelfd)
 {
     const virDomainTPMDef *tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *type = virDomainTPMBackendTypeToString(tpm->type);
-    char *cancel_path;
+    char *cancel_path = NULL, *devset = NULL;
     const char *tpmdev;
+
+    *tpmfd = -1;
+    *cancelfd = -1;
 
     virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
 
@@ -6342,11 +6399,42 @@ static char *qemuBuildTPMBackendStr(const virDomainDef *def,
         if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
             goto error;
 
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
+            *tpmfd = open(tpmdev, O_RDWR);
+            if (*tpmfd < 0) {
+                virReportSystemError(errno, _("Could not open TPM device %s"),
+                                     tpmdev);
+                goto error;
+            }
+
+            virCommandPassFD(cmd, *tpmfd,
+                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            devset = qemuVirCommandGetDevSet(cmd, *tpmfd);
+            if (devset == NULL)
+                goto error;
+
+            *cancelfd = open(cancel_path, O_WRONLY);
+            if (*cancelfd < 0) {
+                virReportSystemError(errno,
+                                     _("Could not open TPM device's cancel "
+                                       "path %s"), cancel_path);
+                goto error;
+            }
+            VIR_FREE(cancel_path);
+
+            virCommandPassFD(cmd, *cancelfd,
+                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            cancel_path = qemuVirCommandGetDevSet(cmd, *cancelfd);
+            if (cancel_path == NULL)
+                goto error;
+        }
         virBufferAddLit(&buf, ",path=");
-        virBufferEscape(&buf, ',', ",", "%s", tpmdev);
+        virBufferEscape(&buf, ',', ",", "%s", devset ? devset : tpmdev);
 
         virBufferAddLit(&buf, ",cancel-path=");
         virBufferEscape(&buf, ',', ",", "%s", cancel_path);
+
+        VIR_FREE(devset);
         VIR_FREE(cancel_path);
 
         break;
@@ -6366,6 +6454,9 @@ static char *qemuBuildTPMBackendStr(const virDomainDef *def,
                    emulator, type);
 
  error:
+    VIR_FREE(devset);
+    VIR_FREE(cancel_path);
+
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -8199,12 +8290,34 @@ qemuBuildTPMCommandLine(virDomainDefPtr def,
                         const char *emulator)
 {
     char *optstr;
+    int tpmfd = -1;
+    int cancelfd = -1;
+    char *fdset;
 
-    if (!(optstr = qemuBuildTPMBackendStr(def, qemuCaps, emulator)))
+    if (!(optstr = qemuBuildTPMBackendStr(def, cmd, qemuCaps, emulator,
+                                          &tpmfd, &cancelfd)))
         return -1;
 
     virCommandAddArgList(cmd, "-tpmdev", optstr, NULL);
     VIR_FREE(optstr);
+
+    if (tpmfd >= 0) {
+        fdset = qemuVirCommandGetFDSet(cmd, tpmfd);
+        if (!fdset)
+            return -1;
+
+        virCommandAddArgList(cmd, "-add-fd", fdset, NULL);
+        VIR_FREE(fdset);
+    }
+
+    if (cancelfd >= 0) {
+        fdset = qemuVirCommandGetFDSet(cmd, cancelfd);
+        if (!fdset)
+            return -1;
+
+        virCommandAddArgList(cmd, "-add-fd", fdset, NULL);
+        VIR_FREE(fdset);
+    }
 
     if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps, emulator)))
         return -1;
