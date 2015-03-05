@@ -47,6 +47,10 @@
 # undef HAVE_STRUCT_IFREQ
 #endif
 
+#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
+# include <linux/ethtool.h>
+#endif
+
 #if HAVE_DECL_LINK_ADDR
 # include <sys/sockio.h>
 # include <net/if_dl.h>

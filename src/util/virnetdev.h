@@ -32,7 +32,6 @@
 # include "virpci.h"
 # include "device_conf.h"
 
-# include <linux/ethtool.h>
 # ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
 # else
