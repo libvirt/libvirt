@@ -8106,6 +8106,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
     .domainGetIOThreadsInfo = remoteDomainGetIOThreadsInfo, /* 1.2.14 */
+    .domainPinIOThread = remoteDomainPinIOThread, /* 1.2.14 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = remoteDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = remoteNodeGetSecurityModel, /* 0.6.1 */

@@ -1199,6 +1199,13 @@ struct remote_domain_get_iothreads_info_ret {
     unsigned int ret;
 };
 
+struct remote_domain_pin_iothread_args {
+    remote_nonnull_domain dom;
+    unsigned int iothreads_id;
+    opaque cpumap<REMOTE_CPUMAP_MAX>; /* (unsigned char *) */
+    unsigned int flags;
+};
+
 struct remote_domain_get_security_label_args {
     remote_nonnull_domain dom;
 };
@@ -5593,5 +5600,13 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351
+    REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352
 };

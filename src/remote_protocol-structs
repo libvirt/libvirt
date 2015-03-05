@@ -825,6 +825,15 @@ struct remote_domain_get_iothreads_info_ret {
         } info;
         u_int                      ret;
 };
+struct remote_domain_pin_iothread_args {
+        remote_nonnull_domain      dom;
+        u_int                      iothreads_id;
+        struct {
+                u_int              cpumap_len;
+                char *             cpumap_val;
+        } cpumap;
+        u_int                      flags;
+};
 struct remote_domain_get_security_label_args {
         remote_nonnull_domain      dom;
 };
@@ -2982,4 +2991,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_FSINFO = 349,
         REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350,
         REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
+        REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
 };
