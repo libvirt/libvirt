@@ -1214,6 +1214,7 @@ virCommandNewArgList;
 virCommandNewArgs;
 virCommandNonblockingFDs;
 virCommandPassFD;
+virCommandPassFDGetFDIndex;
 virCommandPassListenFDs;
 virCommandRawStatus;
 virCommandRequireHandshake;

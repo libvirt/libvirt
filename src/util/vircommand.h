@@ -62,6 +62,9 @@ void virCommandPassFD(virCommandPtr cmd,
 
 void virCommandPassListenFDs(virCommandPtr cmd);
 
+int virCommandPassFDGetFDIndex(virCommandPtr cmd,
+                               int fd);
+
 void virCommandSetPidFile(virCommandPtr cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);
 
