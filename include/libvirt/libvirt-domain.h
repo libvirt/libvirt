@@ -1609,6 +1609,11 @@ void                 virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info);
 int                  virDomainGetIOThreadsInfo(virDomainPtr domain,
                                                virDomainIOThreadInfoPtr **info,
                                                unsigned int flags);
+int                  virDomainPinIOThread(virDomainPtr domain,
+                                          unsigned int iothread_id,
+                                          unsigned char *cpumap,
+                                          int maplen,
+                                          unsigned int flags);
 
 /**
  * VIR_USE_CPU:

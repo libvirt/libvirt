@@ -7966,6 +7966,82 @@ virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info)
 
 
 /**
+ * virDomainPinIOThread:
+ * @domain: a domain object
+ * @iothread_id: the IOThread ID to set the CPU affinity
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN)
+ *      Each bit set to 1 means that corresponding CPU is usable.
+ *      Bytes are stored in little-endian order: CPU0-7, 8-15...
+ *      In each byte, lowest CPU number is least significant bit.
+ * @maplen: number of bytes in cpumap, from 1 up to size of CPU map in
+ *      underlying virtualization system (Xen...).
+ *      If maplen < size, missing bytes are set to zero.
+ *      If maplen > size, failure code is returned.
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Dynamically change the real CPUs which can be allocated to an IOThread.
+ * This function may require privileged access to the hypervisor.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ * Not all hypervisors can support all flag combinations.
+ *
+ * See also virDomainGetIOThreadsInfo for querying this information.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainPinIOThread(virDomainPtr domain,
+                     unsigned int iothread_id,
+                     unsigned char *cpumap,
+                     int maplen,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "iothread_id=%u, cpumap=%p, maplen=%d",
+                     iothread_id, cpumap, maplen);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    if ((unsigned short) iothread_id != iothread_id) {
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u"),
+                       iothread_id);
+        goto error;
+    }
+    virCheckPositiveArgGoto(iothread_id, error);
+    virCheckNonNullArgGoto(cpumap, error);
+    virCheckPositiveArgGoto(maplen, error);
+
+    if (conn->driver->domainPinIOThread) {
+        int ret;
+        ret = conn->driver->domainPinIOThread(domain, iothread_id,
+                                              cpumap, maplen, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainGetSecurityLabel:
  * @domain: a domain object
  * @seclabel: pointer to a virSecurityLabel structure
