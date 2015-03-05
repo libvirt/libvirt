@@ -30,8 +30,11 @@
 #include "virerror.h"
 #include "virmacaddr.h"
 #include "virstring.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("util.netdevopenvswitch");
 
 /**
  * virNetDevOpenvswitchAddPort:
@@ -206,7 +209,7 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     virCommandPtr cmd = NULL;
     int ret = -1;
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "get", "Interface",
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "--if-exists", "get", "Interface",
                                ifname, "external_ids:PortData", NULL);
 
     virCommandSetOutputBuffer(cmd, migrate);
@@ -240,6 +243,11 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 {
     virCommandPtr cmd = NULL;
     int ret = -1;
+
+    if (!migrate) {
+        VIR_DEBUG("No OVS port data for interface %s", ifname);
+        return 0;
+    }
 
     cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "set",
                                "Interface", ifname, NULL);
