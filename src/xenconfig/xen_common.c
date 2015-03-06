@@ -972,33 +972,6 @@ xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
         if (str &&
             xenParseSxprSound(def, str) < 0)
             return -1;
-
-        if (xenConfigGetString(conf, "usbdevice", &str, NULL) < 0)
-            return -1;
-
-        if (str &&
-            (STREQ(str, "tablet") ||
-             STREQ(str, "mouse") ||
-             STREQ(str, "keyboard"))) {
-            virDomainInputDefPtr input;
-            if (VIR_ALLOC(input) < 0)
-                return -1;
-
-            input->bus = VIR_DOMAIN_INPUT_BUS_USB;
-            if (STREQ(str, "mouse"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
-            else if (STREQ(str, "tablet"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
-            else if (STREQ(str, "keyboard"))
-                input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
-            if (VIR_ALLOC_N(def->inputs, 1) < 0) {
-                virDomainInputDefFree(input);
-                return -1;
-
-            }
-            def->inputs[0] = input;
-            def->ninputs = 1;
-        }
     }
 
     return 0;
@@ -1949,42 +1922,6 @@ xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 }
 
 
-static int
-xenFormatInputDevs(virConfPtr conf, virDomainDefPtr def)
-{
-    size_t i;
-
-    if (STREQ(def->os.type, "hvm")) {
-        for (i = 0; i < def->ninputs; i++) {
-            if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-                if (xenConfigSetInt(conf, "usb", 1) < 0)
-                    return -1;
-
-                switch (def->inputs[i]->type) {
-                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-                        if (xenConfigSetString(conf, "usbdevice", "mouse") < 0)
-                            return -1;
-
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
-                        if (xenConfigSetString(conf, "usbdevice", "tablet") < 0)
-                            return -1;
-
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_KBD:
-                        if (xenConfigSetString(conf, "usbdevice", "keyboard") < 0)
-                            return -1;
-
-                        break;
-                }
-                break;
-            }
-        }
-    }
-
-    return 0;
-}
-
 
 static int
 xenFormatVif(virConfPtr conf,
@@ -2057,9 +1994,6 @@ xenFormatConfigCommon(virConfPtr conf,
         return -1;
 
     if (xenFormatEmulator(conf, def) < 0)
-        return -1;
-
-    if (xenFormatInputDevs(conf, def) < 0)
         return -1;
 
     if (xenFormatVfb(conf, def, xendConfigVersion) < 0)

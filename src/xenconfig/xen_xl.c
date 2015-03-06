@@ -289,6 +289,59 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
     goto cleanup;
 }
 
+static int
+xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *str;
+    virConfValuePtr val;
+
+    if (STREQ(def->os.type, "hvm")) {
+        val = virConfGetValue(conf, "usbdevice");
+        /* usbdevice can be defined as either a single string or a list */
+        if (val && val->type == VIR_CONF_LIST) {
+#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
+            val = val->list;
+#else
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("multiple USB devices not supported"));
+            return -1;
+#endif
+        }
+        /* otherwise val->next is NULL, so can be handled by the same code */
+        while (val) {
+            if (val->type != VIR_CONF_STRING) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("config value %s was malformed"),
+                               "usbdevice");
+                return -1;
+            }
+            str = val->str;
+
+            if (str &&
+                    (STREQ(str, "tablet") ||
+                     STREQ(str, "mouse") ||
+                     STREQ(str, "keyboard"))) {
+                virDomainInputDefPtr input;
+                if (VIR_ALLOC(input) < 0)
+                    return -1;
+
+                input->bus = VIR_DOMAIN_INPUT_BUS_USB;
+                if (STREQ(str, "mouse"))
+                    input->type = VIR_DOMAIN_INPUT_TYPE_MOUSE;
+                else if (STREQ(str, "tablet"))
+                    input->type = VIR_DOMAIN_INPUT_TYPE_TABLET;
+                else if (STREQ(str, "keyboard"))
+                    input->type = VIR_DOMAIN_INPUT_TYPE_KBD;
+                if (VIR_APPEND_ELEMENT(def->inputs, def->ninputs, input) < 0) {
+                    virDomainInputDefFree(input);
+                    return -1;
+                }
+            }
+            val = val->next;
+        }
+    }
+    return 0;
+}
 
 virDomainDefPtr
 xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
@@ -308,6 +361,9 @@ xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
         goto cleanup;
 
     if (xenParseXLSpice(conf, def) < 0)
+        goto cleanup;
+
+    if (xenParseXLInputDevs(conf, def) < 0)
         goto cleanup;
 
     return def;
@@ -488,6 +544,74 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
     return 0;
 }
 
+static int
+xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+    const char *devtype;
+    virConfValuePtr usbdevices = NULL, lastdev;
+
+    if (STREQ(def->os.type, "hvm")) {
+        if (VIR_ALLOC(usbdevices) < 0)
+            goto error;
+
+        usbdevices->type = VIR_CONF_LIST;
+        usbdevices->list = NULL;
+        lastdev = NULL;
+        for (i = 0; i < def->ninputs; i++) {
+            if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+                if (xenConfigSetInt(conf, "usb", 1) < 0)
+                    goto error;
+
+                switch (def->inputs[i]->type) {
+                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                        devtype = "mouse";
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                        devtype = "tablet";
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_KBD:
+                        devtype = "keyboard";
+                        break;
+                    default:
+                        continue;
+                }
+
+                if (lastdev == NULL) {
+                    if (VIR_ALLOC(lastdev) < 0)
+                        goto error;
+                    usbdevices->list = lastdev;
+                } else {
+                    if (VIR_ALLOC(lastdev->next) < 0)
+                        goto error;
+                    lastdev = lastdev->next;
+                }
+                lastdev->type = VIR_CONF_STRING;
+                if (VIR_STRDUP(lastdev->str, devtype) < 0)
+                    goto error;
+            }
+        }
+        if (usbdevices->list != NULL) {
+            if (usbdevices->list->next == NULL) {
+                /* for compatibility with Xen <= 4.2, use old syntax when
+                 * only one device present */
+                if (xenConfigSetString(conf, "usbdevice", usbdevices->list->str) < 0)
+                    goto error;
+                virConfFreeValue(usbdevices);
+            } else {
+                virConfSetValue(conf, "usbdevice", usbdevices);
+            }
+        } else {
+            VIR_FREE(usbdevices);
+        }
+    }
+
+    return 0;
+ error:
+    virConfFreeValue(usbdevices);
+    return -1;
+}
+
 
 virConfPtr
 xenFormatXL(virDomainDefPtr def, virConnectPtr conn, int xendConfigVersion)
@@ -504,6 +628,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn, int xendConfigVersion)
         goto cleanup;
 
     if (xenFormatXLSpice(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXLInputDevs(conf, def) < 0)
         goto cleanup;
 
     return conf;
