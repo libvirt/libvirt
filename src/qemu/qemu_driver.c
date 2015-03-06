@@ -1420,7 +1420,10 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                 if (virProcessGetAffinity(priv->vcpupids[v],
                                           &map, maxcpu) < 0)
                     return -1;
-                virBitmapToData(map, &tmpmap, &tmpmapLen);
+                if (virBitmapToData(map, &tmpmap, &tmpmapLen) < 0) {
+                    virBitmapFree(map);
+                    return -1;
+                }
                 if (tmpmapLen > maplen)
                     tmpmapLen = maplen;
                 memcpy(cpumap, tmpmap, tmpmapLen);
