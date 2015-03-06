@@ -4672,13 +4672,11 @@ networkCheckBandwidth(virNetworkObjPtr net,
 static ssize_t
 networkNextClassID(virNetworkObjPtr net)
 {
-    size_t ret = 0;
-    bool is_set = false;
+    ssize_t ret = 0;
 
-    while (virBitmapGetBit(net->class_id, ret, &is_set) == 0 && is_set)
-        ret++;
+    ret = virBitmapNextClearBit(net->class_id, -1);
 
-    if (is_set || virBitmapSetBit(net->class_id, ret) < 0)
+    if (ret < 0 || virBitmapSetBit(net->class_id, ret) < 0)
         return -1;
 
     return ret;
