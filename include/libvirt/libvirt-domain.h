@@ -3218,6 +3218,15 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN "cputune.emulatorpin"
 
 /**
+ * VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN:
+ *
+ * Macro represents formatted pinning for one IOThread specified by id which is
+ * appended to the parameter name, for example "cputune.iothreadpin1",
+ * as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN "cputune.iothreadpin%u"
+
+/**
  * VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES:
  *
  * Macro represents proportional weight of the scheduler used on the

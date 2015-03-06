@@ -5759,6 +5759,206 @@ qemuDomainGetIOThreadsInfo(virDomainPtr dom,
     return ret;
 }
 
+static int
+qemuDomainPinIOThread(virDomainPtr dom,
+                      unsigned int iothread_id,
+                      unsigned char *cpumap,
+                      int maplen,
+                      unsigned int flags)
+{
+    int ret = -1;
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
+    virDomainObjPtr vm;
+    virCapsPtr caps = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    virBitmapPtr pcpumap = NULL;
+    qemuDomainObjPrivatePtr priv;
+    virDomainVcpuPinDefPtr *newIOThreadsPin = NULL;
+    size_t newIOThreadsPinNum = 0;
+    virCgroupPtr cgroup_iothread = NULL;
+    virObjectEventPtr event = NULL;
+    char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
+    char *str = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+    priv = vm->privateData;
+
+    if (virDomainPinIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Changing affinity for IOThread dynamically is "
+                         "not allowed when CPU placement is 'auto'"));
+        goto cleanup;
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        goto endjob;
+
+    if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
+        goto endjob;
+
+    if (virBitmapIsAllClear(pcpumap)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Empty iothread cpumap list for pinning"));
+        goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+
+        if (priv->iothreadpids == NULL) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("IOThread affinity is not supported"));
+            goto endjob;
+        }
+
+        if (iothread_id > priv->niothreadpids) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("iothread value out of range %d > %d"),
+                           iothread_id, priv->niothreadpids);
+            goto endjob;
+        }
+
+        if (vm->def->cputune.iothreadspin) {
+            /* The VcpuPinDefCopy works for IOThreads too */
+            newIOThreadsPin =
+                virDomainVcpuPinDefCopy(vm->def->cputune.iothreadspin,
+                                        vm->def->cputune.niothreadspin);
+            if (!newIOThreadsPin)
+                goto endjob;
+
+            newIOThreadsPinNum = vm->def->cputune.niothreadspin;
+        } else {
+            if (VIR_ALLOC(newIOThreadsPin) < 0)
+                goto endjob;
+            newIOThreadsPinNum = 0;
+        }
+
+        if (virDomainIOThreadsPinAdd(&newIOThreadsPin, &newIOThreadsPinNum,
+                                     cpumap, maplen, iothread_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to update iothreadspin"));
+            goto endjob;
+        }
+
+        /* Configure the corresponding cpuset cgroup before set affinity. */
+        if (virCgroupHasController(priv->cgroup,
+                                   VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (virCgroupNewIOThread(priv->cgroup, iothread_id,
+                                     false, &cgroup_iothread) < 0)
+                goto endjob;
+            if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,
+                                            newIOThreadsPin,
+                                            newIOThreadsPinNum,
+                                            iothread_id) < 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("failed to set cpuset.cpus in cgroup"
+                                 " for iothread %d"), iothread_id);
+                goto endjob;
+            }
+        } else {
+            if (virProcessSetAffinity(priv->iothreadpids[iothread_id - 1],
+                                      pcpumap) < 0) {
+                virReportError(VIR_ERR_SYSTEM_ERROR,
+                               _("failed to set cpu affinity for IOThread %d"),
+                               iothread_id);
+                goto endjob;
+            }
+        }
+
+        if (vm->def->cputune.iothreadspin)
+            virDomainVcpuPinDefArrayFree(vm->def->cputune.iothreadspin,
+                                         vm->def->cputune.niothreadspin);
+
+        vm->def->cputune.iothreadspin = newIOThreadsPin;
+        vm->def->cputune.niothreadspin = newIOThreadsPinNum;
+        newIOThreadsPin = NULL;
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            goto endjob;
+
+        if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN, iothread_id) < 0) {
+            goto endjob;
+        }
+
+        str = virBitmapFormat(pcpumap);
+        if (virTypedParamsAddString(&eventParams, &eventNparams,
+                                    &eventMaxparams, paramField, str) < 0)
+            goto endjob;
+
+        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        /* Coverity didn't realize that targetDef must be set if we got here. */
+        sa_assert(persistentDef);
+
+        if (iothread_id > persistentDef->iothreads) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("iothread value out of range %d > %d"),
+                           iothread_id, persistentDef->iothreads);
+            goto endjob;
+        }
+
+        if (!persistentDef->cputune.iothreadspin) {
+            if (VIR_ALLOC(persistentDef->cputune.iothreadspin) < 0)
+                goto endjob;
+            persistentDef->cputune.niothreadspin = 0;
+        }
+        if (virDomainIOThreadsPinAdd(&persistentDef->cputune.iothreadspin,
+                                     &persistentDef->cputune.niothreadspin,
+                                     cpumap,
+                                     maplen,
+                                     iothread_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to update or add iothreadspin xml "
+                             "of a persistent domain"));
+            goto endjob;
+        }
+
+        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        goto endjob;
+    }
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    if (newIOThreadsPin)
+        virDomainVcpuPinDefArrayFree(newIOThreadsPin, newIOThreadsPinNum);
+    if (cgroup_iothread)
+        virCgroupFree(&cgroup_iothread);
+    if (event)
+        qemuDomainEventQueue(driver, event);
+    VIR_FREE(str);
+    virBitmapFree(pcpumap);
+    qemuDomObjEndAPI(&vm);
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
 static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -19282,6 +19482,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetVcpus = qemuDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemuDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetIOThreadsInfo = qemuDomainGetIOThreadsInfo, /* 1.2.14 */
+    .domainPinIOThread = qemuDomainPinIOThread, /* 1.2.14 */
     .domainGetSecurityLabel = qemuDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemuNodeGetSecurityModel, /* 0.6.1 */
