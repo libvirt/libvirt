@@ -5368,10 +5368,12 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
-    int maxcpu, hostcpus, pcpu;
+    int hostcpus;
     virBitmapPtr cpumask = NULL;
-    bool pinned;
+    virBitmapPtr bitmap = NULL;
     virCapsPtr caps = NULL;
+    unsigned char *tmpmap = NULL;
+    int tmpmaplen;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5398,36 +5400,30 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    /* initialize cpumaps */
-    memset(cpumaps, 0xff, maplen);
-    if (maxcpu % 8)
-        cpumaps[maplen - 1] &= (1 << maxcpu % 8) - 1;
-
     if (targetDef->cputune.emulatorpin) {
         cpumask = targetDef->cputune.emulatorpin->cpumask;
     } else if (targetDef->cpumask) {
         cpumask = targetDef->cpumask;
     } else {
-        ret = 0;
-        goto cleanup;
+        if (!(bitmap = virBitmapNew(hostcpus)))
+            goto cleanup;
+        virBitmapSetAll(bitmap);
+        cpumask = bitmap;
     }
 
-    for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-        if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
-            goto cleanup;
-        if (!pinned)
-            VIR_UNUSE_CPU(cpumaps, pcpu);
-    }
+    if (virBitmapToData(cpumask, &tmpmap, &tmpmaplen) < 0)
+        goto cleanup;
+    if (tmpmaplen > maplen)
+        tmpmaplen = maplen;
+    memcpy(cpumaps, tmpmap, tmpmaplen);
+    VIR_FREE(tmpmap);
 
     ret = 1;
 
  cleanup:
     qemuDomObjEndAPI(&vm);
     virObjectUnref(caps);
+    virBitmapFree(bitmap);
     return ret;
 }
 
