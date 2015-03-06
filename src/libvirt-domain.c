@@ -7919,7 +7919,6 @@ virDomainGetIOThreadsInfo(virDomainPtr dom,
     virResetLastError();
 
     virCheckDomainReturn(dom, -1);
-    virCheckReadOnlyGoto(dom->conn->flags, error);
     virCheckNonNullArgGoto(info, error);
     *info = NULL;
 
