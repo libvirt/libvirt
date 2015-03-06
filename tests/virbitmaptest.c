@@ -74,11 +74,11 @@ testBit(virBitmapPtr bitmap,
     for (i = start; i <= end; i++) {
         if (virBitmapGetBit(bitmap, i, &result) < 0)
             return -1;
-        if (result == expected)
-            return 0;
+        if (result != expected)
+            return -1;
     }
 
-    return -1;
+    return 0;
 }
 
 static int
