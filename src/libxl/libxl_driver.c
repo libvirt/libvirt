@@ -2780,6 +2780,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     int actualType;
     libxl_device_nic nic;
     int ret = -1;
+    char mac[VIR_MAC_STRING_BUFLEN];
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -2793,6 +2794,13 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         return -1;
 
     actualType = virDomainNetGetActualType(net);
+
+    if (virDomainHasNet(vm->def, net)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("network device with mac %s already exists"),
+                       virMacAddrFormat(&net->mac, mac));
+        return -1;
+    }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* This is really a "smart hostdev", so it should be attached
@@ -2872,6 +2880,7 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
     virDomainHostdevDefPtr hostdev;
     virDomainHostdevDefPtr found;
     virDomainHostdevSubsysPCIPtr pcisrc;
+    char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
@@ -2889,6 +2898,12 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 
         case VIR_DOMAIN_DEVICE_NET:
             net = dev->data.net;
+            if (virDomainHasNet(vmdef, net)) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("network device with mac %s already exists"),
+                               virMacAddrFormat(&net->mac, mac));
+                return -1;
+            }
             if (virDomainNetInsert(vmdef, net))
                 return -1;
             dev->data.net = NULL;
