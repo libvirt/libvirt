@@ -12016,6 +12016,27 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
     return matchidx;
 }
 
+bool
+virDomainHasNet(virDomainDefPtr def, virDomainNetDefPtr net)
+{
+    size_t i;
+    bool PCIAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
+                                                          VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
+
+    for (i = 0; i < def->nnets; i++) {
+        if (virMacAddrCmp(&def->nets[i]->mac, &net->mac))
+            continue;
+
+        if (PCIAddrSpecified) {
+            if (virDevicePCIAddressEqual(&def->nets[i]->info.addr.pci,
+                                         &net->info.addr.pci))
+                return true;
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
 
 void
 virDomainNetRemoveHostdev(virDomainDefPtr def,

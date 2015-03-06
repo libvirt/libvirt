@@ -293,6 +293,7 @@ virDomainGraphicsTypeToString;
 virDomainGraphicsVNCSharePolicyTypeFromString;
 virDomainGraphicsVNCSharePolicyTypeToString;
 virDomainHasDiskMirror;
+virDomainHasNet;
 virDomainHostdevCapsTypeToString;
 virDomainHostdevDefAlloc;
 virDomainHostdevDefClear;
