@@ -5100,12 +5100,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
-    int maxcpu, hostcpus, vcpu, pcpu;
-    int n;
-    virDomainVcpuPinDefPtr *vcpupin_list;
-    virBitmapPtr cpumask = NULL;
+    int hostcpus, vcpu;
     unsigned char *cpumap;
-    bool pinned;
     virCapsPtr caps = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5133,10 +5129,6 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
     /* Clamp to actual number of vcpus */
     if (ncpumaps > targetDef->vcpus)
         ncpumaps = targetDef->vcpus;
@@ -5144,28 +5136,37 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (ncpumaps < 1)
         goto cleanup;
 
-    /* initialize cpumaps */
-    memset(cpumaps, 0xff, maplen * ncpumaps);
-    if (maxcpu % 8) {
-        for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-            cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-            cpumap[maplen - 1] &= (1 << maxcpu % 8) - 1;
+    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
+        virDomainVcpuPinDefPtr pininfo;
+        virBitmapPtr bitmap = NULL;
+        unsigned char *tmpmap = NULL;
+        int tmpmaplen;
+
+        pininfo = virDomainVcpuPinFindByVcpu(targetDef->cputune.vcpupin,
+                                             targetDef->cputune.nvcpupin,
+                                             vcpu);
+        if (!pininfo) {
+            if (!(bitmap = virBitmapNew(hostcpus)))
+                goto cleanup;
+            virBitmapSetAll(bitmap);
+        } else {
+            bitmap = pininfo->cpumask;
         }
+
+        if (virBitmapToData(bitmap, &tmpmap, &tmpmaplen) < 0) {
+            if (!pininfo)
+                virBitmapFree(bitmap);
+            goto cleanup;
+        }
+        if (tmpmaplen > maplen)
+            tmpmaplen = maplen;
+        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+        memcpy(cpumap, tmpmap, tmpmaplen);
+        if (!pininfo)
+            virBitmapFree(bitmap);
+        VIR_FREE(tmpmap);
     }
 
-    /* if vcpupin setting exists, there are unused physical cpus */
-    for (n = 0; n < targetDef->cputune.nvcpupin; n++) {
-        vcpupin_list = targetDef->cputune.vcpupin;
-        vcpu = vcpupin_list[n]->vcpuid;
-        cpumask = vcpupin_list[n]->cpumask;
-        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-        for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-            if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
-                goto cleanup;
-            if (!pinned)
-                VIR_UNUSE_CPU(cpumap, pcpu);
-        }
-    }
     ret = ncpumaps;
 
  cleanup:
