@@ -65,6 +65,11 @@ typedef enum {
     VIR_LOCK_MANAGER_ACQUIRE_RESTRICT = (1 << 1),
 } virLockManagerAcquireFlags;
 
+typedef enum {
+    /* virLockManagerNew called for a freshly started domain */
+    VIR_LOCK_MANAGER_NEW_STARTED = (1 << 0),
+} virLockManagerNewFlags;
+
 enum {
     VIR_LOCK_MANAGER_PARAM_TYPE_STRING,
     VIR_LOCK_MANAGER_PARAM_TYPE_CSTRING,
@@ -142,12 +147,17 @@ typedef int (*virLockDriverDeinit)(void);
  * @type: the type of process to be supervised
  * @nparams: number of metadata parameters
  * @params: extra metadata parameters
- * @flags: optional flags, currently unused
+ * @flags: bitwise-OR of virLockManagerNewFlags
  *
  * Initialize a new context to supervise a process, usually
  * a virtual machine. The lock driver implementation can use
  * the <code>privateData</code> field of <code>man</code>
  * to store a pointer to any driver specific state.
+ *
+ * If @flags contains VIR_LOCK_MANAGER_NEW_STARTED, this API is called for
+ * a domain that has just been started and may therefore skip some actions.
+ * Specifically, checking whether the domain is registered with a lock
+ * daemon is useless in this case.
  *
  * A process of VIR_LOCK_MANAGER_START_DOMAIN will be
  * given the following parameters

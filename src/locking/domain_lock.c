@@ -104,7 +104,8 @@ static int virDomainLockManagerAddImage(virLockManagerPtr lock,
 static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
                                                  const char *uri,
                                                  virDomainObjPtr dom,
-                                                 bool withResources)
+                                                 bool withResources,
+                                                 unsigned int flags)
 {
     virLockManagerPtr lock;
     size_t i;
@@ -138,7 +139,7 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
                                    VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN,
                                    ARRAY_CARDINALITY(params),
                                    params,
-                                   0)))
+                                   flags)))
         goto error;
 
     if (withResources) {
@@ -177,7 +178,8 @@ int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p paused=%d fd=%p",
               plugin, dom, paused, fd);
 
-    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, true)))
+    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, true,
+                                         VIR_LOCK_MANAGER_NEW_STARTED)))
         return -1;
 
     if (paused)
@@ -201,7 +203,7 @@ int virDomainLockProcessPause(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p state=%p",
               plugin, dom, state);
 
-    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, true)))
+    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, true, 0)))
         return -1;
 
     ret = virLockManagerRelease(lock, state, 0);
@@ -221,7 +223,7 @@ int virDomainLockProcessResume(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p state=%s",
               plugin, dom, NULLSTR(state));
 
-    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, true)))
+    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, true, 0)))
         return -1;
 
     ret = virLockManagerAcquire(lock, state, 0, dom->def->onLockFailure, NULL);
@@ -240,7 +242,7 @@ int virDomainLockProcessInquire(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p state=%p",
               plugin, dom, state);
 
-    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, true)))
+    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, true, 0)))
         return -1;
 
     ret = virLockManagerInquire(lock, state, 0);
@@ -260,7 +262,7 @@ int virDomainLockImageAttach(virLockManagerPluginPtr plugin,
 
     VIR_DEBUG("plugin=%p dom=%p src=%p", plugin, dom, src);
 
-    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, false)))
+    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, false, 0)))
         return -1;
 
     if (virDomainLockManagerAddImage(lock, src) < 0)
@@ -297,7 +299,7 @@ int virDomainLockImageDetach(virLockManagerPluginPtr plugin,
 
     VIR_DEBUG("plugin=%p dom=%p src=%p", plugin, dom, src);
 
-    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, false)))
+    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, false, 0)))
         return -1;
 
     if (virDomainLockManagerAddImage(lock, src) < 0)
@@ -334,7 +336,7 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p lease=%p",
               plugin, dom, lease);
 
-    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, false)))
+    if (!(lock = virDomainLockManagerNew(plugin, uri, dom, false, 0)))
         return -1;
 
     if (virDomainLockManagerAddLease(lock, lease) < 0)
@@ -362,7 +364,7 @@ int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,
     VIR_DEBUG("plugin=%p dom=%p lease=%p",
               plugin, dom, lease);
 
-    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, false)))
+    if (!(lock = virDomainLockManagerNew(plugin, NULL, dom, false, 0)))
         return -1;
 
     if (virDomainLockManagerAddLease(lock, lease) < 0)
