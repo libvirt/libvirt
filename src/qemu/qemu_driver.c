@@ -5566,7 +5566,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
     qemuMonitorIOThreadsInfoPtr *iothreads = NULL;
     virDomainIOThreadInfoPtr *info_ret = NULL;
     int niothreads = 0;
-    int maxcpu, hostcpus, maplen;
+    int hostcpus;
     size_t i;
     int ret = -1;
 
@@ -5602,18 +5602,11 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto endjob;
 
-    maplen = VIR_CPU_MAPLEN(hostcpus);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
     if (VIR_ALLOC_N(info_ret, niothreads) < 0)
         goto endjob;
 
     for (i = 0; i < niothreads; i++) {
         virBitmapPtr map = NULL;
-        unsigned char *tmpmap = NULL;
-        int tmpmaplen = 0;
 
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto endjob;
@@ -5622,19 +5615,14 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
                             &info_ret[i]->iothread_id) < 0)
             goto endjob;
 
-        if (VIR_ALLOC_N(info_ret[i]->cpumap, maplen) < 0)
+        if (virProcessGetAffinity(iothreads[i]->thread_id, &map, hostcpus) < 0)
             goto endjob;
 
-        if (virProcessGetAffinity(iothreads[i]->thread_id, &map, maxcpu) < 0)
+        if (virBitmapToData(map, &info_ret[i]->cpumap,
+                            &info_ret[i]->cpumaplen) < 0) {
+            virBitmapFree(map);
             goto endjob;
-
-        virBitmapToData(map, &tmpmap, &tmpmaplen);
-        if (tmpmaplen > maplen)
-            tmpmaplen = maplen;
-        memcpy(info_ret[i]->cpumap, tmpmap, tmpmaplen);
-        info_ret[i]->cpumaplen = tmpmaplen;
-
-        VIR_FREE(tmpmap);
+        }
         virBitmapFree(map);
     }
 
@@ -5665,12 +5653,10 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
                              virDomainIOThreadInfoPtr **info)
 {
     virDomainIOThreadInfoPtr *info_ret = NULL;
-    virDomainVcpuPinDefPtr *iothreadspin_list;
+    virBitmapPtr bitmap = NULL;
     virBitmapPtr cpumask = NULL;
-    unsigned char *cpumap;
-    int maxcpu, hostcpus, maplen;
-    size_t i, pcpu;
-    bool pinned;
+    int hostcpus;
+    size_t i;
     int ret = -1;
 
     if (targetDef->iothreads == 0)
@@ -5679,47 +5665,39 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    maplen = VIR_CPU_MAPLEN(hostcpus);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
     if (VIR_ALLOC_N(info_ret, targetDef->iothreads) < 0)
         goto cleanup;
 
     for (i = 0; i < targetDef->iothreads; i++) {
+        virDomainVcpuPinDefPtr pininfo;
+
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto cleanup;
 
         /* IOThreads being counting at 1 */
         info_ret[i]->iothread_id = i + 1;
 
-        if (VIR_ALLOC_N(info_ret[i]->cpumap, maplen) < 0)
-            goto cleanup;
-
         /* Initialize the cpumap */
-        info_ret[i]->cpumaplen = maplen;
-        memset(info_ret[i]->cpumap, 0xff, maplen);
-        if (maxcpu % 8)
-            info_ret[i]->cpumap[maplen - 1] &= (1 << maxcpu % 8) - 1;
-    }
-
-    /* If iothreadspin setting exists, there are unused physical cpus */
-    iothreadspin_list = targetDef->cputune.iothreadspin;
-    for (i = 0; i < targetDef->cputune.niothreadspin; i++) {
-        /* vcpuid is the iothread_id...
-         * iothread_id is the index into info_ret + 1, so we can
-         * assume that the info_ret index we want is vcpuid - 1
-         */
-        cpumap = info_ret[iothreadspin_list[i]->vcpuid - 1]->cpumap;
-        cpumask = iothreadspin_list[i]->cpumask;
-
-        for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-            if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
-                goto cleanup;
-            if (!pinned)
-                VIR_UNUSE_CPU(cpumap, pcpu);
+        pininfo = virDomainVcpuPinFindByVcpu(targetDef->cputune.iothreadspin,
+                                             targetDef->cputune.niothreadspin,
+                                             i + 1);
+        if (!pininfo) {
+            if (targetDef->cpumask) {
+                cpumask = targetDef->cpumask;
+            } else {
+                if (!(bitmap = virBitmapNew(hostcpus)))
+                    goto cleanup;
+                virBitmapSetAll(bitmap);
+                cpumask = bitmap;
+            }
+        } else {
+            cpumask = pininfo->cpumask;
         }
+        if (virBitmapToData(cpumask, &info_ret[i]->cpumap,
+                            &info_ret[i]->cpumaplen) < 0)
+            goto cleanup;
+        virBitmapFree(bitmap);
+        bitmap = NULL;
     }
 
     *info = info_ret;
@@ -5732,6 +5710,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
             virDomainIOThreadsInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
+    virBitmapFree(bitmap);
 
     return ret;
 }
