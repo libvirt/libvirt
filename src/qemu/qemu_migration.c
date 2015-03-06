@@ -2298,6 +2298,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
         /* fall through */
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
         ret = 0;
         break;
 

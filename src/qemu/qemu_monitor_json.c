@@ -2518,6 +2518,7 @@ qemuMonitorJSONGetMigrationStatusReply(virJSONValuePtr reply,
         status->setup_time_set = true;
 
     if (status->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE ||
+        status->status == QEMU_MONITOR_MIGRATION_STATUS_CANCELLING ||
         status->status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
         virJSONValuePtr ram = virJSONValueObjectGet(ret, "ram");
         if (!ram) {
