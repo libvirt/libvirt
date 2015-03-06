@@ -6878,6 +6878,106 @@ cmdIOThreadsInfo(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "iothreadpin" command
+ */
+static const vshCmdInfo info_iothreadpin[] = {
+    {.name = "help",
+     .data = N_("control domain IOThread affinity")
+    },
+    {.name = "desc",
+     .data = N_("Pin domain IOThreads to host physical CPUs.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_iothreadpin[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "iothread",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("IOThread ID number")
+    },
+    {.name = "cpulist",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("host cpu number(s) to set")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *cpulist = NULL;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    unsigned int iothread_id = 0;
+    int maxcpu;
+    bool ret = false;
+    unsigned char *cpumap = NULL;
+    size_t cpumaplen;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptUInt(cmd, "iothread", &iothread_id) < 0) {
+        vshError(ctl, "%s", _("iothreadpin: Invalid IOThread number."));
+        goto cleanup;
+    }
+
+    if (vshCommandOptString(cmd, "cpulist", &cpulist) < 0) {
+        vshError(ctl, "%s", _("iothreadpin: invalid cpulist."));
+        goto cleanup;
+    }
+
+    if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
+        goto cleanup;
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+
+    /* Pin mode: pinning specified vcpu to specified physical cpus*/
+    if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
+        goto cleanup;
+
+    if (virDomainPinIOThread(dom, iothread_id,
+                             cpumap, cpumaplen, flags) != 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    VIR_FREE(cpumap);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "cpu-compare" command
  */
 static const vshCmdInfo info_cpu_compare[] = {
@@ -12784,6 +12884,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdIOThreadsInfo,
      .opts = opts_iothreads,
      .info = info_iothreads,
+     .flags = 0
+    },
+    {.name = "iothreadpin",
+     .handler = cmdIOThreadPin,
+     .opts = opts_iothreadpin,
+     .info = info_iothreadpin,
      .flags = 0
     },
     {.name = "send-key",

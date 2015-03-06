@@ -1374,6 +1374,32 @@ a persistent guest.
 If I<--current> is specified or I<--live> and I<--config> are not specified,
 then get the IOThread data based on the current guest state.
 
+=item B<iothreadpin> I<domain> I<iothread> I<cpulist>
+[[I<--live>] [I<--config>] | [I<--current>]]
+
+Change the pinning of a domain IOThread to host physical CPUs. In order
+to retrieve a list of all IOThreads, use B<iothreadsinfo>. To pin an
+I<iothread> specify the I<cpulist> desired for the IOThread ID as listed
+in the B<iothreadsinfo> output.
+
+I<cpulist> is a list of physical CPU numbers. Its syntax is a comma
+separated list and a special markup using '-' and '^' (ex. '0-4', '0-3,^2') can
+also be allowed. The '-' denotes the range and the '^' denotes exclusive.
+If you want to reset iothreadpin setting, that is, to pin an I<iothread>
+to all physical cpus, simply specify 'r' as a I<cpulist>.
+
+If I<--live> is specified, affect a running guest. If the guest is not running,
+an error is returned.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified or I<--live> and I<--config> are not specified,
+affect the current guest state.
+Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
+but I<--current> is exclusive.
+If no flag is specified, behavior is different depending on hypervisor.
+
+B<Note>: The expression is sequentially evaluated, so "0-15,^8" is
+identical to "9-14,0-7,15" but not identical to "^8,0-15".
+
 =item B<managedsave> I<domain> [I<--bypass-cache>]
 [{I<--running> | I<--paused>}] [I<--verbose>]
 
