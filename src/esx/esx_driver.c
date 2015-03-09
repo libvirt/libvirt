@@ -3990,52 +3990,37 @@ static unsigned long long
 esxNodeGetFreeMemory(virConnectPtr conn)
 {
     unsigned long long result = 0;
+    unsigned long long usageBytes = 0;
     esxPrivate *priv = conn->privateData;
     esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *resourcePool = NULL;
-    esxVI_DynamicProperty *dynamicProperty = NULL;
-    esxVI_ResourcePoolResourceUsage *resourcePoolResourceUsage = NULL;
+    esxVI_ObjectContent *hostSystem = NULL;
+    esxVI_Int *memoryUsage = NULL;
+    esxVI_Long *memorySize = NULL;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return 0;
 
-    /* Get memory usage of resource pool */
-    if (esxVI_String_AppendValueToList(&propertyNameList,
-                                       "runtime.memory") < 0 ||
-        esxVI_LookupObjectContentByType(priv->primary,
-                                        priv->primary->computeResource->resourcePool,
-                                        "ResourcePool", propertyNameList,
-                                        &resourcePool,
-                                        esxVI_Occurrence_RequiredItem) < 0) {
+    /* Get memory usage of host system */
+    if (esxVI_String_AppendValueListToList(&propertyNameList,
+                                           "summary.quickStats.overallMemoryUsage\0"
+                                           "hardware.memorySize\0") < 0 ||
+        esxVI_LookupHostSystemProperties(priv->primary, propertyNameList,
+                                         &hostSystem) < 0 ||
+        esxVI_GetInt(hostSystem, "summary.quickStats.overallMemoryUsage",
+                      &memoryUsage, esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetLong(hostSystem, "hardware.memorySize", &memorySize,
+                      esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
-    for (dynamicProperty = resourcePool->propSet; dynamicProperty;
-         dynamicProperty = dynamicProperty->_next) {
-        if (STREQ(dynamicProperty->name, "runtime.memory")) {
-            if (esxVI_ResourcePoolResourceUsage_CastFromAnyType
-                  (dynamicProperty->val, &resourcePoolResourceUsage) < 0) {
-                goto cleanup;
-            }
-
-            break;
-        } else {
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-        }
-    }
-
-    if (!resourcePoolResourceUsage) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not retrieve memory usage of resource pool"));
-        goto cleanup;
-    }
-
-    result = resourcePoolResourceUsage->unreservedForVm->value;
+    usageBytes = (unsigned long long) (memoryUsage->value) * 1048576;
+    result = memorySize->value - usageBytes;
 
  cleanup:
     esxVI_String_Free(&propertyNameList);
-    esxVI_ObjectContent_Free(&resourcePool);
-    esxVI_ResourcePoolResourceUsage_Free(&resourcePoolResourceUsage);
+    esxVI_ObjectContent_Free(&hostSystem);
+    esxVI_Int_Free(&memoryUsage);
+    esxVI_Long_Free(&memorySize);
 
     return result;
 }
