@@ -1817,8 +1817,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  long long *wr_bytes,
                                  long long *wr_total_times,
                                  long long *flush_req,
-                                 long long *flush_total_times,
-                                 long long *errs)
+                                 long long *flush_total_times)
 {
     int ret;
     VIR_DEBUG("mon=%p dev=%s", mon, dev_name);
@@ -1836,8 +1835,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                                wr_req, wr_bytes,
                                                wr_total_times,
                                                flush_req,
-                                               flush_total_times,
-                                               errs);
+                                               flush_total_times);
     else
         ret = qemuMonitorTextGetBlockStatsInfo(mon, dev_name,
                                                rd_req, rd_bytes,
@@ -1845,8 +1843,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                                wr_req, wr_bytes,
                                                wr_total_times,
                                                flush_req,
-                                               flush_total_times,
-                                               errs);
+                                               flush_total_times);
     return ret;
 }
 

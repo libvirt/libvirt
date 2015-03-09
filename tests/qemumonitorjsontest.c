@@ -1438,7 +1438,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     int ret = -1;
     long long rd_req, rd_bytes, rd_total_times;
     long long wr_req, wr_bytes, wr_total_times;
-    long long flush_req, flush_total_times, errs;
+    long long flush_req, flush_total_times;
     int nparams;
     unsigned long long extent;
 
@@ -1552,7 +1552,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     }
 
 #define CHECK(RD_REQ, RD_BYTES, RD_TOTAL_TIMES, WR_REQ, WR_BYTES, WR_TOTAL_TIMES, \
-              FLUSH_REQ, FLUSH_TOTAL_TIMES, ERRS) \
+              FLUSH_REQ, FLUSH_TOTAL_TIMES) \
     CHECK0(rd_req, RD_REQ) \
     CHECK0(rd_bytes, RD_BYTES) \
     CHECK0(rd_total_times, RD_TOTAL_TIMES) \
@@ -1560,32 +1560,31 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     CHECK0(wr_bytes, WR_BYTES) \
     CHECK0(wr_total_times, WR_TOTAL_TIMES) \
     CHECK0(flush_req, FLUSH_REQ) \
-    CHECK0(flush_total_times, FLUSH_TOTAL_TIMES) \
-    CHECK0(errs, ERRS)
+    CHECK0(flush_total_times, FLUSH_TOTAL_TIMES)
 
     if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "virtio-disk0",
                                          &rd_req, &rd_bytes, &rd_total_times,
                                          &wr_req, &wr_bytes, &wr_total_times,
-                                         &flush_req, &flush_total_times, &errs) < 0)
+                                         &flush_req, &flush_total_times) < 0)
         goto cleanup;
 
-    CHECK(1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, -1)
+    CHECK(1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0)
 
     if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "virtio-disk1",
                                          &rd_req, &rd_bytes, &rd_total_times,
                                          &wr_req, &wr_bytes, &wr_total_times,
-                                         &flush_req, &flush_total_times, &errs) < 0)
+                                         &flush_req, &flush_total_times) < 0)
         goto cleanup;
 
-    CHECK(85, 348160, 8232156, 0, 0, 0, 0, 0, -1)
+    CHECK(85, 348160, 8232156, 0, 0, 0, 0, 0)
 
     if (qemuMonitorJSONGetBlockStatsInfo(qemuMonitorTestGetMonitor(test), "ide0-1-0",
                                          &rd_req, &rd_bytes, &rd_total_times,
                                          &wr_req, &wr_bytes, &wr_total_times,
-                                         &flush_req, &flush_total_times, &errs) < 0)
+                                         &flush_req, &flush_total_times) < 0)
         goto cleanup;
 
-    CHECK(16, 49250, 1004952, 0, 0, 0, 0, 0, -1)
+    CHECK(16, 49250, 1004952, 0, 0, 0, 0, 0)
 
     if (qemuMonitorJSONGetBlockStatsParamsNumber(qemuMonitorTestGetMonitor(test),
                                                  &nparams) < 0)

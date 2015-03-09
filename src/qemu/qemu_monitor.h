@@ -366,8 +366,7 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
                                  long long *wr_bytes,
                                  long long *wr_total_times,
                                  long long *flush_req,
-                                 long long *flush_total_times,
-                                 long long *errs);
+                                 long long *flush_total_times);
 
 typedef struct _qemuBlockStats qemuBlockStats;
 typedef qemuBlockStats *qemuBlockStatsPtr;

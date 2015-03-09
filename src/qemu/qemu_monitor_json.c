@@ -1677,15 +1677,14 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *wr_bytes,
                                      long long *wr_total_times,
                                      long long *flush_req,
-                                     long long *flush_total_times,
-                                     long long *errs)
+                                     long long *flush_total_times)
 {
     qemuBlockStats *stats;
     virHashTablePtr blockstats = NULL;
     int ret = -1;
 
     *rd_req = *rd_bytes = -1;
-    *wr_req = *wr_bytes = *errs = -1;
+    *wr_req = *wr_bytes = -1;
 
     if (rd_total_times)
         *rd_total_times = -1;
@@ -1709,7 +1708,6 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
     *rd_bytes = stats->rd_bytes;
     *wr_req = stats->wr_req;
     *wr_bytes = stats->wr_bytes;
-    *errs = -1; /* QEMU does not have this */
 
     if (rd_total_times)
         *rd_total_times = stats->rd_total_times;

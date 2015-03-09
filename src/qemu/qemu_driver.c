@@ -10536,6 +10536,9 @@ qemuDomainBlockStats(virDomainPtr dom,
 
     priv = vm->privateData;
 
+    /* qemu doesn't report the error count */
+    stats->errs = -1;
+
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorGetBlockStatsInfo(priv->mon,
                                        diskAlias,
@@ -10546,8 +10549,7 @@ qemuDomainBlockStats(virDomainPtr dom,
                                        &stats->wr_bytes,
                                        NULL,
                                        NULL,
-                                       NULL,
-                                       &stats->errs);
+                                       NULL);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
@@ -10574,7 +10576,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
-    long long wr_total_times, flush_req, flush_total_times, errs;
+    long long wr_total_times, flush_req, flush_total_times;
     char *diskAlias = NULL;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -10643,8 +10645,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                                        &wr_bytes,
                                        &wr_total_times,
                                        &flush_req,
-                                       &flush_total_times,
-                                       &errs);
+                                       &flush_total_times);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;

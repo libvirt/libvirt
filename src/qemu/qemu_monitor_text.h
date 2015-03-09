@@ -69,8 +69,7 @@ int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      long long *wr_bytes,
                                      long long *wr_total_times,
                                      long long *flush_req,
-                                     long long *flush_total_times,
-                                     long long *errs);
+                                     long long *flush_total_times);
 int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
                                              int *nparams);
 int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
