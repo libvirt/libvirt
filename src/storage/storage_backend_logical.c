@@ -479,8 +479,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendLogicalCheckPool(virStoragePoolObjPtr pool,
                                   bool *isActive)
 {
     *isActive = virFileExists(pool->def->target.path);

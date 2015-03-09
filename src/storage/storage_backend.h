@@ -34,8 +34,7 @@
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn,
                                                    const char *srcSpec,
                                                    unsigned int flags);
-typedef int (*virStorageBackendCheckPool)(virConnectPtr conn,
-                                          virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendCheckPool)(virStoragePoolObjPtr pool,
                                           bool *active);
 typedef int (*virStorageBackendStartPool)(virConnectPtr conn,
                                           virStoragePoolObjPtr pool);

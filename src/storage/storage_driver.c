@@ -100,7 +100,7 @@ storageDriverAutostart(void)
         }
 
         if (backend->checkPool &&
-            backend->checkPool(conn, pool, &started) < 0) {
+            backend->checkPool(pool, &started) < 0) {
             virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
                       pool->def->name, err ? err->message :

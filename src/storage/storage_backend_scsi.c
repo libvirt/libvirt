@@ -844,8 +844,7 @@ deleteVport(virConnectPtr conn,
 
 
 static int
-virStorageBackendSCSICheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
+virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
                                bool *isActive)
 {
     char *path = NULL;

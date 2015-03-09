@@ -533,8 +533,7 @@ virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool)
 
 
 static int
-virStorageBackendFileSystemCheck(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool,
+virStorageBackendFileSystemCheck(virStoragePoolObjPtr pool,
                                  bool *isActive)
 {
     if (pool->def->type == VIR_STORAGE_POOL_DIR) {

@@ -41,8 +41,7 @@ VIR_LOG_INIT("storage.storage_backend_zfs");
 
 
 static int
-virStorageBackendZFSCheckPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                               bool *isActive)
 {
     char *devpath;
