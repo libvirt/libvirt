@@ -439,7 +439,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
     virLockManagerLockDaemonPrivatePtr priv;
     size_t i;
 
-    virCheckFlags(VIR_LOCK_MANAGER_USES_STATE, -1);
+    virCheckFlags(0, -1);
 
     if (VIR_ALLOC(priv) < 0)
         return -1;
