@@ -10575,7 +10575,6 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
     long long wr_total_times, flush_req, flush_total_times, errs;
-    virTypedParameterPtr param;
     char *diskAlias = NULL;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -10656,75 +10655,29 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     tmp = 0;
     ret = -1;
 
-    if (tmp < *nparams && wr_bytes != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES,
-                                    VIR_TYPED_PARAM_LLONG, wr_bytes) < 0)
-            goto endjob;
-        tmp++;
+#define QEMU_BLOCK_STATS_ASSIGN_PARAM(VAR, NAME)                              \
+    if (tmp < *nparams && (VAR) != -1) {                                      \
+        if (virTypedParameterAssign(params + tmp, NAME, VIR_TYPED_PARAM_LLONG,\
+                                    (VAR)) < 0)                               \
+            goto endjob;                                                      \
+        tmp++;                                                                \
     }
 
-    if (tmp < *nparams && wr_req != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ,
-                                    VIR_TYPED_PARAM_LLONG, wr_req) < 0)
-            goto endjob;
-        tmp++;
-    }
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES);
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ);
 
-    if (tmp < *nparams && rd_bytes != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_BYTES,
-                                    VIR_TYPED_PARAM_LLONG, rd_bytes) < 0)
-            goto endjob;
-        tmp++;
-    }
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES);
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ);
 
-    if (tmp < *nparams && rd_req != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_REQ,
-                                    VIR_TYPED_PARAM_LLONG, rd_req) < 0)
-            goto endjob;
-        tmp++;
-    }
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(flush_req, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ);
 
-    if (tmp < *nparams && flush_req != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ,
-                                    VIR_TYPED_PARAM_LLONG, flush_req) < 0)
-            goto endjob;
-        tmp++;
-    }
-
-    if (tmp < *nparams && wr_total_times != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param,
-                                    VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES,
-                                    VIR_TYPED_PARAM_LLONG, wr_total_times) < 0)
-            goto endjob;
-        tmp++;
-    }
-
-    if (tmp < *nparams && rd_total_times != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param,
-                                    VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES,
-                                    VIR_TYPED_PARAM_LLONG, rd_total_times) < 0)
-            goto endjob;
-        tmp++;
-    }
-
-    if (tmp < *nparams && flush_total_times != -1) {
-        param = &params[tmp];
-        if (virTypedParameterAssign(param,
-                                    VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES,
-                                    VIR_TYPED_PARAM_LLONG,
-                                    flush_total_times) < 0)
-            goto endjob;
-        tmp++;
-    }
-
-    /* Field 'errs' is meaningless for QEMU, won't set it. */
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(wr_total_times,
+                                  VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES);
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(rd_total_times,
+                                  VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES);
+    QEMU_BLOCK_STATS_ASSIGN_PARAM(flush_total_times,
+                                  VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES);
+#undef QEMU_BLOCK_STATS_ASSIGN_PARAM
 
     ret = 0;
     *nparams = tmp;
