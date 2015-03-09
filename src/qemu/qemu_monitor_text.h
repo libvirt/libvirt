@@ -60,6 +60,9 @@ int qemuMonitorTextGetMemoryStats(qemuMonitorPtr mon,
                                   unsigned int nr_stats);
 int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table);
+
+int qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
+                                        virHashTablePtr hash);
 int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
                                      const char *dev_name,
                                      long long *rd_req,

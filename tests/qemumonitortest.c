@@ -12,6 +12,10 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "qemu/qemu_monitor.h"
+# include "qemu/qemu_monitor_text.h"
+# include "qemumonitortestutils.h"
+
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testEscapeString
 {
@@ -86,21 +90,104 @@ static int testUnescapeArg(const void *data ATTRIBUTE_UNUSED)
     return 0;
 }
 
+struct blockInfoData {
+    const char *dev;
+    qemuBlockStats data;
+};
+
+static const struct blockInfoData testBlockInfoData[] =
+{
+/* NAME, rd_req, rd_bytes, wr_req, wr_bytes, rd_total_time, wr_total_time, flush_req, flush_total_time */
+    {"vda", {11, 12, 13, 14, 15, 16, 17, 18, 0, 0, 0}},
+    {"vdb", {21, 22, 23, 24, 25, 26, 27, 28, 0, 0, 0}},
+    {"vdc", {31, 32, 33, -1, 35, 36, 37, 38, 0, 0, 0}},
+    {"vdd", {-1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0}},
+    {"vde", {41, 42, 43, 44, 45, 46, 47, 48, 0, 0, 0}}
+};
+
+static const char testBlockInfoReply[] =
+"(qemu) info blockstats\r\n"
+"vda: rd_operations=11 rd_bytes=12 wr_operations=13 wr_bytes=14 rd_total_time_ns=15 wr_total_time_ns=16 flush_operations=17 flush_total_time_ns=18\n"
+"vdb: rd_total_time_ns=25 wr_total_time_ns=26 flush_operations=27 flush_total_time_ns=28 rd_operations=21 rd_bytes=22 wr_operations=23 wr_bytes=24 \n"
+"drive-vdc: rd_operations=31 rd_bytes=32 wr_operations=33 rd_total_time_ns=35 wr_total_time_ns=36 flush_operations=37 flush_total_time_ns=38\n"
+"vdd: \n"
+"vde: rd_operations=41 rd_bytes=42 wr_operations=43 wr_bytes=44 rd_total_time_ns=45 wr_total_time_ns=46 flush_operations=47 flush_total_time_ns=48\n"
+"(qemu) ";
+
+static int
+testMonitorTextBlockInfo(const void *opaque)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr) opaque;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(false, xmlopt);
+    virHashTablePtr blockstats = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (!(blockstats = virHashCreate(10, virHashValueFree)))
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "info", testBlockInfoReply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
+                                            blockstats) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ARRAY_CARDINALITY(testBlockInfoData); i++) {
+        qemuBlockStatsPtr entry;
+
+        if (!(entry = virHashLookup(blockstats, testBlockInfoData[i].dev))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "device '%s' was not found in text block stats reply",
+                           testBlockInfoData[i].dev);
+            goto cleanup;
+        }
+
+        if (memcmp(entry, &testBlockInfoData[i].data, sizeof(qemuBlockStats)) != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "block stats for device '%s' differ",
+                           testBlockInfoData[i].dev);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    virHashFree(blockstats);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
+    virDomainXMLOptionPtr xmlopt;
     int result = 0;
+
+    if (virThreadInitialize() < 0 ||
+        !(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
+        return EXIT_FAILURE;
+
+    virEventRegisterDefaultImpl();
 
 # define DO_TEST(_name)                                                 \
     do {                                                                \
         if (virtTestRun("qemu monitor "#_name, test##_name,             \
-                        NULL) < 0) {                                    \
+                        xmlopt) < 0) {                                  \
             result = -1;                                                \
         }                                                               \
     } while (0)
 
     DO_TEST(EscapeArg);
     DO_TEST(UnescapeArg);
+    DO_TEST(MonitorTextBlockInfo);
+
+    virObjectUnref(xmlopt);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

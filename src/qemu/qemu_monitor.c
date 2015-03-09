@@ -1867,8 +1867,20 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
     if (!(*ret_stats = virHashCreate(10, virHashValueFree)))
         goto error;
 
-    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats, backingChain) < 0)
-        goto error;
+    if (mon->json) {
+        if (qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats, backingChain) < 0)
+            goto error;
+    } else {
+         if (backingChain) {
+             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                            _("text monitor doesn't support block stats for "
+                              "backing chain members"));
+             goto error;
+         }
+
+         if (qemuMonitorTextGetAllBlockStatsInfo(mon, *ret_stats) < 0)
+             goto error;
+    }
 
     return 0;
 

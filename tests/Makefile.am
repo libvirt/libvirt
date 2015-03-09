@@ -568,8 +568,12 @@ qemuargv2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
 qemuhelptest_SOURCES = qemuhelptest.c testutils.c testutils.h
 qemuhelptest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
-qemumonitortest_SOURCES = qemumonitortest.c testutils.c testutils.h
-qemumonitortest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemumonitortest_SOURCES = \
+	qemumonitortest.c \
+	testutils.c testutils.h \
+	testutilsqemu.c testutilsqemu.h
+qemumonitortest_LDADD = libqemumonitortestutils.la \
+	$(qemu_LDADDS) $(LDADDS)
 
 qemumonitorjsontest_SOURCES = \
 	qemumonitorjsontest.c \
