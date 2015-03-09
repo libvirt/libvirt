@@ -78,6 +78,7 @@ static void
 storageDriverAutostart(void)
 {
     size_t i;
+    char *stateFile = NULL;
     virConnectPtr conn = NULL;
 
     /* XXX Remove hardcoding of QEMU URI */
@@ -126,13 +127,18 @@ storageDriverAutostart(void)
 
         if (started) {
             virStoragePoolObjClearVols(pool);
-            if (backend->refreshPool(conn, pool) < 0) {
+            stateFile = virFileBuildPath(driver->stateDir,
+                                         pool->def->name, ".xml");
+            if (!stateFile ||
+                virStoragePoolSaveState(stateFile, pool->def) < 0 ||
+                backend->refreshPool(conn, pool) < 0) {
                 virErrorPtr err = virGetLastError();
                 if (backend->stopPool)
                     backend->stopPool(conn, pool);
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
                           _("no error message found"));
+                VIR_FREE(stateFile);
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -147,47 +153,49 @@ storageDriverAutostart(void)
 /**
  * virStorageStartup:
  *
- * Initialization function for the QEmu daemon
+ * Initialization function for the Storage Driver
  */
 static int
 storageStateInitialize(bool privileged,
                        virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                        void *opaque ATTRIBUTE_UNUSED)
 {
-    char *base = NULL;
+    int ret = -1;
+    char *configdir = NULL;
+    char *rundir = NULL;
 
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return ret;
 
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
-        return -1;
+        return ret;
     }
     storageDriverLock();
 
     if (privileged) {
-        if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+        if (VIR_STRDUP(driver->configDir,
+                       SYSCONFDIR "/libvirt/storage") < 0 ||
+            VIR_STRDUP(driver->autostartDir,
+                       SYSCONFDIR "/libvirt/storage/autostart") < 0 ||
+            VIR_STRDUP(driver->stateDir,
+                       LOCALSTATEDIR "/run/libvirt/storage") < 0)
             goto error;
     } else {
-        base = virGetUserConfigDirectory();
-        if (!base)
+        configdir = virGetUserConfigDirectory();
+        rundir = virGetUserRuntimeDirectory();
+        if (!(configdir && rundir))
+            goto error;
+
+        if ((virAsprintf(&driver->configDir,
+                        "%s/storage", configdir) < 0) ||
+            (virAsprintf(&driver->autostartDir,
+                        "%s/storage", configdir) < 0) ||
+            (virAsprintf(&driver->stateDir,
+                         "%s/storage/run", rundir) < 0))
             goto error;
     }
     driver->privileged = privileged;
-
-    /*
-     * Configuration paths are either $USER_CONFIG_HOME/libvirt/storage/...
-     * (session) or /etc/libvirt/storage/... (system).
-     */
-    if (virAsprintf(&driver->configDir,
-                    "%s/storage", base) == -1)
-        goto error;
-
-    if (virAsprintf(&driver->autostartDir,
-                    "%s/storage/autostart", base) == -1)
-        goto error;
-
-    VIR_FREE(base);
 
     if (virStoragePoolLoadAllConfigs(&driver->pools,
                                      driver->configDir,
@@ -195,13 +203,17 @@ storageStateInitialize(bool privileged,
         goto error;
 
     storageDriverUnlock();
-    return 0;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(configdir);
+    VIR_FREE(rundir);
+    return ret;
 
  error:
-    VIR_FREE(base);
     storageDriverUnlock();
     storageStateCleanup();
-    return -1;
+    goto cleanup;
 }
 
 /**
@@ -261,6 +273,7 @@ storageStateCleanup(void)
 
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->autostartDir);
+    VIR_FREE(driver->stateDir);
     storageDriverUnlock();
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
@@ -579,6 +592,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
     virStorageBackendPtr backend;
+    char *stateFile = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -609,7 +623,11 @@ storagePoolCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (backend->refreshPool(conn, pool) < 0) {
+    stateFile = virFileBuildPath(driver->stateDir,
+                                 pool->def->name, ".xml");
+
+    if (!stateFile || virStoragePoolSaveState(stateFile, pool->def) < 0 ||
+        backend->refreshPool(conn, pool) < 0) {
         if (backend->stopPool)
             backend->stopPool(conn, pool);
         virStoragePoolObjRemove(&driver->pools, pool);
@@ -623,6 +641,7 @@ storagePoolCreateXML(virConnectPtr conn,
                             NULL, NULL);
 
  cleanup:
+    VIR_FREE(stateFile);
     virStoragePoolDefFree(def);
     if (pool)
         virStoragePoolObjUnlock(pool);
@@ -745,6 +764,7 @@ storagePoolCreate(virStoragePoolPtr obj,
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     int ret = -1;
+    char *stateFile = NULL;
 
     virCheckFlags(0, -1);
 
@@ -763,21 +783,27 @@ storagePoolCreate(virStoragePoolPtr obj,
                        pool->def->name);
         goto cleanup;
     }
+
+    VIR_INFO("Starting up storage pool '%s'", pool->def->name);
     if (backend->startPool &&
         backend->startPool(obj->conn, pool) < 0)
         goto cleanup;
 
-    if (backend->refreshPool(obj->conn, pool) < 0) {
+    stateFile = virFileBuildPath(driver->stateDir,
+                                 pool->def->name, ".xml");
+
+    if (!stateFile || virStoragePoolSaveState(stateFile, pool->def) < 0 ||
+        backend->refreshPool(obj->conn, pool) < 0) {
         if (backend->stopPool)
             backend->stopPool(obj->conn, pool);
         goto cleanup;
     }
 
-    VIR_INFO("Starting up storage pool '%s'", pool->def->name);
     pool->active = 1;
     ret = 0;
 
  cleanup:
+    VIR_FREE(stateFile);
     virStoragePoolObjUnlock(pool);
     return ret;
 }
@@ -822,6 +848,7 @@ storagePoolDestroy(virStoragePoolPtr obj)
 {
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
+    char *stateFile = NULL;
     int ret = -1;
 
     storageDriverLock();
@@ -840,6 +867,8 @@ storagePoolDestroy(virStoragePoolPtr obj)
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
 
+    VIR_INFO("Destroying storage pool '%s'", pool->def->name);
+
     if (!virStoragePoolObjIsActive(pool)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is not active"), pool->def->name);
@@ -853,6 +882,14 @@ storagePoolDestroy(virStoragePoolPtr obj)
         goto cleanup;
     }
 
+    if (!(stateFile = virFileBuildPath(driver->stateDir,
+                                       pool->def->name,
+                                       ".xml")))
+        goto cleanup;
+
+    unlink(stateFile);
+    VIR_FREE(stateFile);
+
     if (backend->stopPool &&
         backend->stopPool(obj->conn, pool) < 0)
         goto cleanup;
@@ -860,7 +897,6 @@ storagePoolDestroy(virStoragePoolPtr obj)
     virStoragePoolObjClearVols(pool);
 
     pool->active = 0;
-    VIR_INFO("Shutting down storage pool '%s'", pool->def->name);
 
     if (pool->configFile == NULL) {
         virStoragePoolObjRemove(&driver->pools, pool);
@@ -870,6 +906,7 @@ storagePoolDestroy(virStoragePoolPtr obj)
         pool->def = pool->newDef;
         pool->newDef = NULL;
     }
+
     ret = 0;
 
  cleanup:
@@ -885,6 +922,7 @@ storagePoolDelete(virStoragePoolPtr obj,
 {
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
+    char *stateFile = NULL;
     int ret = -1;
 
     if (!(pool = virStoragePoolObjFromStoragePool(obj)))
@@ -895,6 +933,8 @@ storagePoolDelete(virStoragePoolPtr obj,
 
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL)
         goto cleanup;
+
+    VIR_INFO("Deleting storage pool '%s'", pool->def->name);
 
     if (virStoragePoolObjIsActive(pool)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -910,6 +950,14 @@ storagePoolDelete(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    if (!(stateFile = virFileBuildPath(driver->stateDir,
+                                       pool->def->name,
+                                       ".xml")))
+        goto cleanup;
+
+    unlink(stateFile);
+    VIR_FREE(stateFile);
+
     if (!backend->deletePool) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("pool does not support pool deletion"));
@@ -917,7 +965,7 @@ storagePoolDelete(virStoragePoolPtr obj,
     }
     if (backend->deletePool(obj->conn, pool, flags) < 0)
         goto cleanup;
-    VIR_INFO("Deleting storage pool '%s'", pool->def->name);
+
     ret = 0;
 
  cleanup:

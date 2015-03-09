@@ -293,6 +293,7 @@ struct _virStorageDriverState {
 
     char *configDir;
     char *autostartDir;
+    char *stateDir;
     bool privileged;
 };
 
