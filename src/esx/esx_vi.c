@@ -2413,6 +2413,38 @@ esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,
 
 
 int
+esxVI_GetInt(esxVI_ObjectContent *objectContent, const char *propertyName,
+             esxVI_Int **value, esxVI_Occurrence occurence)
+{
+    esxVI_DynamicProperty *dynamicProperty;
+
+    if (!value || *value) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    for (dynamicProperty = objectContent->propSet; dynamicProperty;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, propertyName)) {
+            if (esxVI_Int_CastFromAnyType(dynamicProperty->val, value) < 0)
+                return -1;
+
+            break;
+        }
+    }
+
+    if (!(*value) && occurence == esxVI_Occurrence_RequiredItem) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing '%s' property"), propertyName);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
 esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
               esxVI_Long **value, esxVI_Occurrence occurrence)
 {

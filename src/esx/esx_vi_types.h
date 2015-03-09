@@ -241,6 +241,7 @@ void esxVI_Int_Free(esxVI_Int **numberList);
 int esxVI_Int_Validate(esxVI_Int *number);
 int esxVI_Int_AppendToList(esxVI_Int **numberList, esxVI_Int *number);
 int esxVI_Int_DeepCopy(esxVI_Int **dest, esxVI_Int *src);
+int esxVI_Int_CastFromAnyType(esxVI_AnyType *anyType, esxVI_Int **number);
 int esxVI_Int_Serialize(esxVI_Int *number, const char *element,
                         virBufferPtr output);
 int esxVI_Int_SerializeList(esxVI_Int *numberList, const char *element,

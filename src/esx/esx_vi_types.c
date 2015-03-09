@@ -1376,6 +1376,9 @@ ESX_VI__TEMPLATE__DEEP_COPY(Int,
     (*dest)->value = src->value;
 })
 
+/* esxVI_Int_CastFromAnyType */
+ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(Int)
+
 /* esxVI_Int_Serialize */
 ESX_VI__TEMPLATE__SERIALIZE(Int,
 {

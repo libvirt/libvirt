@@ -338,6 +338,9 @@ int esxVI_GetBoolean(esxVI_ObjectContent *objectContent,
                      const char *propertyName,
                      esxVI_Boolean *value, esxVI_Occurrence occurrence);
 
+int esxVI_GetInt(esxVI_ObjectContent *objectContent, const char *propertyName,
+                 esxVI_Int **value, esxVI_Occurrence occurrence);
+
 int esxVI_GetLong(esxVI_ObjectContent *objectContent, const char *propertyName,
                   esxVI_Long **value, esxVI_Occurrence occurrence);
 
