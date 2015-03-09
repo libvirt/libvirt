@@ -7254,8 +7254,10 @@ vboxDomainScreenshot(virDomainPtr dom,
     IMachine *machine = NULL;
     nsresult rc;
     char *tmp;
+    char *cacheDir;
     int tmp_fd = -1;
     unsigned int max_screen;
+    bool privileged = geteuid() == 0;
     char *ret = NULL;
 
     if (!data->vboxObj)
@@ -7288,8 +7290,15 @@ vboxDomainScreenshot(virDomainPtr dom,
         return NULL;
     }
 
-    if (virAsprintf(&tmp, "%s/cache/libvirt/vbox.screendump.XXXXXX", LOCALSTATEDIR) < 0) {
+    if ((privileged && virAsprintf(&cacheDir, "%s/cache/libvirt", LOCALSTATEDIR) < 0) ||
+        (!privileged && !(cacheDir = virGetUserCacheDirectory()))) {
         VBOX_RELEASE(machine);
+        return NULL;
+    }
+
+    if (virAsprintf(&tmp, "%s/vbox.screendump.XXXXXX", cacheDir) < 0) {
+        VBOX_RELEASE(machine);
+        VIR_FREE(cacheDir);
         return NULL;
     }
 
@@ -7368,6 +7377,7 @@ vboxDomainScreenshot(virDomainPtr dom,
     VIR_FORCE_CLOSE(tmp_fd);
     unlink(tmp);
     VIR_FREE(tmp);
+    VIR_FREE(cacheDir);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
