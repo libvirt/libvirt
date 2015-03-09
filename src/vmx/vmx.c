@@ -2536,10 +2536,11 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         if (STRCASENEQ(virtualDev, "vlance") &&
             STRCASENEQ(virtualDev, "vmxnet") &&
             STRCASENEQ(virtualDev, "vmxnet3") &&
-            STRCASENEQ(virtualDev, "e1000")) {
+            STRCASENEQ(virtualDev, "e1000") &&
+            STRCASENEQ(virtualDev, "e1000e")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                             "'vmxnet3' or 'e1000' but found '%s'"), virtualDev_name,
+                             "'vmxnet3' or 'e1000e' or 'e1000e' but found '%s'"), virtualDev_name,
                            virtualDev);
             goto cleanup;
         }
@@ -3592,11 +3593,12 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
             STRCASENEQ(def->model, "vmxnet") &&
             STRCASENEQ(def->model, "vmxnet2") &&
             STRCASENEQ(def->model, "vmxnet3") &&
-            STRCASENEQ(def->model, "e1000")) {
+            STRCASENEQ(def->model, "e1000") &&
+            STRCASENEQ(def->model, "e1000e")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting domain XML entry 'devices/interface/model' "
                              "to be 'vlance' or 'vmxnet' or 'vmxnet2' or 'vmxnet3' "
-                             "or 'e1000' but found '%s'"), def->model);
+                             "or 'e1000' or 'e1000e' but found '%s'"), def->model);
             return -1;
         }
 
