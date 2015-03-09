@@ -5123,10 +5123,10 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             newVcpuPinNum = 0;
         }
 
-        if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, vcpu) < 0) {
+        if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum,
+                                cpumap, maplen, vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update vcpupin"));
-            virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
             goto endjob;
         }
 
@@ -5134,7 +5134,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (virCgroupNewVcpu(priv->cgroup, vcpu, false, &cgroup_vcpu) < 0)
                 goto endjob;
-            if (qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum, vcpu) < 0) {
+            if (qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum,
+                                       vcpu) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("failed to set cpuset.cpus in cgroup"
                                  " for vcpu %d"), vcpu);
@@ -5153,15 +5154,13 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             virDomainVcpuPinDel(vm->def, vcpu);
         } else {
             if (vm->def->cputune.vcpupin)
-                virDomainVcpuPinDefArrayFree(vm->def->cputune.vcpupin, vm->def->cputune.nvcpupin);
+                virDomainVcpuPinDefArrayFree(vm->def->cputune.vcpupin,
+                                             vm->def->cputune.nvcpupin);
 
             vm->def->cputune.vcpupin = newVcpuPin;
             vm->def->cputune.nvcpupin = newVcpuPinNum;
             newVcpuPin = NULL;
         }
-
-        if (newVcpuPin)
-            virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
@@ -5211,6 +5210,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    if (newVcpuPin)
+        virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
     qemuDomObjEndAPI(&vm);
