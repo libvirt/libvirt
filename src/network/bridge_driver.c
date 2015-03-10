@@ -4559,7 +4559,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     }
 
     if (dev_name) {
-        if (virNetDevGetIPv4Address(dev_name, &addr) < 0)
+        if (virNetDevGetIPAddress(dev_name, &addr) < 0)
             goto cleanup;
         addrptr = &addr;
     }

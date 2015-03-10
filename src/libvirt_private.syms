@@ -1706,7 +1706,7 @@ virNetDevDelMulti;
 virNetDevExists;
 virNetDevGetFeatures;
 virNetDevGetIndex;
-virNetDevGetIPv4Address;
+virNetDevGetIPAddress;
 virNetDevGetLinkInfo;
 virNetDevGetMAC;
 virNetDevGetMTU;

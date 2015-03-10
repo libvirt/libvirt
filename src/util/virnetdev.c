@@ -1386,7 +1386,7 @@ int virNetDevClearIPAddress(const char *ifname,
 #endif /* defined(__linux__) && defined(HAVE_LIBNL) */
 
 /**
- * virNetDevGetIPv4Address:
+ * virNetDevGetIPv4AddressIoctl:
  * @ifname: name of the interface whose IP address we want
  * @addr: filled with the IPv4 address
  *
@@ -1396,22 +1396,21 @@ int virNetDevClearIPAddress(const char *ifname,
  * Returns 0 on success, -errno on failure.
  */
 #if defined(SIOCGIFADDR) && defined(HAVE_STRUCT_IFREQ)
-int virNetDevGetIPv4Address(const char *ifname,
-                            virSocketAddrPtr addr)
+static int
+virNetDevGetIPv4AddressIoctl(const char *ifname,
+                             virSocketAddrPtr addr)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
-
-    memset(addr, 0, sizeof(*addr));
-    addr->data.stor.ss_family = AF_UNSPEC;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
 
     if (ioctl(fd, SIOCGIFADDR, (char *)&ifr) < 0) {
         virReportSystemError(errno,
-                             _("Unable to get IPv4 address for interface %s"), ifname);
+                             _("Unable to get IPv4 address for interface %s via ioctl"),
+                             ifname);
         goto cleanup;
     }
 
@@ -1427,16 +1426,41 @@ int virNetDevGetIPv4Address(const char *ifname,
 
 #else /* ! SIOCGIFADDR */
 
-int virNetDevGetIPv4Address(const char *ifname ATTRIBUTE_UNUSED,
-                            virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+static int
+virNetDevGetIPv4AddressIoctl(const char *ifname ATTRIBUTE_UNUSED,
+                             virSocketAddrPtr addr ATTRIBUTE_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("Unable to get IPv4 address on this platform"));
-    return -1;
+    return -2;
 }
 
 #endif /* ! SIOCGIFADDR */
 
+/**
+ * virNetDevGetIPAddress:
+ * @ifname: name of the interface whose IP address we want
+ * @addr: filled with the IPv4 address
+ *
+ * This function gets the IPv4 address for the interface @ifname
+ * and stores it in @addr
+ *
+ * Returns 0 on success, -errno on failure.
+ */
+int
+virNetDevGetIPAddress(const char *ifname,
+                      virSocketAddrPtr addr)
+{
+    int ret;
+
+    memset(addr, 0, sizeof(*addr));
+    addr->data.stor.ss_family = AF_UNSPEC;
+
+    if ((ret = virNetDevGetIPv4AddressIoctl(ifname, addr)) != -2)
+        return ret;
+
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get IP address on this platform"));
+    return -1;
+}
 
 /**
  * virNetDevValidateConfig:
