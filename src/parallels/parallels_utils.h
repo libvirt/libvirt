@@ -69,7 +69,6 @@ struct parallelsDomObj {
     int id;
     char *uuid;
     char *home;
-    virBitmapPtr cpumask;
     PRL_HANDLE sdkdom;
 };
 

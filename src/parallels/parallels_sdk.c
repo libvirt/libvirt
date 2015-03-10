@@ -412,7 +412,6 @@ prlsdkDomObjFreePrivate(void *p)
         return;
 
     PrlHandle_Free(pdom->sdkdom);
-    virBitmapFree(pdom->cpumask);
     VIR_FREE(pdom->uuid);
     VIR_FREE(pdom->home);
     VIR_FREE(p);
@@ -1053,8 +1052,7 @@ prlsdkConvertDomainState(VIRTUAL_MACHINE_STATE domainState,
 
 static int
 prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
-                     virDomainDefPtr def,
-                     parallelsDomObjPtr pdom)
+                     virDomainDefPtr def)
 {
     char *buf;
     PRL_UINT32 buflen = 0;
@@ -1085,11 +1083,11 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
     pret = PrlVmCfg_GetCpuMask(sdkdom, buf, &buflen);
 
     if (strlen(buf) == 0) {
-        if (!(pdom->cpumask = virBitmapNew(hostcpus)))
+        if (!(def->cpumask = virBitmapNew(hostcpus)))
             goto cleanup;
-        virBitmapSetAll(pdom->cpumask);
+        virBitmapSetAll(def->cpumask);
     } else {
-        if (virBitmapParse(buf, 0, &pdom->cpumask, hostcpus) < 0)
+        if (virBitmapParse(buf, 0, &def->cpumask, hostcpus) < 0)
             goto cleanup;
     }
 
@@ -1217,7 +1215,7 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
                                          convert to Kbytes */
     def->mem.cur_balloon = def->mem.max_balloon;
 
-    if (prlsdkConvertCpuInfo(sdkdom, def, pdom) < 0)
+    if (prlsdkConvertCpuInfo(sdkdom, def) < 0)
         goto error;
 
     if (prlsdkConvertCpuMode(sdkdom, def) < 0)
@@ -1803,13 +1801,6 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (def->placement_mode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing cpu placement mode is not supported "
-                         "by parallels driver"));
-        return -1;
-    }
-
-    if (def->cpumask != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("changing cpu mask is not supported "
                          "by parallels driver"));
         return -1;
     }
@@ -2842,6 +2833,7 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
     size_t i;
     char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
     bool needBoot = true;
+    char *mask = NULL;
 
     if (prlsdkCheckUnsupportedParams(sdkdom, def) < 0)
         return -1;
@@ -2868,6 +2860,13 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
 
     pret = PrlVmCfg_SetCpuCount(sdkdom, def->vcpus);
     prlsdkCheckRetGoto(pret, error);
+
+    if (!(mask = virBitmapFormat(def->cpumask)))
+        goto error;
+
+    pret = PrlVmCfg_SetCpuMask(sdkdom, mask);
+    prlsdkCheckRetGoto(pret, error);
+    VIR_FREE(mask);
 
     if (prlsdkClearDevices(sdkdom) < 0)
         goto error;
@@ -2912,7 +2911,9 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
     return 0;
 
  error:
-    return -1;
+    VIR_FREE(mask);
+
+   return -1;
 }
 
 int

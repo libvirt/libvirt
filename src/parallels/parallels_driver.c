@@ -777,7 +777,6 @@ parallelsDomainGetVcpus(virDomainPtr domain,
                         int maplen)
 {
     parallelsConnPtr privconn = domain->conn->privateData;
-    parallelsDomObjPtr privdomdata = NULL;
     virDomainObjPtr privdom = NULL;
     size_t i;
     int v, maxcpu, hostcpus;
@@ -799,7 +798,6 @@ parallelsDomainGetVcpus(virDomainPtr domain,
         goto cleanup;
     }
 
-    privdomdata = privdom->privateData;
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
@@ -820,7 +818,7 @@ parallelsDomainGetVcpus(virDomainPtr domain,
             int tmpmapLen = 0;
 
             memset(cpumaps, 0, maplen * maxinfo);
-            virBitmapToData(privdomdata->cpumask, &tmpmap, &tmpmapLen);
+            virBitmapToData(privdom->def->cpumask, &tmpmap, &tmpmapLen);
             if (tmpmapLen > maplen)
                 tmpmapLen = maplen;
 
