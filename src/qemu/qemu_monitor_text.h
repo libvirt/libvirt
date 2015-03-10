@@ -63,18 +63,6 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
 
 int qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                         virHashTablePtr hash);
-int qemuMonitorTextGetBlockStatsInfo(qemuMonitorPtr mon,
-                                     const char *dev_name,
-                                     long long *rd_req,
-                                     long long *rd_bytes,
-                                     long long *rd_total_times,
-                                     long long *wr_req,
-                                     long long *wr_bytes,
-                                     long long *wr_total_times,
-                                     long long *flush_req,
-                                     long long *flush_total_times);
-int qemuMonitorTextGetBlockStatsParamsNumber(qemuMonitorPtr mon,
-                                             int *nparams);
 int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
                                   const char *dev_name,
                                   unsigned long long *extent);

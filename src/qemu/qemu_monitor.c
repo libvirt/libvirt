@@ -1808,45 +1808,6 @@ qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
     return info;
 }
 
-int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
-                                 const char *dev_name,
-                                 long long *rd_req,
-                                 long long *rd_bytes,
-                                 long long *rd_total_times,
-                                 long long *wr_req,
-                                 long long *wr_bytes,
-                                 long long *wr_total_times,
-                                 long long *flush_req,
-                                 long long *flush_total_times)
-{
-    int ret;
-    VIR_DEBUG("mon=%p dev=%s", mon, dev_name);
-
-    if (!mon) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("monitor must not be NULL"));
-        return -1;
-    }
-
-    if (mon->json)
-        ret = qemuMonitorJSONGetBlockStatsInfo(mon, dev_name,
-                                               rd_req, rd_bytes,
-                                               rd_total_times,
-                                               wr_req, wr_bytes,
-                                               wr_total_times,
-                                               flush_req,
-                                               flush_total_times);
-    else
-        ret = qemuMonitorTextGetBlockStatsInfo(mon, dev_name,
-                                               rd_req, rd_bytes,
-                                               rd_total_times,
-                                               wr_req, wr_bytes,
-                                               wr_total_times,
-                                               flush_req,
-                                               flush_total_times);
-    return ret;
-}
-
 
 /**
  * qemuMonitorGetAllBlockStatsInfo:
@@ -1920,29 +1881,6 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
     return qemuMonitorJSONBlockStatsUpdateCapacity(mon, stats, backingChain);
 }
 
-
-/* Return 0 and update @nparams with the number of block stats
- * QEMU supports if success. Return -1 if failure.
- */
-int qemuMonitorGetBlockStatsParamsNumber(qemuMonitorPtr mon,
-                                         int *nparams)
-{
-    int ret;
-    VIR_DEBUG("mon=%p nparams=%p", mon, nparams);
-
-    if (!mon) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("monitor must not be NULL"));
-        return -1;
-    }
-
-    if (mon->json)
-        ret = qemuMonitorJSONGetBlockStatsParamsNumber(mon, nparams);
-    else
-        ret = qemuMonitorTextGetBlockStatsParamsNumber(mon, nparams);
-
-    return ret;
-}
 
 int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
                               const char *dev_name,
