@@ -1816,7 +1816,15 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->numa) {
+
+    /*
+     * Though we don't support NUMA configuration at the moment
+     * virDomainDefPtr always contain non zero NUMA configuration
+     * So, just make sure this configuration does't differ from auto generated.
+     */
+    if ((virDomainNumatuneGetMode(def->numa, -1) !=
+         VIR_DOMAIN_NUMATUNE_MEM_STRICT) ||
+         virDomainNumatuneHasPerNodeBinding(def->numa)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
                           "by parallels driver"));
