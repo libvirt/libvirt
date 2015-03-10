@@ -99,6 +99,13 @@ parallelsBuildCapabilities(void)
                                          NULL, 0, NULL)) == NULL)
         goto error;
 
+    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
+                                         VIR_ARCH_I686,
+                                         "parallels",
+                                         NULL, 0, NULL)) == NULL)
+        goto error;
+
+
     if (virCapabilitiesAddGuestDomain(guest,
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto error;
