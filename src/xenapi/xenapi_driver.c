@@ -1646,9 +1646,11 @@ xenapiConnectNumOfDefinedDomains(virConnectPtr conn)
                 xen_vm_set_free(result);
                 return -1;
             }
-            if (record->is_a_template == 0)
-                DomNum++;
-            xen_vm_record_free(record);
+            if (record) {
+                if (record->is_a_template == 0)
+                    DomNum++;
+                xen_vm_record_free(record);
+            }
         }
         xen_vm_set_free(result);
         return DomNum;
