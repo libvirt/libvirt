@@ -939,7 +939,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr orignode, lnk;
     size_t i = -1;
     int ret = -1, n = -1;
-    char *tmp;
+    char *tmp = NULL;
     xmlNodePtr *nodes = NULL;
 
     orignode = ctxt->node;
@@ -978,6 +978,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
             goto out;
         }
         ignore_value(virBitmapSetBit(data->net.features, val));
+        VIR_FREE(tmp);
     }
 
     data->net.subtype = VIR_NODE_DEV_CAP_NET_LAST;
@@ -1002,6 +1003,8 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     ret = 0;
  out:
     ctxt->node = orignode;
+    VIR_FREE(nodes);
+    VIR_FREE(tmp);
     return ret;
 }
 
