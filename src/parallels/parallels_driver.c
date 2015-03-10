@@ -973,6 +973,8 @@ parallelsDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
+    virObjectUnlock(dom);
+
     return 0;
 }
 
