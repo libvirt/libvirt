@@ -10481,6 +10481,30 @@ qemuDomainBlockResize(virDomainPtr dom,
 }
 
 
+static void
+qemuDomainBlockStatsGatherTotals(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    qemuBlockStatsPtr data = payload;
+    qemuBlockStatsPtr total = opaque;
+
+#define QEMU_BLOCK_STAT_TOTAL(NAME)                                            \
+    if (data->NAME > 0)                                                        \
+        total->NAME += data->NAME
+
+    QEMU_BLOCK_STAT_TOTAL(wr_bytes);
+    QEMU_BLOCK_STAT_TOTAL(wr_req);
+    QEMU_BLOCK_STAT_TOTAL(rd_bytes);
+    QEMU_BLOCK_STAT_TOTAL(rd_req);
+    QEMU_BLOCK_STAT_TOTAL(flush_req);
+    QEMU_BLOCK_STAT_TOTAL(wr_total_times);
+    QEMU_BLOCK_STAT_TOTAL(rd_total_times);
+    QEMU_BLOCK_STAT_TOTAL(flush_total_times);
+#undef QEMU_BLOCK_STAT_TOTAL
+}
+
+
 /**
  * qemuDomainBlocksStatsGather:
  * @driver: driver object
@@ -10523,10 +10547,6 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
 
         if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
             goto cleanup;
-    } else {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("summary statistics are not supported yet"));
-        goto cleanup;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -10537,13 +10557,17 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     if (VIR_ALLOC(*retstats) < 0)
         goto cleanup;
 
-    if (!(stats = virHashLookup(blockstats, diskAlias))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot find statistics for device '%s'"), diskAlias);
-        goto cleanup;
-    }
+    if (diskAlias) {
+        if (!(stats = virHashLookup(blockstats, diskAlias))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot find statistics for device '%s'"), diskAlias);
+            goto cleanup;
+        }
 
-    **retstats = *stats;
+        **retstats = *stats;
+    } else {
+        virHashForEach(blockstats, qemuDomainBlockStatsGatherTotals, *retstats);
+    }
 
     ret = nstats;
 
