@@ -709,8 +709,9 @@ return an error instead.
 Get device block stats for a running domain.  A I<block-device> corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names). On a lxc domain, omitting the
-I<block-device> yields device block stats summarily for the entire domain.
+also B<domblklist> for listing these names). On a lxc or qemu domain,
+omitting the I<block-device> yields device block stats summarily for the
+entire domain.
 
 Use I<--human> for a more human readable output.
 

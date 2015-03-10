@@ -10637,21 +10637,14 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                           unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    int idx;
-    int tmp, ret = -1;
     virDomainObjPtr vm;
-    qemuDomainObjPrivatePtr priv;
-    long long rd_req, rd_bytes, wr_req, wr_bytes, rd_total_times;
-    long long wr_total_times, flush_req, flush_total_times;
-    char *diskAlias = NULL;
+    qemuBlockStatsPtr blockstats = NULL;
+    int nstats;
+    int ret = -1;
+
+    VIR_DEBUG("params=%p, flags=%x", params, flags);
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-    if (!*path) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("summary statistics are not supported yet"));
-        return ret;
-    }
 
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
@@ -10671,63 +10664,25 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    if (*nparams != 0) {
-        virDomainDiskDefPtr disk = NULL;
-        if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("invalid path: %s"), path);
-            goto endjob;
-        }
-        disk = vm->def->disks[idx];
+    if ((nstats = qemuDomainBlocksStatsGather(driver, vm, path,
+                                              &blockstats)) < 0)
+        goto endjob;
 
-        if (!disk->info.alias) {
-             virReportError(VIR_ERR_INTERNAL_ERROR,
-                            _("missing disk device alias name for %s"),
-                            disk->dst);
-             goto endjob;
-        }
-        if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
-            goto endjob;
-    }
-
-    priv = vm->privateData;
-    VIR_DEBUG("priv=%p, params=%p, flags=%x", priv, params, flags);
-
-    qemuDomainObjEnterMonitor(driver, vm);
-    tmp = *nparams;
-    ret = qemuMonitorGetBlockStatsParamsNumber(priv->mon, nparams);
-
-    if (tmp == 0 || ret < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    /* return count of supported stats */
+    if (*nparams == 0) {
+        *nparams = nstats;
+        ret = 0;
         goto endjob;
     }
 
-    ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       diskAlias,
-                                       &rd_req,
-                                       &rd_bytes,
-                                       &rd_total_times,
-                                       &wr_req,
-                                       &wr_bytes,
-                                       &wr_total_times,
-                                       &flush_req,
-                                       &flush_total_times);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    if (ret < 0)
-        goto endjob;
-
-    tmp = 0;
-    ret = -1;
+    nstats = 0;
 
 #define QEMU_BLOCK_STATS_ASSIGN_PARAM(VAR, NAME)                              \
-    if (tmp < *nparams && (VAR) != -1) {                                      \
-        if (virTypedParameterAssign(params + tmp, NAME, VIR_TYPED_PARAM_LLONG,\
-                                    (VAR)) < 0)                               \
+    if (nstats < *nparams && (blockstats->VAR) != -1) {                       \
+        if (virTypedParameterAssign(params + nstats, NAME,                    \
+                                    VIR_TYPED_PARAM_LLONG, (blockstats->VAR)) < 0) \
             goto endjob;                                                      \
-        tmp++;                                                                \
+        nstats++;                                                             \
     }
 
     QEMU_BLOCK_STATS_ASSIGN_PARAM(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES);
@@ -10747,13 +10702,13 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
 #undef QEMU_BLOCK_STATS_ASSIGN_PARAM
 
     ret = 0;
-    *nparams = tmp;
+    *nparams = nstats;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(diskAlias);
+    VIR_FREE(blockstats);
     qemuDomObjEndAPI(&vm);
     return ret;
 }
