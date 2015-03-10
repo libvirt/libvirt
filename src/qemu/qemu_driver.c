@@ -10480,6 +10480,80 @@ qemuDomainBlockResize(virDomainPtr dom,
     return ret;
 }
 
+
+/**
+ * qemuDomainBlocksStatsGather:
+ * @driver: driver object
+ * @vm: domain object
+ * @path: to gather the statistics for
+ * @retstats: returns pointer to structure holding the stats
+ *
+ * Gathers the block statistics for use in qemuDomainBlockStats* APIs.
+ *
+ * Returns -1 on error; number of filled block statistics on success.
+ */
+static int
+qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *path,
+                            qemuBlockStatsPtr *retstats)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDiskDefPtr disk;
+    virHashTablePtr blockstats = NULL;
+    qemuBlockStatsPtr stats;
+    int nstats;
+    char *diskAlias = NULL;
+    int ret = -1;
+
+    if (*path) {
+        int idx;
+
+        if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
+            goto cleanup;
+        }
+        disk = vm->def->disks[idx];
+
+        if (!disk->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing disk device alias name for %s"), disk->dst);
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
+            goto cleanup;
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("summary statistics are not supported yet"));
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, false);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(*retstats) < 0)
+        goto cleanup;
+
+    if (!(stats = virHashLookup(blockstats, diskAlias))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find statistics for device '%s'"), diskAlias);
+        goto cleanup;
+    }
+
+    **retstats = *stats;
+
+    ret = nstats;
+
+ cleanup:
+    VIR_FREE(diskAlias);
+    virHashFree(blockstats);
+    return ret;
+}
+
+
 /* This uses the 'info blockstats' monitor command which was
  * integrated into both qemu & kvm in late 2007.  If the command is
  * not supported we detect this and return the appropriate error.
@@ -10490,18 +10564,9 @@ qemuDomainBlockStats(virDomainPtr dom,
                      virDomainBlockStatsPtr stats)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    int idx;
+    qemuBlockStatsPtr blockstats = NULL;
     int ret = -1;
     virDomainObjPtr vm;
-    virDomainDiskDefPtr disk = NULL;
-    qemuDomainObjPrivatePtr priv;
-    char *diskAlias = NULL;
-
-    if (!*path) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("summary statistics are not supported yet"));
-        return ret;
-    }
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -10518,47 +10583,24 @@ qemuDomainBlockStats(virDomainPtr dom,
         goto endjob;
     }
 
-    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path: %s"), path);
-        goto endjob;
-    }
-    disk = vm->def->disks[idx];
-
-    if (!disk->info.alias) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), disk->dst);
-        goto endjob;
-    }
-
-    if (VIR_STRDUP(diskAlias, disk->info.alias) < 0)
+    if (qemuDomainBlocksStatsGather(driver, vm, path, &blockstats) < 0)
         goto endjob;
 
-    priv = vm->privateData;
-
+    stats->rd_req = blockstats->rd_req;
+    stats->rd_bytes = blockstats->rd_bytes;
+    stats->wr_req = blockstats->wr_req;
+    stats->wr_bytes = blockstats->wr_bytes;
     /* qemu doesn't report the error count */
     stats->errs = -1;
 
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorGetBlockStatsInfo(priv->mon,
-                                       diskAlias,
-                                       &stats->rd_req,
-                                       &stats->rd_bytes,
-                                       NULL,
-                                       &stats->wr_req,
-                                       &stats->wr_bytes,
-                                       NULL,
-                                       NULL,
-                                       NULL);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    ret = 0;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     qemuDomObjEndAPI(&vm);
-    VIR_FREE(diskAlias);
+    VIR_FREE(blockstats);
     return ret;
 }
 
