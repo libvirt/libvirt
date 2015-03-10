@@ -318,6 +318,13 @@ int virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
                                  const char *configDir,
                                  const char *autostartDir);
 
+int virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
+                               const char *stateDir);
+
+virStoragePoolObjPtr
+virStoragePoolLoadState(virStoragePoolObjListPtr pools,
+                        const char *stateDir,
+                        const char *name);
 virStoragePoolObjPtr
 virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                             const unsigned char *uuid);

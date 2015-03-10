@@ -197,6 +197,17 @@ storageStateInitialize(bool privileged,
     }
     driver->privileged = privileged;
 
+    if (virFileMakePath(driver->stateDir) < 0) {
+        virReportError(errno,
+                       _("cannot create directory %s"),
+                       driver->stateDir);
+        goto error;
+    }
+
+    if (virStoragePoolLoadAllState(&driver->pools,
+                                   driver->stateDir) < 0)
+        goto error;
+
     if (virStoragePoolLoadAllConfigs(&driver->pools,
                                      driver->configDir,
                                      driver->autostartDir) < 0)
@@ -245,6 +256,8 @@ storageStateReload(void)
         return -1;
 
     storageDriverLock();
+    virStoragePoolLoadAllState(&driver->pools,
+                               driver->stateDir);
     virStoragePoolLoadAllConfigs(&driver->pools,
                                  driver->configDir,
                                  driver->autostartDir);

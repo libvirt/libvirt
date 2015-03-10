@@ -1860,6 +1860,100 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
 }
 
 
+virStoragePoolObjPtr
+virStoragePoolLoadState(virStoragePoolObjListPtr pools,
+                        const char *stateDir,
+                        const char *name)
+{
+    char *stateFile = NULL;
+    virStoragePoolDefPtr def = NULL;
+    virStoragePoolObjPtr pool = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr node = NULL;
+
+    if (!(stateFile = virFileBuildPath(stateDir, name, ".xml")))
+        goto error;
+
+    if (!(xml = virXMLParseCtxt(stateFile, NULL, _("(pool state)"), &ctxt)))
+        goto error;
+
+    if (!(node = virXPathNode("//pool", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find any 'pool' element in state file"));
+        goto error;
+    }
+
+    ctxt->node = node;
+    if (!(def = virStoragePoolDefParseXML(ctxt)))
+        goto error;
+
+    if (!STREQ(name, def->name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Storage pool state file '%s' does not match "
+                         "pool name '%s'"),
+                       stateFile, def->name);
+        goto error;
+    }
+
+    /* create the object */
+    if (!(pool = virStoragePoolObjAssignDef(pools, def)))
+        goto error;
+
+    /* XXX: future handling of some additional useful status data,
+     * for now, if a status file for a pool exists, the pool will be marked
+     * as active
+     */
+
+    pool->active = 1;
+
+ cleanup:
+    VIR_FREE(stateFile);
+    xmlFree(xml);
+    xmlXPathFreeContext(ctxt);
+    return pool;
+
+ error:
+    virStoragePoolDefFree(def);
+    goto cleanup;
+}
+
+
+int
+virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
+                           const char *stateDir)
+{
+    DIR *dir;
+    struct dirent *entry;
+    int ret = -1;
+
+    if (!(dir = opendir(stateDir))) {
+        if (errno == ENOENT)
+            return 0;
+
+        virReportSystemError(errno, _("Failed to open dir '%s'"), stateDir);
+        return -1;
+    }
+
+    while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
+        virStoragePoolObjPtr pool;
+
+        if (entry->d_name[0] == '.')
+            continue;
+
+        if (!virFileStripSuffix(entry->d_name, ".xml"))
+            continue;
+
+        if (!(pool = virStoragePoolLoadState(pools, stateDir, entry->d_name)))
+            continue;
+        virStoragePoolObjUnlock(pool);
+    }
+
+    closedir(dir);
+    return ret;
+}
+
+
 int
 virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
                              const char *configDir,
