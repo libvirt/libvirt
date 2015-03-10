@@ -34,16 +34,23 @@
 struct _virNetworkDriverState {
     virMutex lock;
 
+    /* Immutable pointer, self-locking APIs */
     virNetworkObjListPtr networks;
 
+    /* Immutable pointers, Immutable objects */
     char *networkConfigDir;
     char *networkAutostartDir;
     char *stateDir;
     char *pidDir;
     char *dnsmasqStateDir;
     char *radvdStateDir;
+
+    /* Require lock to get a reference on the object,
+     * lockless access thereafter
+     */
     dnsmasqCapsPtr dnsmasqCaps;
 
+    /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr networkEventState;
 };
 
