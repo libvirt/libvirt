@@ -1864,7 +1864,18 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
         return -1;
     }
 
-    return qemuMonitorJSONGetAllBlockStatsInfo(mon, ret_stats, backingChain);
+    if (!(*ret_stats = virHashCreate(10, virHashValueFree)))
+        goto error;
+
+    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats, backingChain) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    virHashFree(*ret_stats);
+    *ret_stats = NULL;
+    return -1;
 }
 
 

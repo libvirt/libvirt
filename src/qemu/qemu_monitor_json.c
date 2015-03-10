@@ -1695,7 +1695,10 @@ int qemuMonitorJSONGetBlockStatsInfo(qemuMonitorPtr mon,
     if (flush_total_times)
         *flush_total_times = -1;
 
-    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, &blockstats, false) < 0)
+    if (!(blockstats = virHashCreate(10, virHashValueFree)))
+        goto cleanup;
+
+    if (qemuMonitorJSONGetAllBlockStatsInfo(mon, blockstats, false) < 0)
         goto cleanup;
 
     if (!(stats = virHashLookup(blockstats, dev_name))) {
@@ -1870,7 +1873,7 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
 
 int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
-                                    virHashTablePtr *ret_stats,
+                                    virHashTablePtr hash,
                                     bool backingChain)
 {
     int ret = -1;
@@ -1879,13 +1882,9 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
-    virHashTablePtr hash = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
         return -1;
-
-    if (!(hash = virHashCreate(10, virHashValueFree)))
-        goto cleanup;
 
     if ((rc = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
@@ -1924,12 +1923,9 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
 
     }
 
-    *ret_stats = hash;
-    hash = NULL;
     ret = 0;
 
  cleanup:
-    virHashFree(hash);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
