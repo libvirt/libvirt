@@ -1563,8 +1563,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         }
         xen_vif_set_free(vif_set);
     }
-    if (vms)
-        xen_vm_set_free(vms);
+    xen_vm_set_free(vms);
     xml = virDomainDefFormat(defPtr, flags);
     virDomainDefFree(defPtr);
     return xml;
