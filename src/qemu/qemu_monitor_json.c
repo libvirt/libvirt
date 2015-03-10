@@ -1789,66 +1789,23 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
         goto cleanup;
     }
 
-    if (virJSONValueObjectGetNumberLong(stats, "rd_bytes",
-                                        &bstats->rd_bytes) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "rd_bytes");
-        goto cleanup;
+#define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY)                      \
+    if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) {                  \
+        if (virJSONValueObjectGetNumberLong(stats, NAME, &VAR) < 0) {          \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                             \
+                           _("cannot read %s statistic"), NAME);               \
+            goto cleanup;                                                      \
+        }                                                                      \
     }
-    if (virJSONValueObjectGetNumberLong(stats, "rd_operations",
-                                        &bstats->rd_req) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "rd_operations");
-        goto cleanup;
-    }
-    if (virJSONValueObjectHasKey(stats, "rd_total_time_ns") &&
-        (virJSONValueObjectGetNumberLong(stats, "rd_total_time_ns",
-                                         &bstats->rd_total_times) < 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "rd_total_time_ns");
-        goto cleanup;
-    }
-    if (virJSONValueObjectGetNumberLong(stats, "wr_bytes",
-                                        &bstats->wr_bytes) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "wr_bytes");
-        goto cleanup;
-    }
-    if (virJSONValueObjectGetNumberLong(stats, "wr_operations",
-                                        &bstats->wr_req) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "wr_operations");
-        goto cleanup;
-    }
-    if (virJSONValueObjectHasKey(stats, "wr_total_time_ns") &&
-        (virJSONValueObjectGetNumberLong(stats, "wr_total_time_ns",
-                                         &bstats->wr_total_times) < 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "wr_total_time_ns");
-        goto cleanup;
-    }
-    if (virJSONValueObjectHasKey(stats, "flush_operations") &&
-        (virJSONValueObjectGetNumberLong(stats, "flush_operations",
-                                         &bstats->flush_req) < 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "flush_operations");
-        goto cleanup;
-    }
-    if (virJSONValueObjectHasKey(stats, "flush_total_time_ns") &&
-        (virJSONValueObjectGetNumberLong(stats, "flush_total_time_ns",
-                                         &bstats->flush_total_times) < 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot read %s statistic"),
-                       "flush_total_time_ns");
-        goto cleanup;
-    }
+     QEMU_MONITOR_BLOCK_STAT_GET("rd_bytes", bstats->rd_bytes, true);
+     QEMU_MONITOR_BLOCK_STAT_GET("wr_bytes", bstats->wr_bytes, true);
+     QEMU_MONITOR_BLOCK_STAT_GET("rd_operations", bstats->rd_req, true);
+     QEMU_MONITOR_BLOCK_STAT_GET("wr_operations", bstats->wr_req, true);
+     QEMU_MONITOR_BLOCK_STAT_GET("rd_total_time_ns", bstats->rd_total_times, false);
+     QEMU_MONITOR_BLOCK_STAT_GET("wr_total_time_ns", bstats->wr_total_times, false);
+     QEMU_MONITOR_BLOCK_STAT_GET("flush_operations", bstats->flush_req, false);
+     QEMU_MONITOR_BLOCK_STAT_GET("flush_total_time_ns", bstats->flush_total_times, false);
+#undef QEMU_MONITOR_BLOCK_STAT_GET
 
     /* it's ok to not have this information here. Just skip silently. */
     qemuMonitorJSONDevGetBlockExtent(dev, &bstats->wr_highest_offset);
