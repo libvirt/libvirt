@@ -455,11 +455,9 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     *record = xen_vm_record_alloc();
     if (VIR_STRDUP((*record)->name_label, def->name) < 0)
         goto error;
-    if (def->uuid) {
-        virUUIDFormat(def->uuid, uuidStr);
-        if (VIR_STRDUP((*record)->uuid, uuidStr) < 0)
-            goto error;
-    }
+    virUUIDFormat(def->uuid, uuidStr);
+    if (VIR_STRDUP((*record)->uuid, uuidStr) < 0)
+        goto error;
     if (STREQ(def->os.type, "hvm")) {
         char *boot_order = NULL;
         if (VIR_STRDUP((*record)->hvm_boot_policy, "BIOS order") < 0)
