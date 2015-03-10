@@ -560,6 +560,8 @@ xenapiDomainCreateXML(virConnectPtr conn,
                                                      priv->caps, priv->xmlopt,
                                                      1 << VIR_DOMAIN_VIRT_XEN,
                                                      parse_flags);
+    if (!defPtr)
+        return NULL;
     createVMRecordFromXml(conn, defPtr, &record, &vm);
     virDomainDefFree(defPtr);
     if (record) {
