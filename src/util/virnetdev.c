@@ -48,6 +48,7 @@
 #endif
 
 #if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
+# include <linux/types.h>
 # include <linux/ethtool.h>
 #endif
 
@@ -2800,9 +2801,7 @@ int
 virNetDevGetFeatures(const char *ifname,
                      virBitmapPtr *out)
 {
-    int ret = -1;
     size_t i = -1;
-    size_t j = -1;
     struct ethtool_value cmd = { 0 };
 
     struct elem{
@@ -2815,26 +2814,41 @@ virNetDevGetFeatures(const char *ifname,
         {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
         {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
         {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
+# if HAVE_DECL_ETHTOOL_GGSO
         {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
+# endif
+# if HAVE_DECL_ETHTOOL_GGRO
         {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
-    };
-    /* ethtool masks */
-    struct elem flags[] = {
-        {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
-        {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
-        {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
-        {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
-        {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
+# endif
     };
 
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < ARRAY_CARDINALITY(cmds); i++) {
         cmd.cmd = cmds[i].cmd;
         if (virNetDevFeatureAvailable(ifname, &cmd))
             ignore_value(virBitmapSetBit(*out, cmds[i].feat));
     }
+
+# if HAVE_DECL_ETHTOOL_GFLAGS
+    size_t j = -1;
+    /* ethtool masks */
+    struct elem flags[] = {
+#  if HAVE_DECL_ETH_FLAG_LRO
+        {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_TXVLAN
+        {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
+        {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_NTUBLE
+        {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_RXHASH
+        {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
+#  endif
+    };
 
     cmd.cmd = ETHTOOL_GFLAGS;
     if (virNetDevFeatureAvailable(ifname, &cmd)) {
@@ -2843,12 +2857,9 @@ virNetDevGetFeatures(const char *ifname,
                 ignore_value(virBitmapSetBit(*out, flags[j].feat));
         }
     }
+# endif
 
-    ret = 0;
- cleanup:
-
-    return ret;
-
+    return 0;
 }
 #else
 int
