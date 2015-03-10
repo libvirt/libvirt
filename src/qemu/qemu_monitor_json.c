@@ -1773,6 +1773,7 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     qemuBlockStatsPtr bstats = NULL;
     virJSONValuePtr stats;
     int ret = -1;
+    int nstats = 0;
     char *entry_name = qemuDomainStorageAlias(dev_name, depth);
     virJSONValuePtr backing;
 
@@ -1791,6 +1792,7 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
 
 #define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY)                      \
     if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) {                  \
+        nstats++;                                                              \
         if (virJSONValueObjectGetNumberLong(stats, NAME, &VAR) < 0) {          \
             virReportError(VIR_ERR_INTERNAL_ERROR,                             \
                            _("cannot read %s statistic"), NAME);               \
@@ -1820,7 +1822,7 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                             hash, true) < 0)
         goto cleanup;
 
-    ret = 0;
+    ret = nstats;
  cleanup:
     VIR_FREE(bstats);
     VIR_FREE(entry_name);
@@ -1834,6 +1836,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                     bool backingChain)
 {
     int ret = -1;
+    int nstats = 0;
     int rc;
     size_t i;
     virJSONValuePtr cmd;
@@ -1874,13 +1877,17 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash,
-                                                backingChain) < 0)
+        rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash,
+                                                 backingChain);
+
+        if (rc < 0)
             goto cleanup;
 
+        if (rc > nstats)
+            nstats = rc;
     }
 
-    ret = 0;
+    ret = nstats;
 
  cleanup:
     virJSONValueFree(cmd);

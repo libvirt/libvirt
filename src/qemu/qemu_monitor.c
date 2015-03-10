@@ -1848,14 +1848,24 @@ int qemuMonitorGetBlockStatsInfo(qemuMonitorPtr mon,
 }
 
 
-/* Creates a hash table in 'ret_stats' with all block stats.
- * Returns <0 on error, 0 on success.
+/**
+ * qemuMonitorGetAllBlockStatsInfo:
+ * @mon: monitor object
+ * @ret_stats: pointer that is filled with a hash table containing the stats
+ * @backingChain: recurse into the backing chain of devices
+ *
+ * Creates a hash table in @ret_stats with block stats of all devices. In case
+ * @backingChain is true @ret_stats will additionally contain stats for
+ * backing chain members of block devices.
+ *
+ * Returns < 0 on error, count of supported block stats fields on success.
  */
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                 virHashTablePtr *ret_stats,
                                 bool backingChain)
 {
+    int ret = -1;
     VIR_DEBUG("mon=%p ret_stats=%p, backing=%d", mon, ret_stats, backingChain);
 
     if (!mon->json) {
@@ -1868,8 +1878,8 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
         goto error;
 
     if (mon->json) {
-        if (qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats, backingChain) < 0)
-            goto error;
+        ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, *ret_stats,
+                                                  backingChain);
     } else {
          if (backingChain) {
              virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -1878,11 +1888,13 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
              goto error;
          }
 
-         if (qemuMonitorTextGetAllBlockStatsInfo(mon, *ret_stats) < 0)
-             goto error;
+         ret = qemuMonitorTextGetAllBlockStatsInfo(mon, *ret_stats);
     }
 
-    return 0;
+    if (ret < 0)
+        goto error;
+
+    return ret;
 
  error:
     virHashFree(*ret_stats);

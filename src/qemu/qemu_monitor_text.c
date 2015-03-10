@@ -854,6 +854,8 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
     size_t i;
     size_t j;
     int ret = -1;
+    int nstats;
+    int maxstats = 0;
 
     if (qemuMonitorHMPCommand(mon, "info blockstats", &info) < 0)
         goto cleanup;
@@ -911,6 +913,8 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
         if (!(values = virStringSplit(line, " ", 0)))
             goto cleanup;
 
+        nstats = 0;
+
         for (j = 0; values[j] && *values[j]; j++) {
             key = values[j];
 
@@ -925,6 +929,7 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
 
 #define QEMU_MONITOR_TEXT_READ_BLOCK_STAT(NAME, VAR)                           \
             if (STREQ(key, NAME)) {                                            \
+                nstats++;                                                      \
                 if (virStrToLong_ll(value, NULL, 10, &VAR) < 0) {              \
                     virReportError(VIR_ERR_INTERNAL_ERROR,                     \
                                    _("'info blockstats' contains malformed "   \
@@ -948,6 +953,9 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
             VIR_DEBUG("unknown block stat field '%s'", key);
         }
 
+        if (nstats > maxstats)
+            maxstats = nstats;
+
         if (virHashAddEntry(hash, dev_name, stats) < 0)
             goto cleanup;
         stats = NULL;
@@ -956,7 +964,7 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
         values = NULL;
     }
 
-    ret = 0;
+    ret = maxstats;
 
  cleanup:
     virStringFreeList(lines);
