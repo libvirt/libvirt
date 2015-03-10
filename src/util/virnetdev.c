@@ -33,6 +33,10 @@
 #include "virstring.h"
 #include "virutil.h"
 
+#if HAVE_GETIFADDRS
+# include <ifaddrs.h>
+#endif
+
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <fcntl.h>
@@ -1436,6 +1440,70 @@ virNetDevGetIPv4AddressIoctl(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* ! SIOCGIFADDR */
 
 /**
+ * virNetDevGetifaddrsAddress:
+ * @ifname: name of the interface whose IP address we want
+ * @addr: filled with the IP address
+ *
+ * This function gets the IP address for the interface @ifname
+ * and stores it in @addr
+ *
+ * Returns 0 on success, -1 on failure, -2 on unsupported.
+ */
+#if HAVE_GETIFADDRS
+static int
+virNetDevGetifaddrsAddress(const char *ifname,
+                           virSocketAddrPtr addr)
+{
+    struct ifaddrs *ifap, *ifa;
+    int ret = -1;
+
+    if (getifaddrs(&ifap) < 0) {
+        virReportSystemError(errno,
+                             _("Could not get interface list for '%s'"),
+                             ifname);
+        return -1;
+    }
+
+    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        int family = ifa->ifa_addr->sa_family;
+
+        if (STRNEQ_NULLABLE(ifa->ifa_name, ifname))
+            continue;
+        if (family != AF_INET6 && family != AF_INET)
+            continue;
+
+        if (family == AF_INET6) {
+            addr->len = sizeof(addr->data.inet6);
+            memcpy(&addr->data.inet6, ifa->ifa_addr, addr->len);
+        } else {
+            addr->len = sizeof(addr->data.inet4);
+            memcpy(&addr->data.inet4, ifa->ifa_addr, addr->len);
+        }
+        addr->data.stor.ss_family = family;
+        ret = 0;
+        goto cleanup;
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("no IP address found for interface '%s'"),
+                   ifname);
+ cleanup:
+    freeifaddrs(ifap);
+    return ret;
+}
+
+#else  /* ! HAVE_GETIFADDRS */
+
+static int
+virNetDevGetifaddrsAddress(const char *ifname ATTRIBUTE_UNUSED,
+                           virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+{
+    return -2;
+}
+
+#endif
+
+/**
  * virNetDevGetIPAddress:
  * @ifname: name of the interface whose IP address we want
  * @addr: filled with the IPv4 address
@@ -1453,6 +1521,9 @@ virNetDevGetIPAddress(const char *ifname,
 
     memset(addr, 0, sizeof(*addr));
     addr->data.stor.ss_family = AF_UNSPEC;
+
+    if ((ret = virNetDevGetifaddrsAddress(ifname, addr)) != -2)
+        return ret;
 
     if ((ret = virNetDevGetIPv4AddressIoctl(ifname, addr)) != -2)
         return ret;
