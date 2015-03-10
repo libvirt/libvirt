@@ -11262,4 +11262,6 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
     for (i = 0; i < info->ndevAlias; i++)
         VIR_FREE(info->devAlias[i]);
     VIR_FREE(info->devAlias);
+
+    VIR_FREE(info);
 }
