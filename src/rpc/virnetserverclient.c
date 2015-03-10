@@ -866,7 +866,6 @@ void virNetServerClientDispose(void *obj)
     virObjectUnref(client->tlsCtxt);
 #endif
     virObjectUnref(client->sock);
-    virObjectUnlock(client);
 }
 
 

@@ -622,8 +622,6 @@ void virNetClientDispose(void *obj)
 #endif
 
     virNetMessageClear(&client->msg);
-
-    virObjectUnlock(client);
 }
 
 
