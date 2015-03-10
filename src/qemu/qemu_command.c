@@ -7766,6 +7766,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
 
@@ -7841,7 +7842,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         /* network and bridge use a tap device, and direct uses a
          * macvtap device
          */
-        if (nicindexes && nnicindexes && net->ifname) {
+        if (cfg->privileged && nicindexes && nnicindexes && net->ifname) {
             if (virNetDevGetIndex(net->ifname, &nicindex) < 0 ||
                 VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex) < 0)
                 goto cleanup;
