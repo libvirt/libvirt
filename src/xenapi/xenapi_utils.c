@@ -399,14 +399,16 @@ createVifNetwork(virConnectPtr conn, xen_vm vm, int device,
     xen_network_set *net_set = NULL;
     xen_network_record *net_rec = NULL;
     int cnt = 0;
-    if (xen_network_get_all(session, &net_set)) {
-        for (cnt = 0; cnt < net_set->size; cnt++) {
-            if (xen_network_get_record(session, &net_rec, net_set->contents[cnt])) {
-                if (STREQ(net_rec->bridge, bridge)) {
-                    break;
-                } else {
-                    xen_network_record_free(net_rec);
-                }
+    if (!xen_network_get_all(session, &net_set)) {
+        xen_vm_record_opt_free(vm_opt);
+        return -1;
+    }
+    for (cnt = 0; cnt < net_set->size; cnt++) {
+        if (xen_network_get_record(session, &net_rec, net_set->contents[cnt])) {
+            if (STREQ(net_rec->bridge, bridge)) {
+                break;
+            } else {
+                xen_network_record_free(net_rec);
             }
         }
     }
@@ -425,8 +427,12 @@ createVifNetwork(virConnectPtr conn, xen_vm vm, int device,
         vif_record->other_config = xen_string_string_map_alloc(0);
         vif_record->runtime_properties = xen_string_string_map_alloc(0);
         vif_record->qos_algorithm_params = xen_string_string_map_alloc(0);
-        if (virAsprintfQuiet(&vif_record->device, "%d", device) < 0)
+        if (virAsprintfQuiet(&vif_record->device, "%d", device) < 0) {
+            xen_vif_record_free(vif_record);
+            xen_network_record_free(net_rec);
+            xen_network_set_free(net_set);
             return -1;
+        }
         xen_vif_create(session, &vif, vif_record);
         if (!vif) {
             xen_vif_free(vif);
@@ -438,7 +444,7 @@ createVifNetwork(virConnectPtr conn, xen_vm vm, int device,
         xen_vif_record_free(vif_record);
         xen_network_record_free(net_rec);
     }
-    if (net_set != NULL) xen_network_set_free(net_set);
+    xen_network_set_free(net_set);
     return -1;
 }
 
