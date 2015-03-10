@@ -41,6 +41,7 @@
 #include "qemu_monitor.h"
 #include "virstring.h"
 #include "qemu_hostdev.h"
+#include "qemu_domain.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -3394,7 +3395,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     if (monpath)
         ignore_value(unlink(monpath));
     VIR_FREE(monpath);
-    virObjectUnref(vm);
+    qemuDomObjEndAPI(&vm);
     virObjectUnref(xmlopt);
 
     if (pid != 0) {
