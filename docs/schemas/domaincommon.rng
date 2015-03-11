@@ -4530,7 +4530,7 @@
     <attribute name="filter">
       <data type="NCName"/>
     </attribute>
-    <optional>
+    <zeroOrMore>
       <element name="parameter">
         <attribute name="name">
           <ref name="filter-param-name"/>
@@ -4539,7 +4539,7 @@
           <ref name="filter-param-value"/>
         </attribute>
       </element>
-    </optional>
+    </zeroOrMore>
   </define>
 
   <define name="deviceBoot">
