@@ -2573,9 +2573,6 @@ int virDomainEmulatorPinAdd(virDomainDefPtr def,
 
 int virDomainEmulatorPinDel(virDomainDefPtr def);
 
-void virDomainIOThreadsPinDel(virDomainDefPtr def,
-                              unsigned int iothread_id);
-
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
 bool virDomainDiskDefDstDuplicates(virDomainDefPtr def);

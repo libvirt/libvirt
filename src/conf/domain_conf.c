@@ -16876,23 +16876,6 @@ virDomainEmulatorPinDel(virDomainDefPtr def)
     return 0;
 }
 
-void
-virDomainIOThreadsPinDel(virDomainDefPtr def,
-                         unsigned int iothread_id)
-{
-    size_t i;
-    virDomainPinDefPtr *iothreadspin_list = def->cputune.iothreadspin;
-
-    for (i = 0; i < def->cputune.niothreadspin; i++) {
-        if (iothreadspin_list[i]->id == iothread_id) {
-            virBitmapFree(iothreadspin_list[i]->cpumask);
-            VIR_DELETE_ELEMENT(def->cputune.iothreadspin, i,
-                               def->cputune.niothreadspin);
-            return;
-        }
-    }
-}
-
 static int
 virDomainEventActionDefFormat(virBufferPtr buf,
                               int type,
