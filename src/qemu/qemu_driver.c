@@ -5154,8 +5154,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             virDomainVcpuPinDel(vm->def, vcpu);
         } else {
             if (vm->def->cputune.vcpupin)
-                virDomainVcpuPinDefArrayFree(vm->def->cputune.vcpupin,
-                                             vm->def->cputune.nvcpupin);
+                virDomainPinDefArrayFree(vm->def->cputune.vcpupin,
+                                         vm->def->cputune.nvcpupin);
 
             vm->def->cputune.vcpupin = newVcpuPin;
             vm->def->cputune.nvcpupin = newVcpuPinNum;
@@ -5211,7 +5211,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
  cleanup:
     if (newVcpuPin)
-        virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
+        virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
     qemuDomObjEndAPI(&vm);
@@ -5403,7 +5403,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
             if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to update vcpupin"));
-                virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
+                virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
                 goto endjob;
             }
 
@@ -5444,7 +5444,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
             }
 
             if (newVcpuPin)
-                virDomainVcpuPinDefArrayFree(newVcpuPin, newVcpuPinNum);
+                virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
         } else {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
@@ -6031,8 +6031,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
         }
 
         if (vm->def->cputune.iothreadspin)
-            virDomainVcpuPinDefArrayFree(vm->def->cputune.iothreadspin,
-                                         vm->def->cputune.niothreadspin);
+            virDomainPinDefArrayFree(vm->def->cputune.iothreadspin,
+                                     vm->def->cputune.niothreadspin);
 
         vm->def->cputune.iothreadspin = newIOThreadsPin;
         vm->def->cputune.niothreadspin = newIOThreadsPinNum;
@@ -6092,7 +6092,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
  cleanup:
     if (newIOThreadsPin)
-        virDomainVcpuPinDefArrayFree(newIOThreadsPin, newIOThreadsPinNum);
+        virDomainPinDefArrayFree(newIOThreadsPin, newIOThreadsPinNum);
     if (cgroup_iothread)
         virCgroupFree(&cgroup_iothread);
     if (event)

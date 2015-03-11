@@ -2046,15 +2046,15 @@ virDomainPinDefFree(virDomainPinDefPtr def)
 }
 
 void
-virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def,
-                             int nvcpupin)
+virDomainPinDefArrayFree(virDomainPinDefPtr *def,
+                         int npin)
 {
     size_t i;
 
     if (!def)
         return;
 
-    for (i = 0; i < nvcpupin; i++)
+    for (i = 0; i < npin; i++)
         virDomainPinDefFree(def[i]);
 
     VIR_FREE(def);
@@ -2229,11 +2229,11 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virCPUDefFree(def->cpu);
 
-    virDomainVcpuPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
+    virDomainPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
     virDomainPinDefFree(def->cputune.emulatorpin);
 
-    virDomainVcpuPinDefArrayFree(def->cputune.iothreadspin,
+    virDomainPinDefArrayFree(def->cputune.iothreadspin,
                                  def->cputune.niothreadspin);
 
     for (i = 0; i < def->cputune.nvcpusched; i++)

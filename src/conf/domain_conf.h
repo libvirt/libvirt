@@ -1908,7 +1908,7 @@ struct _virDomainPinDef {
 };
 
 void virDomainPinDefFree(virDomainPinDefPtr def);
-void virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def, int nvcpupin);
+void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
 
 virDomainPinDefPtr *virDomainVcpuPinDefCopy(virDomainPinDefPtr *src,
                                             int nvcpupin);
