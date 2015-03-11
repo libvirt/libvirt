@@ -1068,9 +1068,9 @@ virDomainObjListFindByUUIDInternal(virDomainObjListPtr doms,
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
+            virObjectUnlock(obj);
             if (ref)
                 virObjectUnref(obj);
-            virObjectUnlock(obj);
             obj = NULL;
         }
     }
