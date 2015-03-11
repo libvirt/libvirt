@@ -39,6 +39,7 @@
 #include "virtime.h"
 #include "virstoragefile.h"
 #include "virstring.h"
+#include "virthreadjob.h"
 
 #include "storage/storage_driver.h"
 

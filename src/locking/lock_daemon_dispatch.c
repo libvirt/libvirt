@@ -29,6 +29,7 @@
 #include "lock_daemon.h"
 #include "lock_protocol.h"
 #include "virerror.h"
+#include "virthreadjob.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
