@@ -1,7 +1,7 @@
 /*
  * vircgroup.h: methods for managing control cgroups
  *
- * Copyright (C) 2011-2014 Red Hat, Inc.
+ * Copyright (C) 2011-2015 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * This library is free software; you can redistribute it and/or
@@ -250,6 +250,9 @@ int virCgroupGetFreezerState(virCgroupPtr group, char **state);
 
 int virCgroupSetCpusetMems(virCgroupPtr group, const char *mems);
 int virCgroupGetCpusetMems(virCgroupPtr group, char **mems);
+
+int virCgroupSetCpusetMemoryMigrate(virCgroupPtr group, bool migrate);
+int virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate);
 
 int virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus);
 int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
