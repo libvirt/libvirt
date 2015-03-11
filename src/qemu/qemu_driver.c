@@ -5438,7 +5438,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
                     goto endjob;
                 }
             } else {
-                virDomainVcpuPinDefFree(vm->def->cputune.emulatorpin);
+                virDomainPinDefFree(vm->def->cputune.emulatorpin);
                 vm->def->cputune.emulatorpin = newVcpuPin[0];
                 VIR_FREE(newVcpuPin);
             }

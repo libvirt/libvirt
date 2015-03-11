@@ -1907,7 +1907,7 @@ struct _virDomainPinDef {
     virBitmapPtr cpumask;
 };
 
-void virDomainVcpuPinDefFree(virDomainPinDefPtr def);
+void virDomainPinDefFree(virDomainPinDefPtr def);
 void virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def, int nvcpupin);
 
 virDomainPinDefPtr *virDomainVcpuPinDefCopy(virDomainPinDefPtr *src,

@@ -2037,7 +2037,7 @@ virDomainVcpuPinDefCopy(virDomainPinDefPtr *src, int nvcpupin)
 }
 
 void
-virDomainVcpuPinDefFree(virDomainPinDefPtr def)
+virDomainPinDefFree(virDomainPinDefPtr def)
 {
     if (def) {
         virBitmapFree(def->cpumask);
@@ -2055,7 +2055,7 @@ virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def,
         return;
 
     for (i = 0; i < nvcpupin; i++)
-        virDomainVcpuPinDefFree(def[i]);
+        virDomainPinDefFree(def[i]);
 
     VIR_FREE(def);
 }
@@ -2231,7 +2231,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainVcpuPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
-    virDomainVcpuPinDefFree(def->cputune.emulatorpin);
+    virDomainPinDefFree(def->cputune.emulatorpin);
 
     virDomainVcpuPinDefArrayFree(def->cputune.iothreadspin,
                                  def->cputune.niothreadspin);
@@ -13534,7 +13534,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                         vcpupin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("duplicate vcpupin for same vcpu"));
-            virDomainVcpuPinDefFree(vcpupin);
+            virDomainPinDefFree(vcpupin);
             goto error;
         }
 
@@ -13545,7 +13545,7 @@ virDomainDefParseXML(xmlDocPtr xml,
              * ignoring them instead.
              */
             VIR_WARN("Ignore vcpupin for not onlined vcpus");
-            virDomainVcpuPinDefFree(vcpupin);
+            virDomainPinDefFree(vcpupin);
         } else {
             def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
         }
@@ -13626,7 +13626,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                         iothreadpin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("duplicate iothreadpin for same iothread"));
-            virDomainVcpuPinDefFree(iothreadpin);
+            virDomainPinDefFree(iothreadpin);
             goto error;
         }
 
@@ -16812,7 +16812,7 @@ virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
     return 0;
 
  error:
-    virDomainVcpuPinDefFree(vcpupin);
+    virDomainPinDefFree(vcpupin);
     return -1;
 }
 
@@ -16847,7 +16847,7 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
         emulatorpin->id = -1;
         emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
         if (!emulatorpin->cpumask) {
-            virDomainVcpuPinDefFree(emulatorpin);
+            virDomainPinDefFree(emulatorpin);
             return -1;
         }
 
@@ -16871,7 +16871,7 @@ virDomainEmulatorPinDel(virDomainDefPtr def)
     if (!def->cputune.emulatorpin)
         return 0;
 
-    virDomainVcpuPinDefFree(def->cputune.emulatorpin);
+    virDomainPinDefFree(def->cputune.emulatorpin);
     def->cputune.emulatorpin = NULL;
 
     return 0;
@@ -16918,7 +16918,7 @@ virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
     return 0;
 
  error:
-    virDomainVcpuPinDefFree(iothreadpin);
+    virDomainPinDefFree(iothreadpin);
     return -1;
 }
 
