@@ -16875,51 +16875,6 @@ virDomainEmulatorPinDel(virDomainDefPtr def)
     return 0;
 }
 
-int
-virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
-                         size_t *niothreadspin,
-                         unsigned char *cpumap,
-                         int maplen,
-                         unsigned int iothread_id)
-{
-    virDomainPinDefPtr iothreadpin = NULL;
-
-    if (!iothreadspin_list)
-        return -1;
-
-    iothreadpin = virDomainPinFind(*iothreadspin_list,
-                                   *niothreadspin,
-                                   iothread_id);
-    if (iothreadpin) {
-        iothreadpin->id = iothread_id;
-        virBitmapFree(iothreadpin->cpumask);
-        iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!iothreadpin->cpumask)
-            return -1;
-
-        return 0;
-    }
-
-    /* No existing iothreadpin matches iothread_id, adding a new one */
-
-    if (VIR_ALLOC(iothreadpin) < 0)
-        goto error;
-
-    iothreadpin->id = iothread_id;
-    iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
-    if (!iothreadpin->cpumask)
-        goto error;
-
-    if (VIR_APPEND_ELEMENT(*iothreadspin_list, *niothreadspin, iothreadpin) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    virDomainPinDefFree(iothreadpin);
-    return -1;
-}
-
 void
 virDomainIOThreadsPinDel(virDomainDefPtr def,
                          unsigned int iothread_id)

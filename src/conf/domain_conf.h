@@ -2571,12 +2571,6 @@ int virDomainEmulatorPinAdd(virDomainDefPtr def,
 
 int virDomainEmulatorPinDel(virDomainDefPtr def);
 
-int virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
-                             size_t *niothreads,
-                             unsigned char *cpumap,
-                             int maplen,
-                             unsigned int iothread_id);
-
 void virDomainIOThreadsPinDel(virDomainDefPtr def,
                               unsigned int iothread_id);
 

@@ -312,7 +312,6 @@ virDomainHubTypeToString;
 virDomainHypervTypeFromString;
 virDomainHypervTypeToString;
 virDomainInputDefFree;
-virDomainIOThreadsPinAdd;
 virDomainIOThreadsPinDel;
 virDomainLeaseDefFree;
 virDomainLeaseIndex;

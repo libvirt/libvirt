@@ -5997,8 +5997,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
             newIOThreadsPinNum = 0;
         }
 
-        if (virDomainIOThreadsPinAdd(&newIOThreadsPin, &newIOThreadsPinNum,
-                                     cpumap, maplen, iothread_id) < 0) {
+        if (virDomainPinAdd(&newIOThreadsPin, &newIOThreadsPinNum,
+                            cpumap, maplen, iothread_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update iothreadspin"));
             goto endjob;
@@ -6069,11 +6069,11 @@ qemuDomainPinIOThread(virDomainPtr dom,
                 goto endjob;
             persistentDef->cputune.niothreadspin = 0;
         }
-        if (virDomainIOThreadsPinAdd(&persistentDef->cputune.iothreadspin,
-                                     &persistentDef->cputune.niothreadspin,
-                                     cpumap,
-                                     maplen,
-                                     iothread_id) < 0) {
+        if (virDomainPinAdd(&persistentDef->cputune.iothreadspin,
+                            &persistentDef->cputune.niothreadspin,
+                            cpumap,
+                            maplen,
+                            iothread_id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update or add iothreadspin xml "
                              "of a persistent domain"));
