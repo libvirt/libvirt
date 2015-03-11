@@ -1,0 +1,170 @@
+<domain type='kvm'>
+  <name>gentoo</name>
+  <uuid>a75aca4b-a02f-2bcb-4a91-c93cd848c34b</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <memoryBacking>
+    <hugepages>
+      <page size='1048576' unit='KiB' nodeset='0-3'/>
+    </hugepages>
+  </memoryBacking>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-1.4'>hvm</type>
+    <boot dev='hd'/>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='custom' match='exact'>
+    <model fallback='allow'>Haswell</model>
+    <vendor>Intel</vendor>
+    <feature policy='require' name='tm2'/>
+    <feature policy='require' name='est'/>
+    <feature policy='require' name='vmx'/>
+    <feature policy='require' name='osxsave'/>
+    <feature policy='require' name='smx'/>
+    <feature policy='require' name='ss'/>
+    <feature policy='require' name='ds'/>
+    <feature policy='require' name='vme'/>
+    <feature policy='require' name='dtes64'/>
+    <feature policy='require' name='abm'/>
+    <feature policy='require' name='ht'/>
+    <feature policy='require' name='acpi'/>
+    <feature policy='require' name='pbe'/>
+    <feature policy='require' name='tm'/>
+    <feature policy='require' name='pdcm'/>
+    <feature policy='require' name='pdpe1gb'/>
+    <feature policy='require' name='ds_cpl'/>
+    <feature policy='require' name='rdrand'/>
+    <feature policy='require' name='f16c'/>
+    <feature policy='require' name='xtpr'/>
+    <feature policy='require' name='monitor'/>
+    <numa>
+      <cell id='0' cpus='0' memory='1048576' unit='KiB'/>
+      <cell id='1' cpus='1' memory='1048576' unit='KiB'/>
+      <cell id='2' cpus='2' memory='1048576' unit='KiB'/>
+      <cell id='3' cpus='3' memory='1048576' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <pm>
+    <suspend-to-mem enabled='yes'/>
+    <suspend-to-disk enabled='yes'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='floppy'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <source file='/var/lib/libvirt/images/fd.img'/>
+      <target dev='fda' bus='fdc'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/gentoo.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/OtherDemo.img'/>
+      <target dev='vdb' bus='virtio'/>
+      <encryption format='qcow'>
+        <secret type='passphrase' uuid='e78d4b51-a2af-485f-b0f5-afca709a80f4'/>
+      </encryption>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <source file='/home/zippy/tmp/install-amd64-minimal-20140619.iso'/>
+      <target dev='hdc' bus='ide'/>
+      <readonly/>
+      <shareable/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </controller>
+    <controller type='fdc' index='0'/>
+    <interface type='network'>
+      <mac address='52:54:00:d6:c0:0b'/>
+      <source network='default'/>
+      <bandwidth>
+        <inbound average='100'/>
+        <outbound average='100'/>
+      </bandwidth>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+    <interface type='bridge'>
+      <mac address='52:54:00:35:82:59'/>
+      <source bridge='br0'/>
+      <model type='rtl8139'/>
+      <filterref filter='myfilter'>
+        <parameter name='CTRL_IP_LEARNING' value='none'/>
+        <parameter name='DHCPSERVER' value='104.156.226.10'/>
+        <parameter name='IP' value='104.207.129.11'/>
+        <parameter name='IP6_ADDR' value='2001:19f0:300:2102::'/>
+        <parameter name='IP6_MASK' value='64'/>
+      </filterref>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+    </interface>
+    <interface type='server'>
+      <mac address='52:54:00:22:c9:42'/>
+      <source address='127.0.0.1' port='1234'/>
+      <bandwidth>
+        <inbound average='1234'/>
+        <outbound average='5678'/>
+      </bandwidth>
+      <model type='rtl8139'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </interface>
+    <interface type='client'>
+      <mac address='52:54:00:8c:b1:f8'/>
+      <source address='127.0.0.1' port='1234'/>
+      <model type='rtl8139'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </interface>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <serial type='pty'>
+      <target port='1'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <channel type='unix'>
+      <source mode='bind' path='/var/lib/libvirt/qemu/channel/target/gentoo.org.qemu.guest_agent.0'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes'/>
+    <sound model='ich6'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </sound>
+    <video>
+      <model type='cirrus' vram='16384' heads='1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
