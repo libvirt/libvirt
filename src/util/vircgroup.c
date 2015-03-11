@@ -3085,9 +3085,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     need_cpus = MIN(total_cpus, start_cpu + ncpus);
 
     for (i = 0; i < need_cpus; i++) {
-        bool present;
-        ignore_value(virBitmapGetBit(cpumap, i, &present));
-        if (!present) {
+        if (!virBitmapIsBitSet(cpumap, i)) {
             cpu_time = 0;
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

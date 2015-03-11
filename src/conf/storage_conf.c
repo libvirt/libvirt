@@ -1567,7 +1567,6 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
     if (options->featureToString && def->features) {
         size_t i;
-        bool b;
         bool empty = virBitmapIsAllClear(def->features);
 
         if (empty) {
@@ -1578,8 +1577,7 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         }
 
         for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
-            ignore_value(virBitmapGetBit(def->features, i, &b));
-            if (b)
+            if (virBitmapIsBitSet(def->features, i))
                 virBufferAsprintf(buf, "<%s/>\n",
                                   options->featureToString(i));
         }

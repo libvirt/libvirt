@@ -1093,9 +1093,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
         cpumask = def->cputune.vcpupin[vcpu]->cpumask;
 
         for (i = 0; i < virBitmapSize(cpumask); ++i) {
-            bool bit;
-            ignore_value(virBitmapGetBit(cpumask, i, &bit));
-            if (bit)
+            if (virBitmapIsBitSet(cpumask, i))
                 VIR_USE_CPU(cpumap, i);
         }
 

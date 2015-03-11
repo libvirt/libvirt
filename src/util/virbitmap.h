@@ -62,6 +62,11 @@ int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 /*
+ * Get bit @b in @bitmap. Returns false if b is out of range.
+ */
+bool virBitmapIsBitSet(virBitmapPtr bitmap, size_t b)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+/*
  * Get setting of bit position @b in @bitmap and store in @result
  */
 int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)

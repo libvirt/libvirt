@@ -465,7 +465,6 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     virBitmapPtr map = NULL;
     size_t i;
     int ndisks;
-    bool inuse;
 
     if (!def->dom) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -500,7 +499,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
         }
 
-        if (virBitmapGetBit(map, idx, &inuse) < 0 || inuse) {
+        if (virBitmapIsBitSet(map, idx)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' specified twice"),
                            disk->name);
@@ -553,8 +552,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     for (i = 0; i < def->dom->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk;
 
-        ignore_value(virBitmapGetBit(map, i, &inuse));
-        if (inuse)
+        if (virBitmapIsBitSet(map, i))
             continue;
         disk = &def->disks[ndisks++];
         if (VIR_ALLOC(disk->src) < 0)

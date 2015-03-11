@@ -232,9 +232,7 @@ xenDomainUsedCpus(virDomainPtr dom, virDomainDefPtr def)
                                                   cpumap, cpumaplen)) >= 0) {
         for (n = 0; n < ncpus; n++) {
             for (m = 0; m < priv->nbNodeCpus; m++) {
-                bool used;
-                ignore_value(virBitmapGetBit(cpulist, m, &used));
-                if ((!used) &&
+                if (!virBitmapIsBitSet(cpulist, m) &&
                     (VIR_CPU_USABLE(cpumap, cpumaplen, n, m))) {
                     ignore_value(virBitmapSetBit(cpulist, m));
                     nb++;

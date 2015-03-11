@@ -1089,10 +1089,7 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
         }
 
         for (n = 0, cpu = 0; cpu < numCpus; cpu++) {
-            bool used;
-
-            ignore_value(virBitmapGetBit(cpuset, cpu, &used));
-            if (used)
+            if (virBitmapIsBitSet(cpuset, cpu))
                 cpuInfo[n++].id = cpu;
         }
         virBitmapFree(cpuset);

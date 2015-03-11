@@ -2051,7 +2051,6 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     virBitmapPtr cpumask = NULL;
     int maxcpu, hostcpus, vcpu, pcpu, n, ret = -1;
     unsigned char *cpumap;
-    bool pinned;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -2100,9 +2099,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
         cpumask = vcpupin_list[n]->cpumask;
         cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
         for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-            if (virBitmapGetBit(cpumask, pcpu, &pinned) < 0)
-                goto cleanup;
-            if (!pinned)
+            if (!virBitmapIsBitSet(cpumask, pcpu))
                 VIR_UNUSE_CPU(cpumap, pcpu);
         }
     }

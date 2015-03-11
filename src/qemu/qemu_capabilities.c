@@ -2048,12 +2048,7 @@ bool
 virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
                virQEMUCapsFlags flag)
 {
-    bool b;
-
-    if (!qemuCaps || virBitmapGetBit(qemuCaps->flags, flag, &b) < 0)
-        return false;
-    else
-        return b;
+    return qemuCaps && virBitmapIsBitSet(qemuCaps->flags, flag);
 }
 
 

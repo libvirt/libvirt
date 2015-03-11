@@ -184,14 +184,7 @@ int virPortAllocatorAcquire(virPortAllocatorPtr pa,
     for (i = pa->start; i <= pa->end && !*port; i++) {
         bool used = false, v6used = false;
 
-        if (virBitmapGetBit(pa->bitmap,
-                            i - pa->start, &used) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to query port %zu"), i);
-            goto cleanup;
-        }
-
-        if (used)
+        if (virBitmapIsBitSet(pa->bitmap, i - pa->start))
             continue;
 
         if (!(pa->flags & VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)) {
@@ -269,12 +262,8 @@ int virPortAllocatorSetUsed(virPortAllocatorPtr pa,
     }
 
     if (value) {
-        bool used = false;
-        if (virBitmapGetBit(pa->bitmap, port - pa->start, &used) < 0)
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to query port %d"), port);
-
-        if (used || virBitmapSetBit(pa->bitmap, port - pa->start) < 0) {
+        if (virBitmapIsBitSet(pa->bitmap, port - pa->start) ||
+            virBitmapSetBit(pa->bitmap, port - pa->start) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to reserve port %d"), port);
             goto cleanup;

@@ -807,7 +807,6 @@ virStorageBackendCreateQemuImgOpts(char **opts,
                                    virBitmapPtr features)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    bool b;
     size_t i;
 
     if (backingType)
@@ -823,8 +822,7 @@ virStorageBackendCreateQemuImgOpts(char **opts,
         virBufferAsprintf(&buf, "compat=%s,", compat);
     if (features && format == VIR_STORAGE_FILE_QCOW2) {
         for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
-            ignore_value(virBitmapGetBit(features, i, &b));
-            if (b) {
+            if (virBitmapIsBitSet(features, i)) {
                 switch ((virStorageFileFeature) i) {
                 case VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS:
                     if (STREQ_NULLABLE(compat, "0.10")) {

@@ -407,7 +407,6 @@ virProcessKillPainfully(pid_t pid, bool force)
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
     size_t i;
-    bool set = false;
     VIR_DEBUG("Set process affinity on %lld\n", (long long)pid);
 # ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
@@ -433,9 +432,7 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 
     CPU_ZERO_S(masklen, mask);
     for (i = 0; i < virBitmapSize(map); i++) {
-        if (virBitmapGetBit(map, i, &set) < 0)
-            return -1;
-        if (set)
+        if (virBitmapIsBitSet(map, i))
             CPU_SET_S(i, masklen, mask);
     }
 
@@ -457,9 +454,7 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 
     CPU_ZERO(&mask);
     for (i = 0; i < virBitmapSize(map); i++) {
-        if (virBitmapGetBit(map, i, &set) < 0)
-            return -1;
-        if (set)
+        if (virBitmapIsBitSet(map, i))
             CPU_SET(i, &mask);
     }
 

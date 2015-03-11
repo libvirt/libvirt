@@ -439,9 +439,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virInterfaceLinkFormat(&buf, &data->net.lnk);
             if (data->net.features) {
                 for (i = 0; i < VIR_NET_DEV_FEAT_LAST; i++) {
-                    bool b;
-                    ignore_value(virBitmapGetBit(data->net.features, i, &b));
-                    if (b) {
+                    if (virBitmapIsBitSet(data->net.features, i)) {
                         virBufferAsprintf(&buf, "<feature name='%s'/>\n",
                                           virNetDevFeatureTypeToString(i));
                     }

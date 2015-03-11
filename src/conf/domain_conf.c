@@ -3107,7 +3107,6 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
     virDomainControllerDefPtr cont;
     size_t nbitmaps = 0;
     int ret = -1;
-    bool b;
     size_t i;
 
     memset(max_idx, -1, sizeof(max_idx));
@@ -3133,8 +3132,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
         if (max_idx[cont->type] == -1)
             continue;
 
-        ignore_value(virBitmapGetBit(bitmaps[cont->type], cont->idx, &b));
-        if (b) {
+        if (virBitmapIsBitSet(bitmaps[cont->type], cont->idx)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Multiple '%s' controllers with index '%d'"),
                            virDomainControllerTypeToString(cont->type),

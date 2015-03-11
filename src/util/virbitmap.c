@@ -179,6 +179,24 @@ static bool virBitmapIsSet(virBitmapPtr bitmap, size_t b)
 }
 
 /**
+ * virBitmapIsBitSet:
+ * @bitmap: Pointer to bitmap
+ * @b: bit position to get
+ *
+ * Get setting of bit position @b in @bitmap.
+ *
+ * If @b is in the range of @bitmap, returns the value of the bit.
+ * Otherwise false is returned.
+ */
+bool virBitmapIsBitSet(virBitmapPtr bitmap, size_t b)
+{
+    if (bitmap->max_bit <= b)
+        return false;
+
+    return virBitmapIsSet(bitmap, b);
+}
+
+/**
  * virBitmapGetBit:
  * @bitmap: Pointer to bitmap
  * @b: bit position to get

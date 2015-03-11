@@ -874,10 +874,6 @@ dnsmasqCapsGetVersion(dnsmasqCapsPtr caps)
 bool
 dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag)
 {
-    bool b;
 
-    if (!caps || virBitmapGetBit(caps->flags, flag, &b) < 0)
-        return false;
-    else
-        return b;
+    return caps && virBitmapIsBitSet(caps->flags, flag);
 }

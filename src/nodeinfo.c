@@ -1911,11 +1911,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
         cpu = 0;
 
         for (i = 0; i < virBitmapSize(cpumap); i++) {
-            bool cpustate;
-            if (virBitmapGetBit(cpumap, i, &cpustate) < 0)
-                continue;
-
-            if (cpustate) {
+            if (virBitmapIsBitSet(cpumap, i)) {
                 if (virNodeCapsFillCPUInfo(i, cpus + cpu++) < 0) {
                     topology_failed = true;
                     virResetLastError();
