@@ -13529,9 +13529,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!vcpupin)
             goto error;
 
-        if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
-                                        def->cputune.nvcpupin,
-                                        vcpupin->id)) {
+        if (virDomainPinIsDuplicate(def->cputune.vcpupin,
+                                    def->cputune.nvcpupin,
+                                    vcpupin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("duplicate vcpupin for same vcpu"));
             virDomainPinDefFree(vcpupin);
@@ -13560,9 +13560,9 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
 
         for (i = 0; i < def->vcpus; i++) {
-            if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
-                                            def->cputune.nvcpupin,
-                                            i))
+            if (virDomainPinIsDuplicate(def->cputune.vcpupin,
+                                        def->cputune.nvcpupin,
+                                        i))
                 continue;
 
             virDomainPinDefPtr vcpupin = NULL;
@@ -13621,9 +13621,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!iothreadpin)
             goto error;
 
-        if (virDomainVcpuPinIsDuplicate(def->cputune.iothreadspin,
-                                        def->cputune.niothreadspin,
-                                        iothreadpin->id)) {
+        if (virDomainPinIsDuplicate(def->cputune.iothreadspin,
+                                    def->cputune.niothreadspin,
+                                    iothreadpin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("duplicate iothreadpin for same iothread"));
             virDomainPinDefFree(iothreadpin);
@@ -16736,17 +16736,17 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
 /* Check if vcpupin with same id already exists.
  * Return 1 if exists, 0 if not. */
 int
-virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
-                            int nvcpupin,
-                            int vcpu)
+virDomainPinIsDuplicate(virDomainPinDefPtr *def,
+                        int npin,
+                        int id)
 {
     size_t i;
 
-    if (!def || !nvcpupin)
+    if (!def || !npin)
         return 0;
 
-    for (i = 0; i < nvcpupin; i++) {
-        if (def[i]->id == vcpu)
+    for (i = 0; i < npin; i++) {
+        if (def[i]->id == id)
             return 1;
     }
 

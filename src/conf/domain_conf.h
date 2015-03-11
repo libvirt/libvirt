@@ -1913,9 +1913,9 @@ void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
 virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
                                         int npin);
 
-int virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
-                                int nvcpupin,
-                                int vcpu);
+int virDomainPinIsDuplicate(virDomainPinDefPtr *def,
+                            int npin,
+                            int id);
 
 virDomainPinDefPtr virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
                                               int nvcpupin,
