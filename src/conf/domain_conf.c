@@ -16754,17 +16754,17 @@ virDomainPinIsDuplicate(virDomainPinDefPtr *def,
 }
 
 virDomainPinDefPtr
-virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
-                           int nvcpupin,
-                           int vcpu)
+virDomainPinFind(virDomainPinDefPtr *def,
+                 int npin,
+                 int id)
 {
     size_t i;
 
-    if (!def || !nvcpupin)
+    if (!def || !npin)
         return NULL;
 
-    for (i = 0; i < nvcpupin; i++) {
-        if (def[i]->id == vcpu)
+    for (i = 0; i < npin; i++) {
+        if (def[i]->id == id)
             return def[i];
     }
 
@@ -16783,9 +16783,9 @@ virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
     if (!vcpupin_list)
         return -1;
 
-    vcpupin = virDomainVcpuPinFindByVcpu(*vcpupin_list,
-                                         *nvcpupin,
-                                         vcpu);
+    vcpupin = virDomainPinFind(*vcpupin_list,
+                               *nvcpupin,
+                               vcpu);
     if (vcpupin) {
         vcpupin->id = vcpu;
         virBitmapFree(vcpupin->cpumask);
@@ -16889,9 +16889,9 @@ virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
     if (!iothreadspin_list)
         return -1;
 
-    iothreadpin = virDomainVcpuPinFindByVcpu(*iothreadspin_list,
-                                             *niothreadspin,
-                                             iothread_id);
+    iothreadpin = virDomainPinFind(*iothreadspin_list,
+                                   *niothreadspin,
+                                   iothread_id);
     if (iothreadpin) {
         iothreadpin->id = iothread_id;
         virBitmapFree(iothreadpin->cpumask);

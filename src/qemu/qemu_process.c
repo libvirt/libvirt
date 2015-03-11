@@ -2438,9 +2438,9 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
 
     for (n = 0; n < def->vcpus; n++) {
         /* set affinity only for existing vcpus */
-        if (!(pininfo = virDomainVcpuPinFindByVcpu(def->cputune.vcpupin,
-                                                   def->cputune.nvcpupin,
-                                                   n)))
+        if (!(pininfo = virDomainPinFind(def->cputune.vcpupin,
+                                         def->cputune.nvcpupin,
+                                         n)))
             continue;
 
         if (virProcessSetAffinity(priv->vcpupids[n],
@@ -2494,9 +2494,9 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
 
     for (i = 0; i < def->iothreads; i++) {
         /* set affinity only for existing vcpus */
-        if (!(pininfo = virDomainVcpuPinFindByVcpu(def->cputune.iothreadspin,
-                                                   def->cputune.niothreadspin,
-                                                   i + 1)))
+        if (!(pininfo = virDomainPinFind(def->cputune.iothreadspin,
+                                         def->cputune.niothreadspin,
+                                         i + 1)))
             continue;
 
         if (virProcessSetAffinity(priv->iothreadpids[i], pininfo->cpumask) < 0)

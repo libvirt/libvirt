@@ -5288,9 +5288,9 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         unsigned char *tmpmap = NULL;
         int tmpmaplen;
 
-        pininfo = virDomainVcpuPinFindByVcpu(targetDef->cputune.vcpupin,
-                                             targetDef->cputune.nvcpupin,
-                                             vcpu);
+        pininfo = virDomainPinFind(targetDef->cputune.vcpupin,
+                                   targetDef->cputune.nvcpupin,
+                                   vcpu);
         if (!pininfo) {
             if (!(bitmap = virBitmapNew(hostcpus)))
                 goto cleanup;
@@ -5824,9 +5824,9 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
         info_ret[i]->iothread_id = i + 1;
 
         /* Initialize the cpumap */
-        pininfo = virDomainVcpuPinFindByVcpu(targetDef->cputune.iothreadspin,
-                                             targetDef->cputune.niothreadspin,
-                                             i + 1);
+        pininfo = virDomainPinFind(targetDef->cputune.iothreadspin,
+                                   targetDef->cputune.niothreadspin,
+                                   i + 1);
         if (!pininfo) {
             if (targetDef->cpumask) {
                 cpumask = targetDef->cpumask;

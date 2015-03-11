@@ -1917,9 +1917,9 @@ int virDomainPinIsDuplicate(virDomainPinDefPtr *def,
                             int npin,
                             int id);
 
-virDomainPinDefPtr virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
-                                              int nvcpupin,
-                                              int vcpu);
+virDomainPinDefPtr virDomainPinFind(virDomainPinDefPtr *def,
+                                    int npin,
+                                    int id);
 
 typedef struct _virBlkioDevice virBlkioDevice;
 typedef virBlkioDevice *virBlkioDevicePtr;
