@@ -59,6 +59,7 @@
   # access to firmware's etc
   /usr/share/kvm/** r,
   /usr/share/qemu/** r,
+  /usr/share/qemu-kvm/** r,
   /usr/share/bochs/** r,
   /usr/share/openbios/** r,
   /usr/share/openhackware/** r,
@@ -73,6 +74,7 @@
   # the various binaries
   /usr/bin/kvm rmix,
   /usr/bin/qemu rmix,
+  /usr/bin/qemu-kvm rmix,
   /usr/bin/qemu-system-arm rmix,
   /usr/bin/qemu-system-cris rmix,
   /usr/bin/qemu-system-i386 rmix,
@@ -118,11 +120,18 @@
   /bin/dd rmix,
   /bin/cat rmix,
 
+  # for restore
+  /bin/bash rmix,
+
   # for usb access
   /dev/bus/usb/ r,
   /etc/udev/udev.conf r,
   /sys/bus/ r,
   /sys/class/ r,
+
+  # nscd pieces
+  /run/nscd/group r,
+  /run/nscd/passwd r,
 
   /usr/{lib,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
   # child profile for bridge helper process
