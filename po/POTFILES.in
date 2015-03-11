@@ -178,6 +178,8 @@ src/util/virconf.c
 src/util/vircrypto.c
 src/util/virdbus.c
 src/util/virdnsmasq.c
+src/util/virerror.c
+src/util/virerror.h
 src/util/vireventpoll.c
 src/util/virfile.c
 src/util/virfirewall.c
@@ -218,8 +220,6 @@ src/util/virstorageencryption.c
 src/util/virstoragefile.c
 src/util/virstring.c
 src/util/virsysinfo.c
-src/util/virerror.c
-src/util/virerror.h
 src/util/virtime.c
 src/util/virtpm.c
 src/util/virtypedparam.c
