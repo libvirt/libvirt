@@ -5111,8 +5111,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         }
 
         if (vm->def->cputune.vcpupin) {
-            newVcpuPin = virDomainVcpuPinDefCopy(vm->def->cputune.vcpupin,
-                                                 vm->def->cputune.nvcpupin);
+            newVcpuPin = virDomainPinDefCopy(vm->def->cputune.vcpupin,
+                                             vm->def->cputune.nvcpupin);
             if (!newVcpuPin)
                 goto endjob;
 
@@ -5984,10 +5984,9 @@ qemuDomainPinIOThread(virDomainPtr dom,
         }
 
         if (vm->def->cputune.iothreadspin) {
-            /* The VcpuPinDefCopy works for IOThreads too */
             newIOThreadsPin =
-                virDomainVcpuPinDefCopy(vm->def->cputune.iothreadspin,
-                                        vm->def->cputune.niothreadspin);
+                virDomainPinDefCopy(vm->def->cputune.iothreadspin,
+                                    vm->def->cputune.niothreadspin);
             if (!newIOThreadsPin)
                 goto endjob;
 

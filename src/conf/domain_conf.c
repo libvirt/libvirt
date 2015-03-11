@@ -2004,15 +2004,15 @@ virDomainClockDefClear(virDomainClockDefPtr def)
 }
 
 virDomainPinDefPtr *
-virDomainVcpuPinDefCopy(virDomainPinDefPtr *src, int nvcpupin)
+virDomainPinDefCopy(virDomainPinDefPtr *src, int npin)
 {
     size_t i;
     virDomainPinDefPtr *ret = NULL;
 
-    if (VIR_ALLOC_N(ret, nvcpupin) < 0)
+    if (VIR_ALLOC_N(ret, npin) < 0)
         goto error;
 
-    for (i = 0; i < nvcpupin; i++) {
+    for (i = 0; i < npin; i++) {
         if (VIR_ALLOC(ret[i]) < 0)
             goto error;
         ret[i]->id = src[i]->id;
@@ -2024,7 +2024,7 @@ virDomainVcpuPinDefCopy(virDomainPinDefPtr *src, int nvcpupin)
 
  error:
     if (ret) {
-        for (i = 0; i < nvcpupin; i++) {
+        for (i = 0; i < npin; i++) {
             if (ret[i]) {
                 virBitmapFree(ret[i]->cpumask);
                 VIR_FREE(ret[i]);

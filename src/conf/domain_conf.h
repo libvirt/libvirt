@@ -1910,8 +1910,8 @@ struct _virDomainPinDef {
 void virDomainPinDefFree(virDomainPinDefPtr def);
 void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
 
-virDomainPinDefPtr *virDomainVcpuPinDefCopy(virDomainPinDefPtr *src,
-                                            int nvcpupin);
+virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
+                                        int npin);
 
 int virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
                                 int nvcpupin,
