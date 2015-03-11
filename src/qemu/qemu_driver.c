@@ -4801,7 +4801,9 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             }
 
             /* Free vcpupin setting */
-            virDomainVcpuPinDel(vm->def, i);
+            virDomainPinDel(&vm->def->cputune.vcpupin,
+                            &vm->def->cputune.nvcpupin,
+                            i);
         }
     }
 
@@ -4983,7 +4985,9 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             /* remove vcpupin entries for vcpus that were unplugged */
             if (nvcpus < persistentDef->vcpus) {
                 for (i = persistentDef->vcpus; i >= nvcpus; i--)
-                    virDomainVcpuPinDel(persistentDef, i);
+                    virDomainPinDel(&persistentDef->cputune.vcpupin,
+                                    &persistentDef->cputune.nvcpupin,
+                                    i);
             }
 
             if (maximum) {
@@ -5151,7 +5155,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         }
 
         if (doReset) {
-            virDomainVcpuPinDel(vm->def, vcpu);
+            virDomainPinDel(&vm->def->cputune.vcpupin,
+                            &vm->def->cputune.nvcpupin,
+                            vcpu);
         } else {
             if (vm->def->cputune.vcpupin)
                 virDomainPinDefArrayFree(vm->def->cputune.vcpupin,
@@ -5181,7 +5187,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
         if (doReset) {
-            virDomainVcpuPinDel(persistentDef, vcpu);
+            virDomainPinDel(&persistentDef->cputune.vcpupin,
+                            &persistentDef->cputune.nvcpupin,
+                            vcpu);
         } else {
             if (!persistentDef->cputune.vcpupin) {
                 if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)

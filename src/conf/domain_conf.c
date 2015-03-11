@@ -16815,16 +16815,17 @@ virDomainPinAdd(virDomainPinDefPtr **pindef_list,
 }
 
 void
-virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
+virDomainPinDel(virDomainPinDefPtr **pindef_list,
+                size_t *npin,
+                int id)
 {
     int n;
-    virDomainPinDefPtr *vcpupin_list = def->cputune.vcpupin;
 
-    for (n = 0; n < def->cputune.nvcpupin; n++) {
-        if (vcpupin_list[n]->id == vcpu) {
-            virBitmapFree(vcpupin_list[n]->cpumask);
-            VIR_FREE(vcpupin_list[n]);
-            VIR_DELETE_ELEMENT(def->cputune.vcpupin, n, def->cputune.nvcpupin);
+    for (n = 0; n < *npin; n++) {
+        if ((*pindef_list)[n]->id == id) {
+            virBitmapFree((*pindef_list)[n]->cpumask);
+            VIR_FREE((*pindef_list)[n]);
+            VIR_DELETE_ELEMENT(*pindef_list, n, *npin);
             return;
         }
     }

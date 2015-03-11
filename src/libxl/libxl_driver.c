@@ -1990,7 +1990,9 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
 
     /* full bitmap means reset the settings (if any). */
     if (virBitmapIsAllSet(pcpumap)) {
-        virDomainVcpuPinDel(targetDef, vcpu);
+        virDomainPinDel(&targetDef->cputune.vcpupin,
+                        &targetDef->cputune.nvcpupin,
+                        vcpu);
         goto done;
     }
 

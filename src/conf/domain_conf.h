@@ -2563,7 +2563,9 @@ int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
                     int maplen,
                     int id);
 
-void virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
+void virDomainPinDel(virDomainPinDefPtr **pindef_list,
+                     size_t *npin,
+                     int vcpu);
 
 int virDomainEmulatorPinAdd(virDomainDefPtr def,
                               unsigned char *cpumap,
