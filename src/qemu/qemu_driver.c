@@ -5123,8 +5123,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             newVcpuPinNum = 0;
         }
 
-        if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum,
-                                cpumap, maplen, vcpu) < 0) {
+        if (virDomainPinAdd(&newVcpuPin, &newVcpuPinNum,
+                            cpumap, maplen, vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to update vcpupin"));
             goto endjob;
@@ -5188,11 +5188,11 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                     goto endjob;
                 persistentDef->cputune.nvcpupin = 0;
             }
-            if (virDomainVcpuPinAdd(&persistentDef->cputune.vcpupin,
-                                    &persistentDef->cputune.nvcpupin,
-                                    cpumap,
-                                    maplen,
-                                    vcpu) < 0) {
+            if (virDomainPinAdd(&persistentDef->cputune.vcpupin,
+                                &persistentDef->cputune.nvcpupin,
+                                cpumap,
+                                maplen,
+                                vcpu) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to update or add vcpupin xml of "
                                  "a persistent domain"));
@@ -5400,7 +5400,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
             if (VIR_ALLOC(newVcpuPin) < 0)
                 goto endjob;
 
-            if (virDomainVcpuPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
+            if (virDomainPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to update vcpupin"));
                 virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);

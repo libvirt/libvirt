@@ -1897,11 +1897,11 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
                 goto cleanup;
             def->cputune.nvcpupin = 0;
         }
-        if (virDomainVcpuPinAdd(&def->cputune.vcpupin,
-                                &def->cputune.nvcpupin,
-                                cpumap,
-                                maplen,
-                                vcpu) < 0) {
+        if (virDomainPinAdd(&def->cputune.vcpupin,
+                            &def->cputune.nvcpupin,
+                            cpumap,
+                            maplen,
+                            vcpu) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("failed to add vcpupin xml entry"));
             return -1;

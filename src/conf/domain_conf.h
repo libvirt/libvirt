@@ -2557,11 +2557,11 @@ int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev,
                                  virDomainDeviceAction action);
 
-int virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
-                        size_t *nvcpupin,
-                        unsigned char *cpumap,
-                        int maplen,
-                        int vcpu);
+int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
+                    size_t *npin,
+                    unsigned char *cpumap,
+                    int maplen,
+                    int id);
 
 void virDomainVcpuPinDel(virDomainDefPtr def, int vcpu);
 

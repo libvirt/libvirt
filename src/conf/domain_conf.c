@@ -16772,47 +16772,45 @@ virDomainPinFind(virDomainPinDefPtr *def,
 }
 
 int
-virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
-                    size_t *nvcpupin,
-                    unsigned char *cpumap,
-                    int maplen,
-                    int vcpu)
+virDomainPinAdd(virDomainPinDefPtr **pindef_list,
+                size_t *npin,
+                unsigned char *cpumap,
+                int maplen,
+                int id)
 {
-    virDomainPinDefPtr vcpupin = NULL;
+    virDomainPinDefPtr pindef = NULL;
 
-    if (!vcpupin_list)
+    if (!pindef_list)
         return -1;
 
-    vcpupin = virDomainPinFind(*vcpupin_list,
-                               *nvcpupin,
-                               vcpu);
-    if (vcpupin) {
-        vcpupin->id = vcpu;
-        virBitmapFree(vcpupin->cpumask);
-        vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!vcpupin->cpumask)
+    pindef = virDomainPinFind(*pindef_list, *npin, id);
+    if (pindef) {
+        pindef->id = id;
+        virBitmapFree(pindef->cpumask);
+        pindef->cpumask = virBitmapNewData(cpumap, maplen);
+        if (!pindef->cpumask)
             return -1;
 
         return 0;
     }
 
-    /* No existing vcpupin matches vcpu, adding a new one */
+    /* No existing pindef matches id, adding a new one */
 
-    if (VIR_ALLOC(vcpupin) < 0)
+    if (VIR_ALLOC(pindef) < 0)
         goto error;
 
-    vcpupin->id = vcpu;
-    vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
-    if (!vcpupin->cpumask)
+    pindef->id = id;
+    pindef->cpumask = virBitmapNewData(cpumap, maplen);
+    if (!pindef->cpumask)
         goto error;
 
-    if (VIR_APPEND_ELEMENT(*vcpupin_list, *nvcpupin, vcpupin) < 0)
+    if (VIR_APPEND_ELEMENT(*pindef_list, *npin, pindef) < 0)
         goto error;
 
     return 0;
 
  error:
-    virDomainPinDefFree(vcpupin);
+    virDomainPinDefFree(pindef);
     return -1;
 }
 

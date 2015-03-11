@@ -1999,11 +1999,11 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
             goto endjob;
         targetDef->cputune.nvcpupin = 0;
     }
-    if (virDomainVcpuPinAdd(&targetDef->cputune.vcpupin,
-                            &targetDef->cputune.nvcpupin,
-                            cpumap,
-                            maplen,
-                            vcpu) < 0) {
+    if (virDomainPinAdd(&targetDef->cputune.vcpupin,
+                        &targetDef->cputune.nvcpupin,
+                        cpumap,
+                        maplen,
+                        vcpu) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("failed to update or add vcpupin xml"));
         goto endjob;
