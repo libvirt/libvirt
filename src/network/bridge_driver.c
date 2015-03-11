@@ -3084,7 +3084,6 @@ networkUndefine(virNetworkPtr net)
                                driver->networkAutostartDir,
                                network) < 0)
         goto cleanup;
-    network->autostart = 0;
 
     event = virNetworkEventLifecycleNew(network->def->name,
                                         network->def->uuid,

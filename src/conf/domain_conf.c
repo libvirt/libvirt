@@ -20882,6 +20882,7 @@ virDomainDeleteConfig(const char *configDir,
 
     /* Not fatal if this doesn't work */
     unlink(autostartLink);
+    dom->autostart = 0;
 
     if (unlink(configFile) < 0 &&
         errno != ENOENT) {
