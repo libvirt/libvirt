@@ -3077,6 +3077,7 @@ int virNetworkDeleteConfig(const char *configDir,
 
     /* Not fatal if this doesn't work */
     unlink(autostartLink);
+    net->autostart = 0;
 
     if (unlink(configFile) < 0) {
         virReportSystemError(errno,
