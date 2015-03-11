@@ -3488,6 +3488,24 @@ qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon)
 }
 
 
+/* Determine the name that qemu is using for tracking the backing
+ * element TARGET within the chain starting at TOP.  */
+char *
+qemuMonitorDiskNameLookup(qemuMonitorPtr mon,
+                          const char *device,
+                          virStorageSourcePtr top,
+                          virStorageSourcePtr target)
+{
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("JSON monitor is required"));
+        return NULL;
+    }
+
+    return qemuMonitorJSONDiskNameLookup(mon, device, top, target);
+}
+
+
 /* Use the block-job-complete monitor command to pivot a block copy
  * job.  */
 int

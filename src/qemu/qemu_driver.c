@@ -15788,9 +15788,6 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto endjob;
 
     if (baseSource) {
-        if (qemuGetDriveSourceString(baseSource, NULL, &basePath) < 0)
-            goto endjob;
-
         if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE) {
             if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -15828,8 +15825,12 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
-                              speed, mode, async);
+    if (baseSource)
+        basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
+                                             baseSource);
+    if (!baseSource || basePath)
+        ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
+                                  speed, mode, async);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0) {
@@ -16559,12 +16560,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
                                            VIR_DISK_CHAIN_READ_WRITE) < 0))
         goto endjob;
 
-    if (qemuGetDriveSourceString(topSource, NULL, &topPath) < 0)
-        goto endjob;
-
-    if (qemuGetDriveSourceString(baseSource, NULL, &basePath) < 0)
-        goto endjob;
-
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
         topSource != disk->src) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
@@ -16595,9 +16590,14 @@ qemuDomainBlockCommit(virDomainPtr dom,
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockCommit(priv->mon, device,
-                                 topPath, basePath, backingPath,
-                                 speed);
+    basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
+                                         baseSource);
+    topPath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
+                                        topSource);
+    if (basePath && topPath)
+        ret = qemuMonitorBlockCommit(priv->mon, device,
+                                     topPath, basePath, backingPath,
+                                     speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto endjob;
