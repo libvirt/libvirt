@@ -2095,7 +2095,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     /* if vcpupin setting exists, there may be unused pcpus */
     for (n = 0; n < targetDef->cputune.nvcpupin; n++) {
         vcpupin_list = targetDef->cputune.vcpupin;
-        vcpu = vcpupin_list[n]->vcpuid;
+        vcpu = vcpupin_list[n]->id;
         cpumask = vcpupin_list[n]->cpumask;
         cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
         for (pcpu = 0; pcpu < maxcpu; pcpu++) {

@@ -2015,7 +2015,7 @@ virDomainVcpuPinDefCopy(virDomainPinDefPtr *src, int nvcpupin)
     for (i = 0; i < nvcpupin; i++) {
         if (VIR_ALLOC(ret[i]) < 0)
             goto error;
-        ret[i]->vcpuid = src[i]->vcpuid;
+        ret[i]->id = src[i]->id;
         if ((ret[i]->cpumask = virBitmapNewCopy(src[i]->cpumask)) == NULL)
             goto error;
     }
@@ -12796,7 +12796,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
             goto error;
         }
 
-        def->vcpuid = vcpuid;
+        def->id = vcpuid;
     }
 
     if (iothreads && (tmp = virXPathString("string(./@iothread)", ctxt))) {
@@ -12823,8 +12823,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
             goto error;
         }
 
-        /* Rather than creating our own structure we are reusing the vCPU */
-        def->vcpuid = iothreadid;
+        def->id = iothreadid;
     }
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
@@ -13532,14 +13531,14 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (virDomainVcpuPinIsDuplicate(def->cputune.vcpupin,
                                         def->cputune.nvcpupin,
-                                        vcpupin->vcpuid)) {
+                                        vcpupin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("duplicate vcpupin for same vcpu"));
             virDomainVcpuPinDefFree(vcpupin);
             goto error;
         }
 
-        if (vcpupin->vcpuid >= def->vcpus) {
+        if (vcpupin->id >= def->vcpus) {
             /* To avoid the regression when daemon loading
              * domain confs, we can't simply error out if
              * <vcpupin> nodes greater than current vcpus,
@@ -13576,7 +13575,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
             virBitmapCopy(vcpupin->cpumask, def->cpumask);
-            vcpupin->vcpuid = i;
+            vcpupin->id = i;
             def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
         }
     }
@@ -13624,7 +13623,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (virDomainVcpuPinIsDuplicate(def->cputune.iothreadspin,
                                         def->cputune.niothreadspin,
-                                        iothreadpin->vcpuid)) {
+                                        iothreadpin->id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("duplicate iothreadpin for same iothread"));
             virDomainVcpuPinDefFree(iothreadpin);
@@ -16734,7 +16733,7 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
     return 0;
 }
 
-/* Check if vcpupin with same vcpuid already exists.
+/* Check if vcpupin with same id already exists.
  * Return 1 if exists, 0 if not. */
 int
 virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
@@ -16747,7 +16746,7 @@ virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
         return 0;
 
     for (i = 0; i < nvcpupin; i++) {
-        if (def[i]->vcpuid == vcpu)
+        if (def[i]->id == vcpu)
             return 1;
     }
 
@@ -16765,7 +16764,7 @@ virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
         return NULL;
 
     for (i = 0; i < nvcpupin; i++) {
-        if (def[i]->vcpuid == vcpu)
+        if (def[i]->id == vcpu)
             return def[i];
     }
 
@@ -16788,7 +16787,7 @@ virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
                                          *nvcpupin,
                                          vcpu);
     if (vcpupin) {
-        vcpupin->vcpuid = vcpu;
+        vcpupin->id = vcpu;
         virBitmapFree(vcpupin->cpumask);
         vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
         if (!vcpupin->cpumask)
@@ -16802,7 +16801,7 @@ virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
     if (VIR_ALLOC(vcpupin) < 0)
         goto error;
 
-    vcpupin->vcpuid = vcpu;
+    vcpupin->id = vcpu;
     vcpupin->cpumask = virBitmapNewData(cpumap, maplen);
     if (!vcpupin->cpumask)
         goto error;
@@ -16824,7 +16823,7 @@ virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
     virDomainPinDefPtr *vcpupin_list = def->cputune.vcpupin;
 
     for (n = 0; n < def->cputune.nvcpupin; n++) {
-        if (vcpupin_list[n]->vcpuid == vcpu) {
+        if (vcpupin_list[n]->id == vcpu) {
             virBitmapFree(vcpupin_list[n]->cpumask);
             VIR_FREE(vcpupin_list[n]);
             VIR_DELETE_ELEMENT(def->cputune.vcpupin, n, def->cputune.nvcpupin);
@@ -16845,7 +16844,7 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
         if (VIR_ALLOC(emulatorpin) < 0)
             return -1;
 
-        emulatorpin->vcpuid = -1;
+        emulatorpin->id = -1;
         emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
         if (!emulatorpin->cpumask) {
             virDomainVcpuPinDefFree(emulatorpin);
@@ -16894,7 +16893,7 @@ virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
                                              *niothreadspin,
                                              iothread_id);
     if (iothreadpin) {
-        iothreadpin->vcpuid = iothread_id;
+        iothreadpin->id = iothread_id;
         virBitmapFree(iothreadpin->cpumask);
         iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
         if (!iothreadpin->cpumask)
@@ -16908,7 +16907,7 @@ virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
     if (VIR_ALLOC(iothreadpin) < 0)
         goto error;
 
-    iothreadpin->vcpuid = iothread_id;
+    iothreadpin->id = iothread_id;
     iothreadpin->cpumask = virBitmapNewData(cpumap, maplen);
     if (!iothreadpin->cpumask)
         goto error;
@@ -16931,7 +16930,7 @@ virDomainIOThreadsPinDel(virDomainDefPtr def,
     virDomainPinDefPtr *iothreadspin_list = def->cputune.iothreadspin;
 
     for (i = 0; i < def->cputune.niothreadspin; i++) {
-        if (iothreadspin_list[i]->vcpuid == iothread_id) {
+        if (iothreadspin_list[i]->id == iothread_id) {
             virBitmapFree(iothreadspin_list[i]->cpumask);
             VIR_DELETE_ELEMENT(def->cputune.iothreadspin, i,
                                def->cputune.niothreadspin);
@@ -20103,7 +20102,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             continue;
 
         virBufferAsprintf(buf, "<vcpupin vcpu='%u' ",
-                          def->cputune.vcpupin[i]->vcpuid);
+                          def->cputune.vcpupin[i]->id);
 
         if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask)))
             goto error;
@@ -20130,7 +20129,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             continue;
 
         virBufferAsprintf(buf, "<iothreadpin iothread='%u' ",
-                          def->cputune.iothreadspin[i]->vcpuid);
+                          def->cputune.iothreadspin[i]->id);
 
         if (!(cpumask = virBitmapFormat(def->cputune.iothreadspin[i]->cpumask)))
             goto error;

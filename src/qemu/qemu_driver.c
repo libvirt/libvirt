@@ -4751,7 +4751,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
 
                 vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
                 virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
-                vcpupin->vcpuid = i;
+                vcpupin->id = i;
                 if (VIR_APPEND_ELEMENT_COPY(vm->def->cputune.vcpupin,
                                             vm->def->cputune.nvcpupin, vcpupin) < 0) {
                     virBitmapFree(vcpupin->cpumask);

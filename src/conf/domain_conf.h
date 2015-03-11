@@ -1903,7 +1903,7 @@ struct _virDomainClockDef {
 typedef struct _virDomainPinDef virDomainPinDef;
 typedef virDomainPinDef *virDomainPinDefPtr;
 struct _virDomainPinDef {
-    int vcpuid;
+    int id;
     virBitmapPtr cpumask;
 };
 

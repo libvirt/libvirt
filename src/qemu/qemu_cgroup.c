@@ -948,7 +948,7 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
     size_t i;
 
     for (i = 0; i < nvcpupin; i++) {
-        if (vcpuid == vcpupin[i]->vcpuid)
+        if (vcpuid == vcpupin[i]->id)
             return qemuSetupCgroupEmulatorPin(cgroup, vcpupin[i]->cpumask);
     }
 
@@ -964,7 +964,7 @@ qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
     size_t i;
 
     for (i = 0; i < niothreadspin; i++) {
-        if (iothreadid == iothreadspin[i]->vcpuid)
+        if (iothreadid == iothreadspin[i]->id)
             return qemuSetupCgroupEmulatorPin(cgroup, iothreadspin[i]->cpumask);
     }
 
@@ -1059,7 +1059,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             /* find the right CPU to pin, otherwise
              * qemuSetupCgroupVcpuPin will fail. */
             for (j = 0; j < def->cputune.nvcpupin; j++) {
-                if (def->cputune.vcpupin[j]->vcpuid != i)
+                if (def->cputune.vcpupin[j]->id != i)
                     continue;
 
                 if (qemuSetupCgroupVcpuPin(cgroup_vcpu,
@@ -1236,7 +1236,7 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
              * qemuSetupCgroupIOThreadsPin will fail. */
             for (j = 0; j < def->cputune.niothreadspin; j++) {
                 /* IOThreads are numbered/named 1..n */
-                if (def->cputune.iothreadspin[j]->vcpuid != i + 1)
+                if (def->cputune.iothreadspin[j]->id != i + 1)
                     continue;
 
                 if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,

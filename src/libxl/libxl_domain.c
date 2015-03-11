@@ -1084,7 +1084,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
 
     for (vcpu = 0; vcpu < def->cputune.nvcpupin; ++vcpu) {
-        if (vcpu != def->cputune.vcpupin[vcpu]->vcpuid)
+        if (vcpu != def->cputune.vcpupin[vcpu]->id)
             continue;
 
         if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
