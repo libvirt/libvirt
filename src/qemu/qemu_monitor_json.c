@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3879,6 +3879,106 @@ qemuMonitorJSONDrivePivot(qemuMonitorPtr mon, const char *device,
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
+    return ret;
+}
+
+
+static char *
+qemuMonitorJSONDiskNameLookupOne(virJSONValuePtr image,
+                                 virStorageSourcePtr top,
+                                 virStorageSourcePtr target)
+{
+    virJSONValuePtr backing;
+    char *ret;
+
+    /* The caller will report a generic message if we return NULL
+     * without an error; but in some cases we can improve by reporting
+     * a more specific message.  */
+    if (!top || !image)
+        return NULL;
+    if (top != target) {
+        backing = virJSONValueObjectGet(image, "backing-image");
+        return qemuMonitorJSONDiskNameLookupOne(backing, top->backingStore,
+                                                target);
+    }
+    if (VIR_STRDUP(ret, virJSONValueObjectGetString(image, "filename")) < 0)
+        return NULL;
+    /* Sanity check - the name qemu gave us should resolve to the same
+       file tracked by our target description. */
+    if (virStorageSourceIsLocalStorage(target) &&
+        STRNEQ(ret, target->path) &&
+        !virFileLinkPointsTo(ret, target->path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu block name '%s' doesn't match expected '%s'"),
+                       ret, target->path);
+        VIR_FREE(ret);
+    }
+    return ret;
+}
+
+
+char *
+qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
+                              const char *device,
+                              virStorageSourcePtr top,
+                              virStorageSourcePtr target)
+{
+    char *ret = NULL;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr devices;
+    size_t i;
+
+    cmd = qemuMonitorJSONMakeCommand("query-block", NULL);
+    if (!cmd)
+        return NULL;
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    devices = virJSONValueObjectGet(reply, "return");
+    if (!devices || devices->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("block info reply was missing device list"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < virJSONValueArraySize(devices); i++) {
+        virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        virJSONValuePtr inserted;
+        virJSONValuePtr image;
+        const char *thisdev;
+
+        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("block info device entry was not in expected format"));
+            goto cleanup;
+        }
+
+        if (!(thisdev = virJSONValueObjectGetString(dev, "device"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("block info device entry was not in expected format"));
+            goto cleanup;
+        }
+
+        if (STREQ(thisdev, device)) {
+            if ((inserted = virJSONValueObjectGet(dev, "inserted")) &&
+                (image = virJSONValueObjectGet(inserted, "image"))) {
+                ret = qemuMonitorJSONDiskNameLookupOne(image, top, target);
+            }
+            break;
+        }
+    }
+    /* Guarantee an error when returning NULL, but don't override a
+     * more specific error if one was already generated.  */
+    if (!ret && !virGetLastError())
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to find backing name for device %s"),
+                       device);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
     return ret;
 }
 

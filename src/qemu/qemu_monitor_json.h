@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.h: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2009, 2011-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2009, 2011-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -276,6 +276,13 @@ int qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
                                const char *backingName,
                                unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+char *qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
+                                    const char *device,
+                                    virStorageSourcePtr top,
+                                    virStorageSourcePtr target)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
