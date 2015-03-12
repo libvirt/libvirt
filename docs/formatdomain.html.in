@@ -3318,7 +3318,7 @@
       &lt;boot order='1'/&gt;
     &lt;/redirdev&gt;
     &lt;redirfilter&gt;
-      &lt;usbdev class='0x08' vendor='0x1234' product='0xbeef' version='2.00' allow='yes'/&gt;
+      &lt;usbdev class='0x08' vendor='0x1234' product='0xbeef' version='2.56' allow='yes'/&gt;
       &lt;usbdev allow='no'/&gt;
     &lt;/redirfilter&gt;
   &lt;/devices&gt;
@@ -3361,7 +3361,8 @@
         <code>class</code> attribute is the USB Class code, for example,
         0x08 represents mass storage devices. The USB device can be addressed by
         vendor / product id using the <code>vendor</code> and <code>product</code> attributes.
-        <code>version</code> is the bcdDevice value of USB device, such as 1.00, 1.10 and 2.00.
+        <code>version</code> is the device revision from the bcdDevice field (not
+        the version of the USB protocol).
         These four attributes are optional and <code>-1</code> can be used to allow
         any value for them. <code>allow</code> attribute is mandatory,
         'yes' means allow, 'no' for deny.
