@@ -2597,6 +2597,7 @@ expected.
 
 =item B<change-media> I<domain> I<path> [I<--eject>] [I<--insert>]
 [I<--update>] [I<source>] [I<--force>] [[I<--live>] [I<--config>] | [I<--current>]]
+[I<--print-xml>]
 
 Change media of CDROM or floppy drive. I<path> can be the fully-qualified path
 or the unique target name (<target dev='hdc'>) of the disk device. I<source>
@@ -2620,6 +2621,8 @@ the hypervisor's implementation.
 Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
+If I<--print-xml> is specified, the XML that would be used to change media is
+printed instead of changing the media.
 
 =back
 

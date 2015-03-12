@@ -12274,6 +12274,10 @@ static const vshCmdOptDef opts_change_media[] = {
      .type = VSH_OT_BOOL,
      .help = N_("force media changing")
     },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than change media")
+    },
     {.name = NULL}
 };
 
@@ -12354,12 +12358,17 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     if (!(disk_xml = vshPrepareDiskXML(disk_node, source, path, prepare_type)))
         goto cleanup;
 
-    if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
-        vshError(ctl, _("Failed to complete action %s on media"), action);
-        goto cleanup;
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", disk_xml);
+    } else {
+        if (virDomainUpdateDeviceFlags(dom, disk_xml, flags) != 0) {
+            vshError(ctl, _("Failed to complete action %s on media"), action);
+            goto cleanup;
+        }
+
+        vshPrint(ctl, _("succeeded to complete action %s on media\n"), action);
     }
 
-    vshPrint(ctl, _("succeeded to complete action %s on media\n"), action);
     ret = true;
 
  cleanup:
