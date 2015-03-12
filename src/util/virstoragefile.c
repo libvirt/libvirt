@@ -1989,6 +1989,10 @@ virStorageSourceIsEmpty(virStorageSourcePtr src)
     if (src->type == VIR_STORAGE_TYPE_NONE)
         return true;
 
+    if (src->type == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_NONE)
+        return true;
+
     return false;
 }
 
