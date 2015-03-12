@@ -5908,7 +5908,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *sgio = NULL;
     char *driverName = NULL;
     char *driverType = NULL;
-    const char *source = NULL;
+    bool source = false;
     char *target = NULL;
     char *trans = NULL;
     char *bus = NULL;
@@ -5972,13 +5972,13 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!source && !def->src->hosts && !def->src->srcpool &&
-                xmlStrEqual(cur->name, BAD_CAST "source")) {
+            if (!source && xmlStrEqual(cur->name, BAD_CAST "source")) {
                 sourceNode = cur;
 
                 if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
                     goto error;
-                source = def->src->path;
+
+                source = true;
 
                 if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
                     if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
@@ -6405,7 +6405,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present. LUN is for raw access CD-ROMs
      * that are not attached to a physical device presently */
-    if (source == NULL && def->src->hosts == NULL && !def->src->srcpool &&
+    if (virStorageSourceIsEmpty(def->src) &&
         (def->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          (flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE))) {
         virReportError(VIR_ERR_NO_SOURCE,
@@ -6437,7 +6437,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
             VIR_FREE(tmp);
         } else {
-            virReportError(VIR_ERR_NO_TARGET, source ? "%s" : NULL, source);
+            virReportError(VIR_ERR_NO_TARGET, def->src->path ? "%s" : NULL, def->src->path);
         }
         goto error;
     }
