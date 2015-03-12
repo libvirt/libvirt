@@ -2597,11 +2597,13 @@ expected.
 
 =item B<change-media> I<domain> I<path> [I<--eject>] [I<--insert>]
 [I<--update>] [I<source>] [I<--force>] [[I<--live>] [I<--config>] | [I<--current>]]
-[I<--print-xml>]
+[I<--print-xml>] [I<--block>]
 
 Change media of CDROM or floppy drive. I<path> can be the fully-qualified path
 or the unique target name (<target dev='hdc'>) of the disk device. I<source>
-specifies the path of the media to be inserted or updated.
+specifies the path of the media to be inserted or updated. Flag I<--block>
+allows to set the backing type in case a block device is used as media for the
+CDROM or floppy drive instead of a file.
 
 I<--eject> indicates the media will be ejected.
 I<--insert> indicates the media will be inserted. I<source> must be specified.

@@ -11177,11 +11177,10 @@ vshFindDisk(const char *doc,
 }
 
 typedef enum {
-    VSH_PREPARE_DISK_XML_NONE = 0,
-    VSH_PREPARE_DISK_XML_EJECT,
-    VSH_PREPARE_DISK_XML_INSERT,
-    VSH_PREPARE_DISK_XML_UPDATE,
-} vshPrepareDiskXMLType;
+    VSH_UPDATE_DISK_XML_EJECT,
+    VSH_UPDATE_DISK_XML_INSERT,
+    VSH_UPDATE_DISK_XML_UPDATE,
+} vshUpdateDiskXMLType;
 
 /* Helper function to prepare disk XML. Could be used for disk
  * detaching, media changing(ejecting, inserting, updating)
@@ -11189,15 +11188,14 @@ typedef enum {
  * success, or NULL on failure. Caller must free the result.
  */
 static char *
-vshPrepareDiskXML(xmlNodePtr disk_node,
-                  const char *source,
-                  const char *path,
-                  int type)
+vshUpdateDiskXML(xmlNodePtr disk_node,
+                 const char *new_source,
+                 bool source_block,
+                 const char *target,
+                 vshUpdateDiskXMLType type)
 {
-    xmlNodePtr cur = NULL;
-    char *disk_type = NULL;
+    xmlNodePtr source = NULL;
     char *device_type = NULL;
-    xmlNodePtr new_node = NULL;
     char *ret = NULL;
 
     if (!disk_node)
@@ -11205,62 +11203,64 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
 
     device_type = virXMLPropString(disk_node, "device");
 
-    if (STREQ_NULLABLE(device_type, "cdrom") ||
-        STREQ_NULLABLE(device_type, "floppy")) {
-        bool has_source = false;
-        disk_type = virXMLPropString(disk_node, "type");
+    if (!(STREQ_NULLABLE(device_type, "cdrom") ||
+          STREQ_NULLABLE(device_type, "floppy"))) {
+        vshError(NULL, _("The disk device '%s' is not removable"), target);
+        goto cleanup;
+    }
 
-        cur = disk_node->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "source")) {
-                has_source = true;
-                break;
-            }
-            cur = cur->next;
+    /* find the current source subelement */
+    for (source = disk_node->children; source; source = source->next) {
+        if (source->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(source->name, BAD_CAST "source"))
+            break;
+    }
+
+    if (type == VSH_UPDATE_DISK_XML_EJECT) {
+        if (!source) {
+            vshError(NULL, _("The disk device '%s' doesn't have media"), target);
+            goto cleanup;
         }
 
-        if (!has_source) {
-            if (type == VSH_PREPARE_DISK_XML_EJECT) {
-                vshError(NULL, _("The disk device '%s' doesn't have media"),
-                         path);
-                goto cleanup;
-            }
+        /* forcibly switch to empty file cdrom */
+        source_block = false;
+        new_source = NULL;
+    } else if (!new_source) {
+        vshError(NULL, _("New disk media source was not specified"));
+        goto cleanup;
+    }
 
-            if (source) {
-                new_node = xmlNewNode(NULL, BAD_CAST "source");
-                if (STREQ(disk_type, "block"))
-                    xmlNewProp(new_node, BAD_CAST "dev", BAD_CAST source);
-                else
-                    xmlNewProp(new_node, BAD_CAST disk_type, BAD_CAST source);
-                xmlAddChild(disk_node, new_node);
-            } else if (type == VSH_PREPARE_DISK_XML_INSERT) {
-                vshError(NULL, _("No source is specified for inserting media"));
-                goto cleanup;
-            } else if (type == VSH_PREPARE_DISK_XML_UPDATE) {
-                vshError(NULL, _("No source is specified for updating media"));
-                goto cleanup;
-            }
+    if (type == VSH_UPDATE_DISK_XML_INSERT && source) {
+        vshError(NULL, _("The disk device '%s' already has media"), target);
+        goto cleanup;
+    }
+
+    /* remove current source */
+    if (source) {
+        xmlUnlinkNode(source);
+        xmlFreeNode(source);
+        source = NULL;
+    }
+
+    /* set the correct disk type */
+    if (source_block)
+        xmlSetProp(disk_node, BAD_CAST "type", BAD_CAST "block");
+    else
+        xmlSetProp(disk_node, BAD_CAST "type", BAD_CAST "file");
+
+    if (new_source) {
+        /* create new source subelement */
+        if (!(source = xmlNewNode(NULL, BAD_CAST "source"))) {
+            vshError(NULL, _("Failed to allocate new source node"));
+            goto cleanup;
         }
 
-        if (has_source) {
-            if (type == VSH_PREPARE_DISK_XML_INSERT) {
-                vshError(NULL, _("The disk device '%s' already has media"),
-                         path);
-                goto cleanup;
-            }
+        if (source_block)
+            xmlNewProp(source, BAD_CAST "dev", BAD_CAST new_source);
+        else
+            xmlNewProp(source, BAD_CAST "file", BAD_CAST new_source);
 
-            /* Remove the source if it tends to eject/update media. */
-            xmlUnlinkNode(cur);
-            xmlFreeNode(cur);
-
-            if (source && (type == VSH_PREPARE_DISK_XML_UPDATE)) {
-                new_node = xmlNewNode(NULL, BAD_CAST "source");
-                xmlNewProp(new_node, (const xmlChar *)disk_type,
-                           (const xmlChar *)source);
-                xmlAddChild(disk_node, new_node);
-            }
-        }
+        xmlAddChild(disk_node, source);
     }
 
     if (!(ret = virXMLNodeToString(NULL, disk_node))) {
@@ -11270,7 +11270,6 @@ vshPrepareDiskXML(xmlNodePtr disk_node,
 
  cleanup:
     VIR_FREE(device_type);
-    VIR_FREE(disk_type);
     return ret;
 }
 
@@ -12278,6 +12277,10 @@ static const vshCmdOptDef opts_change_media[] = {
      .type = VSH_OT_BOOL,
      .help = N_("print XML document rather than change media")
     },
+    {.name = "block",
+     .type = VSH_OT_BOOL,
+     .help = N_("source media is a block device")
+    },
     {.name = NULL}
 };
 
@@ -12291,7 +12294,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr disk_node = NULL;
     char *disk_xml = NULL;
     bool ret = false;
-    int prepare_type = 0;
+    vshUpdateDiskXMLType update_type;
     const char *action = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -12300,24 +12303,27 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     bool eject = vshCommandOptBool(cmd, "eject");
     bool insert = vshCommandOptBool(cmd, "insert");
     bool update = vshCommandOptBool(cmd, "update");
+    bool block = vshCommandOptBool(cmd, "block");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(eject, insert);
     VSH_EXCLUSIVE_OPTIONS_VAR(eject, update);
     VSH_EXCLUSIVE_OPTIONS_VAR(insert, update);
 
+    VSH_EXCLUSIVE_OPTIONS_VAR(eject, block);
+
     if (eject) {
-        prepare_type = VSH_PREPARE_DISK_XML_EJECT;
+        update_type = VSH_UPDATE_DISK_XML_EJECT;
         action = "eject";
     }
 
     if (insert) {
-        prepare_type = VSH_PREPARE_DISK_XML_INSERT;
+        update_type = VSH_UPDATE_DISK_XML_INSERT;
         action = "insert";
     }
 
     if (update || (!eject && !insert)) {
-        prepare_type = VSH_PREPARE_DISK_XML_UPDATE;
+        update_type = VSH_UPDATE_DISK_XML_UPDATE;
         action = "update";
     }
 
@@ -12332,18 +12338,13 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_DEVICE_MODIFY_FORCE;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         goto cleanup;
 
     if (vshCommandOptStringReq(ctl, cmd, "source", &source) < 0)
         goto cleanup;
-
-    if (insert && !source) {
-        vshError(ctl, "%s", _("No disk source specified for inserting"));
-        goto cleanup;
-    }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG)
         doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
@@ -12355,7 +12356,8 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     if (!(disk_node = vshFindDisk(doc, path, VSH_FIND_DISK_CHANGEABLE)))
         goto cleanup;
 
-    if (!(disk_xml = vshPrepareDiskXML(disk_node, source, path, prepare_type)))
+    if (!(disk_xml = vshUpdateDiskXML(disk_node, source, block, path,
+                                      update_type)))
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "print-xml")) {
@@ -12375,8 +12377,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(doc);
     xmlFreeNode(disk_node);
     VIR_FREE(disk_xml);
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
     return ret;
 }
 
