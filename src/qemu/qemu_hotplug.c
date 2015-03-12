@@ -222,7 +222,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (!virStorageSourceIsLocalStorage(newsrc) || newsrc->path) {
+    if (!virStorageSourceIsEmpty(newsrc)) {
         if (qemuGetDriveSourceString(newsrc, conn, &sourcestr) < 0)
             goto error;
 
