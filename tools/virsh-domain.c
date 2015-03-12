@@ -11365,9 +11365,10 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     if (!(disk_node = vshFindDisk(doc, target, VSH_FIND_DISK_NORMAL)))
         goto cleanup;
 
-    if (!(disk_xml = vshPrepareDiskXML(disk_node, NULL, NULL,
-                                       VSH_PREPARE_DISK_XML_NONE)))
+    if (!(disk_xml = virXMLNodeToString(NULL, disk_node))) {
+        vshSaveLibvirtError();
         goto cleanup;
+    }
 
     if (flags != 0 || current)
         ret = virDomainDetachDeviceFlags(dom, disk_xml, flags);
