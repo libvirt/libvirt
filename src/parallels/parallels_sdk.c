@@ -1781,10 +1781,10 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     if (def->mem.nhugepages ||
-        def->mem.hard_limit ||
-        def->mem.soft_limit ||
+        virMemoryLimitIsSet(def->mem.hard_limit) ||
+        virMemoryLimitIsSet(def->mem.soft_limit) ||
         def->mem.min_guarantee ||
-        def->mem.swap_hard_limit) {
+        virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Memory parameter is not supported "
