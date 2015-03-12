@@ -7683,19 +7683,11 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
          * Update 'orig'
          * We allow updating src/type//driverType/cachemode/
          */
-        VIR_FREE(orig->src->path);
-        orig->src->path = disk->src->path;
-        orig->src->type = disk->src->type;
         orig->cachemode = disk->cachemode;
-        if (disk->src->driverName) {
-            VIR_FREE(orig->src->driverName);
-            orig->src->driverName = disk->src->driverName;
-            disk->src->driverName = NULL;
-        }
-        if (disk->src->format)
-            orig->src->format = disk->src->format;
-        disk->src->path = NULL;
-        orig->startupPolicy = disk->startupPolicy;
+
+        virStorageSourceFree(orig->src);
+        orig->src = disk->src;
+        disk->src = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
