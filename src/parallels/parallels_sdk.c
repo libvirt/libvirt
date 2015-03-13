@@ -1245,6 +1245,14 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     pret = PrlVmCfg_GetHomePath(sdkdom, pdom->home, &buflen);
     prlsdkCheckRetGoto(pret, error);
 
+    /* For VMs pdom->home is actually /directory/config.pvs */
+    if (!IS_CT(def)) {
+        /* Get rid of /config.pvs in path string */
+        char *s = strrchr(pdom->home, '/');
+        if (s)
+            *s = '\0';
+    }
+
     if (olddom) {
         /* assign new virDomainDef without any checks */
         /* we can't use virDomainObjAssignDef, because it checks
