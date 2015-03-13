@@ -391,8 +391,8 @@ networkUpdateState(virNetworkObjPtr obj,
 
     virObjectLock(obj);
     if (!virNetworkObjIsActive(obj)) {
-        virObjectUnlock(obj);
-        return 0;
+        ret = 0;
+        goto cleanup;
     }
 
     switch (obj->def->forward.type) {
