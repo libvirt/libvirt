@@ -606,7 +606,6 @@ networkStateInitialize(bool privileged,
         VIR_FREE(network_driver);
         goto error;
     }
-    networkDriverLock(network_driver);
 
     /* configuration/state paths are one of
      * ~/.config/libvirt/... (session/unprivileged)
@@ -676,8 +675,6 @@ networkStateInitialize(bool privileged,
                                  network_driver->networkConfigDir,
                                  network_driver->networkAutostartDir) < 0)
         goto error;
-
-    networkDriverUnlock(network_driver);
 
     /* Update the internal status of all allegedly active
      * networks according to external conditions on the host
