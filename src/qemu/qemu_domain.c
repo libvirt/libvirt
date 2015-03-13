@@ -2757,6 +2757,29 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+bool
+qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
+{
+    if (disk->mirror) {
+        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
+                       _("disk '%s' already in active block job"),
+                       disk->dst);
+
+        return true;
+    }
+
+    if (disk->blockjob) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("disk '%s' already in active block job"),
+                       disk->dst);
+        return true;
+    }
+
+    return false;
+}
+
+
 int
 qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
