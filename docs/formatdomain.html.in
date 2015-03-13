@@ -5618,18 +5618,17 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>period</code></dt>
       <dd>
         <p>
-          The optional <code>period</code> allows the QEMU virtio memory
-          balloon driver to provide statistics through the <code>virsh
-          dommemstat [domain]</code> command. By default, collection is
-          not enabled. In order to enable, use the <code>virsh dommemstat
-          [domain] --period [number]</code> command or <code>virsh edit</code>
-          command to add the option to the XML definition.
-          The <code>virsh dommemstat</code> will accept the options
-          <code>--live</code>, <code>--current</code>, or <code>--config</code>.
-          If an option is not provided, the change for a running domain will
-          only be made to the active guest.
-          If the QEMU driver is not at the right
-          revision, the attempt to set the period will fail.
+          The optional <code>period</code> allows the QEMU virtio memory balloon
+          driver to provide statistics through the <code>virsh dommemstat
+          [domain]</code> command. By default, collection is not enabled. In
+          order to enable, use the <code>virsh dommemstat [domain] --period
+          [number]</code> command or <code>virsh edit</code> command to add the
+          option to the XML definition.  The <code>virsh dommemstat</code> will
+          accept the options <code>--live</code>, <code>--current</code>,
+          or <code>--config</code>.  If an option is not provided, the change
+          for a running domain will only be made to the active guest.  If the
+          QEMU driver is not at the right revision, the attempt to set the
+          period will fail.  Large values (e.g. many years) might be ignored.
           <span class='since'>Since 1.1.1, requires QEMU 1.5</span>
         </p>
       </dd>

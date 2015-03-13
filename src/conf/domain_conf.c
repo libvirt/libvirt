@@ -10492,6 +10492,7 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     char *model;
     virDomainMemballoonDefPtr def;
     xmlNodePtr save = ctxt->node;
+    unsigned int period = 0;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -10510,11 +10511,15 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     }
 
     ctxt->node = node;
-    if (virXPathUInt("string(./stats/@period)", ctxt, &def->period) < -1) {
+    if (virXPathUInt("string(./stats/@period)", ctxt, &period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid statistics collection period"));
         goto error;
     }
+
+    def->period = period;
+    if (def->period < 0)
+        def->period = 0;
 
     if (def->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
         VIR_DEBUG("Ignoring device address for none model Memballoon");
@@ -18839,7 +18844,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(&childrenBuf, indent + 2);
 
     if (def->period)
-        virBufferAsprintf(&childrenBuf, "<stats period='%u'/>\n", def->period);
+        virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
 
     if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
         virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0) {

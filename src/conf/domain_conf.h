@@ -1560,7 +1560,7 @@ enum {
 struct _virDomainMemballoonDef {
     int model;
     virDomainDeviceInfo info;
-    unsigned int period; /* seconds between collections */
+    int period; /* seconds between collections */
 };
 
 struct _virDomainNVRAMDef {

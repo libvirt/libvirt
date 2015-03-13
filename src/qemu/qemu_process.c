@@ -4309,7 +4309,7 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     unsigned long cur_balloon;
-    unsigned int period = 0;
+    int period = 0;
     size_t i;
     bool rawio_set = false;
     char *nodeset = NULL;
