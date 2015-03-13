@@ -1508,9 +1508,13 @@ qemuMigrationPrecreateDisk(virConnectPtr conn,
             flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
         break;
 
+    case VIR_STORAGE_TYPE_NETWORK:
+        VIR_DEBUG("Skipping creation of network disk '%s'",
+                  disk->dst);
+        return 0;
+
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_DIR:
-    case VIR_STORAGE_TYPE_NETWORK:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
