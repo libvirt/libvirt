@@ -4537,6 +4537,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
             disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
             ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
                                                       true, true));
+            disk->blockjob = false;
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_READY:
@@ -4552,6 +4553,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                 VIR_DOMAIN_DISK_MIRROR_STATE_ABORT : VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
             disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
             save = true;
+            disk->blockjob = false;
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_LAST:
@@ -16133,6 +16135,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
         disk->mirror = NULL;
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        disk->blockjob = false;
     }
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         ret = -1;
@@ -16233,12 +16236,9 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto endjob;
     disk = vm->def->disks[idx];
 
-    if (mode == BLOCK_JOB_PULL && disk->mirror) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block job"),
-                       disk->dst);
+    if (mode == BLOCK_JOB_PULL && qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
-    }
+
     if (mode == BLOCK_JOB_ABORT) {
         if ((flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
             !(async && disk->mirror)) {
@@ -16322,6 +16322,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         if (mode == BLOCK_JOB_ABORT && disk->mirror)
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         goto endjob;
+    } else if (mode == BLOCK_JOB_PULL) {
+        disk->blockjob = true;
     }
 
  waitjob:
@@ -16573,12 +16575,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (!device)
         goto endjob;
     disk = vm->def->disks[idx];
-    if (disk->mirror) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block job"),
-                       disk->dst);
+    if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
-    }
 
     if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR) &&
           virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
@@ -16699,6 +16697,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     disk->mirror = mirror;
     mirror = NULL;
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+    disk->blockjob = true;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -16960,12 +16959,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
                        disk->dst);
         goto endjob;
     }
-    if (disk->mirror) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' already in active block job"),
-                       disk->dst);
+
+    if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
-    }
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
@@ -17088,6 +17084,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
         ret = -1;
         goto endjob;
     }
+
+    disk->blockjob = true;
 
     if (mirror) {
         if (ret == 0) {
