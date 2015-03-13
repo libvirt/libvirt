@@ -107,4 +107,7 @@ int qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar);
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParamPtr sp);
 
+virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
+                                                     const char *alias);
+
 #endif /* __QEMU_PROCESS_H__ */

@@ -390,7 +390,7 @@ qemuProcessFindDomainDiskByPath(virDomainObjPtr vm,
     return NULL;
 }
 
-static virDomainDiskDefPtr
+virDomainDiskDefPtr
 qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
                                  const char *alias)
 {
