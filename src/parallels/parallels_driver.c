@@ -948,6 +948,7 @@ parallelsDomainUndefineFlags(virDomainPtr domain,
 {
     parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom = NULL;
+    int ret;
 
     virCheckFlags(0, -1);
 
@@ -957,7 +958,11 @@ parallelsDomainUndefineFlags(virDomainPtr domain,
         return -1;
     }
 
-    return prlsdkUnregisterDomain(privconn, dom);
+    ret = prlsdkUnregisterDomain(privconn, dom);
+    if (ret)
+         virObjectUnlock(dom);
+
+    return ret;
 }
 
 static int
