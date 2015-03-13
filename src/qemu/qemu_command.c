@@ -7763,7 +7763,8 @@ static int
 qemuBuildVhostuserCommandLine(virCommandPtr cmd,
                               virDomainDefPtr def,
                               virDomainNetDefPtr net,
-                              virQEMUCapsPtr qemuCaps)
+                              virQEMUCapsPtr qemuCaps,
+                              int bootindex)
 {
     virBuffer chardev_buf = VIR_BUFFER_INITIALIZER;
     virBuffer netdev_buf = VIR_BUFFER_INITIALIZER;
@@ -7810,7 +7811,7 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-netdev");
     virCommandAddArgBuffer(cmd, &netdev_buf);
 
-    if (!(nic = qemuBuildNicDevStr(def, net, -1, 0, 0, qemuCaps))) {
+    if (!(nic = qemuBuildNicDevStr(def, net, -1, bootindex, 0, qemuCaps))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Error generating NIC -device string"));
         goto error;
@@ -7855,8 +7856,12 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
 
+
+    if (!bootindex)
+        bootindex = net->info.bootIndex;
+
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
-        return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps);
+        return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps, bootindex);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
@@ -7864,9 +7869,6 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
          */
         return 0;
     }
-
-    if (!bootindex)
-        bootindex = net->info.bootIndex;
 
     /* Currently nothing besides TAP devices supports multiqueue. */
     if (net->driver.virtio.queues > 0 &&
