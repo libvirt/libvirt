@@ -2886,6 +2886,21 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
     prlsdkCheckRetGoto(pret, error);
     VIR_FREE(mask);
 
+    switch (def->os.arch) {
+        case VIR_ARCH_X86_64:
+            pret = PrlVmCfg_SetCpuMode(sdkdom, PCM_CPU_MODE_64);
+            break;
+        case VIR_ARCH_I686:
+            pret = PrlVmCfg_SetCpuMode(sdkdom, PCM_CPU_MODE_32);
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown CPU mode: %s"),
+                           virArchToString(def->os.arch));
+            goto error;
+    }
+    prlsdkCheckRetGoto(pret, error);
+
     if (prlsdkClearDevices(sdkdom) < 0)
         goto error;
 
