@@ -2018,7 +2018,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "\n%s", _("Commit aborted"));
     else if (pivot)
         vshPrint(ctl, "\n%s", _("Successfully pivoted"));
-    else if (!finish)
+    else if (!finish && active)
         vshPrint(ctl, "\n%s", _("Now in synchronized phase"));
     else
         vshPrint(ctl, "\n%s", _("Commit complete"));
