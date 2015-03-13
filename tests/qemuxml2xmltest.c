@@ -354,6 +354,7 @@ mymain(void)
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");
+    DO_TEST_DIFFERENT("balloon-device-period");
     DO_TEST_DIFFERENT("channel-virtio-auto");
     DO_TEST_DIFFERENT("console-compat-auto");
     DO_TEST_DIFFERENT("disk-scsi-device-auto");

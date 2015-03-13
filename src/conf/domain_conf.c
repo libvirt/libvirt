@@ -18826,7 +18826,8 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
                              unsigned int flags)
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
-    bool noopts = true;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int indent = virBufferGetIndent(buf, false);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -18835,27 +18836,24 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, "<memballoon model='%s'", model);
-    virBufferAdjustIndent(buf, 2);
+    virBufferAdjustIndent(&childrenBuf, indent + 2);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        virBufferAddLit(buf, ">\n");
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-        noopts = false;
+    if (def->period)
+        virBufferAsprintf(&childrenBuf, "<stats period='%u'/>\n", def->period);
+
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
+        virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0) {
+        virBufferFreeAndReset(&childrenBuf);
+        return -1;
     }
 
-    if (def->period) {
-        if (noopts)
-            virBufferAddLit(buf, ">\n");
-        virBufferAsprintf(buf, "<stats period='%u'/>\n", def->period);
-        noopts = false;
-    }
-
-    virBufferAdjustIndent(buf, -2);
-    if (noopts)
+    if (!virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "/>\n");
-    else
+    } else {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childrenBuf);
         virBufferAddLit(buf, "</memballoon>\n");
+    }
 
     return 0;
 }
