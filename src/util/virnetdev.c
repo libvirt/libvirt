@@ -2758,6 +2758,7 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
         goto cleanup;
     }
 
+    memset(&ifr, 0, sizeof(ifr));
     strcpy(ifr.ifr_name, ifname);
     ifr.ifr_data = (void*) cmd;
 
