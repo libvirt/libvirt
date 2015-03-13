@@ -1,7 +1,7 @@
 /*
  * qemu_monitor.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1709,27 +1709,40 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     return ret;
 }
 
+/**
+ * qemuMonitorSetMemoryStatsPeriod:
+ *
+ * This function sets balloon stats update period.
+ *
+ * Returns 0 on success and -1 on error, but does *not* set an error.
+ */
 int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
                                     int period)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p period=%d", mon, period);
 
-    if (!mon) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("monitor must not be NULL"));
+    if (!mon)
         return -1;
-    }
 
-    if (!mon->json) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("JSON monitor is required"));
+    if (!mon->json)
         return -1;
-    }
+
+    if (period < 0)
+        return -1;
 
     if (qemuMonitorFindBalloonObjectPath(mon, "/") == 0) {
         ret = qemuMonitorJSONSetMemoryStatsPeriod(mon, mon->balloonpath,
                                                   period);
+
+        /*
+         * Most of the calls to this function are supposed to be
+         * non-fatal and the only one that should be fatal wants its
+         * own error message.  More details for debugging will be in
+         * the log file.
+         */
+        if (ret < 0)
+            virResetLastError();
     }
     mon->ballooninit = true;
     return ret;
