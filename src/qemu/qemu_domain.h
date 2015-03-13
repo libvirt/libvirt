@@ -196,6 +196,7 @@ typedef enum {
     QEMU_PROCESS_EVENT_DEVICE_DELETED,
     QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED,
     QEMU_PROCESS_EVENT_SERIAL_CHANGED,
+    QEMU_PROCESS_EVENT_BLOCK_JOB,
 
     QEMU_PROCESS_EVENT_LAST
 } qemuProcessEventType;
@@ -204,6 +205,7 @@ struct qemuProcessEvent {
     virDomainObjPtr vm;
     qemuProcessEventType eventType;
     int action;
+    int status;
     void *data;
 };
 
