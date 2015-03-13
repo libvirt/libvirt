@@ -112,4 +112,7 @@ int qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                                   virDomainGraphicsDefPtr graphics,
                                   bool allocate);
 
+virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
+                                                     const char *alias);
+
 #endif /* __QEMU_PROCESS_H__ */
