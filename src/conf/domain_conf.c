@@ -2003,11 +2003,11 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
-virDomainVcpuPinDefPtr *
-virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
+virDomainPinDefPtr *
+virDomainVcpuPinDefCopy(virDomainPinDefPtr *src, int nvcpupin)
 {
     size_t i;
-    virDomainVcpuPinDefPtr *ret = NULL;
+    virDomainPinDefPtr *ret = NULL;
 
     if (VIR_ALLOC_N(ret, nvcpupin) < 0)
         goto error;
@@ -2037,7 +2037,7 @@ virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src, int nvcpupin)
 }
 
 void
-virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr def)
+virDomainVcpuPinDefFree(virDomainPinDefPtr def)
 {
     if (def) {
         virBitmapFree(def->cpumask);
@@ -2046,7 +2046,7 @@ virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr def)
 }
 
 void
-virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def,
+virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def,
                              int nvcpupin)
 {
     size_t i;
@@ -12759,14 +12759,14 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  * A vcpuid of -1 is valid and only valid for emulatorpin. So callers
  * have to check the returned cpuid for validity.
  */
-static virDomainVcpuPinDefPtr
+static virDomainPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
                             bool emulator,
                             bool iothreads)
 {
-    virDomainVcpuPinDefPtr def;
+    virDomainPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
     int vcpuid = -1;
     unsigned int iothreadid;
@@ -13523,7 +13523,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainVcpuPinDefPtr vcpupin = NULL;
+        virDomainPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
                                               def->maxvcpus, false, false);
 
@@ -13566,7 +13566,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                             i))
                 continue;
 
-            virDomainVcpuPinDefPtr vcpupin = NULL;
+            virDomainPinDefPtr vcpupin = NULL;
 
             if (VIR_ALLOC(vcpupin) < 0)
                 goto error;
@@ -13615,7 +13615,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainVcpuPinDefPtr iothreadpin = NULL;
+        virDomainPinDefPtr iothreadpin = NULL;
         iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
                                                   def->iothreads,
                                                   false, true);
@@ -16737,7 +16737,7 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
 /* Check if vcpupin with same vcpuid already exists.
  * Return 1 if exists, 0 if not. */
 int
-virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
+virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
                             int nvcpupin,
                             int vcpu)
 {
@@ -16754,8 +16754,8 @@ virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
     return 0;
 }
 
-virDomainVcpuPinDefPtr
-virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
+virDomainPinDefPtr
+virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
                            int nvcpupin,
                            int vcpu)
 {
@@ -16773,13 +16773,13 @@ virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
 }
 
 int
-virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
+virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
                     size_t *nvcpupin,
                     unsigned char *cpumap,
                     int maplen,
                     int vcpu)
 {
-    virDomainVcpuPinDefPtr vcpupin = NULL;
+    virDomainPinDefPtr vcpupin = NULL;
 
     if (!vcpupin_list)
         return -1;
@@ -16821,7 +16821,7 @@ void
 virDomainVcpuPinDel(virDomainDefPtr def, int vcpu)
 {
     int n;
-    virDomainVcpuPinDefPtr *vcpupin_list = def->cputune.vcpupin;
+    virDomainPinDefPtr *vcpupin_list = def->cputune.vcpupin;
 
     for (n = 0; n < def->cputune.nvcpupin; n++) {
         if (vcpupin_list[n]->vcpuid == vcpu) {
@@ -16838,7 +16838,7 @@ virDomainEmulatorPinAdd(virDomainDefPtr def,
                         unsigned char *cpumap,
                         int maplen)
 {
-    virDomainVcpuPinDefPtr emulatorpin = NULL;
+    virDomainPinDefPtr emulatorpin = NULL;
 
     if (!def->cputune.emulatorpin) {
         /* No emulatorpin exists yet. */
@@ -16879,14 +16879,13 @@ virDomainEmulatorPinDel(virDomainDefPtr def)
 }
 
 int
-virDomainIOThreadsPinAdd(virDomainVcpuPinDefPtr **iothreadspin_list,
+virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
                          size_t *niothreadspin,
                          unsigned char *cpumap,
                          int maplen,
                          unsigned int iothread_id)
 {
-    /* IOThreads share the virDomainVcpuPinDefPtr */
-    virDomainVcpuPinDefPtr iothreadpin = NULL;
+    virDomainPinDefPtr iothreadpin = NULL;
 
     if (!iothreadspin_list)
         return -1;
@@ -16929,8 +16928,7 @@ virDomainIOThreadsPinDel(virDomainDefPtr def,
                          unsigned int iothread_id)
 {
     size_t i;
-    /* IOThreads share the virDomainVcpuPinDefPtr */
-    virDomainVcpuPinDefPtr *iothreadspin_list = def->cputune.iothreadspin;
+    virDomainPinDefPtr *iothreadspin_list = def->cputune.iothreadspin;
 
     for (i = 0; i < def->cputune.niothreadspin; i++) {
         if (iothreadspin_list[i]->vcpuid == iothread_id) {

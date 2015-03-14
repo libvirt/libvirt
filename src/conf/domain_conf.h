@@ -1900,26 +1900,26 @@ struct _virDomainClockDef {
 
 # define VIR_DOMAIN_CPUMASK_LEN 1024
 
-typedef struct _virDomainVcpuPinDef virDomainVcpuPinDef;
-typedef virDomainVcpuPinDef *virDomainVcpuPinDefPtr;
-struct _virDomainVcpuPinDef {
+typedef struct _virDomainPinDef virDomainPinDef;
+typedef virDomainPinDef *virDomainPinDefPtr;
+struct _virDomainPinDef {
     int vcpuid;
     virBitmapPtr cpumask;
 };
 
-void virDomainVcpuPinDefFree(virDomainVcpuPinDefPtr def);
-void virDomainVcpuPinDefArrayFree(virDomainVcpuPinDefPtr *def, int nvcpupin);
+void virDomainVcpuPinDefFree(virDomainPinDefPtr def);
+void virDomainVcpuPinDefArrayFree(virDomainPinDefPtr *def, int nvcpupin);
 
-virDomainVcpuPinDefPtr *virDomainVcpuPinDefCopy(virDomainVcpuPinDefPtr *src,
-                                                int nvcpupin);
+virDomainPinDefPtr *virDomainVcpuPinDefCopy(virDomainPinDefPtr *src,
+                                            int nvcpupin);
 
-int virDomainVcpuPinIsDuplicate(virDomainVcpuPinDefPtr *def,
+int virDomainVcpuPinIsDuplicate(virDomainPinDefPtr *def,
                                 int nvcpupin,
                                 int vcpu);
 
-virDomainVcpuPinDefPtr virDomainVcpuPinFindByVcpu(virDomainVcpuPinDefPtr *def,
-                                                  int nvcpupin,
-                                                  int vcpu);
+virDomainPinDefPtr virDomainVcpuPinFindByVcpu(virDomainPinDefPtr *def,
+                                              int nvcpupin,
+                                              int vcpu);
 
 typedef struct _virBlkioDevice virBlkioDevice;
 typedef virBlkioDevice *virBlkioDevicePtr;
@@ -2009,10 +2009,10 @@ struct _virDomainCputune {
     unsigned long long emulator_period;
     long long emulator_quota;
     size_t nvcpupin;
-    virDomainVcpuPinDefPtr *vcpupin;
-    virDomainVcpuPinDefPtr emulatorpin;
+    virDomainPinDefPtr *vcpupin;
+    virDomainPinDefPtr emulatorpin;
     size_t niothreadspin;
-    virDomainVcpuPinDefPtr *iothreadspin;
+    virDomainPinDefPtr *iothreadspin;
 
     size_t nvcpusched;
     virDomainThreadSchedParamPtr vcpusched;
@@ -2557,7 +2557,7 @@ int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev,
                                  virDomainDeviceAction action);
 
-int virDomainVcpuPinAdd(virDomainVcpuPinDefPtr **vcpupin_list,
+int virDomainVcpuPinAdd(virDomainPinDefPtr **vcpupin_list,
                         size_t *nvcpupin,
                         unsigned char *cpumap,
                         int maplen,
@@ -2571,8 +2571,7 @@ int virDomainEmulatorPinAdd(virDomainDefPtr def,
 
 int virDomainEmulatorPinDel(virDomainDefPtr def);
 
-/* IOThreads share the virDomainVcpuPinDefPtr */
-int virDomainIOThreadsPinAdd(virDomainVcpuPinDefPtr **iothreadspin_list,
+int virDomainIOThreadsPinAdd(virDomainPinDefPtr **iothreadspin_list,
                              size_t *niothreads,
                              unsigned char *cpumap,
                              int maplen,

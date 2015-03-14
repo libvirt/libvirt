@@ -4744,7 +4744,7 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                 /* vm->def->cputune.vcpupin can't be NULL if
                  * vm->def->cpumask is not NULL.
                  */
-                virDomainVcpuPinDefPtr vcpupin = NULL;
+                virDomainPinDefPtr vcpupin = NULL;
 
                 if (VIR_ALLOC(vcpupin) < 0)
                     goto cleanup;
@@ -5046,7 +5046,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
     size_t newVcpuPinNum = 0;
-    virDomainVcpuPinDefPtr *newVcpuPin = NULL;
+    virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
@@ -5283,7 +5283,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         goto cleanup;
 
     for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainVcpuPinDefPtr pininfo;
+        virDomainPinDefPtr pininfo;
         virBitmapPtr bitmap = NULL;
         unsigned char *tmpmap = NULL;
         int tmpmaplen;
@@ -5336,7 +5336,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
     size_t newVcpuPinNum = 0;
-    virDomainVcpuPinDefPtr *newVcpuPin = NULL;
+    virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
@@ -5815,7 +5815,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
         goto cleanup;
 
     for (i = 0; i < targetDef->iothreads; i++) {
-        virDomainVcpuPinDefPtr pininfo;
+        virDomainPinDefPtr pininfo;
 
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto cleanup;
@@ -5920,7 +5920,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     virBitmapPtr pcpumap = NULL;
     qemuDomainObjPrivatePtr priv;
-    virDomainVcpuPinDefPtr *newIOThreadsPin = NULL;
+    virDomainPinDefPtr *newIOThreadsPin = NULL;
     size_t newIOThreadsPinNum = 0;
     virCgroupPtr cgroup_iothread = NULL;
     virObjectEventPtr event = NULL;

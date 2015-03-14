@@ -2413,7 +2413,7 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    virDomainVcpuPinDefPtr pininfo;
+    virDomainPinDefPtr pininfo;
     int n;
     int ret = -1;
     VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d nvcpupids=%d",
@@ -2479,7 +2479,7 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    virDomainVcpuPinDefPtr pininfo;
+    virDomainPinDefPtr pininfo;
     size_t i;
     int ret = -1;
 

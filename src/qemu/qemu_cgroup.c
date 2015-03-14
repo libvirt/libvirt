@@ -941,7 +941,7 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
 
 int
 qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
-                       virDomainVcpuPinDefPtr *vcpupin,
+                       virDomainPinDefPtr *vcpupin,
                        int nvcpupin,
                        int vcpuid)
 {
@@ -957,7 +957,7 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
 
 int
 qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
-                            virDomainVcpuPinDefPtr *iothreadspin,
+                            virDomainPinDefPtr *iothreadspin,
                             int niothreadspin,
                             int iothreadid)
 {

@@ -53,12 +53,12 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
 int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
-                           virDomainVcpuPinDefPtr *vcpupin,
+                           virDomainPinDefPtr *vcpupin,
                            int nvcpupin,
                            int vcpuid);
 int qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup, virBitmapPtr cpumask);
 int qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
-                                virDomainVcpuPinDefPtr *iothreadspin,
+                                virDomainPinDefPtr *iothreadspin,
                                 int niothreadspin,
                                 int iothreadid);
 int qemuSetupCgroupForVcpu(virDomainObjPtr vm);

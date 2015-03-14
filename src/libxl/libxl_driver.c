@@ -2047,7 +2047,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
-    virDomainVcpuPinDefPtr *vcpupin_list;
+    virDomainPinDefPtr *vcpupin_list;
     virBitmapPtr cpumask = NULL;
     int maxcpu, hostcpus, vcpu, pcpu, n, ret = -1;
     unsigned char *cpumap;
