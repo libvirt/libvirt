@@ -750,13 +750,6 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_defbool_set(&b_info->u.hvm.sdl.enable, 0);
 
         if (def->ninputs) {
-            for (i = 0; i < def->ninputs; i++) {
-                if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_USB) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("libxenlight supports only USB input"));
-                    return -1;
-                }
-            }
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
             if (VIR_ALLOC_N(b_info->u.hvm.usbdevice_list, def->ninputs+1) < 0)
                 return -1;
@@ -769,6 +762,10 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 #endif
             for (i = 0; i < def->ninputs; i++) {
                 char **usbdevice;
+
+                if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_USB)
+                    continue;
+
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
                 usbdevice = &b_info->u.hvm.usbdevice_list[i];
 #else
