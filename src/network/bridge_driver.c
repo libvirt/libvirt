@@ -2748,8 +2748,7 @@ static int networkIsPersistent(virNetworkPtr net)
 
 static int
 networkValidate(virNetworkDriverStatePtr driver,
-                virNetworkDefPtr def,
-                bool check_active)
+                virNetworkDefPtr def)
 {
     size_t i, j;
     bool vlanUsed, vlanAllowed, badVlanUse = false;
@@ -2758,10 +2757,6 @@ networkValidate(virNetworkDriverStatePtr driver,
     bool ipv4def = false, ipv6def = false;
     bool bandwidthAllowed = true;
     bool usesInterface = false, usesAddress = false;
-
-    /* check for duplicate networks */
-    if (virNetworkObjIsDuplicate(driver->networks, def, check_active) < 0)
-        return -1;
 
     /* Only the three L3 network types that are configured by libvirt
      * need to have a bridge device name / mac address provided
@@ -2980,14 +2975,16 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
     if (virNetworkCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (networkValidate(driver, def, true) < 0)
+    if (networkValidate(driver, def) < 0)
         goto cleanup;
 
     /* NB: even though this transient network hasn't yet been started,
      * we assign the def with live = true in anticipation that it will
      * be started momentarily.
      */
-    if (!(network = virNetworkAssignDef(driver->networks, def, true)))
+    if (!(network = virNetworkAssignDef(driver->networks, def,
+                                        VIR_NETWORK_OBJ_LIST_ADD_LIVE |
+                                        VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     def = NULL;
 
@@ -3028,10 +3025,10 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     if (virNetworkDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (networkValidate(driver, def, false) < 0)
+    if (networkValidate(driver, def) < 0)
         goto cleanup;
 
-    if (!(network = virNetworkAssignDef(driver->networks, def, false)))
+    if (!(network = virNetworkAssignDef(driver->networks, def, 0)))
         goto cleanup;
 
     /* def was assigned to network object */

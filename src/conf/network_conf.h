@@ -316,9 +316,13 @@ void virNetworkDefFree(virNetworkDefPtr def);
 typedef bool (*virNetworkObjListFilter)(virConnectPtr conn,
                                         virNetworkDefPtr def);
 
+enum {
+    VIR_NETWORK_OBJ_LIST_ADD_LIVE = (1 << 0),
+    VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
+};
 virNetworkObjPtr virNetworkAssignDef(virNetworkObjListPtr nets,
                                      virNetworkDefPtr def,
-                                     bool live);
+                                     unsigned int flags);
 void virNetworkObjAssignDef(virNetworkObjPtr network,
                             virNetworkDefPtr def,
                             bool live);
@@ -413,10 +417,6 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
                     int parentIndex,
                     const char *xml,
                     unsigned int flags);  /* virNetworkUpdateFlags */
-
-int virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
-                             virNetworkDefPtr def,
-                             bool check_active);
 
 VIR_ENUM_DECL(virNetworkForward)
 

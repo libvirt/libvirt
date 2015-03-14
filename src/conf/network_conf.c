@@ -504,55 +504,108 @@ virNetworkObjAssignDef(virNetworkObjPtr network,
 }
 
 /*
+ * If flags & VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE then this will
+ * refuse updating an existing def if the current def is live
+ *
+ * If flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE then the @def being
+ * added is assumed to represent a live config, not a future
+ * inactive config
+ *
+ * If flags is zero, network is considered as inactive and persistent.
+ */
+static virNetworkObjPtr
+virNetworkAssignDefLocked(virNetworkObjListPtr nets,
+                          virNetworkDefPtr def,
+                          unsigned int flags)
+{
+    virNetworkObjPtr network;
+    virNetworkObjPtr ret = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    /* See if a network with matching UUID already exists */
+    if ((network = virNetworkObjFindByUUIDLocked(nets, def->uuid))) {
+        virObjectLock(network);
+        /* UUID matches, but if names don't match, refuse it */
+        if (STRNEQ(network->def->name, def->name)) {
+            virUUIDFormat(network->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("network '%s' is already defined with uuid %s"),
+                           network->def->name, uuidstr);
+            goto cleanup;
+        }
+
+        if (flags & VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE) {
+            /* UUID & name match, but if network is already active, refuse it */
+            if (virNetworkObjIsActive(network)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("network is already active as '%s'"),
+                               network->def->name);
+                goto cleanup;
+            }
+        }
+
+        virNetworkObjAssignDef(network,
+                               def,
+                               !!(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE));
+    } else {
+        /* UUID does not match, but if a name matches, refuse it */
+        if ((network = virNetworkObjFindByNameLocked(nets, def->name))) {
+            virObjectLock(network);
+            virUUIDFormat(network->def->uuid, uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("network '%s' already exists with uuid %s"),
+                           def->name, uuidstr);
+            goto cleanup;
+        }
+
+        if (!(network = virNetworkObjNew()))
+              goto cleanup;
+
+        virObjectLock(network);
+
+        virUUIDFormat(def->uuid, uuidstr);
+        if (virHashAddEntry(nets->objs, uuidstr, network) < 0)
+            goto cleanup;
+
+        network->def = def;
+        network->persistent = !(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE);
+        virObjectRef(network);
+    }
+
+    ret = network;
+    network = NULL;
+
+ cleanup:
+    virNetworkObjEndAPI(&network);
+    return ret;
+}
+
+/*
  * virNetworkAssignDef:
  * @nets: list of all networks
  * @def: the new NetworkDef (will be consumed by this function iff successful)
- * @live: is this new def the "live" version, or the "persistent" version
+ * @flags: bitwise-OR of VIR_NETWORK_OBJ_LIST_ADD_* flags
  *
  * Either replace the appropriate copy of the NetworkDef with name
  * matching def->name or, if not found, create a new NetworkObj with
  * def. For an existing network, use "live" and current state of the
  * network to determine which to replace.
  *
+ * Look at virNetworkAssignDefLocked() for @flags description.
+ *
  * Returns NULL on error, virNetworkObjPtr on success.
  */
 virNetworkObjPtr
 virNetworkAssignDef(virNetworkObjListPtr nets,
                     virNetworkDefPtr def,
-                    bool live)
+                    unsigned int flags)
 {
     virNetworkObjPtr network;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virObjectLock(nets);
-    if ((network = virNetworkObjFindByNameLocked(nets, def->name))) {
-        virObjectUnlock(nets);
-        virObjectLock(network);
-        virNetworkObjAssignDef(network, def, live);
-        return network;
-    }
-
-    if (!(network = virNetworkObjNew())) {
-        virObjectUnlock(nets);
-        return NULL;
-    }
-    virObjectLock(network);
-
-    virUUIDFormat(def->uuid, uuidstr);
-    if (virHashAddEntry(nets->objs, uuidstr, network) < 0)
-        goto error;
-
-    network->def = def;
-    network->persistent = !live;
-    virObjectRef(network);
+    network = virNetworkAssignDefLocked(nets, def, flags);
     virObjectUnlock(nets);
     return network;
-
- error:
-    virObjectUnlock(nets);
-    virNetworkObjEndAPI(&network);
-    return NULL;
-
 }
 
 /*
@@ -3005,7 +3058,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     }
 
     /* create the object */
-    if (!(net = virNetworkAssignDef(nets, def, true)))
+    if (!(net = virNetworkAssignDef(nets, def, VIR_NETWORK_OBJ_LIST_ADD_LIVE)))
         goto error;
     /* do not put any "goto error" below this comment */
 
@@ -3082,7 +3135,7 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
         def->mac_specified = false;
     }
 
-    if (!(net = virNetworkAssignDef(nets, def, false)))
+    if (!(net = virNetworkAssignDef(nets, def, 0)))
         goto error;
 
     net->autostart = autostart;
@@ -4294,68 +4347,6 @@ virNetworkObjUpdate(virNetworkObjPtr network,
     virNetworkDefFree(configdef);
     return ret;
 }
-
-/*
- * virNetworkObjIsDuplicate:
- * @nets : virNetworkObjListPtr to search
- * @def  : virNetworkDefPtr definition of network to lookup
- * @check_active: If true, ensure that network is not active
- *
- * Returns: -1 on error
- *          0 if network is new
- *          1 if network is a duplicate
- */
-int
-virNetworkObjIsDuplicate(virNetworkObjListPtr nets,
-                         virNetworkDefPtr def,
-                         bool check_active)
-{
-    int ret = -1;
-    virNetworkObjPtr net = NULL;
-
-    /* See if a network with matching UUID already exists */
-    net = virNetworkObjFindByUUID(nets, def->uuid);
-    if (net) {
-        /* UUID matches, but if names don't match, refuse it */
-        if (STRNEQ(net->def->name, def->name)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(net->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("network '%s' is already defined with uuid %s"),
-                           net->def->name, uuidstr);
-            goto cleanup;
-        }
-
-        if (check_active) {
-            /* UUID & name match, but if network is already active, refuse it */
-            if (virNetworkObjIsActive(net)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("network is already active as '%s'"),
-                               net->def->name);
-                goto cleanup;
-            }
-        }
-
-        ret = 1;
-    } else {
-        /* UUID does not match, but if a name matches, refuse it */
-        net = virNetworkObjFindByName(nets, def->name);
-        if (net) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(net->def->uuid, uuidstr);
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("network '%s' already exists with uuid %s"),
-                           def->name, uuidstr);
-            goto cleanup;
-        }
-        ret = 0;
-    }
-
- cleanup:
-    virNetworkObjEndAPI(&net);
-    return ret;
-}
-
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool

@@ -239,7 +239,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
-    if (!(net = virNetworkAssignDef(privconn->networks, def, false)))
+    if (!(net = virNetworkAssignDef(privconn->networks, def, 0)))
         goto cleanup;
     def = NULL;
     net->active = 1;
@@ -273,7 +273,7 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
     }
     def->uuid_specified = 1;
 
-    if (!(net = virNetworkAssignDef(privconn->networks, def, false)))
+    if (!(net = virNetworkAssignDef(privconn->networks, def, 0)))
         goto cleanup;
 
     net->active = 1;

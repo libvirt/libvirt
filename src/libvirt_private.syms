@@ -573,7 +573,6 @@ virNetworkObjFindByNameLocked;
 virNetworkObjFindByUUID;
 virNetworkObjFindByUUIDLocked;
 virNetworkObjGetPersistentDef;
-virNetworkObjIsDuplicate;
 virNetworkObjListExport;
 virNetworkObjListForEach;
 virNetworkObjListGetNames;
