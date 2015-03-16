@@ -1,0 +1,10 @@
+rootfs / rootfs rw 0 0
+sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
+proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+udev /dev devtmpfs rw,relatime,size=10240k,nr_inodes=256016,mode=755 0 0
+devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+tmpfs /run tmpfs rw,nosuid,noexec,relatime,size=206096k,mode=755 0 0
+/dev/disk/by-uuid/e5690604-413c-4782-ab67-b3678cea9f80 / ext4 rw,relatime,errors=remount-ro,user_xattr,barrier=1,data=ordered 0 0
+tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k 0 0
+tmpfs /run/shm tmpfs rw,nosuid,nodev,noexec,relatime,size=549800k 0 0
+rpc_pipefs /var/lib/nfs/rpc_pipefs rpc_pipefs rw,relatime 0 0

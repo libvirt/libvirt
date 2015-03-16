@@ -1,0 +1,7 @@
+rootfs / rootfs rw 0 0
+sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
+proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
+udev /dev devtmpfs rw,relatime,size=16458560k,nr_inodes=4114640,mode=755 0 0
+devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
+nfsd /proc/fs/nfsd nfsd rw,relatime 0 0
+cgroup /sys/fs/cgroup cgroup rw,relatime,blkio,devices,memory,cpuacct,cpu,cpuset 0 0

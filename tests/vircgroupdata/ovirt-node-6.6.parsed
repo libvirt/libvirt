@@ -1,0 +1,10 @@
+cpu          /cgroup/cpu
+cpuacct      /cgroup/cpuacct
+cpuset       /cgroup/cpuset
+memory       /cgroup/memory
+devices      /cgroup/devices
+freezer      /cgroup/freezer
+blkio        /cgroup/blkio
+net_cls      /cgroup/net_cls
+perf_event   <null>
+name=systemd <null>

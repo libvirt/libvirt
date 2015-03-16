@@ -32,6 +32,7 @@
 # include "virerror.h"
 # include "virlog.h"
 # include "virfile.h"
+# include "virbuffer.h"
 # include "testutilslxc.h"
 # include "nodeinfo.h"
 
@@ -156,6 +157,58 @@ const char *linksLogind[VIR_CGROUP_CONTROLLER_LAST] = {
     [VIR_CGROUP_CONTROLLER_BLKIO] = NULL,
     [VIR_CGROUP_CONTROLLER_SYSTEMD] = NULL,
 };
+
+
+static int
+testCgroupDetectMounts(const void *args)
+{
+    int result = -1;
+    const char *file = args;
+    char *mounts = NULL;
+    char *parsed = NULL;
+    char *expected = NULL;
+    const char *actual;
+    virCgroupPtr group = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    if (virAsprintf(&mounts, "%s/vircgroupdata/%s.mounts",
+                    abs_srcdir, file) < 0 ||
+        virAsprintf(&parsed, "%s/vircgroupdata/%s.parsed",
+                    abs_srcdir, file) < 0 ||
+        VIR_ALLOC(group) < 0)
+        goto cleanup;
+
+    if (virCgroupDetectMountsFromFile(group, mounts, false) < 0)
+        goto cleanup;
+
+    if (virtTestLoadFile(parsed, &expected) < 0)
+        goto cleanup;
+
+    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+        virBufferAsprintf(&buf, "%-12s %s\n",
+                          virCgroupControllerTypeToString(i),
+                          NULLSTR(group->controllers[i].mountPoint));
+    }
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    actual = virBufferCurrentContent(&buf);
+    if (STRNEQ(expected, actual)) {
+        virtTestDifference(stderr, expected, actual);
+        goto cleanup;
+    }
+
+    result = 0;
+
+ cleanup:
+    VIR_FREE(mounts);
+    VIR_FREE(parsed);
+    VIR_FREE(expected);
+    virCgroupFree(&group);
+    virBufferFreeAndReset(&buf);
+    return result;
+}
 
 
 static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
@@ -792,6 +845,25 @@ mymain(void)
     }
 
     setenv("LIBVIRT_FAKE_SYSFS_DIR", fakesysfsdir, 1);
+
+# define DETECT_MOUNTS(file)                                            \
+    do {                                                                \
+        if (virtTestRun("Detect cgroup mounts for " file,               \
+                        testCgroupDetectMounts,                         \
+                        file) < 0)                                      \
+            ret = -1;                                                   \
+    } while (0)
+
+    DETECT_MOUNTS("ovirt-node-6.6");
+    DETECT_MOUNTS("ovirt-node-7.1");
+    DETECT_MOUNTS("fedora-18");
+    DETECT_MOUNTS("fedora-21");
+    DETECT_MOUNTS("rhel-7.1");
+    DETECT_MOUNTS("cgroups1");
+    DETECT_MOUNTS("cgroups2");
+    DETECT_MOUNTS("cgroups3");
+    DETECT_MOUNTS("all-in-one");
+    DETECT_MOUNTS("no-cgroups");
 
     if (virtTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;

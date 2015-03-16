@@ -1126,6 +1126,7 @@ virCgroupDenyAllDevices;
 virCgroupDenyDevice;
 virCgroupDenyDeviceMajor;
 virCgroupDenyDevicePath;
+virCgroupDetectMountsFromFile;
 virCgroupFree;
 virCgroupGetBlkioIoDeviceServiced;
 virCgroupGetBlkioIoServiced;
