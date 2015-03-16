@@ -75,6 +75,65 @@ static void storageDriverUnlock(void)
 }
 
 static void
+storagePoolUpdateAllState(void)
+{
+    size_t i;
+    bool active;
+
+    for (i = 0; i < driver->pools.count; i++) {
+        virStoragePoolObjPtr pool = driver->pools.objs[i];
+        virStorageBackendPtr backend;
+
+        virStoragePoolObjLock(pool);
+        if (!virStoragePoolObjIsActive(pool)) {
+            virStoragePoolObjUnlock(pool);
+            continue;
+        }
+
+        if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
+            VIR_ERROR(_("Missing backend %d"), pool->def->type);
+            virStoragePoolObjUnlock(pool);
+            continue;
+        }
+
+        /* Backends which do not support 'checkPool' are considered
+         * inactive by default.
+         */
+        active = false;
+        if (backend->checkPool &&
+            backend->checkPool(pool, &active) < 0) {
+            virErrorPtr err = virGetLastError();
+            VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
+                      pool->def->name, err ? err->message :
+                      _("no error message found"));
+            virStoragePoolObjUnlock(pool);
+            continue;
+        }
+
+        /* We can pass NULL as connection, most backends do not use
+         * it anyway, but if they do and fail, we want to log error and
+         * continue with other pools.
+         */
+        if (active) {
+            virStoragePoolObjClearVols(pool);
+            if (backend->refreshPool(NULL, pool) < 0) {
+                virErrorPtr err = virGetLastError();
+                if (backend->stopPool)
+                    backend->stopPool(NULL, pool);
+                VIR_ERROR(_("Failed to restart storage pool '%s': %s"),
+                          pool->def->name, err ? err->message :
+                          _("no error message found"));
+                virStoragePoolObjUnlock(pool);
+                continue;
+            }
+        }
+
+        pool->active = active;
+        virStoragePoolObjUnlock(pool);
+    }
+}
+
+static void
 storageDriverAutostart(void)
 {
     size_t i;
@@ -95,23 +154,11 @@ storageDriverAutostart(void)
 
         virStoragePoolObjLock(pool);
         if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
-            VIR_ERROR(_("Missing backend %d"), pool->def->type);
             virStoragePoolObjUnlock(pool);
             continue;
         }
 
-        if (backend->checkPool &&
-            backend->checkPool(pool, &started) < 0) {
-            virErrorPtr err = virGetLastError();
-            VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
-                      pool->def->name, err ? err->message :
-                      _("no error message found"));
-            virStoragePoolObjUnlock(pool);
-            continue;
-        }
-
-        if (!started &&
-            pool->autostart &&
+        if (pool->autostart &&
             !virStoragePoolObjIsActive(pool)) {
             if (backend->startPool &&
                 backend->startPool(conn, pool) < 0) {
@@ -212,6 +259,8 @@ storageStateInitialize(bool privileged,
                                      driver->configDir,
                                      driver->autostartDir) < 0)
         goto error;
+
+    storagePoolUpdateAllState();
 
     storageDriverUnlock();
 
