@@ -3246,11 +3246,13 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
               mon, type, objalias, props);
     int ret = -1;
 
-    if (mon->json)
+    if (mon->json) {
         ret = qemuMonitorJSONAddObject(mon, type, objalias, props);
-    else
+    } else {
+        virJSONValueFree(props);
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("object adding requires JSON monitor"));
+    }
 
     return ret;
 }
