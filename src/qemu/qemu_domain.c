@@ -153,6 +153,7 @@ qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
 
     job->active = QEMU_JOB_NONE;
     job->owner = 0;
+    job->ownerAPI = NULL;
 }
 
 static void
@@ -162,6 +163,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
 
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
+    job->asyncOwnerAPI = NULL;
     job->phase = 0;
     job->mask = QEMU_JOB_DEFAULT_MASK;
     job->dump_memory_only = false;
@@ -1330,6 +1332,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *blocker = NULL;
     int ret = -1;
 
     VIR_DEBUG("Starting %s: %s (async=%s vm=%p name=%s)",
@@ -1378,6 +1381,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                   obj, obj->def->name);
         priv->job.active = job;
         priv->job.owner = virThreadSelfID();
+        priv->job.ownerAPI = virThreadJobGet();
     } else {
         VIR_DEBUG("Started async job: %s (vm=%p name=%s)",
                   qemuDomainAsyncJobTypeToString(asyncJob),
@@ -1387,6 +1391,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
             goto cleanup;
         priv->job.asyncJob = asyncJob;
         priv->job.asyncOwner = virThreadSelfID();
+        priv->job.asyncOwnerAPI = virThreadJobGet();
         priv->job.current->started = now;
     }
 
@@ -1397,29 +1402,47 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     return 0;
 
  error:
-    VIR_WARN("Cannot start job (%s, %s) for domain %s;"
-             " current job is (%s, %s) owned by (%llu, %llu)",
+    VIR_WARN("Cannot start job (%s, %s) for domain %s; "
+             "current job is (%s, %s) owned by (%llu %s, %llu %s)",
              qemuDomainJobTypeToString(job),
              qemuDomainAsyncJobTypeToString(asyncJob),
              obj->def->name,
              qemuDomainJobTypeToString(priv->job.active),
              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
-             priv->job.owner, priv->job.asyncOwner);
+             priv->job.owner, NULLSTR(priv->job.ownerAPI),
+             priv->job.asyncOwner, NULLSTR(priv->job.asyncOwnerAPI));
+
+    if (nested || qemuDomainNestedJobAllowed(priv, job))
+        blocker = priv->job.ownerAPI;
+    else
+        blocker = priv->job.asyncOwnerAPI;
 
     ret = -1;
     if (errno == ETIMEDOUT) {
-        virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       "%s", _("cannot acquire state change lock"));
+        if (blocker) {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                           _("cannot acquire state change lock (held by %s)"),
+                           blocker);
+        } else {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                           _("cannot acquire state change lock"));
+        }
         ret = -2;
     } else if (cfg->maxQueuedJobs &&
                priv->jobs_queued > cfg->maxQueuedJobs) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("cannot acquire state change lock "
-                               "due to max_queued limit"));
+        if (blocker) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot acquire state change lock (held by %s) "
+                             "due to max_queued limit"),
+                           blocker);
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("cannot acquire state change lock "
+                             "due to max_queued limit"));
+        }
         ret = -2;
     } else {
-        virReportSystemError(errno,
-                             "%s", _("cannot acquire job mutex"));
+        virReportSystemError(errno, "%s", _("cannot acquire job mutex"));
     }
 
  cleanup:

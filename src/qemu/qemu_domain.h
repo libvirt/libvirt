@@ -117,10 +117,12 @@ struct qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     qemuDomainJob active;               /* Currently running job */
     unsigned long long owner;           /* Thread id which set current job */
+    const char *ownerAPI;               /* The API which owns the job */
 
     virCond asyncCond;                  /* Use to coordinate with async jobs */
     qemuDomainAsyncJob asyncJob;        /* Currently active async job */
     unsigned long long asyncOwner;      /* Thread which set current async job */
+    const char *asyncOwnerAPI;          /* The API which owns the async job */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
     bool dump_memory_only;              /* use dump-guest-memory to do dump */
