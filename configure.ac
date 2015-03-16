@@ -247,6 +247,7 @@ LIBVIRT_CHECK_SELINUX
 LIBVIRT_CHECK_SSH2
 LIBVIRT_CHECK_SYSTEMD_DAEMON
 LIBVIRT_CHECK_UDEV
+LIBVIRT_CHECK_WIRESHARK
 LIBVIRT_CHECK_YAJL
 
 AC_MSG_CHECKING([for CPUID instruction])
@@ -2642,70 +2643,6 @@ AM_CONDITIONAL([HAVE_LIBNL], [test "$have_libnl" = "yes"])
 AC_SUBST([LIBNL_CFLAGS])
 AC_SUBST([LIBNL_LIBS])
 
-dnl wireshark dissector
-
-AC_ARG_WITH([wireshark-dissector],
-  [AS_HELP_STRING([--with-wireshark-dissector],
-    [enable wireshark dissector plugin support @<:@default=check@:>@])],
-  [ with_wireshark_dissector=$withval ],
-  [ with_wireshark_dissector=check ])
-
-AC_DEFUN([LIBVIRT_WS_HANDLE_ERROR], [
-  if test "$with_wireshark_dissector" = "yes"; then
-    AC_MSG_ERROR([$1])
-  else
-    with_wireshark_dissector=no
-  fi
-])
-if test "$with_wireshark_dissector" != "no"; then
-    dnl Check for XDR headers existence
-    AC_CHECK_HEADERS([rpc/types.h])
-
-    dnl Check for glib-2.0 existence
-    PKG_CHECK_MODULES([GLIB], [glib-2.0], [
-      WS_DISSECTOR_CPPFLAGS="$WS_DISSECTOR_CPPFLAGS `$PKG_CONFIG --cflags glib-2.0`"
-    ], [
-      LIBVIRT_WS_HANDLE_ERROR([pkg-config 'glib-2.0' is required for wireshark-dissector support])
-    ])
-
-    dnl Search for wireshark(or tshark) command
-    AC_PATH_PROG([WIRESHARK], [wireshark])
-    AC_PATH_PROG([WIRESHARK], [tshark])
-    if test -z "$WIRESHARK"; then
-        LIBVIRT_WS_HANDLE_ERROR([command not found wireshark or tshark])
-    else
-        dnl Check for wireshark headers
-        save_CPPFLAGS="$CPPFLAGS"
-        WS_DISSECTOR_CPPFLAGS="$WS_DISSECTOR_CPPFLAGS -I`dirname $WIRESHARK`/../include/wireshark"
-        CPPFLAGS="$CPPFLAGS $WS_DISSECTOR_CPPFLAGS"
-        AC_CHECK_HEADERS([wireshark/config.h],, [
-            LIBVIRT_WS_HANDLE_ERROR([wireshark/config.h is required for wireshark-dissector support])
-        ])
-        AC_CHECK_HEADERS([wireshark/epan/packet.h wireshark/epan/dissectors/packet-tcp.h],, [
-            LIBVIRT_WS_HANDLE_ERROR([wireshark/epan/{packet,packet-tcp}.h are required for wireshark-dissector support])
-        ], [
-          #include <wireshark/config.h>
-        ])
-        CPPFLAGS="$save_CPPFLAGS"
-    fi
-    if test "$with_wireshark_dissector" != "no"; then
-        with_wireshark_dissector=yes
-    fi
-fi
-AC_SUBST([WS_DISSECTOR_CPPFLAGS])
-AM_CONDITIONAL([WITH_WIRESHARK_DISSECTOR], [test "$with_wireshark_dissector" = "yes"])
-
-AC_ARG_WITH([ws-plugindir],
-  [AS_HELP_STRING([--with-ws-plugindir],
-    [wireshark plugins directory for use when installing wireshark plugin])],
-  [ws_plugindir=$withval])
-
-if test "$with_wireshark_dissector" != "no" && test -z "$ws_plugindir"; then
-    ws_version=`$WIRESHARK -v | head -1 | cut -f 2 -d' '`
-    ws_plugindir="$libdir/wireshark/plugins/$ws_version"
-fi
-AC_SUBST([ws_plugindir])
-
 # Check for Linux vs. BSD ifreq members
 AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
                   struct ifreq.ifr_ifindex,
@@ -2937,6 +2874,7 @@ LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_SYSTEMD_DAEMON
 LIBVIRT_RESULT_UDEV
+LIBVIRT_RESULT_WIRESHARK
 LIBVIRT_RESULT_YAJL
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])

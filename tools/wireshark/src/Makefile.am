@@ -26,7 +26,7 @@ INCLUDES = \
 
 ws_plugin_LTLIBRARIES     = libvirt.la
 libvirt_la_SOURCES        = packet-libvirt.h packet-libvirt.c plugin.c
-libvirt_la_CPPFLAGS       = $(WS_DISSECTOR_CPPFLAGS)
+libvirt_la_CPPFLAGS       = $(WIRESHARK_DISSECTOR_CFLAGS)
 libvirt_la_LDFLAGS        = -avoid-version -module
 
 packet-libvirt.c: packet-libvirt.h libvirt/protocol.h
