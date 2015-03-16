@@ -17094,7 +17094,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
     }
 
-    disk->blockjob = true;
+    if (ret == 0)
+        disk->blockjob = true;
 
     if (mirror) {
         if (ret == 0) {
