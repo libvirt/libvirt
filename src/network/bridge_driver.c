@@ -3820,7 +3820,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
         (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
         /* for these forward types, the actual net type really *is*
-         *NETWORK; we just keep the info from the portgroup in
+         * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
          */
         iface->data.network.actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
@@ -4584,7 +4584,8 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
 /**
  * networkCheckBandwidth:
  * @net: network QoS
- * @iface: interface QoS
+ * @ifaceBand: interface QoS (may be NULL if no QoS)
+ * @ifaceMac: interface MAC (used in error messages for identification)
  * @new_rate: new rate for non guaranteed class
  *
  * Returns: -1 if plugging would overcommit network QoS
@@ -4593,17 +4594,17 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
  */
 static int
 networkCheckBandwidth(virNetworkObjPtr net,
-                      virDomainNetDefPtr iface,
+                      virNetDevBandwidthPtr ifaceBand,
+                      virMacAddr ifaceMac,
                       unsigned long long *new_rate)
 {
     int ret = -1;
     virNetDevBandwidthPtr netBand = net->def->bandwidth;
-    virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
     unsigned long long tmp_floor_sum = net->floor_sum;
     unsigned long long tmp_new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
 
-    virMacAddrFormat(&iface->mac, ifmac);
+    virMacAddrFormat(&ifaceMac, ifmac);
 
     if (ifaceBand && ifaceBand->in && ifaceBand->in->floor &&
         !(netBand && netBand->in)) {
@@ -4689,7 +4690,8 @@ networkPlugBandwidth(virNetworkObjPtr net,
     char ifmac[VIR_MAC_STRING_BUFLEN];
     virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
 
-    if ((plug_ret = networkCheckBandwidth(net, iface, &new_rate)) < 0) {
+    if ((plug_ret = networkCheckBandwidth(net, ifaceBand,
+                                          iface->mac, &new_rate)) < 0) {
         /* helper reported error */
         goto cleanup;
     }
