@@ -546,10 +546,9 @@ libxlDomainDefPostParse(virDomainDefPtr def,
                         virCapsPtr caps ATTRIBUTE_UNUSED,
                         void *opaque ATTRIBUTE_UNUSED)
 {
-    if (STREQ(def->os.type, "hvm"))
-        return 0;
-
-    if (def->nconsoles == 0) {
+    /* Xen PV domains always have a PV console, so add one to the domain config
+     * via post-parse callback if not explicitly specified in the XML. */
+    if (STRNEQ(def->os.type, "hvm") && def->nconsoles == 0) {
         virDomainChrDefPtr chrdef;
 
         if (!(chrdef = virDomainChrDefNew()))
