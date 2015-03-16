@@ -2371,8 +2371,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio only support device address type 'PCI'"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("virtio disk cannot have an address of type '%s'"),
+                           virDomainDeviceAddressTypeToString(def->disks[i]->info.type));
             goto error;
         }
 
