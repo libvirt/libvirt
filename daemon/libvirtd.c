@@ -1,7 +1,7 @@
 /*
  * libvirtd.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@
 #include "viralloc.h"
 #include "virconf.h"
 #include "virnetlink.h"
-#include "virnetserver.h"
+#include "virnetdaemon.h"
 #include "remote.h"
 #include "virhook.h"
 #include "viraudit.h"
@@ -776,14 +776,14 @@ daemonSetupPrivs(void)
 #endif
 
 
-static void daemonShutdownHandler(virNetServerPtr srv,
+static void daemonShutdownHandler(virNetDaemonPtr dmn,
                                   siginfo_t *sig ATTRIBUTE_UNUSED,
                                   void *opaque ATTRIBUTE_UNUSED)
 {
-    virNetServerQuit(srv);
+    virNetDaemonQuit(dmn);
 }
 
-static void daemonReloadHandler(virNetServerPtr srv ATTRIBUTE_UNUSED,
+static void daemonReloadHandler(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
                                 siginfo_t *sig ATTRIBUTE_UNUSED,
                                 void *opaque ATTRIBUTE_UNUSED)
 {
@@ -799,15 +799,15 @@ static void daemonReloadHandler(virNetServerPtr srv ATTRIBUTE_UNUSED,
         VIR_WARN("Error while reloading drivers");
 }
 
-static int daemonSetupSignals(virNetServerPtr srv)
+static int daemonSetupSignals(virNetDaemonPtr dmn)
 {
-    if (virNetServerAddSignalHandler(srv, SIGINT, daemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGINT, daemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGQUIT, daemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGQUIT, daemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGTERM, daemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGTERM, daemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGHUP, daemonReloadHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGHUP, daemonReloadHandler, NULL) < 0)
         return -1;
     return 0;
 }
@@ -815,12 +815,12 @@ static int daemonSetupSignals(virNetServerPtr srv)
 
 static void daemonInhibitCallback(bool inhibit, void *opaque)
 {
-    virNetServerPtr srv = opaque;
+    virNetDaemonPtr dmn = opaque;
 
     if (inhibit)
-        virNetServerAddShutdownInhibition(srv);
+        virNetDaemonAddShutdownInhibition(dmn);
     else
-        virNetServerRemoveShutdownInhibition(srv);
+        virNetDaemonRemoveShutdownInhibition(dmn);
 }
 
 
@@ -830,26 +830,26 @@ static DBusConnection *systemBus;
 
 static void daemonStopWorker(void *opaque)
 {
-    virNetServerPtr srv = opaque;
+    virNetDaemonPtr dmn = opaque;
 
-    VIR_DEBUG("Begin stop srv=%p", srv);
+    VIR_DEBUG("Begin stop dmn=%p", dmn);
 
     ignore_value(virStateStop());
 
-    VIR_DEBUG("Completed stop srv=%p", srv);
+    VIR_DEBUG("Completed stop dmn=%p", dmn);
 
     /* Exit libvirtd cleanly */
-    virNetServerQuit(srv);
+    virNetDaemonQuit(dmn);
 }
 
 
 /* We do this in a thread to not block the main loop */
-static void daemonStop(virNetServerPtr srv)
+static void daemonStop(virNetDaemonPtr dmn)
 {
     virThread thr;
-    virObjectRef(srv);
-    if (virThreadCreate(&thr, false, daemonStopWorker, srv) < 0)
-        virObjectUnref(srv);
+    virObjectRef(dmn);
+    if (virThreadCreate(&thr, false, daemonStopWorker, dmn) < 0)
+        virObjectUnref(dmn);
 }
 
 
@@ -858,14 +858,14 @@ handleSessionMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
                          DBusMessage *message,
                          void *opaque)
 {
-    virNetServerPtr srv = opaque;
+    virNetDaemonPtr dmn = opaque;
 
-    VIR_DEBUG("srv=%p", srv);
+    VIR_DEBUG("dmn=%p", dmn);
 
     if (dbus_message_is_signal(message,
                                DBUS_INTERFACE_LOCAL,
                                "Disconnected"))
-        daemonStop(srv);
+        daemonStop(dmn);
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -876,14 +876,14 @@ handleSystemMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
                         DBusMessage *message,
                         void *opaque)
 {
-    virNetServerPtr srv = opaque;
+    virNetDaemonPtr dmn = opaque;
 
-    VIR_DEBUG("srv=%p", srv);
+    VIR_DEBUG("dmn=%p", dmn);
 
     if (dbus_message_is_signal(message,
                                "org.freedesktop.login1.Manager",
                                "PrepareForShutdown"))
-        daemonStop(srv);
+        daemonStop(dmn);
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -892,22 +892,22 @@ handleSystemMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
 
 static void daemonRunStateInit(void *opaque)
 {
-    virNetServerPtr srv = opaque;
+    virNetDaemonPtr dmn = opaque;
     virIdentityPtr sysident = virIdentityGetSystem();
 
     virIdentitySetCurrent(sysident);
 
     /* Since driver initialization can take time inhibit daemon shutdown until
        we're done so clients get a chance to connect */
-    daemonInhibitCallback(true, srv);
+    daemonInhibitCallback(true, dmn);
 
     /* Start the stateful HV drivers
      * This is deliberately done after telling the parent process
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
-    if (virStateInitialize(virNetServerIsPrivileged(srv),
+    if (virStateInitialize(virNetDaemonIsPrivileged(dmn),
                            daemonInhibitCallback,
-                           srv) < 0) {
+                           dmn) < 0) {
         VIR_ERROR(_("Driver state initialization failed"));
         /* Ensure the main event loop quits */
         kill(getpid(), SIGTERM);
@@ -918,17 +918,17 @@ static void daemonRunStateInit(void *opaque)
 
 #ifdef HAVE_DBUS
     /* Tie the non-priviledged libvirtd to the session/shutdown lifecycle */
-    if (!virNetServerIsPrivileged(srv)) {
+    if (!virNetDaemonIsPrivileged(dmn)) {
 
         sessionBus = virDBusGetSessionBus();
         if (sessionBus != NULL)
             dbus_connection_add_filter(sessionBus,
-                                       handleSessionMessageFunc, srv, NULL);
+                                       handleSessionMessageFunc, dmn, NULL);
 
         systemBus = virDBusGetSystemBus();
         if (systemBus != NULL) {
             dbus_connection_add_filter(systemBus,
-                                       handleSystemMessageFunc, srv, NULL);
+                                       handleSystemMessageFunc, dmn, NULL);
             dbus_bus_add_match(systemBus,
                                "type='signal',sender='org.freedesktop.login1', interface='org.freedesktop.login1.Manager'",
                                NULL);
@@ -936,20 +936,20 @@ static void daemonRunStateInit(void *opaque)
     }
 #endif
     /* Only now accept clients from network */
-    virNetServerUpdateServices(srv, true);
+    virNetDaemonUpdateServices(dmn, true);
  cleanup:
-    daemonInhibitCallback(false, srv);
-    virObjectUnref(srv);
+    daemonInhibitCallback(false, dmn);
+    virObjectUnref(dmn);
     virObjectUnref(sysident);
     virIdentitySetCurrent(NULL);
 }
 
-static int daemonStateInit(virNetServerPtr srv)
+static int daemonStateInit(virNetDaemonPtr dmn)
 {
     virThread thr;
-    virObjectRef(srv);
-    if (virThreadCreate(&thr, false, daemonRunStateInit, srv) < 0) {
-        virObjectUnref(srv);
+    virObjectRef(dmn);
+    if (virThreadCreate(&thr, false, daemonRunStateInit, dmn) < 0) {
+        virObjectUnref(dmn);
         return -1;
     }
     return 0;
@@ -1100,6 +1100,7 @@ daemonUsage(const char *argv0, bool privileged)
 }
 
 int main(int argc, char **argv) {
+    virNetDaemonPtr dmn = NULL;
     virNetServerPtr srv = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
@@ -1354,6 +1355,12 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (!(dmn = virNetDaemonNew()) ||
+        virNetDaemonAddServer(dmn, srv) < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     /* Beyond this point, nothing should rely on using
      * getuid/geteuid() == 0, for privilege level checks.
      */
@@ -1408,11 +1415,10 @@ int main(int argc, char **argv) {
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
-        virNetServerAutoShutdown(srv,
-                                 timeout);
+        virNetDaemonAutoShutdown(dmn, timeout);
     }
 
-    if ((daemonSetupSignals(srv)) < 0) {
+    if ((daemonSetupSignals(dmn)) < 0) {
         ret = VIR_DAEMON_ERR_SIGNAL;
         goto cleanup;
     }
@@ -1467,7 +1473,7 @@ int main(int argc, char **argv) {
     }
 
     /* Initialize drivers & then start accepting new clients from network */
-    if (daemonStateInit(srv) < 0) {
+    if (daemonStateInit(dmn) < 0) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
@@ -1489,7 +1495,7 @@ int main(int argc, char **argv) {
 #endif
 
     /* Run event loop. */
-    virNetServerRun(srv);
+    virNetDaemonRun(dmn);
 
     ret = 0;
 
@@ -1501,7 +1507,8 @@ int main(int argc, char **argv) {
     virObjectUnref(remoteProgram);
     virObjectUnref(lxcProgram);
     virObjectUnref(qemuProgram);
-    virNetServerClose(srv);
+    virNetDaemonClose(dmn);
+    virObjectUnref(dmn);
     virObjectUnref(srv);
     virNetlinkShutdown();
     if (statuswrite != -1) {

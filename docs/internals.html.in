@@ -82,7 +82,9 @@
           <ul>
               <li>Daemon Startup
               <p>The daemon initialization processing will declare itself
-              as a server via a virNetServerNew() call, then use
+              as a daemon via a virNetDaemonNew() call, then creates new server
+              using virNetServerNew() and adds that server to the main daemon
+              struct with virNetDaemonAddServer() call.  It will then use
               virDriverLoadModule() to find/load all known drivers,
               set up an RPC server program using the <code>remoteProcs[]</code>
               table via a virNetServerProgramNew() call. The table is the

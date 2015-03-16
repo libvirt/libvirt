@@ -28,6 +28,9 @@
 # include "virnetserverclient.h"
 # include "virobject.h"
 
+typedef struct _virNetDaemon virNetDaemon;
+typedef virNetDaemon *virNetDaemonPtr;
+
 typedef struct _virNetServer virNetServer;
 typedef virNetServer *virNetServerPtr;
 

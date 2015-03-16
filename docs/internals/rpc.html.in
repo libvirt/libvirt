@@ -532,6 +532,13 @@
         calls in parallel, with dispatch across multiple worker threads.
       </dd>
 
+      <dt><code>virNetDaemonPtr</code> (virnetdaemon.h)</dt>
+      <dd>The virNetDaemon APIs are used to manage a daemon process. A
+        deamon is a process that might expose one or more servers.  It
+        handles most process-related details, network-related should
+        be part of the underlying server.
+      </dd>
+
       <dt><code>virNetServerMDNSPtr</code> (virnetservermdns.h)</dt>
       <dd>The virNetServerMDNS APIs are used to advertise a server
         across the local network, enabling clients to automatically

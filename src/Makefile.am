@@ -2507,6 +2507,7 @@ libvirt_net_rpc_server_la_SOURCES = \
 	rpc/virnetserverservice.h rpc/virnetserverservice.c \
 	rpc/virnetserverclient.h rpc/virnetserverclient.c \
 	rpc/virnetservermdns.h rpc/virnetservermdns.c \
+	rpc/virnetdaemon.h rpc/virnetdaemon.c \
 	rpc/virnetserver.h rpc/virnetserver.c
 libvirt_net_rpc_server_la_CFLAGS = \
 			$(AVAHI_CFLAGS) \

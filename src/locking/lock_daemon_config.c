@@ -28,7 +28,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
-#include "rpc/virnetserver.h"
+#include "rpc/virnetdaemon.h"
 #include "configmake.h"
 #include "virstring.h"
 #include "virutil.h"

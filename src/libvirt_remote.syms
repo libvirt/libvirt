@@ -57,6 +57,24 @@ virNetClientStreamSendPacket;
 virNetClientStreamSetError;
 
 
+# rpc/virnetdaemon.h
+virNetDaemonAddServer;
+virNetDaemonAddServerPostExec;
+virNetDaemonAddShutdownInhibition;
+virNetDaemonAddSignalHandler;
+virNetDaemonAutoShutdown;
+virNetDaemonClose;
+virNetDaemonGetServer;
+virNetDaemonIsPrivileged;
+virNetDaemonNew;
+virNetDaemonNewPostExecRestart;
+virNetDaemonPreExecRestart;
+virNetDaemonQuit;
+virNetDaemonRemoveShutdownInhibition;
+virNetDaemonRun;
+virNetDaemonUpdateServices;
+
+
 # rpc/virnetmessage.h
 virNetMessageClear;
 virNetMessageDecodeHeader;
@@ -80,18 +98,16 @@ xdr_virNetMessageError;
 virNetServerAddClient;
 virNetServerAddProgram;
 virNetServerAddService;
-virNetServerAddShutdownInhibition;
-virNetServerAddSignalHandler;
-virNetServerAutoShutdown;
 virNetServerClose;
-virNetServerIsPrivileged;
+virNetServerHasClients;
 virNetServerKeepAliveRequired;
 virNetServerNew;
 virNetServerNewPostExecRestart;
 virNetServerPreExecRestart;
-virNetServerQuit;
-virNetServerRemoveShutdownInhibition;
-virNetServerRun;
+virNetServerProcessClients;
+virNetServerStart;
+virNetServerTrackCompletedAuth;
+virNetServerTrackPendingAuth;
 virNetServerUpdateServices;
 
 

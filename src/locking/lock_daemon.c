@@ -1,7 +1,7 @@
 /*
  * lock_daemon.c: lock management daemon
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virconf.h"
+#include "rpc/virnetdaemon.h"
 #include "rpc/virnetserver.h"
 #include "virrandom.h"
 #include "virhash.h"
@@ -60,6 +61,7 @@ VIR_LOG_INIT("locking.lock_daemon");
 
 struct _virLockDaemon {
     virMutex lock;
+    virNetDaemonPtr dmn;
     virNetServerPtr srv;
     virHashTablePtr lockspaces;
     virLockSpacePtr defaultLockspace;
@@ -118,6 +120,7 @@ virLockDaemonFree(virLockDaemonPtr lockd)
         return;
 
     virObjectUnref(lockd->srv);
+    virObjectUnref(lockd->dmn);
     virHashFree(lockd->lockspaces);
     virLockSpaceFree(lockd->defaultLockspace);
 
@@ -153,6 +156,10 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
                                        virLockDaemonClientPreExecRestart,
                                        virLockDaemonClientFree,
                                        (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+        goto error;
+
+    if (!(lockd->dmn = virNetDaemonNew()) ||
+        virNetDaemonAddServer(lockd->dmn, lockd->srv) < 0)
         goto error;
 
     if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
@@ -230,18 +237,29 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
         }
     }
 
-    if (!(child = virJSONValueObjectGet(object, "server"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing server data from JSON file"));
-        goto error;
+    if (virJSONValueObjectHasKey(object, "daemon")) {
+        if (!(child = virJSONValueObjectGet(object, "daemon"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed daemon data from JSON file"));
+            goto error;
+        }
+    } else {
+        if (!(child = virJSONValueObjectGet(object, "server"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing server data from JSON file"));
+            goto error;
+        }
     }
 
-    if (!(lockd->srv = virNetServerNewPostExecRestart(child,
-                                                      virLockDaemonClientNew,
-                                                      virLockDaemonClientNewPostExecRestart,
-                                                      virLockDaemonClientPreExecRestart,
-                                                      virLockDaemonClientFree,
-                                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+    if (!(lockd->dmn = virNetDaemonNewPostExecRestart(child)))
+        goto error;
+
+    if (!(lockd->srv = virNetDaemonAddServerPostExec(lockd->dmn,
+                                                     virLockDaemonClientNew,
+                                                     virLockDaemonClientNewPostExecRestart,
+                                                     virLockDaemonClientPreExecRestart,
+                                                     virLockDaemonClientFree,
+                                                     (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
     return lockd;
@@ -529,32 +547,32 @@ virLockDaemonVersion(const char *argv0)
 }
 
 static void
-virLockDaemonShutdownHandler(virNetServerPtr srv,
+virLockDaemonShutdownHandler(virNetDaemonPtr dmn,
                              siginfo_t *sig ATTRIBUTE_UNUSED,
                              void *opaque ATTRIBUTE_UNUSED)
 {
-    virNetServerQuit(srv);
+    virNetDaemonQuit(dmn);
 }
 
 static void
-virLockDaemonExecRestartHandler(virNetServerPtr srv,
+virLockDaemonExecRestartHandler(virNetDaemonPtr dmn,
                                 siginfo_t *sig ATTRIBUTE_UNUSED,
                                 void *opaque ATTRIBUTE_UNUSED)
 {
     execRestart = true;
-    virNetServerQuit(srv);
+    virNetDaemonQuit(dmn);
 }
 
 static int
-virLockDaemonSetupSignals(virNetServerPtr srv)
+virLockDaemonSetupSignals(virNetDaemonPtr dmn)
 {
-    if (virNetServerAddSignalHandler(srv, SIGINT, virLockDaemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGINT, virLockDaemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGQUIT, virLockDaemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGQUIT, virLockDaemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGTERM, virLockDaemonShutdownHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGTERM, virLockDaemonShutdownHandler, NULL) < 0)
         return -1;
-    if (virNetServerAddSignalHandler(srv, SIGUSR1, virLockDaemonExecRestartHandler, NULL) < 0)
+    if (virNetDaemonAddSignalHandler(dmn, SIGUSR1, virLockDaemonExecRestartHandler, NULL) < 0)
         return -1;
     return 0;
 }
@@ -966,7 +984,7 @@ virLockDaemonPostExecRestart(const char *state_file,
 
 static int
 virLockDaemonPreExecRestart(const char *state_file,
-                            virNetServerPtr srv,
+                            virNetDaemonPtr dmn,
                             char **argv)
 {
     virJSONValuePtr child;
@@ -982,10 +1000,10 @@ virLockDaemonPreExecRestart(const char *state_file,
     if (!(object = virJSONValueNewObject()))
         goto cleanup;
 
-    if (!(child = virNetServerPreExecRestart(srv)))
+    if (!(child = virNetDaemonPreExecRestart(dmn)))
         goto cleanup;
 
-    if (virJSONValueObjectAppend(object, "server", child) < 0) {
+    if (virJSONValueObjectAppend(object, "daemon", child) < 0) {
         virJSONValueFree(child);
         goto cleanup;
     }
@@ -1350,11 +1368,11 @@ int main(int argc, char **argv) {
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
-        virNetServerAutoShutdown(lockDaemon->srv,
+        virNetDaemonAutoShutdown(lockDaemon->dmn,
                                  timeout);
     }
 
-    if ((virLockDaemonSetupSignals(lockDaemon->srv)) < 0) {
+    if ((virLockDaemonSetupSignals(lockDaemon->dmn)) < 0) {
         ret = VIR_LOCK_DAEMON_ERR_SIGNAL;
         goto cleanup;
     }
@@ -1366,6 +1384,7 @@ int main(int argc, char **argv) {
         ret = VIR_LOCK_DAEMON_ERR_INIT;
         goto cleanup;
     }
+
     if (virNetServerAddProgram(lockDaemon->srv, lockProgram) < 0) {
         ret = VIR_LOCK_DAEMON_ERR_INIT;
         goto cleanup;
@@ -1389,12 +1408,12 @@ int main(int argc, char **argv) {
 
     /* Start accepting new clients from network */
 
-    virNetServerUpdateServices(lockDaemon->srv, true);
-    virNetServerRun(lockDaemon->srv);
+    virNetDaemonUpdateServices(lockDaemon->dmn, true);
+    virNetDaemonRun(lockDaemon->dmn);
 
     if (execRestart &&
         virLockDaemonPreExecRestart(state_file,
-                                    lockDaemon->srv,
+                                    lockDaemon->dmn,
                                     argv) < 0)
         ret = VIR_LOCK_DAEMON_ERR_REEXEC;
     else

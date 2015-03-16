@@ -1,7 +1,7 @@
 /*
  * virnetserver.h: generic network RPC server
  *
- * Copyright (C) 2006-2011 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@
 #ifndef __VIR_NET_SERVER_H__
 # define __VIR_NET_SERVER_H__
 
-# include <signal.h>
-
 # ifdef WITH_GNUTLS
 #  include "virnettlscontext.h"
 # endif
@@ -34,6 +32,9 @@
 # include "virnetserverservice.h"
 # include "virobject.h"
 # include "virjson.h"
+
+typedef struct _virNetServer virNetServer;
+typedef virNetServer *virNetServerPtr;
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
@@ -56,24 +57,9 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                                                virFreeCallback clientPrivFree,
                                                void *clientPrivOpaque);
 
+void virNetServerClose(virNetServerPtr srv);
+
 virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv);
-
-typedef int (*virNetServerAutoShutdownFunc)(virNetServerPtr srv, void *opaque);
-
-bool virNetServerIsPrivileged(virNetServerPtr srv);
-
-void virNetServerAutoShutdown(virNetServerPtr srv,
-                              unsigned int timeout);
-
-void virNetServerAddShutdownInhibition(virNetServerPtr srv);
-void virNetServerRemoveShutdownInhibition(virNetServerPtr srv);
-
-typedef void (*virNetServerSignalFunc)(virNetServerPtr srv, siginfo_t *info, void *opaque);
-
-int virNetServerAddSignalHandler(virNetServerPtr srv,
-                                 int signum,
-                                 virNetServerSignalFunc func,
-                                 void *opaque);
 
 int virNetServerAddService(virNetServerPtr srv,
                            virNetServerServicePtr svc,
@@ -90,18 +76,18 @@ int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls);
 # endif
 
-void virNetServerUpdateServices(virNetServerPtr srv,
-                                bool enabled);
-
-void virNetServerRun(virNetServerPtr srv);
-
-void virNetServerQuit(virNetServerPtr srv);
-
-void virNetServerClose(virNetServerPtr srv);
-
 bool virNetServerKeepAliveRequired(virNetServerPtr srv);
 
 size_t virNetServerTrackPendingAuth(virNetServerPtr srv);
 size_t virNetServerTrackCompletedAuth(virNetServerPtr srv);
 
-#endif
+int virNetServerAddClient(virNetServerPtr srv,
+                          virNetServerClientPtr client);
+bool virNetServerHasClients(virNetServerPtr srv);
+void virNetServerProcessClients(virNetServerPtr srv);
+
+void virNetServerUpdateServices(virNetServerPtr srv, bool enabled);
+
+int virNetServerStart(virNetServerPtr srv);
+
+#endif /* __VIR_NET_SERVER_H__ */
