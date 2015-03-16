@@ -417,7 +417,7 @@ testNetworkCreateXML(const void *data)
                            &counter, NULL);
     net = virNetworkCreateXML(test->conn, networkDef);
 
-    if (virEventRunDefaultImpl() < 0) {
+    if (!net || virEventRunDefaultImpl() < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -429,10 +429,10 @@ testNetworkCreateXML(const void *data)
 
  cleanup:
     virConnectNetworkEventDeregisterAny(test->conn, id);
-    virNetworkDestroy(net);
-
-    virNetworkFree(net);
-
+    if (net) {
+        virNetworkDestroy(net);
+        virNetworkFree(net);
+    }
     return ret;
 }
 
@@ -455,7 +455,7 @@ testNetworkDefine(const void *data)
     /* Make sure the define event is triggered */
     net = virNetworkDefineXML(test->conn, networkDef);
 
-    if (virEventRunDefaultImpl() < 0) {
+    if (!net || virEventRunDefaultImpl() < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -481,7 +481,8 @@ testNetworkDefine(const void *data)
 
  cleanup:
     virConnectNetworkEventDeregisterAny(test->conn, id);
-    virNetworkFree(net);
+    if (net)
+        virNetworkFree(net);
 
     return ret;
 }
@@ -493,6 +494,9 @@ testNetworkStartStopEvent(const void *data)
     lifecycleEventCounter counter;
     int id;
     int ret = 0;
+
+    if (!test->net)
+        return -1;
 
     lifecycleEventCounter_reset(&counter);
 
@@ -509,7 +513,7 @@ testNetworkStartStopEvent(const void *data)
     }
 
     if (counter.startEvents != 1 || counter.stopEvents != 1 ||
-            counter.unexpectedEvents > 0) {
+        counter.unexpectedEvents > 0) {
         ret = -1;
         goto cleanup;
     }
@@ -567,13 +571,16 @@ mymain(void)
         ret = EXIT_FAILURE;
 
     /* Define a test network */
-    test.net = virNetworkDefineXML(test.conn, networkDef);
+    if (!(test.net = virNetworkDefineXML(test.conn, networkDef)))
+        ret = EXIT_FAILURE;
     if (virtTestRun("Network start stop events ", testNetworkStartStopEvent, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Cleanup */
-    virNetworkUndefine(test.net);
-    virNetworkFree(test.net);
+    if (test.net) {
+        virNetworkUndefine(test.net);
+        virNetworkFree(test.net);
+    }
     virConnectClose(test.conn);
     virEventRemoveTimeout(timer);
 
