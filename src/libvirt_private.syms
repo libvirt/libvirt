@@ -1816,6 +1816,7 @@ virNetDevVPortProfileOpTypeToString;
 
 # util/virnetlink.h
 virNetlinkCommand;
+virNetlinkDelLink;
 virNetlinkEventAddClient;
 virNetlinkEventRemoveClient;
 virNetlinkEventServiceIsRunning;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Red Hat, Inc.
+ * Copyright (C) 2010-2013, 2015 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -51,6 +51,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                       struct nlmsghdr **resp, unsigned int *respbuflen,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups);
+int virNetlinkDelLink(const char *ifname);
 
 int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 
