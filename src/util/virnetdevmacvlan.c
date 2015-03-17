@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -220,70 +220,7 @@ virNetDevMacVLanCreate(const char *ifname,
  */
 int virNetDevMacVLanDelete(const char *ifname)
 {
-    int rc = -1;
-    struct nlmsghdr *resp = NULL;
-    struct nlmsgerr *err;
-    struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    unsigned int recvbuflen;
-    struct nl_msg *nl_msg;
-
-    nl_msg = nlmsg_alloc_simple(RTM_DELLINK,
-                                NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
-    if (!nl_msg) {
-        virReportOOMError();
-        return -1;
-    }
-
-    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
-        goto buffer_too_small;
-
-    if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
-        goto buffer_too_small;
-
-    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
-                          NETLINK_ROUTE, 0) < 0) {
-        goto cleanup;
-    }
-
-    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
-        goto malformed_resp;
-
-    switch (resp->nlmsg_type) {
-    case NLMSG_ERROR:
-        err = (struct nlmsgerr *)NLMSG_DATA(resp);
-        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
-            goto malformed_resp;
-
-        if (err->error) {
-            virReportSystemError(-err->error,
-                                 _("error destroying %s interface"),
-                                 ifname);
-            goto cleanup;
-        }
-        break;
-
-    case NLMSG_DONE:
-        break;
-
-    default:
-        goto malformed_resp;
-    }
-
-    rc = 0;
- cleanup:
-    nlmsg_free(nl_msg);
-    VIR_FREE(resp);
-    return rc;
-
- malformed_resp:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("malformed netlink response message"));
-    goto cleanup;
-
- buffer_too_small:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("allocated netlink buffer is too small"));
-    goto cleanup;
+    return virNetlinkDelLink(ifname);
 }
 
 
