@@ -2278,7 +2278,8 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
         /* When the interface has no IP address */
         if (!iface->naddrs) {
             vshPrintExtra(ctl, " %-10s %-17s    %-12s %s\n",
-                          iface->name, iface->hwaddr, "N/A", "N/A");
+                          iface->name,
+                          iface->hwaddr ? iface->hwaddr : "N/A", "N/A", "N/A");
             continue;
         }
 
@@ -2312,7 +2313,8 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
             /* Don't repeat interface name */
             if (full || !j)
                 vshPrintExtra(ctl, " %-10s %-17s    %s\n",
-                              iface->name, iface->hwaddr, ip_addr_str);
+                              iface->name,
+                              iface->hwaddr ? iface->hwaddr : "", ip_addr_str);
             else
                 vshPrintExtra(ctl, " %-10s %-17s    %s\n",
                               "-", "-", ip_addr_str);
