@@ -1683,8 +1683,8 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
      *
      */
     if (nbuses > 0)
-       virDomainPCIAddressBusSetModel(&addrs->buses[0],
-                                      VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT);
+        virDomainPCIAddressBusSetModel(&addrs->buses[0],
+                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT);
     for (i = 1; i < nbuses; i++) {
         virDomainPCIAddressBusSetModel(&addrs->buses[i],
                                        VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE);
@@ -4761,7 +4761,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
-                goto cleanup;
+            goto cleanup;
         }
 
         /* report back that using the new backend is not necessary to achieve
@@ -4967,7 +4967,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &net->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)
-       goto error;
+        goto error;
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&buf, ",bootindex=%d", bootindex);
 
@@ -5512,7 +5512,7 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
-       goto error;
+        goto error;
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -5577,8 +5577,7 @@ qemuBuildRedirdevDevStr(virDomainDefPtr def,
     }
 
     virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
-                      dev->info.alias,
-                      dev->info.alias);
+                      dev->info.alias, dev->info.alias);
 
     if (redirfilter && redirfilter->nusbdevs) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
@@ -9610,7 +9609,7 @@ qemuBuildCommandLine(virConnectPtr conn,
             } else {
                 virCommandAddArg(cmd, "-parallel");
                 if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
-                      goto error;
+                    goto error;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
             }
@@ -10558,7 +10557,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
             if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("no addresses are suported for isa-serial"));
+                               _("no addresses are supported for isa-serial"));
                 goto error;
             }
             break;
@@ -10611,7 +10610,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
         if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(chr, qemuCaps)))
-                goto cleanup;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
@@ -11467,7 +11466,7 @@ qemuParseCommandLinePCI(const char *val)
     virDomainHostdevDefPtr def = virDomainHostdevDefAlloc();
 
     if (!def)
-       goto error;
+        goto error;
 
     if (!STRPREFIX(val, "host=")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -11521,7 +11520,7 @@ qemuParseCommandLineUSB(const char *val)
     char *end;
 
     if (!def)
-       goto error;
+        goto error;
     usbsrc = &def->source.subsys.u.usb;
 
     if (!STRPREFIX(val, "host:")) {
