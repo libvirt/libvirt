@@ -2269,7 +2269,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 
     for (i = 0; i < ifaces_count; i++) {
         virDomainInterfacePtr iface = ifaces[i];
-        const char *ip_addr_str = NULL;
+        char *ip_addr_str = NULL;
         const char *type = NULL;
 
         if (interface && STRNEQ(interface, iface->name))
@@ -2308,7 +2308,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
             ip_addr_str = virBufferContentAndReset(&buf);
 
             if (!ip_addr_str)
-                ip_addr_str = "";
+                ip_addr_str = vshStrdup(ctl, "");
 
             /* Don't repeat interface name */
             if (full || !j)
@@ -2320,6 +2320,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
                               "-", "-", ip_addr_str);
 
             virBufferFreeAndReset(&buf);
+            VIR_FREE(ip_addr_str);
         }
     }
 
