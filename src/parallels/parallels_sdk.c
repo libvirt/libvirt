@@ -701,7 +701,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         goto cleanup;
 
     pret = PrlVmDevNet_GetHostInterfaceName(netAdapter, net->ifname, &buflen);
-        prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetGoto(pret, cleanup);
 
     if (isCt && netAdapterIndex == (PRL_UINT32) -1) {
         /* venet devices don't have mac address and
@@ -1350,7 +1350,6 @@ prlsdkLoadDomains(parallelsConnPtr privconn)
 
  error:
     PrlHandle_Free(result);
-    PrlHandle_Free(job);
     return -1;
 }
 
@@ -1730,8 +1729,6 @@ prlsdkDomainChangeState(virDomainPtr domain,
 
     pdom = dom->privateData;
     pret = chstate(privconn, pdom->sdkdom);
-    virReportError(VIR_ERR_OPERATION_FAILED,
-                   _("Can't change domain state: %d"), pret);
     if (PRL_FAILED(pret)) {
         virResetLastError();
 
