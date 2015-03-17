@@ -20,9 +20,9 @@
 
 INCLUDES = \
   -I$(top_srcdir) \
-  -I$(top_srcdir)/src \
-  -I$(top_srcdir)/include \
-  -I$(top_srcdir)/gnulib/lib
+  -I$(top_srcdir)/src -I$(top_builddir)/src	\
+  -I$(top_srcdir)/include -I$(top_builddir)/include	\
+  -I$(top_srcdir)/gnulib/lib -I$(top_builddir)/gnulib/lib
 
 ws_plugin_LTLIBRARIES     = libvirt.la
 libvirt_la_SOURCES        = packet-libvirt.h packet-libvirt.c plugin.c
