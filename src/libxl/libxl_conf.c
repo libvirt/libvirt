@@ -305,7 +305,6 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
     regmatch_t subs[4];
     char *saveptr = NULL;
     size_t i;
-    virArch hostarch = caps->host.arch;
 
     struct guest_arch guest_archs[32];
     int nr_guest_archs = 0;
@@ -428,11 +427,9 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
         if ((guest = virCapabilitiesAddGuest(caps,
                                              guest_archs[i].hvm ? "hvm" : "xen",
                                              guest_archs[i].arch,
-                                             ((hostarch == VIR_ARCH_X86_64) ?
-                                              "/usr/lib64/xen/bin/qemu-dm" :
-                                              "/usr/lib/xen/bin/qemu-dm"),
+                                             LIBXL_EXECBIN_DIR "/qemu-system-i386",
                                              (guest_archs[i].hvm ?
-                                              "/usr/lib/xen/boot/hvmloader" :
+                                              LIBXL_FIRMWARE_DIR "/hvmloader" :
                                               NULL),
                                              1,
                                              machines)) == NULL) {

@@ -55,6 +55,14 @@
 # define LIBXL_DUMP_DIR LIBXL_LIB_DIR "/dump"
 # define LIBXL_BOOTLOADER_PATH "pygrub"
 
+# ifndef LIBXL_FIRMWARE_DIR
+#  define LIBXL_FIRMWARE_DIR "/usr/lib/xen/boot"
+# endif
+# ifndef LIBXL_EXECBIN_DIR
+#  define LIBXL_EXECBIN_DIR "/usr/lib/xen/bin"
+# endif
+
+
 /* libxl interface for setting VCPU affinity changed in 4.5. In fact, a new
  * parameter has been added, representative of 'VCPU soft affinity'. If one
  * does not care about it (and that's libvirt case), passing NULL is the

@@ -873,24 +873,37 @@ old_LIBS="$LIBS"
 old_CFLAGS="$CFLAGS"
 LIBXL_LIBS=""
 LIBXL_CFLAGS=""
+LIBXL_FIRMWARE_DIR=""
+LIBXL_EXECBIN_DIR=""
+
 dnl search for libxl, aka libxenlight
+dnl Xen > 4.5 introduced a pkgconfig file, check for it first
 fail=0
 if test "$with_libxl" != "no" ; then
-    if test "$with_libxl" != "yes" && test "$with_libxl" != "check" ; then
-        LIBXL_CFLAGS="-I$with_libxl/include"
-        LIBXL_LIBS="-L$with_libxl"
-    fi
-    CFLAGS="$CFLAGS $LIBXL_CFLAGS"
-    LIBS="$LIBS $LIBXL_LIBS"
-    AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
-        with_libxl=yes
-        LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenctrl"
-    ],[
-        if test "$with_libxl" = "yes"; then
-            fail=1
+    PKG_CHECK_MODULES([LIBXL], [xenlight], [
+     LIBXL_FIRMWARE_DIR=`$PKG_CONFIG --variable xenfirmwaredir xenlight`
+     LIBXL_EXECBIN_DIR=`$PKG_CONFIG --variable libexec_bin xenlight`
+     LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
+     with_libxl=yes
+    ], [LIBXL_FOUND=no])
+    if test "$LIBXL_FOUND" = "no"; then
+        dnl No xenlight pkg-config file
+        if test "$with_libxl" != "yes" && test "$with_libxl" != "check" ; then
+            LIBXL_CFLAGS="-I$with_libxl/include"
+            LIBXL_LIBS="-L$with_libxl"
         fi
-        with_libxl=no
-    ])
+        CFLAGS="$CFLAGS $LIBXL_CFLAGS"
+        LIBS="$LIBS $LIBXL_LIBS"
+        AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
+            with_libxl=yes
+            LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenctrl"
+        ],[
+            if test "$with_libxl" = "yes"; then
+                fail=1
+            fi
+            with_libxl=no
+        ])
+    fi
 fi
 
 LIBS="$old_LIBS"
@@ -905,6 +918,12 @@ if test "$with_libxl" = "yes"; then
     AC_CHECK_HEADERS([libxlutil.h])
     LIBXL_LIBS="$LIBXL_LIBS -lxlutil"
     AC_DEFINE_UNQUOTED([WITH_LIBXL], 1, [whether libxenlight driver is enabled])
+    if test "x$LIBXL_FIRMWARE_DIR" != "x"; then
+        AC_DEFINE_UNQUOTED([LIBXL_FIRMWARE_DIR], ["$LIBXL_FIRMWARE_DIR"], [directory containing Xen firmware blobs])
+    fi
+    if test "x$LIBXL_EXECBIN_DIR" != "x"; then
+        AC_DEFINE_UNQUOTED([LIBXL_EXECBIN_DIR], ["$LIBXL_EXECBIN_DIR"], [directory containing Xen libexec binaries])
+    fi
 fi
 AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
 
