@@ -3191,7 +3191,7 @@ struct remote_domain_ip_addr {
 
 struct remote_domain_interface {
     remote_nonnull_string name;
-    remote_nonnull_string hwaddr;
+    remote_string hwaddr;
     remote_domain_ip_addr addrs<REMOTE_DOMAIN_IP_ADDR_MAX>;
 };
 

@@ -7963,7 +7963,8 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
         if (VIR_STRDUP(iface->name, iface_ret->name) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(iface->hwaddr, iface_ret->hwaddr) < 0)
+        if (iface_ret->hwaddr &&
+            VIR_STRDUP(iface->hwaddr, *iface_ret->hwaddr) < 0)
             goto cleanup;
 
         if (iface_ret->addrs.addrs_len > REMOTE_DOMAIN_IP_ADDR_MAX) {

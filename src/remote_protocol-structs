@@ -2646,7 +2646,7 @@ struct remote_domain_ip_addr {
 };
 struct remote_domain_interface {
         remote_nonnull_string      name;
-        remote_nonnull_string      hwaddr;
+        remote_string              hwaddr;
         struct {
                 u_int              addrs_len;
                 remote_domain_ip_addr * addrs_val;

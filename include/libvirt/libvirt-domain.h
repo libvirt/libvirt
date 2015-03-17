@@ -3760,7 +3760,7 @@ typedef struct _virDomainInterface virDomainInterface;
 typedef virDomainInterface *virDomainInterfacePtr;
 struct _virDomainInterface {
     char *name;                     /* interface name */
-    char *hwaddr;                   /* hardware address */
+    char *hwaddr;                   /* hardware address, may be NULL */
     unsigned int naddrs;            /* number of items in @addrs */
     virDomainIPAddressPtr addrs;    /* array of IP addresses */
 };

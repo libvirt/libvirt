@@ -11460,7 +11460,8 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  *  ... do something with returned values, for example:
  *  for (i = 0; i < ifaces_count; i++) {
  *      printf("name: %s", ifaces[i]->name);
- *      printf(" hwaddr: %s", ifaces[i]->hwaddr);
+ *      if (ifaces[i]->hwaddr)
+ *          printf(" hwaddr: %s", ifaces[i]->hwaddr);
  *
  *      for (j = 0; j < ifaces[i]->naddrs; j++) {
  *          virDomainIPAddressPtr ip_addr = ifaces[i]->addrs + j;

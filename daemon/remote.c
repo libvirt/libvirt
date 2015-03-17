@@ -6525,7 +6525,9 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
         if ((VIR_STRDUP(iface_ret->name, iface->name)) < 0)
             goto cleanup;
 
-        if ((VIR_STRDUP(iface_ret->hwaddr, iface->hwaddr)) < 0)
+        if (iface->hwaddr &&
+            (VIR_ALLOC(iface_ret->hwaddr) < 0 ||
+             VIR_STRDUP(*iface_ret->hwaddr, iface->hwaddr) < 0))
             goto cleanup;
 
         if (iface->naddrs > REMOTE_DOMAIN_IP_ADDR_MAX) {
@@ -6561,7 +6563,10 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
         for (i = 0; i < ifaces_count; i++) {
             remote_domain_interface *iface_ret = &(ret->ifaces.ifaces_val[i]);
             VIR_FREE(iface_ret->name);
-            VIR_FREE(iface_ret->hwaddr);
+            if (iface_ret->hwaddr) {
+                VIR_FREE(*iface_ret->hwaddr);
+                VIR_FREE(iface_ret->hwaddr);
+            }
             for (j = 0; j < iface_ret->addrs.addrs_len; j++) {
                 remote_domain_ip_addr *ip_addr =
                     &(iface_ret->addrs.addrs_val[j]);
