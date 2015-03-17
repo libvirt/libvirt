@@ -1,0 +1,43 @@
+=head1 NAME
+
+virt-admin - client for admin interface of libvirt
+
+=head1 SYNOPSIS
+
+B<virt-admin>
+
+=head1 DESCRIPTION
+
+Libre ip_sum do { lor(); } sit; I'm @.
+
+=head1 EXIT STATUS
+
+It should be 0, really.
+
+=head1 BUGS
+
+None!
+
+=head1 AUTHORS
+
+  Please refer to the AUTHORS file distributed with libvirt.
+
+  Martin Kletzander <mkletzan@redhat.com>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2014-2015 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
+
+=head1 LICENSE
+
+virt-admin is distributed under the terms of the GNU GPL v2+.  This is
+free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+L<virsh(1)>, L<http://www.libvirt.org/>
+
+=cut

@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2013 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ SUBDIRS = . gnulib/lib include src daemon tools docs gnulib/tests \
   examples/dominfo examples/domsuspend examples/apparmor \
   examples/xml/nwfilter examples/openauth examples/systemtap \
   tools/wireshark examples/dommigrate \
-  examples/lxcconvert examples/domtop
+  examples/lxcconvert examples/domtop tools/virt-admin
 
 ACLOCAL_AMFLAGS = -I m4
 
