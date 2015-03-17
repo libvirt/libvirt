@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -457,7 +457,15 @@ int virNetDevBridgeCreate(const char *brname)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+#if defined(__linux__) && defined(HAVE_LIBNL)
+int virNetDevBridgeDelete(const char *brname)
+{
+    /* If netlink is available, use it, as it is successful at
+     * deleting a bridge even if it is currently IFF_UP.
+     */
+    return virNetlinkDelLink(brname);
+}
+#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
 int virNetDevBridgeDelete(const char *brname)
 {
     int fd = -1;
