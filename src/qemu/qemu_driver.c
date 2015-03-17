@@ -19652,7 +19652,7 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
     int n_leases = 0;
     size_t i, j;
     size_t ifaces_count = 0;
-    virNetworkPtr network;
+    virNetworkPtr network = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     virDomainInterfacePtr iface = NULL;
     virNetworkDHCPLeasePtr *leases = NULL;
@@ -19670,6 +19670,7 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
             continue;
 
         virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
+        virObjectUnref(network);
         network = virNetworkLookupByName(dom->conn,
                                          vm->def->nets[i]->data.network.name);
 
@@ -19720,6 +19721,7 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
     rv = ifaces_count;
 
  cleanup:
+    virObjectUnref(network);
     if (leases) {
         for (i = 0; i < n_leases; i++)
             virNetworkDHCPLeaseFree(leases[i]);
