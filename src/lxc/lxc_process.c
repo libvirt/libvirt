@@ -37,6 +37,7 @@
 #include "virnetdev.h"
 #include "virnetdevveth.h"
 #include "virnetdevbridge.h"
+#include "virnetdevopenvswitch.h"
 #include "virtime.h"
 #include "domain_nwfilter.h"
 #include "network/bridge_driver.h"

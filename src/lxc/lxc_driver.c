@@ -49,6 +49,7 @@
 #include "viralloc.h"
 #include "virnetdevbridge.h"
 #include "virnetdevveth.h"
+#include "virnetdevopenvswitch.h"
 #include "nodeinfo.h"
 #include "viruuid.h"
 #include "virstats.h"

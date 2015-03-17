@@ -62,6 +62,7 @@
 #include "virprocess.h"
 #include "virtime.h"
 #include "virnetdevtap.h"
+#include "virnetdevopenvswitch.h"
 #include "virnetdevmidonet.h"
 #include "virbitmap.h"
 #include "viratomic.h"

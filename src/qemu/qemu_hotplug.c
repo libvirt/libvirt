@@ -47,6 +47,7 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
+#include "virnetdevopenvswitch.h"
 #include "virnetdevmidonet.h"
 #include "device_conf.h"
 #include "virstoragefile.h"

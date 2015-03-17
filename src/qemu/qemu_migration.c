@@ -1,7 +1,7 @@
 /*
  * qemu_migration.c: QEMU migration handling
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,7 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virnetdevopenvswitch.h"
 #include "datatypes.h"
 #include "fdstream.h"
 #include "viruuid.h"
