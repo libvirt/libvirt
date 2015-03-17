@@ -2054,13 +2054,6 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
                 goto error;
 
             hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
-            if (!hwaddr) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("qemu agent didn't provide"
-                                 " 'hardware-address' field"));
-                goto error;
-            }
-
             if (VIR_STRDUP(iface->hwaddr, hwaddr) < 0)
                 goto error;
         }
