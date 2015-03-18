@@ -2251,7 +2251,8 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
 
 static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
 {
-    if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+    if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK &&
+        net->type != VIR_DOMAIN_NET_TYPE_BRIDGE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified network adapter type is not "
                          "supported by Parallels Cloud Server."));
