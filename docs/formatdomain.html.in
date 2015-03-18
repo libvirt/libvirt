@@ -2108,14 +2108,22 @@
         </dd>
       <dt><code>backingStore</code></dt>
       <dd>
-        This element describes the backing store used by the disk specified by
-        sibling <code>source</code> element. It is currently ignored on input
-        and only used for output to describe the detected backing chains.
-        <span class="since">Since 1.2.4</span>. An empty
-        <code>backingStore</code> element means the sibling source is
-        self-contained and is not based on any backing store. The following
-        attributes and sub-elements are supported in
-        <code>backingStore</code>:
+        This element describes the backing store used by the disk
+        specified by sibling <code>source</code> element. It is
+        currently ignored on input and only used for output to
+        describe the detected backing chains of running
+        domains <span class="since">since 1.2.4</span> (although a
+        future version of libvirt may start accepting chains on input,
+        or output information for offline domains). An
+        empty <code>backingStore</code> element means the sibling
+        source is self-contained and is not based on any backing
+        store. For backing chain information to be accurate, the
+        backing format must be correctly specified in the metadata of
+        each file of the chain (files created by libvirt satisfy this
+        property, but using existing external files for snapshot or
+        block copy operations requires the end user to pre-create the
+        file correctly). The following attributes and sub-elements are
+        supported in <code>backingStore</code>:
         <dl>
           <dt><code>type</code> attribute</dt>
           <dd>
