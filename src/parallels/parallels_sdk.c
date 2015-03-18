@@ -691,9 +691,6 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
     /* use device name, shown by prlctl as target device
      * for identifying network adapter in virDomainDefineXML */
-    pret = PrlVmDev_GetIndex(netAdapter, &netAdapterIndex);
-    prlsdkCheckRetGoto(pret, cleanup);
-
     pret = PrlVmDevNet_GetHostInterfaceName(netAdapter, NULL, &buflen);
     prlsdkCheckRetGoto(pret, cleanup);
 
@@ -701,6 +698,9 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         goto cleanup;
 
     pret = PrlVmDevNet_GetHostInterfaceName(netAdapter, net->ifname, &buflen);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_GetIndex(netAdapter, &netAdapterIndex);
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (isCt && netAdapterIndex == (PRL_UINT32) -1) {
@@ -740,6 +740,16 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
                                                net->data.network.name,
                                                &buflen);
         prlsdkCheckRetGoto(pret, cleanup);
+
+        /*
+         * We use VIR_DOMAIN_NET_TYPE_NETWORK for all network adapters
+         * except those whose Virtual Network Id differ from Parallels
+         * predefined ones such as PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME
+         * and PARALLELS_DONAIN_ROUTED_NETWORK_NAME
+         */
+        if (STRNEQ(net->data.network.name, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME))
+            net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
     }
 
     pret = PrlVmDev_IsConnected(netAdapter, &isConnected);
@@ -2630,10 +2640,14 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
     return macstr;
 }
 
-static int prlsdkAddNet(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
+static int prlsdkAddNet(PRL_HANDLE sdkdom,
+                        parallelsConnPtr privconn,
+                        virDomainNetDefPtr net)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
+    PRL_HANDLE vnet = PRL_INVALID_HANDLE;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
     int ret = -1;
     char macstr[PRL_MAC_STRING_BUFNAME];
 
@@ -2658,10 +2672,39 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
     pret = PrlVmDevNet_SetMacAddress(sdknet, macstr);
     prlsdkCheckRetGoto(pret, cleanup);
 
-        pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
-    if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
+            pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
+            prlsdkCheckRetGoto(pret, cleanup);
+        } else if (STREQ(net->data.network.name, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME)) {
+            pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
+            prlsdkCheckRetGoto(pret, cleanup);
+
+            pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
+            prlsdkCheckRetGoto(pret, cleanup);
+        }
+    } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        /*
+         * For this type of adapter we create a new
+         * Virtual Network assuming that bridge with given name exists
+         * Failing creating this means domain creation failure
+         */
+        pret = PrlVirtNet_Create(&vnet);
         prlsdkCheckRetGoto(pret, cleanup);
-    } else {
+
+        pret = PrlVirtNet_SetNetworkId(vnet, net->data.network.name);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlVirtNet_SetNetworkType(vnet, PVN_BRIDGED_ETHERNET);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        job = PrlSrv_AddVirtualNetwork(privconn->server, vnet, 0);
+        if (PRL_FAILED(pret = waitJob(job, privconn->jobTimeout)))
+            goto cleanup;
+
+        pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
+        prlsdkCheckRetGoto(pret, cleanup);
+
         pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
         prlsdkCheckRetGoto(pret, cleanup);
     }
@@ -2674,8 +2717,32 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
 
     ret = 0;
  cleanup:
+    PrlHandle_Free(vnet);
     PrlHandle_Free(sdknet);
     return ret;
+}
+
+static void prlsdkDelNet(parallelsConnPtr privconn, virDomainNetDefPtr net)
+{
+    PRL_RESULT pret;
+    PRL_HANDLE vnet = PRL_INVALID_HANDLE;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE)
+        return;
+
+    pret = PrlVirtNet_Create(&vnet);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVirtNet_SetNetworkId(vnet, net->data.network.name);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    PrlSrv_DeleteVirtualNetwork(privconn->server, vnet, 0);
+    if (PRL_FAILED(pret = waitJob(job, privconn->jobTimeout)))
+        goto cleanup;
+
+ cleanup:
+    PrlHandle_Free(vnet);
 }
 
 static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootDisk)
@@ -2849,7 +2916,8 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     return ret;
 }
 static int
-prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
+prlsdkDoApplyConfig(virConnectPtr conn,
+                    PRL_HANDLE sdkdom,
                     virDomainDefPtr def)
 {
     PRL_RESULT pret;
@@ -2924,8 +2992,8 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (prlsdkAddNet(sdkdom, def->nets[i]) < 0)
-            goto error;
+        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i]) < 0)
+           goto error;
     }
 
     for (i = 0; i < def->ndisks; i++) {
@@ -2951,6 +3019,9 @@ prlsdkDoApplyConfig(PRL_HANDLE sdkdom,
  error:
     VIR_FREE(mask);
 
+    for (i = 0; i < def->nnets; i++)
+        prlsdkDelNet(conn->privateData, def->nets[i]);
+
    return -1;
 }
 
@@ -2972,7 +3043,7 @@ prlsdkApplyConfig(virConnectPtr conn,
     if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
         return -1;
 
-    ret = prlsdkDoApplyConfig(sdkdom, new);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, new);
 
     if (ret == 0) {
         job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
@@ -3009,7 +3080,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
     pret = PrlVmCfg_SetDefaultConfig(sdkdom, srvconf, PVS_GUEST_VER_LIN_REDHAT, 0);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    ret = prlsdkDoApplyConfig(sdkdom, def);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, def);
     if (ret)
         goto cleanup;
 
@@ -3071,7 +3142,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 
     }
 
-    ret = prlsdkDoApplyConfig(sdkdom, def);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, def);
     if (ret)
         goto cleanup;
 
@@ -3090,6 +3161,10 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
 {
     parallelsDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
+    size_t i;
+
+    for (i = 0; i < dom->def->nnets; i++)
+       prlsdkDelNet(privconn, dom->def->nets[i]);
 
     job = PrlVm_Unreg(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
