@@ -107,6 +107,7 @@ virNetDevMacVLanCreate(const char *ifname,
     unsigned int recvbuflen;
     struct nl_msg *nl_msg;
     struct nlattr *linkinfo, *info_data;
+    char macstr[VIR_MAC_STRING_BUFLEN];
 
     if (virNetDevGetIndex(srcdev, &ifindex) < 0)
         return -1;
@@ -177,8 +178,9 @@ virNetDevMacVLanCreate(const char *ifname,
 
         default:
             virReportSystemError(-err->error,
-                                 _("error creating %s type of interface attach to %s"),
-                                 type, srcdev);
+                                 _("error creating %s interface %s@%s (%s)"),
+                                 type, ifname, srcdev,
+                                 virMacAddrFormat(macaddress, macstr));
             goto cleanup;
         }
         break;
