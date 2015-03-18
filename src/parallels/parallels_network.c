@@ -180,10 +180,11 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
     return ret;
 }
 
-static virNetworkObjPtr
+static int
 parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
 {
-    virNetworkObjPtr net;
+    int ret = -1;
+    virNetworkObjPtr net = NULL;
     virNetworkDefPtr def;
     const char *tmp;
     /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
@@ -214,13 +215,25 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     if (STREQ(tmp, PARALLELS_BRIDGED_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
 
-        if (parallelsGetBridgedNetInfo(def, jobj) < 0)
+        if (parallelsGetBridgedNetInfo(def, jobj) < 0) {
+
+            /* Only mandatory networks are required to be configured completely */
+            if (STRNEQ(def->name, PARALLELS_REQUIRED_BRIDGED_NETWORK))
+                ret = 0;
+
             goto cleanup;
+        }
     } else if (STREQ(tmp, PARALLELS_HOSTONLY_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
-        if (parallelsGetHostOnlyNetInfo(def, def->name) < 0)
+        if (parallelsGetHostOnlyNetInfo(def, def->name) < 0) {
+
+            /* Only mandatory networks are required to be configured completely */
+            if (STRNEQ(def->name, PARALLELS_REQUIRED_HOSTONLY_NETWORK))
+                ret = 0;
+
             goto cleanup;
+        }
     } else {
         parallelsParseError();
         goto cleanup;
@@ -228,16 +241,18 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
 
     if (!(net = virNetworkAssignDef(privconn->networks, def, false)))
         goto cleanup;
+    def = NULL;
     net->active = 1;
     net->autostart = 1;
-    return net;
+    ret = 0;
 
  cleanup:
+    virNetworkObjEndAPI(&net);
     virNetworkDefFree(def);
-    return NULL;
+    return ret;
 }
 
-static virNetworkObjPtr
+static int
 parallelsAddRoutedNetwork(parallelsConnPtr privconn)
 {
     virNetworkObjPtr net = NULL;
@@ -258,24 +273,23 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
     }
     def->uuid_specified = 1;
 
-    if (!(net = virNetworkAssignDef(privconn->networks, def, false))) {
-        virNetworkDefFree(def);
+    if (!(net = virNetworkAssignDef(privconn->networks, def, false)))
         goto cleanup;
-    }
+
     net->active = 1;
     net->autostart = 1;
+    virNetworkObjEndAPI(&net);
 
-    return net;
+    return 0;
 
  cleanup:
     virNetworkDefFree(def);
-    return NULL;
+    return -1;
 }
 
 static int parallelsLoadNetworks(parallelsConnPtr privconn)
 {
     virJSONValuePtr jobj, jobj2;
-    virNetworkObjPtr net = NULL;
     int ret = -1;
     int count;
     size_t i;
@@ -300,22 +314,17 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
             goto cleanup;
         }
 
-        net = parallelsLoadNetwork(privconn, jobj2);
-        if (!net)
+        if (parallelsLoadNetwork(privconn, jobj2) < 0)
             goto cleanup;
-        else
-            virNetworkObjEndAPI(&net);
-
     }
 
-    if (!(net = parallelsAddRoutedNetwork(privconn)))
+    if (parallelsAddRoutedNetwork(privconn) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
     virJSONValueFree(jobj);
-    virNetworkObjEndAPI(&net);
     return ret;
 }
 
