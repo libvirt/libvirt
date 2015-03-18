@@ -4752,7 +4752,11 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                 if (VIR_ALLOC(vcpupin) < 0)
                     goto cleanup;
 
-                vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN);
+                if (!(vcpupin->cpumask =
+                      virBitmapNew(VIR_DOMAIN_CPUMASK_LEN))) {
+                    VIR_FREE(vcpupin);
+                    goto cleanup;
+                }
                 virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
                 vcpupin->id = i;
                 if (VIR_APPEND_ELEMENT_COPY(vm->def->cputune.vcpupin,
@@ -4987,7 +4991,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             /* remove vcpupin entries for vcpus that were unplugged */
             if (nvcpus < persistentDef->vcpus) {
-                for (i = persistentDef->vcpus; i >= nvcpus; i--)
+                for (i = persistentDef->vcpus - 1; i >= nvcpus; i--)
                     virDomainPinDel(&persistentDef->cputune.vcpupin,
                                     &persistentDef->cputune.nvcpupin,
                                     i);
