@@ -22,6 +22,9 @@ module Libvirtd_qemu =
    let int_entry       (kw:string) = [ key kw . value_sep . int_val ]
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
+   let unlimited_val =  del /\"/ "\"" . store /unlimited/ . del /\"/ "\""
+   let limits_entry (kw:string) = [ key kw . value_sep . unlimited_val ] |  [ key kw . value_sep . int_val ]
+
 
    (* Config entry grouped by function - same order as example config *)
    let vnc_entry = str_entry "vnc_listen"
@@ -72,6 +75,7 @@ module Libvirtd_qemu =
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | int_entry "max_files"
+                 | limits_entry "max_core"
                  | str_entry "stdio_handler"
 
    let device_entry = bool_entry "mac_filter"

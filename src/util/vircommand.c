@@ -124,6 +124,8 @@ struct _virCommand {
     unsigned long long maxMemLock;
     unsigned int maxProcesses;
     unsigned int maxFiles;
+    bool setMaxCore;
+    unsigned long long maxCore;
 
     uid_t uid;
     gid_t gid;
@@ -687,6 +689,9 @@ virExec(virCommandPtr cmd)
         goto fork_error;
     if (virProcessSetMaxFiles(0, cmd->maxFiles) < 0)
         goto fork_error;
+    if (cmd->setMaxCore &&
+        virProcessSetMaxCoreSize(0, cmd->maxCore) < 0)
+        goto fork_error;
 
     if (cmd->hook) {
         VIR_DEBUG("Run hook %p %p", cmd->hook, cmd->opaque);
@@ -1103,6 +1108,15 @@ virCommandSetMaxFiles(virCommandPtr cmd, unsigned int files)
         return;
 
     cmd->maxFiles = files;
+}
+
+void virCommandSetMaxCoreSize(virCommandPtr cmd, unsigned long long bytes)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->maxCore = bytes;
+    cmd->setMaxCore = true;
 }
 
 void virCommandSetUmask(virCommandPtr cmd, int mask)

@@ -398,6 +398,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     char **controllers = NULL;
     char **hugetlbfs = NULL;
     char **nvram = NULL;
+    char *corestr = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -638,6 +639,21 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueUInt(conf, "max_files", &cfg->maxFiles) < 0)
         goto cleanup;
 
+    if (virConfGetValueType(conf, "max_core") == VIR_CONF_STRING) {
+        if (virConfGetValueString(conf, "max_core", &corestr) < 0)
+            goto cleanup;
+        if (STREQ(corestr, "unlimited")) {
+            cfg->maxCore = ULLONG_MAX;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown core size '%s'"),
+                           corestr);
+            goto cleanup;
+        }
+    } else if (virConfGetValueULLong(conf, "max_core", &cfg->maxCore) < 0) {
+        goto cleanup;
+    }
+
     if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
@@ -720,6 +736,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virStringFreeList(controllers);
     virStringFreeList(hugetlbfs);
     virStringFreeList(nvram);
+    VIR_FREE(corestr);
     VIR_FREE(user);
     VIR_FREE(group);
     virConfFree(conf);

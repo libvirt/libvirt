@@ -62,6 +62,7 @@ module Test_libvirtd_qemu =
 { "set_process_name" = "1" }
 { "max_processes" = "0" }
 { "max_files" = "0" }
+{ "max_core" = "unlimited" }
 { "mac_filter" = "1" }
 { "relaxed_acs_check" = "1" }
 { "allow_disk_format_probing" = "1" }

@@ -75,6 +75,7 @@ int virProcessSetNamespaces(size_t nfdlist,
 int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes);
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
+int virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes);
 
 int virProcessGetMaxMemLock(pid_t pid, unsigned long long *bytes);
 

@@ -914,6 +914,45 @@ virProcessSetMaxFiles(pid_t pid ATTRIBUTE_UNUSED, unsigned int files)
 }
 #endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_NOFILE)) */
 
+#if HAVE_SETRLIMIT && defined(RLIMIT_CORE)
+int
+virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes)
+{
+    struct rlimit rlim;
+
+    rlim.rlim_cur = rlim.rlim_max = bytes;
+    if (pid == 0) {
+        if (setrlimit(RLIMIT_CORE, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit core file size to %llu"),
+                                 bytes);
+            return -1;
+        }
+    } else {
+        if (virProcessPrLimit(pid, RLIMIT_CORE, &rlim, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot limit core file size "
+                                   "of process %lld to %llu"),
+                                 (long long int)pid, bytes);
+            return -1;
+        }
+    }
+    return 0;
+}
+#else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_CORE)) */
+int
+virProcessSetMaxCoreSize(pid_t pid ATTRIBUTE_UNUSED,
+                         unsigned long long bytes)
+{
+    if (bytes == 0)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_CORE)) */
+
+
 #ifdef __linux__
 /*
  * Port of code from polkitunixprocess.c under terms
