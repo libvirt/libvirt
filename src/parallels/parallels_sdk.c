@@ -2660,7 +2660,9 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     pret = PrlVmDev_SetEnabled(sdknet, 1);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetConnected(sdknet, net->linkstate);
+    pret = PrlVmDev_SetConnected(sdknet, net->linkstate !=
+                                 VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN);
+
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (net->ifname) {
