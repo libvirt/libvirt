@@ -3096,6 +3096,9 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
     pret = PrlVmCfg_SetDefaultConfig(sdkdom, srvconf, PVS_GUEST_VER_LIN_REDHAT, 0);
     prlsdkCheckRetGoto(pret, cleanup);
 
+    pret = PrlVmCfg_SetOfflineManagementEnabled(sdkdom, 0);
+    prlsdkCheckRetGoto(pret, cleanup);
+
     ret = prlsdkDoApplyConfig(conn, sdkdom, def);
     if (ret)
         goto cleanup;
