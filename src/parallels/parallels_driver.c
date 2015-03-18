@@ -168,14 +168,24 @@ parallelsDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return 0;
 }
 
-
 static int
-parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                                   const virDomainDef *def ATTRIBUTE_UNUSED,
                                   virCapsPtr caps ATTRIBUTE_UNUSED,
                                   void *opaque ATTRIBUTE_UNUSED)
 {
-    return 0;
+    int ret = -1;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_NET &&
+        (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
+         dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
+        !dev->data.net->model &&
+        VIR_STRDUP(dev->data.net->model, "e1000") < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 

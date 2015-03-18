@@ -2674,6 +2674,20 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     pret = PrlVmDevNet_SetMacAddress(sdknet, macstr);
     prlsdkCheckRetGoto(pret, cleanup);
 
+    if (STREQ(net->model, "rtl8139")) {
+        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);
+    } else if (STREQ(net->model, "e1000")) {
+        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_E1000);
+    } else if (STREQ(net->model, "virtio")) {
+        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_VIRTIO);
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified network adapter model is not "
+                         "supported by Parallels Cloud Server."));
+        goto cleanup;
+    }
+    prlsdkCheckRetGoto(pret, cleanup);
+
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
             pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
