@@ -6896,6 +6896,166 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "iothreadadd" command
+ */
+static const vshCmdInfo info_iothreadadd[] = {
+    {.name = "help",
+     .data = N_("add an IOThread to the guest domain")
+    },
+    {.name = "desc",
+     .data = N_("Add an IOThread to the guest domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_iothreadadd[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "id",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("iothread for the new IOThread")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int iothread_id = 0;
+    bool ret = false;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptInt(cmd, "id", &iothread_id) < 0) {
+        vshError(ctl, "%s", _("Unable to parse integer parameter"));
+        goto cleanup;
+    }
+    if (iothread_id <= 0) {
+        vshError(ctl, _("Invalid IOThread id value: '%d'"), iothread_id);
+        goto cleanup;
+    }
+
+    if (virDomainAddIOThread(dom, iothread_id, flags) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "iothreaddel" command
+ */
+static const vshCmdInfo info_iothreaddel[] = {
+    {.name = "help",
+     .data = N_("delete an IOThread from the guest domain")
+    },
+    {.name = "desc",
+     .data = N_("Delete an IOThread from the guest domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_iothreaddel[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "id",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("iothread_id for the IOThread to delete")
+    },
+    {.name = "config",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect next boot")
+    },
+    {.name = "live",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect running domain")
+    },
+    {.name = "current",
+     .type = VSH_OT_BOOL,
+     .help = N_("affect current domain")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int iothread_id = 0;
+    bool ret = false;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptInt(cmd, "id", &iothread_id) < 0) {
+        vshError(ctl, "%s", _("Unable to parse integer parameter"));
+        goto cleanup;
+    }
+    if (iothread_id <= 0) {
+        vshError(ctl, _("Invalid IOThread id value: '%d'"), iothread_id);
+        goto cleanup;
+    }
+
+    if (virDomainDelIOThread(dom, iothread_id, flags) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "cpu-compare" command
  */
 static const vshCmdInfo info_cpu_compare[] = {
@@ -12843,6 +13003,18 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdIOThreadPin,
      .opts = opts_iothreadpin,
      .info = info_iothreadpin,
+     .flags = 0
+    },
+    {.name = "iothreadadd",
+     .handler = cmdIOThreadAdd,
+     .opts = opts_iothreadadd,
+     .info = info_iothreadadd,
+     .flags = 0
+    },
+    {.name = "iothreaddel",
+     .handler = cmdIOThreadDel,
+     .opts = opts_iothreaddel,
+     .info = info_iothreaddel,
      .flags = 0
     },
     {.name = "send-key",
