@@ -131,6 +131,7 @@ EXTRA_DIST =		\
 	vircaps2xmldata \
 	vboxsnapshotxmldata \
 	virsh-uriprecedence \
+	vircgroupdata \
 	virfiledata \
 	virpcitestdata \
 	virscsidata \
