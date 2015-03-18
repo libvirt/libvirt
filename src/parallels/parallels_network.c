@@ -211,12 +211,12 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
     }
 
-    if (STREQ(tmp, "bridged")) {
+    if (STREQ(tmp, PARALLELS_BRIDGED_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
 
         if (parallelsGetBridgedNetInfo(def, jobj) < 0)
             goto cleanup;
-    } else if (STREQ(tmp, "host-only")) {
+    } else if (STREQ(tmp, PARALLELS_HOSTONLY_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
         if (parallelsGetHostOnlyNetInfo(def, def->name) < 0)
@@ -248,7 +248,7 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
 
     def->forward.type = VIR_NETWORK_FORWARD_ROUTE;
 
-    if (VIR_STRDUP(def->name, PARALLELS_ROUTED_NETWORK_NAME) < 0)
+    if (VIR_STRDUP(def->name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
         goto cleanup;
 
     if (virUUIDParse(PARALLELS_ROUTED_NETWORK_UUID, def->uuid) < 0) {

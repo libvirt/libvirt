@@ -47,7 +47,13 @@
                        _("no domain with matching uuid '%s'"), uuidstr); \
     } while (0)
 
-# define PARALLELS_ROUTED_NETWORK_NAME   "Routed"
+# define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "Routed"
+# define PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME  "Bridged"
+
+# define PARALLELS_REQUIRED_HOSTONLY_NETWORK "Host-Only"
+# define PARALLELS_HOSTONLY_NETWORK_TYPE "host-only"
+# define PARALLELS_REQUIRED_BRIDGED_NETWORK  "Bridged"
+# define PARALLELS_BRIDGED_NETWORK_TYPE  "bridged"
 
 struct _parallelsConn {
     virMutex lock;

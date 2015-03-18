@@ -708,7 +708,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
          * always up */
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
         if (VIR_STRDUP(net->data.network.name,
-                       PARALLELS_ROUTED_NETWORK_NAME) < 0)
+                       PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
             goto cleanup;
         return 0;
     }
@@ -727,7 +727,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
     if (emulatedType == PNA_ROUTED) {
         if (VIR_STRDUP(net->data.network.name,
-                       PARALLELS_ROUTED_NETWORK_NAME) < 0)
+                       PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
             goto cleanup;
     } else {
         pret = PrlVmDevNet_GetVirtualNetworkId(netAdapter, NULL, &buflen);
@@ -2658,8 +2658,8 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
     pret = PrlVmDevNet_SetMacAddress(sdknet, macstr);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (STREQ(net->data.network.name, PARALLELS_ROUTED_NETWORK_NAME)) {
         pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
+    if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
         prlsdkCheckRetGoto(pret, cleanup);
     } else {
         pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
