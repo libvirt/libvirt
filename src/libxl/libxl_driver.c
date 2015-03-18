@@ -2222,22 +2222,16 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
             goto cleanup;
         if (!(def = xenParseXL(conf,
                                cfg->caps,
-                               cfg->verInfo->xen_version_major))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("parsing xl config failed"));
+                               cfg->verInfo->xen_version_major)))
             goto cleanup;
-        }
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
         if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
             goto cleanup;
 
         if (!(def = xenParseXM(conf,
                                cfg->verInfo->xen_version_major,
-                               cfg->caps))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("parsing xm config failed"));
+                               cfg->caps)))
             goto cleanup;
-        }
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_SEXPR)) {
         /* only support latest xend config format */
         if (!(def = xenParseSxprString(nativeConfig,
