@@ -127,6 +127,7 @@ virDomainAuditDisk;
 virDomainAuditFS;
 virDomainAuditHostdev;
 virDomainAuditInit;
+virDomainAuditIOThread;
 virDomainAuditMemory;
 virDomainAuditNet;
 virDomainAuditNetDevice;

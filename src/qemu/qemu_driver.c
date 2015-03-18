@@ -6230,6 +6230,370 @@ qemuDomainPinIOThread(virDomainPtr dom,
     return ret;
 }
 
+static int
+qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             unsigned int iothread_id)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *alias = NULL;
+    size_t idx;
+    int rc = -1;
+    int ret = -1;
+    unsigned int orig_niothreads = vm->def->iothreads;
+    unsigned int exp_niothreads = vm->def->iothreads;
+    int new_niothreads = 0;
+    qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
+    virCgroupPtr cgroup_iothread = NULL;
+    char *mem_mask = NULL;
+    virDomainIOThreadIDDefPtr iothrid;
+    virBitmapPtr cpumask;
+
+    if (virDomainIOThreadIDFind(vm->def, iothread_id)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("an IOThread is already using iothread_id '%u'"),
+                       iothread_id);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&alias, "iothread%u", iothread_id) < 0)
+        return -1;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorAddObject(priv->mon, "iothread", alias, NULL);
+    exp_niothreads++;
+    if (rc < 0)
+        goto exit_monitor;
+
+    /* After hotplugging the IOThreads we need to re-detect the
+     * IOThreads thread_id's, adjust the cgroups, thread affinity,
+     * and add the thread_id to the vm->def->iothreadids list.
+     */
+    if ((new_niothreads = qemuMonitorGetIOThreads(priv->mon,
+                                                  &new_iothreads)) < 0)
+        goto exit_monitor;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
+
+    if (new_niothreads != exp_niothreads) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("got wrong number of IOThread ids from QEMU monitor. "
+                         "got %d, wanted %d"),
+                       new_niothreads, exp_niothreads);
+        vm->def->iothreads = new_niothreads;
+        goto cleanup;
+    }
+    vm->def->iothreads = exp_niothreads;
+
+    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
+        VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+                                            priv->autoNodeset,
+                                            &mem_mask, -1) < 0)
+        goto cleanup;
+
+
+    /*
+     * If we've successfully added an IOThread, find out where we added it
+     * in the QEMU IOThread list, so we can add it to our iothreadids list
+     */
+    for (idx = 0; idx < new_niothreads; idx++) {
+        if (STREQ(new_iothreads[idx]->name, alias))
+            break;
+    }
+
+    if (idx == new_niothreads) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find new IOThread '%u' in QEMU monitor."),
+                       iothread_id);
+        goto cleanup;
+    }
+
+    if (!(iothrid = virDomainIOThreadIDAdd(vm->def, iothread_id)))
+        goto cleanup;
+
+    iothrid->thread_id = new_iothreads[idx]->thread_id;
+
+    /* Add IOThread to cgroup if present */
+    if (priv->cgroup) {
+        cgroup_iothread =
+            qemuDomainAddCgroupForThread(priv->cgroup,
+                                         VIR_CGROUP_THREAD_IOTHREAD,
+                                         iothread_id, mem_mask,
+                                         iothrid->thread_id);
+        if (!cgroup_iothread)
+            goto cleanup;
+    }
+
+    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+        cpumask = priv->autoCpuset;
+    else
+        cpumask = vm->def->cpumask;
+
+    if (cpumask) {
+        if (qemuDomainHotplugPinThread(cpumask, iothread_id,
+                                       iothrid->thread_id, cgroup_iothread) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (new_iothreads) {
+        for (idx = 0; idx < new_niothreads; idx++)
+            qemuMonitorIOThreadInfoFree(new_iothreads[idx]);
+        VIR_FREE(new_iothreads);
+    }
+    VIR_FREE(mem_mask);
+    virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
+                           "update", rc == 0);
+    virCgroupFree(&cgroup_iothread);
+    VIR_FREE(alias);
+    return ret;
+
+ exit_monitor:
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    goto cleanup;
+}
+
+static int
+qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             unsigned int iothread_id)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t idx;
+    char *alias = NULL;
+    int rc = -1;
+    int ret = -1;
+    unsigned int orig_niothreads = vm->def->iothreads;
+    unsigned int exp_niothreads = vm->def->iothreads;
+    int new_niothreads = 0;
+    qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
+
+    /* Normally would use virDomainIOThreadIDFind, but we need the index
+     * from whence to delete for later...
+     */
+    for (idx = 0; idx < vm->def->niothreadids; idx++) {
+        if (iothread_id == vm->def->iothreadids[idx]->iothread_id)
+            break;
+    }
+
+    if (idx == vm->def->niothreadids) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find IOThread '%u' in iothreadids list"),
+                       iothread_id);
+        return -1;
+    }
+
+    if (virAsprintf(&alias, "iothread%u", iothread_id) < 0)
+        return -1;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorDelObject(priv->mon, alias);
+    exp_niothreads--;
+    if (rc < 0)
+        goto exit_monitor;
+
+    if ((new_niothreads = qemuMonitorGetIOThreads(priv->mon,
+                                                  &new_iothreads)) < 0)
+        goto exit_monitor;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
+
+    if (new_niothreads != exp_niothreads) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("got wrong number of IOThread ids from QEMU monitor. "
+                         "got %d, wanted %d"),
+                       new_niothreads, exp_niothreads);
+        vm->def->iothreads = new_niothreads;
+        goto cleanup;
+    }
+    vm->def->iothreads = exp_niothreads;
+
+    virDomainIOThreadIDDel(vm->def, iothread_id);
+
+    virDomainIOThreadSchedDelId(vm->def, iothread_id);
+
+    if (qemuDomainDelCgroupForThread(priv->cgroup,
+                                     VIR_CGROUP_THREAD_IOTHREAD,
+                                     iothread_id) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (new_iothreads) {
+        for (idx = 0; idx < new_niothreads; idx++)
+            qemuMonitorIOThreadInfoFree(new_iothreads[idx]);
+        VIR_FREE(new_iothreads);
+    }
+    virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
+                           "update", rc == 0);
+    VIR_FREE(alias);
+    return ret;
+
+ exit_monitor:
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    goto cleanup;
+}
+
+static int
+qemuDomainChgIOThread(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      unsigned int iothread_id,
+                      bool add,
+                      unsigned int flags)
+{
+    virQEMUDriverConfigPtr cfg = NULL;
+    virCapsPtr caps = NULL;
+    qemuDomainObjPrivatePtr priv;
+    virDomainDefPtr persistentDef;
+    int ret = -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        goto endjob;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot change IOThreads for an inactive domain"));
+            goto endjob;
+        }
+
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("IOThreads not supported with this binary"));
+            goto endjob;
+        }
+
+        if (add) {
+            if (qemuDomainHotplugAddIOThread(driver, vm, iothread_id) < 0)
+                goto endjob;
+        } else {
+            if (qemuDomainHotplugDelIOThread(driver, vm, iothread_id) < 0)
+                goto endjob;
+        }
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            goto endjob;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (add) {
+            if (!virDomainIOThreadIDAdd(persistentDef, iothread_id))
+                goto endjob;
+
+            persistentDef->iothreads++;
+        } else {
+            virDomainIOThreadIDDefPtr iothrid;
+            if (!(iothrid = virDomainIOThreadIDFind(persistentDef,
+                                                    iothread_id))) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("cannot find IOThread '%u' in persistent "
+                                 "iothreadids"),
+                               iothread_id);
+                goto cleanup;
+            }
+
+            virDomainIOThreadIDDel(persistentDef, iothread_id);
+            virDomainIOThreadSchedDelId(persistentDef, iothread_id);
+            persistentDef->iothreads--;
+        }
+
+        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+            goto endjob;
+    }
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virObjectUnref(caps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+static int
+qemuDomainAddIOThread(virDomainPtr dom,
+                      unsigned int iothread_id,
+                      unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainAddIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    ret = qemuDomainChgIOThread(driver, vm, iothread_id, true, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
+qemuDomainDelIOThread(virDomainPtr dom,
+                      unsigned int iothread_id,
+                      unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+    size_t i;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainDelIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
+           goto cleanup;
+
+    /* If there is a disk using the IOThread to be removed, then fail. */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i]->iothread == iothread_id) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot remove IOThread %u since it "
+                             "is being used by disk '%s'"),
+                           iothread_id, vm->def->disks[i]->dst);
+            goto cleanup;
+        }
+    }
+
+    ret = qemuDomainChgIOThread(driver, vm, iothread_id, false, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -19967,6 +20331,8 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetMaxVcpus = qemuDomainGetMaxVcpus, /* 0.4.4 */
     .domainGetIOThreadInfo = qemuDomainGetIOThreadInfo, /* 1.2.14 */
     .domainPinIOThread = qemuDomainPinIOThread, /* 1.2.14 */
+    .domainAddIOThread = qemuDomainAddIOThread, /* 1.2.15 */
+    .domainDelIOThread = qemuDomainDelIOThread, /* 1.2.15 */
     .domainGetSecurityLabel = qemuDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemuNodeGetSecurityModel, /* 0.6.1 */

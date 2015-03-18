@@ -790,6 +790,15 @@ virDomainAuditVcpu(virDomainObjPtr vm,
     return virDomainAuditResource(vm, "vcpu", oldvcpu, newvcpu, reason, success);
 }
 
+void
+virDomainAuditIOThread(virDomainObjPtr vm,
+                       unsigned int oldiothread, unsigned int newiothread,
+                       const char *reason, bool success)
+{
+    return virDomainAuditResource(vm, "iothread", oldiothread, newiothread,
+                                  reason, success);
+}
+
 static void
 virDomainAuditLifecycle(virDomainObjPtr vm, const char *op,
                         const char *reason, bool success)
