@@ -1604,8 +1604,9 @@ int qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
 {
     qemuDomainObjExitMonitorInternal(driver, obj);
     if (!virDomainObjIsActive(obj)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("domain is no longer running"));
+        if (!virGetLastError())
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("domain is no longer running"));
         return -1;
     }
     return 0;
