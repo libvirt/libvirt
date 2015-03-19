@@ -29,7 +29,7 @@ There are a number of locks on various objects
     methods.  However, preferred method is qemuDomObjFromDomain() that uses
     virDomainFindByUUIDRef() which also increases the reference counter and
     finds the domain in the domain list without blocking all other lookups.
-    When the domain is locked and the reference increased, the prefered way of
+    When the domain is locked and the reference increased, the preferred way of
     decrementing the reference counter and unlocking the domain is using the
     qemuDomObjEndAPI() function.
 

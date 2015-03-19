@@ -3,7 +3,7 @@
 <!-- ***
   This file has been reduced for ineffective packets.
   Real output contains more and more elements, but structure
-  and hierarchy of XML is same as this exmaple.
+  and hierarchy of XML is same as this example.
 *** -->
 <!-- You can find pdml2html.xsl in /usr/share/wireshark or at http://anonsvn.wireshark.org/trunk/wireshark/pdml2html.xsl. -->
 <pdml version="0" creator="wireshark/1.10.2" time="Thu Sep 19 18:09:24 2013" capture_file="">

@@ -4,7 +4,7 @@
          xmlns:v="http://netcf.org/xml/version/1.0"
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <!-- Versions for this schema are simple integers that are incremented
-       everytime a changed (but backwards compatible) version
+       every time a changed (but backwards compatible) version
        is released. The current version is indicated with the v:serial
        attribute on the start element.
   -->

@@ -66,9 +66,9 @@
     <p>
       The libvirt security team operates a policy of
       <a href="http://en.wikipedia.org/wiki/Responsible_disclosure">responsible disclosure</a>.
-      As such any security issue reported, that is not already publically disclosed
+      As such any security issue reported, that is not already publicly disclosed
       elsewhere, will have an embargo date assigned. Members of the security team agree
-      not to publically disclose any details of the security issue until the embargo
+      not to publicly disclose any details of the security issue until the embargo
       date expires.
     </p>
 
@@ -77,7 +77,7 @@
       are two weeks or less in duration. If a problem is identified
       with a proposed patch for a security issue, requiring further
       investigation and bug fixing, the embargo clock may be restarted.
-      In exceptional circumstances longer initial embargos may be
+      In exceptional circumstances longer initial embargoes may be
       negotiated by mutual agreement between members of the security
       team and other relevant parties to the problem. Any such extended
       embargoes will aim to be at most one month in duration.

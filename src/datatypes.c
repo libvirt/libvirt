@@ -377,7 +377,7 @@ virInterfaceDispose(void *obj)
  * @name: pointer to the storage pool name
  * @uuid: pointer to the uuid
  * @privateData: pointer to driver specific private data
- * @freeFunc: private data cleanup function pointer specfic to driver
+ * @freeFunc: private data cleanup function pointer specific to driver
  *
  * Allocates a new storage pool object. When the object is no longer needed,
  * virObjectUnref() must be called in order to not leak data.
@@ -453,7 +453,7 @@ virStoragePoolDispose(void *obj)
  * @name: pointer to the storage vol name
  * @key: pointer to unique key of the volume
  * @privateData: pointer to driver specific private data
- * @freeFunc: private data cleanup function pointer specfic to driver
+ * @freeFunc: private data cleanup function pointer specific to driver
  *
  * Allocates a new storage volume object. When the object is no longer needed,
  * virObjectUnref() must be called in order to not leak data.

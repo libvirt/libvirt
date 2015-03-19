@@ -49,7 +49,7 @@ probe unlock = library.function("virMutexUnlock")
 probe begin
 {
     %( $# > 1 %? println("error: Too many parameters"); exit();
-       %: print("Started, press ^C when the proccess hangs\n"); %)
+       %: print("Started, press ^C when the process hangs\n"); %)
 }
 
 probe lock.call

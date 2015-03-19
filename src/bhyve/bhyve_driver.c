@@ -1160,14 +1160,14 @@ bhyveStateCleanup(void)
 }
 
 static int
-bhyveStateInitialize(bool priveleged,
+bhyveStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
     virConnectPtr conn = NULL;
 
-    if (!priveleged) {
-        VIR_INFO("Not running priveleged, disabling driver");
+    if (!privileged) {
+        VIR_INFO("Not running privileged, disabling driver");
         return 0;
     }
 

@@ -469,7 +469,7 @@ xenFormatXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
 
 /*
- * Convert a virDomainDef object inot an XM config record.
+ * Convert a virDomainDef object into an XM config record.
  */
 virConfPtr
 xenFormatXM(virConnectPtr conn,

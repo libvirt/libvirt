@@ -945,7 +945,7 @@ virFirewallApply(virFirewallPtr firewall)
     VIR_DEBUG("Applying groups for %p", firewall);
     for (i = 0; i < firewall->ngroups; i++) {
         if (virFirewallApplyGroup(firewall, i) < 0) {
-            VIR_DEBUG("Rolling back groups upto %zu for %p", i, firewall);
+            VIR_DEBUG("Rolling back groups up to %zu for %p", i, firewall);
             size_t first = i;
             virErrorPtr saved_error = virSaveLastError();
 

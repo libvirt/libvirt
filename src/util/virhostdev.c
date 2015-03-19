@@ -569,7 +569,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
 
         /* The device is in use by other active domain if
          * the dev is in list activePCIHostdevs. VFIO devices
-         * belonging to same iommu group cant be shared
+         * belonging to same iommu group can't be shared
          * across guests.
          */
         if (STREQ(virPCIDeviceGetStubDriver(dev), "vfio-pci")) {

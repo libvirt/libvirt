@@ -1266,7 +1266,7 @@ virQEMUCapsComputeCmdFlags(const char *help,
      * promises to keep the human interface stable, but requests that
      * we use QMP (the JSON interface) for everything.  If the user
      * forgot to include YAJL libraries when building their own
-     * libvirt but is targetting a newer qemu, we are better off
+     * libvirt but is targeting a newer qemu, we are better off
      * telling them to recompile (the spec file includes the
      * dependency, so distros won't hit this).  This check is
      * also in m4/virt-yajl.m4 (see $with_yajl).  */

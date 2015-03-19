@@ -6357,7 +6357,7 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
  * @open_write: open the file for writing (for updates)
  * @unlink_corrupt: remove the image file if it is corrupted
  *
- * Returns the opened fd of the save image file and fills the apropriate fields
+ * Returns the opened fd of the save image file and fills the appropriate fields
  * on success. On error returns -1 on most failures, -3 if corrupt image was
  * unlinked (no error raised).
  */

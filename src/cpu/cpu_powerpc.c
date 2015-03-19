@@ -102,7 +102,7 @@ ppcModelFindPVR(const struct ppc_map *map,
     /* PowerPC Processor Version Register is interpreted as follows :
      * Higher order 16 bits : Power ISA generation.
      * Lower order 16 bits : CPU chip version number.
-     * If the exact CPU isnt found, return the nearest matching CPU generation
+     * If the exact CPU isn't found, return the nearest matching CPU generation
      */
     if (pvr & 0x0000FFFFul)
         return ppcModelFindPVR(map, (pvr & 0xFFFF0000ul));

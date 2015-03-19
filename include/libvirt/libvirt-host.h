@@ -218,7 +218,7 @@ typedef enum {
  *
  * The types virSchedParameter, virBlkioParameter, and
  * virMemoryParameter are aliases of this type, for use when
- * targetting libvirt earlier than 0.9.2.
+ * targeting libvirt earlier than 0.9.2.
  */
 typedef struct _virTypedParameter virTypedParameter;
 

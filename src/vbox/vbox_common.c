@@ -7413,7 +7413,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
     /* filter out flag options that will produce 0 results in vbox driver:
      * - managed save: vbox guests don't have managed save images
      * - autostart: vbox doesn't support autostarting guests
-     * - persistance: vbox doesn't support transient guests
+     * - persistence: vbox doesn't support transient guests
      */
     if ((MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) &&
          !MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT)) ||

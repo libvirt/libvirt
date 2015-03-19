@@ -523,7 +523,7 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
  * @ap: input values to pass to the operation
  * @...: input values to pass to the operation
  *
- * internal routine to run a POST RPC operation to the Xen Daemon targetting
+ * internal routine to run a POST RPC operation to the Xen Daemon targeting
  * a given domain.
  *
  * Returns 0 in case of success, -1 in case of failure.

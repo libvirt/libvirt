@@ -354,7 +354,7 @@ virProcessKillPainfully(pid_t pid, bool force)
     /* This loop sends SIGTERM, then waits a few iterations (10 seconds)
      * to see if it dies. If the process still hasn't exited, and
      * @force is requested, a SIGKILL will be sent, and this will
-     * wait upto 5 seconds more for the process to exit before
+     * wait up to 5 seconds more for the process to exit before
      * returning.
      *
      * Note that setting @force could result in dataloss for the process.
