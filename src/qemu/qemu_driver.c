@@ -4635,9 +4635,44 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     VIR_FREE(processEvent);
 }
 
-static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  unsigned int nvcpus)
+static virCgroupPtr
+qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
+                             virCgroupThreadName nameval,
+                             int index,
+                             char *mem_mask,
+                             pid_t pid)
+{
+    virCgroupPtr new_cgroup = NULL;
+    int rv = -1;
+
+    /* Create cgroup */
+    if (virCgroupNewThread(cgroup, nameval, index, true, &new_cgroup) < 0)
+        return NULL;
+
+    if (mem_mask && virCgroupSetCpusetMems(new_cgroup, mem_mask) < 0)
+        goto error;
+
+    /* Add pid/thread to the cgroup */
+    rv = virCgroupAddTask(new_cgroup, pid);
+    if (rv < 0) {
+        virReportSystemError(-rv,
+                             _("unable to add id %d task %d to cgroup"),
+                             index, pid);
+        virCgroupRemove(new_cgroup);
+        goto error;
+    }
+
+    return new_cgroup;
+
+ error:
+    virCgroupFree(&new_cgroup);
+    return NULL;
+}
+
+static int
+qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       unsigned int nvcpus)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
@@ -4726,26 +4761,13 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     if (nvcpus > oldvcpus) {
         for (i = oldvcpus; i < nvcpus; i++) {
             if (priv->cgroup) {
-                int rv = -1;
-                /* Create cgroup for the onlined vcpu */
-                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
-                                       true, &cgroup_vcpu) < 0)
+                cgroup_vcpu =
+                    qemuDomainAddCgroupForThread(priv->cgroup,
+                                                 VIR_CGROUP_THREAD_VCPU,
+                                                 i, mem_mask,
+                                                 cpupids[i]);
+                if (!cgroup_vcpu)
                     goto cleanup;
-
-                if (mem_mask &&
-                    virCgroupSetCpusetMems(cgroup_vcpu, mem_mask) < 0)
-                    goto cleanup;
-
-                /* Add vcpu thread to the cgroup */
-                rv = virCgroupAddTask(cgroup_vcpu, cpupids[i]);
-                if (rv < 0) {
-                    virReportSystemError(-rv,
-                                         _("unable to add vcpu %zu task %d to cgroup"),
-                                         i, cpupids[i]);
-                    virCgroupRemove(cgroup_vcpu);
-                    goto cleanup;
-                }
-
             }
 
             /* Inherit def->cpuset */
