@@ -4670,6 +4670,25 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
 }
 
 static int
+qemuDomainDelCgroupForThread(virCgroupPtr cgroup,
+                             virCgroupThreadName nameval,
+                             int index)
+{
+    virCgroupPtr new_cgroup = NULL;
+
+    if (cgroup) {
+        if (virCgroupNewThread(cgroup, nameval, index, false, &new_cgroup) < 0)
+            return -1;
+
+        /* Remove the offlined cgroup */
+        virCgroupRemove(new_cgroup);
+        virCgroupFree(&new_cgroup);
+    }
+
+    return 0;
+}
+
+static int
 qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        unsigned int nvcpus)
@@ -4823,15 +4842,9 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
         }
     } else {
         for (i = oldvcpus - 1; i >= nvcpus; i--) {
-            if (priv->cgroup) {
-                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
-                                       false, &cgroup_vcpu) < 0)
-                    goto cleanup;
-
-                /* Remove cgroup for the offlined vcpu */
-                virCgroupRemove(cgroup_vcpu);
-                virCgroupFree(&cgroup_vcpu);
-            }
+            if (qemuDomainDelCgroupForThread(priv->cgroup,
+                                             VIR_CGROUP_THREAD_VCPU, i) < 0)
+                goto cleanup;
 
             /* Free vcpupin setting */
             virDomainPinDel(&vm->def->cputune.vcpupin,
