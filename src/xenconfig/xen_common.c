@@ -172,7 +172,7 @@ xenConfigCopyStringInternal(virConfPtr conf,
 }
 
 
-static int
+int
 xenConfigCopyString(virConfPtr conf, const char *name, char **value)
 {
     return xenConfigCopyStringInternal(conf, name, value, 0);

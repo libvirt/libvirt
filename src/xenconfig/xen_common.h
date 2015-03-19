@@ -43,6 +43,11 @@ int xenConfigGetULong(virConfPtr conf,
                       unsigned long *value,
                       unsigned long def);
 
+int
+xenConfigCopyString(virConfPtr conf,
+                    const char *name,
+                    char **value);
+
 int xenConfigCopyStringOpt(virConfPtr conf,
                            const char *name,
                            char **value);
