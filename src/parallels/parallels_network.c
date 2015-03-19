@@ -348,6 +348,7 @@ parallelsNetworkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
  error:
     virObjectUnref(privconn->networks);
+    privconn->networks = NULL;
     return VIR_DRV_OPEN_DECLINED;
 }
 
