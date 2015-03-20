@@ -33,11 +33,15 @@ typedef virThreadPool *virThreadPoolPtr;
 
 typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
-virThreadPoolPtr virThreadPoolNew(size_t minWorkers,
-                                  size_t maxWorkers,
-                                  size_t prioWorkers,
-                                  virThreadPoolJobFunc func,
-                                  void *opaque) ATTRIBUTE_NONNULL(4);
+# define virThreadPoolNew(min, max, prio, func, opaque) \
+    virThreadPoolNewFull(min, max, prio, func, #func, opaque)
+
+virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
+                                      size_t maxWorkers,
+                                      size_t prioWorkers,
+                                      virThreadPoolJobFunc func,
+                                      const char *funcName,
+                                      void *opaque) ATTRIBUTE_NONNULL(4);
 
 size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool);
 size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool);
