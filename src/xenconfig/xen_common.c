@@ -1029,9 +1029,6 @@ xenParseOS(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
 
-    if (xenConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
-        return -1;
-
     if (STREQ(def->os.type, "hvm")) {
         const char *boot;
 
