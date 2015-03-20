@@ -59,16 +59,22 @@ extern int xlu_disk_parse(XLU_Config *cfg,
 #endif
 
 static int
-xenParseXLOS(virConfPtr conf, virDomainDefPtr def)
+xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     size_t i;
 
     if (STREQ(def->os.type, "hvm")) {
         const char *boot;
 
-        if (VIR_ALLOC(def->os.loader) < 0 ||
-            xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
-            return -1;
+        for (i = 0; i < caps->nguests; i++) {
+            if (STREQ(caps->guests[i]->ostype, "hvm") &&
+                caps->guests[i]->arch.id == def->os.arch) {
+                if (VIR_ALLOC(def->os.loader) < 0 ||
+                    VIR_STRDUP(def->os.loader->path,
+                               caps->guests[i]->arch.defaultInfo.loader) < 0)
+                    return -1;
+            }
+        }
 
         if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
             return -1;
@@ -423,7 +429,7 @@ xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
     if (xenParseConfigCommon(conf, def, caps, xendConfigVersion) < 0)
         goto cleanup;
 
-    if (xenParseXLOS(conf, def) < 0)
+    if (xenParseXLOS(conf, def, caps) < 0)
         goto cleanup;
 
     if (xenParseXLDisk(conf, def) < 0)
@@ -451,10 +457,6 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
     if (STREQ(def->os.type, "hvm")) {
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
-            return -1;
-
-        if (def->os.loader && def->os.loader->path &&
-            xenConfigSetString(conf, "kernel", def->os.loader->path) < 0)
             return -1;
 
         for (i = 0; i < def->os.nBootDevs; i++) {

@@ -92,7 +92,8 @@ testXLInitCaps(void)
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
         goto cleanup;
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
-                                         "/usr/lib/xen/bin/qemu-dm", NULL,
+                                         "/usr/lib/xen/bin/qemu-system-i386",
+                                         "/usr/lib/xen/boot/hvmloader",
                                          nmachines, machines)) == NULL)
         goto cleanup;
     machines = NULL;
@@ -104,8 +105,9 @@ testXLInitCaps(void)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64,
-                                        "/usr/lib/xen/bin/qemu-dm", NULL,
-                                        nmachines, machines)) == NULL)
+                                         "/usr/lib/xen/bin/qemu-system-i386",
+                                         NULL,
+                                         nmachines, machines)) == NULL)
         goto cleanup;
     machines = NULL;
 
