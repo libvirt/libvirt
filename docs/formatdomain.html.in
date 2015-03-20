@@ -3114,21 +3114,20 @@
         with additional attributes noted.
         <dl>
           <dt>usb</dt>
-          <dd>For USB devices, the user is responsible to call
-            <code>virNodeDeviceDettach</code> (or
-            <code>virsh nodedev-detach</code>) before starting the guest
-            or hot-plugging the device and <code>virNodeDeviceReAttach</code>
-            (or <code>virsh nodedev-reattach</code>) after hot-unplug or
-            stopping the guest.
+          <dd>USB devices are detached from the host on guest startup
+            and reattached after the guest exits or the device is
+            hot-unplugged.
           </dd>
           <dt>pci</dt>
           <dd>For PCI devices, when <code>managed</code> is "yes" it is
             detached from the host before being passed on to the guest
             and reattached to the host after the guest exits. If
-            <code>managed</code> is omitted or "no", follow the steps
-            described for a USB device to detach before starting the
-            guest or hot-plugging and reattach after stopping the guest
-            or hot-unplug.
+            <code>managed</code> is omitted or "no", the user is
+            responsible to call <code>virNodeDeviceDetachFlags</code>
+            (or <code>virsh nodedev-detach</code> before starting the guest
+            or hot-plugging the device and <code>virNodeDeviceReAttach</code>
+            (or <code>virsh nodedev-reattach</code>) after hot-unplug or
+            stopping the guest.
           </dd>
           <dt>scsi</dt>
           <dd>For SCSI devices, user is responsible to make sure the device

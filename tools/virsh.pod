@@ -2385,7 +2385,7 @@ attach taking effect the next time libvirt starts the domain.
 For cdrom and floppy devices, this command only replaces the media
 within an existing device; consider using B<update-device> for this
 usage.  For passthrough host devices, see also B<nodedev-detach>,
-needed if the device does not use managed mode.
+needed if the PCI device does not use managed mode.
 
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.
@@ -2646,15 +2646,14 @@ L<http://libvirt.org/formatnode.html>.
 
 Passthrough devices cannot be simultaneously used by the host and its
 guest domains, nor by multiple active guests at once.  If the
-<hostdev> description includes the attribute B<managed='yes'>, and the
-hypervisor driver supports it, then the device is in managed mode, and
+<hostdev> description of a PCI device includes the attribute B<managed='yes'>,
+and the hypervisor driver supports it, then the device is in managed mode, and
 attempts to use that passthrough device in an active guest will
 automatically behave as if B<nodedev-detach> (guest start, device
 hot-plug) and B<nodedev-reattach> (guest stop, device hot-unplug) were
-called at the right points (currently, qemu does this for PCI devices,
-but not USB).  If a device is not marked as managed, then it must
-manually be detached before guests can use it, and manually reattached
-to be returned to the host.  Also, if a device is manually detached,
+called at the right points.  If a PCI device is not marked as managed,
+then it must manually be detached before guests can use it, and manually
+reattached to be returned to the host.  Also, if a device is manually detached,
 then the host does not regain control of the device without a matching
 reattach, even if the guests use the device in managed mode.
 
@@ -2712,8 +2711,8 @@ I<cap> and I<--tree> are mutually exclusive.
 
 Declare that I<nodedev> is no longer in use by any guests, and that
 the host can resume normal use of the device.  This is done
-automatically for devices in managed mode, but must be done explicitly
-to match any explicit B<nodedev-detach>.
+automatically for PCI devices in managed mode and USB devices, but
+must be done explicitly to match any explicit B<nodedev-detach>.
 
 =item B<nodedev-reset> I<nodedev>
 
