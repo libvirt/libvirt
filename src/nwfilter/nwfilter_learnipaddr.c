@@ -374,7 +374,7 @@ procDHCPOpts(struct dhcp *dhcp, int dhcp_opts_len,
  * will require that the IP address was taken from an ARP packet or an IPv4
  * packet. Both flags can be set at the same time.
  */
-static void *
+static void
 learnIPAddressThread(void *arg)
 {
     char errbuf[PCAP_ERRBUF_SIZE] = {0};
@@ -638,8 +638,6 @@ learnIPAddressThread(void *arg)
         techdriver->applyDropAllRules(req->ifname);
     }
 
-    memset(&req->thread, 0x0, sizeof(req->thread));
-
     VIR_DEBUG("pcap thread terminating for interface %s\n", req->ifname);
 
     virNWFilterUnlockIface(req->ifname);
@@ -648,8 +646,6 @@ learnIPAddressThread(void *arg)
     virNWFilterDeregisterLearnReq(req->ifindex);
 
     virNWFilterIPAddrLearnReqFree(req);
-
-    return 0;
 }
 
 
@@ -686,6 +682,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                           enum howDetect howDetect)
 {
     int rc;
+    virThread thread;
     virNWFilterIPAddrLearnReqPtr req = NULL;
     virNWFilterHashTablePtr ht = NULL;
 
@@ -742,10 +739,10 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     if (rc < 0)
         goto err_free_req;
 
-    if (pthread_create(&req->thread,
-                       NULL,
-                       learnIPAddressThread,
-                       req) != 0)
+    if (virThreadCreate(&thread,
+                        false,
+                        learnIPAddressThread,
+                        req) != 0)
         goto err_dereg_req;
 
     return 0;

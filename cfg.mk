@@ -999,6 +999,12 @@ sc_prohibit_sysconf_pagesize:
 	halt='use virGetSystemPageSize[KB] instead of sysconf(_SC_PAGESIZE)' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_pthread_create:
+	@prohibit='\bpthread_create\b' \
+	exclude='sc_prohibit_pthread_create' \
+	halt="avoid using 'pthread_create', use 'virThreadCreate' instead" \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1192,3 +1198,6 @@ exclude_file_name_regexp--sc_prohibit_virXXXFree = \
 
 exclude_file_name_regexp--sc_prohibit_sysconf_pagesize = \
   ^(cfg\.mk|src/util/virutil\.c)$$
+
+exclude_file_name_regexp--sc_prohibit_pthread_create = \
+  ^(cfg\.mk|src/util/virthread\.c|tests/.*)$$

@@ -49,7 +49,6 @@ struct _virNWFilterIPAddrLearnReq {
     enum howDetect howDetect;
 
     int status;
-    pthread_t thread;
     volatile bool terminate;
 };
 
