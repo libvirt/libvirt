@@ -59,6 +59,72 @@ extern int xlu_disk_parse(XLU_Config *cfg,
 #endif
 
 static int
+xenParseXLOS(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+
+    if (STREQ(def->os.type, "hvm")) {
+        const char *boot;
+
+        if (VIR_ALLOC(def->os.loader) < 0 ||
+            xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
+            return -1;
+
+        if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
+            return -1;
+
+        for (i = 0; i < VIR_DOMAIN_BOOT_LAST && boot[i]; i++) {
+            switch (boot[i]) {
+            case 'a':
+                def->os.bootDevs[i] = VIR_DOMAIN_BOOT_FLOPPY;
+                break;
+            case 'd':
+                def->os.bootDevs[i] = VIR_DOMAIN_BOOT_CDROM;
+                break;
+            case 'n':
+                def->os.bootDevs[i] = VIR_DOMAIN_BOOT_NET;
+                break;
+            case 'c':
+            default:
+                def->os.bootDevs[i] = VIR_DOMAIN_BOOT_DISK;
+                break;
+            }
+            def->os.nBootDevs++;
+        }
+    } else {
+        const char *extra, *root;
+
+        if (xenConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
+            return -1;
+        if (xenConfigCopyStringOpt(conf, "bootargs", &def->os.bootloaderArgs) < 0)
+            return -1;
+
+        if (xenConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
+            return -1;
+
+        if (xenConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
+            return -1;
+
+        if (xenConfigGetString(conf, "extra", &extra, NULL) < 0)
+            return -1;
+
+        if (xenConfigGetString(conf, "root", &root, NULL) < 0)
+            return -1;
+
+        if (root) {
+            if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
+                return -1;
+        } else {
+            if (VIR_STRDUP(def->os.cmdline, extra) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
 {
     virDomainGraphicsDefPtr graphics = NULL;
@@ -357,6 +423,9 @@ xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
     if (xenParseConfigCommon(conf, def, caps, xendConfigVersion) < 0)
         goto cleanup;
 
+    if (xenParseXLOS(conf, def) < 0)
+        goto cleanup;
+
     if (xenParseXLDisk(conf, def) < 0)
         goto cleanup;
 
@@ -371,6 +440,75 @@ xenParseXL(virConfPtr conf, virCapsPtr caps, int xendConfigVersion)
  cleanup:
     virDomainDefFree(def);
     return NULL;
+}
+
+
+static int
+xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
+{
+    size_t i;
+
+    if (STREQ(def->os.type, "hvm")) {
+        char boot[VIR_DOMAIN_BOOT_LAST+1];
+        if (xenConfigSetString(conf, "builder", "hvm") < 0)
+            return -1;
+
+        if (def->os.loader && def->os.loader->path &&
+            xenConfigSetString(conf, "kernel", def->os.loader->path) < 0)
+            return -1;
+
+        for (i = 0; i < def->os.nBootDevs; i++) {
+            switch (def->os.bootDevs[i]) {
+            case VIR_DOMAIN_BOOT_FLOPPY:
+                boot[i] = 'a';
+                break;
+            case VIR_DOMAIN_BOOT_CDROM:
+                boot[i] = 'd';
+                break;
+            case VIR_DOMAIN_BOOT_NET:
+                boot[i] = 'n';
+                break;
+            case VIR_DOMAIN_BOOT_DISK:
+            default:
+                boot[i] = 'c';
+                break;
+            }
+        }
+
+        if (!def->os.nBootDevs) {
+            boot[0] = 'c';
+            boot[1] = '\0';
+        } else {
+            boot[def->os.nBootDevs] = '\0';
+        }
+
+        if (xenConfigSetString(conf, "boot", boot) < 0)
+            return -1;
+
+        /* XXX floppy disks */
+    } else {
+        if (def->os.bootloader &&
+             xenConfigSetString(conf, "bootloader", def->os.bootloader) < 0)
+            return -1;
+
+         if (def->os.bootloaderArgs &&
+             xenConfigSetString(conf, "bootargs", def->os.bootloaderArgs) < 0)
+            return -1;
+
+         if (def->os.kernel &&
+             xenConfigSetString(conf, "kernel", def->os.kernel) < 0)
+            return -1;
+
+         if (def->os.initrd &&
+             xenConfigSetString(conf, "ramdisk", def->os.initrd) < 0)
+            return -1;
+
+         if (def->os.cmdline &&
+             xenConfigSetString(conf, "extra", def->os.cmdline) < 0)
+            return -1;
+     } /* !hvm */
+
+    return 0;
 }
 
 
@@ -622,6 +760,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn, int xendConfigVersion)
         goto cleanup;
 
     if (xenFormatConfigCommon(conf, def, conn, xendConfigVersion) < 0)
+        goto cleanup;
+
+    if (xenFormatXLOS(conf, def) < 0)
         goto cleanup;
 
     if (xenFormatXLDomainDisks(conf, def) < 0)
