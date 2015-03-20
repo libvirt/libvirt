@@ -6657,15 +6657,16 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
     VSH_EXCLUSIVE_OPTIONS_VAR(guest, config);
 
+    VSH_REQUIRE_OPTION_VAR(maximum, config);
+
     if (config)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
     if (guest)
         flags |= VIR_DOMAIN_VCPU_GUEST;
-    /* none of the options were specified */
-    if (!current && flags == 0)
-        flags = -1;
+    if (maximum)
+        flags |= VIR_DOMAIN_VCPU_MAXIMUM;
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -6675,30 +6676,11 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (flags == -1) {
+    /* none of the options were specified */
+    if (!current && flags == 0) {
         if (virDomainSetVcpus(dom, count) != 0)
             goto cleanup;
     } else {
-        /* If the --maximum flag was given, we need to ensure only the
-           --config flag is in effect as well */
-        if (maximum) {
-            vshDebug(ctl, VSH_ERR_DEBUG, "--maximum flag was given\n");
-
-            flags |= VIR_DOMAIN_VCPU_MAXIMUM;
-
-            /* If neither the --config nor --live flags were given, OR
-               if just the --live flag was given, we need to error out
-               warning the user that the --maximum flag can only be used
-               with the --config flag */
-            if (live || !config) {
-
-                /* Warn the user about the invalid flag combination */
-                vshError(ctl, _("--maximum must be used with --config only"));
-                goto cleanup;
-            }
-        }
-
-        /* Apply the virtual cpu changes */
         if (virDomainSetVcpusFlags(dom, count, flags) < 0)
             goto cleanup;
     }

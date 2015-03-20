@@ -2181,7 +2181,8 @@ and may require guest agent to be configured in the guest.
 
 The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be
-used with the I<--config> flag, and not with the I<--live> flag.
+used with the I<--config> flag, and not with the I<--live> or the I<--current>
+flag.
 
 =item B<shutdown> I<domain> [I<--mode MODE-LIST>]
 
