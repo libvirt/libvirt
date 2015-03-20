@@ -327,6 +327,56 @@
         }                                                               \
     } while (0)
 
+/* Macros to help dealing with mutually exclusive flags. */
+
+/**
+ * VIR_EXCLUSIVE_FLAGS_RET:
+ *
+ * @FLAG1: First flag to be checked.
+ * @FLAG2: Second flag to be checked.
+ * @RET: Return value.
+ *
+ * Reject mutually exclusive API flags.  The checked flags are compared
+ * with flags variable.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VIR_EXCLUSIVE_FLAGS_RET(FLAG1, FLAG2, RET)                         \
+    do {                                                                    \
+        if ((flags & FLAG1) && (flags & FLAG2)) {                           \
+            virReportInvalidArg(ctl,                                        \
+                                _("Flags '%s' and '%s' are mutually "       \
+                                  "exclusive"),                             \
+                                #FLAG1, #FLAG2);                            \
+            return RET;                                                     \
+        }                                                                   \
+    } while (0)
+
+/**
+ * VIR_EXCLUSIVE_FLAGS_GOTO:
+ *
+ * @FLAG1: First flag to be checked.
+ * @FLAG2: Second flag to be checked.
+ * @LABEL: Label to jump to.
+ *
+ * Reject mutually exclusive API flags.  The checked flags are compared
+ * with flags variable.
+ *
+ * Returns nothing.  Jumps to a label if unsupported flags were
+ * passed to it.
+ */
+# define VIR_EXCLUSIVE_FLAGS_GOTO(FLAG1, FLAG2, LABEL)                      \
+    do {                                                                    \
+        if ((flags & FLAG1) && (flags & FLAG2)) {                           \
+            virReportInvalidArg(ctl,                                        \
+                                _("Flags '%s' and '%s' are mutually "       \
+                                  "exclusive"),                             \
+                                #FLAG1, #FLAG2);                            \
+            goto LABEL;                                                     \
+        }                                                                   \
+    } while (0)
+
 # define virCheckNonNullArgReturn(argname, retval)  \
     do {                                            \
         if (argname == NULL) {                      \
