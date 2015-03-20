@@ -62,6 +62,7 @@ static int
 xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     size_t i;
+    const char *extra, *root;
 
     if (STREQ(def->os.type, "hvm")) {
         const char *boot;
@@ -75,6 +76,28 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
                     return -1;
             }
         }
+
+#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
+        if (xenConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
+            return -1;
+
+        if (xenConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
+            return -1;
+
+        if (xenConfigGetString(conf, "extra", &extra, NULL) < 0)
+            return -1;
+
+        if (xenConfigGetString(conf, "root", &root, NULL) < 0)
+            return -1;
+
+        if (root) {
+            if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
+                return -1;
+        } else {
+            if (VIR_STRDUP(def->os.cmdline, extra) < 0)
+                return -1;
+        }
+#endif
 
         if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
             return -1;
@@ -98,8 +121,6 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
             def->os.nBootDevs++;
         }
     } else {
-        const char *extra, *root;
-
         if (xenConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
             return -1;
         if (xenConfigCopyStringOpt(conf, "bootargs", &def->os.bootloaderArgs) < 0)
@@ -458,6 +479,20 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
+
+#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
+        if (def->os.kernel &&
+            xenConfigSetString(conf, "kernel", def->os.kernel) < 0)
+            return -1;
+
+        if (def->os.initrd &&
+            xenConfigSetString(conf, "ramdisk", def->os.initrd) < 0)
+            return -1;
+
+        if (def->os.cmdline &&
+            xenConfigSetString(conf, "extra", def->os.cmdline) < 0)
+            return -1;
+#endif
 
         for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {

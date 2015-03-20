@@ -702,6 +702,15 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         if (VIR_STRDUP(b_info->u.hvm.boot, bootorder) < 0)
             return -1;
 
+#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
+        if (VIR_STRDUP(b_info->cmdline, def->os.cmdline) < 0)
+            return -1;
+        if (VIR_STRDUP(b_info->kernel, def->os.kernel) < 0)
+            return -1;
+        if (VIR_STRDUP(b_info->ramdisk, def->os.initrd) < 0)
+            return -1;
+#endif
+
         if (def->emulator) {
             if (!virFileExists(def->emulator)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

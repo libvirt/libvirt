@@ -219,6 +219,9 @@ mymain(void)
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
     DO_TEST("fullvirt-multiusb", 3);
 #endif
+#ifdef LIBXL_HAVE_BUILDINFO_KERNEL
+    DO_TEST("fullvirt-direct-kernel-boot", 3);
+#endif
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
