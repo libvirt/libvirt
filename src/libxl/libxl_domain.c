@@ -811,38 +811,33 @@ libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
 {
     uint32_t needed_mem;
     uint32_t free_mem;
-    size_t i;
-    int ret = -1;
     int tries = 3;
     int wait_secs = 10;
 
-    if ((ret = libxl_domain_need_memory(ctx, &d_config->b_info,
-                                        &needed_mem)) >= 0) {
-        for (i = 0; i < tries; ++i) {
-            if ((ret = libxl_get_free_memory(ctx, &free_mem)) < 0)
-                break;
+    if (libxl_domain_need_memory(ctx, &d_config->b_info, &needed_mem) < 0)
+        goto error;
 
-            if (free_mem >= needed_mem) {
-                ret = 0;
-                break;
-            }
+    do {
+        if (libxl_get_free_memory(ctx, &free_mem) < 0)
+            goto error;
 
-            if ((ret = libxl_set_memory_target(ctx, 0,
-                                               free_mem - needed_mem,
-                                               /* relative */ 1, 0)) < 0)
-                break;
+        if (free_mem >= needed_mem)
+            return 0;
 
-            ret = libxl_wait_for_free_memory(ctx, 0, needed_mem,
-                                             wait_secs);
-            if (ret == 0 || ret != ERROR_NOMEM)
-                break;
+        if (libxl_set_memory_target(ctx, 0, free_mem - needed_mem,
+                                    /* relative */ 1, 0) < 0)
+            goto error;
 
-            if ((ret = libxl_wait_for_memory_target(ctx, 0, 1)) < 0)
-                break;
-        }
-    }
+        if (libxl_wait_for_memory_target(ctx, 0, wait_secs) < 0)
+            goto error;
 
-    return ret;
+        tries--;
+    } while (tries > 0);
+
+ error:
+    virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                   _("Failed to balloon domain0 memory"));
+    return -1;
 }
 
 static void
@@ -958,12 +953,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                cfg->ctx, &d_config) < 0)
         goto endjob;
 
-    if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("libxenlight failed to get free memory for domain '%s'"),
-                       d_config.c_info.name);
+    if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
         goto endjob;
-    }
 
     if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                        vm->def, VIR_HOSTDEV_SP_PCI) < 0)
