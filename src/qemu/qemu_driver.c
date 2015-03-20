@@ -4890,7 +4890,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                                         &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST)) {
+    if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST) &&
+        virNumaIsAvailable()) {
         if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
             goto endjob;
 
