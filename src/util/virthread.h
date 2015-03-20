@@ -88,10 +88,15 @@ void virThreadOnExit(void);
 
 typedef void (*virThreadFunc)(void *opaque);
 
-int virThreadCreate(virThreadPtr thread,
-                    bool joinable,
-                    virThreadFunc func,
-                    void *opaque) ATTRIBUTE_RETURN_CHECK;
+# define virThreadCreate(thread, joinable, func, opaque) \
+    virThreadCreateFull(thread, joinable, func, #func, false, opaque)
+
+int virThreadCreateFull(virThreadPtr thread,
+                        bool joinable,
+                        virThreadFunc func,
+                        const char *funcName,
+                        bool worker,
+                        void *opaque) ATTRIBUTE_RETURN_CHECK;
 void virThreadSelf(virThreadPtr thread);
 bool virThreadIsSelf(virThreadPtr thread);
 void virThreadJoin(virThreadPtr thread);

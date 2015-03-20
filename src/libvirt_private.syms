@@ -2181,7 +2181,7 @@ virRWLockRead;
 virRWLockUnlock;
 virRWLockWrite;
 virThreadCancel;
-virThreadCreate;
+virThreadCreateFull;
 virThreadID;
 virThreadInitialize;
 virThreadIsSelf;
