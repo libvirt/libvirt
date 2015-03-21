@@ -2017,9 +2017,7 @@
       </choice>
       <interleave>
         <element name="target">
-          <attribute name="dir">
-            <ref name="absDirPath"/>
-          </attribute>
+          <attribute name="dir"/>
           <empty/>
         </element>
         <optional>
