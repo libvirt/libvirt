@@ -1035,10 +1035,6 @@ libvirt_la_BUILT_LIBADD += libvirt_cpu.la
 libvirt_cpu_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
-libvirt_cpu_la_DEPENDENCIES = $(abs_builddir)/cpu/cpu_map.xml
-
-$(abs_builddir)/cpu/cpu_map.xml:
-	$(AM_V_GEN)ln -s $(abs_srcdir)/cpu/cpu_map.xml $@
 
 if WITH_VMX
 noinst_LTLIBRARIES += libvirt_vmx.la
