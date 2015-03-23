@@ -22,11 +22,30 @@
 
 static virQEMUDriver driver;
 
+enum {
+    WHEN_INACTIVE = 1,
+    WHEN_ACTIVE = 2,
+    WHEN_BOTH = 3,
+};
+
+struct testInfo {
+    char *inName;
+    char *inFile;
+
+    char *outActiveName;
+    char *outActiveFile;
+
+    char *outInactiveName;
+    char *outInactiveFile;
+};
+
 static int
-testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
+testXML2XMLHelper(const char *inxml,
+                  const char *inXmlData,
+                  const char *outxml,
+                  const char *outXmlData,
+                  bool live)
 {
-    char *inXmlData = NULL;
-    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
@@ -34,11 +53,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
-
-    if (virtTestLoadFile(inxml, &inXmlData) < 0)
-        goto fail;
-    if (virtTestLoadFile(outxml, &outXmlData) < 0)
-        goto fail;
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
                                         QEMU_EXPECTED_VIRT_TYPES, parse_flags)))
@@ -58,82 +72,120 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     }
 
     ret = 0;
+
  fail:
-    VIR_FREE(inXmlData);
-    VIR_FREE(outXmlData);
     VIR_FREE(actual);
     virDomainDefFree(def);
     return ret;
 }
 
-enum {
-    WHEN_INACTIVE = 1,
-    WHEN_ACTIVE = 2,
-    WHEN_EITHER = 3,
-};
-
-struct testInfo {
-    const char *name;
-    bool different;
-    int when;
-};
 
 static int
-testCompareXMLToXMLHelper(const void *data)
+testXML2XMLActive(const void *opaque)
 {
-    const struct testInfo *info = data;
-    char *xml_in = NULL;
-    char *xml_out = NULL;
-    char *xml_out_active = NULL;
-    char *xml_out_inactive = NULL;
-    int ret = -1;
+    const struct testInfo *info = opaque;
 
-    if (virAsprintf(&xml_in, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out, "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out_active,
-                    "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-active.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out_inactive,
-                    "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-inactive.xml",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    return testXML2XMLHelper(info->inName,
+                             info->inFile,
+                             info->outActiveName,
+                             info->outActiveFile,
+                             true);
+}
 
-    if ((info->when & WHEN_INACTIVE)) {
-        char *out;
-        if (!info->different)
-            out = xml_in;
-        else if (virFileExists(xml_out_inactive))
-            out = xml_out_inactive;
-        else
-            out = xml_out;
 
-        if (testCompareXMLToXMLFiles(xml_in, out, false) < 0)
-            goto cleanup;
+static int
+testXML2XMLInactive(const void *opaque)
+{
+    const struct testInfo *info = opaque;
+
+    return testXML2XMLHelper(info->inName,
+                             info->inFile,
+                             info->outInactiveName,
+                             info->outInactiveFile,
+                             false);
+}
+
+
+static void
+testInfoFree(struct testInfo *info)
+{
+    VIR_FREE(info->inName);
+    VIR_FREE(info->inFile);
+
+    VIR_FREE(info->outActiveName);
+    VIR_FREE(info->outActiveFile);
+
+    VIR_FREE(info->outInactiveName);
+    VIR_FREE(info->outInactiveFile);
+}
+
+
+static int
+testInfoSet(struct testInfo *info,
+            const char *name,
+            bool different,
+            int when)
+{
+    if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+                    abs_srcdir, name) < 0)
+        goto error;
+
+    if (virtTestLoadFile(info->inName, &info->inFile) < 0)
+        goto error;
+
+    if (when & WHEN_INACTIVE) {
+        if (different) {
+            if (virAsprintf(&info->outInactiveName,
+                           "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-inactive.xml",
+                           abs_srcdir, name) < 0)
+                goto error;
+
+            if (!virFileExists(info->outInactiveName)) {
+                VIR_FREE(info->outInactiveName);
+
+                if (virAsprintf(&info->outInactiveName,
+                                "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                                abs_srcdir, name) < 0)
+                    goto error;
+            }
+        } else {
+            if (VIR_STRDUP(info->outInactiveName, info->inName) < 0)
+                goto error;
+        }
+
+        if (virtTestLoadFile(info->outInactiveName, &info->outInactiveFile) < 0)
+            goto error;
     }
 
-    if ((info->when & WHEN_ACTIVE)) {
-        char *out;
-        if (!info->different)
-            out = xml_in;
-        else if (virFileExists(xml_out_active))
-            out = xml_out_active;
-        else
-            out = xml_out;
+    if (when & WHEN_ACTIVE) {
+        if (different) {
+            if (virAsprintf(&info->outActiveName,
+                           "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-active.xml",
+                           abs_srcdir, name) < 0)
+                goto error;
 
-        if (testCompareXMLToXMLFiles(xml_in, out, true) < 0)
-            goto cleanup;
+            if (!virFileExists(info->outActiveName)) {
+                VIR_FREE(info->outActiveName);
+
+                if (virAsprintf(&info->outActiveName,
+                                "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                                abs_srcdir, name) < 0)
+                    goto error;
+            }
+        } else {
+            if (VIR_STRDUP(info->outActiveName, info->inName) < 0)
+                goto error;
+        }
+
+        if (virtTestLoadFile(info->outActiveName, &info->outActiveFile) < 0)
+            goto error;
     }
 
-    ret = 0;
+    return 0;
 
- cleanup:
-    VIR_FREE(xml_in);
-    VIR_FREE(xml_out);
-    VIR_FREE(xml_out_active);
-    VIR_FREE(xml_out_inactive);
-    return ret;
+ error:
+    testInfoFree(info);
+    return -1;
 }
 
 
@@ -141,6 +193,7 @@ static int
 mymain(void)
 {
     int ret = 0;
+    struct testInfo info;
 
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
@@ -148,19 +201,32 @@ mymain(void)
     if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, when)                         \
-    do {                                                                \
-        const struct testInfo info = {name, is_different, when};        \
-        if (virtTestRun("QEMU XML-2-XML " name,                         \
-                        testCompareXMLToXMLHelper, &info) < 0)          \
-            ret = -1;                                                   \
+# define DO_TEST_FULL(name, is_different, when)                                \
+    do {                                                                       \
+        if (testInfoSet(&info, name, is_different, when) < 0) {                \
+            fprintf(stderr, "Failed to generate test data for '%s'", name);    \
+            return -1;                                                         \
+        }                                                                      \
+                                                                               \
+        if (info.outInactiveName) {                                            \
+            if (virtTestRun("QEMU XML-2-XML-inactive " name,                   \
+                            testXML2XMLInactive, &info) < 0)                   \
+                ret = -1;                                                      \
+        }                                                                      \
+                                                                               \
+        if (info.outActiveName) {                                              \
+            if (virtTestRun("QEMU XML-2-XML-active " name,                     \
+                            testXML2XMLActive, &info) < 0)                     \
+                ret = -1;                                                      \
+        }                                                                      \
+        testInfoFree(&info);                                                   \
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, false, WHEN_EITHER)
+    DO_TEST_FULL(name, false, WHEN_BOTH)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, true, WHEN_EITHER)
+    DO_TEST_FULL(name, true, WHEN_BOTH)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
