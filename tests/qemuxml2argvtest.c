@@ -457,6 +457,7 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
     const char *newModels[] = {
         "Opteron_G3", "Opteron_G2", "Opteron_G1",
         "Nehalem", "Penryn", "Conroe",
+        "Haswell-noTSX", "Haswell",
     };
     const char *legacyModels[] = {
         "n270", "athlon", "pentium3", "pentium2", "pentium",
@@ -1250,6 +1251,13 @@ mymain(void)
     DO_TEST_FAILURE("cpu-host-passthrough", NONE);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough",
                     QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+
+    driver.caps->host.cpu = cpuHaswell;
+    DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
+    DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
+    DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
+    DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
+    driver.caps->host.cpu = cpuDefault;
 
     DO_TEST("memtune", QEMU_CAPS_NAME);
     DO_TEST("memtune-unlimited", QEMU_CAPS_NAME);
