@@ -4750,9 +4750,6 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
     }
 
-    *backendProps = props;
-    props = NULL;
-
     if (!hugepage) {
         bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
 
@@ -4767,11 +4764,15 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         /* report back that using the new backend is not necessary to achieve
          * the desired configuration */
         if (!userNodeset && !nodeSpecified) {
+            *backendProps = props;
+            props = NULL;
             ret = 1;
             goto cleanup;
         }
     }
 
+    *backendProps = props;
+    props = NULL;
     ret = 0;
 
  cleanup:
