@@ -1457,12 +1457,11 @@ libvirt_driver_interface_la_LIBADD =
 if WITH_NETCF
 libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
-else ! WITH_NETCF
+endif WITH_NETCF
 if WITH_UDEV
 libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
 endif WITH_UDEV
-endif ! WITH_NETCF
 if WITH_DRIVER_MODULES
 libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_interface_la_LDFLAGS += -module -avoid-version
