@@ -122,8 +122,10 @@ cpuTestLoadMultiXML(const char *arch,
         goto cleanup;
 
     n = virXPathNodeSet("/cpuTest/cpu", ctxt, &nodes);
-    if (n <= 0 || (VIR_ALLOC_N(cpus, n) < 0))
+    if (n <= 0 || (VIR_ALLOC_N(cpus, n) < 0)) {
+        fprintf(stderr, "\nNo /cpuTest/cpu elements found in %s\n", xml);
         goto cleanup;
+    }
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -496,6 +498,7 @@ cpuTestRun(const char *name, const struct data *data)
 static const char *model486[]   = { "486" };
 static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
+static const char *haswell[]    = { "SandyBridge", "Haswell" };
 static const char *ppc_models[]     = { "POWER7", "POWER7_v2.1", "POWER8_v1.0"};
 
 static int
@@ -641,6 +644,14 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
     DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback",
                       models, "Penryn", -1);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell",
+                      haswell, "Haswell", 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
+                      haswell, "Haswell-noTSX", 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback",
+                      haswell, "Haswell-noTSX", -1);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
+                      NULL, "Haswell-noTSX", 0);
 
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);

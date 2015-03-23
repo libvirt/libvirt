@@ -1,0 +1,28 @@
+<cpuTest>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>SandyBridge</model>
+      <vendor>Intel</vendor>
+      <topology sockets='1' cores='2' threads='2'/>
+      <feature name='invpcid'/>
+      <feature name='erms'/>
+      <feature name='bmi2'/>
+      <feature name='smep'/>
+      <feature name='avx2'/>
+      <feature name='bmi1'/>
+      <feature name='fsgsbase'/>
+      <feature name='movbe'/>
+      <feature name='pcid'/>
+      <feature name='fma'/>
+      <feature name='3dnowprefetch'/>
+      <feature name='rdseed'/>
+      <feature name='adx'/>
+      <feature name='smap'/>
+    </cpu>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>Broadwell-noTSX</model>
+      <vendor>Intel</vendor>
+      <topology sockets='1' cores='2' threads='2'/>
+    </cpu>
+</cpuTest>

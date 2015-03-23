@@ -1,0 +1,6 @@
+<cpu mode='custom' match='exact'>
+  <arch>x86_64</arch>
+  <model fallback='allow'>Haswell</model>
+  <feature policy='disable' name='rtm'/>
+  <feature policy='disable' name='hle'/>
+</cpu>
