@@ -10,4 +10,10 @@ virDomainXMLOptionPtr testQemuXMLConfInit(void);
 extern qemuBuildCommandLineCallbacks testCallbacks;
 
 virQEMUCapsPtr qemuTestParseCapabilities(const char *capsFile);
+
+extern virCPUDefPtr cpuDefault;
+extern virCPUDefPtr cpuHaswell;
+void testQemuCapsSetCPU(virCapsPtr caps,
+                        virCPUDefPtr hostCPU);
+
 #endif

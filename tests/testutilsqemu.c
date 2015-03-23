@@ -12,6 +12,83 @@
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
+virCPUDefPtr cpuDefault;
+virCPUDefPtr cpuHaswell;
+
+static virCPUFeatureDef cpuDefaultFeatures[] = {
+    { (char *) "lahf_lm",   -1 },
+    { (char *) "xtpr",      -1 },
+    { (char *) "cx16",      -1 },
+    { (char *) "tm2",       -1 },
+    { (char *) "est",       -1 },
+    { (char *) "vmx",       -1 },
+    { (char *) "ds_cpl",    -1 },
+    { (char *) "pbe",       -1 },
+    { (char *) "tm",        -1 },
+    { (char *) "ht",        -1 },
+    { (char *) "ss",        -1 },
+    { (char *) "acpi",      -1 },
+    { (char *) "ds",        -1 }
+};
+static virCPUDef cpuDefaultData = {
+    VIR_CPU_TYPE_HOST,      /* type */
+    0,                      /* mode */
+    0,                      /* match */
+    VIR_ARCH_X86_64,        /* arch */
+    (char *) "core2duo",    /* model */
+    NULL,                   /* vendor_id */
+    0,                      /* fallback */
+    (char *) "Intel",       /* vendor */
+    1,                      /* sockets */
+    2,                      /* cores */
+    1,                      /* threads */
+    ARRAY_CARDINALITY(cpuDefaultFeatures), /* nfeatures */
+    ARRAY_CARDINALITY(cpuDefaultFeatures), /* nfeatures_max */
+    cpuDefaultFeatures,     /* features */
+};
+
+static virCPUFeatureDef cpuHaswellFeatures[] = {
+    { (char *) "lahf_lm",   -1 },
+    { (char *) "invtsc",    -1 },
+    { (char *) "abm",       -1 },
+    { (char *) "pdpe1gb",   -1 },
+    { (char *) "rdrand",    -1 },
+    { (char *) "f16c",      -1 },
+    { (char *) "osxsave",   -1 },
+    { (char *) "pdcm",      -1 },
+    { (char *) "xtpr",      -1 },
+    { (char *) "tm2",       -1 },
+    { (char *) "est",       -1 },
+    { (char *) "smx",       -1 },
+    { (char *) "vmx",       -1 },
+    { (char *) "ds_cpl",    -1 },
+    { (char *) "monitor",   -1 },
+    { (char *) "dtes64",    -1 },
+    { (char *) "pbe",       -1 },
+    { (char *) "tm",        -1 },
+    { (char *) "ht",        -1 },
+    { (char *) "ss",        -1 },
+    { (char *) "acpi",      -1 },
+    { (char *) "ds",        -1 },
+    { (char *) "vme",       -1 },
+};
+static virCPUDef cpuHaswellData = {
+    VIR_CPU_TYPE_HOST,      /* type */
+    0,                      /* mode */
+    0,                      /* match */
+    VIR_ARCH_X86_64,        /* arch */
+    (char *) "Haswell",     /* model */
+    NULL,                   /* vendor_id */
+    0,                      /* fallback */
+    (char *) "Intel",       /* vendor */
+    1,                      /* sockets */
+    2,                      /* cores */
+    2,                      /* threads */
+    ARRAY_CARDINALITY(cpuHaswellFeatures), /* nfeatures */
+    ARRAY_CARDINALITY(cpuHaswellFeatures), /* nfeatures_max */
+    cpuHaswellFeatures,     /* features */
+};
+
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
 {
     virCapsGuestMachinePtr *machines;
@@ -239,40 +316,8 @@ virCapsPtr testQemuCapsInit(void)
     static const char *const xen_machines[] = {
         "xenner"
     };
-    static virCPUFeatureDef host_cpu_features[] = {
-        { (char *) "lahf_lm",   -1 },
-        { (char *) "xtpr",      -1 },
-        { (char *) "cx16",      -1 },
-        { (char *) "tm2",       -1 },
-        { (char *) "est",       -1 },
-        { (char *) "vmx",       -1 },
-        { (char *) "ds_cpl",    -1 },
-        { (char *) "pbe",       -1 },
-        { (char *) "tm",        -1 },
-        { (char *) "ht",        -1 },
-        { (char *) "ss",        -1 },
-        { (char *) "acpi",      -1 },
-        { (char *) "ds",        -1 }
-    };
-    static virCPUDef host_cpu = {
-        VIR_CPU_TYPE_HOST,      /* type */
-        0,                      /* mode */
-        0,                      /* match */
-        VIR_ARCH_X86_64,        /* arch */
-        (char *) "core2duo",    /* model */
-        NULL,                   /* vendor_id */
-        0,                      /* fallback */
-        (char *) "Intel",       /* vendor */
-        1,                      /* sockets */
-        2,                      /* cores */
-        1,                      /* threads */
-        ARRAY_CARDINALITY(host_cpu_features), /* nfeatures */
-        ARRAY_CARDINALITY(host_cpu_features), /* nfeatures_max */
-        host_cpu_features,      /* features */
-    };
 
-    if ((caps = virCapabilitiesNew(host_cpu.arch,
-                                   false, false)) == NULL)
+    if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
         return NULL;
 
     /* Add dummy 'none' security_driver. This is equal to setting
@@ -285,8 +330,13 @@ virCapsPtr testQemuCapsInit(void)
         VIR_STRDUP(caps->host.secModels[0].doi, "0") < 0)
         goto cleanup;
 
-    if ((caps->host.cpu = virCPUDefCopy(&host_cpu)) == NULL ||
-        (machines = testQemuAllocMachines(&nmachines)) == NULL)
+    if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
+        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)))
+        goto cleanup;
+
+    caps->host.cpu = cpuDefault;
+
+    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
 
     if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
@@ -386,6 +436,10 @@ virCapsPtr testQemuCapsInit(void)
 
  cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
+    if (caps->host.cpu != cpuDefault)
+        virCPUDefFree(cpuDefault);
+    if (caps->host.cpu != cpuHaswell)
+        virCPUDefFree(cpuHaswell);
     virObjectUnref(caps);
     return NULL;
 }

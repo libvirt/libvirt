@@ -1,0 +1,4 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='allow'>Broadwell-noTSX</model>
+  <vendor>Intel</vendor>
+</cpu>

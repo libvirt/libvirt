@@ -500,28 +500,38 @@
       <feature name='rdtscp'/>
     </model>
 
-    <model name='Haswell'>
+    <model name='Haswell-noTSX'>
       <model name='SandyBridge'/>
       <feature name='fma'/>
       <feature name='pcid'/>
       <feature name='movbe'/>
       <feature name='fsgsbase'/>
       <feature name='bmi1'/>
-      <feature name='hle'/>
       <feature name='avx2'/>
       <feature name='smep'/>
       <feature name='bmi2'/>
       <feature name='erms'/>
       <feature name='invpcid'/>
+    </model>
+
+    <model name='Haswell'>
+      <model name='Haswell-noTSX'/>
+      <feature name='hle'/>
       <feature name='rtm'/>
     </model>
 
-    <model name='Broadwell'>
-      <model name='Haswell'/>
+    <model name='Broadwell-noTSX'>
+      <model name='Haswell-noTSX'/>
       <feature name='3dnowprefetch'/>
       <feature name='rdseed'/>
       <feature name='adx'/>
       <feature name='smap'/>
+    </model>
+
+    <model name='Broadwell'>
+      <model name='Broadwell-noTSX'/>
+      <feature name='hle'/>
+      <feature name='rtm'/>
     </model>
 
     <!-- AMD CPUs -->
