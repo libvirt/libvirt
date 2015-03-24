@@ -1083,6 +1083,7 @@ virBitmapToData;
 virBufferAdd;
 virBufferAddBuffer;
 virBufferAddChar;
+virBufferAddStr;
 virBufferAdjustIndent;
 virBufferAsprintf;
 virBufferCheckErrorInternal;
