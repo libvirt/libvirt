@@ -3290,6 +3290,10 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
 
     *source = NULL;
 
+    /* return 1 for empty sources */
+    if (virStorageSourceIsEmpty(src))
+        return 1;
+
     if (conn) {
         if (actualType == VIR_STORAGE_TYPE_NETWORK &&
             src->auth &&
@@ -3319,11 +3323,6 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
-        if (!src->path) {
-            ret = 1;
-            goto cleanup;
-        }
-
         if (VIR_STRDUP(*source, src->path) < 0)
             goto cleanup;
 
