@@ -3264,6 +3264,9 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
 
         case VIR_STORAGE_NET_PROTOCOL_LAST:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected network protocol '%s'"),
+                           virStorageNetProtocolTypeToString(src->protocol));
             goto cleanup;
     }
 
