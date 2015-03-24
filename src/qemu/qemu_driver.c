@@ -4367,7 +4367,7 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
     def = dev.data.net;
 
     if (!virDomainNetGetActualTrustGuestRxFilters(def)) {
-        VIR_WARN("ignore NIC_RX_FILTER_CHANGED event for network "
+        VIR_DEBUG("ignore NIC_RX_FILTER_CHANGED event for network "
                   "device %s in domain %s",
                   def->info.alias, vm->def->name);
         /* not sending "query-rx-filter" will also suppress any
