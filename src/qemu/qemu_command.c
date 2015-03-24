@@ -6612,6 +6612,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     size_t ncpus = 0;
     char **cpus = NULL;
     virCPUDataPtr data = NULL;
+    virCPUDataPtr hostData = NULL;
     char *compare_msg = NULL;
     virCPUCompareResult cmp;
     const char *preferred;
@@ -6643,16 +6644,42 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
     /* For non-KVM, CPU features are emulated, so host compat doesn't matter */
     if (compareAgainstHost) {
+        bool noTSX = false;
+
         cmp = cpuGuestData(host, cpu, &data, &compare_msg);
         switch (cmp) {
         case VIR_CPU_COMPARE_INCOMPATIBLE:
+            if (cpuEncode(host->arch, host, NULL, &hostData,
+                          NULL, NULL, NULL, NULL) == 0 &&
+                (!cpuHasFeature(hostData, "hle") ||
+                 !cpuHasFeature(hostData, "rtm")) &&
+                (STREQ_NULLABLE(cpu->model, "Haswell") ||
+                 STREQ_NULLABLE(cpu->model, "Broadwell")))
+                noTSX = true;
+
             if (compare_msg) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("guest and host CPU are not compatible: %s"),
-                               compare_msg);
+                if (noTSX) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("guest and host CPU are not compatible: "
+                                     "%s; try using '%s-noTSX' CPU model"),
+                                   compare_msg, cpu->model);
+                } else {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("guest and host CPU are not compatible: "
+                                     "%s"),
+                                   compare_msg);
+                }
             } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("guest CPU is not compatible with host CPU"));
+                if (noTSX) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("guest CPU is not compatible with host "
+                                     "CPU; try using '%s-noTSX' CPU model"),
+                                   cpu->model);
+                } else {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("guest CPU is not compatible with host "
+                                     "CPU"));
+                }
             }
             /* fall through */
         case VIR_CPU_COMPARE_ERROR:
@@ -6746,6 +6773,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     virObjectUnref(caps);
     VIR_FREE(compare_msg);
     cpuDataFree(data);
+    cpuDataFree(hostData);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
     return ret;
