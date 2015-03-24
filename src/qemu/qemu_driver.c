@@ -4887,6 +4887,10 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
+    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
+        goto endjob;
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST)) {
         if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
             goto endjob;
@@ -4904,10 +4908,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     maximum = (flags & VIR_DOMAIN_VCPU_MAXIMUM) != 0;
     flags &= ~VIR_DOMAIN_VCPU_MAXIMUM;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto endjob;
 
     /* MAXIMUM cannot be mixed with LIVE.  */
     if (maximum && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
@@ -4955,12 +4955,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
         if (ncpuinfo < 0)
             goto endjob;
-
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
-            goto endjob;
-        }
 
         if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
             goto endjob;
