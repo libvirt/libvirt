@@ -588,8 +588,9 @@
         <code>type='qcow2'</code> volumes. Valid values are <code>0.10</code>
         and <code>1.1</code> so far, specifying QEMU version the images should
         be compatible with. If the <code>feature</code> element is present,
-        1.1 is used. If omitted, qemu-img default is used.
-        <span class="since">Since 1.1.0</span>
+        1.1 is used.
+        <span class="since">Since 1.1.0</span> If omitted, 0.10 is used.
+        <span class="since">Since 1.1.2</span>
       </dd>
       <dt><code>nocow</code></dt>
       <dd>Turn off COW of the newly created volume. So far, this is only valid
