@@ -31,7 +31,7 @@
 static int
 testCompareXMLToXML(const char *inxmldata, const char *outxmldata)
 {
-    int ret = 1;
+    int ret = -1;
 
     if (STRNEQ(outxmldata, inxmldata)) {
         virtTestDifference(stderr, outxmldata, inxmldata);
@@ -143,7 +143,7 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-   if (virAsprintf(&xmlFile, "%s/qemucaps2xmldata/%s.xml",
+    if (virAsprintf(&xmlFile, "%s/qemucaps2xmldata/%s.xml",
                     abs_srcdir, data->base) < 0)
         goto cleanup;
 
