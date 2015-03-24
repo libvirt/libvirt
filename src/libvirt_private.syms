@@ -297,7 +297,7 @@ virDomainGraphicsTypeFromString;
 virDomainGraphicsTypeToString;
 virDomainGraphicsVNCSharePolicyTypeFromString;
 virDomainGraphicsVNCSharePolicyTypeToString;
-virDomainHasDiskMirror;
+virDomainHasBlockjob;
 virDomainHasNet;
 virDomainHostdevCapsTypeToString;
 virDomainHostdevDefAlloc;

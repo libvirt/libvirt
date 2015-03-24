@@ -2660,7 +2660,8 @@ int virDomainDiskSourceParse(xmlNodePtr node,
                              xmlXPathContextPtr ctxt,
                              virStorageSourcePtr src);
 
-bool virDomainHasDiskMirror(virDomainObjPtr vm);
+bool virDomainHasBlockjob(virDomainObjPtr vm,
+                          bool copy_only);
 
 int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);

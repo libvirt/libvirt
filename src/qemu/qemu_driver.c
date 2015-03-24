@@ -7387,7 +7387,7 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
 
     virObjectRef(vm);
     def = NULL;
-    if (virDomainHasDiskMirror(vm)) {
+    if (virDomainHasBlockjob(vm, true)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
                        _("domain has active block job"));
         virDomainObjAssignDef(vm, NULL, false, NULL);
@@ -15237,8 +15237,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (virDomainHasDiskMirror(vm)) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
+    if (virDomainHasBlockjob(vm, false)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain has active block job"));
         goto cleanup;
     }
