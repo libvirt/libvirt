@@ -16646,7 +16646,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
 
     if (src->mem.memory_slots != dst->mem.memory_slots) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain memory slots count '%u' doesn't match source '%u"),
+                       _("Target domain memory slots count '%u' doesn't match source '%u'"),
                        dst->mem.memory_slots, src->mem.memory_slots);
         goto error;
     }
