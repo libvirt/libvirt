@@ -878,7 +878,28 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
 }
 
 static int
-virDomainVirtioSerialAddrNext(virDomainVirtioSerialAddrSetPtr addrs,
+virDomainVirtioSerialAddrSetAutoaddController(virDomainDefPtr def,
+                                              virDomainVirtioSerialAddrSetPtr addrs,
+                                              unsigned int idx)
+{
+    int contidx;
+
+    if (virDomainDefMaybeAddController(def,
+                                       VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+                                       idx, -1) < 0)
+        return -1;
+
+    contidx = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, idx);
+
+    if (virDomainVirtioSerialAddrSetAddController(addrs, def->controllers[contidx]) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+virDomainVirtioSerialAddrNext(virDomainDefPtr def,
+                              virDomainVirtioSerialAddrSetPtr addrs,
                               virDomainDeviceVirtioSerialAddress *addr,
                               bool allowZero)
 {
@@ -902,6 +923,20 @@ virDomainVirtioSerialAddrNext(virDomainVirtioSerialAddrSetPtr addrs,
         if ((port = virBitmapNextClearBit(map, startPort)) >= 0) {
             controller = addrs->controllers[i]->idx;
             goto success;
+        }
+    }
+
+    if (def) {
+        for (i = 0; i < INT_MAX; i++) {
+            int idx = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, i);
+
+            if (idx == -1) {
+                if (virDomainVirtioSerialAddrSetAutoaddController(def, addrs, i) < 0)
+                    goto cleanup;
+                controller = i;
+                port = startPort + 1;
+                goto success;
+            }
         }
     }
 
@@ -958,7 +993,8 @@ virDomainVirtioSerialAddrNextFromController(virDomainVirtioSerialAddrSetPtr addr
  * or assign a virtio serial address to the device
  */
 int
-virDomainVirtioSerialAddrAutoAssign(virDomainVirtioSerialAddrSetPtr addrs,
+virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
+                                    virDomainVirtioSerialAddrSetPtr addrs,
                                     virDomainDeviceInfoPtr info,
                                     bool allowZero)
 {
@@ -967,12 +1003,13 @@ virDomainVirtioSerialAddrAutoAssign(virDomainVirtioSerialAddrSetPtr addrs,
         info->addr.vioserial.port)
         return virDomainVirtioSerialAddrReserve(NULL, NULL, info, addrs);
     else
-        return virDomainVirtioSerialAddrAssign(addrs, info, allowZero, portOnly);
+        return virDomainVirtioSerialAddrAssign(def, addrs, info, allowZero, portOnly);
 }
 
 
 int
-virDomainVirtioSerialAddrAssign(virDomainVirtioSerialAddrSetPtr addrs,
+virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
+                                virDomainVirtioSerialAddrSetPtr addrs,
                                 virDomainDeviceInfoPtr info,
                                 bool allowZero,
                                 bool portOnly)
@@ -988,7 +1025,7 @@ virDomainVirtioSerialAddrAssign(virDomainVirtioSerialAddrSetPtr addrs,
                                                         &ptr->addr.vioserial) < 0)
             goto cleanup;
     } else {
-        if (virDomainVirtioSerialAddrNext(addrs, &ptr->addr.vioserial,
+        if (virDomainVirtioSerialAddrNext(def, addrs, &ptr->addr.vioserial,
                                           allowZero) < 0)
             goto cleanup;
     }

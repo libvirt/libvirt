@@ -1557,7 +1557,8 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO)
         allowZero = true;
 
-    if (virDomainVirtioSerialAddrAutoAssign(priv->vioserialaddrs,
+    if (virDomainVirtioSerialAddrAutoAssign(NULL,
+                                            priv->vioserialaddrs,
                                             &chr->info,
                                             allowZero) < 0)
         goto cleanup;

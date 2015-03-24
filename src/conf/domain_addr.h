@@ -208,17 +208,19 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs);
 bool
 virDomainVirtioSerialAddrIsComplete(virDomainDeviceInfoPtr info);
 int
-virDomainVirtioSerialAddrAutoAssign(virDomainVirtioSerialAddrSetPtr addrs,
+virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
+                                    virDomainVirtioSerialAddrSetPtr addrs,
                                     virDomainDeviceInfoPtr info,
                                     bool allowZero)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
-virDomainVirtioSerialAddrAssign(virDomainVirtioSerialAddrSetPtr addrs,
+virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
+                                virDomainVirtioSerialAddrSetPtr addrs,
                                 virDomainDeviceInfoPtr info,
                                 bool allowZero,
                                 bool portOnly)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
 virDomainVirtioSerialAddrReserve(virDomainDefPtr def,
