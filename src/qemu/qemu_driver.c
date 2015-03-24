@@ -4846,7 +4846,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef;
     int ret = -1;
-    bool maximum;
     unsigned int maxvcpus = 0;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
@@ -4906,13 +4905,10 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
     }
 
-    maximum = (flags & VIR_DOMAIN_VCPU_MAXIMUM) != 0;
-    flags &= ~VIR_DOMAIN_VCPU_MAXIMUM;
-
     /* MAXIMUM cannot be mixed with LIVE.  */
-    if (maximum && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+    if ((flags & VIR_DOMAIN_VCPU_MAXIMUM) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("cannot adjust maximum on running domain"));
+                       _("cannot adjust maximum vcpus on running domain"));
         goto endjob;
     }
 
@@ -4922,7 +4918,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (!maxvcpus || maxvcpus > persistentDef->maxvcpus)
             maxvcpus = persistentDef->maxvcpus;
     }
-    if (!maximum && nvcpus > maxvcpus) {
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && nvcpus > maxvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
                          " vcpus for the domain: %d > %d"),
@@ -4933,8 +4929,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("changing of maximum vCPU count isn't supported "
-                             "via guest agent"));
+                           _("setting vcpus via guest agent isn't supported "
+                             "on offline domain"));
             goto endjob;
         }
 
@@ -4991,7 +4987,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                                     i);
             }
 
-            if (maximum) {
+            if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
                 persistentDef->maxvcpus = nvcpus;
                 if (nvcpus < persistentDef->vcpus)
                     persistentDef->vcpus = nvcpus;
