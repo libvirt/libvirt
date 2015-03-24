@@ -444,6 +444,7 @@ qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->origname);
 
     virCondDestroy(&priv->unplugFinished);
+    virStringFreeList(priv->qemuDevices);
     virChrdevFree(priv->devs);
 
     /* This should never be non-NULL if we get here, but just in case... */
