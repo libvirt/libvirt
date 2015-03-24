@@ -310,6 +310,43 @@ static int testBufAddBuffer(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
+struct testBufAddStrData {
+    const char *data;
+    const char *expect;
+};
+
+static int
+testBufAddStr(const void *opaque ATTRIBUTE_UNUSED)
+{
+    const struct testBufAddStrData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual;
+    int ret = -1;
+
+    virBufferAddLit(&buf, "<c>\n");
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAddStr(&buf, data->data);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</c>");
+
+    if (!(actual = virBufferContentAndReset(&buf))) {
+        TEST_ERROR("buf is empty");
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(actual, data->expect)) {
+        TEST_ERROR("testBufAddStr(): Strings don't match:\n");
+        virtTestDifference(stderr, data->expect, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -329,6 +366,18 @@ mymain(void)
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
+
+#define DO_TEST_ADD_STR(DATA, EXPECT)                                  \
+    do {                                                               \
+        struct testBufAddStrData info = { DATA, EXPECT };              \
+        if (virtTestRun("Buf: AddStr", testBufAddStr, &info) < 0)      \
+            ret = -1;                                                  \
+    } while (0)
+
+    DO_TEST_ADD_STR("", "<c>\n</c>");
+    DO_TEST_ADD_STR("<a/>", "<c>\n  <a/></c>");
+    DO_TEST_ADD_STR("<a/>\n", "<c>\n  <a/>\n</c>");
+    DO_TEST_ADD_STR("<b>\n  <a/>\n</b>\n", "<c>\n  <b>\n    <a/>\n  </b>\n</c>");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

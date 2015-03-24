@@ -96,5 +96,6 @@ void virBufferAdjustIndent(virBufferPtr buf, int indent);
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
+void virBufferAddStr(virBufferPtr buf, const char *str);
 
 #endif /* __VIR_BUFFER_H__ */

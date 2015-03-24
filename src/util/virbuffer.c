@@ -756,3 +756,32 @@ virBufferTrim(virBufferPtr buf, const char *str, int len)
     buf->use -= len < 0 ? len2 : len;
     buf->content[buf->use] = '\0';
 }
+
+
+/**
+ * virBufferAddStr:
+ * @buf: the buffer to append to
+ * @str: string to append
+ *
+ * Appends @str to @buffer. Applies autoindentation on the separate lines of
+ * @str.
+ */
+void
+virBufferAddStr(virBufferPtr buf,
+                const char *str)
+{
+    const char *end;
+
+    if (!buf || !str || buf->error)
+        return;
+
+    while (*str) {
+        if ((end = strchr(str, '\n'))) {
+            virBufferAdd(buf, str, (end - str) + 1);
+            str = end + 1;
+        } else {
+            virBufferAdd(buf, str, -1);
+            break;
+        }
+    }
+}
