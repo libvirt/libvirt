@@ -2313,8 +2313,16 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
              * is no way to change the individual node sizes with this API */
             if (virDomainNumaGetNodeCount(persistentDef->numa) > 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("maximum memory size of a domain with NUMA "
+                               _("initial memory size of a domain with NUMA "
                                  "nodes cannot be modified with this API"));
+                goto endjob;
+            }
+
+            if (persistentDef->mem.max_memory &&
+                persistentDef->mem.max_memory < newmem) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("cannot set initial memory size greater than "
+                                 "the maximum memory size"));
                 goto endjob;
             }
 
