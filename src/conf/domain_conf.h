@@ -2565,6 +2565,12 @@ virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       virDomainXMLOptionPtr xmlopt,
                                       unsigned int expectedVirtTypes,
                                       unsigned int flags);
+virDomainObjPtr virDomainObjParseNode(xmlDocPtr xml,
+                                      xmlNodePtr root,
+                                      virCapsPtr caps,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      unsigned int expectedVirtTypes,
+                                      unsigned int flags);
 virDomainObjPtr virDomainObjParseFile(const char *filename,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
@@ -2579,6 +2585,9 @@ int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,
+                         unsigned int flags);
+char *virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
+                         virDomainObjPtr obj,
                          unsigned int flags);
 int virDomainDefFormatInternal(virDomainDefPtr def,
                                unsigned int flags,

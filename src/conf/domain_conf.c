@@ -15580,7 +15580,7 @@ virDomainDefParseNode(xmlDocPtr xml,
 }
 
 
-static virDomainObjPtr
+virDomainObjPtr
 virDomainObjParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
                       virCapsPtr caps,
@@ -21252,7 +21252,7 @@ virDomainDefFormat(virDomainDefPtr def, unsigned int flags)
 }
 
 
-static char *
+char *
 virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr obj,
                    unsigned int flags)

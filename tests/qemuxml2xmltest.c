@@ -106,6 +106,113 @@ testXML2XMLInactive(const void *opaque)
 }
 
 
+static const char testStatusXMLPrefix[] =
+"<domstatus state='running' reason='booted' pid='3803518'>\n"
+"  <taint flag='high-privileges'/>\n"
+"  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>\n"
+"  <vcpus>\n"
+"    <vcpu pid='3803519'/>\n"
+"  </vcpus>\n"
+"  <qemuCaps>\n"
+"    <flag name='vnc-colon'/>\n"
+"    <flag name='no-reboot'/>\n"
+"    <flag name='drive'/>\n"
+"    <flag name='name'/>\n"
+"    <flag name='uuid'/>\n"
+"    <flag name='vnet-hdr'/>\n"
+"    <flag name='qxl.vgamem_mb'/>\n"
+"    <flag name='qxl-vga.vgamem_mb'/>\n"
+"    <flag name='pc-dimm'/>\n"
+"  </qemuCaps>\n"
+"  <devices>\n"
+"    <device alias='balloon0'/>\n"
+"    <device alias='video0'/>\n"
+"    <device alias='serial0'/>\n"
+"    <device alias='net0'/>\n"
+"    <device alias='usb'/>\n"
+"  </devices>\n";
+
+static const char testStatusXMLSuffix[] =
+"</domstatus>\n";
+
+
+static int
+testCompareStatusXMLToXMLFiles(const void *opaque)
+{
+    const struct testInfo *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    xmlDocPtr xml = NULL;
+    virDomainObjPtr obj = NULL;
+    char *expect = NULL;
+    char *actual = NULL;
+    char *source = NULL;
+    int ret = -1;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
+
+    /* construct faked source status XML */
+    virBufferAdd(&buf, testStatusXMLPrefix, -1);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAddStr(&buf, data->inFile);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAdd(&buf, testStatusXMLSuffix, -1);
+
+    if (!(source = virBufferContentAndReset(&buf))) {
+        fprintf(stderr, "Failed to create the source XML");
+        goto cleanup;
+    }
+
+    /* construct the expect string */
+    virBufferAdd(&buf, testStatusXMLPrefix, -1);
+    virBufferAdjustIndent(&buf, 2);
+    virBufferAddStr(&buf, data->outActiveFile);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAdd(&buf, testStatusXMLSuffix, -1);
+
+    if (!(expect = virBufferContentAndReset(&buf))) {
+        fprintf(stderr, "Failed to create the expect XML");
+        goto cleanup;
+    }
+
+    /* parse the fake source status XML */
+    if (!(xml = virXMLParseString(source, "(domain_status_test_XML)")) ||
+        !(obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
+                                      driver.caps, driver.xmlopt,
+                                      QEMU_EXPECTED_VIRT_TYPES,
+                                      VIR_DOMAIN_DEF_PARSE_STATUS |
+                                      VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
+                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST))) {
+        fprintf(stderr, "Failed to parse domain status XML:\n%s", source);
+        goto cleanup;
+    }
+
+    /* format it back */
+    if (!(actual = virDomainObjFormat(driver.xmlopt, obj,
+                                      VIR_DOMAIN_DEF_FORMAT_SECURE))) {
+        fprintf(stderr, "Failed to format domain status XML");
+        goto cleanup;
+    }
+
+    if (STRNEQ(actual, expect)) {
+        virtTestDifferenceFull(stderr,
+                               expect, data->outActiveName,
+                               actual, data->inName);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    xmlKeepBlanksDefault(keepBlanksDefault);
+    xmlFreeDoc(xml);
+    virObjectUnref(obj);
+    VIR_FREE(expect);
+    VIR_FREE(actual);
+    VIR_FREE(source);
+    return ret;
+}
+
+
 static void
 testInfoFree(struct testInfo *info)
 {
@@ -217,6 +324,10 @@ mymain(void)
         if (info.outActiveName) {                                              \
             if (virtTestRun("QEMU XML-2-XML-active " name,                     \
                             testXML2XMLActive, &info) < 0)                     \
+                ret = -1;                                                      \
+                                                                               \
+            if (virtTestRun("QEMU XML-2-XML-status " name,                     \
+                            testCompareStatusXMLToXMLFiles, &info) < 0)        \
                 ret = -1;                                                      \
         }                                                                      \
         testInfoFree(&info);                                                   \
