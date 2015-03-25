@@ -6790,9 +6790,9 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
- * "iothreadsinfo" command
+ * "iothreadinfo" command
  */
-static const vshCmdInfo info_iothreads[] = {
+static const vshCmdInfo info_iothreadinfo[] = {
     {.name = "help",
      .data = N_("view domain IOThreads")
     },
@@ -6801,7 +6801,7 @@ static const vshCmdInfo info_iothreads[] = {
     },
     {.name = NULL}
 };
-static const vshCmdOptDef opts_iothreads[] = {
+static const vshCmdOptDef opts_iothreadinfo[] = {
     {.name = "domain",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -6823,7 +6823,7 @@ static const vshCmdOptDef opts_iothreads[] = {
 };
 
 static bool
-cmdIOThreadsInfo(vshControl *ctl, const vshCmd *cmd)
+cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool config = vshCommandOptBool(cmd, "config");
@@ -12891,10 +12891,10 @@ const vshCmdDef domManagementCmds[] = {
      .info = info_inject_nmi,
      .flags = 0
     },
-    {.name = "iothreadsinfo",
-     .handler = cmdIOThreadsInfo,
-     .opts = opts_iothreads,
-     .info = info_iothreads,
+    {.name = "iothreadinfo",
+     .handler = cmdIOThreadInfo,
+     .opts = opts_iothreadinfo,
+     .info = info_iothreadinfo,
      .flags = 0
     },
     {.name = "iothreadpin",

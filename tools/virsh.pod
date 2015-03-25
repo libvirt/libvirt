@@ -1378,7 +1378,7 @@ If I<--timeout> is specified, the command gives up waiting for events
 after I<seconds> have elapsed.   With I<--loop>, the command prints all
 events until a timeout or interrupt key.
 
-=item B<iothreadsinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
+=item B<iothreadinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
 
 Display basic domain IOThreads information including the IOThread ID and
 the CPU Affinity for each IOThread.
@@ -1394,9 +1394,9 @@ then get the IOThread data based on the current guest state.
 [[I<--live>] [I<--config>] | [I<--current>]]
 
 Change the pinning of a domain IOThread to host physical CPUs. In order
-to retrieve a list of all IOThreads, use B<iothreadsinfo>. To pin an
+to retrieve a list of all IOThreads, use B<iothreadinfo>. To pin an
 I<iothread> specify the I<cpulist> desired for the IOThread ID as listed
-in the B<iothreadsinfo> output.
+in the B<iothreadinfo> output.
 
 I<cpulist> is a list of physical CPU numbers. Its syntax is a comma
 separated list and a special markup using '-' and '^' (ex. '0-4', '0-3,^2') can
