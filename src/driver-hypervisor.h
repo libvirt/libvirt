@@ -393,6 +393,16 @@ typedef int
                            unsigned int flags);
 
 typedef int
+(*virDrvDomainAddIOThread)(virDomainPtr domain,
+                           unsigned int iothread_id,
+                           unsigned int flags);
+
+typedef int
+(*virDrvDomainDelIOThread)(virDomainPtr domain,
+                           unsigned int iothread_id,
+                           unsigned int flags);
+
+typedef int
 (*virDrvDomainGetSecurityLabel)(virDomainPtr domain,
                                 virSecurityLabelPtr seclabel);
 
@@ -1273,6 +1283,8 @@ struct _virHypervisorDriver {
     virDrvDomainGetMaxVcpus domainGetMaxVcpus;
     virDrvDomainGetIOThreadInfo domainGetIOThreadInfo;
     virDrvDomainPinIOThread domainPinIOThread;
+    virDrvDomainAddIOThread domainAddIOThread;
+    virDrvDomainDelIOThread domainDelIOThread;
     virDrvDomainGetSecurityLabel domainGetSecurityLabel;
     virDrvDomainGetSecurityLabelList domainGetSecurityLabelList;
     virDrvNodeGetSecurityModel nodeGetSecurityModel;

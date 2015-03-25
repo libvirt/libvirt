@@ -8020,6 +8020,124 @@ virDomainPinIOThread(virDomainPtr domain,
 
 
 /**
+ * virDomainAddIOThread:
+ * @domain: a domain object
+ * @iothread_id: the specific IOThread ID value to add
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Dynamically add an IOThread to the domain. If @iothread_id is a positive
+ * non-zero value, then attempt to add the specific IOThread ID and error
+ * out if the iothread id already exists.
+ *
+ * Note that this call can fail if the underlying virtualization hypervisor
+ * does not support it or if growing the number is arbitrarily limited.
+ * This function requires privileged access to the hypervisor.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainAddIOThread(virDomainPtr domain,
+                     unsigned int iothread_id,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "iothread_id=%u, flags=%x",
+                     iothread_id, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainAddIOThread) {
+        int ret;
+        ret = conn->driver->domainAddIOThread(domain, iothread_id, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainDelIOThread:
+ * @domain: a domain object
+ * @iothread_id: the specific IOThread ID value to delete
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Dynamically delete an IOThread from the domain. The @iothread_id to be
+ * deleted must not have a resource associated with it and can be any of
+ * the currently valid IOThread ID's.
+ *
+ * Note that this call can fail if the underlying virtualization hypervisor
+ * does not support it or if reducing the number is arbitrarily limited.
+ * This function requires privileged access to the hypervisor.
+ *
+ * @flags may include VIR_DOMAIN_AFFECT_LIVE or VIR_DOMAIN_AFFECT_CONFIG.
+ * Both flags may be set.
+ * If VIR_DOMAIN_AFFECT_LIVE is set, the change affects a running domain
+ * and may fail if domain is not alive.
+ * If VIR_DOMAIN_AFFECT_CONFIG is set, the change affects persistent state,
+ * and will fail for transient domains. If neither flag is specified (that is,
+ * @flags is VIR_DOMAIN_AFFECT_CURRENT), then an inactive domain modifies
+ * persistent setup, while an active domain is hypervisor-dependent on whether
+ * just live or both live and persistent state is changed.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainDelIOThread(virDomainPtr domain,
+                     unsigned int iothread_id,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "iothread_id=%u, flags=%x", iothread_id, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+    virCheckNonZeroArgGoto(iothread_id, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainDelIOThread) {
+        int ret;
+        ret = conn->driver->domainDelIOThread(domain, iothread_id, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainGetSecurityLabel:
  * @domain: a domain object
  * @seclabel: pointer to a virSecurityLabel structure

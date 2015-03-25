@@ -1615,6 +1615,12 @@ int                  virDomainPinIOThread(virDomainPtr domain,
                                           unsigned char *cpumap,
                                           int maplen,
                                           unsigned int flags);
+int                  virDomainAddIOThread(virDomainPtr domain,
+                                          unsigned int iothread_id,
+                                          unsigned int flags);
+int                  virDomainDelIOThread(virDomainPtr domain,
+                                          unsigned int iothread_id,
+                                          unsigned int flags);
 
 /**
  * VIR_USE_CPU:

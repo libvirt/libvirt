@@ -704,4 +704,10 @@ LIBVIRT_1.2.14 {
         virDomainInterfaceFree;
 } LIBVIRT_1.2.12;
 
+LIBVIRT_1.2.15 {
+    global:
+        virDomainAddIOThread;
+        virDomainDelIOThread;
+} LIBVIRT_1.2.14;
+
 # .... define new API here using predicted next version number ....
