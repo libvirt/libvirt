@@ -25,10 +25,8 @@
 #ifndef __VIR_UTIL_H__
 # define __VIR_UTIL_H__
 
-# include "verify.h"
 # include "internal.h"
 # include <unistd.h>
-# include <sys/select.h>
 # include <sys/types.h>
 
 # ifndef MIN
