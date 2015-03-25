@@ -851,11 +851,11 @@ void virNetServerClientDispose(void *obj)
     PROBE(RPC_SERVER_CLIENT_DISPOSE,
           "client=%p", client);
 
-    virObjectUnref(client->identity);
-
     if (client->privateData &&
         client->privateDataFreeFunc)
         client->privateDataFreeFunc(client->privateData);
+
+    virObjectUnref(client->identity);
 
 #if WITH_SASL
     virObjectUnref(client->sasl);
