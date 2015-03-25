@@ -151,6 +151,7 @@ remoteRelayDomainEventCheckACL(virNetServerClientPtr client,
     /* For now, we just create a virDomainDef with enough contents to
      * satisfy what viraccessdriverpolkit.c references.  This is a bit
      * fragile, but I don't know of anything better.  */
+    memset(&def, 0, sizeof(def));
     def.name = dom->name;
     memcpy(def.uuid, dom->uuid, VIR_UUID_BUFLEN);
 
