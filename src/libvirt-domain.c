@@ -7894,7 +7894,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
 
 
 /**
- * virDomainGetIOThreadsInfo:
+ * virDomainGetIOThreadInfo:
  * @dom: a domain object
  * @info: pointer to an array of virDomainIOThreadInfo structures (OUT)
  * @flags: bitwise-OR of virDomainModificationImpact
@@ -7910,9 +7910,9 @@ virDomainGetMaxVcpus(virDomainPtr domain)
  * then calling free() on @info. On error, @info is set to NULL.
  */
 int
-virDomainGetIOThreadsInfo(virDomainPtr dom,
-                          virDomainIOThreadInfoPtr **info,
-                          unsigned int flags)
+virDomainGetIOThreadInfo(virDomainPtr dom,
+                         virDomainIOThreadInfoPtr **info,
+                         unsigned int flags)
 {
     VIR_DOMAIN_DEBUG(dom, "info=%p flags=%x", info, flags);
 
@@ -7932,9 +7932,9 @@ virDomainGetIOThreadsInfo(virDomainPtr dom,
         goto error;
     }
 
-    if (dom->conn->driver->domainGetIOThreadsInfo) {
+    if (dom->conn->driver->domainGetIOThreadInfo) {
         int ret;
-        ret = dom->conn->driver->domainGetIOThreadsInfo(dom, info, flags);
+        ret = dom->conn->driver->domainGetIOThreadInfo(dom, info, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -7993,7 +7993,7 @@ virDomainIOThreadInfoFree(virDomainIOThreadInfoPtr info)
  * just live or both live and persistent state is changed.
  * Not all hypervisors can support all flag combinations.
  *
- * See also virDomainGetIOThreadsInfo for querying this information.
+ * See also virDomainGetIOThreadInfo for querying this information.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */

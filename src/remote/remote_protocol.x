@@ -86,7 +86,7 @@ const REMOTE_VCPUINFO_MAX = 16384;
 const REMOTE_CPUMAPS_MAX = 8388608;
 
 /* Upper limit on number of info fields returned by virDomainGetIOThreads. */
-const REMOTE_IOTHREADS_INFO_MAX = 16384;
+const REMOTE_IOTHREAD_INFO_MAX = 16384;
 
 /* Upper limit on migrate cookie. */
 const REMOTE_MIGRATE_COOKIE_MAX = 4194304;
@@ -1195,13 +1195,13 @@ struct remote_domain_iothread_info {
     opaque cpumap<REMOTE_CPUMAP_MAX>;
 };
 
-struct remote_domain_get_iothreads_info_args {
+struct remote_domain_get_iothread_info_args {
     remote_nonnull_domain dom;
     unsigned int flags;
 };
 
-struct remote_domain_get_iothreads_info_ret {
-    remote_domain_iothread_info info<REMOTE_IOTHREADS_INFO_MAX>;
+struct remote_domain_get_iothread_info_ret {
+    remote_domain_iothread_info info<REMOTE_IOTHREAD_INFO_MAX>;
     unsigned int ret;
 };
 
@@ -5629,7 +5629,7 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
+    REMOTE_PROC_DOMAIN_GET_IOTHREAD_INFO = 351,
 
     /**
      * @generate: both

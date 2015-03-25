@@ -2270,12 +2270,12 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteDispatchDomainGetIOThreadsInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                     virNetServerClientPtr client,
-                                     virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                                     virNetMessageErrorPtr rerr,
-                                     remote_domain_get_iothreads_info_args *args,
-                                     remote_domain_get_iothreads_info_ret *ret)
+remoteDispatchDomainGetIOThreadInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                    virNetServerClientPtr client,
+                                    virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                    virNetMessageErrorPtr rerr,
+                                    remote_domain_get_iothread_info_args *args,
+                                    remote_domain_get_iothread_info_ret *ret)
 {
     int rv = -1;
     size_t i;
@@ -2293,13 +2293,13 @@ remoteDispatchDomainGetIOThreadsInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if ((ninfo = virDomainGetIOThreadsInfo(dom, &info, args->flags)) < 0)
+    if ((ninfo = virDomainGetIOThreadInfo(dom, &info, args->flags)) < 0)
         goto cleanup;
 
-    if (ninfo > REMOTE_IOTHREADS_INFO_MAX) {
+    if (ninfo > REMOTE_IOTHREAD_INFO_MAX) {
         virReportError(VIR_ERR_RPC,
                        _("Too many IOThreads in info: %d for limit %d"),
-                       ninfo, REMOTE_IOTHREADS_INFO_MAX);
+                       ninfo, REMOTE_IOTHREAD_INFO_MAX);
         goto cleanup;
     }
 

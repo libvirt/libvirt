@@ -2316,15 +2316,15 @@ remoteDomainGetVcpus(virDomainPtr domain,
 }
 
 static int
-remoteDomainGetIOThreadsInfo(virDomainPtr dom,
-                             virDomainIOThreadInfoPtr **info,
-                             unsigned int flags)
+remoteDomainGetIOThreadInfo(virDomainPtr dom,
+                            virDomainIOThreadInfoPtr **info,
+                            unsigned int flags)
 {
     int rv = -1;
     size_t i;
     struct private_data *priv = dom->conn->privateData;
-    remote_domain_get_iothreads_info_args args;
-    remote_domain_get_iothreads_info_ret ret;
+    remote_domain_get_iothread_info_args args;
+    remote_domain_get_iothread_info_ret ret;
     remote_domain_iothread_info *src;
     virDomainIOThreadInfoPtr *info_ret = NULL;
 
@@ -2336,17 +2336,17 @@ remoteDomainGetIOThreadsInfo(virDomainPtr dom,
 
     memset(&ret, 0, sizeof(ret));
 
-    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO,
-             (xdrproc_t)xdr_remote_domain_get_iothreads_info_args,
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_IOTHREAD_INFO,
+             (xdrproc_t)xdr_remote_domain_get_iothread_info_args,
              (char *)&args,
-             (xdrproc_t)xdr_remote_domain_get_iothreads_info_ret,
+             (xdrproc_t)xdr_remote_domain_get_iothread_info_ret,
              (char *)&ret) == -1)
         goto done;
 
-    if (ret.info.info_len > REMOTE_IOTHREADS_INFO_MAX) {
+    if (ret.info.info_len > REMOTE_IOTHREAD_INFO_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Too many IOThreads in info: %d for limit %d"),
-                       ret.info.info_len, REMOTE_IOTHREADS_INFO_MAX);
+                       ret.info.info_len, REMOTE_IOTHREAD_INFO_MAX);
         goto cleanup;
     }
 
@@ -2385,7 +2385,7 @@ remoteDomainGetIOThreadsInfo(virDomainPtr dom,
             virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
-    xdr_free((xdrproc_t)xdr_remote_domain_get_iothreads_info_ret,
+    xdr_free((xdrproc_t)xdr_remote_domain_get_iothread_info_ret,
              (char *) &ret);
 
  done:
@@ -8208,7 +8208,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetEmulatorPinInfo = remoteDomainGetEmulatorPinInfo, /* 0.10.0 */
     .domainGetVcpus = remoteDomainGetVcpus, /* 0.3.0 */
     .domainGetMaxVcpus = remoteDomainGetMaxVcpus, /* 0.3.0 */
-    .domainGetIOThreadsInfo = remoteDomainGetIOThreadsInfo, /* 1.2.14 */
+    .domainGetIOThreadInfo = remoteDomainGetIOThreadInfo, /* 1.2.14 */
     .domainPinIOThread = remoteDomainPinIOThread, /* 1.2.14 */
     .domainGetSecurityLabel = remoteDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = remoteDomainGetSecurityLabelList, /* 0.10.0 */

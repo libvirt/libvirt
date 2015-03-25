@@ -381,9 +381,9 @@ typedef int
 (*virDrvDomainGetMaxVcpus)(virDomainPtr domain);
 
 typedef int
-(*virDrvDomainGetIOThreadsInfo)(virDomainPtr domain,
-                                virDomainIOThreadInfoPtr **info,
-                                unsigned int flags);
+(*virDrvDomainGetIOThreadInfo)(virDomainPtr domain,
+                               virDomainIOThreadInfoPtr **info,
+                               unsigned int flags);
 
 typedef int
 (*virDrvDomainPinIOThread)(virDomainPtr domain,
@@ -1271,7 +1271,7 @@ struct _virHypervisorDriver {
     virDrvDomainGetEmulatorPinInfo domainGetEmulatorPinInfo;
     virDrvDomainGetVcpus domainGetVcpus;
     virDrvDomainGetMaxVcpus domainGetMaxVcpus;
-    virDrvDomainGetIOThreadsInfo domainGetIOThreadsInfo;
+    virDrvDomainGetIOThreadInfo domainGetIOThreadInfo;
     virDrvDomainPinIOThread domainPinIOThread;
     virDrvDomainGetSecurityLabel domainGetSecurityLabel;
     virDrvDomainGetSecurityLabelList domainGetSecurityLabelList;

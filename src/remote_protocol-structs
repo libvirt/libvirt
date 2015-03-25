@@ -814,11 +814,11 @@ struct remote_domain_iothread_info {
                 char *             cpumap_val;
         } cpumap;
 };
-struct remote_domain_get_iothreads_info_args {
+struct remote_domain_get_iothread_info_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
 };
-struct remote_domain_get_iothreads_info_ret {
+struct remote_domain_get_iothread_info_ret {
         struct {
                 u_int              info_len;
                 remote_domain_iothread_info * info_val;
@@ -3014,7 +3014,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE = 348,
         REMOTE_PROC_DOMAIN_GET_FSINFO = 349,
         REMOTE_PROC_DOMAIN_DEFINE_XML_FLAGS = 350,
-        REMOTE_PROC_DOMAIN_GET_IOTHREADS_INFO = 351,
+        REMOTE_PROC_DOMAIN_GET_IOTHREAD_INFO = 351,
         REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
         REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
 };

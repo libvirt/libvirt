@@ -67,7 +67,6 @@ sub fixup_name {
     $name =~ s/Fsfreeze$/FSFreeze/;
     $name =~ s/Fsthaw$/FSThaw/;
     $name =~ s/Fsinfo$/FSInfo/;
-    $name =~ s/Iothreads$/IOThreads/;
     $name =~ s/Iothread$/IOThread/;
     $name =~ s/Scsi/SCSI/;
     $name =~ s/Wwn$/WWN/;

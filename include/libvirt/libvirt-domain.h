@@ -1607,7 +1607,7 @@ struct _virDomainIOThreadInfo {
 
 void                 virDomainIOThreadInfoFree(virDomainIOThreadInfoPtr info);
 
-int                  virDomainGetIOThreadsInfo(virDomainPtr domain,
+int                  virDomainGetIOThreadInfo(virDomainPtr domain,
                                                virDomainIOThreadInfoPtr **info,
                                                unsigned int flags);
 int                  virDomainPinIOThread(virDomainPtr domain,

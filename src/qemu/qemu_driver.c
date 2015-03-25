@@ -5868,9 +5868,9 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
 }
 
 static int
-qemuDomainGetIOThreadsInfo(virDomainPtr dom,
-                           virDomainIOThreadInfoPtr **info,
-                           unsigned int flags)
+qemuDomainGetIOThreadInfo(virDomainPtr dom,
+                          virDomainIOThreadInfoPtr **info,
+                          unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
@@ -5884,7 +5884,7 @@ qemuDomainGetIOThreadsInfo(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainGetIOThreadsInfoEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainGetIOThreadInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -19824,7 +19824,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetEmulatorPinInfo = qemuDomainGetEmulatorPinInfo, /* 0.10.0 */
     .domainGetVcpus = qemuDomainGetVcpus, /* 0.4.4 */
     .domainGetMaxVcpus = qemuDomainGetMaxVcpus, /* 0.4.4 */
-    .domainGetIOThreadsInfo = qemuDomainGetIOThreadsInfo, /* 1.2.14 */
+    .domainGetIOThreadInfo = qemuDomainGetIOThreadInfo, /* 1.2.14 */
     .domainPinIOThread = qemuDomainPinIOThread, /* 1.2.14 */
     .domainGetSecurityLabel = qemuDomainGetSecurityLabel, /* 0.6.1 */
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */

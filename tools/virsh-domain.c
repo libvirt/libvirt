@@ -6849,7 +6849,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
         goto cleanup;
 
-    if ((niothreads = virDomainGetIOThreadsInfo(dom, &info, flags)) < 0) {
+    if ((niothreads = virDomainGetIOThreadInfo(dom, &info, flags)) < 0) {
         vshError(ctl, _("Unable to get domain IOThreads information"));
         goto cleanup;
     }
