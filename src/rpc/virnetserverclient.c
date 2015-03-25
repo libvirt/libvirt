@@ -721,7 +721,7 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 
  error:
     virObjectUnref(ret);
-    ret = 0;
+    ret = NULL;
     goto cleanup;
 }
 
