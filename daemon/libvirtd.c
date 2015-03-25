@@ -105,7 +105,6 @@
 #include "configmake.h"
 
 #include "virdbus.h"
-#include "cpu/cpu_map.h"
 
 VIR_LOG_INIT("daemon.libvirtd");
 
