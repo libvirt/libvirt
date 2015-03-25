@@ -406,6 +406,7 @@ test_libraries = libshunload.la \
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
 		qemuxml2argvmock.la \
+		qemucaps2xmlmock.la \
 		$(NULL)
 endif WITH_QEMU
 
@@ -605,6 +606,12 @@ qemucaps2xmltest_SOURCES = \
 	testutils.c testutils.h \
 	$(NULL)
 qemucaps2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+
+qemucaps2xmlmock_la_SOURCES = \
+	qemucaps2xmlmock.c
+qemucaps2xmlmock_la_CFLAGS = $(AM_CFLAGS)
+qemucaps2xmlmock_la_LDFLAGS = -module -avoid-version \
+		-rpath /evil/libtool/hack/to/force/shared/lib/creation
 
 qemuagenttest_SOURCES = \
 	qemuagenttest.c \
