@@ -2224,7 +2224,7 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
                               int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorIOThreadsInfoPtr *iothreads = NULL;
+    qemuMonitorIOThreadInfoPtr *iothreads = NULL;
     int niothreads = 0;
     int ret = -1;
     size_t i;
@@ -2267,7 +2267,7 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
  cleanup:
     if (iothreads) {
         for (i = 0; i < niothreads; i++)
-            qemuMonitorIOThreadsInfoFree(iothreads[i]);
+            qemuMonitorIOThreadInfoFree(iothreads[i]);
         VIR_FREE(iothreads);
     }
     return ret;

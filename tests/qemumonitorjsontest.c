@@ -2241,7 +2241,7 @@ testQemuMonitorJSONGetIOThreads(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
-    qemuMonitorIOThreadsInfoPtr *info;
+    qemuMonitorIOThreadInfoPtr *info;
     int ninfo = 0;
     int ret = -1;
     size_t i;
@@ -2300,7 +2300,7 @@ testQemuMonitorJSONGetIOThreads(const void *data)
  cleanup:
     qemuMonitorTestFree(test);
     for (i = 0; i < ninfo; i++)
-        qemuMonitorIOThreadsInfoFree(info[i]);
+        qemuMonitorIOThreadInfoFree(info[i]);
     VIR_FREE(info);
 
     return ret;

@@ -872,17 +872,17 @@ int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
 
 int qemuMonitorRTCResetReinjection(qemuMonitorPtr mon);
 
-typedef struct _qemuMonitorIOThreadsInfo qemuMonitorIOThreadsInfo;
-typedef qemuMonitorIOThreadsInfo *qemuMonitorIOThreadsInfoPtr;
+typedef struct _qemuMonitorIOThreadInfo qemuMonitorIOThreadInfo;
+typedef qemuMonitorIOThreadInfo *qemuMonitorIOThreadInfoPtr;
 
-struct _qemuMonitorIOThreadsInfo {
+struct _qemuMonitorIOThreadInfo {
     char *name;
     int thread_id;
 };
 int qemuMonitorGetIOThreads(qemuMonitorPtr mon,
-                            qemuMonitorIOThreadsInfoPtr **iothreads);
+                            qemuMonitorIOThreadInfoPtr **iothreads);
 
-void qemuMonitorIOThreadsInfoFree(qemuMonitorIOThreadsInfoPtr iothread);
+void qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread);
 
 typedef struct _qemuMonitorMemoryDeviceInfo qemuMonitorMemoryDeviceInfo;
 typedef qemuMonitorMemoryDeviceInfo *qemuMonitorMemoryDeviceInfoPtr;

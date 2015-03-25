@@ -6411,13 +6411,13 @@ qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon)
  */
 int
 qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
-                            qemuMonitorIOThreadsInfoPtr **iothreads)
+                            qemuMonitorIOThreadInfoPtr **iothreads)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
-    qemuMonitorIOThreadsInfoPtr *infolist = NULL;
+    qemuMonitorIOThreadInfoPtr *infolist = NULL;
     int n = 0;
     size_t i;
 
@@ -6455,7 +6455,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
     for (i = 0; i < n; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
-        qemuMonitorIOThreadsInfoPtr info;
+        qemuMonitorIOThreadInfoPtr info;
 
         if (VIR_ALLOC(info) < 0)
             goto cleanup;
@@ -6486,7 +6486,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
  cleanup:
     if (ret < 0 && infolist) {
         for (i = 0; i < n; i++)
-            qemuMonitorIOThreadsInfoFree(infolist[i]);
+            qemuMonitorIOThreadInfoFree(infolist[i]);
         VIR_FREE(infolist);
     }
     virJSONValueFree(cmd);

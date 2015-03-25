@@ -4336,7 +4336,7 @@ qemuMonitorRTCResetReinjection(qemuMonitorPtr mon)
  */
 int
 qemuMonitorGetIOThreads(qemuMonitorPtr mon,
-                        qemuMonitorIOThreadsInfoPtr **iothreads)
+                        qemuMonitorIOThreadInfoPtr **iothreads)
 {
 
     VIR_DEBUG("mon=%p iothreads=%p", mon, iothreads);
@@ -4356,7 +4356,7 @@ qemuMonitorGetIOThreads(qemuMonitorPtr mon,
     return qemuMonitorJSONGetIOThreads(mon, iothreads);
 }
 
-void qemuMonitorIOThreadsInfoFree(qemuMonitorIOThreadsInfoPtr iothread)
+void qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread)
 {
     if (!iothread)
         return;

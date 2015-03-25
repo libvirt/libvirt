@@ -5715,7 +5715,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
                            virDomainIOThreadInfoPtr **info)
 {
     qemuDomainObjPrivatePtr priv;
-    qemuMonitorIOThreadsInfoPtr *iothreads = NULL;
+    qemuMonitorIOThreadInfoPtr *iothreads = NULL;
     virDomainIOThreadInfoPtr *info_ret = NULL;
     int niothreads = 0;
     int hostcpus;
@@ -5793,7 +5793,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
     }
     if (iothreads) {
         for (i = 0; i < niothreads; i++)
-            qemuMonitorIOThreadsInfoFree(iothreads[i]);
+            qemuMonitorIOThreadInfoFree(iothreads[i]);
         VIR_FREE(iothreads);
     }
 
