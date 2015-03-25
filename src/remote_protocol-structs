@@ -834,6 +834,16 @@ struct remote_domain_pin_iothread_args {
         } cpumap;
         u_int                      flags;
 };
+struct remote_domain_add_iothread_args {
+        remote_nonnull_domain      dom;
+        u_int                      iothread_id;
+        u_int                      flags;
+};
+struct remote_domain_del_iothread_args {
+        remote_nonnull_domain      dom;
+        u_int                      iothread_id;
+        u_int                      flags;
+};
 struct remote_domain_get_security_label_args {
         remote_nonnull_domain      dom;
 };
@@ -3023,4 +3033,6 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
         REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354,
+        REMOTE_PROC_DOMAIN_ADD_IOTHREAD = 355,
+        REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356,
 };

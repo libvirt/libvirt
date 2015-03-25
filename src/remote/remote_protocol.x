@@ -1212,6 +1212,18 @@ struct remote_domain_pin_iothread_args {
     unsigned int flags;
 };
 
+struct remote_domain_add_iothread_args {
+    remote_nonnull_domain dom;
+    unsigned int iothread_id;
+    unsigned int flags;
+};
+
+struct remote_domain_del_iothread_args {
+    remote_nonnull_domain dom;
+    unsigned int iothread_id;
+    unsigned int flags;
+};
+
 struct remote_domain_get_security_label_args {
     remote_nonnull_domain dom;
 };
@@ -5655,5 +5667,21 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354,
+
+    /**
+     * @generate:both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_ADD_IOTHREAD = 355,
+
+    /**
+     * @generate:both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356
 };
