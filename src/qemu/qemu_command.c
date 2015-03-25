@@ -4757,6 +4757,8 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     }
 
     if (nodemask) {
+        if (!virNumaNodesetIsAvailable(nodemask))
+            goto cleanup;
         if (virJSONValueObjectAdd(props,
                                   "m:host-nodes", nodemask,
                                   "S:policy", qemuNumaPolicyTypeToString(mode),
