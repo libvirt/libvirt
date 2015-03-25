@@ -118,8 +118,8 @@ testGetCaps(char *capsData, const testQemuData *data)
     if (virQEMUCapsInitGuestFromBinary(caps,
                                        "/usr/bin/qemu-system-i386",
                                        qemuCaps,
-                                       "/usr/bin/qemu-system-i386",
-                                       qemuCaps,
+                                       NULL,
+                                       NULL,
                                        data->guestarch) < 0) {
         fprintf(stderr, "failed to create the capabilities from qemu");
         goto error;
