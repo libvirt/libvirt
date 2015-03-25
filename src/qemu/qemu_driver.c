@@ -4942,13 +4942,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
     }
 
-    /* MAXIMUM cannot be mixed with LIVE.  */
-    if ((flags & VIR_DOMAIN_VCPU_MAXIMUM) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("cannot adjust maximum vcpus on running domain"));
-        goto endjob;
-    }
-
     if (flags & VIR_DOMAIN_AFFECT_LIVE)
         maxvcpus = vm->def->maxvcpus;
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -4964,13 +4957,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("setting vcpus via guest agent isn't supported "
-                             "on offline domain"));
-            goto endjob;
-        }
-
         if (!qemuDomainAgentAvailable(vm, true))
             goto endjob;
 
