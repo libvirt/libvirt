@@ -697,7 +697,7 @@ LIBVIRT_1.2.12 {
 
 LIBVIRT_1.2.14 {
     global:
-        virDomainIOThreadsInfoFree;
+        virDomainIOThreadInfoFree;
         virDomainGetIOThreadsInfo;
         virDomainPinIOThread;
         virDomainInterfaceAddresses;

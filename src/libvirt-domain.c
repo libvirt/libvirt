@@ -7906,7 +7906,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
  *
  * Returns the number of IOThreads or -1 in case of error.
  * On success, the array of information is stored into @info. The caller is
- * responsible for calling virDomainIOThreadsInfoFree() on each array element,
+ * responsible for calling virDomainIOThreadInfoFree() on each array element,
  * then calling free() on @info. On error, @info is set to NULL.
  */
 int
@@ -7949,13 +7949,13 @@ virDomainGetIOThreadsInfo(virDomainPtr dom,
 
 
 /**
- * virDomainIOThreadsInfoFree:
+ * virDomainIOThreadInfoFree:
  * @info: pointer to a virDomainIOThreadInfo object
  *
  * Frees the memory used by @info.
  */
 void
-virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info)
+virDomainIOThreadInfoFree(virDomainIOThreadInfoPtr info)
 {
     if (!info)
         return;

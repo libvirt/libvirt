@@ -2335,7 +2335,7 @@ remoteDispatchDomainGetIOThreadsInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     virObjectUnref(dom);
     if (ninfo >= 0)
         for (i = 0; i < ninfo; i++)
-            virDomainIOThreadsInfoFree(info[i]);
+            virDomainIOThreadInfoFree(info[i]);
     VIR_FREE(info);
 
     return rv;

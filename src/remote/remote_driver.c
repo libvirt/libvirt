@@ -2382,7 +2382,7 @@ remoteDomainGetIOThreadsInfo(virDomainPtr dom,
  cleanup:
     if (info_ret) {
         for (i = 0; i < ret.info.info_len; i++)
-            virDomainIOThreadsInfoFree(info_ret[i]);
+            virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
     xdr_free((xdrproc_t)xdr_remote_domain_get_iothreads_info_ret,

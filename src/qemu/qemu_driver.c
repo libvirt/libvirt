@@ -5788,7 +5788,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
  cleanup:
     if (info_ret) {
         for (i = 0; i < niothreads; i++)
-            virDomainIOThreadsInfoFree(info_ret[i]);
+            virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
     if (iothreads) {
@@ -5859,7 +5859,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
  cleanup:
     if (info_ret) {
         for (i = 0; i < targetDef->iothreads; i++)
-            virDomainIOThreadsInfoFree(info_ret[i]);
+            virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
     virBitmapFree(bitmap);

@@ -1605,7 +1605,7 @@ struct _virDomainIOThreadInfo {
     int cpumaplen;                     /* cpumap size */
 };
 
-void                 virDomainIOThreadsInfoFree(virDomainIOThreadInfoPtr info);
+void                 virDomainIOThreadInfoFree(virDomainIOThreadInfoPtr info);
 
 int                  virDomainGetIOThreadsInfo(virDomainPtr domain,
                                                virDomainIOThreadInfoPtr **info,

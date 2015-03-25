@@ -6868,7 +6868,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
         ignore_value(vshPrintPinInfo(info[i]->cpumap, info[i]->cpumaplen,
                                      maxcpu, 0));
         vshPrint(ctl, "\n");
-        virDomainIOThreadsInfoFree(info[i]);
+        virDomainIOThreadInfoFree(info[i]);
     }
     VIR_FREE(info);
 
