@@ -4470,8 +4470,8 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet0'/&gt;
       <b>&lt;ip address='192.168.122.5' prefix='24'/&gt;</b>
-      <b>&lt;route family='ipv4' address='192.168.122.0' prefix='24' via='192.168.122.1'/&gt;</b>
-      <b>&lt;route family='ipv4' via='192.168.122.1'/&gt;</b>
+      <b>&lt;route family='ipv4' address='192.168.122.0' prefix='24' gateway='192.168.122.1'/&gt;</b>
+      <b>&lt;route family='ipv4' gateway='192.168.122.1'/&gt;</b>
     &lt;/interface&gt;
     ...
     &lt;hostdev mode='capabilities' type='net'&gt;
@@ -4479,8 +4479,8 @@ qemu-kvm -net nic,model=? /dev/null
         &lt;interface&gt;eth0&lt;/interface&gt;
       &lt;/source&gt;
       <b>&lt;ip address='192.168.122.6' prefix='24'/&gt;</b>
-      <b>&lt;route family='ipv4' address='192.168.122.0' prefix='24' via='192.168.122.1'/&gt;</b>
-      <b>&lt;route family='ipv4' via='192.168.122.1'/&gt;</b>
+      <b>&lt;route family='ipv4' address='192.168.122.0' prefix='24' gateway='192.168.122.1'/&gt;</b>
+      <b>&lt;route family='ipv4' gateway='192.168.122.1'/&gt;</b>
     &lt;/hostdev&gt;
 
   &lt;/devices&gt;
