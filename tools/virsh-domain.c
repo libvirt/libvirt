@@ -6522,14 +6522,14 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
             vshPrintExtra(ctl, "----------------------------------\n");
             for (i = 0; i < ncpus; i++) {
-               if (got_vcpu && i != vcpu)
-                   continue;
+                if (got_vcpu && i != vcpu)
+                    continue;
 
-               vshPrint(ctl, "%4zu: ", i);
-               ret = vshPrintPinInfo(cpumap, cpumaplen, maxcpu, i);
-               vshPrint(ctl, "\n");
-               if (!ret)
-                   break;
+                vshPrint(ctl, "%4zu: ", i);
+                ret = vshPrintPinInfo(cpumap, cpumaplen, maxcpu, i);
+                vshPrint(ctl, "\n");
+                if (!ret)
+                    break;
             }
         }
     } else {
