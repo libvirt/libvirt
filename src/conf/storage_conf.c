@@ -1899,11 +1899,27 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
     return ret;
 }
 
+
+static int virStoragePoolSaveXML(const char *path,
+                                 virStoragePoolDefPtr def,
+                                 const char *xml)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int ret = -1;
+
+    virUUIDFormat(def->uuid, uuidstr);
+    ret = virXMLSaveFile(path,
+                         virXMLPickShellSafeComment(def->name, uuidstr),
+                         "pool-edit", xml);
+
+    return ret;
+}
+
+
 int
 virStoragePoolSaveConfig(const char *configFile,
                          virStoragePoolDefPtr def)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *xml;
     int ret = -1;
 
@@ -1913,12 +1929,12 @@ virStoragePoolSaveConfig(const char *configFile,
         return -1;
     }
 
-    virUUIDFormat(def->uuid, uuidstr);
-    ret = virXMLSaveFile(configFile,
-                         virXMLPickShellSafeComment(def->name, uuidstr),
-                         "pool-edit", xml);
-    VIR_FREE(xml);
+    if (virStoragePoolSaveXML(configFile, def, xml))
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
+    VIR_FREE(xml);
     return ret;
 }
 
