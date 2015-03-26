@@ -1150,76 +1150,87 @@ virStoragePoolSourceFormat(virBufferPtr buf,
 }
 
 
-char *
-virStoragePoolDefFormat(virStoragePoolDefPtr def)
+static int
+virStoragePoolDefFormatBuf(virBufferPtr buf,
+                           virStoragePoolDefPtr def)
 {
     virStoragePoolOptionsPtr options;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *type;
     char uuid[VIR_UUID_STRING_BUFLEN];
+    const char *type;
 
     options = virStoragePoolOptionsForPoolType(def->type);
     if (options == NULL)
-        return NULL;
+        return -1;
 
     type = virStoragePoolTypeToString(def->type);
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected pool type"));
-        goto cleanup;
+        return -1;
     }
-    virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
-    virBufferAdjustIndent(&buf, 2);
-    virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
+    virBufferAsprintf(buf, "<pool type='%s'>\n", type);
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<name>%s</name>\n", def->name);
 
     virUUIDFormat(def->uuid, uuid);
-    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuid);
+    virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuid);
 
-    virBufferAsprintf(&buf, "<capacity unit='bytes'>%llu</capacity>\n",
+    virBufferAsprintf(buf, "<capacity unit='bytes'>%llu</capacity>\n",
                       def->capacity);
-    virBufferAsprintf(&buf, "<allocation unit='bytes'>%llu</allocation>\n",
+    virBufferAsprintf(buf, "<allocation unit='bytes'>%llu</allocation>\n",
                       def->allocation);
-    virBufferAsprintf(&buf, "<available unit='bytes'>%llu</available>\n",
+    virBufferAsprintf(buf, "<available unit='bytes'>%llu</available>\n",
                       def->available);
 
-    if (virStoragePoolSourceFormat(&buf, options, &def->source) < 0)
-        goto cleanup;
+    if (virStoragePoolSourceFormat(buf, options, &def->source) < 0)
+        return -1;
 
     /* RBD, Sheepdog, and Gluster devices are not local block devs nor
      * files, so they don't have a target */
     if (def->type != VIR_STORAGE_POOL_RBD &&
         def->type != VIR_STORAGE_POOL_SHEEPDOG &&
         def->type != VIR_STORAGE_POOL_GLUSTER) {
-        virBufferAddLit(&buf, "<target>\n");
-        virBufferAdjustIndent(&buf, 2);
+        virBufferAddLit(buf, "<target>\n");
+        virBufferAdjustIndent(buf, 2);
 
-        virBufferEscapeString(&buf, "<path>%s</path>\n", def->target.path);
+        virBufferEscapeString(buf, "<path>%s</path>\n", def->target.path);
 
-        virBufferAddLit(&buf, "<permissions>\n");
-        virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<mode>0%o</mode>\n",
+        virBufferAddLit(buf, "<permissions>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<mode>0%o</mode>\n",
                           def->target.perms.mode);
-        virBufferAsprintf(&buf, "<owner>%d</owner>\n",
+        virBufferAsprintf(buf, "<owner>%d</owner>\n",
                           (int) def->target.perms.uid);
-        virBufferAsprintf(&buf, "<group>%d</group>\n",
+        virBufferAsprintf(buf, "<group>%d</group>\n",
                           (int) def->target.perms.gid);
-        virBufferEscapeString(&buf, "<label>%s</label>\n",
+        virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->target.perms.label);
 
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</permissions>\n");
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</target>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</permissions>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</target>\n");
     }
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAddLit(&buf, "</pool>\n");
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</pool>\n");
+
+    return 0;
+}
+
+char *
+virStoragePoolDefFormat(virStoragePoolDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (virStoragePoolDefFormatBuf(&buf, def) < 0)
+        goto error;
 
     if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
+        goto error;
 
     return virBufferContentAndReset(&buf);
 
- cleanup:
+ error:
     virBufferFreeAndReset(&buf);
     return NULL;
 }
