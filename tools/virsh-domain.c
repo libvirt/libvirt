@@ -6322,36 +6322,15 @@ static const vshCmdOptDef opts_vcpupin[] = {
  * Helper function to print vcpupin info.
  */
 static bool
-vshPrintPinInfo(unsigned char *cpumaps, size_t cpumaplen,
-                int maxcpu, int vcpuindex)
+vshPrintPinInfo(unsigned char *cpumap, size_t cpumaplen)
 {
-    int cpu, lastcpu;
-    bool bit, lastbit, isInvert;
+    char *str = NULL;
 
-    if (!cpumaps || cpumaplen <= 0 || maxcpu <= 0 || vcpuindex < 0)
+    if (!(str = virBitmapDataToString(cpumap, cpumaplen)))
         return false;
 
-    bit = lastbit = isInvert = false;
-    lastcpu = -1;
-
-    for (cpu = 0; cpu < maxcpu; cpu++) {
-        bit = VIR_CPU_USABLE(cpumaps, cpumaplen, vcpuindex, cpu);
-
-        isInvert = (bit ^ lastbit);
-        if (bit && isInvert) {
-            if (lastcpu == -1)
-                vshPrint(ctl, "%d", cpu);
-            else
-                vshPrint(ctl, ",%d", cpu);
-            lastcpu = cpu;
-        }
-        if (!bit && isInvert && lastcpu != cpu - 1)
-            vshPrint(ctl, "-%d", cpu - 1);
-        lastbit = bit;
-    }
-    if (bit && !isInvert)
-        vshPrint(ctl, "-%d", maxcpu - 1);
-
+    vshPrint(ctl, "%s", str);
+    VIR_FREE(str);
     return true;
 }
 
@@ -6526,7 +6505,8 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                     continue;
 
                 vshPrint(ctl, "%4zu: ", i);
-                ret = vshPrintPinInfo(cpumap, cpumaplen, maxcpu, i);
+                ret = vshPrintPinInfo(VIR_GET_CPUMAP(cpumap, cpumaplen, i),
+                                      cpumaplen);
                 vshPrint(ctl, "\n");
                 if (!ret)
                     break;
@@ -6599,7 +6579,6 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     const char *cpulist = NULL;
     bool ret = false;
     unsigned char *cpumap = NULL;
-    unsigned char *cpumaps = NULL;
     size_t cpumaplen;
     int maxcpu;
     bool config = vshCommandOptBool(cmd, "config");
@@ -6642,16 +6621,15 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
         if (flags == -1)
             flags = VIR_DOMAIN_AFFECT_CURRENT;
 
-        cpumaps = vshMalloc(ctl, cpumaplen);
-        if (virDomainGetEmulatorPinInfo(dom, cpumaps,
+        cpumap = vshMalloc(ctl, cpumaplen);
+        if (virDomainGetEmulatorPinInfo(dom, cpumap,
                                         cpumaplen, flags) >= 0) {
             vshPrintExtra(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
             vshPrintExtra(ctl, "----------------------------------\n");
             vshPrintExtra(ctl, "       *: ");
-            ret = vshPrintPinInfo(cpumaps, cpumaplen, maxcpu, 0);
+            ret = vshPrintPinInfo(cpumap, cpumaplen);
             vshPrint(ctl, "\n");
         }
-        VIR_FREE(cpumaps);
         goto cleanup;
     }
 
@@ -6865,8 +6843,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < niothreads; i++) {
 
         vshPrint(ctl, " %-15u ", info[i]->iothread_id);
-        ignore_value(vshPrintPinInfo(info[i]->cpumap, info[i]->cpumaplen,
-                                     maxcpu, 0));
+        ignore_value(vshPrintPinInfo(info[i]->cpumap, info[i]->cpumaplen));
         vshPrint(ctl, "\n");
         virDomainIOThreadInfoFree(info[i]);
     }
