@@ -3235,7 +3235,7 @@ B<Note>: A storage pool that relies on remote resources such as an
 times in order to have all the volumes detected (see B<pool-refresh>).
 This is because the corresponding volume devices may not be present in
 the host's filesystem during the initial pool startup or the current
-refresh attempt. The number of refresh retries is dependant upon the
+refresh attempt. The number of refresh retries is dependent upon the
 network connection and the time the host takes to export the
 corresponding devices.
 

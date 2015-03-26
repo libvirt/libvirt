@@ -2642,7 +2642,7 @@ virDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
  *
  * Reads native configuration data  describing a domain, and
  * generates libvirt domain XML. The format of the native
- * data is hypervisor dependant.
+ * data is hypervisor dependent.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
@@ -2692,7 +2692,7 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
  *
  * Reads a domain XML configuration document, and generates
  * a native configuration file describing the domain.
- * The format of the native data is hypervisor dependant.
+ * The format of the native data is hypervisor dependent.
  *
  * Returns a 0 terminated UTF-8 encoded native config datafile, or NULL in case of error.
  *         the caller must free() the returned value.

@@ -452,7 +452,7 @@ virSecretGetUsageType(virSecretPtr secret)
  *
  * Get the unique identifier of the object with which this
  * secret is to be used. The format of the identifier is
- * dependant on the usage type of the secret. For a secret
+ * dependent on the usage type of the secret. For a secret
  * with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the
  * identifier will be a fully qualfied path name. The
  * identifiers are intended to be unique within the set of
