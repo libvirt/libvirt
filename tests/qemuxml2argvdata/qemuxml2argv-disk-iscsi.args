@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -usb \
+-hda /dev/disk/by-path/ip-192.168.44.1:3260-iscsi-iqn.2011-02.lan.hdserver\
+:hydrar-desktop.win7vm-lun-0 -net none \
+-serial none -parallel none
