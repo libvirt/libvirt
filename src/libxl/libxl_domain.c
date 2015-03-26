@@ -473,7 +473,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     libxlDriverPrivatePtr driver = data;
     virDomainObjPtr vm = NULL;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
-    struct libxlShutdownThreadInfo *shutdown_info;
+    struct libxlShutdownThreadInfo *shutdown_info = NULL;
     virThread thread;
     libxlDriverConfigPtr cfg;
 
@@ -526,6 +526,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     virObjectUnref(cfg);
     if (vm)
         virObjectUnlock(vm);
+    VIR_FREE(shutdown_info);
 }
 
 void
