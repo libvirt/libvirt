@@ -469,4 +469,58 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
 # define VSH_EXCLUSIVE_OPTIONS_VAR(VARNAME1, VARNAME2)                      \
     VSH_EXCLUSIVE_OPTIONS_EXPR(#VARNAME1, VARNAME1, #VARNAME2, VARNAME2)
 
+/* Macros to help dealing with required options. */
+
+/* VSH_REQUIRE_OPTION_EXPR:
+ *
+ * @NAME1: String containing the name of the option.
+ * @EXPR1: Expression to validate the variable (boolean variable).
+ * @NAME2: String containing the name of required option.
+ * @EXPR2: Expression to validate the variable (boolean variable).
+ *
+ * Check if required command options in virsh was set.  Use the
+ * provided expression to check the variables.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_REQUIRE_OPTION_EXPR(NAME1, EXPR1, NAME2, EXPR2)                \
+    do {                                                                    \
+        if ((EXPR1) && !(EXPR2)) {                                          \
+            vshError(ctl, _("Option --%s is required by option --%s"),      \
+                     NAME2, NAME1);                                         \
+            return false;                                                   \
+        }                                                                   \
+    } while (0)
+
+/* VSH_REQUIRE_OPTION:
+ *
+ * @NAME1: String containing the name of the option.
+ * @NAME2: String containing the name of required option.
+ *
+ * Check if required command options in virsh was set.  Use the
+ * vshCommandOptBool call to request them.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_REQUIRE_OPTION(NAME1, NAME2)                                   \
+    VSH_REQUIRE_OPTION_EXPR(NAME1, vshCommandOptBool(cmd, NAME1),           \
+                            NAME2, vshCommandOptBool(cmd, NAME2))
+
+/* VSH_REQUIRE_OPTION_VAR:
+ *
+ * @VARNAME1: Boolean variable containing the value of the option of same name.
+ * @VARNAME2: Boolean variable containing the value of required option of
+ *            same name.
+ *
+ * Check if required command options in virsh was set.  Check in variables
+ * that contain the value and have same name as the option.
+ *
+ * This helper does an early return and therefore it has to be called
+ * before anything that would require cleanup.
+ */
+# define VSH_REQUIRE_OPTION_VAR(VARNAME1, VARNAME2)                         \
+    VSH_REQUIRE_OPTION_EXPR(#VARNAME1, VARNAME1, #VARNAME2, VARNAME2)
+
 #endif /* VIRSH_H */
