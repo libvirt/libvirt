@@ -785,7 +785,8 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
      * them and reset all the devices before re-attach.
      * Attach mac and port profile parameters to devices
      */
-    for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
+    i = 0;
+    while (i < virPCIDeviceListCount(pcidevs)) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         virPCIDevicePtr activeDev = NULL;
 
@@ -806,6 +807,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
 
         virPCIDeviceListDel(hostdev_mgr->activePCIHostdevs, dev);
+        i++;
     }
 
     /* At this point, any device that had been used by the guest is in
