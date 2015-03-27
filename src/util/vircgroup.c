@@ -4021,6 +4021,17 @@ virCgroupAvailable(void)
 
 
 int
+virCgroupDetectMountsFromFile(virCgroupPtr group ATTRIBUTE_UNUSED,
+                              const char *path ATTRIBUTE_UNUSED,
+                              bool checkLinks ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
                       bool create ATTRIBUTE_UNUSED,
                       int controllers ATTRIBUTE_UNUSED,
