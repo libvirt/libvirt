@@ -645,8 +645,6 @@ static int
 qemuSetupCpusetCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *cpu_mask = NULL;
-    int ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
@@ -654,25 +652,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm)
     if (virCgroupSetCpusetMemoryMigrate(priv->cgroup, true) < 0)
         return -1;
 
-    if (vm->def->cpumask ||
-        (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)) {
-
-        if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
-            cpu_mask = virBitmapFormat(priv->autoCpuset);
-        else
-            cpu_mask = virBitmapFormat(vm->def->cpumask);
-
-        if (!cpu_mask)
-            goto cleanup;
-
-        if (virCgroupSetCpusetCpus(priv->cgroup, cpu_mask) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(cpu_mask);
-    return ret;
+    return 0;
 }
 
 
@@ -1079,20 +1059,27 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 
         /* Set vcpupin in cgroup if vcpupin xml is provided */
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            /* find the right CPU to pin, otherwise
-             * qemuSetupCgroupVcpuPin will fail. */
+            virBitmapPtr cpumap = NULL;
+
+            /* try to use the default cpu maps */
+            if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+                cpumap = priv->autoCpuset;
+            else
+                cpumap = vm->def->cpumask;
+
+            /* lookup a more specific pinning info */
             for (j = 0; j < def->cputune.nvcpupin; j++) {
-                if (def->cputune.vcpupin[j]->id != i)
-                    continue;
-
-                if (qemuSetupCgroupVcpuPin(cgroup_vcpu,
-                                           def->cputune.vcpupin,
-                                           def->cputune.nvcpupin,
-                                           i) < 0)
-                    goto cleanup;
-
-                break;
+                if (def->cputune.vcpupin[j]->id == i) {
+                    cpumap = def->cputune.vcpupin[j]->cpumask;
+                    break;
+                }
             }
+
+            if (!cpumap)
+                continue;
+
+            if (qemuSetupCgroupEmulatorPin(cgroup_vcpu, cpumap) < 0)
+                goto cleanup;
         }
 
         virCgroupFree(&cgroup_vcpu);
