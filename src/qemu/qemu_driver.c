@@ -4759,12 +4759,10 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                 if (VIR_ALLOC(vcpupin) < 0)
                     goto cleanup;
 
-                if (!(vcpupin->cpumask =
-                      virBitmapNew(VIR_DOMAIN_CPUMASK_LEN))) {
+                if (!(vcpupin->cpumask = virBitmapNewCopy(vm->def->cpumask))) {
                     VIR_FREE(vcpupin);
                     goto cleanup;
                 }
-                virBitmapCopy(vcpupin->cpumask, vm->def->cpumask);
                 vcpupin->id = i;
                 if (VIR_APPEND_ELEMENT_COPY(vm->def->cputune.vcpupin,
                                             vm->def->cputune.nvcpupin, vcpupin) < 0) {
