@@ -99,8 +99,6 @@ int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm);
 bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm);
-virBitmapPtr qemuPrepareCpumap(virQEMUDriverPtr driver,
-                               virBitmapPtr nodemask);
 
 int qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar);
 

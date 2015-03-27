@@ -1099,11 +1099,9 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 }
 
 int
-qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm)
+qemuSetupCgroupForEmulator(virDomainObjPtr vm)
 {
     virBitmapPtr cpumask = NULL;
-    virBitmapPtr cpumap = NULL;
     virCgroupPtr cgroup_emulator = NULL;
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1135,15 +1133,12 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     if (virCgroupMoveTask(priv->cgroup, cgroup_emulator) < 0)
         goto cleanup;
 
-    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        if (!(cpumap = qemuPrepareCpumap(driver, priv->autoNodeset)))
-            goto cleanup;
-        cpumask = cpumap;
-    } else if (def->cputune.emulatorpin) {
+    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+        cpumask = priv->autoCpuset;
+    else if (def->cputune.emulatorpin)
         cpumask = def->cputune.emulatorpin->cpumask;
-    } else if (def->cpumask) {
+    else if (def->cpumask)
         cpumask = def->cpumask;
-    }
 
     if (cpumask) {
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
@@ -1159,12 +1154,9 @@ qemuSetupCgroupForEmulator(virQEMUDriverPtr driver,
     }
 
     virCgroupFree(&cgroup_emulator);
-    virBitmapFree(cpumap);
     return 0;
 
  cleanup:
-    virBitmapFree(cpumap);
-
     if (cgroup_emulator) {
         virCgroupRemove(cgroup_emulator);
         virCgroupFree(&cgroup_emulator);

@@ -2285,67 +2285,12 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
     return ret;
 }
 
-/* Helper to prepare cpumap for affinity setting, convert
- * NUMA nodeset into cpuset if @nodemask is not NULL, otherwise
- * just return a new allocated bitmap.
- */
-virBitmapPtr
-qemuPrepareCpumap(virQEMUDriverPtr driver,
-                  virBitmapPtr nodemask)
-{
-    size_t i;
-    int hostcpus, maxcpu = QEMUD_CPUMASK_LEN;
-    virBitmapPtr cpumap = NULL;
-    virCapsPtr caps = NULL;
-
-    /* setaffinity fails if you set bits for CPUs which
-     * aren't present, so we have to limit ourselves */
-    if ((hostcpus = nodeGetCPUCount()) < 0)
-        return NULL;
-
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    if (!(cpumap = virBitmapNew(maxcpu)))
-        return NULL;
-
-    if (nodemask) {
-        if (!(caps = virQEMUDriverGetCapabilities(driver, false))) {
-            virBitmapFree(cpumap);
-            cpumap = NULL;
-            goto cleanup;
-        }
-
-        for (i = 0; i < caps->host.nnumaCell; i++) {
-            size_t j;
-            int cur_ncpus = caps->host.numaCell[i]->ncpus;
-            bool result;
-            if (virBitmapGetBit(nodemask, caps->host.numaCell[i]->num, &result) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Failed to convert nodeset to cpuset"));
-                virBitmapFree(cpumap);
-                cpumap = NULL;
-                goto cleanup;
-            }
-            if (result) {
-                for (j = 0; j < cur_ncpus; j++)
-                    ignore_value(virBitmapSetBit(cpumap,
-                                                 caps->host.numaCell[i]->cpus[j].id));
-            }
-        }
-    }
-
- cleanup:
-    virObjectUnref(caps);
-    return cpumap;
-}
 
 /*
  * To be run between fork/exec of QEMU only
  */
 static int
-qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm)
+qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
     int ret = -1;
     virBitmapPtr cpumap = NULL;
@@ -2358,23 +2303,34 @@ qemuProcessInitCpuAffinity(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!(cpumap = qemuPrepareCpumap(driver, priv->autoNodeset)))
-        return -1;
-
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         VIR_DEBUG("Set CPU affinity with advisory nodeset from numad");
-        cpumapToSet = cpumap;
+        cpumapToSet = priv->autoCpuset;
     } else {
         VIR_DEBUG("Set CPU affinity with specified cpuset");
         if (vm->def->cpumask) {
             cpumapToSet = vm->def->cpumask;
         } else {
-            cpumapToSet = cpumap;
             /* You may think this is redundant, but we can't assume libvirtd
              * itself is running on all pCPUs, so we need to explicitly set
              * the spawned QEMU instance to all pCPUs if no map is given in
              * its config file */
+            int hostcpus;
+
+            /* setaffinity fails if you set bits for CPUs which
+             * aren't present, so we have to limit ourselves */
+            if ((hostcpus = nodeGetCPUCount()) < 0)
+                goto cleanup;
+
+            if (hostcpus > QEMUD_CPUMASK_LEN)
+                hostcpus = QEMUD_CPUMASK_LEN;
+
+            if (!(cpumap = virBitmapNew(hostcpus)))
+                goto cleanup;
+
             virBitmapSetAll(cpumap);
+
+            cpumapToSet = cpumap;
         }
     }
 
@@ -4799,7 +4755,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
     if (!vm->def->cputune.emulatorpin &&
-        qemuProcessInitCpuAffinity(driver, vm) < 0)
+        qemuProcessInitCpuAffinity(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
@@ -4846,7 +4802,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for emulator (if required)");
-    if (qemuSetupCgroupForEmulator(driver, vm) < 0)
+    if (qemuSetupCgroupForEmulator(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting affinity of emulator threads");
