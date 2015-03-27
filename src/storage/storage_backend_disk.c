@@ -746,10 +746,13 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
             goto cleanup;
     }
 
-    /* If this was the extended partition, then all the logical partitions
-     * are then lost. Make it easy on ourselves and just refresh the pool
+    /* If this is not a logical partition, then either we've removed an
+     * extended partition or a primary partion - refresh the pool which
+     * includes resetting the [n]freeExtents data so a subsequent allocation
+     * might be able to use what was deleted.  A logical partition is part
+     * of an extended partition and handled differently
      */
-    if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+    if (vol->source.partType != VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
         virStoragePoolObjClearVols(pool);
         if (virStorageBackendDiskRefreshPool(conn, pool) < 0)
             goto cleanup;
