@@ -46,6 +46,11 @@ enum {
 };
 
 VIR_ENUM_DECL(virCgroupController);
+/* Items of this enum are used later in virCgroupNew to create
+ * bit array stored in int. Like this:
+ *   1 << VIR_CGROUP_CONTROLLER_CPU
+ * Make sure we will not overflow */
+verify(VIR_CGROUP_CONTROLLER_LAST < 8 * sizeof(int));
 
 bool virCgroupAvailable(void);
 
