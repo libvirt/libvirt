@@ -2249,7 +2249,7 @@ storageVolResize(virStorageVolPtr obj,
     virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
-    unsigned long long abs_capacity;
+    unsigned long long abs_capacity, delta;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
@@ -2294,13 +2294,24 @@ storageVolResize(virStorageVolPtr obj,
         !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Can't shrink capacity below current "
-                         "capacity with shrink flag explicitly specified"));
+                         "capacity unless shrink flag explicitly specified"));
         goto cleanup;
     }
 
-    if (abs_capacity > vol->target.capacity + pool->def->available) {
+    if (flags & VIR_STORAGE_VOL_RESIZE_SHRINK)
+        delta = vol->target.allocation - abs_capacity;
+    else
+        delta = abs_capacity - vol->target.allocation;
+
+    /* If the operation is going to increase the allocation value and not
+     * just the capacity value, then let's make sure there's enough space
+     * in the pool in order to perform that operation
+     */
+    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE &&
+        !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK) &&
+        delta > pool->def->available) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Not enough space left on storage pool"));
+                       _("Not enough space left in storage pool"));
         goto cleanup;
     }
 
@@ -2315,12 +2326,22 @@ storageVolResize(virStorageVolPtr obj,
         goto cleanup;
 
     vol->target.capacity = abs_capacity;
-    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE)
+    /* Only update the allocation and pool values if we actually did the
+     * allocation; otherwise, this is akin to a create operation with a
+     * capacity value different and potentially much larger than available
+     */
+    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE) {
         vol->target.allocation = abs_capacity;
 
-    /* Update pool metadata */
-    pool->def->allocation += (abs_capacity - vol->target.capacity);
-    pool->def->available -= (abs_capacity - vol->target.capacity);
+        /* Update pool metadata */
+        if (flags & VIR_STORAGE_VOL_RESIZE_SHRINK) {
+           pool->def->allocation -= delta;
+           pool->def->available += delta;
+        } else {
+           pool->def->allocation += delta;
+           pool->def->available -= delta;
+        }
+    }
 
     ret = 0;
 
