@@ -3153,11 +3153,21 @@ static int qemuProcessHook(void *data)
         goto cleanup;
 
     mode = virDomainNumatuneGetMode(h->vm->def->numa, -1);
-    nodeset = virDomainNumatuneGetNodeset(h->vm->def->numa,
-                                          priv->autoNodeset, -1);
 
-    if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
-        goto cleanup;
+    if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        h->cfg->cgroupControllers & (1 << VIR_CGROUP_CONTROLLER_CPUSET) &&
+        virCgroupControllerAvailable(VIR_CGROUP_CONTROLLER_CPUSET)) {
+        /* Use virNuma* API iff necessary. Once set and child is exec()-ed,
+         * there's no way for us to change it. Rely on cgroups (if available
+         * and enabled in the config) rather then virNuma*. */
+        VIR_DEBUG("Relying on CGroups for memory binding");
+    } else {
+        nodeset = virDomainNumatuneGetNodeset(h->vm->def->numa,
+                                              priv->autoNodeset, -1);
+
+        if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
