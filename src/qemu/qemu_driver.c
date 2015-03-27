@@ -16866,6 +16866,11 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
             }
             bandwidth = param->value.ul;
         } else if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_GRANULARITY)) {
+            if (param->value.ui != VIR_ROUND_UP_POWER_OF_TWO(param->value.ui)) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("granularity must be power of 2"));
+                goto cleanup;
+            }
             granularity = param->value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_BUF_SIZE)) {
             buf_size = param->value.ul;

@@ -1039,10 +1039,10 @@ unlimited, but more likely would overflow; it is safer to use 0 for that
 purpose.  Specifying I<granularity> allows fine-tuning of the granularity that
 will be copied when a dirty region is detected; larger values trigger less
 I/O overhead but may end up copying more data overall (the default value is
-usually correct); this value must be a power of two.  Specifying I<buf-size>
-will control how much data can be simultaneously in-flight during the copy;
-larger values use more memory but may allow faster completion (the default
-value is usually correct).
+usually correct); hypervisors may restrict this to be a power of two or fall
+within a certain range. Specifying I<buf-size> will control how much data can
+be simultaneously in-flight during the copy; larger values use more memory but
+may allow faster completion (the default value is usually correct).
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
