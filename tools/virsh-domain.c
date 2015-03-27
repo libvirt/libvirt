@@ -2253,9 +2253,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
                  * ullong bytes/s; make sure we don't overflow */
                 unsigned long long limit = MIN(ULONG_MAX, ULLONG_MAX >> 20);
                 if (bandwidth > limit) {
-                    virReportError(VIR_ERR_OVERFLOW,
-                                   _("bandwidth must be less than %llu"),
-                                   ULLONG_MAX >> 20);
+                    vshError(ctl, _("bandwidth must be less than %llu"), limit);
+                    goto cleanup;
                 }
                 if (virTypedParameterAssign(&params[nparams++],
                                             VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
