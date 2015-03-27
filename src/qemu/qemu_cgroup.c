@@ -952,7 +952,7 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
 
     for (i = 0; i < nvcpupin; i++) {
         if (vcpuid == vcpupin[i]->id)
-            return qemuSetupCgroupEmulatorPin(cgroup, vcpupin[i]->cpumask);
+            return qemuSetupCgroupCpusetCpus(cgroup, vcpupin[i]->cpumask);
     }
 
     return -1;
@@ -968,15 +968,15 @@ qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
 
     for (i = 0; i < niothreadspin; i++) {
         if (iothreadid == iothreadspin[i]->id)
-            return qemuSetupCgroupEmulatorPin(cgroup, iothreadspin[i]->cpumask);
+            return qemuSetupCgroupCpusetCpus(cgroup, iothreadspin[i]->cpumask);
     }
 
     return -1;
 }
 
 int
-qemuSetupCgroupEmulatorPin(virCgroupPtr cgroup,
-                           virBitmapPtr cpumask)
+qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,
+                          virBitmapPtr cpumask)
 {
     int ret = -1;
     char *new_cpus = NULL;
@@ -1078,7 +1078,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             if (!cpumap)
                 continue;
 
-            if (qemuSetupCgroupEmulatorPin(cgroup_vcpu, cpumap) < 0)
+            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;
         }
 
@@ -1142,7 +1142,7 @@ qemuSetupCgroupForEmulator(virDomainObjPtr vm)
 
     if (cpumask) {
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
-            qemuSetupCgroupEmulatorPin(cgroup_emulator, cpumask) < 0)
+            qemuSetupCgroupCpusetCpus(cgroup_emulator, cpumask) < 0)
             goto cleanup;
     }
 
@@ -1252,7 +1252,7 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
             }
 
             if (cpumask &&
-                qemuSetupCgroupEmulatorPin(cgroup_iothread, cpumask) < 0)
+                qemuSetupCgroupCpusetCpus(cgroup_iothread, cpumask) < 0)
                 goto cleanup;
         }
 

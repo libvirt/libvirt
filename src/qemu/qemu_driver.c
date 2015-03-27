@@ -5427,8 +5427,8 @@ qemuDomainPinEmulator(virDomainPtr dom,
                  */
                 if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_emulator) < 0)
                     goto endjob;
-                if (qemuSetupCgroupEmulatorPin(cgroup_emulator,
-                                               newVcpuPin[0]->cpumask) < 0) {
+                if (qemuSetupCgroupCpusetCpus(cgroup_emulator,
+                                              newVcpuPin[0]->cpumask) < 0) {
                     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                    _("failed to set cpuset.cpus in cgroup"
                                      " for emulator threads"));
