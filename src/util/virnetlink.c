@@ -886,7 +886,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
 
 
 int
-virNetlinkDelLink(const char *ifname ATTRIBUTE_UNSUPPORTED)
+virNetlinkDelLink(const char *ifname ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
