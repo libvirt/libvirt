@@ -1290,7 +1290,7 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
  * @controllers: mask of controllers to create
  *
  * Creates a new cgroup to represent the resource
- * partition path identified by @name.
+ * partition path identified by @path.
  *
  * Returns 0 on success, -1 on failure
  */
