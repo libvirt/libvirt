@@ -1255,21 +1255,26 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
         /* Set iothreadpin in cgroup if iothreadpin xml is provided */
         if (virCgroupHasController(priv->cgroup,
                                    VIR_CGROUP_CONTROLLER_CPUSET)) {
-            /* find the right CPU to pin, otherwise
-             * qemuSetupCgroupIOThreadsPin will fail. */
+            virBitmapPtr cpumask = NULL;
+
+            /* default cpu masks */
+            if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+                cpumask = priv->autoCpuset;
+            else
+                cpumask = def->cpumask;
+
+            /* specific cpu mask */
             for (j = 0; j < def->cputune.niothreadspin; j++) {
                 /* IOThreads are numbered/named 1..n */
-                if (def->cputune.iothreadspin[j]->id != i + 1)
-                    continue;
-
-                if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,
-                                                def->cputune.iothreadspin,
-                                                def->cputune.niothreadspin,
-                                                i + 1) < 0)
-                    goto cleanup;
-
-                break;
+                if (def->cputune.iothreadspin[j]->id == i + 1) {
+                    cpumask = def->cputune.iothreadspin[j]->cpumask;
+                    break;
+                }
             }
+
+            if (cpumask &&
+                qemuSetupCgroupEmulatorPin(cgroup_iothread, cpumask) < 0)
+                goto cleanup;
         }
 
         virCgroupFree(&cgroup_iothread);
