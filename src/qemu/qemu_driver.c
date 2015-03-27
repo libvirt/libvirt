@@ -10187,7 +10187,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                     goto cleanup;
             } else {
                 if (!virCgroupHasController(priv->cgroup,
-                                            VIR_CGROUP_CONTROLLER_MEMORY) ||
+                                            VIR_CGROUP_CONTROLLER_CPUSET) ||
                     virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0) {
                     nodeset = virDomainNumatuneFormatNodeset(vm->def->numa,
                                                              NULL, -1);
