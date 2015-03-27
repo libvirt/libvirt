@@ -4420,6 +4420,26 @@ virCgroupGetCpusetMems(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
+virCgroupSetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                bool migrate ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupGetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
+                                bool *migrate ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupSetCpusetCpus(virCgroupPtr group ATTRIBUTE_UNUSED,
                        const char *cpus ATTRIBUTE_UNUSED)
 {
