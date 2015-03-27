@@ -642,8 +642,7 @@ qemuSetupCpusetMems(virDomainObjPtr vm)
 
 
 static int
-qemuSetupCpusetCgroup(virDomainObjPtr vm,
-                      virCapsPtr caps)
+qemuSetupCpusetCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *cpu_mask = NULL;
@@ -658,15 +657,10 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm,
     if (vm->def->cpumask ||
         (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)) {
 
-        if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-            virBitmapPtr cpumap;
-            if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, priv->autoNodeset)))
-                goto cleanup;
-            cpu_mask = virBitmapFormat(cpumap);
-            virBitmapFree(cpumap);
-        } else {
+        if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+            cpu_mask = virBitmapFormat(priv->autoCpuset);
+        else
             cpu_mask = virBitmapFormat(vm->def->cpumask);
-        }
 
         if (!cpu_mask)
             goto cleanup;
@@ -896,7 +890,6 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
                 int *nicindexes)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCapsPtr caps = NULL;
     int ret = -1;
 
     if (!vm->pid) {
@@ -911,9 +904,6 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     if (!priv->cgroup)
         return 0;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (qemuSetupDevicesCgroup(driver, vm) < 0)
         goto cleanup;
 
@@ -926,12 +916,11 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     if (qemuSetupCpuCgroup(driver, vm) < 0)
         goto cleanup;
 
-    if (qemuSetupCpusetCgroup(vm, caps) < 0)
+    if (qemuSetupCpusetCgroup(vm) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    virObjectUnref(caps);
     return ret;
 }
 

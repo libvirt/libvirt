@@ -4333,7 +4333,6 @@ int qemuProcessStart(virConnectPtr conn,
     size_t i;
     bool rawio_set = false;
     char *nodeset = NULL;
-    virBitmapPtr nodemask = NULL;
     unsigned int stop_flags;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
@@ -4594,10 +4593,14 @@ int qemuProcessStart(virConnectPtr conn,
 
         VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-        if (virBitmapParse(nodeset, 0, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(nodeset, 0, &priv->autoNodeset,
+                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+
+        if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                                   priv->autoNodeset)))
             goto cleanup;
     }
-    priv->autoNodeset = nodemask;
 
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
@@ -4664,7 +4667,7 @@ int qemuProcessStart(virConnectPtr conn,
                                      migrateFrom, stdin_fd, snapshot, vmop,
                                      &buildCommandLineCallbacks, false,
                                      qemuCheckFips(),
-                                     nodemask,
+                                     priv->autoNodeset,
                                      &nnicindexes, &nicindexes)))
         goto cleanup;
 
