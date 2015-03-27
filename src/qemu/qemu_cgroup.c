@@ -958,21 +958,6 @@ qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
     return -1;
 }
 
-int
-qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
-                            virDomainPinDefPtr *iothreadspin,
-                            int niothreadspin,
-                            int iothreadid)
-{
-    size_t i;
-
-    for (i = 0; i < niothreadspin; i++) {
-        if (iothreadid == iothreadspin[i]->id)
-            return qemuSetupCgroupCpusetCpus(cgroup, iothreadspin[i]->cpumask);
-    }
-
-    return -1;
-}
 
 int
 qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,

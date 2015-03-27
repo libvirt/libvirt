@@ -57,10 +57,6 @@ int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
                            int nvcpupin,
                            int vcpuid);
 int qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
-int qemuSetupCgroupIOThreadsPin(virCgroupPtr cgroup,
-                                virDomainPinDefPtr *iothreadspin,
-                                int niothreadspin,
-                                int iothreadid);
 int qemuSetupCgroupForVcpu(virDomainObjPtr vm);
 int qemuSetupCgroupForIOThreads(virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(virDomainObjPtr vm);

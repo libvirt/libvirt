@@ -6023,10 +6023,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
             if (virCgroupNewIOThread(priv->cgroup, iothread_id,
                                      false, &cgroup_iothread) < 0)
                 goto endjob;
-            if (qemuSetupCgroupIOThreadsPin(cgroup_iothread,
-                                            newIOThreadsPin,
-                                            newIOThreadsPinNum,
-                                            iothread_id) < 0) {
+            if (qemuSetupCgroupCpusetCpus(cgroup_iothread, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("failed to set cpuset.cpus in cgroup"
                                  " for iothread %d"), iothread_id);
