@@ -326,12 +326,14 @@
         <choice>
           <ref name="dhcp-element"/>
           <group>
-            <element name="ip">
-              <attribute name="address"><ref name="ipv4Addr"/></attribute>
-              <optional>
-                <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
-              </optional>
-            </element>
+            <oneOrMore>
+              <element name="ip">
+                <attribute name="address"><ref name="ipv4Addr"/></attribute>
+                <optional>
+                  <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
+                </optional>
+              </element>
+            </oneOrMore>
             <optional>
               <element name="route">
                 <attribute name="gateway"><ref name="ipv4Addr"/></attribute>
