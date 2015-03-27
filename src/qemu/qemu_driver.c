@@ -16166,6 +16166,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (!virStorageSourceIsLocalStorage(mirror)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("non-file destination not supported yet"));
+        goto endjob;
     }
     if (stat(mirror->path, &st) < 0) {
         if (errno != ENOENT) {
