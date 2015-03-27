@@ -942,22 +942,6 @@ qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
     return -1;
 }
 
-int
-qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
-                       virDomainPinDefPtr *vcpupin,
-                       int nvcpupin,
-                       int vcpuid)
-{
-    size_t i;
-
-    for (i = 0; i < nvcpupin; i++) {
-        if (vcpuid == vcpupin[i]->id)
-            return qemuSetupCgroupCpusetCpus(cgroup, vcpupin[i]->cpumask);
-    }
-
-    return -1;
-}
-
 
 int
 qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,

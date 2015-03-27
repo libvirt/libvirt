@@ -4775,9 +4775,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
                 }
 
                 if (cgroup_vcpu) {
-                    if (qemuSetupCgroupVcpuPin(cgroup_vcpu,
-                                               vm->def->cputune.vcpupin,
-                                               vm->def->cputune.nvcpupin, i) < 0) {
+                    if (qemuSetupCgroupCpusetCpus(cgroup_vcpu,
+                                                  vcpupin->cpumask) < 0) {
                         virReportError(VIR_ERR_OPERATION_INVALID,
                                        _("failed to set cpuset.cpus in cgroup"
                                          " for vcpu %zu"), i);
@@ -5143,8 +5142,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (virCgroupNewVcpu(priv->cgroup, vcpu, false, &cgroup_vcpu) < 0)
                 goto endjob;
-            if (qemuSetupCgroupVcpuPin(cgroup_vcpu, newVcpuPin, newVcpuPinNum,
-                                       vcpu) < 0) {
+            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("failed to set cpuset.cpus in cgroup"
                                  " for vcpu %d"), vcpu);

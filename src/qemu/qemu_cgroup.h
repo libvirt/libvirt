@@ -52,10 +52,6 @@ int qemuSetupCpusetMems(virDomainObjPtr vm);
 int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
-int qemuSetupCgroupVcpuPin(virCgroupPtr cgroup,
-                           virDomainPinDefPtr *vcpupin,
-                           int nvcpupin,
-                           int vcpuid);
 int qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
 int qemuSetupCgroupForVcpu(virDomainObjPtr vm);
 int qemuSetupCgroupForIOThreads(virDomainObjPtr vm);
