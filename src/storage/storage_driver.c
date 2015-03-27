@@ -1609,6 +1609,7 @@ storageVolDeleteInternal(virStorageVolPtr obj,
 {
     size_t i;
     int ret = -1;
+    unsigned long long orig_pool_available, orig_pool_allocation;
 
     if (!backend->deleteVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
@@ -1617,6 +1618,9 @@ storageVolDeleteInternal(virStorageVolPtr obj,
         goto cleanup;
     }
 
+    orig_pool_available = pool->def->available;
+    orig_pool_allocation = pool->def->allocation;
+
     if (backend->deleteVol(obj->conn, pool, vol, flags) < 0)
         goto cleanup;
 
@@ -1624,8 +1628,10 @@ storageVolDeleteInternal(virStorageVolPtr obj,
      * in this module since the allocation/available weren't adjusted yet
      */
     if (updateMeta) {
-        pool->def->allocation -= vol->target.allocation;
-        pool->def->available += vol->target.allocation;
+        if (orig_pool_allocation == pool->def->allocation)
+            pool->def->allocation -= vol->target.allocation;
+        if (orig_pool_available == pool->def->available)
+            pool->def->available += vol->target.allocation;
     }
 
     for (i = 0; i < pool->volumes.count; i++) {
@@ -1744,6 +1750,7 @@ storageVolCreateXML(virStoragePoolPtr obj,
     virStorageVolDefPtr voldef = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
     virStorageVolDefPtr buildvoldef = NULL;
+    unsigned long long orig_pool_available, orig_pool_allocation;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -1790,6 +1797,9 @@ storageVolCreateXML(virStoragePoolPtr obj,
                                "creation"));
         goto cleanup;
     }
+
+    orig_pool_available = pool->def->available;
+    orig_pool_allocation = pool->def->allocation;
 
     /* Wipe any key the user may have suggested, as volume creation
      * will generate the canonical key.  */
@@ -1848,8 +1858,10 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
 
     /* Update pool metadata */
-    pool->def->allocation += buildvoldef->target.allocation;
-    pool->def->available -= buildvoldef->target.allocation;
+    if (orig_pool_allocation == pool->def->allocation)
+        pool->def->allocation += buildvoldef->target.allocation;
+    if (orig_pool_available == pool->def->available)
+        pool->def->available -= buildvoldef->target.allocation;
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
@@ -1877,6 +1889,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     virStorageVolDefPtr origvol = NULL, newvol = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
     unsigned long long allocation;
+    unsigned long long orig_pool_available, orig_pool_allocation;
     int buildret;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
@@ -1979,6 +1992,9 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
                       pool->volumes.count+1) < 0)
         goto cleanup;
 
+    orig_pool_available = pool->def->available;
+    orig_pool_allocation = pool->def->allocation;
+
     /* 'Define' the new volume so we get async progress reporting.
      * Wipe any key the user may have suggested, as volume creation
      * will generate the canonical key.  */
@@ -2032,8 +2048,10 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     newvol = NULL;
 
     /* Updating pool metadata */
-    pool->def->allocation += allocation;
-    pool->def->available -= allocation;
+    if (orig_pool_allocation == pool->def->allocation)
+        pool->def->allocation += allocation;
+    if (orig_pool_available == pool->def->available)
+        pool->def->available -= allocation;
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
