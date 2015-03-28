@@ -1,7 +1,7 @@
 /*
  * virsh-domain-monitor.c: Commands to monitor domain status
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2230,7 +2230,7 @@ static bool
 cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    const char *interface = NULL;
+    const char *ifacestr = NULL;
     virDomainInterfacePtr *ifaces = NULL;
     size_t i, j;
     int ifaces_count = 0;
@@ -2242,7 +2242,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &interface) < 0)
+    if (vshCommandOptString(cmd, "interface", &ifacestr) < 0)
         goto cleanup;
     if (vshCommandOptString(cmd, "source", &sourcestr) < 0)
         goto cleanup;
@@ -2273,7 +2273,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
         char *ip_addr_str = NULL;
         const char *type = NULL;
 
-        if (interface && STRNEQ(interface, iface->name))
+        if (ifacestr && STRNEQ(ifacestr, iface->name))
             continue;
 
         /* When the interface has no IP address */
