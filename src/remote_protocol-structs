@@ -2487,6 +2487,11 @@ struct remote_domain_event_callback_tunable_msg {
                 remote_typed_param * params_val;
         } params;
 };
+struct remote_domain_event_callback_device_added_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      devAlias;
+};
 struct remote_connect_get_cpu_model_names_args {
         remote_nonnull_string      arch;
         int                        need_results;
@@ -3017,4 +3022,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_IOTHREAD_INFO = 351,
         REMOTE_PROC_DOMAIN_PIN_IOTHREAD = 352,
         REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354,
 };

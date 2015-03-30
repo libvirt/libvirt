@@ -11862,6 +11862,24 @@ vshEventDeviceRemovedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
+vshEventDeviceAddedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virDomainPtr dom,
+                           const char *alias,
+                           void *opaque)
+{
+    vshDomEventData *data = opaque;
+
+    if (!data->loop && *data->count)
+        return;
+    vshPrint(data->ctl,
+             _("event 'device-added' for domain %s: %s\n"),
+             virDomainGetName(dom), alias);
+    (*data->count)++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static void
 vshEventTunablePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                      virDomainPtr dom,
                      virTypedParameterPtr params,
@@ -11966,6 +11984,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(vshEventTunablePrint), },
     { "agent-lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(vshEventAgentLifecyclePrint), },
+    { "device-added",
+      VIR_DOMAIN_EVENT_CALLBACK(vshEventDeviceAddedPrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

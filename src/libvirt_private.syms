@@ -487,6 +487,8 @@ virDomainEventBlockJobNewFromDom;
 virDomainEventBlockJobNewFromObj;
 virDomainEventControlErrorNewFromDom;
 virDomainEventControlErrorNewFromObj;
+virDomainEventDeviceAddedNewFromDom;
+virDomainEventDeviceAddedNewFromObj;
 virDomainEventDeviceRemovedNewFromDom;
 virDomainEventDeviceRemovedNewFromObj;
 virDomainEventDiskChangeNewFromDom;

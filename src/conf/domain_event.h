@@ -185,6 +185,12 @@ virObjectEventPtr
 virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
                                       const char *devAlias);
 virObjectEventPtr
+virDomainEventDeviceAddedNewFromObj(virDomainObjPtr obj,
+                                    const char *devAlias);
+virObjectEventPtr
+virDomainEventDeviceAddedNewFromDom(virDomainPtr dom,
+                                    const char *devAlias);
+virObjectEventPtr
 virDomainEventTunableNewFromObj(virDomainObjPtr obj,
                                 virTypedParameterPtr params,
                                 int nparams);

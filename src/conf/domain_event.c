@@ -55,6 +55,7 @@ static virClassPtr virDomainEventPMClass;
 static virClassPtr virDomainQemuMonitorEventClass;
 static virClassPtr virDomainEventTunableClass;
 static virClassPtr virDomainEventAgentLifecycleClass;
+static virClassPtr virDomainEventDeviceAddedClass;
 
 
 static void virDomainEventDispose(void *obj);
@@ -72,6 +73,7 @@ static void virDomainEventPMDispose(void *obj);
 static void virDomainQemuMonitorEventDispose(void *obj);
 static void virDomainEventTunableDispose(void *obj);
 static void virDomainEventAgentLifecycleDispose(void *obj);
+static void virDomainEventDeviceAddedDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -189,6 +191,14 @@ struct _virDomainEventDeviceRemoved {
 typedef struct _virDomainEventDeviceRemoved virDomainEventDeviceRemoved;
 typedef virDomainEventDeviceRemoved *virDomainEventDeviceRemovedPtr;
 
+struct _virDomainEventDeviceAdded {
+    virDomainEvent parent;
+
+    char *devAlias;
+};
+typedef struct _virDomainEventDeviceAdded virDomainEventDeviceAdded;
+typedef virDomainEventDeviceAdded *virDomainEventDeviceAddedPtr;
+
 struct _virDomainEventPM {
     virDomainEvent parent;
 
@@ -295,6 +305,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventDeviceRemoved",
                       sizeof(virDomainEventDeviceRemoved),
                       virDomainEventDeviceRemovedDispose)))
+        return -1;
+    if (!(virDomainEventDeviceAddedClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventDeviceAdded",
+                      sizeof(virDomainEventDeviceAdded),
+                      virDomainEventDeviceAddedDispose)))
         return -1;
     if (!(virDomainEventPMClass =
           virClassNew(virDomainEventClass,
@@ -433,6 +449,15 @@ static void
 virDomainEventDeviceRemovedDispose(void *obj)
 {
     virDomainEventDeviceRemovedPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->devAlias);
+}
+
+static void
+virDomainEventDeviceAddedDispose(void *obj)
+{
+    virDomainEventDeviceAddedPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 
     VIR_FREE(event->devAlias);
@@ -1226,6 +1251,47 @@ virDomainEventDeviceRemovedNewFromDom(virDomainPtr dom,
                                           devAlias);
 }
 
+static virObjectEventPtr
+virDomainEventDeviceAddedNew(int id,
+                             const char *name,
+                             unsigned char *uuid,
+                             const char *devAlias)
+{
+    virDomainEventDeviceAddedPtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventDeviceAddedClass,
+                                 VIR_DOMAIN_EVENT_ID_DEVICE_ADDED,
+                                 id, name, uuid)))
+        return NULL;
+
+    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
+        goto error;
+
+    return (virObjectEventPtr)ev;
+
+ error:
+    virObjectUnref(ev);
+    return NULL;
+}
+
+virObjectEventPtr
+virDomainEventDeviceAddedNewFromObj(virDomainObjPtr obj,
+                                       const char *devAlias)
+{
+    return virDomainEventDeviceAddedNew(obj->def->id, obj->def->name,
+                                           obj->def->uuid, devAlias);
+}
+
+virObjectEventPtr
+virDomainEventDeviceAddedNewFromDom(virDomainPtr dom,
+                                      const char *devAlias)
+{
+    return virDomainEventDeviceAddedNew(dom->id, dom->name, dom->uuid,
+                                          devAlias);
+}
 
 static virObjectEventPtr
 virDomainEventAgentLifecycleNew(int id,
@@ -1534,6 +1600,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                               agentLifecycleEvent->state,
                                                               agentLifecycleEvent->reason,
                                                               cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_DEVICE_ADDED:
+        {
+            virDomainEventDeviceAddedPtr deviceAddedEvent;
+
+            deviceAddedEvent = (virDomainEventDeviceAddedPtr)event;
+            ((virConnectDomainEventDeviceAddedCallback)cb)(conn, dom,
+                                                           deviceAddedEvent->devAlias,
+                                                           cbopaque);
             goto cleanup;
         }
 

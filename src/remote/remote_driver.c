@@ -321,6 +321,10 @@ static void
 remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog,
                                             virNetClientPtr client,
                                             void *evdata, void *opaque);
+static void
+remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog,
+                                          virNetClientPtr client,
+                                          void *evdata, void *opaque);
 
 static void
 remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog,
@@ -496,6 +500,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackAgentLifecycle,
       sizeof(remote_domain_event_callback_agent_lifecycle_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_agent_lifecycle_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED,
+      remoteDomainBuildEventCallbackDeviceAdded,
+      sizeof(remote_domain_event_callback_device_added_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_device_added_msg },
 };
 
 
@@ -5431,6 +5439,27 @@ remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog ATTRIBUT
     remoteDomainBuildEventDeviceRemovedHelper(conn, &msg->msg, msg->callbackID);
 }
 
+static void
+remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                          virNetClientPtr client ATTRIBUTE_UNUSED,
+                                          void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_device_added_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    dom = get_nonnull_domain(conn, msg->dom);
+    if (!dom)
+        return;
+
+    event = virDomainEventDeviceAddedNewFromDom(dom, msg->devAlias);
+
+    virObjectUnref(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
 
 static void
 remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,

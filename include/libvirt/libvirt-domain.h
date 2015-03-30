@@ -3202,6 +3202,23 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
                                                            void *opaque);
 
 /**
+ * virConnectDomainEventDeviceAddedCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @devAlias: device alias
+ * @opaque: application specified data
+ *
+ * This callback occurs when a device is added to the domain.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_DEVICE_ADDED with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
+                                                         virDomainPtr dom,
+                                                         const char *devAlias,
+                                                         void *opaque);
+
+/**
  * VIR_DOMAIN_TUNABLE_CPU_VCPUPIN:
  *
  * Macro represents formatted pinning for one vcpu specified by id which is
@@ -3483,6 +3500,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback */
     VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback */
     VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback */
+    VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

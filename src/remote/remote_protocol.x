@@ -3045,6 +3045,12 @@ struct remote_domain_event_callback_tunable_msg {
     remote_typed_param params<REMOTE_DOMAIN_EVENT_TUNABLE_MAX>;
 };
 
+struct remote_domain_event_callback_device_added_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string devAlias;
+};
+
 struct remote_connect_get_cpu_model_names_args {
     remote_nonnull_string arch;
     int need_results;
@@ -5643,5 +5649,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353
+    REMOTE_PROC_DOMAIN_INTERFACE_ADDRESSES = 353,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354
 };
