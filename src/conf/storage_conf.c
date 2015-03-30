@@ -2406,6 +2406,26 @@ matchSCSIAdapterParent(virStoragePoolObjPtr pool,
 }
 
 
+static bool
+virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
+                               virStoragePoolDefPtr def)
+{
+    virStoragePoolSourcePtr poolsrc = &matchpool->def->source;
+    virStoragePoolSourcePtr defsrc = &def->source;
+
+    if (poolsrc->nhost != 1 && defsrc->nhost != 1)
+        return false;
+
+    if (STRNEQ(poolsrc->hosts[0].name, defsrc->hosts[0].name))
+        return false;
+
+    if (STRNEQ_NULLABLE(poolsrc->initiator.iqn, defsrc->initiator.iqn))
+        return false;
+
+    return true;
+}
+
+
 int
 virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                                   virStoragePoolObjListPtr pools,
@@ -2505,17 +2525,8 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_ISCSI:
             matchpool = virStoragePoolSourceFindDuplicateDevices(pool, def);
             if (matchpool) {
-                if (matchpool->def->source.nhost == 1 && def->source.nhost == 1) {
-                    if (STREQ(matchpool->def->source.hosts[0].name, def->source.hosts[0].name)) {
-                        if ((matchpool->def->source.initiator.iqn) && (def->source.initiator.iqn)) {
-                            if (STREQ(matchpool->def->source.initiator.iqn, def->source.initiator.iqn))
-                                break;
-                            matchpool = NULL;
-                        }
-                        break;
-                    }
-                }
-                matchpool = NULL;
+                if (!virStoragePoolSourceISCSIMatch(matchpool, def))
+                    matchpool = NULL;
             }
             break;
         case VIR_STORAGE_POOL_FS:
