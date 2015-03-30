@@ -16276,6 +16276,12 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto endjob;
 
     if (mode == BLOCK_JOB_ABORT) {
+        if (async && !(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
+            /* prepare state for event delivery */
+            disk->blockJobStatus = -1;
+            disk->blockJobSync = true;
+        }
+
         if ((flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
             !(async && disk->mirror)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -16389,37 +16395,24 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                                                      status);
             event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
                                                        status);
-        } else if (!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
+        } else if (disk->blockJobSync) {
             /* XXX If the event reports failure, we should reflect
              * that back into the return status of this API call.  */
-            while (1) {
-                /* Poll every 50ms */
-                static struct timespec ts = {
-                    .tv_sec = 0,
-                    .tv_nsec = 50 * 1000 * 1000ull };
-                virDomainBlockJobInfo dummy;
 
-                qemuDomainObjEnterMonitor(driver, vm);
-                ret = qemuMonitorBlockJobInfo(priv->mon, device, &dummy, NULL);
-                if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                    ret = -1;
-
-                if (ret <= 0)
-                    break;
-
-                virObjectUnlock(vm);
-
-                nanosleep(&ts, NULL);
-
-                virObjectLock(vm);
-
-                if (!virDomainObjIsActive(vm)) {
-                    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                   _("domain is not running"));
-                    ret = -1;
-                    break;
+            while (disk->blockJobStatus == -1 && disk->blockJobSync) {
+                if (virCondWait(&disk->blockJobSyncCond, &vm->parent.lock) < 0) {
+                    virReportSystemError(errno, "%s",
+                                         _("Unable to wait on block job sync "
+                                           "condition"));
+                    disk->blockJobSync = false;
+                    goto endjob;
                 }
             }
+
+            qemuBlockJobEventProcess(driver, vm, disk,
+                                     disk->blockJobType,
+                                     disk->blockJobStatus);
+            disk->blockJobSync = false;
         }
     }
 

@@ -1020,28 +1020,40 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     virQEMUDriverPtr driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
-    char *data;
+    virDomainDiskDefPtr disk;
+    char *data = NULL;
 
     virObjectLock(vm);
 
     VIR_DEBUG("Block job for device %s (domain: %p,%s) type %d status %d",
               diskAlias, vm, vm->def->name, type, status);
 
-    if (VIR_ALLOC(processEvent) < 0)
+    if (!(disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
         goto error;
 
-    processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
-    if (VIR_STRDUP(data, diskAlias) < 0)
-        goto error;
-    processEvent->data = data;
-    processEvent->vm = vm;
-    processEvent->action = type;
-    processEvent->status = status;
+    if (disk->blockJobSync) {
+        disk->blockJobType = type;
+        disk->blockJobStatus = status;
+        /* We have an SYNC API waiting for this event, dispatch it back */
+        virCondSignal(&disk->blockJobSyncCond);
+    } else {
+        /* there is no waiting SYNC API, dispatch the update to a thread */
+        if (VIR_ALLOC(processEvent) < 0)
+            goto error;
 
-    virObjectRef(vm);
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        ignore_value(virObjectUnref(vm));
-        goto error;
+        processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
+        if (VIR_STRDUP(data, diskAlias) < 0)
+            goto error;
+        processEvent->data = data;
+        processEvent->vm = vm;
+        processEvent->action = type;
+        processEvent->status = status;
+
+        virObjectRef(vm);
+        if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
+            ignore_value(virObjectUnref(vm));
+            goto error;
+        }
     }
 
  cleanup:

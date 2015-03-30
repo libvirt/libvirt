@@ -1289,9 +1289,22 @@ virDomainDiskDefNew(void)
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
+
     if (VIR_ALLOC(ret->src) < 0)
-        VIR_FREE(ret);
+        goto error;
+
+    if (virCondInit(&ret->blockJobSyncCond) < 0) {
+        virReportSystemError(errno, "%s", _("Failed to initialize condition"));
+        goto error;
+    }
+
     return ret;
+
+ error:
+    virStorageSourceFree(ret->src);
+    VIR_FREE(ret);
+
+    return NULL;
 }
 
 
@@ -1310,6 +1323,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->product);
     VIR_FREE(def->domain_name);
     virDomainDeviceInfoClear(&def->info);
+    virCondDestroy(&def->blockJobSyncCond);
 
     VIR_FREE(def);
 }
