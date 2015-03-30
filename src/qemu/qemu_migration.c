@@ -1853,6 +1853,10 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         } else {
             VIR_WARN("Unable to enter monitor. No block job cancelled");
         }
+
+        /* If disk mirror is already aborted, clear the mirror state now */
+        if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_ABORT)
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
     }
     if (err)
         virSetError(err);
@@ -1921,6 +1925,10 @@ qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
             ret = -1;
             goto cleanup;
         }
+
+        /* If disk mirror is already aborted, clear the mirror state now */
+        if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_ABORT)
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
     }
 
  cleanup:
