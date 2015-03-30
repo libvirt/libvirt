@@ -13926,6 +13926,14 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
         virDomainDiskDefPtr dom_disk = vm->def->disks[i];
 
+        if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
+            dom_disk->blockjob) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk '%s' has an active block job"),
+                           disk->name);
+            goto cleanup;
+        }
+
         switch ((virDomainSnapshotLocation) disk->snapshot) {
         case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
             found_internal = true;
@@ -14570,11 +14578,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (qemuProcessAutoDestroyActive(driver, vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is marked for auto destroy"));
-        goto cleanup;
-    }
-    if (virDomainHasDiskMirror(vm)) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
-                       _("domain has active block job"));
         goto cleanup;
     }
 
