@@ -434,6 +434,13 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     int len;
     char *escaped, *out;
     const char *cur;
+    const char forbidden_characters[] = {
+        0x01,   0x02,   0x03,   0x04,   0x05,   0x06,   0x07,   0x08,
+        /*\t*/  /*\n*/  0x0B,   0x0C,   /*\r*/  0x0E,   0x0F,   0x10,
+        0x11,   0x12,   0x13,   0x14,   0x15,   0x16,   0x17,   0x18,
+        0x19,   '"',    '&',    '\'',   '<',    '>',
+        '\0'
+    };
 
     if ((format == NULL) || (buf == NULL) || (str == NULL))
         return;
@@ -442,7 +449,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
         return;
 
     len = strlen(str);
-    if (strcspn(str, "<>&'\"") == len) {
+    if (strcspn(str, forbidden_characters) == len) {
         virBufferAsprintf(buf, format, str);
         return;
     }
@@ -486,8 +493,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
             *out++ = 'o';
             *out++ = 's';
             *out++ = ';';
-        } else if (((unsigned char)*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
-                   (*cur == '\r')) {
+        } else if (!strchr(forbidden_characters, *cur)) {
             /*
              * default case, just copy !
              * Note that character over 0x80 are likely to give problem
@@ -495,6 +501,8 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
              * it's hard to handle properly we have to assume it's UTF-8 too
              */
             *out++ = *cur;
+        } else {
+            /* silently ignore control characters */
         }
         cur++;
     }
