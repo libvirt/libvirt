@@ -4453,116 +4453,101 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
 
 static void
-processBlockJobEvent(virQEMUDriverPtr driver,
-                     virDomainObjPtr vm,
-                     char *diskAlias,
-                     int type,
-                     int status)
+qemuBlockJobEventProcess(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         virDomainDiskDefPtr disk,
+                         int type,
+                         int status)
 {
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
     const char *path;
-    virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr persistDisk = NULL;
     bool save = false;
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+    /* Have to generate two variants of the event for old vs. new
+     * client callbacks */
+    if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+        type = disk->mirrorJob;
+    path = virDomainDiskGetSource(disk);
+    event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
+    event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type, status);
 
-    if (!virDomainObjIsActive(vm)) {
-        VIR_DEBUG("Domain is not running");
-        goto endjob;
-    }
+    /* If we completed a block pull or commit, then update the XML
+     * to match.  */
+    switch ((virConnectDomainEventBlockJobStatus) status) {
+    case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+        if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
+            if (vm->newDef) {
+                int indx = virDomainDiskIndexByName(vm->newDef, disk->dst, false);
+                virStorageSourcePtr copy = NULL;
 
-    disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias);
-
-    if (disk) {
-        /* Have to generate two variants of the event for old vs. new
-         * client callbacks */
-        if (type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
-            disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-            type = disk->mirrorJob;
-        path = virDomainDiskGetSource(disk);
-        event = virDomainEventBlockJobNewFromObj(vm, path, type, status);
-        event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
-                                                   status);
-
-        /* If we completed a block pull or commit, then update the XML
-         * to match.  */
-        switch ((virConnectDomainEventBlockJobStatus) status) {
-        case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-            if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
-                if (vm->newDef) {
-                    int indx = virDomainDiskIndexByName(vm->newDef, disk->dst,
-                                                        false);
-                    virStorageSourcePtr copy = NULL;
-
-                    if (indx >= 0) {
-                        persistDisk = vm->newDef->disks[indx];
-                        copy = virStorageSourceCopy(disk->mirror, false);
-                        if (virStorageSourceInitChainElement(copy,
-                                                             persistDisk->src,
-                                                             true) < 0) {
-                            VIR_WARN("Unable to update persistent definition "
-                                     "on vm %s after block job",
-                                     vm->def->name);
-                            virStorageSourceFree(copy);
-                            copy = NULL;
-                            persistDisk = NULL;
-                        }
-                    }
-                    if (copy) {
-                        virStorageSourceFree(persistDisk->src);
-                        persistDisk->src = copy;
+                if (indx >= 0) {
+                    persistDisk = vm->newDef->disks[indx];
+                    copy = virStorageSourceCopy(disk->mirror, false);
+                    if (virStorageSourceInitChainElement(copy,
+                                                         persistDisk->src,
+                                                         true) < 0) {
+                        VIR_WARN("Unable to update persistent definition "
+                                 "on vm %s after block job",
+                                 vm->def->name);
+                        virStorageSourceFree(copy);
+                        copy = NULL;
+                        persistDisk = NULL;
                     }
                 }
-
-                /* XXX We want to revoke security labels and disk
-                 * lease, as well as audit that revocation, before
-                 * dropping the original source.  But it gets tricky
-                 * if both source and mirror share common backing
-                 * files (we want to only revoke the non-shared
-                 * portion of the chain); so for now, we leak the
-                 * access to the original.  */
-                virStorageSourceFree(disk->src);
-                disk->src = disk->mirror;
-            } else {
-                virStorageSourceFree(disk->mirror);
+                if (copy) {
+                    virStorageSourceFree(persistDisk->src);
+                    persistDisk->src = copy;
+                }
             }
 
-            /* Recompute the cached backing chain to match our
-             * updates.  Better would be storing the chain ourselves
-             * rather than reprobing, but we haven't quite completed
-             * that conversion to use our XML tracking. */
-            disk->mirror = NULL;
-            save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-            ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
-                                                      true, true));
-            disk->blockjob = false;
-            break;
-
-        case VIR_DOMAIN_BLOCK_JOB_READY:
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-            save = true;
-            break;
-
-        case VIR_DOMAIN_BLOCK_JOB_FAILED:
-        case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+            /* XXX We want to revoke security labels and disk
+             * lease, as well as audit that revocation, before
+             * dropping the original source.  But it gets tricky
+             * if both source and mirror share common backing
+             * files (we want to only revoke the non-shared
+             * portion of the chain); so for now, we leak the
+             * access to the original.  */
+            virStorageSourceFree(disk->src);
+            disk->src = disk->mirror;
+        } else {
             virStorageSourceFree(disk->mirror);
-            disk->mirror = NULL;
-            disk->mirrorState = status == VIR_DOMAIN_BLOCK_JOB_FAILED ?
-                VIR_DOMAIN_DISK_MIRROR_STATE_ABORT : VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-            disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-            save = true;
-            disk->blockjob = false;
-            break;
-
-        case VIR_DOMAIN_BLOCK_JOB_LAST:
-            break;
         }
+
+        /* Recompute the cached backing chain to match our
+         * updates.  Better would be storing the chain ourselves
+         * rather than reprobing, but we haven't quite completed
+         * that conversion to use our XML tracking. */
+        disk->mirror = NULL;
+        save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
+                                                  true, true));
+        disk->blockjob = false;
+        break;
+
+    case VIR_DOMAIN_BLOCK_JOB_READY:
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
+        save = true;
+        break;
+
+    case VIR_DOMAIN_BLOCK_JOB_FAILED:
+    case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+        virStorageSourceFree(disk->mirror);
+        disk->mirror = NULL;
+        disk->mirrorState = status == VIR_DOMAIN_BLOCK_JOB_FAILED ?
+            VIR_DOMAIN_DISK_MIRROR_STATE_ABORT : VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        save = true;
+        disk->blockjob = false;
+        break;
+
+    case VIR_DOMAIN_BLOCK_JOB_LAST:
+        break;
     }
 
     if (save) {
@@ -4574,12 +4559,35 @@ processBlockJobEvent(virQEMUDriverPtr driver,
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
     }
-    virObjectUnref(cfg);
 
     if (event)
         qemuDomainEventQueue(driver, event);
     if (event2)
         qemuDomainEventQueue(driver, event2);
+
+    virObjectUnref(cfg);
+}
+
+
+static void
+processBlockJobEvent(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     char *diskAlias,
+                     int type,
+                     int status)
+{
+    virDomainDiskDefPtr disk;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("Domain is not running");
+        goto endjob;
+    }
+
+    if ((disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
+        qemuBlockJobEventProcess(driver, vm, disk, type, status);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
