@@ -377,6 +377,15 @@ getBlockDevice(uint32_t host,
 }
 
 
+/*
+ * Process a Logical Unit entry from the scsi host device directory
+ *
+ * Returns:
+ *
+ *  0  => Found a valid entry
+ *  -1 => Some sort of fatal error
+ *  -2 => non-fatal error or a non-disk entry
+ */
 static int
 processLU(virStoragePoolObjPtr pool,
           uint32_t host,
@@ -395,7 +404,7 @@ processLU(virStoragePoolObjPtr pool,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"),
                        host, bus, target, lun);
-        goto out;
+        return -1;
     }
 
     /* We don't create volumes for devices other than disk and cdrom
@@ -403,32 +412,28 @@ processLU(virStoragePoolObjPtr pool,
      * isn't an error, either. */
     if (!(device_type == VIR_STORAGE_DEVICE_TYPE_DISK ||
           device_type == VIR_STORAGE_DEVICE_TYPE_ROM))
-    {
-        retval = 0;
-        goto out;
-    }
+        return -2;
 
     VIR_DEBUG("%u:%u:%u:%u is a Direct-Access LUN",
               host, bus, target, lun);
 
     if (getBlockDevice(host, bus, target, lun, &block_device) < 0) {
         VIR_DEBUG("Failed to find block device for this LUN");
-        goto out;
+        return -1;
     }
 
-    if (virStorageBackendSCSINewLun(pool,
-                                    host, bus, target, lun,
-                                    block_device) < 0) {
+    retval = virStorageBackendSCSINewLun(pool, host, bus, target, lun,
+                                         block_device);
+    if (retval < 0) {
         VIR_DEBUG("Failed to create new storage volume for %u:%u:%u:%u",
                   host, bus, target, lun);
-        goto out;
+        goto cleanup;
     }
-    retval = 0;
 
     VIR_DEBUG("Created new storage volume for %u:%u:%u:%u successfully",
               host, bus, target, lun);
 
- out:
+ cleanup:
     VIR_FREE(block_device);
     return retval;
 }
@@ -461,6 +466,8 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
     snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
 
     while ((retval = virDirRead(devicedir, &lun_dirent, device_path)) > 0) {
+        int rc;
+
         if (sscanf(lun_dirent->d_name, devicepattern,
                    &bus, &target, &lun) != 3) {
             continue;
@@ -468,7 +475,12 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
 
         VIR_DEBUG("Found possible LU '%s'", lun_dirent->d_name);
 
-        if (processLU(pool, scanhost, bus, target, lun) == 0)
+        rc = processLU(pool, scanhost, bus, target, lun);
+        if (rc == -1) {
+            retval = -1;
+            break;
+        }
+        if (rc == 0)
             found++;
     }
 
