@@ -4574,7 +4574,6 @@ processBlockJobEvent(virQEMUDriverPtr driver,
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
     }
-    virObjectUnlock(vm);
     virObjectUnref(cfg);
 
     if (event)
