@@ -5615,8 +5615,10 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 
     qemuDomainObjEndJob(driver, dom);
 
-    if (!dom->persistent)
+    if (!dom->persistent) {
         qemuDomainRemoveInactive(driver, dom);
+        dom = NULL;
+    }
 
     if (event)
         qemuDomainEventQueue(driver, event);
