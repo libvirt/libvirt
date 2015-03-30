@@ -201,6 +201,45 @@ static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
 }
 
 
+struct testBufAddStrData {
+    const char *data;
+    const char *expect;
+};
+
+
+static int
+testBufEscapeStr(const void *opaque ATTRIBUTE_UNUSED)
+{
+    const struct testBufAddStrData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual;
+    int ret = -1;
+
+    virBufferAddLit(&buf, "<c>\n");
+    virBufferAdjustIndent(&buf, 2);
+    virBufferEscapeString(&buf, "<el>%s</el>\n", data->data);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</c>");
+
+    if (!(actual = virBufferContentAndReset(&buf))) {
+        TEST_ERROR("buf is empty");
+        goto cleanup;
+    }
+
+    if (STRNEQ_NULLABLE(actual, data->expect)) {
+        TEST_ERROR("testBufEscapeStr(): Strings don't match:\n");
+        virtTestDifference(stderr, data->expect, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -218,6 +257,22 @@ mymain(void)
     DO_TEST("VSprintf infinite loop", testBufInfiniteLoop, 0);
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
+
+#define DO_TEST_ESCAPE(data, expect)                                   \
+    do {                                                               \
+        struct testBufAddStrData info = { data, expect };              \
+        if (virtTestRun("Buf: EscapeStr", testBufEscapeStr, &info) < 0)   \
+            ret = -1;                                                  \
+    } while (0)
+
+    DO_TEST_ESCAPE("<td></td><td></td>",
+                   "<c>\n  <el>&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;</el>\n</c>");
+    DO_TEST_ESCAPE("\007\"&&\"\x15",
+                   "<c>\n  <el>&quot;&amp;&amp;&quot;</el>\n</c>");
+    DO_TEST_ESCAPE(",,'..',,",
+                   "<c>\n  <el>,,&apos;..&apos;,,</el>\n</c>");
+    DO_TEST_ESCAPE("\x01\x01\x02\x03\x05\x08",
+                   "<c>\n  <el></el>\n</c>");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
