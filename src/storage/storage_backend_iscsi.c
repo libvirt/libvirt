@@ -146,11 +146,8 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
         retval = -1;
     }
 
-    if (virStorageBackendSCSIFindLUs(pool, host) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to find LUs on host %u"), host);
+    if (virStorageBackendSCSIFindLUs(pool, host) < 0)
         retval = -1;
-    }
 
     VIR_FREE(sysfs_path);
 
