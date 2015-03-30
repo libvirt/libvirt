@@ -1058,7 +1058,7 @@
   ...</pre>
 
 <pre>
-  &lt;cpu mode='host-passthrough'/&gt;
+  &lt;cpu mode='host-passthrough'&gt;
     &lt;feature policy='disable' name='lahf_lm'/&gt;
   ...</pre>
 
