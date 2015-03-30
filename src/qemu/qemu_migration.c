@@ -2761,8 +2761,10 @@ qemuMigrationBegin(virConnectPtr conn,
          * place.
          */
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                 qemuMigrationCleanup) < 0)
+                                 qemuMigrationCleanup) < 0) {
+            VIR_FREE(xml);
             goto endjob;
+        }
         qemuMigrationJobContinue(vm);
     } else {
         goto endjob;
