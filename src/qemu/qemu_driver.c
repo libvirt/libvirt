@@ -7661,19 +7661,24 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
+    const char *alias = NULL;
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
         ret = qemuDomainAttachDeviceDiskLive(dom->conn, driver, vm, dev);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.disk->info.alias;
             dev->data.disk = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         ret = qemuDomainAttachDeviceControllerLive(driver, vm, dev);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.controller->info.alias;
             dev->data.controller = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -7687,41 +7692,52 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         qemuDomainObjCheckNetTaint(driver, vm, dev->data.net, -1);
         ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
                                         dev->data.net);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.net->info.alias;
             dev->data.net = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, -1);
         ret = qemuDomainAttachHostDevice(dom->conn, driver, vm,
                                          dev->data.hostdev);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.hostdev->info->alias;
             dev->data.hostdev = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         ret = qemuDomainAttachRedirdevDevice(driver, vm,
                                              dev->data.redirdev);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.redirdev->info.alias;
             dev->data.redirdev = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainAttachChrDevice(driver, vm,
                                         dev->data.chr);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.chr->info.alias;
             dev->data.chr = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
         ret = qemuDomainAttachRNGDevice(driver, vm,
                                         dev->data.rng);
-        if (!ret)
+        if (!ret) {
+            alias = dev->data.rng->info.alias;
             dev->data.rng = NULL;
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        /* note that qemuDomainAttachMemory always consumes dev->data.memory */
+        /* note that qemuDomainAttachMemory always consumes dev->data.memory
+         * and dispatches DeviceAdded event on success */
         ret = qemuDomainAttachMemory(driver, vm,
                                      dev->data.memory);
         dev->data.memory = NULL;
@@ -7746,6 +7762,16 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
                        _("live attach of device '%s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         break;
+    }
+
+    if (alias) {
+        /* queue the event before the alias has a chance to get freed
+         * if the domain disappears while qemuDomainUpdateDeviceList
+         * is in monitor */
+        virObjectEventPtr event;
+        event = virDomainEventDeviceAddedNewFromObj(vm, alias);
+        if (event)
+            qemuDomainEventQueue(driver, event);
     }
 
     if (ret == 0)

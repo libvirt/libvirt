@@ -1726,6 +1726,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     char *objalias = NULL;
     const char *backendType;
     virJSONValuePtr props = NULL;
+    virObjectEventPtr event;
     int id;
     int ret = -1;
 
@@ -1768,6 +1769,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         mem = NULL;
         goto cleanup;
     }
+
+    event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
+    if (event)
+        qemuDomainEventQueue(driver, event);
 
     /* mem is consumed by vm->def */
     mem = NULL;
