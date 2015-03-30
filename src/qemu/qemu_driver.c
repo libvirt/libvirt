@@ -16334,7 +16334,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     flags &= (VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
               VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT);
     ret = qemuDomainBlockCopyCommon(vm, dom->conn, path, dest,
-                                    bandwidth, 0, 0, flags, true);
+                                    speed, 0, 0, flags, true);
     dest = NULL;
 
  cleanup:
