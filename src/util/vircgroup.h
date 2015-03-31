@@ -282,4 +282,5 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
 
 int virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller);
 
+bool virCgroupControllerAvailable(int controller);
 #endif /* __VIR_CGROUP_H__ */

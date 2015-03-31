@@ -4011,6 +4011,20 @@ virCgroupHasEmptyTasks(virCgroupPtr cgroup, int controller)
     return ret;
 }
 
+bool
+virCgroupControllerAvailable(int controller)
+{
+    virCgroupPtr cgroup;
+    bool ret = false;
+
+    if (virCgroupNewSelf(&cgroup) < 0)
+        return ret;
+
+    ret = virCgroupHasController(cgroup, controller);
+    virCgroupFree(&cgroup);
+    return ret;
+}
+
 #else /* !VIR_CGROUP_SUPPORTED */
 
 bool
@@ -4781,4 +4795,9 @@ virCgroupHasEmptyTasks(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
     return -1;
 }
 
+bool
+virCgroupControllerAvailable(int controller ATTRIBUTE_UNUSED)
+{
+    return false;
+}
 #endif /* !VIR_CGROUP_SUPPORTED */

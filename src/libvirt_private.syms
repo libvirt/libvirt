@@ -1142,6 +1142,7 @@ virCgroupAllowDevice;
 virCgroupAllowDeviceMajor;
 virCgroupAllowDevicePath;
 virCgroupAvailable;
+virCgroupControllerAvailable;
 virCgroupControllerTypeFromString;
 virCgroupControllerTypeToString;
 virCgroupDenyAllDevices;

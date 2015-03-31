@@ -586,6 +586,34 @@ static int testCgroupAvailable(const void *args)
     return 0;
 }
 
+static int testCgroupControllerAvailable(const void *args ATTRIBUTE_UNUSED)
+{
+    int ret = 0;
+
+# define CHECK_CONTROLLER(c, present)                                   \
+    if ((present && !virCgroupControllerAvailable(c)) ||                \
+        (!present && virCgroupControllerAvailable(c))) {                \
+        fprintf(stderr, present ?                                       \
+                "Expected controller %s not available\n" :              \
+                "Unexpected controller %s available\n", #c);            \
+        ret = -1;                                                       \
+    }
+
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_CPU, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_CPUACCT, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_CPUSET, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_MEMORY, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_DEVICES, false)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_FREEZER, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_BLKIO, true)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_NET_CLS, false)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_PERF_EVENT, false)
+    CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_SYSTEMD, true)
+
+# undef CHECK_CONTROLLER
+    return ret;
+}
+
 static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 {
     virCgroupPtr cgroup = NULL;
@@ -884,6 +912,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("Cgroup available", testCgroupAvailable, (void*)0x1) < 0)
+        ret = -1;
+
+    if (virtTestRun("Cgroup controller available", testCgroupControllerAvailable, NULL) < 0)
         ret = -1;
 
     if (virtTestRun("virCgroupGetBlkioIoServiced works", testCgroupGetBlkioIoServiced, NULL) < 0)
