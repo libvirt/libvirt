@@ -246,6 +246,7 @@ mymain(void)
         {"test7", VIR_ARCH_X86_64},
         {"test8", VIR_ARCH_X86_64},
         {"raspberrypi", VIR_ARCH_ARMV6L},
+        {"f21-mustang", VIR_ARCH_AARCH64},
     };
 
     if (virInitialize() < 0)
