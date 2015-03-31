@@ -3034,3 +3034,16 @@ qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem)
 {
     mem->size = VIR_ROUND_UP(mem->size, 1024);
 }
+
+
+/**
+ * qemuDomainGetMonitor:
+ * @vm: domain object
+ *
+ * Returns the monitor pointer corresponding to the domain object @vm.
+ */
+qemuMonitorPtr
+qemuDomainGetMonitor(virDomainObjPtr vm)
+{
+    return ((qemuDomainObjPrivatePtr) vm->privateData)->mon;
+}
