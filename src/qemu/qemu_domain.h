@@ -428,6 +428,8 @@ int qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
+int qemuDomainSupportsBlockJobs(virDomainObjPtr vm, bool *modern)
+    ATTRIBUTE_NONNULL(1);
 bool qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk);
 
 void qemuDomObjEndAPI(virDomainObjPtr *vm);

@@ -3047,3 +3047,33 @@ qemuDomainGetMonitor(virDomainObjPtr vm)
 {
     return ((qemuDomainObjPrivatePtr) vm->privateData)->mon;
 }
+
+
+/**
+ * qemuDomainSupportsBlockJobs:
+ * @vm: domain object
+ * @modern: pointer to bool that returns whether modern block jobs are supported
+ *
+ * Returns -1 in case when qemu does not support block jobs at all. Otherwise
+ * returns 0 and optionally fills @modern to denote that modern (async) block
+ * jobs are supported.
+ */
+int
+qemuDomainSupportsBlockJobs(virDomainObjPtr vm,
+                            bool *modern)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool async = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
+    bool sync = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
+
+    if (!sync && !async) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("block jobs not supported with this QEMU binary"));
+        return -1;
+    }
+
+    if (modern)
+        *modern = async;
+
+    return 0;
+}
