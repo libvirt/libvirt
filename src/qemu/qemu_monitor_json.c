@@ -4247,6 +4247,39 @@ qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorJSONBlockJobError(virJSONValuePtr reply,
+                             const char *cmd_name,
+                             const char *device)
+{
+    virJSONValuePtr error;
+
+    if (!(error = virJSONValueObjectGet(reply, "error")))
+        return 0;
+
+    if (qemuMonitorJSONErrorIsClass(error, "DeviceNotActive")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("No active operation on device: %s"), device);
+    } else if (qemuMonitorJSONErrorIsClass(error, "DeviceInUse")) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Device %s in use"), device);
+    } else if (qemuMonitorJSONErrorIsClass(error, "NotSupported")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Operation is not supported for device: %s"), device);
+    } else if (qemuMonitorJSONErrorIsClass(error, "CommandNotFound")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Command '%s' is not found"), cmd_name);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected error: (%s) '%s'"),
+                       NULLSTR(virJSONValueObjectGetString(error, "class")),
+                       NULLSTR(virJSONValueObjectGetString(error, "desc")));
+    }
+
+    return -1;
+}
+
+
 /* speed is in bytes/sec */
 int
 qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
@@ -4317,34 +4350,15 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0 && virJSONValueObjectHasKey(reply, "error")) {
-        ret = -1;
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive")) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("No active operation on device: %s"),
-                           device);
-        } else if (qemuMonitorJSONHasError(reply, "DeviceInUse")) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("Device %s in use"), device);
-        } else if (qemuMonitorJSONHasError(reply, "NotSupported")) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Operation is not supported for device: %s"),
-                           device);
-        } else if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Command '%s' is not found"), cmd_name);
-        } else {
-            virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
+    if (qemuMonitorJSONBlockJobError(reply, cmd_name, device) < 0)
+        goto cleanup;
 
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected error: (%s) '%s'"),
-                           NULLSTR(virJSONValueObjectGetString(error, "class")),
-                           NULLSTR(virJSONValueObjectGetString(error, "desc")));
-        }
-    }
+    ret = 0;
 
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
