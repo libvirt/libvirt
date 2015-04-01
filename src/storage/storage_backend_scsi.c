@@ -146,6 +146,16 @@ virStorageBackendSCSISerial(const char *dev)
 }
 
 
+/*
+ * Attempt to create a new LUN
+ *
+ * Returns:
+ *
+ *  0  => Success
+ *  -1 => Failure due to some sort of OOM or other fatal issue found when
+ *        attempting to get/update information about a found volume
+ *  -2 => Failure to find a stable path, not fatal, caller can try another
+ */
 static int
 virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             uint32_t host ATTRIBUTE_UNUSED,
@@ -157,6 +167,22 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
     virStorageVolDefPtr vol = NULL;
     char *devpath = NULL;
     int retval = -1;
+
+    /* Check if the pool is using a stable target path. The call to
+     * virStorageBackendStablePath will fail if the pool target path
+     * isn't stable and just return the strdup'd 'devpath' anyway.
+     * This would be indistinguishable to failing to find the stable
+     * path to the device if the virDirRead loop to search the
+     * target pool path for our devpath had failed.
+     */
+    if (!virStorageBackendPoolPathIsStable(pool->def->target.path) &&
+        !(STREQ(pool->def->target.path, "/dev") ||
+          STREQ(pool->def->target.path, "/dev/"))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unable to use target path '%s' for dev '%s'"),
+                       NULLSTR(pool->def->target.path), dev);
+        goto cleanup;
+    }
 
     if (VIR_ALLOC(vol) < 0)
         goto cleanup;
@@ -194,6 +220,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         VIR_DEBUG("No stable path found for '%s' in '%s'",
                   devpath, pool->def->target.path);
 
+        retval = -2;
         goto cleanup;
     }
 
