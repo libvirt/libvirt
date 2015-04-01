@@ -1521,10 +1521,17 @@ int
 virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
                               virPCIDevicePtr pci)
 {
+    virPCIDeviceAddressPtr devAddr = NULL;
     int ret = -1;
 
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
+
+    if (!(devAddr = virPCIDeviceGetAddress(pci)))
+        goto out;
+
+    if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr))
+        goto out;
 
     if (virPCIDeviceDetach(pci, hostdev_mgr->activePCIHostdevs,
                            hostdev_mgr->inactivePCIHostdevs) < 0) {
@@ -1535,6 +1542,7 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
  out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
+    VIR_FREE(devAddr);
     return ret;
 }
 
