@@ -1666,7 +1666,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
 typedef enum {
     VSH_CMD_BLOCK_JOB_ABORT,
-    VSH_CMD_BLOCK_JOB_SPEED,
     VSH_CMD_BLOCK_JOB_PULL,
     VSH_CMD_BLOCK_JOB_COMMIT,
 } vshCmdBlockJobMode;
@@ -1699,10 +1698,6 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         if (vshCommandOptBool(cmd, "pivot"))
             flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
         if (virDomainBlockJobAbort(dom, path, flags) < 0)
-            goto cleanup;
-        break;
-    case VSH_CMD_BLOCK_JOB_SPEED:
-        if (virDomainBlockJobSetSpeed(dom, path, bandwidth, 0) < 0)
             goto cleanup;
         break;
     case VSH_CMD_BLOCK_JOB_PULL:
@@ -2537,6 +2532,24 @@ vshBlockJobInfo(vshControl *ctl,
 
 
 static bool
+vshBlockJobSetSpeed(vshControl *ctl,
+                    const vshCmd *cmd,
+                    virDomainPtr dom,
+                    const char *path)
+{
+    unsigned long bandwidth;
+
+    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+        return false;
+
+    if (virDomainBlockJobSetSpeed(dom, path, bandwidth, 0) < 0)
+        return false;
+
+    return true;
+}
+
+
+static bool
 cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
@@ -2568,10 +2581,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 
     if (abortMode || pivot || async)
         return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_ABORT, NULL);
-    if (bandwidth)
-        return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_SPEED, NULL);
 
-    /* Everything below here is for --info mode */
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
@@ -2579,7 +2589,10 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         goto cleanup;
 
-    ret = vshBlockJobInfo(ctl, dom, path, raw, bytes);
+    if (bandwidth)
+        ret = vshBlockJobSetSpeed(ctl, cmd, dom, path);
+    else
+        ret = vshBlockJobInfo(ctl, dom, path, raw, bytes);
 
  cleanup:
     if (dom)
