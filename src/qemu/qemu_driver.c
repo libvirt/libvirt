@@ -16204,27 +16204,10 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     }
 
     if (ret < 0) {
-        /* On failure, qemu abandons the mirror, and reverts back to
-         * the source disk (RHEL 6.3 has a bug where the revert could
-         * cause catastrophic failure in qemu, but we don't need to
-         * worry about it here as it is not an upstream qemu problem.  */
-        /* XXX should we be parsing the exact qemu error, or calling
-         * 'query-block', to see what state we really got left in
-         * before killing the mirroring job?
-         * XXX We want to revoke security labels and disk lease, as
-         * well as audit that revocation, before dropping the original
-         * source.  But it gets tricky if both source and mirror share
-         * common backing files (we want to only revoke the non-shared
-         * portion of the chain); so for now, we leak the access to
-         * the original.  */
-        virStorageSourceFree(disk->mirror);
-        disk->mirror = NULL;
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        disk->blockjob = false;
+        /* The pivot failed. The block job in QEMU remains in the synchronised
+         * phase. Reset the state we changed and return the error to the user */
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
     }
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        ret = -1;
 
  cleanup:
     if (oldsrc)
@@ -16430,8 +16413,10 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
     if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
         ret = qemuDomainBlockPivot(driver, vm, device, disk);
-        if (ret < 0 && async)
+        if (ret < 0 && async) {
+            disk->blockJobSync = false;
             goto endjob;
+        }
         goto waitjob;
     }
     if (disk->mirror) {
