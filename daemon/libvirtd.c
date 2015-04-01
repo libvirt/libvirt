@@ -1097,7 +1097,6 @@ daemonUsage(const char *argv0, bool privileged)
     }
 }
 
-#define MAX_LISTEN 5
 int main(int argc, char **argv) {
     virNetServerPtr srv = NULL;
     char *remote_config_file = NULL;

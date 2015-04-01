@@ -110,8 +110,6 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_NB_NUMA_PARAM 2
 
-#define QEMU_NB_PER_CPU_STAT_PARAM 2
-
 #define QEMU_SCHED_MIN_PERIOD              1000LL
 #define QEMU_SCHED_MAX_PERIOD           1000000LL
 #define QEMU_SCHED_MIN_QUOTA               1000LL

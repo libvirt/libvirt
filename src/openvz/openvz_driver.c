@@ -63,10 +63,6 @@
 
 VIR_LOG_INIT("openvz.openvz_driver");
 
-#define OPENVZ_MAX_ARG 28
-#define CMDBUF_LEN 1488
-#define CMDOP_LEN 288
-
 #define OPENVZ_NB_MEM_PARAM 3
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);

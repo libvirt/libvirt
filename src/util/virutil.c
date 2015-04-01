@@ -81,10 +81,6 @@
 #include "virstring.h"
 #include "virutil.h"
 
-#ifndef NSIG
-# define NSIG 32
-#endif
-
 verify(sizeof(gid_t) <= sizeof(unsigned int) &&
        sizeof(uid_t) <= sizeof(unsigned int));
 

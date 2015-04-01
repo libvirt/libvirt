@@ -259,16 +259,6 @@ mymain(void)
      */
     virtTestQuiesceLibvirtErrors(false);
 
-#define DO_TEST_PARSE(addrstr, family, pass)                            \
-    do {                                                                \
-        virSocketAddr addr;                                             \
-        struct testParseData data = { &addr, addrstr, family, pass };   \
-        memset(&addr, 0, sizeof(addr));                                 \
-        if (virtTestRun("Test parse " addrstr,                          \
-                        testParseHelper, &data) < 0)                    \
-            ret = -1;                                                   \
-    } while (0)
-
 #define DO_TEST_PARSE_AND_FORMAT(addrstr, family, pass)                 \
     do {                                                                \
         virSocketAddr addr;                                             \

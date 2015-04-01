@@ -1111,7 +1111,6 @@ virLockDaemonUsage(const char *argv0, bool privileged)
     }
 }
 
-#define MAX_LISTEN 5
 int main(int argc, char **argv) {
     virNetServerProgramPtr lockProgram = NULL;
     char *remote_config_file = NULL;

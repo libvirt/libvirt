@@ -62,11 +62,6 @@
 
 VIR_LOG_INIT("tests.testutils");
 
-#define GETTIMEOFDAY(T) gettimeofday(T, NULL)
-#define DIFF_MSEC(T, U)                                 \
-    ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
-      ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
-
 #include "virfile.h"
 
 static unsigned int testDebug = -1;

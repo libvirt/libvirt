@@ -122,7 +122,6 @@ static int defaultConnections;
 static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
 #define TEST_MODEL "i686"
-#define TEST_MODEL_WORDSIZE 32
 #define TEST_EMULATOR "/usr/bin/test-hv"
 
 static const virNodeInfo defaultNodeInfo = {

@@ -47,7 +47,6 @@
 
 #define MAX_BRIDGE_ID 256
 #define VIR_FROM_THIS VIR_FROM_NETWORK
-#define NEXT_FREE_CLASS_ID 3
 /* currently, /sbin/tc implementation allows up to 16 bits for minor class size */
 #define CLASS_ID_BITMAP_SIZE (1<<16)
 

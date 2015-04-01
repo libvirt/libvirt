@@ -71,9 +71,6 @@
 
 VIR_LOG_INIT("uml.uml_driver");
 
-/* For storing short-lived temporary files. */
-#define TEMPDIR LOCALSTATEDIR "/cache/libvirt"
-
 typedef struct _umlDomainObjPrivate umlDomainObjPrivate;
 typedef umlDomainObjPrivate *umlDomainObjPrivatePtr;
 struct _umlDomainObjPrivate {
