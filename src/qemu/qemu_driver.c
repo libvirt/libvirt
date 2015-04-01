@@ -16037,14 +16037,14 @@ qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idxret)
  * abort with pivot; this updates the VM definition as appropriate, on
  * either success or failure.  */
 static int
-qemuDomainBlockPivot(virConnectPtr conn,
-                     virQEMUDriverPtr driver, virDomainObjPtr vm,
-                     const char *device, virDomainDiskDefPtr disk)
+qemuDomainBlockPivot(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     const char *device,
+                     virDomainDiskDefPtr disk)
 {
     int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainBlockJobInfo info;
-    bool resume = false;
     virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -16073,29 +16073,6 @@ qemuDomainBlockPivot(virConnectPtr conn,
                        _("disk '%s' not ready for pivot yet"),
                        disk->dst);
         goto cleanup;
-    }
-
-    /* If we are using the older 'drive-reopen', we want to make sure
-     * that management apps can tell whether the command succeeded,
-     * even if libvirtd is restarted at the wrong time.  To accomplish
-     * that, we pause the guest before drive-reopen, and resume it
-     * only when we know the outcome; if libvirtd restarts, then
-     * management will see the guest still paused, and know that no
-     * guest I/O has caused the source and mirror to diverge.  XXX
-     * With the newer 'block-job-complete', we need to use a
-     * persistent bitmap to make things safe; so for now, we just
-     * blindly pause the guest.  */
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
-                                QEMU_ASYNC_JOB_NONE) < 0)
-            goto cleanup;
-
-        resume = true;
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("guest unexpectedly quit"));
-            goto cleanup;
-        }
     }
 
     /* For active commit, the mirror is part of the already labeled
@@ -16171,21 +16148,6 @@ qemuDomainBlockPivot(virConnectPtr conn,
     if (oldsrc)
         disk->src = oldsrc;
 
-    if (resume && virDomainObjIsActive(vm) &&
-        qemuProcessStartCPUs(driver, vm, conn,
-                             VIR_DOMAIN_RUNNING_UNPAUSED,
-                             QEMU_ASYNC_JOB_NONE) < 0) {
-        virObjectEventPtr event = NULL;
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_SUSPENDED,
-                                         VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
-        if (event)
-            qemuDomainEventQueue(driver, event);
-        if (virGetLastError() == NULL) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("resuming after drive-reopen failed"));
-        }
-    }
     virObjectUnref(cfg);
     return ret;
 }
@@ -16289,7 +16251,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         }
 
         if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
-            ret = qemuDomainBlockPivot(conn, driver, vm, device, disk);
+            ret = qemuDomainBlockPivot(driver, vm, device, disk);
             if (ret < 0 && async)
                 goto endjob;
             goto waitjob;
