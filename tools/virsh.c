@@ -44,11 +44,6 @@
 #include <strings.h>
 #include <signal.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
-
 #if WITH_READLINE
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -56,19 +51,14 @@
 
 #include "internal.h"
 #include "virerror.h"
-#include "base64.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include "virxml.h"
 #include <libvirt/libvirt-qemu.h>
 #include <libvirt/libvirt-lxc.h>
 #include "virfile.h"
 #include "configmake.h"
 #include "virthread.h"
 #include "vircommand.h"
-#include "virkeycode.h"
-#include "virnetdevbandwidth.h"
-#include "virbitmap.h"
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
 #include "virstring.h"

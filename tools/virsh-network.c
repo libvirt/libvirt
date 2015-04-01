@@ -26,16 +26,10 @@
 #include <config.h>
 #include "virsh-network.h"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
-
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virxml.h"
 #include "conf/network_conf.h"
 
 virNetworkPtr

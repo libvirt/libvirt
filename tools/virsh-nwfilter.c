@@ -26,17 +26,11 @@
 #include <config.h>
 #include "virsh-nwfilter.h"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
-
 #include "internal.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
-#include "virxml.h"
 
 virNWFilterPtr
 vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,

@@ -26,18 +26,12 @@
 #include <config.h>
 #include "virsh-secret.h"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-#include <libxml/xmlsave.h>
-
 #include "internal.h"
 #include "base64.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
-#include "virxml.h"
 #include "conf/secret_conf.h"
 
 static virSecretPtr

@@ -31,7 +31,6 @@
 # include <stdarg.h>
 # include <unistd.h>
 # include <sys/stat.h>
-# include <inttypes.h>
 # include <termios.h>
 
 # include "internal.h"
