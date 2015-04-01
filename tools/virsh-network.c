@@ -30,6 +30,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virstring.h"
 #include "conf/network_conf.h"
 
 virNetworkPtr

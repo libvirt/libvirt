@@ -47,6 +47,7 @@
 #include "virjson.h"
 #include "virkeycode.h"
 #include "virmacaddr.h"
+#include "virnetdevbandwidth.h"
 #include "virprocess.h"
 #include "virstring.h"
 #include "virsh-console.h"

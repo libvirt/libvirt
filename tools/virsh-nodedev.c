@@ -30,6 +30,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virstring.h"
 #include "conf/node_device_conf.h"
 
 /*
