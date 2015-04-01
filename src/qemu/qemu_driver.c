@@ -16249,16 +16249,12 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     char *device = NULL;
     int ret = -1;
     bool async = false;
-    virObjectEventPtr event = NULL;
-    virObjectEventPtr event2 = NULL;
     int idx;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
     char *basePath = NULL;
     char *backingPath = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    bool save = false;
     unsigned long long speed = bandwidth;
 
     if (!virDomainObjIsActive(vm)) {
@@ -16309,40 +16305,6 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
     if (mode == BLOCK_JOB_PULL && qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
-
-    if (mode == BLOCK_JOB_ABORT) {
-        if (async && !(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
-            /* prepare state for event delivery */
-            disk->blockJobStatus = -1;
-            disk->blockJobSync = true;
-        }
-
-        if ((flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
-            !(async && disk->mirror)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("pivot of disk '%s' requires an active copy job"),
-                           disk->dst);
-            goto endjob;
-        }
-        if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
-            disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("another job on disk '%s' is still being ended"),
-                           disk->dst);
-            goto endjob;
-        }
-
-        if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
-            ret = qemuDomainBlockPivot(driver, vm, device, disk);
-            if (ret < 0 && async)
-                goto endjob;
-            goto waitjob;
-        }
-        if (disk->mirror) {
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
-            save = true;
-        }
-    }
 
     if (base &&
         (virStorageFileParseChainIndex(disk->dst, base, &baseIndex) < 0 ||
@@ -16395,11 +16357,105 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0) {
-        if (mode == BLOCK_JOB_ABORT && disk->mirror)
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         goto endjob;
     } else if (mode == BLOCK_JOB_PULL) {
         disk->blockjob = true;
+    }
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    VIR_FREE(basePath);
+    VIR_FREE(backingPath);
+    VIR_FREE(device);
+    qemuDomObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+qemuDomainBlockJobAbort(virDomainPtr dom,
+                        const char *path,
+                        unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    char *device = NULL;
+    virObjectEventPtr event = NULL;
+    virObjectEventPtr event2 = NULL;
+    virDomainDiskDefPtr disk;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool save = false;
+    int idx;
+    bool async;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC |
+                  VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainBlockJobAbortEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainSupportsBlockJobs(vm, &async) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
+        goto endjob;
+    disk = vm->def->disks[idx];
+
+    if (async && !(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)) {
+        /* prepare state for event delivery */
+        disk->blockJobStatus = -1;
+        disk->blockJobSync = true;
+    }
+
+    if ((flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT) &&
+        !(async && disk->mirror)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("pivot of disk '%s' requires an active copy job"),
+                       disk->dst);
+        goto endjob;
+    }
+    if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
+        disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("another job on disk '%s' is still being ended"),
+                       disk->dst);
+        goto endjob;
+    }
+
+    if (disk->mirror && (flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT)) {
+        ret = qemuDomainBlockPivot(driver, vm, device, disk);
+        if (ret < 0 && async)
+            goto endjob;
+        goto waitjob;
+    }
+    if (disk->mirror) {
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_ABORT;
+        save = true;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device, async);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    if (ret < 0) {
+        if (disk->mirror)
+            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
+        goto endjob;
     }
 
  waitjob:
@@ -16416,37 +16472,35 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
      * block to guarantee synchronous operation.  We do the waiting
      * while still holding the VM job, to prevent newly scheduled
      * block jobs from confusing us.  */
-    if (mode == BLOCK_JOB_ABORT) {
-        if (!async) {
-            /* Older qemu that lacked async reporting also lacked
-             * blockcopy and active commit, so we can hardcode the
-             * event to pull, and we know the XML doesn't need
-             * updating.  We have to generate two event variants.  */
-            int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
-            int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
-            event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
-                                                     status);
-            event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
-                                                       status);
-        } else if (disk->blockJobSync) {
-            /* XXX If the event reports failure, we should reflect
-             * that back into the return status of this API call.  */
+    if (!async) {
+        /* Older qemu that lacked async reporting also lacked
+         * blockcopy and active commit, so we can hardcode the
+         * event to pull, and we know the XML doesn't need
+         * updating.  We have to generate two event variants.  */
+        int type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
+        int status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
+        event = virDomainEventBlockJobNewFromObj(vm, disk->src->path, type,
+                                                 status);
+        event2 = virDomainEventBlockJob2NewFromObj(vm, disk->dst, type,
+                                                   status);
+    } else if (disk->blockJobSync) {
+        /* XXX If the event reports failure, we should reflect
+         * that back into the return status of this API call.  */
 
-            while (disk->blockJobStatus == -1 && disk->blockJobSync) {
-                if (virCondWait(&disk->blockJobSyncCond, &vm->parent.lock) < 0) {
-                    virReportSystemError(errno, "%s",
-                                         _("Unable to wait on block job sync "
-                                           "condition"));
-                    disk->blockJobSync = false;
-                    goto endjob;
-                }
+        while (disk->blockJobStatus == -1 && disk->blockJobSync) {
+            if (virCondWait(&disk->blockJobSyncCond, &vm->parent.lock) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to wait on block job sync "
+                                       "condition"));
+                disk->blockJobSync = false;
+                goto endjob;
             }
-
-            qemuBlockJobEventProcess(driver, vm, disk,
-                                     disk->blockJobType,
-                                     disk->blockJobStatus);
-            disk->blockJobSync = false;
         }
+
+        qemuBlockJobEventProcess(driver, vm, disk,
+                                 disk->blockJobType,
+                                 disk->blockJobStatus);
+        disk->blockJobSync = false;
     }
 
  endjob:
@@ -16454,8 +16508,6 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
 
  cleanup:
     virObjectUnref(cfg);
-    VIR_FREE(basePath);
-    VIR_FREE(backingPath);
     VIR_FREE(device);
     qemuDomObjEndAPI(&vm);
     if (event)
@@ -16465,25 +16517,6 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     return ret;
 }
 
-static int
-qemuDomainBlockJobAbort(virDomainPtr dom, const char *path, unsigned int flags)
-{
-    virDomainObjPtr vm;
-
-    virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC |
-                  VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT, -1);
-
-    if (!(vm = qemuDomObjFromDomain(dom)))
-        return -1;
-
-    if (virDomainBlockJobAbortEnsureACL(dom->conn, vm->def) < 0) {
-        qemuDomObjEndAPI(&vm);
-        return -1;
-    }
-
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, 0,
-                                  BLOCK_JOB_ABORT, flags);
-}
 
 static int
 qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,

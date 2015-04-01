@@ -1846,10 +1846,9 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             continue;
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
-            if (qemuMonitorBlockJob(priv->mon, diskAlias, NULL, NULL, 0,
-                                    BLOCK_JOB_ABORT, true) < 0) {
+            if (qemuMonitorBlockJobCancel(priv->mon, diskAlias, true) < 0)
                 VIR_WARN("Unable to cancel block-job on '%s'", diskAlias);
-            }
+
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 break;
         } else {
@@ -1920,8 +1919,7 @@ qemuMigrationCancelDriveMirror(qemuMigrationCookiePtr mig,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto cleanup;
 
-        if (qemuMonitorBlockJob(priv->mon, diskAlias, NULL, NULL, 0,
-                                BLOCK_JOB_ABORT, true) < 0)
+        if (qemuMonitorBlockJobCancel(priv->mon, diskAlias, true) < 0)
             VIR_WARN("Unable to stop block job on %s", diskAlias);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;

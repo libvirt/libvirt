@@ -3603,6 +3603,24 @@ qemuMonitorBlockJob(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorBlockJobCancel(qemuMonitorPtr mon,
+                          const char *device,
+                          bool modern)
+{
+    VIR_DEBUG("mon=%p, device=%s, modern=%d",
+              mon, device, modern);
+
+    if (!mon->json) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("block jobs require JSON monitor"));
+        return -1;
+    }
+
+    return qemuMonitorJSONBlockJobCancel(mon, device, modern);
+}
+
+
+int
 qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
                             const char *device,
                             unsigned long long bandwidth,

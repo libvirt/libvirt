@@ -4321,13 +4321,6 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     }
 
     switch (mode) {
-    case BLOCK_JOB_ABORT:
-        cmd_name = modern ? "block-job-cancel" : "block_job_cancel";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name,
-                                         "s:device", device,
-                                         NULL);
-        break;
-
     case BLOCK_JOB_PULL:
         cmd_name = modern ? "block-stream" : "block_stream";
         cmd = qemuMonitorJSONMakeCommand(cmd_name,
@@ -4340,6 +4333,36 @@ qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
     }
 
     if (!cmd)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONBlockJobError(reply, cmd_name, device) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
+                              const char *device,
+                              bool modern)
+{
+    int ret = -1;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    const char *cmd_name = modern ? "block-job-cancel" : "block_job_cancel";
+
+    if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
+                                           "s:device", device,
+                                           NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
