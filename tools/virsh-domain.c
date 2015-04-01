@@ -6961,7 +6961,6 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
 
-    /* Pin mode: pinning specified vcpu to specified physical cpus*/
     if (!(cpumap = vshParseCPUList(ctl, cpulist, maxcpu, cpumaplen)))
         goto cleanup;
 
