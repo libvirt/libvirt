@@ -372,7 +372,6 @@ processLU(virStoragePoolObjPtr pool,
           uint32_t target,
           uint32_t lun)
 {
-    char *type_path = NULL;
     int retval = -1;
     int device_type;
     char *block_device = NULL;
@@ -416,8 +415,6 @@ processLU(virStoragePoolObjPtr pool,
 
     VIR_DEBUG("Created new storage volume for %u:%u:%u:%u successfully",
               host, bus, target, lun);
-
-    VIR_FREE(type_path);
 
  out:
     VIR_FREE(block_device);
