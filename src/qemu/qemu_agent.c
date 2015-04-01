@@ -1300,7 +1300,7 @@ int qemuAgentShutdown(qemuAgentPtr mon,
     else
         mon->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
     ret = qemuAgentCommand(mon, cmd, &reply, false,
-                           VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK);
+                           VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN);
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
