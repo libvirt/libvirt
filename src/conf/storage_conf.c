@@ -2464,9 +2464,9 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                 matchpool = pool;
             break;
         case VIR_STORAGE_POOL_NETFS:
-            if ((STREQ(pool->def->source.dir, def->source.dir)) \
-                && (pool->def->source.nhost == 1 && def->source.nhost == 1) \
-                && (STREQ(pool->def->source.hosts[0].name, def->source.hosts[0].name)))
+            if (STREQ(pool->def->source.dir, def->source.dir) &&
+                virStoragePoolSourceMatchSingleHost(&pool->def->source,
+                                                    &def->source))
                 matchpool = pool;
             break;
         case VIR_STORAGE_POOL_SCSI:
