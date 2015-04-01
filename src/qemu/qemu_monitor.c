@@ -3577,28 +3577,26 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
 
 /* bandwidth is in bytes/sec */
 int
-qemuMonitorBlockJob(qemuMonitorPtr mon,
-                    const char *device,
-                    const char *base,
-                    const char *backingName,
-                    unsigned long long bandwidth,
-                    qemuMonitorBlockJobCmd mode,
-                    bool modern)
+qemuMonitorBlockStream(qemuMonitorPtr mon,
+                       const char *device,
+                       const char *base,
+                       const char *backingName,
+                       unsigned long long bandwidth,
+                       bool modern)
 {
-    int ret = -1;
-
     VIR_DEBUG("mon=%p, device=%s, base=%s, backingName=%s, bandwidth=%lluB, "
-              "mode=%o, modern=%d",
+              "modern=%d",
               mon, device, NULLSTR(base), NULLSTR(backingName),
-              bandwidth, mode, modern);
+              bandwidth, modern);
 
-    if (mon->json)
-        ret = qemuMonitorJSONBlockJob(mon, device, base, backingName,
-                                      bandwidth, mode, modern);
-    else
+    if (!mon->json) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block jobs require JSON monitor"));
-    return ret;
+        return -1;
+    }
+
+    return qemuMonitorJSONBlockStream(mon, device, base, backingName,
+                                      bandwidth, modern);
 }
 
 

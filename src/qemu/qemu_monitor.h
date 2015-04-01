@@ -755,17 +755,12 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
                        unsigned int *keycodes,
                        unsigned int nkeycodes);
 
-typedef enum {
-    BLOCK_JOB_PULL,
-} qemuMonitorBlockJobCmd;
-
-int qemuMonitorBlockJob(qemuMonitorPtr mon,
-                        const char *device,
-                        const char *base,
-                        const char *backingName,
-                        unsigned long long bandwidth,
-                        qemuMonitorBlockJobCmd mode,
-                        bool modern)
+int qemuMonitorBlockStream(qemuMonitorPtr mon,
+                           const char *device,
+                           const char *base,
+                           const char *backingName,
+                           unsigned long long bandwidth,
+                           bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobCancel(qemuMonitorPtr mon,

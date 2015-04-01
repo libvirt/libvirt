@@ -16238,17 +16238,16 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 /* bandwidth in MiB/s per public API. Caller must lock vm beforehand,
  * and not access it afterwards.  */
 static int
-qemuDomainBlockJobImpl(virDomainObjPtr vm,
-                       virConnectPtr conn,
-                       const char *path, const char *base,
-                       unsigned long bandwidth,
-                       int mode, unsigned int flags)
+qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          const char *path,
+                          const char *base,
+                          unsigned long bandwidth,
+                          unsigned int flags)
 {
-    virQEMUDriverPtr driver = conn->privateData;
-    qemuDomainObjPrivatePtr priv;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
-    int ret = -1;
-    bool async = false;
+    bool modern;
     int idx;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
@@ -16256,12 +16255,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     char *basePath = NULL;
     char *backingPath = NULL;
     unsigned long long speed = bandwidth;
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not running"));
-        goto cleanup;
-    }
+    int ret = -1;
 
     if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -16270,23 +16264,23 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    priv = vm->privateData;
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC)) {
-        async = true;
-    } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block jobs not supported with this QEMU binary"));
+    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
         goto cleanup;
-    } else if (base) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("partial block pull not supported with this "
-                         "QEMU binary"));
-        goto cleanup;
-    } else if (mode == BLOCK_JOB_PULL && bandwidth) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("setting bandwidth at start of block pull not "
-                         "supported with this QEMU binary"));
-        goto cleanup;
+
+    if (!modern) {
+        if (base) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("partial block pull not supported with this "
+                             "QEMU binary"));
+            goto cleanup;
+        }
+
+        if (bandwidth) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting bandwidth at start of block pull not "
+                             "supported with this QEMU binary"));
+            goto cleanup;
+        }
     }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
@@ -16298,12 +16292,11 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         goto endjob;
     }
 
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device)
+    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
         goto endjob;
     disk = vm->def->disks[idx];
 
-    if (mode == BLOCK_JOB_PULL && qemuDomainDiskBlockJobIsActive(disk))
+    if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
     if (base &&
@@ -16326,7 +16319,6 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
                                                      &backingPath) < 0)
                 goto endjob;
 
-
             if (!backingPath) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("can't keep relative backing relationship"));
@@ -16336,8 +16328,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     }
 
     /* Convert bandwidth MiB to bytes, if needed */
-    if (mode == BLOCK_JOB_PULL &&
-        !(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES)) {
+    if (!(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
                            _("bandwidth must be less than %llu"),
@@ -16352,15 +16343,15 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
         basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                              baseSource);
     if (!baseSource || basePath)
-        ret = qemuMonitorBlockJob(priv->mon, device, basePath, backingPath,
-                                  speed, mode, async);
+        ret = qemuMonitorBlockStream(priv->mon, device, basePath, backingPath,
+                                     speed, modern);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
-    if (ret < 0) {
+
+    if (ret < 0)
         goto endjob;
-    } else if (mode == BLOCK_JOB_PULL) {
-        disk->blockjob = true;
-    }
+
+    disk->blockjob = true;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
@@ -16372,6 +16363,7 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     qemuDomObjEndAPI(&vm);
     return ret;
 }
+
 
 static int
 qemuDomainBlockJobAbort(virDomainPtr dom,
@@ -16855,6 +16847,7 @@ static int
 qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     unsigned long long speed = bandwidth;
@@ -16877,8 +16870,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     /* For normal rebase (enhanced blockpull), the common code handles
      * everything, including vm cleanup. */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_COPY))
-        return qemuDomainBlockJobImpl(vm, dom->conn, path, base, bandwidth,
-                                      BLOCK_JOB_PULL, flags);
+        return qemuDomainBlockPullCommon(driver, vm, path, base, bandwidth, flags);
 
     /* If we got here, we are doing a block copy rebase. */
     if (VIR_ALLOC(dest) < 0)
@@ -17016,8 +17008,8 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
         return -1;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth,
-                                  BLOCK_JOB_PULL, flags);
+    return qemuDomainBlockPullCommon(dom->conn->privateData,
+                                     vm, path, NULL, bandwidth, flags);
 }
 
 

@@ -4282,57 +4282,24 @@ qemuMonitorJSONBlockJobError(virJSONValuePtr reply,
 
 /* speed is in bytes/sec */
 int
-qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
-                        const char *device,
-                        const char *base,
-                        const char *backingName,
-                        unsigned long long speed,
-                        qemuMonitorBlockJobCmd mode,
-                        bool modern)
+qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
+                           const char *device,
+                           const char *base,
+                           const char *backingName,
+                           unsigned long long speed,
+                           bool modern)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = NULL;
+    const char *cmd_name = modern ? "block-stream" : "block_stream";
 
-    if (base && (mode != BLOCK_JOB_PULL || !modern)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("only modern block pull supports base: %s"), base);
-        return -1;
-    }
-
-    if (backingName && mode != BLOCK_JOB_PULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("backing name is supported only for block pull"));
-        return -1;
-    }
-
-    if (backingName && !base) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("backing name requires a base image"));
-        return -1;
-    }
-
-    if (speed && mode == BLOCK_JOB_PULL && !modern) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("only modern block pull supports speed: %llu"),
-                       speed);
-        return -1;
-    }
-
-    switch (mode) {
-    case BLOCK_JOB_PULL:
-        cmd_name = modern ? "block-stream" : "block_stream";
-        cmd = qemuMonitorJSONMakeCommand(cmd_name,
-                                         "s:device", device,
-                                         "Y:speed", speed,
-                                         "S:base", base,
-                                         "S:backing-file", backingName,
-                                         NULL);
-        break;
-    }
-
-    if (!cmd)
+    if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
+                                           "s:device", device,
+                                           "Y:speed", speed,
+                                           "S:base", base,
+                                           "S:backing-file", backingName,
+                                           NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)

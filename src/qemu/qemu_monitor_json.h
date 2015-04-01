@@ -297,13 +297,12 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
                               const char *file);
 
-int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
-                            const char *device,
-                            const char *base,
-                            const char *backingName,
-                            unsigned long long speed,
-                            qemuMonitorBlockJobCmd mode,
-                            bool modern)
+int qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
+                               const char *device,
+                               const char *base,
+                               const char *backingName,
+                               unsigned long long speed,
+                               bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
