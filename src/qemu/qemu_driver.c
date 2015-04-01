@@ -16374,10 +16374,8 @@ qemuDomainBlockJobImpl(virDomainObjPtr vm,
     }
 
     /* Convert bandwidth MiB to bytes, if needed */
-    if ((mode == BLOCK_JOB_SPEED &&
-         !(flags & VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES)) ||
-        (mode == BLOCK_JOB_PULL &&
-         !(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES))) {
+    if (mode == BLOCK_JOB_PULL &&
+        !(flags & VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
             virReportError(VIR_ERR_OVERFLOW,
                            _("bandwidth must be less than %llu"),
@@ -16568,23 +16566,69 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     return ret;
 }
 
+
 static int
-qemuDomainBlockJobSetSpeed(virDomainPtr dom, const char *path,
-                           unsigned long bandwidth, unsigned int flags)
+qemuDomainBlockJobSetSpeed(virDomainPtr dom,
+                           const char *path,
+                           unsigned long bandwidth,
+                           unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    int ret = -1;
     virDomainObjPtr vm;
+    bool modern;
+    const char *device;
+    unsigned long long speed = bandwidth;
+
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES, -1);
+
+    /* Convert bandwidth MiB to bytes, if needed */
+    if (!(flags & VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES)) {
+        if (speed > LLONG_MAX >> 20) {
+            virReportError(VIR_ERR_OVERFLOW,
+                           _("bandwidth must be less than %llu"),
+                           LLONG_MAX >> 20);
+            return -1;
+        }
+        speed <<= 20;
+    }
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainBlockJobSetSpeedEnsureACL(dom->conn, vm->def) < 0) {
-        qemuDomObjEndAPI(&vm);
-        return -1;
+    if (virDomainBlockJobSetSpeedEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
     }
 
-    return qemuDomainBlockJobImpl(vm, dom->conn, path, NULL, bandwidth,
-                                  BLOCK_JOB_SPEED, flags);
+    if (!(device = qemuDiskPathToAlias(vm, path, NULL)))
+        goto endjob;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorBlockJobSetSpeed(qemuDomainGetMonitor(vm),
+                                      device,
+                                      speed,
+                                      modern);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    qemuDomObjEndAPI(&vm);
+
+    return ret;
 }
 
 

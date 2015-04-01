@@ -757,7 +757,6 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
 
 typedef enum {
     BLOCK_JOB_ABORT,
-    BLOCK_JOB_SPEED,
     BLOCK_JOB_PULL,
 } qemuMonitorBlockJobCmd;
 
@@ -769,6 +768,11 @@ int qemuMonitorBlockJob(qemuMonitorPtr mon,
                         qemuMonitorBlockJobCmd mode,
                         bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
+                                const char *device,
+                                unsigned long long bandwidth,
+                                bool modern);
 
 int qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
                             const char *device,

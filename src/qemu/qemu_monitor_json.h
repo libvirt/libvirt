@@ -306,6 +306,12 @@ int qemuMonitorJSONBlockJob(qemuMonitorPtr mon,
                             bool modern)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
+                                    const char *device,
+                                    unsigned long long speed,
+                                    bool modern)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
                                 const char *device,
                                 virDomainBlockJobInfoPtr info,
