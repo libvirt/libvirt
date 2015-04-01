@@ -131,23 +131,27 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
                               const char *session)
 {
     char *sysfs_path;
-    int retval = 0;
+    int retval = -1;
     uint32_t host;
 
     if (virAsprintf(&sysfs_path,
                     "/sys/class/iscsi_session/session%s/device", session) < 0)
-        return -1;
+        goto cleanup;
 
     if (virStorageBackendISCSIGetHostNumber(sysfs_path, &host) < 0) {
         virReportSystemError(errno,
                              _("Failed to get host number for iSCSI session "
                                "with path '%s'"),
                              sysfs_path);
-        retval = -1;
+        goto cleanup;
     }
 
     if (virStorageBackendSCSIFindLUs(pool, host) < 0)
-        retval = -1;
+        goto cleanup;
+
+    retval = 0;
+
+ cleanup:
 
     VIR_FREE(sysfs_path);
 
