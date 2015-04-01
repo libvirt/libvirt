@@ -16451,7 +16451,6 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
                            virDomainBlockJobInfoPtr info, unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     char *device = NULL;
     int idx;
@@ -16464,12 +16463,9 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainGetBlockJobInfoEnsureACL(dom->conn, vm->def) < 0) {
-        qemuDomObjEndAPI(&vm);
-        return -1;
-    }
+    if (virDomainGetBlockJobInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
 
-    priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
@@ -16480,20 +16476,16 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
         goto endjob;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC) &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block jobs not supported with this QEMU binary"));
+    if (qemuDomainSupportsBlockJobs(vm, NULL) < 0)
         goto endjob;
-    }
 
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device)
+    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
         goto endjob;
     disk = vm->def->disks[idx];
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJobInfo(priv->mon, device, info, &bandwidth);
+    ret = qemuMonitorBlockJobInfo(qemuDomainGetMonitor(vm), device, info,
+                                  &bandwidth);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0)
