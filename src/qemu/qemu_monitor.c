@@ -3492,23 +3492,20 @@ qemuMonitorDiskNameLookup(qemuMonitorPtr mon,
 }
 
 
-/* Use the block-job-complete monitor command to pivot a block copy
- * job.  */
+/* Use the block-job-complete monitor command to pivot a block copy job.  */
 int
-qemuMonitorDrivePivot(qemuMonitorPtr mon, const char *device,
-                      const char *file, const char *format)
+qemuMonitorDrivePivot(qemuMonitorPtr mon,
+                      const char *device)
 {
-    int ret = -1;
+    VIR_DEBUG("mon=%p, device=%s", mon, device);
 
-    VIR_DEBUG("mon=%p, device=%s, file=%s, format=%s",
-              mon, device, file, NULLSTR(format));
-
-    if (mon->json)
-        ret = qemuMonitorJSONDrivePivot(mon, device, file, format);
-    else
+    if (!mon->json) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("drive pivot requires JSON monitor"));
-    return ret;
+        return -1;
+    }
+
+    return qemuMonitorJSONDrivePivot(mon, device);
 }
 
 int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,

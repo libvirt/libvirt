@@ -3859,9 +3859,8 @@ qemuMonitorJSONBlockCommit(qemuMonitorPtr mon, const char *device,
 }
 
 int
-qemuMonitorJSONDrivePivot(qemuMonitorPtr mon, const char *device,
-                          const char *file ATTRIBUTE_UNUSED,
-                          const char *format ATTRIBUTE_UNUSED)
+qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
+                          const char *device)
 {
     int ret;
     virJSONValuePtr cmd;

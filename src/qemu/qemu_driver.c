@@ -16044,7 +16044,6 @@ qemuDomainBlockPivot(virConnectPtr conn,
     int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainBlockJobInfo info;
-    const char *format = NULL;
     bool resume = false;
     virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -16055,8 +16054,6 @@ qemuDomainBlockPivot(virConnectPtr conn,
                        disk->dst);
         goto cleanup;
     }
-
-    format = virStorageFileFormatTypeToString(disk->mirror->format);
 
     /* Probe the status, if needed.  */
     if (!disk->mirrorState) {
@@ -16141,7 +16138,7 @@ qemuDomainBlockPivot(virConnectPtr conn,
      * overall return value.  */
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT;
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorDrivePivot(priv->mon, device, disk->mirror->path, format);
+    ret = qemuMonitorDrivePivot(priv->mon, device);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto cleanup;

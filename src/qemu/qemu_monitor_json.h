@@ -264,9 +264,7 @@ int qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                                unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorJSONDrivePivot(qemuMonitorPtr mon,
-                              const char *device,
-                              const char *file,
-                              const char *format)
+                              const char *device)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockCommit(qemuMonitorPtr mon,
