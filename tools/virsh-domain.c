@@ -2542,26 +2542,31 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     bool raw = vshCommandOptBool(cmd, "raw");
     bool bytes = vshCommandOptBool(cmd, "bytes");
-    bool abortMode = (vshCommandOptBool(cmd, "abort") ||
-                      vshCommandOptBool(cmd, "async") ||
-                      vshCommandOptBool(cmd, "pivot"));
-    bool infoMode = vshCommandOptBool(cmd, "info") || raw;
+    bool abortMode = vshCommandOptBool(cmd, "abort");
+    bool pivot = vshCommandOptBool(cmd, "pivot");
+    bool async = vshCommandOptBool(cmd, "async");
+    bool info = vshCommandOptBool(cmd, "info");
     bool bandwidth = vshCommandOptBool(cmd, "bandwidth");
     virDomainPtr dom = NULL;
     const char *path;
 
-    if (abortMode + infoMode + bandwidth > 1) {
-        vshError(ctl, "%s",
-                 _("conflict between abort, info, and bandwidth modes"));
-        return false;
-    }
-    /* XXX also support --bytes with bandwidth mode */
-    if (bytes && (abortMode || bandwidth)) {
-        vshError(ctl, "%s", _("--bytes requires info mode"));
-        return false;
-    }
+    VSH_EXCLUSIVE_OPTIONS("raw", "abort");
+    VSH_EXCLUSIVE_OPTIONS_VAR(raw, pivot);
+    VSH_EXCLUSIVE_OPTIONS_VAR(raw, async);
+    VSH_EXCLUSIVE_OPTIONS_VAR(raw, bandwidth);
 
-    if (abortMode)
+    VSH_EXCLUSIVE_OPTIONS("info", "abort");
+    VSH_EXCLUSIVE_OPTIONS_VAR(info, pivot);
+    VSH_EXCLUSIVE_OPTIONS_VAR(info, async);
+    VSH_EXCLUSIVE_OPTIONS_VAR(info, bandwidth);
+
+    VSH_EXCLUSIVE_OPTIONS("bytes", "abort");
+    VSH_EXCLUSIVE_OPTIONS_VAR(bytes, pivot);
+    VSH_EXCLUSIVE_OPTIONS_VAR(bytes, async);
+    /* XXX also support --bytes with bandwidth mode */
+    VSH_EXCLUSIVE_OPTIONS_VAR(bytes, bandwidth);
+
+    if (abortMode || pivot || async)
         return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_ABORT, NULL);
     if (bandwidth)
         return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_SPEED, NULL);
