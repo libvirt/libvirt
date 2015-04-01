@@ -2405,6 +2405,16 @@ matchSCSIAdapterParent(virStoragePoolObjPtr pool,
     return false;
 }
 
+static bool
+virStoragePoolSourceMatchSingleHost(virStoragePoolSourcePtr poolsrc,
+                                    virStoragePoolSourcePtr defsrc)
+{
+    if (poolsrc->nhost != 1 && defsrc->nhost != 1)
+        return false;
+
+    return STREQ(poolsrc->hosts[0].name, defsrc->hosts[0].name);
+}
+
 
 static bool
 virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
@@ -2413,10 +2423,7 @@ virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
     virStoragePoolSourcePtr poolsrc = &matchpool->def->source;
     virStoragePoolSourcePtr defsrc = &def->source;
 
-    if (poolsrc->nhost != 1 && defsrc->nhost != 1)
-        return false;
-
-    if (STRNEQ(poolsrc->hosts[0].name, defsrc->hosts[0].name))
+    if (!virStoragePoolSourceMatchSingleHost(poolsrc, defsrc))
         return false;
 
     if (STRNEQ_NULLABLE(poolsrc->initiator.iqn, defsrc->initiator.iqn))
