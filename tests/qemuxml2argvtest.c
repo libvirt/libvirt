@@ -594,6 +594,10 @@ mymain(void)
     DO_TEST_FAILURE("machine-core-on", QEMU_CAPS_MACHINE_OPT);
     DO_TEST("machine-usb-opt", QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_USB_OPT);
+    DO_TEST("machine-vmport-opt", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_VMPORT_OPT);
+    DO_TEST_FAILURE("machine-xen-vmport-opt", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST("kvm", QEMU_CAPS_MACHINE_OPT);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
