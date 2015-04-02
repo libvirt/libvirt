@@ -279,6 +279,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qxl.vgamem_mb",
               "qxl-vga.vgamem_mb",
               "pc-dimm",
+
+              "machine-vmport-opt", /* 185 */
     );
 
 
@@ -2509,6 +2511,7 @@ struct virQEMUCapsCommandLineProps {
 
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
+    { "machine", "vmport", QEMU_CAPS_MACHINE_VMPORT_OPT },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
@@ -3254,6 +3257,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     if (qemuCaps->version >= 1006000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+
+    /* vmport option is supported v2.2.0 onwards */
+    if (qemuCaps->version >= 2002000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;
