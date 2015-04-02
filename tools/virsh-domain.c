@@ -1665,7 +1665,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 }
 
 typedef enum {
-    VSH_CMD_BLOCK_JOB_ABORT,
     VSH_CMD_BLOCK_JOB_PULL,
     VSH_CMD_BLOCK_JOB_COMMIT,
 } vshCmdBlockJobMode;
@@ -1692,14 +1691,6 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
 
     switch (mode) {
-    case VSH_CMD_BLOCK_JOB_ABORT:
-        if (vshCommandOptBool(cmd, "async"))
-            flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
-        if (vshCommandOptBool(cmd, "pivot"))
-            flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
-        if (virDomainBlockJobAbort(dom, path, flags) < 0)
-            goto cleanup;
-        break;
     case VSH_CMD_BLOCK_JOB_PULL:
         if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
             goto cleanup;
@@ -2550,6 +2541,26 @@ vshBlockJobSetSpeed(vshControl *ctl,
 
 
 static bool
+vshBlockJobAbort(virDomainPtr dom,
+                 const char *path,
+                 bool pivot,
+                 bool async)
+{
+    unsigned int flags = 0;
+
+    if (async)
+        flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+    if (pivot)
+        flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
+
+    if (virDomainBlockJobAbort(dom, path, flags) < 0)
+        return false;
+
+    return true;
+}
+
+
+static bool
 cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
@@ -2579,9 +2590,6 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     /* XXX also support --bytes with bandwidth mode */
     VSH_EXCLUSIVE_OPTIONS_VAR(bytes, bandwidth);
 
-    if (abortMode || pivot || async)
-        return blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_ABORT, NULL);
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
@@ -2591,6 +2599,8 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 
     if (bandwidth)
         ret = vshBlockJobSetSpeed(ctl, cmd, dom, path);
+    else if (abortMode || pivot || async)
+        ret = vshBlockJobAbort(dom, path, pivot, async);
     else
         ret = vshBlockJobInfo(ctl, dom, path, raw, bytes);
 
