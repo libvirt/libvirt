@@ -7316,6 +7316,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
         obsoleteAccel = true;
     } else {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
+        virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
 
         virCommandAddArg(cmd, "-machine");
         virBufferAdd(&buf, def->os.machine, -1);
@@ -7332,6 +7333,19 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
          */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
             virBufferAddLit(&buf, ",usb=off");
+
+        if (vmport) {
+            if (!virQEMUCapsSupportsVmport(qemuCaps, def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vmport is not available "
+                                 "with this QEMU binary"));
+                virBufferFreeAndReset(&buf);
+                return -1;
+            }
+
+            virBufferAsprintf(&buf, ",vmport=%s",
+                              virTristateSwitchTypeToString(vmport));
+        }
 
         if (def->mem.dump_core) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
