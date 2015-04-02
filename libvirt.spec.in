@@ -2291,6 +2291,13 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Thu Apr  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.14-1
+- qemu: Implement memory device hotplug
+- Implement public API for virDomainPinIOThread
+- Implement public API for virDomainGetIOThreadsInfo
+- SRIOV NIC offload feature discovery
+- a lot of improvement and bug fixes
+
 * Mon Mar  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.13-1
 - lot of improvements around NUMA code
 - a lot of improvement and bug fixes
