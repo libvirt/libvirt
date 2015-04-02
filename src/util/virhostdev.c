@@ -693,7 +693,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
 
  resetvfnetconfig:
     for (i = 0;
-         last_processed_hostdev_vf != -1 && i < last_processed_hostdev_vf; i++)
+         last_processed_hostdev_vf != -1 && i <= last_processed_hostdev_vf; i++)
         virHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir, NULL);
 
  reattachdevs:
