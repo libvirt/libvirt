@@ -539,6 +539,18 @@
       </optional>
 
       <optional>
+        <element name="iothreadids">
+          <zeroOrMore>
+            <element name="iothread">
+              <attribute name="id">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
+
+      <optional>
         <ref name="blkiotune"/>
       </optional>
 

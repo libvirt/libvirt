@@ -521,6 +521,18 @@
   ...
 &lt;/domain&gt;
 </pre>
+<pre>
+&lt;domain&gt;
+  ...
+  &lt;iothreadids&gt;
+    &lt;iothread id="2"/&gt;
+    &lt;iothread id="4"/&gt;
+    &lt;iothread id="6"/&gt;
+    &lt;iothread id="8"/&gt;
+  &lt;/iothreadids&gt;
+  ...
+&lt;/domain&gt;
+</pre>
 
     <dl>
       <dt><code>iothreads</code></dt>
@@ -530,7 +542,25 @@
         virtio-blk-pci and virtio-blk-ccw target storage devices. There
         should be only 1 or 2 IOThreads per host CPU. There may be more
         than one supported device assigned to each IOThread.
+        <span class="since">Since 1.2.8</span>
       </dd>
+      <dt><code>iothreadids</code></dt>
+      <dd>
+        The optional <code>iothreadids</code> element provides the capability
+        to specifically define the IOThread ID's for the domain.  By default,
+        IOThread ID's are sequentially numbered starting from 1 through the
+        number of <code>iothreads</code> defined for the domain. The
+        <code>id</code> attribute is used to define the IOThread ID. The
+        <code>id</code> attribute must be a positive integer greater than 0.
+        If there are less <code>iothreadids</code> defined than
+        <code>iothreads</code> defined for the domain, then libvirt will
+        sequentially fill <code>iothreadids</code> starting at 1 avoiding
+        any predefined <code>id</code>. If there are more
+        <code>iothreadids</code> defined than <code>iothreads</code>
+        defined for the domain, then the <code>iothreads</code> value
+        will be adjusted accordingly.
+        <span class="since">Since 1.2.15</span>
+       </dd>
     </dl>
 
     <h3><a name="elementsCPUTuning">CPU Tuning</a></h3>

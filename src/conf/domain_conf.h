@@ -2054,6 +2054,16 @@ struct _virDomainHugePage {
     unsigned long long size;    /* hugepage size in KiB */
 };
 
+typedef struct _virDomainIOThreadIDDef virDomainIOThreadIDDef;
+typedef virDomainIOThreadIDDef *virDomainIOThreadIDDefPtr;
+
+struct _virDomainIOThreadIDDef {
+    bool autofill;
+    unsigned int iothread_id;
+};
+
+void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
+
 typedef struct _virDomainCputune virDomainCputune;
 typedef virDomainCputune *virDomainCputunePtr;
 
@@ -2145,6 +2155,8 @@ struct _virDomainDef {
     virBitmapPtr cpumask;
 
     unsigned int iothreads;
+    size_t niothreadids;
+    virDomainIOThreadIDDefPtr *iothreadids;
 
     virDomainCputune cputune;
 
@@ -2603,6 +2615,12 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
+
+virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(virDomainDefPtr def,
+                                                  unsigned int iothread_id);
+virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
+                                                 unsigned int iothread_id);
+void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
 
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 

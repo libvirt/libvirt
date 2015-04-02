@@ -2102,6 +2102,32 @@ virDomainPinDefCopy(virDomainPinDefPtr *src, int npin)
     return NULL;
 }
 
+
+void
+virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def)
+{
+    if (!def)
+        return;
+    VIR_FREE(def);
+}
+
+
+static void
+virDomainIOThreadIDDefArrayFree(virDomainIOThreadIDDefPtr *def,
+                                int nids)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    for (i = 0; i < nids; i++)
+        virDomainIOThreadIDDefFree(def[i]);
+
+    VIR_FREE(def);
+}
+
+
 void
 virDomainPinDefFree(virDomainPinDefPtr def)
 {
@@ -2297,6 +2323,8 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->seclabels);
 
     virCPUDefFree(def->cpu);
+
+    virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
 
     virDomainPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
@@ -13170,6 +13198,54 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
     return idmap;
 }
 
+/* Parse the XML definition for an IOThread ID
+ *
+ * Format is :
+ *
+ *     <iothreads>4</iothreads>
+ *     <iothreadids>
+ *       <iothread id='1'/>
+ *       <iothread id='3'/>
+ *       <iothread id='5'/>
+ *       <iothread id='7'/>
+ *     </iothreadids>
+ */
+static virDomainIOThreadIDDefPtr
+virDomainIOThreadIDDefParseXML(xmlNodePtr node,
+                               xmlXPathContextPtr ctxt)
+{
+    virDomainIOThreadIDDefPtr iothrid;
+    xmlNodePtr oldnode = ctxt->node;
+    char *tmp = NULL;
+
+    if (VIR_ALLOC(iothrid) < 0)
+        return NULL;
+
+    ctxt->node = node;
+
+    if (!(tmp = virXPathString("string(./@id)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing 'id' attribute in <iothread> element"));
+        goto error;
+    }
+    if (virStrToLong_uip(tmp, NULL, 10, &iothrid->iothread_id) < 0 ||
+        iothrid->iothread_id == 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                        _("invalid iothread 'id' value '%s'"), tmp);
+        goto error;
+    }
+
+ cleanup:
+    VIR_FREE(tmp);
+    ctxt->node = oldnode;
+    return iothrid;
+
+ error:
+    virDomainIOThreadIDDefFree(iothrid);
+    goto cleanup;
+}
+
+
 /* Parse the XML definition for a vcpupin
  *
  * vcpupin has the form of
@@ -13975,6 +14051,49 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     VIR_FREE(tmp);
+
+    /* Extract any iothread id's defined */
+    if ((n = virXPathNodeSet("./iothreadids/iothread", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > def->iothreads)
+        def->iothreads = n;
+
+    if (n && VIR_ALLOC_N(def->iothreadids, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainIOThreadIDDefPtr iothrid = NULL;
+        if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i], ctxt)))
+            goto error;
+
+        if (virDomainIOThreadIDFind(def, iothrid->iothread_id)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("duplicate iothread id '%u' found"),
+                           iothrid->iothread_id);
+            virDomainIOThreadIDDefFree(iothrid);
+            goto error;
+        }
+        def->iothreadids[def->niothreadids++] = iothrid;
+    }
+    VIR_FREE(nodes);
+
+    /* If no iothreadid's or not fully populated, let's finish the job
+     * here rather than in PostParseCallback
+     */
+    if (def->iothreads && def->iothreads != def->niothreadids) {
+        unsigned int iothread_id = 1;
+        while (def->niothreadids != def->iothreads) {
+            if (!virDomainIOThreadIDFind(def, iothread_id)) {
+                virDomainIOThreadIDDefPtr iothrid;
+
+                if (!(iothrid = virDomainIOThreadIDAdd(def, iothread_id)))
+                    goto error;
+                iothrid->autofill = true;
+            }
+            iothread_id++;
+        }
+    }
 
     /* Extract cpu tunables. */
     if ((n = virXPathULong("string(./cputune/shares[1])", ctxt,
@@ -17258,6 +17377,67 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
         return -1;
 
     return 0;
+}
+
+virDomainIOThreadIDDefPtr
+virDomainIOThreadIDFind(virDomainDefPtr def,
+                        unsigned int iothread_id)
+{
+    size_t i;
+
+    if (!def->iothreadids || !def->niothreadids)
+        return NULL;
+
+    for (i = 0; i < def->niothreadids; i++) {
+        if (iothread_id == def->iothreadids[i]->iothread_id)
+            return def->iothreadids[i];
+    }
+
+    return NULL;
+}
+
+virDomainIOThreadIDDefPtr
+virDomainIOThreadIDAdd(virDomainDefPtr def,
+                       unsigned int iothread_id)
+{
+    virDomainIOThreadIDDefPtr iothrid = NULL;
+
+    if (virDomainIOThreadIDFind(def, iothread_id)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot duplicate iothread_id '%u' in iothreadids"),
+                       iothread_id);
+        return NULL;
+    }
+
+    if (VIR_ALLOC(iothrid) < 0)
+        goto error;
+
+    iothrid->iothread_id = iothread_id;
+
+    if (VIR_APPEND_ELEMENT_COPY(def->iothreadids, def->niothreadids,
+                                iothrid) < 0)
+        goto error;
+
+    return iothrid;
+
+ error:
+    virDomainIOThreadIDDefFree(iothrid);
+    return NULL;
+}
+
+void
+virDomainIOThreadIDDel(virDomainDefPtr def,
+                       unsigned int iothread_id)
+{
+    int n;
+
+    for (n = 0; n < def->niothreadids; n++) {
+        if (def->iothreadids[n]->iothread_id == iothread_id) {
+            virDomainIOThreadIDDefFree(def->iothreadids[n]);
+            VIR_DELETE_ELEMENT(def->iothreadids, n, def->niothreadids);
+            return;
+        }
+    }
 }
 
 /* Check if vcpupin with same id already exists. */
@@ -20602,8 +20782,27 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 
-    if (def->iothreads > 0)
-        virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n", def->iothreads);
+    if (def->iothreads > 0) {
+        virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n",
+                          def->iothreads);
+        /* Only print out iothreadids if we read at least one */
+        for (i = 0; i < def->niothreadids; i++) {
+            if (!def->iothreadids[i]->autofill)
+                break;
+        }
+        if (i < def->niothreadids) {
+            virBufferAddLit(buf, "<iothreadids>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (i = 0; i < def->niothreadids; i++) {
+                if (def->iothreadids[i]->autofill)
+                    continue;
+                virBufferAsprintf(buf, "<iothread id='%u'/>\n",
+                                  def->iothreadids[i]->iothread_id);
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</iothreadids>\n");
+        }
+    }
 
     if (def->cputune.sharesSpecified ||
         (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
