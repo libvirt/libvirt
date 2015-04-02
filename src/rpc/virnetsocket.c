@@ -123,7 +123,7 @@ VIR_ONCE_GLOBAL_INIT(virNetSocket)
 
 
 #ifndef WIN32
-static int virNetSocketForkDaemon(const char *binary, int passfd)
+static int virNetSocketForkDaemon(const char *binary)
 {
     int ret;
     virCommandPtr cmd = virCommandNewArgList(binary,
@@ -136,10 +136,6 @@ static int virNetSocketForkDaemon(const char *binary, int passfd)
     virCommandAddEnvPassBlockSUID(cmd, "XDG_RUNTIME_DIR", NULL);
     virCommandClearCaps(cmd);
     virCommandDaemonize(cmd);
-    if (passfd) {
-        virCommandPassFD(cmd, passfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        virCommandPassListenFDs(cmd);
-    }
     ret = virCommandRun(cmd, NULL);
     virCommandFree(cmd);
     return ret;
@@ -543,22 +539,59 @@ int virNetSocketNewConnectUNIX(const char *path,
                                const char *binary,
                                virNetSocketPtr *retsock)
 {
-    char *binname = NULL;
-    char *pidpath = NULL;
-    int fd, passfd = -1;
-    int pidfd = -1;
+    char *lockpath = NULL;
+    int lockfd = -1;
+    int fd = -1;
+    int retries = 100;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
+    char *rundir = NULL;
 
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
-    if (spawnDaemon && !binary) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Auto-spawn of daemon requested, but no binary specified"));
-        return -1;
+    if (spawnDaemon) {
+        const char *binname;
+
+        if (spawnDaemon && !binary) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Auto-spawn of daemon requested, "
+                             "but no binary specified"));
+            goto error;
+        }
+
+        if (!(binname = last_component(binary)) || binname[0] == '\0') {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot determine basename for binary '%s'"),
+                           binary);
+            goto error;
+        }
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto error;
+
+        if (virFileMakePathWithMode(rundir, 0700) < 0) {
+            virReportSystemError(errno,
+                                 _("Cannot create user runtime directory '%s'"),
+                                 rundir);
+            goto error;
+        }
+
+        if (virAsprintf(&lockpath, "%s/%s.lock", rundir, binname) < 0)
+            goto error;
+
+        if ((lockfd = open(lockpath, O_RDWR | O_CREAT, 0600)) < 0 ||
+            virSetCloseExec(lockfd) < 0) {
+            virReportSystemError(errno, _("Unable to create lock '%s'"), lockpath);
+            goto error;
+        }
+
+        if (virFileLock(lockfd, false, 0, 1, true) < 0) {
+            virReportSystemError(errno, _("Unable to lock '%s'"), lockpath);
+            goto error;
+        }
     }
 
     if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
@@ -574,108 +607,25 @@ int virNetSocketNewConnectUNIX(const char *path,
     if (remoteAddr.data.un.sun_path[0] == '@')
         remoteAddr.data.un.sun_path[0] = '\0';
 
- retry:
-    if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-        int status = 0;
-        pid_t pid = 0;
-
-        if (!spawnDaemon) {
+    while (retries &&
+           connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
+        if (!(spawnDaemon && errno == ENOENT)) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
             goto error;
         }
 
-        if (!(binname = last_component(binary)) || binname[0] == '\0') {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot determine basename for binary '%s'"),
-                           binary);
-            goto error;
-        }
-
-        if (virPidFileConstructPath(false, NULL, binname, &pidpath) < 0)
+        if (virNetSocketForkDaemon(binary) < 0)
             goto error;
 
-        pidfd = virPidFileAcquirePath(pidpath, false, getpid());
-        if (pidfd < 0) {
-            /*
-             * This can happen in a very rare case of two clients spawning two
-             * daemons at the same time, and the error in the logs that gets
-             * reset here can be a clue to some future debugging.
-             */
-            virResetLastError();
-            spawnDaemon = false;
-            goto retry;
-        }
+        retries--;
+        usleep(5000);
+    }
 
-        if ((passfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-            virReportSystemError(errno, "%s", _("Failed to create socket"));
-            goto error;
-        }
-
-        /*
-         * We already even acquired the pidfile, so no one else should be using
-         * @path right now.  So we're OK to unlink it and paying attention to
-         * the return value makes no real sense here.  Only if it's not an
-         * abstract socket, of course.
-         */
-        if (path[0] != '@')
-            unlink(path);
-
-        /*
-         * We have to fork() here, because umask() is set per-process, chmod()
-         * is racy and fchmod() has undefined behaviour on sockets according to
-         * POSIX, so it doesn't work outside Linux.
-         */
-        if ((pid = virFork()) < 0)
-            goto error;
-
-        if (pid == 0) {
-            umask(0077);
-            if (bind(passfd, &remoteAddr.data.sa, remoteAddr.len) < 0)
-                _exit(EXIT_FAILURE);
-
-            _exit(EXIT_SUCCESS);
-        }
-
-        if (virProcessWait(pid, &status, false) < 0)
-            goto error;
-
-        if (status != EXIT_SUCCESS) {
-            /*
-             * OK, so the child failed to bind() the socket.  This may mean that
-             * another daemon was starting at the same time and succeeded with
-             * its bind() (even though it should not happen because we using a
-             * pidfile for the race).  So we'll try connecting again, but this
-             * time without spawning the daemon.
-             */
-            spawnDaemon = false;
-            virPidFileDeletePath(pidpath);
-            VIR_FORCE_CLOSE(pidfd);
-            VIR_FORCE_CLOSE(passfd);
-            goto retry;
-        }
-
-        if (listen(passfd, 0) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Failed to listen on socket that's about "
-                                   "to be passed to the daemon"));
-            goto error;
-        }
-
-        if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-            virReportSystemError(errno, _("Failed to connect socket to '%s'"),
-                                 path);
-            goto error;
-        }
-
-        /*
-         * Do we need to eliminate the super-rare race here any more?  It would
-         * need incorporating the following VIR_FORCE_CLOSE() into a
-         * virCommandHook inside a virNetSocketForkDaemon().
-         */
-        VIR_FORCE_CLOSE(pidfd);
-        if (virNetSocketForkDaemon(binary, passfd) < 0)
-            goto error;
+    if (lockfd) {
+        unlink(lockpath);
+        VIR_FORCE_CLOSE(lockfd);
+        VIR_FREE(lockpath);
     }
 
     localAddr.len = sizeof(localAddr.data);
@@ -687,19 +637,15 @@ int virNetSocketNewConnectUNIX(const char *path,
     if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0)))
         goto error;
 
-    VIR_FREE(pidpath);
-
     return 0;
 
  error:
-    if (pidfd >= 0)
-        virPidFileDeletePath(pidpath);
-    VIR_FREE(pidpath);
+    if (lockfd)
+        unlink(lockpath);
+    VIR_FREE(lockpath);
+    VIR_FREE(rundir);
     VIR_FORCE_CLOSE(fd);
-    VIR_FORCE_CLOSE(passfd);
-    VIR_FORCE_CLOSE(pidfd);
-    if (spawnDaemon)
-        unlink(path);
+    VIR_FORCE_CLOSE(lockfd);
     return -1;
 }
 #else
