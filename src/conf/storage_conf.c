@@ -2543,6 +2543,7 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_FS:
         case VIR_STORAGE_POOL_LOGICAL:
         case VIR_STORAGE_POOL_DISK:
+        case VIR_STORAGE_POOL_ZFS:
             matchpool = virStoragePoolSourceFindDuplicateDevices(pool, def);
             break;
         case VIR_STORAGE_POOL_SHEEPDOG:
@@ -2552,7 +2553,6 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
             break;
         case VIR_STORAGE_POOL_MPATH:
         case VIR_STORAGE_POOL_RBD:
-        case VIR_STORAGE_POOL_ZFS:
         case VIR_STORAGE_POOL_LAST:
             break;
         }
