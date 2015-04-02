@@ -2458,7 +2458,7 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
 
         virStoragePoolObjLock(pool);
 
-        switch (pool->def->type) {
+        switch ((virStoragePoolType)pool->def->type) {
         case VIR_STORAGE_POOL_DIR:
             if (STREQ(pool->def->target.path, def->target.path))
                 matchpool = pool;
@@ -2544,7 +2544,12 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_DISK:
             matchpool = virStoragePoolSourceFindDuplicateDevices(pool, def);
             break;
-        default:
+        case VIR_STORAGE_POOL_MPATH:
+        case VIR_STORAGE_POOL_RBD:
+        case VIR_STORAGE_POOL_SHEEPDOG:
+        case VIR_STORAGE_POOL_GLUSTER:
+        case VIR_STORAGE_POOL_ZFS:
+        case VIR_STORAGE_POOL_LAST:
             break;
         }
         virStoragePoolObjUnlock(pool);
