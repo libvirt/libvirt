@@ -1580,7 +1580,7 @@ qemuMigrationPrecreateStorage(virConnectPtr conn,
         int indx;
         const char *diskSrcPath;
 
-        VIR_DEBUG("Looking up disk target '%s' (capacity=%lluu)",
+        VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
                   nbd->disks[i].target, nbd->disks[i].capacity);
 
         if ((indx = virDomainDiskIndexByName(vm->def,
