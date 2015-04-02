@@ -4026,6 +4026,15 @@
           <optional>
             <ref name="pmu"/>
           </optional>
+          <optional>
+            <element name="vmport">
+              <optional>
+                <attribute name="state">
+                  <ref name="virOnOff"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>
