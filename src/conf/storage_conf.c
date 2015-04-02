@@ -2464,6 +2464,7 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                 matchpool = pool;
             break;
         case VIR_STORAGE_POOL_NETFS:
+        case VIR_STORAGE_POOL_GLUSTER:
             if (STREQ(pool->def->source.dir, def->source.dir) &&
                 virStoragePoolSourceMatchSingleHost(&pool->def->source,
                                                     &def->source))
@@ -2551,7 +2552,6 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
             break;
         case VIR_STORAGE_POOL_MPATH:
         case VIR_STORAGE_POOL_RBD:
-        case VIR_STORAGE_POOL_GLUSTER:
         case VIR_STORAGE_POOL_ZFS:
         case VIR_STORAGE_POOL_LAST:
             break;
