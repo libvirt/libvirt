@@ -1928,6 +1928,40 @@ static int virStoragePoolSaveXML(const char *path,
 
 
 int
+virStoragePoolSaveState(const char *stateFile,
+                        virStoragePoolDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+    char *xml;
+
+    virBufferAddLit(&buf, "<poolstate>\n");
+    virBufferAdjustIndent(&buf, 2);
+
+    if (virStoragePoolDefFormatBuf(&buf, def) < 0)
+        goto error;
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</poolstate>\n");
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    if (!(xml = virBufferContentAndReset(&buf)))
+        goto error;
+
+    if (virStoragePoolSaveXML(stateFile, def, xml))
+        goto error;
+
+    ret = 0;
+
+ error:
+    VIR_FREE(xml);
+    return ret;
+}
+
+
+int
 virStoragePoolSaveConfig(const char *configFile,
                          virStoragePoolDefPtr def)
 {
