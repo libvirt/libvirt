@@ -873,6 +873,7 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
     if (addrs) {
         for (i = 0; i < addrs->ncontrollers; i++)
             virDomainVirtioSerialControllerFree(addrs->controllers[i]);
+        VIR_FREE(addrs->controllers);
         VIR_FREE(addrs);
     }
 }
