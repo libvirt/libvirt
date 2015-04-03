@@ -3964,7 +3964,7 @@ qemuBuildDriveStr(virConnectPtr conn,
 
 
 static bool
-qemuCheckIothreads(virDomainDefPtr def,
+qemuCheckIOThreads(virDomainDefPtr def,
                    virQEMUCapsPtr qemuCaps,
                    virDomainDiskDefPtr disk)
 {
@@ -4024,7 +4024,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         }
     }
 
-    if (disk->iothread && !qemuCheckIothreads(def, qemuCaps, disk))
+    if (disk->iothread && !qemuCheckIOThreads(def, qemuCaps, disk))
         goto error;
 
     switch (disk->bus) {
