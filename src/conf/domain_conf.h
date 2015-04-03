@@ -1934,9 +1934,9 @@ void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
 virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
                                         int npin);
 
-int virDomainPinIsDuplicate(virDomainPinDefPtr *def,
-                            int npin,
-                            int id);
+bool virDomainPinIsDuplicate(virDomainPinDefPtr *def,
+                             int npin,
+                             int id);
 
 virDomainPinDefPtr virDomainPinFind(virDomainPinDefPtr *def,
                                     int npin,

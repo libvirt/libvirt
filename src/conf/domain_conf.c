@@ -17277,9 +17277,8 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
     return 0;
 }
 
-/* Check if vcpupin with same id already exists.
- * Return 1 if exists, 0 if not. */
-int
+/* Check if vcpupin with same id already exists. */
+bool
 virDomainPinIsDuplicate(virDomainPinDefPtr *def,
                         int npin,
                         int id)
@@ -17287,14 +17286,14 @@ virDomainPinIsDuplicate(virDomainPinDefPtr *def,
     size_t i;
 
     if (!def || !npin)
-        return 0;
+        return false;
 
     for (i = 0; i < npin; i++) {
         if (def[i]->id == id)
-            return 1;
+            return true;
     }
 
-    return 0;
+    return false;
 }
 
 virDomainPinDefPtr
