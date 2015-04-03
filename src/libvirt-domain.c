@@ -385,9 +385,7 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     virCheckNonNullArgGoto(uuidstr, error);
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
-        virReportInvalidArg(uuidstr,
-                            _("uuidstr in %s must be a valid UUID"),
-                            __FUNCTION__);
+        virReportInvalidArg(uuidstr, "%s", _("Invalid UUID"));
         goto error;
     }
 
@@ -1441,8 +1439,8 @@ virDomainScreenshot(virDomainPtr domain,
 
     if (domain->conn != stream->conn) {
         virReportInvalidArg(stream,
-                            _("stream in %s must match connection of domain '%s'"),
-                            __FUNCTION__, domain->name);
+                            _("stream must match connection of domain '%s'"),
+                            domain->name);
         goto error;
     }
 
@@ -2179,10 +2177,8 @@ virDomainGetMemoryParameters(virDomainPtr domain,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' are mutually exclusive"));
         goto error;
     }
     conn = domain->conn;
@@ -2423,10 +2419,8 @@ virDomainGetBlkioParameters(virDomainPtr domain,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' are mutually exclusive"));
         goto error;
     }
     conn = domain->conn;
@@ -3343,9 +3337,8 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
     if (!(tempuri = virURIParse(dconnuri)))
         return -1;
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
-        virReportInvalidArg(dconnuri,
-                            _("unable to parse server from dconnuri in %s"),
-                            __FUNCTION__);
+        virReportInvalidArg(dconnuri, "%s",
+                            _("unable to parse server from dconnuri"));
         virURIFree(tempuri);
         return -1;
     }
@@ -3580,10 +3573,9 @@ virDomainMigrate(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
-                            _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'shared disk' and 'shared incremental'"
+                              " are mutually exclusive"));
         goto error;
     }
 
@@ -3809,10 +3801,9 @@ virDomainMigrate2(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -3989,10 +3980,9 @@ virDomainMigrate3(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+                              "are mutually exclusive"));
         goto error;
     }
     if (flags & VIR_MIGRATE_PEER2PEER) {
@@ -4212,10 +4202,9 @@ virDomainMigrateToURI(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -4372,10 +4361,9 @@ virDomainMigrateToURI2(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -4481,10 +4469,9 @@ virDomainMigrateToURI3(virDomainPtr domain,
 
     if (flags & VIR_MIGRATE_NON_SHARED_DISK &&
         flags & VIR_MIGRATE_NON_SHARED_INC) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'shared disk' and 'shared incremental' "
-                              "in %s are mutually exclusive"),
-                            __FUNCTION__);
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -4791,9 +4778,8 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
-        virReportInvalidArg(conn,
-                            _("conn in %s must match stream connection"),
-                            __FUNCTION__);
+        virReportInvalidArg(conn, "%s",
+                            _("conn must match stream connection"));
         goto error;
     }
 
@@ -4937,9 +4923,8 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
-        virReportInvalidArg(conn,
-                            _("conn in %s must match stream connection"),
-                            __FUNCTION__);
+        virReportInvalidArg(conn, "%s",
+                            _("conn must match stream connection"));
         goto error;
     }
 
@@ -5220,9 +5205,8 @@ virDomainMigratePrepareTunnel3Params(virConnectPtr conn,
     virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn != st->conn) {
-        virReportInvalidArg(conn,
-                            _("conn in %s must match stream connection"),
-                            __FUNCTION__);
+        virReportInvalidArg(conn, "%s",
+                            _("conn must match stream connection"));
         goto error;
     }
 
@@ -5529,10 +5513,9 @@ virDomainGetSchedulerParametersFlags(virDomainPtr domain,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' in "
+                              "are mutually exclusive"));
         goto error;
     }
     conn = domain->conn;
@@ -5710,8 +5693,8 @@ virDomainBlockStats(virDomainPtr dom, const char *disk,
     virCheckNonNullArgGoto(stats, error);
     if (size > sizeof(stats2)) {
         virReportInvalidArg(size,
-                            _("size in %s must not exceed %zu"),
-                            __FUNCTION__, sizeof(stats2));
+                            _("size must not exceed %zu"),
+                            sizeof(stats2));
         goto error;
     }
     conn = dom->conn;
@@ -5851,8 +5834,8 @@ virDomainInterfaceStats(virDomainPtr dom, const char *path,
     virCheckNonNullArgGoto(stats, error);
     if (size > sizeof(stats2)) {
         virReportInvalidArg(size,
-                            _("size in %s must not exceed %zu"),
-                            __FUNCTION__, sizeof(stats2));
+                            _("size must not exceed %zu"),
+                            sizeof(stats2));
         goto error;
     }
 
@@ -6297,10 +6280,9 @@ virDomainMemoryPeek(virDomainPtr dom,
 
     /* Exactly one of these two flags must be set.  */
     if (!(flags & VIR_MEMORY_VIRTUAL) == !(flags & VIR_MEMORY_PHYSICAL)) {
-        virReportInvalidArg(flags,
-                            _("flags in %s must include VIR_MEMORY_VIRTUAL or "
-                              "VIR_MEMORY_PHYSICAL"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags must include VIR_MEMORY_VIRTUAL or "
+                              "VIR_MEMORY_PHYSICAL"));
         goto error;
     }
 
@@ -7145,8 +7127,8 @@ virDomainSendKey(virDomainPtr domain,
 
     if (nkeycodes > VIR_DOMAIN_SEND_KEY_MAX_KEYS) {
         virReportInvalidArg(nkeycodes,
-                            _("nkeycodes in %s must be <= %d"),
-                            __FUNCTION__, VIR_DOMAIN_SEND_KEY_MAX_KEYS);
+                            _("nkeycodes must be <= %d"),
+                            VIR_DOMAIN_SEND_KEY_MAX_KEYS);
         goto error;
     }
 
@@ -7342,10 +7324,10 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
 
     if (flags & VIR_DOMAIN_VCPU_GUEST &&
         flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-        virReportInvalidArg(flags,
+        virReportInvalidArg(flags, "%s",
                             _("flags 'VIR_DOMAIN_VCPU_MAXIMUM' and "
-                              "'VIR_DOMAIN_VCPU_GUEST' in '%s' are mutually "
-                              "exclusive"), __FUNCTION__);
+                              "'VIR_DOMAIN_VCPU_GUEST' in are mutually "
+                              "exclusive"));
         goto error;
     }
 
@@ -7419,10 +7401,9 @@ virDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -7625,10 +7606,9 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -7755,10 +7735,9 @@ virDomainGetEmulatorPinInfo(virDomainPtr domain, unsigned char *cpumap,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
     conn = domain->conn;
@@ -7925,10 +7904,9 @@ virDomainGetIOThreadInfo(virDomainPtr dom,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -8181,10 +8159,9 @@ virDomainSetMetadata(virDomainPtr domain,
     switch (type) {
     case VIR_DOMAIN_METADATA_TITLE:
         if (metadata && strchr(metadata, '\n')) {
-            virReportInvalidArg(metadata,
-                                _("metadata title in %s can't contain "
-                                  "newlines"),
-                                __FUNCTION__);
+            virReportInvalidArg(metadata, "%s",
+                                _("metadata title can't contain "
+                                  "newlines"));
             goto error;
         }
         /* fallthrough */
@@ -8259,10 +8236,9 @@ virDomainGetMetadata(virDomainPtr domain,
 
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
 
@@ -9200,8 +9176,8 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
         virCheckDomainGoto(dom, error);
         if (dom->conn != conn) {
             virReportInvalidArg(dom,
-                                _("domain '%s' in %s must match connection"),
-                                dom->name, __FUNCTION__);
+                                _("domain '%s' must match connection"),
+                                dom->name);
             goto error;
         }
     }
@@ -9209,8 +9185,8 @@ virConnectDomainEventRegisterAny(virConnectPtr conn,
     virCheckNonNegativeArgGoto(eventID, error);
     if (eventID >= VIR_DOMAIN_EVENT_ID_LAST) {
         virReportInvalidArg(eventID,
-                            _("eventID in %s must be less than %d"),
-                            __FUNCTION__, VIR_DOMAIN_EVENT_ID_LAST);
+                            _("eventID must be less than %d"),
+                            VIR_DOMAIN_EVENT_ID_LAST);
         goto error;
     }
 
@@ -9310,10 +9286,9 @@ virDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virCheckReadOnlyGoto(conn->flags, error);
 
     if ((flags & VIR_DOMAIN_SAVE_RUNNING) && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
-        virReportInvalidArg(flags,
-                            _("running and paused flags in %s are mutually "
-                              "exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("running and paused flags are mutually "
+                              "exclusive"));
         goto error;
     }
 
@@ -9467,8 +9442,8 @@ virDomainOpenConsole(virDomainPtr dom,
 
     if (conn != st->conn) {
         virReportInvalidArg(st,
-                            _("stream in %s must match connection of domain '%s'"),
-                            __FUNCTION__, dom->name);
+                            _("stream must match connection of domain '%s'"),
+                            dom->name);
         goto error;
     }
 
@@ -9531,8 +9506,8 @@ virDomainOpenChannel(virDomainPtr dom,
 
     if (conn != st->conn) {
         virReportInvalidArg(st,
-                            _("stream in %s must match connection of domain '%s'"),
-                            __FUNCTION__, dom->name);
+                            _("stream must match connection of domain '%s'"),
+                            dom->name);
         goto error;
     }
 
@@ -9955,9 +9930,8 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
                         VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
                         VIR_DOMAIN_BLOCK_REBASE_COPY_RAW |
                         VIR_DOMAIN_BLOCK_REBASE_COPY_DEV)) {
-        virReportInvalidArg(flags,
-                            _("use of flags in %s requires a copy job"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("use of flags requires a copy job"));
         goto error;
     }
 
@@ -10277,8 +10251,8 @@ virDomainOpenGraphics(virDomainPtr dom,
 
     if (!S_ISSOCK(sb.st_mode)) {
         virReportInvalidArg(fd,
-                          _("fd %d in %s must be a socket"),
-                            fd, __FUNCTION__);
+                            _("fd %d must be a socket"),
+                            fd);
         goto error;
     }
 
@@ -10489,10 +10463,9 @@ virDomainGetBlockIoTune(virDomainPtr dom,
     /* At most one of these two flags should be set.  */
     if ((flags & VIR_DOMAIN_AFFECT_LIVE) &&
         (flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportInvalidArg(flags,
-                            _("flags 'affect live' and 'affect config' in %s "
-                              "are mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("flags 'affect live' and 'affect config' "
+                              "are mutually exclusive"));
         goto error;
     }
     conn = dom->conn;
@@ -10614,9 +10587,8 @@ virDomainGetCPUStats(virDomainPtr domain,
      */
     if (start_cpu == -1) {
         if (ncpus != 1) {
-            virReportInvalidArg(start_cpu,
-                                _("ncpus in %s must be 1 when start_cpu is -1"),
-                                __FUNCTION__);
+            virReportInvalidArg(start_cpu, "%s",
+                                _("ncpus must be 1 when start_cpu is -1"));
             goto error;
         }
     } else {
@@ -11304,9 +11276,9 @@ virDomainListGetStats(virDomainPtr *doms,
         virCheckDomainGoto(dom, cleanup);
 
         if (dom->conn != conn) {
-            virReportError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("domains in 'doms' array must belong to a "
-                             "single connection in %s"), __FUNCTION__);
+                             "single connection"));
             goto cleanup;
         }
 

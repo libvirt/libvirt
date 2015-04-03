@@ -222,26 +222,20 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) &&
         !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
-        virReportInvalidArg(flags,
-                            _("use of 'current' flag in %s requires "
-                              "'redefine' flag"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("use of 'current' flag in requires 'redefine' flag"));
         goto error;
     }
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        virReportInvalidArg(flags,
-                            _("'redefine' and 'no metadata' flags in %s are "
-                              "mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("'redefine' and 'no metadata' flags in are mutually exclusive"));
         goto error;
     }
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
-        virReportInvalidArg(flags,
-                            _("'redefine' and 'halt' flags in %s are mutually "
-                              "exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("'redefine' and 'halt' flags are mutually exclusive"));
         goto error;
     }
 
@@ -1084,10 +1078,8 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
         (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
-        virReportInvalidArg(flags,
-                            _("running and paused flags in %s are mutually "
-                              "exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("running and paused flags are mutually exclusive"));
         goto error;
     }
 
@@ -1146,10 +1138,8 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     if ((flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) &&
         (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
-        virReportInvalidArg(flags,
-                            _("children and children_only flags in %s are "
-                              "mutually exclusive"),
-                            __FUNCTION__);
+        virReportInvalidArg(flags, "%s",
+                            _("children and children_only flags are mutually exclusive"));
         goto error;
     }
 
