@@ -2458,7 +2458,7 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 =item B<attach-interface> I<domain> I<type> I<source>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
-[I<--config>] [I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
+[I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
 
 Attach a new network interface to the domain.  I<type> can be
 I<network> to indicate connection via a libvirt virtual network, or
