@@ -1010,6 +1010,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         goto cleanup;
 
     for (i = 0; i < priv->nvcpupids; i++) {
+        virCgroupFree(&cgroup_vcpu);
         if (virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu) < 0)
             goto cleanup;
 
@@ -1050,9 +1051,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;
         }
-
-        virCgroupFree(&cgroup_vcpu);
     }
+    virCgroupFree(&cgroup_vcpu);
     VIR_FREE(mem_mask);
 
     return 0;
