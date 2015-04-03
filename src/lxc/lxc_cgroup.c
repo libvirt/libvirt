@@ -77,6 +77,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 
         if (virCgroupSetCpusetCpus(cgroup, mask) < 0)
             goto cleanup;
+        /* free mask to make sure we won't use it in a wrong way later */
+        VIR_FREE(mask);
     }
 
     if (virDomainNumatuneGetMode(def->numa, -1) !=
