@@ -7766,7 +7766,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     int actualType = virDomainNetGetActualType(net);
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virQEMUDriverConfigPtr cfg = NULL;
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
 
@@ -7801,6 +7801,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                        virDomainNetTypeToString(actualType));
         return -1;
     }
+
+    cfg = virQEMUDriverGetConfig(driver);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
@@ -7983,6 +7985,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     VIR_FREE(host);
     VIR_FREE(tapfdName);
     VIR_FREE(vhostfdName);
+    virObjectUnref(cfg);
     return ret;
 }
 

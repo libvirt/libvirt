@@ -1081,6 +1081,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     virQEMUDriverPtr driver = opaque;
     virQEMUDriverConfigPtr cfg = NULL;
 
+    if (driver)
+        cfg = virQEMUDriverGetConfig(driver);
+
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !dev->data.net->model) {
@@ -1094,7 +1097,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         virDomainDiskDefPtr disk = dev->data.disk;
 
         /* both of these require data from the driver config */
-        if (driver && (cfg = virQEMUDriverGetConfig(driver))) {
+        if (cfg) {
             /* assign default storage format and driver according to config */
             if (cfg->allowDiskFormatProbing) {
                 /* default disk format for drives */
@@ -1103,7 +1106,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                      virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
                     virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
 
-                 /* default disk format for mirrored drive */
+                /* default disk format for mirrored drive */
                 if (disk->mirror &&
                     disk->mirror->format == VIR_STORAGE_FILE_NONE)
                     disk->mirror->format = VIR_STORAGE_FILE_AUTO;
@@ -1111,7 +1114,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                 /* default driver if probing is forbidden */
                 if (!virDomainDiskGetDriver(disk) &&
                     virDomainDiskSetDriver(disk, "qemu") < 0)
-                        goto cleanup;
+                    goto cleanup;
 
                 /* default disk format for drives */
                 if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
@@ -1119,7 +1122,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                      virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
                     virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
 
-                 /* default disk format for mirrored drive */
+                /* default disk format for mirrored drive */
                 if (disk->mirror &&
                     disk->mirror->format == VIR_STORAGE_FILE_NONE)
                     disk->mirror->format = VIR_STORAGE_FILE_RAW;
@@ -1147,8 +1150,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
         dev->data.chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        !dev->data.chr->source.data.nix.path &&
-        (driver && (cfg = virQEMUDriverGetConfig(driver)))) {
+        !dev->data.chr->source.data.nix.path && cfg) {
 
         if (virAsprintf(&dev->data.chr->source.data.nix.path,
                         "%s/channel/target/%s.%s",

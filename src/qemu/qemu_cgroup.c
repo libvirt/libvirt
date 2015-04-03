@@ -1270,10 +1270,12 @@ qemuRemoveCgroup(virQEMUDriverPtr driver,
                  virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virQEMUDriverConfigPtr cfg;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
+
+    cfg = virQEMUDriverGetConfig(driver);
 
     if (virCgroupTerminateMachine(vm->def->name,
                                   "qemu",
