@@ -373,7 +373,7 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
 
 int virStoragePoolSaveState(const char *stateFile,
                             virStoragePoolDefPtr def);
-int virStoragePoolSaveConfig(const char *configDir,
+int virStoragePoolSaveConfig(const char *configFile,
                              virStoragePoolDefPtr def);
 int virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
                              virStoragePoolObjPtr pool,
