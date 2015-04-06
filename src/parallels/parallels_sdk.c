@@ -2935,7 +2935,8 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
 static int
 prlsdkDoApplyConfig(virConnectPtr conn,
                     PRL_HANDLE sdkdom,
-                    virDomainDefPtr def)
+                    virDomainDefPtr def,
+                    virDomainDefPtr olddef)
 {
     PRL_RESULT pret;
     size_t i;
@@ -2997,6 +2998,16 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     if (prlsdkRemoveBootDevices(sdkdom) < 0)
         goto error;
 
+    if (olddef) {
+        for (i = 0; i < olddef->nnets; i++)
+            prlsdkDelNet(conn->privateData, olddef->nets[i]);
+    }
+
+    for (i = 0; i < def->nnets; i++) {
+        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i]) < 0)
+           goto error;
+    }
+
     if (prlsdkApplyGraphicsParams(sdkdom, def) < 0)
         goto error;
 
@@ -3006,11 +3017,6 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     for (i = 0; i < def->nserials; i++) {
         if (prlsdkAddSerial(sdkdom, def->serials[i]) < 0)
             goto error;
-    }
-
-    for (i = 0; i < def->nnets; i++) {
-        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i]) < 0)
-           goto error;
     }
 
     for (i = 0; i < def->ndisks; i++) {
@@ -3060,7 +3066,7 @@ prlsdkApplyConfig(virConnectPtr conn,
     if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
         return -1;
 
-    ret = prlsdkDoApplyConfig(conn, sdkdom, new);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, new, dom->def);
 
     if (ret == 0) {
         job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
@@ -3100,7 +3106,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
     pret = PrlVmCfg_SetOfflineManagementEnabled(sdkdom, 0);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    ret = prlsdkDoApplyConfig(conn, sdkdom, def);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, def, NULL);
     if (ret)
         goto cleanup;
 
@@ -3162,7 +3168,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 
     }
 
-    ret = prlsdkDoApplyConfig(conn, sdkdom, def);
+    ret = prlsdkDoApplyConfig(conn, sdkdom, def, NULL);
     if (ret)
         goto cleanup;
 
