@@ -12104,6 +12104,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     int prepare_type = 0;
     const char *action = NULL;
+    const char *success_msg = NULL;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -12120,16 +12121,19 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     if (eject) {
         prepare_type = VSH_PREPARE_DISK_XML_EJECT;
         action = "eject";
+        success_msg = _("Successfully ejected media.");
     }
 
     if (insert) {
         prepare_type = VSH_PREPARE_DISK_XML_INSERT;
         action = "insert";
+        success_msg = _("Successfully inserted media.");
     }
 
     if (update || (!eject && !insert)) {
         prepare_type = VSH_PREPARE_DISK_XML_UPDATE;
         action = "update";
+        success_msg = _("Successfully updated media.");
     }
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
@@ -12174,7 +12178,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("succeeded to complete action %s on media\n"), action);
+    vshPrint(ctl, "%s", success_msg);
     ret = true;
 
  cleanup:
