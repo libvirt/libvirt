@@ -13180,36 +13180,30 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  */
 static virDomainPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
-                            xmlXPathContextPtr ctxt,
-                            int maxvcpus)
+                            xmlXPathContextPtr ctxt)
 {
     virDomainPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
-    int vcpuid = -1;
+    unsigned int vcpuid;
     char *tmp = NULL;
-    int ret;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
     ctxt->node = node;
 
-    ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
-    if ((ret == -2) || (vcpuid < -1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vcpu id must be an unsigned integer or -1"));
-        goto error;
-    } else if (vcpuid == -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vcpu id value -1 is not allowed for vcpupin"));
+    if (!(tmp = virXPathString("string(./@vcpu)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing vcpu id in vcpupin"));
         goto error;
     }
 
-    if (vcpuid >= maxvcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vcpu id must be less than maxvcpus"));
+    if (virStrToLong_uip(tmp, NULL, 10, &vcpuid) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid setting for vcpu '%s'"), tmp);
         goto error;
     }
+    VIR_FREE(tmp);
 
     def->id = vcpuid;
 
@@ -14034,11 +14028,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainPinDefPtr vcpupin = NULL;
-        vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                              def->maxvcpus);
-
-        if (!vcpupin)
+        virDomainPinDefPtr vcpupin;
+        if (!(vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt)))
             goto error;
 
         if (virDomainPinIsDuplicate(def->cputune.vcpupin,
@@ -14056,7 +14047,7 @@ virDomainDefParseXML(xmlDocPtr xml,
              * <vcpupin> nodes greater than current vcpus,
              * ignoring them instead.
              */
-            VIR_WARN("Ignore vcpupin for not onlined vcpus");
+            VIR_WARN("Ignore vcpupin for missing vcpus");
             virDomainPinDefFree(vcpupin);
         } else {
             def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
