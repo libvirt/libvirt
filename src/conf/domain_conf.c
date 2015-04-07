@@ -15889,6 +15889,14 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
         return false;
     }
 
+    if (STRNEQ_NULLABLE(src->wwn, dst->wwn)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk wwn '%s' does not match source '%s'"),
+                       NULLSTR(dst->wwn), NULLSTR(src->wwn));
+        return false;
+
+    }
+
     if (src->src->readonly != dst->src->readonly ||
         src->src->shared != dst->src->shared) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
