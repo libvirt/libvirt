@@ -33,6 +33,7 @@
 #include "virstring.h"
 #include "virfile.h"
 #include "virtime.h"
+#include "virkeycode.h"
 #include "snapshot_conf.h"
 #include "vbox_snapshot_conf.h"
 #include "fdstream.h"
@@ -7672,6 +7673,124 @@ vboxDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
+static int
+vboxDomainSendKey(virDomainPtr dom,
+                  unsigned int codeset,
+                  unsigned int holdtime,
+                  unsigned int *keycodes,
+                  int nkeycodes,
+                  unsigned int flags)
+{
+    int ret = -1;
+    vboxGlobalData *data = dom->conn->privateData;
+    IConsole *console = NULL;
+    vboxIIDUnion iid;
+    IMachine *machine = NULL;
+    IKeyboard *keyboard = NULL;
+    PRInt32 *keyDownCodes = NULL;
+    PRInt32 *keyUpCodes = NULL;
+    PRUint32 codesStored = 0;
+    nsresult rc;
+    size_t i;
+    int keycode;
+
+    if (!data->vboxObj)
+        return ret;
+
+    virCheckFlags(0, -1);
+
+    keyDownCodes = (PRInt32 *) keycodes;
+
+    if (VIR_ALLOC_N(keyUpCodes, nkeycodes) < 0)
+        return ret;
+
+    /* translate keycodes to xt and generate keyup scancodes */
+    for (i = 0; i < nkeycodes; i++) {
+        if (codeset != VIR_KEYCODE_SET_XT) {
+            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_XT,
+                                               keyDownCodes[i]);
+            if (keycode < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot translate keycode %u of %s codeset to"
+                                 " xt keycode"),
+                                 keyDownCodes[i],
+                                 virKeycodeSetTypeToString(codeset));
+                goto cleanup;
+            }
+            keyDownCodes[i] = keycode;
+        }
+
+        keyUpCodes[i] = keyDownCodes[i] + 0x80;
+    }
+
+    if (openSessionForMachine(data, dom->uuid, &iid, &machine, false) < 0)
+        goto cleanup;
+
+    rc = gVBoxAPI.UISession.OpenExisting(data, &iid, machine);
+
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to open VirtualBox session with domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UISession.GetConsole(data->vboxSession, &console);
+
+    if (NS_FAILED(rc) || !console) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to get Console object for domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UIConsole.GetKeyboard(console, &keyboard);
+
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to get Keyboard object for domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    rc = gVBoxAPI.UIKeyboard.PutScancodes(keyboard, nkeycodes, keyDownCodes,
+                                          &codesStored);
+
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to send keyboard scancodes for domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    /* since VBOX does not support holdtime, simulate it by sleeping and
+       then sending the release key scancodes */
+    if (holdtime > 0)
+        usleep(holdtime * 1000);
+
+    rc = gVBoxAPI.UIKeyboard.PutScancodes(keyboard, nkeycodes, keyUpCodes,
+                                          &codesStored);
+
+    if (NS_FAILED(rc)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("Unable to send keyboard scan codes to domain %s"),
+                       dom->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(keyUpCodes);
+    VBOX_RELEASE(keyboard);
+    VBOX_RELEASE(console);
+    gVBoxAPI.UISession.Close(data->vboxSession);
+    VBOX_RELEASE(machine);
+    vboxIIDUnalloc(&iid);
+
+    return ret;
+}
+
 
 /**
  * Function Tables
@@ -7746,6 +7865,7 @@ virHypervisorDriver vboxCommonDriver = {
     .nodeGetFreePages = vboxNodeGetFreePages, /* 1.2.6 */
     .nodeAllocPages = vboxNodeAllocPages, /* 1.2.9 */
     .domainHasManagedSaveImage = vboxDomainHasManagedSaveImage, /* 1.2.13 */
+    .domainSendKey = vboxDomainSendKey, /* 1.2.15 */
 };
 
 static void updateDriver(void)
