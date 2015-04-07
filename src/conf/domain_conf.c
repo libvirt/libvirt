@@ -500,7 +500,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vmvga",
               "xen",
               "vbox",
-              "qxl")
+              "qxl",
+              "parallels")
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",

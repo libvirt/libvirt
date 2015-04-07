@@ -997,6 +997,25 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, gr) < 0)
         goto error;
 
+    if (IS_CT(def)) {
+        virDomainVideoDefPtr video;
+        if (VIR_ALLOC(video) < 0)
+            goto error;
+        video->type = virDomainVideoDefaultType(def);
+        if (video->type < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot determine default video type"));
+            VIR_FREE(video);
+            goto error;
+        }
+        video->vram = virDomainVideoDefaultRAM(def, video->type);
+        video->heads = 1;
+        if (VIR_ALLOC_N(def->videos, 1) < 0) {
+            virDomainVideoDefFree(video);
+            goto error;
+        }
+        def->videos[def->nvideos++] = video;
+    }
     return 0;
 
  error:

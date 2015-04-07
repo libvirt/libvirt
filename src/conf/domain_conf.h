@@ -1326,6 +1326,7 @@ typedef enum {
     VIR_DOMAIN_VIDEO_TYPE_XEN,
     VIR_DOMAIN_VIDEO_TYPE_VBOX,
     VIR_DOMAIN_VIDEO_TYPE_QXL,
+    VIR_DOMAIN_VIDEO_TYPE_PARALLELS, /* pseudo device for VNC in containers */
 
     VIR_DOMAIN_VIDEO_TYPE_LAST
 } virDomainVideoType;

@@ -112,7 +112,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vmware",
               "", /* no arg needed for xen */
               "", /* don't support vbox */
-              "qxl");
+              "qxl",
+              "" /* don't support parallels */);
 
 VIR_ENUM_DECL(qemuDeviceVideo)
 
@@ -122,7 +123,8 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vmware-svga",
               "", /* no device for xen */
               "", /* don't support vbox */
-              "qxl-vga");
+              "qxl-vga",
+              "" /* don't support parallels */);
 
 VIR_ENUM_DECL(qemuSoundCodec)
 
