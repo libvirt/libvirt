@@ -754,6 +754,31 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
     }
 
+    if (!isCt) {
+        PRL_VM_NET_ADAPTER_TYPE type;
+        pret = PrlVmDevNet_GetAdapterType(netAdapter, &type);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        switch (type) {
+        case PNT_RTL:
+            if (VIR_STRDUP(net->model, "rtl8139") < 0)
+                goto cleanup;
+            break;
+        case PNT_E1000:
+            if (VIR_STRDUP(net->model, "e1000") < 0)
+                goto cleanup;
+            break;
+        case PNT_VIRTIO:
+            if (VIR_STRDUP(net->model, "virtio") < 0)
+                goto cleanup;
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown adapter type: %X"), type);
+            goto cleanup;
+        }
+    }
+
     pret = PrlVmDev_IsConnected(netAdapter, &isConnected);
     prlsdkCheckRetGoto(pret, cleanup);
 
