@@ -187,6 +187,7 @@ int virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                            int fd,
                                            struct stat *sb);
 
+bool virStorageBackendPoolPathIsStable(const char *path);
 char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,
                                   bool loop);

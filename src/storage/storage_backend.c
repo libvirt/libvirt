@@ -1674,6 +1674,17 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
     return 0;
 }
 
+bool
+virStorageBackendPoolPathIsStable(const char *path)
+{
+    if (path == NULL || STREQ(path, "/dev") || STREQ(path, "/dev/"))
+        return false;
+
+    if (!STRPREFIX(path, "/dev"))
+        return false;
+
+    return true;
+}
 
 /*
  * Given a volume path directly in /dev/XXX, iterate over the
@@ -1703,20 +1714,9 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     int retry = 0;
     int direrr;
 
-    /* Short circuit if pool has no target, or if its /dev */
-    if (pool->def->target.path == NULL ||
-        STREQ(pool->def->target.path, "/dev") ||
-        STREQ(pool->def->target.path, "/dev/"))
-        goto ret_strdup;
-
-    /* Skip whole thing for a pool which isn't in /dev
-     * so we don't mess filesystem/dir based pools
-     */
-    if (!STRPREFIX(pool->def->target.path, "/dev"))
-        goto ret_strdup;
-
     /* Logical pools are under /dev but already have stable paths */
-    if (pool->def->type == VIR_STORAGE_POOL_LOGICAL)
+    if (pool->def->type == VIR_STORAGE_POOL_LOGICAL ||
+        !virStorageBackendPoolPathIsStable(pool->def->target.path))
         goto ret_strdup;
 
     /* We loop here because /dev/disk/by-{id,path} may not have existed
