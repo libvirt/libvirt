@@ -13173,30 +13173,19 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
     return idmap;
 }
 
-/* Parse the XML definition for a vcpupin or emulatorpin.
+/* Parse the XML definition for a vcpupin
  *
  * vcpupin has the form of
  *   <vcpupin vcpu='0' cpuset='0'/>
- *
- * and emulatorpin has the form of
- *   <emulatorpin cpuset='0'/>
- *
- * and an iothreadspin has the form
- *   <iothreadpin iothread='1' cpuset='2'/>
- *
- * A vcpuid of -1 is valid and only valid for emulatorpin. So callers
- * have to check the returned cpuid for validity.
  */
 static virDomainPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
-                            int maxvcpus,
-                            bool iothreads)
+                            int maxvcpus)
 {
     virDomainPinDefPtr def;
     xmlNodePtr oldnode = ctxt->node;
     int vcpuid = -1;
-    unsigned int iothreadid;
     char *tmp = NULL;
     int ret;
 
@@ -13205,28 +13194,66 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!iothreads) {
-        ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
-        if ((ret == -2) || (vcpuid < -1)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("vcpu id must be an unsigned integer or -1"));
-            goto error;
-        } else if (vcpuid == -1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("vcpu id value -1 is not allowed for vcpupin"));
-            goto error;
-        }
-
-        if (vcpuid >= maxvcpus) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("vcpu id must be less than maxvcpus"));
-            goto error;
-        }
-
-        def->id = vcpuid;
+    ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
+    if ((ret == -2) || (vcpuid < -1)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vcpu id must be an unsigned integer or -1"));
+        goto error;
+    } else if (vcpuid == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vcpu id value -1 is not allowed for vcpupin"));
+        goto error;
     }
 
-    if (iothreads && (tmp = virXPathString("string(./@iothread)", ctxt))) {
+    if (vcpuid >= maxvcpus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vcpu id must be less than maxvcpus"));
+        goto error;
+    }
+
+    def->id = vcpuid;
+
+    if (!(tmp = virXMLPropString(node, "cpuset"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing cpuset for vcpupin"));
+
+        goto error;
+    }
+
+    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto error;
+
+ cleanup:
+    VIR_FREE(tmp);
+    ctxt->node = oldnode;
+    return def;
+
+ error:
+    VIR_FREE(def);
+    goto cleanup;
+}
+
+
+/* Parse the XML definition for a iothreadpin
+ * and an iothreadspin has the form
+ *   <iothreadpin iothread='1' cpuset='2'/>
+ */
+static virDomainPinDefPtr
+virDomainIOThreadPinDefParseXML(xmlNodePtr node,
+                                xmlXPathContextPtr ctxt,
+                                int iothreads)
+{
+    virDomainPinDefPtr def;
+    xmlNodePtr oldnode = ctxt->node;
+    unsigned int iothreadid;
+    char *tmp = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    ctxt->node = node;
+
+    if ((tmp = virXPathString("string(./@iothread)", ctxt))) {
         if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid setting for iothread '%s'"), tmp);
@@ -13240,11 +13267,9 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
             goto error;
         }
 
-        /* NB: maxvcpus is actually def->iothreads
-         * IOThreads are numbered "iothread1...iothread<n>", where
-         * "n" is the iothreads value
-         */
-        if (iothreadid > maxvcpus) {
+        /* IOThreads are numbered "iothread1...iothread<n>", where
+         * "n" is the iothreads value */
+        if (iothreadid > iothreads) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("iothread id must not exceed iothreads"));
             goto error;
@@ -13254,13 +13279,8 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     }
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
-        if (iothreads)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing cpuset for iothreadpin"));
-        else
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing cpuset for vcpupin"));
-
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing cpuset for iothreadpin"));
         goto error;
     }
 
@@ -13283,6 +13303,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     VIR_FREE(def);
     goto cleanup;
 }
+
 
 
 /* Parse the XML definition for emulatorpin.
@@ -14011,7 +14032,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                              def->maxvcpus, false);
+                                              def->maxvcpus);
 
         if (!vcpupin)
             goto error;
@@ -14098,9 +14119,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     for (i = 0; i < n; i++) {
         virDomainPinDefPtr iothreadpin = NULL;
-        iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                                  def->iothreads,
-                                                  true);
+        iothreadpin = virDomainIOThreadPinDefParseXML(nodes[i], ctxt,
+                                                      def->iothreads);
         if (!iothreadpin)
             goto error;
 
