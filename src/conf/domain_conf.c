@@ -13191,7 +13191,6 @@ static virDomainPinDefPtr
 virDomainVcpuPinDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             int maxvcpus,
-                            bool emulator,
                             bool iothreads)
 {
     virDomainPinDefPtr def;
@@ -13206,7 +13205,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (!emulator && !iothreads) {
+    if (!iothreads) {
         ret = virXPathInt("string(./@vcpu)", ctxt, &vcpuid);
         if ((ret == -2) || (vcpuid < -1)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -13255,10 +13254,7 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     }
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
-        if (emulator)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing cpuset for emulatorpin"));
-        else if (iothreads)
+        if (iothreads)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing cpuset for iothreadpin"));
         else
@@ -13286,6 +13282,38 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
  error:
     VIR_FREE(def);
     goto cleanup;
+}
+
+
+/* Parse the XML definition for emulatorpin.
+ * emulatorpin has the form of
+ *   <emulatorpin cpuset='0'/>
+ */
+static virDomainPinDefPtr
+virDomainEmulatorPinDefParseXML(xmlNodePtr node)
+{
+    virDomainPinDefPtr def;
+    char *tmp = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    if (!(tmp = virXMLPropString(node, "cpuset"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing cpuset for emulatorpin"));
+        goto error;
+    }
+
+    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto error;
+
+    VIR_FREE(tmp);
+    return def;
+
+ error:
+    VIR_FREE(tmp);
+    VIR_FREE(def);
+    return NULL;
 }
 
 
@@ -13983,7 +14011,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainPinDefPtr vcpupin = NULL;
         vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
-                                              def->maxvcpus, false, false);
+                                              def->maxvcpus, false);
 
         if (!vcpupin)
             goto error;
@@ -14053,11 +14081,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
 
-        def->cputune.emulatorpin = virDomainVcpuPinDefParseXML(nodes[0],
-                                                               ctxt, 0,
-                                                               true, false);
-
-        if (!def->cputune.emulatorpin)
+        if (!(def->cputune.emulatorpin = virDomainEmulatorPinDefParseXML(nodes[0])))
             goto error;
     }
     VIR_FREE(nodes);
@@ -14076,7 +14100,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainPinDefPtr iothreadpin = NULL;
         iothreadpin = virDomainVcpuPinDefParseXML(nodes[i], ctxt,
                                                   def->iothreads,
-                                                  false, true);
+                                                  true);
         if (!iothreadpin)
             goto error;
 
