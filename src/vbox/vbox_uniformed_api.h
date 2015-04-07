@@ -286,6 +286,7 @@ typedef struct {
                              PRUnichar *description, IProgress **progress);
     nsresult (*DeleteSnapshot)(IConsole *console, vboxIIDUnion *iidu, IProgress **progress);
     nsresult (*GetDisplay)(IConsole *console, IDisplay **display);
+    nsresult (*GetKeyboard)(IConsole *console, IKeyboard **keyboard);
 } vboxUniformedIConsole;
 
 /* Functions for IProgress */
@@ -534,6 +535,12 @@ typedef struct {
 } vboxUniformedIHardDisk;
 
 typedef struct {
+    nsresult (*PutScancode)(IKeyboard *keyboard, PRInt32 scancode);
+    nsresult (*PutScancodes)(IKeyboard *keyboard, PRUint32 scancodesSize,
+                             PRInt32 *scanCodes, PRUint32 *codesStored);
+} vboxUniformedIKeyboard;
+
+typedef struct {
     bool (*Online)(PRUint32 state);
     bool (*Inactive)(PRUint32 state);
     bool (*NotStart)(PRUint32 state);
@@ -591,6 +598,7 @@ typedef struct {
     vboxUniformedIHNInterface UIHNInterface;
     vboxUniformedIDHCPServer UIDHCPServer;
     vboxUniformedIHardDisk UIHardDisk;
+    vboxUniformedIKeyboard UIKeyboard;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;

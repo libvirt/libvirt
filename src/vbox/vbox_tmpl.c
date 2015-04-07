@@ -3437,6 +3437,12 @@ _consoleGetDisplay(IConsole *console, IDisplay **display)
 }
 
 static nsresult
+_consoleGetKeyboard(IConsole *console, IKeyboard **keyboard)
+{
+    return console->vtbl->GetKeyboard(console, keyboard);
+}
+
+static nsresult
 _progressWaitForCompletion(IProgress *progress, PRInt32 timeout)
 {
     return progress->vtbl->WaitForCompletion(progress, timeout);
@@ -4599,6 +4605,20 @@ _hardDiskGetFormat(IHardDisk *hardDisk, PRUnichar **format)
     return hardDisk->vtbl->GetFormat(hardDisk, format);
 }
 
+static nsresult
+_keyboardPutScancode(IKeyboard *keyboard, PRInt32 scancode)
+{
+    return keyboard->vtbl->PutScancode(keyboard, scancode);
+}
+
+static nsresult
+_keyboardPutScancodes(IKeyboard *keyboard, PRUint32 scancodesSize,
+                      PRInt32 *scanCodes, PRUint32 *codesStored)
+{
+    return keyboard->vtbl->PutScancodes(keyboard, scancodesSize, scanCodes,
+                                        codesStored);
+}
+
 static bool _machineStateOnline(PRUint32 state)
 {
     return ((state >= MachineState_FirstOnline) &&
@@ -4757,6 +4777,7 @@ static vboxUniformedIConsole _UIConsole = {
     .TakeSnapshot = _consoleTakeSnapshot,
     .DeleteSnapshot = _consoleDeleteSnapshot,
     .GetDisplay = _consoleGetDisplay,
+    .GetKeyboard = _consoleGetKeyboard,
 };
 
 static vboxUniformedIProgress _UIProgress = {
@@ -4951,6 +4972,11 @@ static vboxUniformedIHardDisk _UIHardDisk = {
     .GetFormat = _hardDiskGetFormat,
 };
 
+static vboxUniformedIKeyboard _UIKeyboard = {
+    .PutScancode = _keyboardPutScancode,
+    .PutScancodes = _keyboardPutScancodes,
+};
+
 static uniformedMachineStateChecker _machineStateChecker = {
     .Online = _machineStateOnline,
     .Inactive = _machineStateInactive,
@@ -5008,6 +5034,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->UIDHCPServer = _UIDHCPServer;
     pVBoxAPI->UIHardDisk = _UIHardDisk;
+    pVBoxAPI->UIKeyboard = _UIKeyboard;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
