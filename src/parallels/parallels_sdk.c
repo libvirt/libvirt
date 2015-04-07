@@ -1721,21 +1721,13 @@ PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
 }
 
 int
-prlsdkDomainChangeState(virDomainPtr domain,
-                        prlsdkChangeStateFunc chstate)
+prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
+                              virDomainObjPtr dom,
+                              prlsdkChangeStateFunc chstate)
 {
-    parallelsConnPtr privconn = domain->conn->privateData;
-    virDomainObjPtr dom;
     parallelsDomObjPtr pdom;
     PRL_RESULT pret;
-    int ret = -1;
     virErrorNumber virerr;
-
-    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
-    if (dom == NULL) {
-        parallelsDomNotFoundError(domain);
-        return -1;
-    }
 
     pdom = dom->privateData;
     pret = chstate(privconn, pdom->sdkdom);
@@ -1752,12 +1744,27 @@ prlsdkDomainChangeState(virDomainPtr domain,
         }
 
         virReportError(virerr, "%s", _("Can't change domain state."));
-        goto cleanup;
+        return -1;
     }
 
-    ret = prlsdkUpdateDomain(privconn, dom);
+    return prlsdkUpdateDomain(privconn, dom);
+}
 
- cleanup:
+int
+prlsdkDomainChangeState(virDomainPtr domain,
+                        prlsdkChangeStateFunc chstate)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    ret = prlsdkDomainChangeStateLocked(privconn, dom, chstate);
     virObjectUnlock(dom);
     return ret;
 }

@@ -46,6 +46,10 @@ int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate);
 int
+prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
+                              virDomainObjPtr dom,
+                              prlsdkChangeStateFunc chstate);
+int
 prlsdkApplyConfig(virConnectPtr conn,
                   virDomainObjPtr dom,
                   virDomainDefPtr new);
