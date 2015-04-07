@@ -154,14 +154,12 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             uint32_t lun,
                             const char *dev)
 {
-    virStorageVolDefPtr vol;
+    virStorageVolDefPtr vol = NULL;
     char *devpath = NULL;
-    int retval = 0;
+    int retval = -1;
 
-    if (VIR_ALLOC(vol) < 0) {
-        retval = -1;
-        goto out;
-    }
+    if (VIR_ALLOC(vol) < 0)
+        goto cleanup;
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
@@ -170,15 +168,11 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
      * in the volume name. We only need uniqueness per-pool, so
      * just leave 'host' out
      */
-    if (virAsprintf(&(vol->name), "unit:%u:%u:%u", bus, target, lun) < 0) {
-        retval = -1;
-        goto free_vol;
-    }
+    if (virAsprintf(&(vol->name), "unit:%u:%u:%u", bus, target, lun) < 0)
+        goto cleanup;
 
-    if (virAsprintf(&devpath, "/dev/%s", dev) < 0) {
-        retval = -1;
-        goto free_vol;
-    }
+    if (virAsprintf(&devpath, "/dev/%s", dev) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Trying to create volume for '%s'", devpath);
 
@@ -190,10 +184,8 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
      */
     if ((vol->target.path = virStorageBackendStablePath(pool,
                                                         devpath,
-                                                        true)) == NULL) {
-        retval = -1;
-        goto free_vol;
-    }
+                                                        true)) == NULL)
+        goto cleanup;
 
     if (STREQ(devpath, vol->target.path) &&
         !(STREQ(pool->def->target.path, "/dev") ||
@@ -202,34 +194,27 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         VIR_DEBUG("No stable path found for '%s' in '%s'",
                   devpath, pool->def->target.path);
 
-        retval = -1;
-        goto free_vol;
+        goto cleanup;
     }
 
     if (virStorageBackendUpdateVolInfo(vol, true,
-                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0) {
-        retval = -1;
-        goto free_vol;
-    }
+                                       VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
+        goto cleanup;
 
-    if (!(vol->key = virStorageBackendSCSISerial(vol->target.path))) {
-        retval = -1;
-        goto free_vol;
-    }
+    if (!(vol->key = virStorageBackendSCSISerial(vol->target.path)))
+        goto cleanup;
 
     pool->def->capacity += vol->target.capacity;
     pool->def->allocation += vol->target.allocation;
 
-    if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0) {
-        retval = -1;
-        goto free_vol;
-    }
+    if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
+        goto cleanup;
 
-    goto out;
+    vol = NULL;
+    retval = 0;
 
- free_vol:
+ cleanup:
     virStorageVolDefFree(vol);
- out:
     VIR_FREE(devpath);
     return retval;
 }
