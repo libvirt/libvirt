@@ -3080,4 +3080,7 @@ virDomainParseMemory(const char *xpath,
 bool virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
+int virDomainDefCheckDuplicateDiskWWN(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __DOMAIN_CONF_H */

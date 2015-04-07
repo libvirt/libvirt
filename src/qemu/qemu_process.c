@@ -4568,6 +4568,9 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    if (virDomainDefCheckDuplicateDiskWWN(vm->def) < 0)
+        goto cleanup;
+
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
      */
