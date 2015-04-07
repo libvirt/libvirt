@@ -511,7 +511,8 @@ VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
               "ps2",
               "usb",
-              "xen")
+              "xen",
+              "parallels")
 
 VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
