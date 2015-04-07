@@ -728,11 +728,35 @@ parallelsDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int 
         if (!olddom)
             goto cleanup;
     } else {
-        if (prlsdkApplyConfig(conn, olddom, def))
-            goto cleanup;
+        int state, reason;
 
-        if (prlsdkUpdateDomain(privconn, olddom))
-            goto cleanup;
+        state = virDomainObjGetState(olddom, &reason);
+
+        if (state == VIR_DOMAIN_SHUTOFF &&
+            reason == VIR_DOMAIN_SHUTOFF_SAVED) {
+
+            /* PCS doesn't store domain config in managed save state file.
+             * It's forbidden to change config for VMs in this state.
+             * It's possible to change config for containers, but after
+             * restoring domain will have that new config, not a config,
+             * which domain had at the moment of virDomainManagedSave.
+             *
+             * So forbid this operation, if config is changed. If it's
+             * not changed - just do nothing. */
+
+            if (!virDomainDefCheckABIStability(olddom->def, def)) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("Can't change domain configuration "
+                                 "in managed save state"));
+                goto cleanup;
+            }
+        } else {
+            if (prlsdkApplyConfig(conn, olddom, def))
+                goto cleanup;
+
+            if (prlsdkUpdateDomain(privconn, olddom))
+                goto cleanup;
+        }
     }
 
     retdom = virGetDomain(conn, def->name, def->uuid);
