@@ -10968,6 +10968,16 @@ virDomainVideoDefaultType(const virDomainDef *def)
     case VIR_DOMAIN_VIRT_VMWARE:
         return VIR_DOMAIN_VIDEO_TYPE_VMVGA;
 
+    case VIR_DOMAIN_VIRT_PARALLELS:
+        if (def->os.type) {
+            if (STREQ(def->os.type, "hvm"))
+                return VIR_DOMAIN_VIDEO_TYPE_VGA;
+            else
+                return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
+        } else {
+            return VIR_DOMAIN_VIDEO_TYPE_VGA;
+        }
+
     default:
         return -1;
     }
