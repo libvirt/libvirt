@@ -174,7 +174,7 @@ parallelsDomainDefPostParse(virDomainDefPtr def,
 
 static int
 parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                                  const virDomainDef *def ATTRIBUTE_UNUSED,
+                                  const virDomainDef *def,
                                   virCapsPtr caps ATTRIBUTE_UNUSED,
                                   void *opaque ATTRIBUTE_UNUSED)
 {
@@ -184,6 +184,7 @@ parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
         !dev->data.net->model &&
+        STREQ(def->os.type, "hvm") &&
         VIR_STRDUP(dev->data.net->model, "e1000") < 0)
         goto cleanup;
 
