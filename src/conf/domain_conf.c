@@ -9458,7 +9458,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
                                bus);
                 goto error;
             }
-        } else {
+        } else if (STREQ(dom->os.type, "xen")) {
             if (def->bus != VIR_DOMAIN_INPUT_BUS_XEN) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported input bus %s"),
@@ -9472,6 +9472,30 @@ virDomainInputDefParseXML(const virDomainDef *dom,
                                type);
                 goto error;
             }
+        } else {
+            if (dom->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
+                if (def->bus != VIR_DOMAIN_INPUT_BUS_PARALLELS) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("parallels containers don't support "
+                                     "input bus %s"),
+                                   bus);
+                    goto error;
+                }
+
+                if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+                    def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("parallels bus does not support "
+                                     "%s input device"),
+                                   type);
+                    goto error;
+                }
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Input devices are not supported by this "
+                                 "virtualization driver."));
+                goto error;
+            }
         }
     } else {
         if (STREQ(dom->os.type, "hvm")) {
@@ -9482,8 +9506,11 @@ virDomainInputDefParseXML(const virDomainDef *dom,
             } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
             }
-        } else {
+        } else if (STREQ(dom->os.type, "xen")) {
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
+        } else {
+            if ((dom->virtType == VIR_DOMAIN_VIRT_PARALLELS))
+                def->bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
         }
     }
 
@@ -14979,8 +15006,13 @@ virDomainDefParseXML(xmlDocPtr xml,
              input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
-            (STRNEQ(def->os.type, "hvm") &&
+            (STREQ(def->os.type, "xen") &&
              input->bus == VIR_DOMAIN_INPUT_BUS_XEN &&
+             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
+              input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
+            (STREQ(def->os.type, "exe") &&
+             def->virtType == VIR_DOMAIN_VIRT_PARALLELS &&
+             input->bus == VIR_DOMAIN_INPUT_BUS_PARALLELS &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD))) {
             virDomainInputDefFree(input);
@@ -15014,6 +15046,9 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (STREQ(def->os.type, "hvm"))
             input_bus = VIR_DOMAIN_INPUT_BUS_PS2;
+        if (STREQ(def->os.type, "exe") &&
+            def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
+            input_bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
 
         if (virDomainDefMaybeAddInput(def,
                                       VIR_DOMAIN_INPUT_TYPE_MOUSE,
