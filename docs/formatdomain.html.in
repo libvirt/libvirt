@@ -126,7 +126,8 @@
         provides details on allowed values for
         these. <span class="since">Since 0.0.1</span></dd>
       <dt><code>loader</code></dt>
-      <dd>The optional <code>loader</code> tag refers to a firmware blob
+      <dd>The optional <code>loader</code> tag refers to a firmware blob,
+        which is specified by absolute path,
         used to assist the domain creation process. It is used by Xen
         fully virtualized domains as well as setting the QEMU BIOS file
         path for QEMU/KVM domains. <span class="since">Xen since 0.1.0,
@@ -142,10 +143,10 @@
         <code>pflash</code>.</dd>
       <dt><code>nvram</code></dt>
       <dd>Some UEFI firmwares may want to use a non-volatile memory to store
-        some variables. In the host, this is represented as a file and the path
-        to the file is stored in this element. Moreover, when the domain is
-        started up libvirt copies so called master NVRAM store file defined
-        in <code>qemu.conf</code>. If needed, the <code>template</code>
+        some variables. In the host, this is represented as a file and the
+        absolute path to the file is stored in this element. Moreover, when the
+        domain is started up libvirt copies so called master NVRAM store file
+        defined in <code>qemu.conf</code>. If needed, the <code>template</code>
         attribute can be used to per domain override map of master NVRAM stores
         from the config file. Note, that for transient domains if the NVRAM file
         has been created by libvirt it is left behind and it is management
@@ -971,7 +972,7 @@
       resource partitions, potentially with nesting of said partitions.
       The <code>resource</code> element groups together configuration
       related to resource partitioning. It currently supports a child
-      element <code>partition</code> whose content defines the path
+      element <code>partition</code> whose content defines the absolute path
       of the resource partition in which to place the domain. If no
       partition is listed, then the domain will be placed in a default
       partition. It is the responsibility of the app/admin to ensure
@@ -1954,8 +1955,8 @@
             <dt><code>type='block'</code>
             <span class="since">since 0.0.3</span></dt>
               <dd>
-              The <code>dev</code> attribute specifies the path to the
-              host device to serve as the disk.
+              The <code>dev</code> attribute specifies the fully-qualified path
+              to the host device to serve as the disk.
               </dd>
             <dt><code>type='dir'</code>
             <span class="since">since 0.7.5</span></dt>
@@ -3226,7 +3227,7 @@
         versions of qemu used a default of "off", while newer qemus
         have a default of "on"). <span class="since">Since
         0.9.7 (QEMU and KVM only)</span>. The optional
-        <code>file</code> attribute is used to point to a binary file
+        <code>file</code> attribute contains an absolute path to a binary file
         to be presented to the guest as the device's ROM BIOS. This
         can be useful, for example, to provide a PXE boot ROM for a
         virtual function of an sr-iov capable ethernet device (which
@@ -3285,7 +3286,8 @@
     <p>
       Block / character devices from the host can be passed through
       to the guest using the <code>hostdev</code> element. This is
-      only possible with container based virtualization.
+      only possible with container based virtualization. Devices are specified
+      by a fully qualified path.
       <span class="since">since after 1.0.1 for LXC</span>:
     </p>
 
@@ -5486,11 +5488,12 @@ qemu-kvm -net nic,model=? /dev/null
 
     <dl>
       <dt><code>master</code></dt>
-      <dd>Master device of the pair, that is passed to the hypervisor.</dd>
+      <dd>Master device of the pair, that is passed to the hypervisor.
+      Device is specified by a fully qualified path.</dd>
 
       <dt><code>slave</code></dt>
       <dd>Slave device of the pair, that is passed to the clients for connection
-      to the guest console.</dd>
+      to the guest console. Device is specified by a fully qualified path.</dd>
     </dl>
 
     <h4><a name="elementsSound">Sound devices</a></h4>
@@ -5834,8 +5837,8 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           This backend type requires exclusive access to a TPM device on
           the host.
-          An example for such a device is /dev/tpm0. The filename is
-          specified as path attribute of the <code>source</code> element.
+          An example for such a device is /dev/tpm0. The fully qualified file
+          name is specified by path attribute of the <code>source</code> element.
           If no file name is specified then /dev/tpm0 is automatically used.
         </p>
       </dd>
@@ -5941,8 +5944,8 @@ qemu-kvm -net nic,model=? /dev/null
     <dd>
       The optional <code>server</code> element can be used to configure a server
       socket the device is supposed to connect to.  The optional
-      <code>path</code> attribute specifies the path to the unix socket and
-      defaults to <code>/var/lib/libvirt/shmem/$shmem-$name-sock</code>.
+      <code>path</code> attribute specifies the absolute path to the unix socket
+      and defaults to <code>/var/lib/libvirt/shmem/$shmem-$name-sock</code>.
     </dd>
     <dt><code>msi</code></dt>
     <dd>

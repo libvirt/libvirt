@@ -379,9 +379,10 @@
     <dl>
       <dt><code>path</code></dt>
       <dd>Provides the location at which the pool will be mapped into
-        the local filesystem namespace. For a filesystem/directory based
-        pool it will be the name of the directory in which volumes will
-        be created. For device based pools it will be the name of the directory in which
+        the local filesystem namespace, as an absolute path. For a
+        filesystem/directory based pool it will be a fully qualified name of
+        the directory in which volumes will be created. For device based pools
+        it will be a fully qualified name of the directory in which
         devices nodes exist. For the latter <code>/dev/</code> may seem
         like the logical choice, however, devices nodes there are not
         guaranteed stable across reboots, since they are allocated on
