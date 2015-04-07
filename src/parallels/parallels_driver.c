@@ -990,6 +990,8 @@ parallelsDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 {
     parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom = NULL;
+    int state, reason;
+    int ret = 0;
 
     virCheckFlags(0, -1);
 
@@ -999,9 +1001,72 @@ parallelsDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
         return -1;
     }
 
+    state = virDomainObjGetState(dom, &reason);
+    if (state == VIR_DOMAIN_SHUTOFF && reason == VIR_DOMAIN_SHUTOFF_SAVED)
+        ret = 1;
     virObjectUnlock(dom);
 
-    return 0;
+    return ret;
+}
+
+static int
+parallelsDomainManagedSave(virDomainPtr domain, unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
+    int state, reason;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    state = virDomainObjGetState(dom, &reason);
+
+    if (state == VIR_DOMAIN_RUNNING && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
+        ret = prlsdkDomainChangeStateLocked(privconn, dom, prlsdkPause);
+        if (ret)
+            goto cleanup;
+    }
+
+    ret = prlsdkDomainChangeStateLocked(privconn, dom, prlsdkSuspend);
+
+ cleanup:
+    virObjectUnlock(dom);
+    return ret;
+}
+
+static int
+parallelsDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
+{
+    parallelsConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
+    int state, reason;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (dom == NULL) {
+        parallelsDomNotFoundError(domain);
+        return -1;
+    }
+
+    state = virDomainObjGetState(dom, &reason);
+
+    if (!(state == VIR_DOMAIN_SHUTOFF && reason == VIR_DOMAIN_SHUTOFF_SAVED))
+        goto cleanup;
+
+    ret = prlsdkDomainManagedSaveRemove(privconn, dom);
+
+ cleanup:
+    virObjectUnlock(dom);
+    return ret;
 }
 
 static virHypervisorDriver parallelsDriver = {
@@ -1046,6 +1111,8 @@ static virHypervisorDriver parallelsDriver = {
     .connectIsSecure = parallelsConnectIsSecure, /* 1.2.5 */
     .connectIsAlive = parallelsConnectIsAlive, /* 1.2.5 */
     .domainHasManagedSaveImage = parallelsDomainHasManagedSaveImage, /* 1.2.13 */
+    .domainManagedSave = parallelsDomainManagedSave, /* 1.2.14 */
+    .domainManagedSaveRemove = parallelsDomainManagedSaveRemove, /* 1.2.14 */
 };
 
 static virConnectDriver parallelsConnectDriver = {

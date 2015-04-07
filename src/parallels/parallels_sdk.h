@@ -40,6 +40,7 @@ PRL_RESULT prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkSuspend(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 
 typedef PRL_RESULT (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
 int
@@ -57,3 +58,5 @@ int prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def);
 int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
 int
 prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
+int
+prlsdkDomainManagedSaveRemove(parallelsConnPtr privconn, virDomainObjPtr dom);

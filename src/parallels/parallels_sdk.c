@@ -1720,6 +1720,14 @@ PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
     return waitJob(job, privconn->jobTimeout);
 }
 
+PRL_RESULT prlsdkSuspend(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_Suspend(sdkdom);
+    return waitJob(job, privconn->jobTimeout);
+}
+
 int
 prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
                               virDomainObjPtr dom,
@@ -3208,5 +3216,18 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
         return -1;
 
     virDomainObjListRemove(privconn->domains, dom);
+    return 0;
+}
+
+int
+prlsdkDomainManagedSaveRemove(parallelsConnPtr privconn, virDomainObjPtr dom)
+{
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+
+    job = PrlVm_DropSuspendedState(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+        return -1;
+
     return 0;
 }
