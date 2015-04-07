@@ -52,6 +52,14 @@ VIR_ENUM_DECL(virCgroupController);
  * Make sure we will not overflow */
 verify(VIR_CGROUP_CONTROLLER_LAST < 8 * sizeof(int));
 
+typedef enum {
+    VIR_CGROUP_THREAD_VCPU = 0,
+    VIR_CGROUP_THREAD_EMULATOR,
+    VIR_CGROUP_THREAD_IOTHREAD,
+
+    VIR_CGROUP_THREAD_LAST
+} virCgroupThreadName;
+
 bool virCgroupAvailable(void);
 
 int virCgroupNewPartition(const char *path,
@@ -69,6 +77,13 @@ int virCgroupNewDomainPartition(virCgroupPtr partition,
                                 bool create,
                                 virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
+
+int virCgroupNewThread(virCgroupPtr domain,
+                       virCgroupThreadName nameval,
+                       int id,
+                       bool create,
+                       virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(5);
 
 int virCgroupNewVcpu(virCgroupPtr domain,
                      int vcpuid,

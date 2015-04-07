@@ -1188,6 +1188,7 @@ virCgroupNewIOThread;
 virCgroupNewMachine;
 virCgroupNewPartition;
 virCgroupNewSelf;
+virCgroupNewThread;
 virCgroupNewVcpu;
 virCgroupPathOfController;
 virCgroupRemove;

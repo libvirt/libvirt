@@ -1422,6 +1422,67 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
 
 
 /**
+ * virCgroupNewThread:
+ *
+ * @domain: group for the domain
+ * @name: enum to generate the name for the new thread
+ * @id: id of the vcpu or iothread
+ * @create: true to create if not already existing
+ * @group: Pointer to returned virCgroupPtr
+ *
+ * Returns 0 on success, or -1 on error
+ */
+int
+virCgroupNewThread(virCgroupPtr domain,
+                   virCgroupThreadName nameval,
+                   int id,
+                   bool create,
+                   virCgroupPtr *group)
+{
+    int ret = -1;
+    char *name = NULL;
+    int controllers;
+
+    switch (nameval) {
+    case VIR_CGROUP_THREAD_VCPU:
+        if (virAsprintf(&name, "vcpu%d", id) < 0)
+            goto cleanup;
+        break;
+    case VIR_CGROUP_THREAD_EMULATOR:
+        if (VIR_STRDUP(name, "emulator") < 0)
+            goto cleanup;
+        break;
+    case VIR_CGROUP_THREAD_IOTHREAD:
+        if (virAsprintf(&name, "iothread%d", id) < 0)
+            goto cleanup;
+        break;
+    case VIR_CGROUP_THREAD_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected name value %d"), nameval);
+        goto cleanup;
+    }
+
+    controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
+                   (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
+                   (1 << VIR_CGROUP_CONTROLLER_CPUSET));
+
+    if (virCgroupNew(-1, name, domain, controllers, group) < 0)
+        goto cleanup;
+
+    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(name);
+    return ret;
+}
+
+
+/**
  * virCgroupNewVcpu:
  *
  * @domain: group for the domain
@@ -4072,6 +4133,19 @@ virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
                             const char *name ATTRIBUTE_UNUSED,
                             bool create ATTRIBUTE_UNUSED,
                             virCgroupPtr *group ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupNewThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
+                   virCgroupThreadName nameval ATTRIBUTE_UNUSED,
+                   int id ATTRIBUTE_UNUSED,
+                   bool create ATTRIBUTE_UNUSED,
+                   virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
