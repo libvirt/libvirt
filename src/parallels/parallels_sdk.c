@@ -1312,6 +1312,21 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
+    if (def->ngraphics > 0) {
+        int bus = IS_CT(def) ? VIR_DOMAIN_INPUT_BUS_PARALLELS:
+                                VIR_DOMAIN_INPUT_BUS_PS2;
+
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                                      bus) < 0)
+            goto error;
+
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_KBD,
+                                      bus) < 0)
+            goto error;
+    }
+
     if (olddom) {
         /* assign new virDomainDef without any checks */
         /* we can't use virDomainObjAssignDef, because it checks
