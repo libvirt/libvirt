@@ -478,10 +478,12 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
         virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
     }
 
-    if (isCdrom)
+    if (isCdrom) {
         disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-    else
+        disk->src->readonly = true;
+    } else {
         disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+    }
 
     pret = PrlVmDev_GetFriendlyName(prldisk, NULL, &buflen);
     prlsdkCheckRetGoto(pret, cleanup);
