@@ -1265,6 +1265,9 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
             *s = '\0';
     }
 
+    if (virDomainDefAddImplicitControllers(def) < 0)
+        goto error;
+
     if (olddom) {
         /* assign new virDomainDef without any checks */
         /* we can't use virDomainObjAssignDef, because it checks
