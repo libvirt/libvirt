@@ -5150,10 +5150,17 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (vcpu > (priv->nvcpupids-1)) {
+    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && vcpu >= vm->def->vcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu number out of range %d > %d"),
-                       vcpu, priv->nvcpupids - 1);
+                       _("vcpu %d is out of range of live cpu count %d"),
+                       vcpu, vm->def->vcpus);
+        goto endjob;
+    }
+
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && vcpu >= persistentDef->vcpus) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vcpu %d is out of range of persistent cpu count %d"),
+                       vcpu, persistentDef->vcpus);
         goto endjob;
     }
 
