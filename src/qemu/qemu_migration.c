@@ -5080,6 +5080,7 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def)
                                net->ifname);
                 goto err_exit;
             }
+            last_good_net = i;
             VIR_DEBUG("Port profile Associate succeeded for %s", net->ifname);
 
             if (virNetDevMacVLanVPortProfileRegisterCallback(net->ifname, &net->mac,
@@ -5088,13 +5089,12 @@ qemuMigrationVPAssociatePortProfiles(virDomainDefPtr def)
                                                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE))
                 goto err_exit;
         }
-        last_good_net = i;
     }
 
     return 0;
 
  err_exit:
-    for (i = 0; last_good_net != -1 && i < last_good_net; i++) {
+    for (i = 0; last_good_net != -1 && i <= last_good_net; i++) {
         net = def->nets[i];
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
             ignore_value(virNetDevVPortProfileDisassociate(net->ifname,
