@@ -4728,7 +4728,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
             if (priv->cgroup) {
                 int rv = -1;
                 /* Create cgroup for the onlined vcpu */
-                if (virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu) < 0)
+                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                                       true, &cgroup_vcpu) < 0)
                     goto cleanup;
 
                 if (mem_mask &&
@@ -4801,7 +4802,8 @@ static int qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     } else {
         for (i = oldvcpus - 1; i >= nvcpus; i--) {
             if (priv->cgroup) {
-                if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_vcpu) < 0)
+                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                                       false, &cgroup_vcpu) < 0)
                     goto cleanup;
 
                 /* Remove cgroup for the offlined vcpu */
@@ -4894,7 +4896,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST) &&
         virNumaIsAvailable()) {
-        if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0)
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                               false, &cgroup_temp) < 0)
             goto endjob;
 
         if (!(all_nodes = virNumaGetHostNodeset()))
@@ -5136,7 +5139,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
         /* Configure the corresponding cpuset cgroup before set affinity. */
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            if (virCgroupNewVcpu(priv->cgroup, vcpu, false, &cgroup_vcpu) < 0)
+            if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
+                                   false, &cgroup_vcpu) < 0)
                 goto endjob;
             if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
@@ -5419,7 +5423,8 @@ qemuDomainPinEmulator(virDomainPtr dom,
                 /*
                  * Configure the corresponding cpuset cgroup.
                  */
-                if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_emulator) < 0)
+                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR,
+                                       0, false, &cgroup_emulator) < 0)
                     goto endjob;
                 if (qemuSetupCgroupCpusetCpus(cgroup_emulator,
                                               newVcpuPin[0]->cpumask) < 0) {
@@ -6014,8 +6019,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
         /* Configure the corresponding cpuset cgroup before set affinity. */
         if (virCgroupHasController(priv->cgroup,
                                    VIR_CGROUP_CONTROLLER_CPUSET)) {
-            if (virCgroupNewIOThread(priv->cgroup, iothread_id,
-                                     false, &cgroup_iothread) < 0)
+            if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                                   iothread_id, false, &cgroup_iothread) < 0)
                 goto endjob;
             if (qemuSetupCgroupCpusetCpus(cgroup_iothread, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
@@ -9956,21 +9961,23 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     if (!(nodeset_str = virBitmapFormat(nodeset)))
         goto cleanup;
 
-    if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0 ||
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &cgroup_temp) < 0 ||
         virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
         goto cleanup;
     virCgroupFree(&cgroup_temp);
 
     for (i = 0; i < priv->nvcpupids; i++) {
-        if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_temp) < 0 ||
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                               false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
             goto cleanup;
         virCgroupFree(&cgroup_temp);
     }
 
     for (i = 0; i < priv->niothreadpids; i++) {
-        if (virCgroupNewIOThread(priv->cgroup, i + 1, false,
-                                 &cgroup_temp) < 0 ||
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+                               false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
             goto cleanup;
         virCgroupFree(&cgroup_temp);
@@ -10237,7 +10244,8 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
      */
     if (priv->nvcpupids != 0 && priv->vcpupids[0] != vm->pid) {
         for (i = 0; i < priv->nvcpupids; i++) {
-            if (virCgroupNewVcpu(cgroup, i, false, &cgroup_vcpu) < 0)
+            if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                                   false, &cgroup_vcpu) < 0)
                 goto cleanup;
 
             if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
@@ -10267,7 +10275,8 @@ qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid)
         return 0;
 
-    if (virCgroupNewEmulator(cgroup, false, &cgroup_emulator) < 0)
+    if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &cgroup_emulator) < 0)
         goto cleanup;
 
     if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
@@ -10562,7 +10571,8 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
     }
 
     /* get period and quota for vcpu0 */
-    if (virCgroupNewVcpu(priv->cgroup, 0, false, &cgroup_vcpu) < 0)
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, 0,
+                           false, &cgroup_vcpu) < 0)
         goto cleanup;
 
     rc = qemuGetVcpuBWLive(cgroup_vcpu, period, quota);
@@ -10595,7 +10605,8 @@ qemuGetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     }
 
     /* get period and quota for emulator */
-    if (virCgroupNewEmulator(cgroup, false, &cgroup_emulator) < 0)
+    if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &cgroup_emulator) < 0)
         goto cleanup;
 
     rc = qemuGetVcpuBWLive(cgroup_emulator, period, quota);

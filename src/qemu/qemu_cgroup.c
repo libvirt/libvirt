@@ -629,7 +629,8 @@ qemuSetupCpusetMems(virDomainObjPtr vm)
         goto cleanup;
 
     if (mem_mask)
-        if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0 ||
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                               false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, mem_mask) < 0)
             goto cleanup;
 
@@ -790,7 +791,8 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         goto error;
 
     for (i = 0; i < priv->nvcpupids; i++) {
-        if (virCgroupNewVcpu(priv->cgroup, i, false, &cgroup_temp) < 0 ||
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                               false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
             virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
@@ -801,7 +803,8 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
     }
 
     for (i = 0; i < priv->niothreadpids; i++) {
-        if (virCgroupNewIOThread(priv->cgroup, i + 1, false, &cgroup_temp) < 0 ||
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+                               false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
             virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
@@ -811,7 +814,8 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         virCgroupFree(&cgroup_temp);
     }
 
-    if (virCgroupNewEmulator(priv->cgroup, false, &cgroup_temp) < 0 ||
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &cgroup_temp) < 0 ||
         virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
         virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
         virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
@@ -1013,7 +1017,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
 
     for (i = 0; i < priv->nvcpupids; i++) {
         virCgroupFree(&cgroup_vcpu);
-        if (virCgroupNewVcpu(priv->cgroup, i, true, &cgroup_vcpu) < 0)
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                               true, &cgroup_vcpu) < 0)
             goto cleanup;
 
         /* move the thread for vcpu to sub dir */
@@ -1098,7 +1103,8 @@ qemuSetupCgroupForEmulator(virDomainObjPtr vm)
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    if (virCgroupNewEmulator(priv->cgroup, true, &cgroup_emulator) < 0)
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           true, &cgroup_emulator) < 0)
         goto cleanup;
 
     if (virCgroupMoveTask(priv->cgroup, cgroup_emulator) < 0)
@@ -1185,8 +1191,8 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
         /* IOThreads are numbered 1..n, although the array is 0..n-1,
          * so we will account for that here
          */
-        if (virCgroupNewIOThread(priv->cgroup, i + 1, true,
-                                 &cgroup_iothread) < 0)
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+                               true, &cgroup_iothread) < 0)
             goto cleanup;
 
         /* move the thread for iothread to sub dir */

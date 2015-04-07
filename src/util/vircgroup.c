@@ -1482,128 +1482,6 @@ virCgroupNewThread(virCgroupPtr domain,
 }
 
 
-/**
- * virCgroupNewVcpu:
- *
- * @domain: group for the domain
- * @vcpuid: id of the vcpu
- * @create: true to create if not already existing
- * @group: Pointer to returned virCgroupPtr
- *
- * Returns 0 on success, or -1 on error
- */
-int
-virCgroupNewVcpu(virCgroupPtr domain,
-                 int vcpuid,
-                 bool create,
-                 virCgroupPtr *group)
-{
-    int ret = -1;
-    char *name = NULL;
-    int controllers;
-
-    if (virAsprintf(&name, "vcpu%d", vcpuid) < 0)
-        goto cleanup;
-
-    controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUSET));
-
-    if (virCgroupNew(-1, name, domain, controllers, group) < 0)
-        goto cleanup;
-
-    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
-        virCgroupRemove(*group);
-        virCgroupFree(group);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(name);
-    return ret;
-}
-
-
-/**
- * virCgroupNewEmulator:
- *
- * @domain: group for the domain
- * @create: true to create if not already existing
- * @group: Pointer to returned virCgroupPtr
- *
- * Returns: 0 on success or -1 on error
- */
-int
-virCgroupNewEmulator(virCgroupPtr domain,
-                     bool create,
-                     virCgroupPtr *group)
-{
-    int ret = -1;
-    int controllers;
-
-    controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUSET));
-
-    if (virCgroupNew(-1, "emulator", domain, controllers, group) < 0)
-        goto cleanup;
-
-    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
-        virCgroupRemove(*group);
-        virCgroupFree(group);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
-}
-
-
-/**
- * virCgroupNewIOThread:
- *
- * @domain: group for the domain
- * @iothreadid: id of the iothread
- * @create: true to create if not already existing
- * @group: Pointer to returned virCgroupPtr
- *
- * Returns 0 on success, or -1 on error
- */
-int
-virCgroupNewIOThread(virCgroupPtr domain,
-                     int iothreadid,
-                     bool create,
-                     virCgroupPtr *group)
-{
-    int ret = -1;
-    char *name = NULL;
-    int controllers;
-
-    if (virAsprintf(&name, "iothread%d", iothreadid) < 0)
-        goto cleanup;
-
-    controllers = ((1 << VIR_CGROUP_CONTROLLER_CPU) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUACCT) |
-                   (1 << VIR_CGROUP_CONTROLLER_CPUSET));
-
-    if (virCgroupNew(-1, name, domain, controllers, group) < 0)
-        goto cleanup;
-
-    if (virCgroupMakeGroup(domain, *group, create, VIR_CGROUP_NONE) < 0) {
-        virCgroupRemove(*group);
-        virCgroupFree(group);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(name);
-    return ret;
-}
-
-
 int
 virCgroupNewDetect(pid_t pid,
                    int controllers,
@@ -3106,7 +2984,8 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
         unsigned long long tmp;
         ssize_t j;
 
-        if (virCgroupNewVcpu(group, i, false, &group_vcpu) < 0)
+        if (virCgroupNewThread(group, VIR_CGROUP_THREAD_VCPU, i,
+                               false, &group_vcpu) < 0)
             goto cleanup;
 
         if (virCgroupGetCpuacctPercpuUsage(group_vcpu, &buf) < 0)
@@ -4146,41 +4025,6 @@ virCgroupNewThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
                    int id ATTRIBUTE_UNUSED,
                    bool create ATTRIBUTE_UNUSED,
                    virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupNewVcpu(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                 int vcpuid ATTRIBUTE_UNUSED,
-                 bool create ATTRIBUTE_UNUSED,
-                 virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupNewEmulator(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                     bool create ATTRIBUTE_UNUSED,
-                     virCgroupPtr *group ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupNewIOThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                     int iothreadid ATTRIBUTE_UNUSED,
-                     bool create ATTRIBUTE_UNUSED,
-                     virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
