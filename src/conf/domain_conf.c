@@ -13253,30 +13253,34 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if ((tmp = virXPathString("string(./@iothread)", ctxt))) {
-        if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid setting for iothread '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-
-        if (iothreadid == 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("zero is an invalid iothread id value"));
-            goto error;
-        }
-
-        /* IOThreads are numbered "iothread1...iothread<n>", where
-         * "n" is the iothreads value */
-        if (iothreadid > iothreads) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("iothread id must not exceed iothreads"));
-            goto error;
-        }
-
-        def->id = iothreadid;
+    if (!(tmp = virXPathString("string(./@iothread)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing iothread id in iothreadpin"));
+        goto error;
     }
+
+    if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid setting for iothread '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    if (iothreadid == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("zero is an invalid iothread id value"));
+        goto error;
+    }
+
+    /* IOThreads are numbered "iothread1...iothread<n>", where
+     * "n" is the iothreads value */
+    if (iothreadid > iothreads) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("iothread id must not exceed iothreads"));
+        goto error;
+    }
+
+    def->id = iothreadid;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
