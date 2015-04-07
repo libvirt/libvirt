@@ -21177,11 +21177,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         /* If graphics is enabled, add the implicit mouse/keyboard */
         if ((ARCH_IS_X86(def->os.arch)) || def->os.arch == VIR_ARCH_NONE) {
             virDomainInputDef autoInput = {
-                VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                STREQ(def->os.type, "hvm") ?
-                VIR_DOMAIN_INPUT_BUS_PS2 : VIR_DOMAIN_INPUT_BUS_XEN,
-                { .alias = NULL },
+                .type = VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                .info = { .alias = NULL },
             };
+
+            if (STREQ(def->os.type, "hvm"))
+                autoInput.bus = VIR_DOMAIN_INPUT_BUS_PS2;
+            else if (STREQ(def->os.type, "exe") &&
+                     def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
+                autoInput.bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
+            else
+               autoInput.bus = VIR_DOMAIN_INPUT_BUS_XEN;
 
             if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
                 goto error;
