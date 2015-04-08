@@ -165,6 +165,8 @@ mymain(void)
             ret = -1;                                                          \
     } while (0)
 
+#define DO_TEST_SANITIZE_PATH_SAME(PATH) DO_TEST_SANITIZE_PATH(PATH, PATH)
+
     virtTestCounterReset("testFileSanitizePath ");
     DO_TEST_SANITIZE_PATH("", "");
     DO_TEST_SANITIZE_PATH("/", "/");
@@ -178,6 +180,11 @@ mymain(void)
     DO_TEST_SANITIZE_PATH("../../", "../..");
     DO_TEST_SANITIZE_PATH("//foo//bar", "//foo/bar");
     DO_TEST_SANITIZE_PATH("/bar//foo", "/bar/foo");
+    DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/foo/hoo");
+    DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz//fooo/hoo");
+    DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz//////fooo/hoo");
+    DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo//hoo");
+    DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo///////hoo");
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }

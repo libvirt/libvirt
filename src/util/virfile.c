@@ -2812,11 +2812,17 @@ char *
 virFileSanitizePath(const char *path)
 {
     const char *cur = path;
+    char *uri;
     char *cleanpath;
     int idx = 0;
 
     if (VIR_STRDUP(cleanpath, path) < 0)
         return NULL;
+
+    /* don't sanitize URIs - rfc3986 states that two slashes may lead to a
+     * different resource, thus removing them would possibly change the path */
+    if ((uri = strstr(path, "://")) && strchr(path, '/') > uri)
+        return cleanpath;
 
     /* Need to sanitize:
      * //           -> //
