@@ -4485,12 +4485,12 @@ networkReleaseActualDevice(virDomainDefPtr dom,
  * @netname: the name of a network
  * @netaddr: string representation of IP address for that network.
  *
- * Attempt to return an IP (v4) address associated with the named
+ * Attempt to return an IP address associated with the named
  * network. If a libvirt virtual network, that will be provided in the
  * configuration. For host bridge and direct (macvtap) networks, we
  * must do an ioctl to learn the address.
  *
- * Note: This function returns the 1st IPv4 address it finds. It might
+ * Note: This function returns the first IP address it finds. It might
  * be useful if it was more flexible, but the current use (getting a
  * listen address for qemu's vnc/spice graphics server) can only use a
  * single address anyway.
@@ -4525,11 +4525,10 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
-        /* if there's an ipv4def, get it's address */
-        ipdef = virNetworkDefGetIpByIndex(netdef, AF_INET, 0);
+        ipdef = virNetworkDefGetIpByIndex(netdef, AF_UNSPEC, 0);
         if (!ipdef) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("network '%s' doesn't have an IPv4 address"),
+                           _("network '%s' doesn't have an IP address"),
                            netdef->name);
             goto cleanup;
         }
