@@ -331,8 +331,9 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
         return;
 
     for (i = 0; i < list->nentries; i++) {
-        virHashRemoveEntry(closeCallbacks->list,
-                           list->entries[i].uuid);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(list->entries[i].uuid, uuidstr);
+        virHashRemoveEntry(closeCallbacks->list, uuidstr);
     }
     virObjectUnlock(closeCallbacks);
 
