@@ -1650,6 +1650,13 @@ static int lxcStateInitialize(bool privileged,
     if (!(caps = virLXCDriverGetCapabilities(lxc_driver, false)))
         goto cleanup;
 
+    if (virFileMakePath(cfg->stateDir) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mkdir %s"),
+                             cfg->stateDir);
+        goto cleanup;
+    }
+
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        cfg->stateDir,
