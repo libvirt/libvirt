@@ -570,7 +570,9 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
             if (!(stats = virHashCreate(10, virHashValueFree)))
                 goto cleanup;
 
-            qemuDomainObjEnterMonitor(driver, vm);
+            if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                               priv->job.asyncJob) < 0)
+                goto cleanup;
             rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats, false);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 goto cleanup;
