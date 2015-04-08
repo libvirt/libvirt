@@ -89,10 +89,40 @@ static int testFileGetMountSubtree(const void *opaque)
 }
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
+struct testFileSanitizePathData
+{
+    const char *path;
+    const char *expect;
+};
+
+static int
+testFileSanitizePath(const void *opaque)
+{
+    const struct testFileSanitizePathData *data = opaque;
+    int ret = -1;
+    char *actual;
+
+    if (!(actual = virFileSanitizePath(data->path)))
+        return -1;
+
+    if (STRNEQ(actual, data->expect)) {
+        fprintf(stderr, "\nexpect: '%s'\nactual: '%s'\n", data->expect, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
+    struct testFileSanitizePathData data1;
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # define MTAB_PATH1 abs_srcdir "/virfiledata/mounts1.txt"
@@ -125,6 +155,29 @@ mymain(void)
     DO_TEST_MOUNT_SUBTREE("/etc/aliases", MTAB_PATH2, "/etc/aliases", wantmounts2a, false);
     DO_TEST_MOUNT_SUBTREE("/etc/aliases.db", MTAB_PATH2, "/etc/aliases.db", wantmounts2b, false);
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
+
+#define DO_TEST_SANITIZE_PATH(PATH, EXPECT)                                    \
+    do {                                                                       \
+        data1.path = PATH;                                                     \
+        data1.expect = EXPECT;                                                 \
+        if (virtTestRun(virtTestCounterNext(), testFileSanitizePath,           \
+                        &data1) < 0)                                           \
+            ret = -1;                                                          \
+    } while (0)
+
+    virtTestCounterReset("testFileSanitizePath ");
+    DO_TEST_SANITIZE_PATH("", "");
+    DO_TEST_SANITIZE_PATH("/", "/");
+    DO_TEST_SANITIZE_PATH("/path", "/path");
+    DO_TEST_SANITIZE_PATH("/path/to/blah", "/path/to/blah");
+    DO_TEST_SANITIZE_PATH("/path/", "/path");
+    DO_TEST_SANITIZE_PATH("///////", "/");
+    DO_TEST_SANITIZE_PATH("//", "//");
+    DO_TEST_SANITIZE_PATH(".", ".");
+    DO_TEST_SANITIZE_PATH("../", "..");
+    DO_TEST_SANITIZE_PATH("../../", "../..");
+    DO_TEST_SANITIZE_PATH("//foo//bar", "//foo/bar");
+    DO_TEST_SANITIZE_PATH("/bar//foo", "/bar/foo");
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
