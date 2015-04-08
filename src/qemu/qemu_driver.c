@@ -18901,7 +18901,10 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
         arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
         if (arch_from_caps != arch &&
-            (arch_from_caps != VIR_ARCH_X86_64 || arch != VIR_ARCH_I686)) {
+            !((ARCH_IS_X86(arch) && ARCH_IS_X86(arch_from_caps)) ||
+              (ARCH_IS_PPC(arch) && ARCH_IS_PPC(arch_from_caps)) ||
+              (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
+              (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("architecture from emulator '%s' doesn't "
                              "match given architecture '%s'"),
