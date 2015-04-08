@@ -4670,6 +4670,64 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
 }
 
 static int
+qemuDomainHotplugAddPin(virBitmapPtr cpumask,
+                        int index,
+                        virDomainPinDefPtr **pindef_list,
+                        size_t *npin)
+{
+    int ret = -1;
+    virDomainPinDefPtr pindef = NULL;
+
+    if (VIR_ALLOC(pindef) < 0)
+        goto cleanup;
+
+    if (!(pindef->cpumask = virBitmapNewCopy(cpumask))) {
+        VIR_FREE(pindef);
+        goto cleanup;
+    }
+    pindef->id = index;
+    if (VIR_APPEND_ELEMENT_COPY(*pindef_list, *npin, pindef) < 0) {
+        virBitmapFree(pindef->cpumask);
+        VIR_FREE(pindef);
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
+qemuDomainHotplugPinThread(virBitmapPtr cpumask,
+                           int index,
+                           pid_t pid,
+                           virCgroupPtr cgroup)
+{
+    int ret = -1;
+
+    if (cgroup) {
+        if (qemuSetupCgroupCpusetCpus(cgroup, cpumask) < 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("failed to set cpuset.cpus in cgroup for id %d"),
+                           index);
+            goto cleanup;
+        }
+    } else {
+        if (virProcessSetAffinity(pid, cpumask) < 0) {
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to set cpu affinity for id %d"),
+                           index);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
 qemuDomainDelCgroupForThread(virCgroupPtr cgroup,
                              virCgroupThreadName nameval,
                              int index)
@@ -4791,48 +4849,18 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
 
             /* Inherit def->cpuset */
             if (vm->def->cpumask) {
-                /* vm->def->cputune.vcpupin can't be NULL if
-                 * vm->def->cpumask is not NULL.
-                 */
-                virDomainPinDefPtr vcpupin = NULL;
-
-                if (VIR_ALLOC(vcpupin) < 0)
-                    goto cleanup;
-
-                if (!(vcpupin->cpumask = virBitmapNewCopy(vm->def->cpumask))) {
-                    VIR_FREE(vcpupin);
-                    goto cleanup;
-                }
-                vcpupin->id = i;
-                if (VIR_APPEND_ELEMENT_COPY(vm->def->cputune.vcpupin,
-                                            vm->def->cputune.nvcpupin, vcpupin) < 0) {
-                    virBitmapFree(vcpupin->cpumask);
-                    VIR_FREE(vcpupin);
+                if (qemuDomainHotplugAddPin(vm->def->cpumask, i,
+                                            &vm->def->cputune.vcpupin,
+                                            &vm->def->cputune.nvcpupin) < 0) {
                     ret = -1;
                     goto cleanup;
                 }
-
-                if (cgroup_vcpu) {
-                    if (qemuSetupCgroupCpusetCpus(cgroup_vcpu,
-                                                  vcpupin->cpumask) < 0) {
-                        virReportError(VIR_ERR_OPERATION_INVALID,
-                                       _("failed to set cpuset.cpus in cgroup"
-                                         " for vcpu %zu"), i);
-                        ret = -1;
-                        goto cleanup;
-                    }
-                } else {
-                    if (virProcessSetAffinity(cpupids[i],
-                                              vcpupin->cpumask) < 0) {
-                        virReportError(VIR_ERR_SYSTEM_ERROR,
-                                       _("failed to set cpu affinity for vcpu %zu"),
-                                       i);
-                        ret = -1;
-                        goto cleanup;
-                    }
+                if (qemuDomainHotplugPinThread(vm->def->cpumask, i, cpupids[i],
+                                               cgroup_vcpu) < 0) {
+                    ret = -1;
+                    goto cleanup;
                 }
             }
-
             virCgroupFree(&cgroup_vcpu);
 
             if (qemuProcessSetSchedParams(i, cpupids[i],
