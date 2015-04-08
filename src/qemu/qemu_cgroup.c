@@ -796,6 +796,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
             virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
             goto cleanup;
 
+        VIR_FREE(nodeset);
         virCgroupFree(&cgroup_temp);
     }
 
@@ -806,6 +807,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
             virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
             goto cleanup;
 
+        VIR_FREE(nodeset);
         virCgroupFree(&cgroup_temp);
     }
 
