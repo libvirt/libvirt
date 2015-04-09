@@ -1,7 +1,7 @@
 /*
  * qemu_domain.c: QEMU domain private state
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -999,6 +999,12 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     case VIR_ARCH_S390X:
         addDefaultUSB = false;
         break;
+
+    case VIR_ARCH_SPARC:
+    case VIR_ARCH_SPARC64:
+        addPCIRoot = true;
+        break;
+
     default:
         break;
     }
