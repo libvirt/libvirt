@@ -2369,7 +2369,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
     jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
-    while (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
+    while (1) {
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
@@ -2390,6 +2390,9 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
                            _("Lost connection to destination host"));
             break;
         }
+
+        if (jobInfo->type != VIR_DOMAIN_JOB_UNBOUNDED)
+            break;
 
         virObjectUnlock(vm);
 
