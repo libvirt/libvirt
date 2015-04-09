@@ -1158,6 +1158,12 @@ static int parallelsDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     return ret;
 }
 
+static int parallelsDomainAttachDevice(virDomainPtr dom, const char *xml)
+{
+    return parallelsDomainAttachDeviceFlags(dom, xml,
+                                            VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
+}
+
 static virHypervisorDriver parallelsDriver = {
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -1192,6 +1198,7 @@ static virHypervisorDriver parallelsDriver = {
     .domainDefineXMLFlags = parallelsDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = parallelsDomainUndefine, /* 1.2.10 */
     .domainUndefineFlags = parallelsDomainUndefineFlags, /* 1.2.10 */
+    .domainAttachDevice = parallelsDomainAttachDevice, /* 1.2.15 */
     .domainAttachDeviceFlags = parallelsDomainAttachDeviceFlags, /* 1.2.15 */
     .domainIsActive = parallelsDomainIsActive, /* 1.2.10 */
     .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
