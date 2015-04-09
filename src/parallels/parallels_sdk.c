@@ -2437,10 +2437,8 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
     }
 
     if (disk->serial) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk serial number is not "
+        VIR_INFO("%s", _("Setting disk serial number is not "
                          "supported by parallels driver."));
-        return -1;
     }
 
     if (disk->wwn) {
