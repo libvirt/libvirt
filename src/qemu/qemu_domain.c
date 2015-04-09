@@ -3063,17 +3063,17 @@ qemuDomainSupportsBlockJobs(virDomainObjPtr vm,
                             bool *modern)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    bool async = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
-    bool sync = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
+    bool asynchronous = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
+    bool synchronous = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_SYNC);
 
-    if (!sync && !async) {
+    if (!synchronous && !asynchronous) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block jobs not supported with this QEMU binary"));
         return -1;
     }
 
     if (modern)
-        *modern = async;
+        *modern = asynchronous;
 
     return 0;
 }
