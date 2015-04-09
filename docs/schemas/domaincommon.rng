@@ -328,179 +328,42 @@
   <define name="ostypehvm">
     <element name="type">
       <optional>
-        <choice>
-          <ref name="hvmx86"/>
-          <ref name="hvmmips"/>
-          <ref name="hvmsparc"/>
-          <ref name="hvmppc"/>
-          <ref name="hvmppc64"/>
-          <ref name="hvms390"/>
-          <ref name="hvmarm"/>
-          <ref name="hvmaarch64"/>
-        </choice>
+        <ref name="archList"/>
+      </optional>
+      <optional>
+        <attribute name="machine">
+          <data type="string">
+            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
+          </data>
+        </attribute>
       </optional>
       <value>hvm</value>
     </element>
   </define>
-  <define name="hvmx86">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <choice>
-            <value>i686</value>
-            <value>x86_64</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <data type="string">
-            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
-          </data>
-        </attribute>
-      </optional>
-    </group>
+
+  <define name="archList">
+    <attribute name="arch">
+      <choice>
+        <value>armv7l</value>
+        <value>aarch64</value>
+        <value>i686</value>
+        <value>x86_64</value>
+        <value>mips</value>
+        <value>ppc</value>
+        <value>ppc64</value>
+        <value>ppc64le</value>
+        <value>s390</value>
+        <value>s390x</value>
+        <value>sparc</value>
+      </choice>
+    </attribute>
   </define>
-  <define name="hvmmips">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <value>mips</value>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <value>mips</value>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvmsparc">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <value>sparc</value>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <value>sun4m</value>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvmppc">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <value>ppc</value>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <choice>
-            <value>g3beige</value>
-            <value>mac99</value>
-            <value>prep</value>
-            <value>ppce500</value>
-          </choice>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvmppc64">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <choice>
-            <value>ppc64</value>
-            <value>ppc64le</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <choice>
-            <value>pseries</value>
-            <value>pseries-2.1</value>
-            <value>pseries-2.2</value>
-          </choice>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvms390">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <choice>
-            <value>s390</value>
-            <value>s390x</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <choice>
-            <value>s390</value>
-            <value>s390-virtio</value>
-            <value>s390-ccw</value>
-            <value>s390-ccw-virtio</value>
-          </choice>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvmarm">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <choice>
-            <value>armv7l</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <data type="string">
-            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
-          </data>
-        </attribute>
-      </optional>
-    </group>
-  </define>
-  <define name="hvmaarch64">
-    <group>
-      <optional>
-        <attribute name="arch">
-          <choice>
-            <value>aarch64</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="machine">
-          <data type="string">
-            <param name="pattern">[a-zA-Z0-9_\.\-]+</param>
-          </data>
-        </attribute>
-      </optional>
-    </group>
-  </define>
+
   <define name="osexe">
     <element name="os">
       <element name="type">
         <optional>
-          <attribute name="arch">
-            <choice>
-              <value>i686</value>
-              <value>x86_64</value>
-              <value>ppc</value>
-              <value>ppc64</value>
-              <value>mips</value>
-              <value>sparc</value>
-            </choice>
-          </attribute>
+          <ref name="archList"/>
         </optional>
         <value>exe</value>
       </element>
@@ -518,6 +381,7 @@
       </interleave>
     </element>
   </define>
+
   <!--
       The Identifiers can be:
       - an optional id attribute with a number on the domain element
