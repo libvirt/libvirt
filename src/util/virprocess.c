@@ -628,7 +628,7 @@ int virProcessGetNamespaces(pid_t pid,
                         ns[i]) < 0)
             goto cleanup;
 
-        if ((fd = open(nsfile, O_RDWR)) >= 0) {
+        if ((fd = open(nsfile, O_RDONLY)) >= 0) {
             if (VIR_EXPAND_N(*fdlist, *nfdlist, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
                 goto cleanup;
