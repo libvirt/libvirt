@@ -400,30 +400,26 @@ qemuMonitorJSONCheckError(virJSONValuePtr cmd,
 }
 
 
-static int
+static bool
+qemuMonitorJSONErrorIsClass(virJSONValuePtr error,
+                            const char *klass)
+{
+    return STREQ_NULLABLE(virJSONValueObjectGetString(error, "class"), klass);
+}
+
+
+static bool
 qemuMonitorJSONHasError(virJSONValuePtr reply,
                         const char *klass)
 {
     virJSONValuePtr error;
-    const char *thisklass;
 
-    if (!virJSONValueObjectHasKey(reply, "error"))
-        return 0;
+    if (!(error = virJSONValueObjectGet(reply, "error")))
+        return false;
 
-    error = virJSONValueObjectGet(reply, "error");
-    if (!error)
-        return 0;
-
-    if (!virJSONValueObjectHasKey(error, "class"))
-        return 0;
-
-    thisklass = virJSONValueObjectGetString(error, "class");
-
-    if (!thisklass)
-        return 0;
-
-    return STREQ(klass, thisklass);
+    return qemuMonitorJSONErrorIsClass(error, klass);
 }
+
 
 /* Top-level commands and nested transaction list elements share a
  * common structure for everything except the dictionary names.  */
