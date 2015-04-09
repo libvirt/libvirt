@@ -2873,3 +2873,32 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
     VIR_FREE(tmp);
     return ret;
 }
+
+
+/*
+ * virStorageFileCheckCompat
+ */
+int
+virStorageFileCheckCompat(const char *compat)
+{
+    char **version;
+    unsigned int result;
+    int ret = -1;
+
+    if (!compat)
+        return 0;
+
+    version = virStringSplit(compat, ".", 2);
+    if (!version || !version[1] ||
+        virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
+        virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("forbidden characters in 'compat' attribute"));
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    virStringFreeList(version);
+    return ret;
+}

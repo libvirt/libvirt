@@ -1374,20 +1374,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     }
 
     ret->target.compat = virXPathString("string(./target/compat)", ctxt);
-    if (ret->target.compat) {
-        char **version = virStringSplit(ret->target.compat, ".", 2);
-        unsigned int result;
-
-        if (!version || !version[1] ||
-            virStrToLong_ui(version[0], NULL, 10, &result) < 0 ||
-            virStrToLong_ui(version[1], NULL, 10, &result) < 0) {
-            virStringFreeList(version);
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("forbidden characters in 'compat' attribute"));
-            goto error;
-        }
-        virStringFreeList(version);
-    }
+    if (virStorageFileCheckCompat(ret->target.compat) < 0)
+        goto error;
 
     if (virXPathNode("./target/nocow", ctxt))
         ret->target.nocow = true;

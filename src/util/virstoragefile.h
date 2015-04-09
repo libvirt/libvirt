@@ -384,4 +384,5 @@ int virStorageFileGetRelativeBackingPath(virStorageSourcePtr from,
                                          char **relpath)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+int virStorageFileCheckCompat(const char *compat);
 #endif /* __VIR_STORAGE_FILE_H__ */
