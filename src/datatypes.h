@@ -1,7 +1,7 @@
 /*
  * datatypes.h: management of structs for public data types
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -328,10 +328,12 @@ struct _virConnectCloseCallbackData {
  * Internal structure associated to a connection
  */
 struct _virConnect {
-    virObject object;
-    /* All the variables from here, until the 'lock' declaration
-     * are setup at time of connection open, and never changed
-     * since. Thus no need to lock when accessing them
+    virObjectLockable object;
+
+    /* All the variables from here, until declared otherwise in one of
+     * the following comments, are setup at time of connection open
+     * and never changed since. Thus no need to lock when accessing
+     * them.
      */
     unsigned int flags;     /* a set of connection flags */
     virURIPtr uri;          /* connection URI */
@@ -352,12 +354,10 @@ struct _virConnect {
     void *            privateData;
 
     /*
-     * The lock mutex must be acquired before accessing/changing
-     * any of members following this point, or changing the ref
-     * count of any virDomain/virNetwork object associated with
-     * this connection
+     * Object lock must be acquired before accessing/changing any of
+     * members following this point, or changing the ref count of any
+     * virDomain/virNetwork object associated with this connection.
      */
-    virMutex lock;
 
     /* Per-connection error. */
     virError err;           /* the last error */

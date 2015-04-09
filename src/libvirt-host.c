@@ -1,7 +1,7 @@
 /*
  * libvirt-host.c: entry points for vir{Connect,Node}Ptr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -51,7 +51,7 @@ VIR_LOG_INIT("libvirt.host");
 int
 virConnectRef(virConnectPtr conn)
 {
-    VIR_DEBUG("conn=%p refs=%d", conn, conn ? conn->object.u.s.refs : 0);
+    VIR_DEBUG("conn=%p refs=%d", conn, conn ? conn->object.parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -1219,7 +1219,7 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
 
     virObjectRef(conn);
 
-    virMutexLock(&conn->lock);
+    virObjectLock(conn);
     virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
@@ -1236,13 +1236,13 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     conn->closeCallback->freeCallback = freecb;
 
     virObjectUnlock(conn->closeCallback);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
 
     return 0;
 
  error:
     virObjectUnlock(conn->closeCallback);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
     virDispatchError(conn);
     virObjectUnref(conn);
     return -1;
@@ -1272,7 +1272,7 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
 
     virCheckConnectReturn(conn, -1);
 
-    virMutexLock(&conn->lock);
+    virObjectLock(conn);
     virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
@@ -1288,15 +1288,15 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
         conn->closeCallback->freeCallback(conn->closeCallback->opaque);
     conn->closeCallback->freeCallback = NULL;
 
-    virObjectUnref(conn);
     virObjectUnlock(conn->closeCallback);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
+    virObjectUnref(conn);
 
     return 0;
 
  error:
     virObjectUnlock(conn->closeCallback);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
     virDispatchError(conn);
     return -1;
 }

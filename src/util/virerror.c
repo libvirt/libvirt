@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006, 2008-2014 Red Hat, Inc.
+ * Copyright (C) 2006, 2008-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -460,12 +460,12 @@ virConnCopyLastError(virConnectPtr conn, virErrorPtr to)
 
     if (conn == NULL)
         return -1;
-    virMutexLock(&conn->lock);
+    virObjectLock(conn);
     if (conn->err.code == VIR_ERR_OK)
         virResetError(to);
     else
         virCopyError(&conn->err, to);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
     return to->code;
 }
 
@@ -483,9 +483,9 @@ virConnResetLastError(virConnectPtr conn)
 {
     if (conn == NULL)
         return;
-    virMutexLock(&conn->lock);
+    virObjectLock(conn);
     virResetError(&conn->err);
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
 }
 
 /**
@@ -520,10 +520,10 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData,
 {
     if (conn == NULL)
         return;
-    virMutexLock(&conn->lock);
+    virObjectLock(conn);
     conn->handler = handler;
     conn->userData = userData;
-    virMutexUnlock(&conn->lock);
+    virObjectUnlock(conn);
 }
 
 /**
@@ -600,14 +600,14 @@ virDispatchError(virConnectPtr conn)
 
     /* Copy the global error to per-connection error if needed */
     if (conn) {
-        virMutexLock(&conn->lock);
+        virObjectLock(conn);
         virCopyError(err, &conn->err);
 
         if (conn->handler != NULL) {
             handler = conn->handler;
             userData = conn->userData;
         }
-        virMutexUnlock(&conn->lock);
+        virObjectUnlock(conn);
     }
 
     /* Invoke the error callback functions */
