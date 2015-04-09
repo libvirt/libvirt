@@ -104,8 +104,6 @@ VIR_ENUM_IMPL(virStoragePoolSourceAdapter,
 
 typedef const char *(*virStorageVolFormatToString)(int format);
 typedef int (*virStorageVolFormatFromString)(const char *format);
-typedef const char *(*virStorageVolFeatureToString)(int feature);
-typedef int (*virStorageVolFeatureFromString)(const char *feature);
 
 typedef const char *(*virStoragePoolFormatToString)(int format);
 typedef int (*virStoragePoolFormatFromString)(const char *format);
@@ -116,8 +114,6 @@ struct _virStorageVolOptions {
     int defaultFormat;
     virStorageVolFormatToString formatToString;
     virStorageVolFormatFromString formatFromString;
-    virStorageVolFeatureToString featureToString;
-    virStorageVolFeatureFromString featureFromString;
 };
 
 /* Flags to indicate mandatory components in the pool source */
@@ -172,8 +168,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
-         .featureFromString = virStorageFileFeatureTypeFromString,
-         .featureToString = virStorageFileFeatureTypeToString,
      },
     },
     {.poolType = VIR_STORAGE_POOL_FS,
@@ -187,8 +181,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
-         .featureFromString = virStorageFileFeatureTypeFromString,
-         .featureToString = virStorageFileFeatureTypeToString,
       },
     },
     {.poolType = VIR_STORAGE_POOL_NETFS,
@@ -203,8 +195,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatFromString = virStorageVolumeFormatFromString,
          .formatToString = virStorageFileFormatTypeToString,
-         .featureFromString = virStorageFileFeatureTypeFromString,
-         .featureToString = virStorageFileFeatureTypeToString,
       },
     },
     {.poolType = VIR_STORAGE_POOL_ISCSI,
@@ -258,8 +248,6 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .defaultFormat = VIR_STORAGE_FILE_RAW,
          .formatToString = virStorageFileFormatTypeToString,
          .formatFromString = virStorageVolumeFormatFromString,
-         .featureFromString = virStorageFileFeatureTypeFromString,
-         .featureToString = virStorageFileFeatureTypeToString,
      }
     },
     {.poolType = VIR_STORAGE_POOL_MPATH,
@@ -1404,7 +1392,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (virXPathNode("./target/nocow", ctxt))
         ret->target.nocow = true;
 
-    if (options->featureFromString && virXPathNode("./target/features", ctxt)) {
+    if (virXPathNode("./target/features", ctxt)) {
         if ((n = virXPathNodeSet("./target/features/*", ctxt, &nodes)) < 0)
             goto error;
 
@@ -1415,7 +1403,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
             goto error;
 
         for (i = 0; i < n; i++) {
-            int f = options->featureFromString((const char*)nodes[i]->name);
+            int f = virStorageFileFeatureTypeFromString((const char*)nodes[i]->name);
 
             if (f < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("unsupported feature %s"),
@@ -1576,7 +1564,7 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
     virBufferEscapeString(buf, "<compat>%s</compat>\n", def->compat);
 
-    if (options->featureToString && def->features) {
+    if (def->features) {
         size_t i;
         bool empty = virBitmapIsAllClear(def->features);
 
@@ -1590,7 +1578,7 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
             if (virBitmapIsBitSet(def->features, i))
                 virBufferAsprintf(buf, "<%s/>\n",
-                                  options->featureToString(i));
+                                  virStorageFileFeatureTypeToString(i));
         }
         if (!empty) {
             virBufferAdjustIndent(buf, -2);
