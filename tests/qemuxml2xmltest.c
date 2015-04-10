@@ -361,6 +361,7 @@ mymain(void)
 
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
+    DO_TEST_DIFFERENT("cpu-empty");
     DO_TEST("cpu-kvmclock");
     DO_TEST("cpu-host-kvmclock");
     DO_TEST("cpu-host-passthrough-features");

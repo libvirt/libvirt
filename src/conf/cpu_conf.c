@@ -435,13 +435,14 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                        bool updateCPU)
 {
     int ret = -1;
+    virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
     int indent = virBufferGetIndent(buf, false);
 
     if (!def)
         return 0;
 
-    virBufferAddLit(buf, "<cpu");
+    /* Format attributes */
     if (def->type == VIR_CPU_TYPE_GUEST) {
         const char *tmp;
 
@@ -451,7 +452,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                                _("Unexpected CPU mode %d"), def->mode);
                 goto cleanup;
             }
-            virBufferAsprintf(buf, " mode='%s'", tmp);
+            virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
         }
 
         if (def->model &&
@@ -463,10 +464,11 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                                def->match);
                 goto cleanup;
             }
-            virBufferAsprintf(buf, " match='%s'", tmp);
+            virBufferAsprintf(&attributeBuf, " match='%s'", tmp);
         }
     }
 
+    /* Format children */
     virBufferAdjustIndent(&childrenBuf, indent + 2);
     if (def->arch)
         virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
@@ -477,16 +479,25 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (virDomainNumaDefCPUFormat(&childrenBuf, numa) < 0)
         goto cleanup;
 
-    if (virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</cpu>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
+    /* Put it all together */
+    if (virBufferUse(&attributeBuf) || virBufferUse(&childrenBuf)) {
+        virBufferAddLit(buf, "<cpu");
+
+        if (virBufferUse(&attributeBuf))
+            virBufferAddBuffer(buf, &attributeBuf);
+
+        if (virBufferUse(&childrenBuf)) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAddBuffer(buf, &childrenBuf);
+            virBufferAddLit(buf, "</cpu>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
     }
 
     ret = 0;
  cleanup:
+    virBufferFreeAndReset(&attributeBuf);
     virBufferFreeAndReset(&childrenBuf);
     return ret;
 }
