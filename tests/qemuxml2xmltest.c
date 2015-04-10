@@ -504,6 +504,7 @@ mymain(void)
     DO_TEST("virtio-lun");
 
     DO_TEST("usb-redir");
+    DO_TEST_DIFFERENT("usb-redir-filter");
     DO_TEST("blkdeviotune");
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
