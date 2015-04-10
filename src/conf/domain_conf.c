@@ -11386,8 +11386,8 @@ virDomainRedirFilterUSBVersionHelper(const char *version,
     *temp = '\0';
     temp++;
 
-    if ((virStrToLong_ui(version_copy, NULL, 0, &major)) < 0 ||
-        (virStrToLong_ui(temp, NULL, 0, &minor)) < 0) {
+    if ((virStrToLong_ui(version_copy, NULL, 10, &major)) < 0 ||
+        (virStrToLong_ui(temp, NULL, 10, &minor)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Cannot parse USB version %s"), version);
         goto cleanup;
@@ -20256,7 +20256,7 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " product='0x%04X'", usbdev->product);
 
         if (usbdev->version >= 0)
-            virBufferAsprintf(buf, " version='%d.%d'",
+            virBufferAsprintf(buf, " version='%d.%02d'",
                                  ((usbdev->version & 0xf000) >> 12) * 10 +
                                  ((usbdev->version & 0x0f00) >>  8),
                                  ((usbdev->version & 0x00f0) >>  4) * 10 +

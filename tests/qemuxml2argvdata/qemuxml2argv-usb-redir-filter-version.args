@@ -1,0 +1,14 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S \
+-M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c \
+-usb -chardev spicevmc,id=charredir0,name=usbredir \
+-device 'usb-redir,chardev=charredir0,id=redir0,\
+filter=0x08:0x15E1:0x2007:0x0109:1|0x08:0x15E1:0x2007:0x0940:1|\
+-1:-1:-1:-1:0,bus=usb.0,port=4' \
+-chardev spicevmc,id=charredir1,name=usbredir \
+-device 'usb-redir,chardev=charredir1,id=redir1,\
+filter=0x08:0x15E1:0x2007:0x0109:1|0x08:0x15E1:0x2007:0x0940:1|\
+-1:-1:-1:-1:0,bus=usb.0,port=5' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
