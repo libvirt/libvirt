@@ -818,7 +818,6 @@ virStorageBackendCreateQemuImgOpts(char **opts,
                                    struct _virStorageBackendQemuImgInfo info)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
 
     if (info.backingPath)
         virBufferAsprintf(&buf, "backing_fmt=%s,",
@@ -832,28 +831,18 @@ virStorageBackendCreateQemuImgOpts(char **opts,
 
     if (info.compat)
         virBufferAsprintf(&buf, "compat=%s,", info.compat);
-    if (info.features && info.format == VIR_STORAGE_FILE_QCOW2) {
-        for (i = 0; i < VIR_STORAGE_FILE_FEATURE_LAST; i++) {
-            if (virBitmapIsBitSet(info.features, i)) {
-                switch ((virStorageFileFeature) i) {
-                case VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS:
-                    if (STREQ_NULLABLE(info.compat, "0.10")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("Feature %s not supported with compat"
-                                         " level %s"),
-                                       virStorageFileFeatureTypeToString(i),
-                                       info.compat);
-                        goto error;
-                    }
-                    break;
 
-                /* coverity[dead_error_begin] */
-                case VIR_STORAGE_FILE_FEATURE_LAST:
-                    ;
-                }
-                virBufferAsprintf(&buf, "%s,",
-                                  virStorageFileFeatureTypeToString(i));
+    if (info.features && info.format == VIR_STORAGE_FILE_QCOW2) {
+        if (virBitmapIsBitSet(info.features,
+                              VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS)) {
+            if (STREQ_NULLABLE(info.compat, "0.10")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("lazy_refcounts not supported with compat"
+                                 " level %s"),
+                               info.compat);
+                goto error;
             }
+            virBufferAddLit(&buf, "lazy_refcounts,");
         }
     }
 
