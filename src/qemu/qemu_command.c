@@ -678,6 +678,24 @@ qemuOpenVhostNet(virDomainDefPtr def,
 }
 
 int
+qemuDomainParseIOThreadAlias(char *alias,
+                             unsigned int *iothread_id)
+{
+    unsigned int idval;
+
+    if (virStrToLong_ui(alias + strlen("iothread"),
+                        NULL, 10, &idval) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to find iothread id for '%s'"),
+                       alias);
+        return -1;
+    }
+
+    *iothread_id = idval;
+    return 0;
+}
+
+int
 qemuNetworkPrepareDevices(virDomainDefPtr def)
 {
     int ret = -1;
@@ -3985,11 +4003,11 @@ qemuCheckIOThreads(virDomainDefPtr def,
         return false;
     }
 
-    /* Value larger than iothreads available? */
-    if (disk->iothread > def->iothreads) {
+    /* Can we find the disk iothread in the iothreadid list? */
+    if (!virDomainIOThreadIDFind(def, disk->iothread)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disk iothread '%u' invalid only %u IOThreads"),
-                       disk->iothread, def->iothreads);
+                       _("Disk iothread '%u' not defined in iothreadid"),
+                       disk->iothread);
         return false;
     }
 
@@ -8794,14 +8812,15 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (def->iothreads > 0 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        /* Create named iothread objects starting with 1. These may be used
+        /* Create iothread objects using the defined iothreadids list
+         * and the defined id and name from the list. These may be used
          * by a disk definition which will associate to an iothread by
-         * supplying a value of 1 up to the number of iothreads available
-         * (since 0 would indicate to not use the feature).
+         * supplying a value of an id from the list
          */
-        for (i = 1; i <= def->iothreads; i++) {
+        for (i = 0; i < def->niothreadids; i++) {
             virCommandAddArg(cmd, "-object");
-            virCommandAddArgFormat(cmd, "iothread,id=iothread%zu", i);
+            virCommandAddArgFormat(cmd, "iothread,id=iothread%u",
+                                   def->iothreadids[i]->iothread_id);
         }
     }
 

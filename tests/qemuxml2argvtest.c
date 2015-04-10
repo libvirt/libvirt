@@ -1217,6 +1217,8 @@ mymain(void)
     DO_TEST("smp", QEMU_CAPS_SMP_TOPOLOGY);
 
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST("iothreads-ids-partial", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD, QEMU_CAPS_DEVICE,
             QEMU_CAPS_DRIVE);
     DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_OBJECT_IOTHREAD, QEMU_CAPS_DEVICE,

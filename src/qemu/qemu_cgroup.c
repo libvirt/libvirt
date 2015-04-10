@@ -802,8 +802,9 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         virCgroupFree(&cgroup_temp);
     }
 
-    for (i = 0; i < priv->niothreadpids; i++) {
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+    for (i = 0; i < vm->def->niothreadids; i++) {
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                               vm->def->iothreadids[i]->iothread_id,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
             virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0 ||
@@ -1175,11 +1176,6 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     if (priv->cgroup == NULL)
         return 0;
 
-    if (def->iothreads && priv->niothreadpids == 0) {
-        VIR_WARN("Unable to get iothreads' pids.");
-        return 0;
-    }
-
     if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
         VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
@@ -1187,16 +1183,18 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
                                             &mem_mask, -1) < 0)
         goto cleanup;
 
-    for (i = 0; i < priv->niothreadpids; i++) {
+    for (i = 0; i < def->niothreadids; i++) {
         /* IOThreads are numbered 1..n, although the array is 0..n-1,
          * so we will account for that here
          */
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                               def->iothreadids[i]->iothread_id,
                                true, &cgroup_iothread) < 0)
             goto cleanup;
 
         /* move the thread for iothread to sub dir */
-        if (virCgroupAddTask(cgroup_iothread, priv->iothreadpids[i]) < 0)
+        if (virCgroupAddTask(cgroup_iothread,
+                             def->iothreadids[i]->thread_id) < 0)
             goto cleanup;
 
         if (period || quota) {
@@ -1221,8 +1219,8 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
 
             /* specific cpu mask */
             for (j = 0; j < def->cputune.niothreadspin; j++) {
-                /* IOThreads are numbered/named 1..n */
-                if (def->cputune.iothreadspin[j]->id == i + 1) {
+                if (def->cputune.iothreadspin[j]->id ==
+                    def->iothreadids[i]->iothread_id) {
                     cpumask = def->cputune.iothreadspin[j]->cpumask;
                     break;
                 }

@@ -2247,12 +2247,21 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(priv->iothreadpids, niothreads) < 0)
-        goto cleanup;
-    priv->niothreadpids = niothreads;
+    for (i = 0; i < niothreads; i++) {
+        unsigned int iothread_id;
+        virDomainIOThreadIDDefPtr iothrid;
 
-    for (i = 0; i < priv->niothreadpids; i++)
-        priv->iothreadpids[i] = iothreads[i]->thread_id;
+        if (qemuDomainParseIOThreadAlias(iothreads[i]->name,
+                                         &iothread_id) < 0)
+            goto cleanup;
+
+        if (!(iothrid = virDomainIOThreadIDFind(vm->def, iothread_id))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("iothread %d not found"), iothread_id);
+            goto cleanup;
+        }
+        iothrid->thread_id = iothreads[i]->thread_id;
+    }
 
     ret = 0;
 
@@ -2433,7 +2442,6 @@ qemuProcessSetEmulatorAffinity(virDomainObjPtr vm)
 static int
 qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     virDomainPinDefPtr pininfo;
     size_t i;
@@ -2442,20 +2450,15 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
     if (!def->cputune.niothreadspin)
         return 0;
 
-    if (priv->iothreadpids == NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("IOThread affinity is not supported"));
-        return -1;
-    }
-
-    for (i = 0; i < def->iothreads; i++) {
-        /* set affinity only for existing vcpus */
+    for (i = 0; i < def->niothreadids; i++) {
+        /* set affinity only for existing iothreads */
         if (!(pininfo = virDomainPinFind(def->cputune.iothreadspin,
                                          def->cputune.niothreadspin,
-                                         i + 1)))
+                                         def->iothreadids[i]->iothread_id)))
             continue;
 
-        if (virProcessSetAffinity(priv->iothreadpids[i], pininfo->cpumask) < 0)
+        if (virProcessSetAffinity(def->iothreadids[i]->thread_id,
+                                  pininfo->cpumask) < 0)
             goto cleanup;
     }
     ret = 0;
@@ -2505,8 +2508,9 @@ qemuProcessSetSchedulers(virDomainObjPtr vm)
             return -1;
     }
 
-    for (i = 0; i < priv->niothreadpids; i++) {
-        if (qemuProcessSetSchedParams(i + 1, priv->iothreadpids[i],
+    for (i = 0; i < vm->def->niothreadids; i++) {
+        if (qemuProcessSetSchedParams(vm->def->iothreadids[i]->iothread_id,
+                                      vm->def->iothreadids[i]->thread_id,
                                       vm->def->cputune.niothreadsched,
                                       vm->def->cputune.iothreadsched) < 0)
             return -1;
@@ -5294,8 +5298,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     VIR_FREE(priv->vcpupids);
     priv->nvcpupids = 0;
-    VIR_FREE(priv->iothreadpids);
-    priv->niothreadpids = 0;
+    for (i = 0; i < vm->def->niothreadids; i++)
+        vm->def->iothreadids[i]->thread_id = 0;
     virObjectUnref(priv->qemuCaps);
     priv->qemuCaps = NULL;
     VIR_FREE(priv->pidfile);

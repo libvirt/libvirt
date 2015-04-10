@@ -455,7 +455,6 @@ qemuDomainObjPrivateFree(void *data)
     virDomainChrSourceDefFree(priv->monConfig);
     qemuDomainObjFreeJob(priv);
     VIR_FREE(priv->vcpupids);
-    VIR_FREE(priv->iothreadpids);
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
@@ -514,18 +513,6 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
             virBufferAsprintf(buf, "<vcpu pid='%d'/>\n", priv->vcpupids[i]);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</vcpus>\n");
-    }
-
-    if (priv->niothreadpids) {
-        size_t i;
-        virBufferAddLit(buf, "<iothreads>\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < priv->niothreadpids; i++) {
-            virBufferAsprintf(buf, "<iothread pid='%d'/>\n",
-                              priv->iothreadpids[i]);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</iothreads>\n");
     }
 
     if (priv->qemuCaps) {
@@ -640,29 +627,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
                 goto error;
 
             if (virStrToLong_i(pidstr, NULL, 10, &(priv->vcpupids[i])) < 0) {
-                VIR_FREE(pidstr);
-                goto error;
-            }
-            VIR_FREE(pidstr);
-        }
-        VIR_FREE(nodes);
-    }
-
-    n = virXPathNodeSet("./iothreads/iothread", ctxt, &nodes);
-    if (n < 0)
-        goto error;
-    if (n) {
-        priv->niothreadpids = n;
-        if (VIR_REALLOC_N(priv->iothreadpids, priv->niothreadpids) < 0)
-            goto error;
-
-        for (i = 0; i < n; i++) {
-            char *pidstr = virXMLPropString(nodes[i], "pid");
-            if (!pidstr)
-                goto error;
-
-            if (virStrToLong_i(pidstr, NULL, 10,
-                               &(priv->iothreadpids[i])) < 0) {
                 VIR_FREE(pidstr);
                 goto error;
             }

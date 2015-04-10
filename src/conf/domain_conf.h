@@ -2060,6 +2060,7 @@ typedef virDomainIOThreadIDDef *virDomainIOThreadIDDefPtr;
 struct _virDomainIOThreadIDDef {
     bool autofill;
     unsigned int iothread_id;
+    int thread_id;
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);

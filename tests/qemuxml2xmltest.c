@@ -493,6 +493,8 @@ mymain(void)
 
     DO_TEST("smp");
     DO_TEST("iothreads");
+    DO_TEST("iothreads-ids");
+    DO_TEST("iothreads-ids-partial");
     DO_TEST_DIFFERENT("cputune-iothreads");
     DO_TEST("iothreads-disk");
     DO_TEST("iothreads-disk-virtio-ccw");

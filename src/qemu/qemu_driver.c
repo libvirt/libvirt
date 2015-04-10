@@ -5926,14 +5926,16 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
         goto endjob;
 
     for (i = 0; i < niothreads; i++) {
+        unsigned int iothread_id;
         virBitmapPtr map = NULL;
+
+        if (qemuDomainParseIOThreadAlias(iothreads[i]->name,
+                                         &iothread_id) < 0)
+            goto endjob;
 
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto endjob;
-
-        if (virStrToLong_ui(iothreads[i]->name + strlen("iothread"), NULL, 10,
-                            &info_ret[i]->iothread_id) < 0)
-            goto endjob;
+        info_ret[i]->iothread_id = iothread_id;
 
         if (virProcessGetAffinity(iothreads[i]->thread_id, &map, hostcpus) < 0)
             goto endjob;
@@ -5988,19 +5990,19 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     if (VIR_ALLOC_N(info_ret, targetDef->iothreads) < 0)
         goto cleanup;
 
-    for (i = 0; i < targetDef->iothreads; i++) {
+    for (i = 0; i < targetDef->niothreadids; i++) {
         virDomainPinDefPtr pininfo;
 
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto cleanup;
 
-        /* IOThreads being counting at 1 */
-        info_ret[i]->iothread_id = i + 1;
+        /* IOThread ID's are taken from the iothreadids list */
+        info_ret[i]->iothread_id = targetDef->iothreadids[i]->iothread_id;
 
         /* Initialize the cpumap */
         pininfo = virDomainPinFind(targetDef->cputune.iothreadspin,
                                    targetDef->cputune.niothreadspin,
-                                   i + 1);
+                                   targetDef->iothreadids[i]->iothread_id);
         if (!pininfo) {
             if (targetDef->cpumask) {
                 cpumask = targetDef->cpumask;
@@ -6144,16 +6146,11 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
-        if (priv->iothreadpids == NULL) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("IOThread affinity is not supported"));
-            goto endjob;
-        }
+        virDomainIOThreadIDDefPtr iothrid;
 
-        if (iothread_id > priv->niothreadpids) {
+        if (!(iothrid = virDomainIOThreadIDFind(vm->def, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("iothread value out of range %d > %d"),
-                           iothread_id, priv->niothreadpids);
+                           _("iothread value %d not found"), iothread_id);
             goto endjob;
         }
 
@@ -6191,8 +6188,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
                 goto endjob;
             }
         } else {
-            if (virProcessSetAffinity(priv->iothreadpids[iothread_id - 1],
-                                      pcpumap) < 0) {
+            if (virProcessSetAffinity(iothrid->thread_id, pcpumap) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("failed to set cpu affinity for IOThread %d"),
                                iothread_id);
@@ -10163,8 +10159,9 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         virCgroupFree(&cgroup_temp);
     }
 
-    for (i = 0; i < priv->niothreadpids; i++) {
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD, i + 1,
+    for (i = 0; i < vm->def->niothreadids; i++) {
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                               vm->def->iothreadids[i]->iothread_id,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
             goto cleanup;

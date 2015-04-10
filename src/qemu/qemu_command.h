@@ -238,6 +238,9 @@ int qemuOpenVhostNet(virDomainDefPtr def,
                      int *vhostfd,
                      size_t *vhostfdSize);
 
+int qemuDomainParseIOThreadAlias(char *alias,
+                                 unsigned int *iothread_id);
+
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
 /*
