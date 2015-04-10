@@ -113,7 +113,11 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     int ret = -1;
     char *snapshot = NULL;
     char *type = NULL;
+    char *driver = NULL;
     xmlNodePtr cur;
+    xmlNodePtr saved = ctxt->node;
+
+    ctxt->node = node;
 
     if (VIR_ALLOC(def->src) < 0)
         goto cleanup;
@@ -148,33 +152,20 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         def->src->type = VIR_STORAGE_TYPE_FILE;
     }
 
-    for (cur = node->children; cur; cur = cur->next) {
-        if (cur->type != XML_ELEMENT_NODE)
-            continue;
+    if ((cur = virXPathNode("./source", ctxt)) &&
+        virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
+        goto cleanup;
 
-        if (!def->src->path &&
-            xmlStrEqual(cur->name, BAD_CAST "source")) {
-
-            if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
-                goto cleanup;
-
-        } else if (!def->src->format &&
-                   xmlStrEqual(cur->name, BAD_CAST "driver")) {
-            char *driver = virXMLPropString(cur, "type");
-            if (driver) {
-                def->src->format = virStorageFileFormatTypeFromString(driver);
-                if (def->src->format < VIR_STORAGE_FILE_BACKING) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   def->src->format <= 0
-                                   ? _("unknown disk snapshot driver '%s'")
-                                   : _("disk format '%s' lacks backing file "
-                                       "support"),
-                                   driver);
-                    VIR_FREE(driver);
-                    goto cleanup;
-                }
-                VIR_FREE(driver);
-            }
+    if ((driver = virXPathString("string(./driver/@type)", ctxt))) {
+        def->src->format = virStorageFileFormatTypeFromString(driver);
+        if (def->src->format < VIR_STORAGE_FILE_BACKING) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           def->src->format <= 0
+                           ? _("unknown disk snapshot driver '%s'")
+                           : _("disk format '%s' lacks backing file "
+                               "support"),
+                           driver);
+            goto cleanup;
         }
     }
 
@@ -193,6 +184,9 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
 
     ret = 0;
  cleanup:
+    ctxt->node = saved;
+
+    VIR_FREE(driver);
     VIR_FREE(snapshot);
     VIR_FREE(type);
     if (ret < 0)
