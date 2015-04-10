@@ -178,6 +178,12 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr numa,
         if (virBitmapParse(tmp, 0, &mem_node->nodeset,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
+
+        if (virBitmapIsAllClear(mem_node->nodeset)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid value of 'nodeset': %s"), tmp);
+            goto cleanup;
+        }
         VIR_FREE(tmp);
     }
 
@@ -233,10 +239,19 @@ virDomainNumatuneParseXML(virDomainNumaPtr numa,
         }
         VIR_FREE(tmp);
 
-        if ((tmp = virXMLPropString(node, "nodeset")) &&
-            virBitmapParse(tmp, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto cleanup;
-        VIR_FREE(tmp);
+        tmp = virXMLPropString(node, "nodeset");
+        if (tmp) {
+            if (virBitmapParse(tmp, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(nodeset)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'nodeset': %s"), tmp);
+                goto cleanup;
+            }
+
+            VIR_FREE(tmp);
+        }
     }
 
     if (virDomainNumatuneSet(numa,

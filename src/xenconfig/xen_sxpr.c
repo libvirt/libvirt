@@ -1165,6 +1165,13 @@ xenParseSxpr(const struct sexpr *root,
         if (virBitmapParse(cpus, 0, &def->cpumask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto error;
+
+        if (virBitmapIsAllClear(def->cpumask)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid value of 'cpumask': %s"),
+                           cpus);
+            goto error;
+        }
     }
 
     def->maxvcpus = sexpr_int(root, "domain/vcpus");

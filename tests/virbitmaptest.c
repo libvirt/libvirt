@@ -524,16 +524,23 @@ static int
 test10(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL;
+    virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL, b4 = NULL;
 
     if (virBitmapParse("0-3,5-8,11-15", 0, &b1, 20) < 0 ||
         virBitmapParse("4,9,10,16-19", 0, &b2, 20) < 0 ||
-        virBitmapParse("15", 0, &b3, 20) < 0)
+        virBitmapParse("15", 0, &b3, 20) < 0 ||
+        virBitmapParse("0,^0", 0, &b4, 20) < 0)
+        goto cleanup;
+
+    if (!virBitmapIsAllClear(b4))
         goto cleanup;
 
     if (virBitmapOverlaps(b1, b2) ||
+        virBitmapOverlaps(b1, b4) ||
         virBitmapOverlaps(b2, b3) ||
-        !virBitmapOverlaps(b1, b3))
+        virBitmapOverlaps(b2, b4) ||
+        !virBitmapOverlaps(b1, b3) ||
+        virBitmapOverlaps(b3, b4))
         goto cleanup;
 
     ret = 0;

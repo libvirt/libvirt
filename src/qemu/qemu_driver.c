@@ -10134,8 +10134,9 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                 goto endjob;
 
             if (virBitmapIsAllClear(nodeset)) {
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("Invalid nodeset for numatune"));
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("Invalid nodeset of 'numatune': %s"),
+                               param->value.s);
                 goto endjob;
             }
         }

@@ -11577,6 +11577,12 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         if (virBitmapParse(nodemask, 0, &def->sourceNodes,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
+
+        if (virBitmapIsAllClear(def->sourceNodes)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid value of 'nodemask': %s"), nodemask);
+            goto cleanup;
+        }
     }
 
     ret = 0;
@@ -13265,6 +13271,13 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto error;
 
+    if (virBitmapIsAllClear(def->cpumask)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid value of 'cpuset': %s"),
+                       tmp);
+        goto error;
+    }
+
  cleanup:
     VIR_FREE(tmp);
     ctxt->node = oldnode;
@@ -13366,6 +13379,12 @@ virDomainHugepagesParseXML(xmlNodePtr node,
         if (virBitmapParse(nodeset, 0, &hugepage->nodemask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
+
+        if (virBitmapIsAllClear(hugepage->nodemask)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid value of 'nodeset': %s"), nodeset);
+            goto cleanup;
+        }
     }
 
     ret = 0;
@@ -13487,13 +13506,14 @@ virDomainThreadSchedParse(xmlNodePtr node,
         goto error;
     }
 
-    if (!virBitmapParse(tmp, 0, &sp->ids,
-                        VIR_DOMAIN_CPUMASK_LEN) ||
-        virBitmapIsAllClear(sp->ids) ||
+    if (virBitmapParse(tmp, 0, &sp->ids, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto error;
+
+    if (virBitmapIsAllClear(sp->ids) ||
         virBitmapNextSetBit(sp->ids, -1) < minid ||
         virBitmapLastSetBit(sp->ids) > maxid) {
 
-        virReportError(VIR_ERR_XML_ERROR,
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid value of '%s': %s"),
                        name, tmp);
         goto error;
@@ -13861,6 +13881,13 @@ virDomainDefParseXML(xmlDocPtr xml,
             if (virBitmapParse(tmp, 0, &def->cpumask,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto error;
+
+            if (virBitmapIsAllClear(def->cpumask)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'cpuset': %s"), tmp);
+                goto error;
+            }
+
             VIR_FREE(tmp);
         }
     }
