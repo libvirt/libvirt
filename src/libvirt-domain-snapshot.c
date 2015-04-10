@@ -177,8 +177,9 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * the correct image format and metadata including backing store path
  * (this allows a management app to pre-create files with relative backing
  * file names, rather than the default of creating with absolute backing
- * file names). Note that setting incorrect metadata in the pre-created
- * image may lead to the VM being unable to start.
+ * file names). Note that only the file specified in the snapshot XML is
+ * inserted as a snapshot thus setting incorrect metadata in the pre-created
+ * image may lead to the VM being unable to start or other block jobs may fail.
  *
  * Be aware that although libvirt prefers to report errors up front with
  * no other effect, some hypervisors have certain types of failures where
