@@ -11345,66 +11345,41 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
 }
 
 /*
- * This is the helper function to convert USB version from a
+ * This is the helper function to convert USB device version from a
  * format of JJ.MN to a format of 0xJJMN where JJ is the major
  * version number, M is the minor version number and N is the
  * sub minor version number.
- * e.g. USB 2.0 is reported as 0x0200,
- *      USB 1.1 as 0x0110 and USB 1.0 as 0x0100.
+ * e.g. USB version 2.0 is reported as 0x0200,
+ *      USB version 4.07 as 0x0407
  */
 static int
 virDomainRedirFilterUSBVersionHelper(const char *version,
                                      virDomainRedirFilterUSBDevDefPtr def)
 {
-    char *version_copy = NULL;
-    char *temp = NULL;
-    int ret = -1;
-    size_t len;
-    size_t fraction_len;
-    unsigned int major;
-    unsigned int minor;
-    unsigned int hex;
+    unsigned int major, minor;
+    char *s = NULL;
 
-    if (VIR_STRDUP(version_copy, version) < 0)
-        return -1;
+    if ((virStrToLong_ui(version, &s, 10, &major)) < 0 ||
+        *s++ != '.' ||
+        (virStrToLong_ui(s, NULL, 10, &minor)) < 0)
+        goto error;
 
-    len = strlen(version_copy);
-    /*
-     * The valid format of version is like 01.10, 1.10, 1.1, etc.
-     */
-    if (len > 5 ||
-        !(temp = strchr(version_copy, '.')) ||
-        temp - version_copy < 1 ||
-        temp - version_copy > 2 ||
-        !(fraction_len = strlen(temp + 1)) ||
-        fraction_len > 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Incorrect USB version format %s"), version);
-        goto cleanup;
-    }
+    if (major >= 100 || minor >= 100)
+        goto error;
 
-    *temp = '\0';
-    temp++;
+    /* Treat JJ.M as JJ.M0, not JJ.0M */
+    if (strlen(s) == 1)
+        minor *= 10;
 
-    if ((virStrToLong_ui(version_copy, NULL, 10, &major)) < 0 ||
-        (virStrToLong_ui(temp, NULL, 10, &minor)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot parse USB version %s"), version);
-        goto cleanup;
-    }
+    def->version = (major / 10) << 12 | (major % 10) << 8 |
+                   (minor / 10) << 4 | (minor % 10) << 0;
 
-    hex = (major / 10) << 12 | (major % 10) << 8;
-    if (fraction_len == 1)
-        hex |= (minor % 10) << 4;
-    else
-        hex |= (minor / 10) << 4 | (minor % 10) << 0;
+    return 0;
 
-    def->version = hex;
-    ret = 0;
-
- cleanup:
-    VIR_FREE(version_copy);
-    return ret;
+ error:
+    virReportError(VIR_ERR_XML_ERROR,
+                   _("Cannot parse USB device version %s"), version);
+    return -1;
 }
 
 static virDomainRedirFilterUSBDevDefPtr
