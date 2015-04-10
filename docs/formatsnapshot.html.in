@@ -156,22 +156,31 @@
             require that if specified, the snapshot mode must not
             override any snapshot mode attached to the corresponding
             domain disk, while others like qemu allow this field to
-            override the domain default.  If the snapshot mode is
-            external (whether specified or inherited), then there is
-            an optional sub-element <code>source</code>, with an
-            attribute <code>file</code> giving the name, and an
-            optional sub-element <code>driver</code>, with an
-            attribute <code>type</code> giving the driver type (such
-            as qcow2), of the new file created by the external
-            snapshot of the new file.  If <code>source</code> is not
-            given and the disk is backed by a local image file (not
-            a block device or remote storage), a file name is
-            generated that consists of the existing file name
-            with anything after the trailing dot replaced by the
-            snapshot name.  Remember that with external
-            snapshots, the original file name becomes the read-only
-            snapshot, and the new file name contains the read-write
-            delta of all disk changes since the snapshot.
+            override the domain default.
+
+            <dl>
+              <dt><code>source</code></dt>
+              <dd>If the snapshot mode is external (whether specified
+              or inherited), then there is an optional sub-element
+              <code>source</code>, with an attribute <code>file</code>
+              giving the name of the new file.
+              If <code>source</code> is not
+              given and the disk is backed by a local image file (not
+              a block device or remote storage), a file name is
+              generated that consists of the existing file name
+              with anything after the trailing dot replaced by the
+              snapshot name.  Remember that with external
+              snapshots, the original file name becomes the read-only
+              snapshot, and the new file name contains the read-write
+              delta of all disk changes since the snapshot.
+              </dd>
+              <dt><code>driver</code></dt>
+              <dd>An optional sub-element <code>driver</code>,
+              with an attribute <code>type</code> giving the driver type (such
+              as qcow2), of the new file created by the external
+              snapshot of the new file.
+              </dd>
+            </dl>
 
             <span class="since">Since 1.2.2</span> the <code>disk</code> element
             supports an optional attribute <code>type</code> if the
