@@ -1094,6 +1094,70 @@ parallelsDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
     return ret;
 }
 
+static int parallelsDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+                                            unsigned int flags)
+{
+    int ret = -1;
+    parallelsConnPtr privconn = dom->conn->privateData;
+    virDomainDeviceDefPtr dev = NULL;
+    virDomainObjPtr privdom = NULL;
+    bool domactive = false;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    privdom = virDomainObjListFindByUUID(privconn->domains, dom->uuid);
+    if (privdom == NULL) {
+        parallelsDomNotFoundError(dom);
+        goto cleanup;
+    }
+
+    if (!(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("device attach needs VIR_DOMAIN_AFFECT_CONFIG "
+                         "flag to be set"));
+        goto cleanup;
+    }
+
+    domactive = virDomainObjIsActive(privdom);
+    if (!domactive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot do live update a device on "
+                         "inactive domain"));
+        goto cleanup;
+    }
+    if (domactive && !(flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Updates on a running domain need "
+                         "VIR_DOMAIN_AFFECT_LIVE flag"));
+    }
+
+    dev = virDomainDeviceDefParse(xml, privdom->def, privconn->caps,
+                                  privconn->xmlopt, VIR_DOMAIN_XML_INACTIVE);
+    if (dev == NULL)
+        goto cleanup;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = prlsdkAttachVolume(dom->conn, privdom, dev->data.disk);
+        if (ret) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("disk attach failed"));
+            goto cleanup;
+        }
+        break;
+    default:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("device type '%s' cannot be detached"),
+                       virDomainDeviceTypeToString(dev->type));
+        break;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
 static virHypervisorDriver parallelsDriver = {
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -1128,6 +1192,7 @@ static virHypervisorDriver parallelsDriver = {
     .domainDefineXMLFlags = parallelsDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = parallelsDomainUndefine, /* 1.2.10 */
     .domainUndefineFlags = parallelsDomainUndefineFlags, /* 1.2.10 */
+    .domainAttachDeviceFlags = parallelsDomainAttachDeviceFlags, /* 1.2.15 */
     .domainIsActive = parallelsDomainIsActive, /* 1.2.10 */
     .connectDomainEventRegisterAny = parallelsConnectDomainEventRegisterAny, /* 1.2.10 */
     .connectDomainEventDeregisterAny = parallelsConnectDomainEventDeregisterAny, /* 1.2.10 */

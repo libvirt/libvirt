@@ -60,3 +60,7 @@ int
 prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
 int
 prlsdkDomainManagedSaveRemove(parallelsConnPtr privconn, virDomainObjPtr dom);
+int
+prlsdkAttachVolume(virConnectPtr conn,
+                   virDomainObjPtr dom,
+                   virDomainDiskDefPtr disk);
