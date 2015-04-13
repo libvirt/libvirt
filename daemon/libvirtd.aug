@@ -35,6 +35,7 @@ module Libvirtd =
    let sock_acl_entry = str_entry "unix_sock_group"
                       | str_entry "unix_sock_ro_perms"
                       | str_entry "unix_sock_rw_perms"
+                      | str_entry "unix_sock_admin_perms"
                       | str_entry "unix_sock_dir"
 
    let authentication_entry = str_entry "auth_unix_ro"
@@ -62,6 +63,12 @@ module Libvirtd =
                         | int_entry "max_client_requests"
                         | int_entry "prio_workers"
 
+   let admin_processing_entry = int_entry "admin_min_workers"
+                              | int_entry "admin_max_workers"
+                              | int_entry "admin_max_clients"
+                              | int_entry "admin_max_queued_clients"
+                              | int_entry "admin_max_client_requests"
+
    let logging_entry = int_entry "log_level"
                      | str_entry "log_filters"
                      | str_entry "log_outputs"
@@ -74,6 +81,10 @@ module Libvirtd =
                        | int_entry "keepalive_count"
                        | bool_entry "keepalive_required"
 
+   let admin_keepalive_entry = int_entry "admin_keepalive_interval"
+                             | int_entry "admin_keepalive_count"
+                             | bool_entry "admin_keepalive_required"
+
    let misc_entry = str_entry "host_uuid"
 
    (* Each enty in the config is one of the following three ... *)
@@ -83,9 +94,11 @@ module Libvirtd =
              | certificate_entry
              | authorization_entry
              | processing_entry
+             | admin_processing_entry
              | logging_entry
              | auditing_entry
              | keepalive_entry
+             | admin_keepalive_entry
              | misc_entry
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

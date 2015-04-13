@@ -1,7 +1,7 @@
 /*
  * libvirtd-config.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2012, 2014 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2014, 2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -264,7 +264,8 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     if (VIR_STRDUP(data->unix_sock_rw_perms,
                    data->auth_unix_rw == REMOTE_AUTH_POLKIT ? "0777" : "0700") < 0 ||
-        VIR_STRDUP(data->unix_sock_ro_perms, "0777") < 0)
+        VIR_STRDUP(data->unix_sock_ro_perms, "0777") < 0 ||
+        VIR_STRDUP(data->unix_sock_admin_perms, "0700") < 0)
         goto error;
 
 #if WITH_SASL
@@ -292,6 +293,16 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->keepalive_interval = 5;
     data->keepalive_count = 5;
     data->keepalive_required = 0;
+
+    data->admin_min_workers = 5;
+    data->admin_max_workers = 20;
+    data->admin_max_clients = 5000;
+    data->admin_max_queued_clients = 20;
+    data->admin_max_client_requests = 5;
+
+    data->admin_keepalive_interval = 5;
+    data->admin_keepalive_count = 5;
+    data->admin_keepalive_required = 0;
 
     localhost = virGetHostname();
     if (localhost == NULL) {
@@ -337,6 +348,7 @@ daemonConfigFree(struct daemonConfig *data)
     }
     VIR_FREE(data->access_drivers);
 
+    VIR_FREE(data->unix_sock_admin_perms);
     VIR_FREE(data->unix_sock_ro_perms);
     VIR_FREE(data->unix_sock_rw_perms);
     VIR_FREE(data->unix_sock_group);
@@ -404,6 +416,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         goto error;
 
     GET_CONF_STR(conf, filename, unix_sock_group);
+    GET_CONF_STR(conf, filename, unix_sock_admin_perms);
     GET_CONF_STR(conf, filename, unix_sock_ro_perms);
     GET_CONF_STR(conf, filename, unix_sock_rw_perms);
 
@@ -441,6 +454,12 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     GET_CONF_INT(conf, filename, max_requests);
     GET_CONF_UINT(conf, filename, max_client_requests);
 
+    GET_CONF_UINT(conf, filename, admin_min_workers);
+    GET_CONF_UINT(conf, filename, admin_max_workers);
+    GET_CONF_UINT(conf, filename, admin_max_clients);
+    GET_CONF_UINT(conf, filename, admin_max_queued_clients);
+    GET_CONF_UINT(conf, filename, admin_max_client_requests);
+
     GET_CONF_UINT(conf, filename, audit_level);
     GET_CONF_UINT(conf, filename, audit_logging);
 
@@ -453,6 +472,10 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     GET_CONF_INT(conf, filename, keepalive_interval);
     GET_CONF_UINT(conf, filename, keepalive_count);
     GET_CONF_UINT(conf, filename, keepalive_required);
+
+    GET_CONF_INT(conf, filename, admin_keepalive_interval);
+    GET_CONF_UINT(conf, filename, admin_keepalive_count);
+    GET_CONF_UINT(conf, filename, admin_keepalive_required);
 
     return 0;
 

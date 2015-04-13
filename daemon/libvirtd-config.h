@@ -1,7 +1,7 @@
 /*
  * libvirtd-config.h: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@ struct daemonConfig {
     char *tls_port;
     char *tcp_port;
 
+    char *unix_sock_admin_perms;
     char *unix_sock_ro_perms;
     char *unix_sock_rw_perms;
     char *unix_sock_group;
@@ -81,6 +82,16 @@ struct daemonConfig {
     int keepalive_interval;
     unsigned int keepalive_count;
     int keepalive_required;
+
+    int admin_min_workers;
+    int admin_max_workers;
+    int admin_max_clients;
+    int admin_max_queued_clients;
+    int admin_max_client_requests;
+
+    int admin_keepalive_interval;
+    unsigned int admin_keepalive_count;
+    int admin_keepalive_required;
 };
 
 
