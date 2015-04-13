@@ -63,7 +63,20 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
                 goto cleanup;
         }
         break;
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT: {
+        const char *physdev = virDomainNetGetActualDirectDev(net);
+        bool isOnline = true;
+
+        /* set the physdev online if necessary. It may already be up,
+         * in which case we shouldn't re-up it just in case that causes
+         * some sort of "blip" in the physdev's status.
+         */
+        if (physdev && virNetDevGetOnline(physdev, &isOnline) < 0)
+            goto cleanup;
+        if (!isOnline && virNetDevSetOnline(physdev, true) < 0)
+            goto cleanup;
+
         /* macvtap devices share their MAC address with the guest
          * domain, and if they are set online prior to the domain CPUs
          * being started, the host may send out traffic from this
@@ -79,6 +92,7 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
         if (virNetDevSetOnline(net->ifname, true) < 0)
             goto cleanup;
         break;
+    }
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -146,7 +160,9 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
         }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_DIRECT: {
+        const char *physdev = virDomainNetGetActualDirectDev(net);
+
         /* macvtap interfaces need to be marked !IFF_UP (ie "down") to
          * prevent any host-generated traffic sent from this interface
          * from putting bad info into the arp caches of other machines
@@ -154,7 +170,16 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
          */
         if (virNetDevSetOnline(net->ifname, false) < 0)
             goto cleanup;
+
+        /* also mark the physdev down for passthrough macvtap, as the
+         * physdev has the same MAC address as the macvtap device.
+         */
+        if (virDomainNetGetActualDirectMode(net) ==
+            VIR_NETDEV_MACVLAN_MODE_PASSTHRU &&
+            physdev && virNetDevSetOnline(physdev, false) < 0)
+            goto cleanup;
         break;
+    }
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
