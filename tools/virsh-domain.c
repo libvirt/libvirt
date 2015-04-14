@@ -8417,7 +8417,7 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 
 #define PARSE_MEMTUNE_PARAM(NAME, FIELD)                                    \
     if ((rc = vshMemtuneGetSize(cmd, NAME, &tmpVal)) < 0) {                 \
-        vshError(ctl, "%s", _("Unable to parse integer parameter 'NAME'")); \
+        vshError(ctl, _("Unable to parse integer parameter %s"), NAME);     \
         goto cleanup;                                                       \
     }                                                                       \
     if (rc == 1) {                                                          \
