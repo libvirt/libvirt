@@ -440,7 +440,7 @@ disksorter(const void *a, const void *b)
     const virDomainSnapshotDiskDef *diskb = b;
 
     /* Integer overflow shouldn't be a problem here.  */
-    return diska->index - diskb->index;
+    return diska->idx - diskb->idx;
 }
 
 /* Align def->disks to def->domain.  Sort the list of def->disks,
@@ -500,7 +500,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
         }
         ignore_value(virBitmapSetBit(map, idx));
-        disk->index = idx;
+        disk->idx = idx;
 
         disk_snapshot = def->dom->disks[idx]->snapshot;
         if (!disk->snapshot) {
@@ -553,7 +553,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
         if (VIR_STRDUP(disk->name, def->dom->disks[i]->dst) < 0)
             goto cleanup;
-        disk->index = i;
+        disk->idx = i;
 
         /* Don't snapshot empty drives */
         if (virStorageSourceIsEmpty(def->dom->disks[i]->src))
