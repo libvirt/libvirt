@@ -931,7 +931,7 @@ virNWFilterVarAccessEqual(const virNWFilterVarAccess *a,
 
     switch (a->accessType) {
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-        return (a->u.index.index == b->u.index.index &&
+        return (a->u.index.idx == b->u.index.idx &&
                 a->u.index.intIterId == b->u.index.intIterId);
         break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
@@ -1010,7 +1010,7 @@ virNWFilterVarAccessParse(const char *varAccess)
 
         switch (dest->accessType) {
         case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-            dest->u.index.index = result;
+            dest->u.index.idx = result;
             dest->u.index.intIterId = ~0;
             break;
         case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
@@ -1044,7 +1044,7 @@ virNWFilterVarAccessPrint(virNWFilterVarAccessPtr vap, virBufferPtr buf)
     virBufferAdd(buf, vap->varName, -1);
     switch (vap->accessType) {
     case VIR_NWFILTER_VAR_ACCESS_ELEMENT:
-        virBufferAsprintf(buf, "[%u]", vap->u.index.index);
+        virBufferAsprintf(buf, "[%u]", vap->u.index.idx);
         break;
     case VIR_NWFILTER_VAR_ACCESS_ITERATOR:
         if (vap->u.iterId != 0)
@@ -1076,7 +1076,7 @@ virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap)
 unsigned int
 virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap)
 {
-    return vap->u.index.index;
+    return vap->u.index.idx;
 }
 
 static void

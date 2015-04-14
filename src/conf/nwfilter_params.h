@@ -111,7 +111,7 @@ struct  _virNWFilterVarAccess {
     virNWFilterVarAccessType accessType;
     union {
         struct {
-            unsigned int index;
+            unsigned int idx;
             unsigned int intIterId;
         } index;
         unsigned int iterId;
