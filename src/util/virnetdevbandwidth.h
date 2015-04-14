@@ -73,4 +73,10 @@ int virNetDevBandwidthUpdateRate(const char *ifname,
                                  unsigned long long new_rate)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevBandwidthUpdateFilter(const char *ifname,
+                                   const virMacAddr *ifmac_ptr,
+                                   unsigned int id)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_RETURN_CHECK;
 #endif /* __VIR_NETDEV_BANDWIDTH_H__ */

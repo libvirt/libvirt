@@ -1758,6 +1758,7 @@ virNetDevBandwidthFree;
 virNetDevBandwidthPlug;
 virNetDevBandwidthSet;
 virNetDevBandwidthUnplug;
+virNetDevBandwidthUpdateFilter;
 virNetDevBandwidthUpdateRate;
 
 

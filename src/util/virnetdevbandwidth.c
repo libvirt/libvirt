@@ -681,3 +681,41 @@ virNetDevBandwidthUpdateRate(const char *ifname,
     VIR_FREE(ceil);
     return ret;
 }
+
+/**
+ * virNetDevBandwidthUpdateFilter:
+ * @ifname: interface to operate on
+ * @ifmac_ptr: new MAC to update the filter with
+ * @id: filter ID
+ *
+ * Sometimes the host environment is so dynamic, that even a
+ * guest's MAC addresses change on the fly. When that happens we
+ * must update our QoS hierarchy so that the guest's traffic is
+ * placed into the correct QDiscs.  This function updates the
+ * filter for the interface @ifname with the unique identifier
+ * @id so that it uses the new MAC address of the guest interface
+ * @ifmac_ptr.
+ *
+ * Returns: 0 on success,
+ *         -1 on failure (with error reported).
+ */
+int
+virNetDevBandwidthUpdateFilter(const char *ifname,
+                               const virMacAddr *ifmac_ptr,
+                               unsigned int id)
+{
+    int ret = -1;
+    char *class_id = NULL;
+
+    if (virAsprintf(&class_id, "1:%x", id) < 0)
+        goto cleanup;
+
+    if (virNetDevBandwidthManipulateFilter(ifname, ifmac_ptr, id,
+                                           class_id, true, true) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(class_id);
+    return ret;
+}
