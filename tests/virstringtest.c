@@ -522,14 +522,14 @@ testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-struct testStripIPv6BracketsData {
+struct testStripData {
     const char *string;
     const char *result;
 };
 
 static int testStripIPv6Brackets(const void *args)
 {
-    const struct testStripIPv6BracketsData *data = args;
+    const struct testStripData *data = args;
     int ret = -1;
     char *res = NULL;
 
@@ -766,7 +766,7 @@ mymain(void)
 
 #define TEST_STRIP_IPV6_BRACKETS(str, res)                              \
     do {                                                                \
-        struct testStripIPv6BracketsData stripData = {                  \
+        struct testStripData stripData = {                              \
             .string = str,                                              \
             .result = res,                                              \
         };                                                              \
