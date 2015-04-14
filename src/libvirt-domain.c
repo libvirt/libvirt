@@ -8463,7 +8463,7 @@ virDomainDetachDevice(virDomainPtr domain, const char *xml)
  * configuration before it was actually removed by the hypervisor causing
  * various failures on subsequent operations. To check whether the device was
  * successfully removed, either recheck domain configuration using
- * virDomainGetXMLDesc() or add handler for VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED
+ * virDomainGetXMLDesc() or add a handler for the VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED
  * event. In case the device is already gone when virDomainDetachDeviceFlags
  * returns, the event is delivered before this API call ends. To help existing
  * clients work better in most cases, this API will try to transform an
