@@ -9843,6 +9843,10 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
 #undef QEMU_SET_MEM_PARAMETER
 
+    if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        goto endjob;
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
         virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
         goto endjob;
