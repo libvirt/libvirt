@@ -1873,12 +1873,6 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
     int ret = -1;
     VIR_DEBUG("mon=%p ret_stats=%p, backing=%d", mon, ret_stats, backingChain);
 
-    if (!mon->json) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unable to query all block stats with this QEMU"));
-        return -1;
-    }
-
     if (!(*ret_stats = virHashCreate(10, virHashValueFree)))
         goto error;
 
