@@ -4385,6 +4385,20 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
         syncNicRxFilterDeviceOptions(def->ifname, guestFilter, hostFilter);
     }
 
+    if (virDomainNetGetActualType(def) == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        const char *brname = virDomainNetGetActualBridgeName(def);
+
+        /* For libivrt network connections, set the following TUN/TAP network
+         * device attributes to match those of the guest network device:
+         * - QoS filters (which are based on MAC address)
+         */
+        if (virDomainNetGetActualBandwidth(def) &&
+            def->data.network.actual &&
+            virNetDevBandwidthUpdateFilter(brname, &guestFilter->mac,
+                                           def->data.network.actual->class_id) < 0)
+            goto endjob;
+    }
+
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
