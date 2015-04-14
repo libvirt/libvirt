@@ -1870,29 +1870,6 @@ vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
     return NULL;
 }
 
-/* Determine whether CMD->opts includes an option with name OPTNAME.
-   If not, give a diagnostic and return false.
-   If so, return true.  */
-bool
-vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname)
-{
-    /* Iterate through cmd->opts, to ensure that there is an entry
-       with name OPTNAME and type VSH_OT_DATA. */
-    bool found = false;
-    const vshCmdOpt *opt;
-    for (opt = cmd->opts; opt; opt = opt->next) {
-        if (STREQ(opt->def->name, optname) && opt->def->type == VSH_OT_DATA) {
-            found = true;
-            break;
-        }
-    }
-
-    if (!found)
-        vshError(ctl, _("internal error: virsh %s: no %s VSH_OT_DATA option"),
-                 cmd->def->name, optname);
-    return found;
-}
-
 /* Parse an optional --timeout parameter in seconds, but store the
  * value of the timeout in milliseconds.  Return -1 on error, 0 if
  * no timeout was requested, and 1 if timeout was set.  */

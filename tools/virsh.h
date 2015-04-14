@@ -319,8 +319,6 @@ int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
                                    const vshCmdOpt *opt);
-bool vshCmdHasOption(vshControl *ctl, const vshCmd *cmd, const char *optname);
-
 int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 
 /* Filter flags for various vshCommandOpt*By() functions */

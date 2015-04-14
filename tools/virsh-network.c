@@ -47,9 +47,6 @@ vshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
     const char *optname = "network";
     virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
 
-    if (!vshCmdHasOption(ctl, cmd, optname))
-        return NULL;
-
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 

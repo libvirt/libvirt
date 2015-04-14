@@ -118,9 +118,6 @@ vshCommandOptDomainBy(vshControl *ctl, const vshCmd *cmd,
     const char *n = NULL;
     const char *optname = "domain";
 
-    if (!vshCmdHasOption(ctl, cmd, optname))
-        return NULL;
-
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 
