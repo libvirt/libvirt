@@ -1,7 +1,7 @@
 /*
  * virsh-secret.c: Commands to manage secret
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,9 +46,6 @@ vshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)
     virSecretPtr secret = NULL;
     const char *n = NULL;
     const char *optname = "secret";
-
-    if (!vshCmdHasOption(ctl, cmd, optname))
-        return NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;

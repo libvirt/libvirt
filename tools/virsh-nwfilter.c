@@ -1,7 +1,7 @@
 /*
  * virsh-nwfilter.c: Commands to manage network filters
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,9 +46,6 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
     const char *n = NULL;
     const char *optname = "nwfilter";
     virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
-
-    if (!vshCmdHasOption(ctl, cmd, optname))
-        return NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
