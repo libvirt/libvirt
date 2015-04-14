@@ -100,7 +100,7 @@ typedef enum {
 typedef struct _virNetDevMcastEntry virNetDevMcastEntry;
 typedef virNetDevMcastEntry *virNetDevMcastEntryPtr;
 struct _virNetDevMcastEntry  {
-        int index;
+        int idx;
         char name[VIR_MCAST_NAME_LEN];
         int users;
         bool global;
@@ -2605,7 +2605,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
                     return -1;
 
                 }
-                mcast->index = num;
+                mcast->idx = num;
                 break;
             case VIR_MCAST_TYPE_NAME_TOKEN:
                 if (virStrncpy(mcast->name, token, strlen(token),
