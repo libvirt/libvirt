@@ -152,9 +152,11 @@
   </define>
 
   <define name="bandwidth-attributes">
-    <attribute name="average">
-      <ref name="speed"/>
-    </attribute>
+    <optional>
+      <attribute name="average">
+        <ref name="speed"/>
+      </attribute>
+    </optional>
     <optional>
       <attribute name="peak">
         <ref name="speed"/>

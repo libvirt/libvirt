@@ -456,6 +456,7 @@ mymain(void)
     DO_TEST("sound");
     DO_TEST("sound-device");
     DO_TEST("net-bandwidth");
+    DO_TEST("net-bandwidth2");
 
     DO_TEST("serial-vc");
     DO_TEST("serial-pty");
