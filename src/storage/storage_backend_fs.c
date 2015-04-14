@@ -860,6 +860,12 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
         int ret;
 
+        if (virStringHasControlChars(ent->d_name)) {
+            VIR_WARN("Ignoring file with control characters under '%s'",
+                     pool->def->target.path);
+            continue;
+        }
+
         if (VIR_ALLOC(vol) < 0)
             goto error;
 
