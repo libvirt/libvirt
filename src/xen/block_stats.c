@@ -63,7 +63,7 @@ static int64_t
 read_stat(const char *path)
 {
     char str[64];
-    int64_t r;
+    long long r;
     size_t i;
     FILE *fp;
 
@@ -79,7 +79,7 @@ read_stat(const char *path)
         return -1;
 
     str[i] = '\0';              /* make sure the string is nul-terminated */
-    if (virStrToLong_ll(str, NULL, 10, (long long *) &r) < 0)
+    if (virStrToLong_ll(str, NULL, 10, &r) < 0)
         return -1;
 
     return r;
