@@ -4638,7 +4638,7 @@ static void qemuProcessEventHandler(void *data, void *opaque)
 static virCgroupPtr
 qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
                              virCgroupThreadName nameval,
-                             int index,
+                             int idx,
                              char *mem_mask,
                              pid_t pid)
 {
@@ -4646,7 +4646,7 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
     int rv = -1;
 
     /* Create cgroup */
-    if (virCgroupNewThread(cgroup, nameval, index, true, &new_cgroup) < 0)
+    if (virCgroupNewThread(cgroup, nameval, idx, true, &new_cgroup) < 0)
         return NULL;
 
     if (mem_mask && virCgroupSetCpusetMems(new_cgroup, mem_mask) < 0)
@@ -4657,7 +4657,7 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
     if (rv < 0) {
         virReportSystemError(-rv,
                              _("unable to add id %d task %d to cgroup"),
-                             index, pid);
+                             idx, pid);
         virCgroupRemove(new_cgroup);
         goto error;
     }
@@ -4671,7 +4671,7 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
 
 static int
 qemuDomainHotplugAddPin(virBitmapPtr cpumask,
-                        int index,
+                        int idx,
                         virDomainPinDefPtr **pindef_list,
                         size_t *npin)
 {
@@ -4685,7 +4685,7 @@ qemuDomainHotplugAddPin(virBitmapPtr cpumask,
         VIR_FREE(pindef);
         goto cleanup;
     }
-    pindef->id = index;
+    pindef->id = idx;
     if (VIR_APPEND_ELEMENT_COPY(*pindef_list, *npin, pindef) < 0) {
         virBitmapFree(pindef->cpumask);
         VIR_FREE(pindef);
@@ -4699,7 +4699,7 @@ qemuDomainHotplugAddPin(virBitmapPtr cpumask,
 
 static int
 qemuDomainHotplugPinThread(virBitmapPtr cpumask,
-                           int index,
+                           int idx,
                            pid_t pid,
                            virCgroupPtr cgroup)
 {
@@ -4709,14 +4709,14 @@ qemuDomainHotplugPinThread(virBitmapPtr cpumask,
         if (qemuSetupCgroupCpusetCpus(cgroup, cpumask) < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("failed to set cpuset.cpus in cgroup for id %d"),
-                           index);
+                           idx);
             goto cleanup;
         }
     } else {
         if (virProcessSetAffinity(pid, cpumask) < 0) {
             virReportError(VIR_ERR_SYSTEM_ERROR,
                            _("failed to set cpu affinity for id %d"),
-                           index);
+                           idx);
             goto cleanup;
         }
     }
@@ -4730,12 +4730,12 @@ qemuDomainHotplugPinThread(virBitmapPtr cpumask,
 static int
 qemuDomainDelCgroupForThread(virCgroupPtr cgroup,
                              virCgroupThreadName nameval,
-                             int index)
+                             int idx)
 {
     virCgroupPtr new_cgroup = NULL;
 
     if (cgroup) {
-        if (virCgroupNewThread(cgroup, nameval, index, false, &new_cgroup) < 0)
+        if (virCgroupNewThread(cgroup, nameval, idx, false, &new_cgroup) < 0)
             return -1;
 
         /* Remove the offlined cgroup */
