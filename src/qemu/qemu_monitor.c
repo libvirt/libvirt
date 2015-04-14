@@ -144,7 +144,8 @@ VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
               QEMU_MONITOR_BLOCK_IO_STATUS_LAST,
               "ok", "failed", "nospace")
 
-char *qemuMonitorEscapeArg(const char *in)
+char *
+qemuMonitorEscapeArg(const char *in)
 {
     int len = 0;
     size_t i, j;
@@ -196,7 +197,9 @@ char *qemuMonitorEscapeArg(const char *in)
     return out;
 }
 
-char *qemuMonitorUnescapeArg(const char *in)
+
+char *
+qemuMonitorUnescapeArg(const char *in)
 {
     size_t i, j;
     char *out;
@@ -234,9 +237,11 @@ char *qemuMonitorUnescapeArg(const char *in)
     return out;
 }
 
+
 #if DEBUG_RAW_IO
 # include <c-ctype.h>
-static char * qemuMonitorEscapeNonPrintable(const char *text)
+static char *
+qemuMonitorEscapeNonPrintable(const char *text)
 {
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -252,7 +257,9 @@ static char * qemuMonitorEscapeNonPrintable(const char *text)
 }
 #endif
 
-static void qemuMonitorDispose(void *obj)
+
+static void
+qemuMonitorDispose(void *obj)
 {
     qemuMonitorPtr mon = obj;
 
@@ -324,6 +331,7 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
     VIR_FORCE_CLOSE(monfd);
     return -1;
 }
+
 
 static int
 qemuMonitorOpenPty(const char *monitor)
@@ -471,6 +479,7 @@ qemuMonitorIOWriteWithFD(qemuMonitorPtr mon,
     return ret;
 }
 
+
 /*
  * Called when the monitor is able to write data
  * Call this function while holding the monitor lock.
@@ -520,6 +529,7 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
     mon->msg->txOffset += done;
     return done;
 }
+
 
 /*
  * Called when the monitor has incoming data to read
@@ -573,7 +583,8 @@ qemuMonitorIORead(qemuMonitorPtr mon)
 }
 
 
-static void qemuMonitorUpdateWatch(qemuMonitorPtr mon)
+static void
+qemuMonitorUpdateWatch(qemuMonitorPtr mon)
 {
     int events =
         VIR_EVENT_HANDLE_HANGUP |
@@ -847,6 +858,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     return NULL;
 }
 
+
 qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrSourceDefPtr config,
@@ -884,17 +896,19 @@ qemuMonitorOpen(virDomainObjPtr vm,
 }
 
 
-qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
-                                 int sockfd,
-                                 bool json,
-                                 qemuMonitorCallbacksPtr cb,
-                                 void *opaque)
+qemuMonitorPtr
+qemuMonitorOpenFD(virDomainObjPtr vm,
+                  int sockfd,
+                  bool json,
+                  qemuMonitorCallbacksPtr cb,
+                  void *opaque)
 {
     return qemuMonitorOpenInternal(vm, sockfd, true, json, cb, opaque);
 }
 
 
-void qemuMonitorClose(qemuMonitorPtr mon)
+void
+qemuMonitorClose(qemuMonitorPtr mon)
 {
     if (!mon)
         return;
@@ -943,7 +957,8 @@ void qemuMonitorClose(qemuMonitorPtr mon)
 }
 
 
-char *qemuMonitorNextCommandID(qemuMonitorPtr mon)
+char *
+qemuMonitorNextCommandID(qemuMonitorPtr mon)
 {
     char *id;
 
@@ -952,8 +967,9 @@ char *qemuMonitorNextCommandID(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorSend(qemuMonitorPtr mon,
-                    qemuMonitorMessagePtr msg)
+int
+qemuMonitorSend(qemuMonitorPtr mon,
+                qemuMonitorMessagePtr msg)
 {
     int ret = -1;
 
@@ -1002,6 +1018,7 @@ qemuMonitorGetOptions(qemuMonitorPtr mon)
 {
     return mon->options;
 }
+
 
 void
 qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
@@ -1190,10 +1207,11 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
-                                const char *cmd,
-                                int scm_fd,
-                                char **reply)
+int
+qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
+                            const char *cmd,
+                            int scm_fd,
+                            char **reply)
 {
     char *json_cmd = NULL;
     int ret = -1;
@@ -1217,6 +1235,7 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
     return ret;
 }
 
+
 /* Ensure proper locking around callbacks.  */
 #define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...)          \
     do {                                                        \
@@ -1229,11 +1248,13 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
         virObjectUnref(mon);                                    \
     } while (0)
 
-int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
-                             virConnectPtr conn,
-                             const char *path,
-                             char **secret,
-                             size_t *secretLen)
+
+int
+qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
+                         virConnectPtr conn,
+                         const char *path,
+                         char **secret,
+                         size_t *secretLen)
 {
     int ret = -1;
     *secret = NULL;
@@ -1259,7 +1280,8 @@ qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
 }
 
 
-int qemuMonitorEmitShutdown(qemuMonitorPtr mon)
+int
+qemuMonitorEmitShutdown(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1269,7 +1291,8 @@ int qemuMonitorEmitShutdown(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitReset(qemuMonitorPtr mon)
+int
+qemuMonitorEmitReset(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1279,7 +1302,8 @@ int qemuMonitorEmitReset(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitPowerdown(qemuMonitorPtr mon)
+int
+qemuMonitorEmitPowerdown(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1289,7 +1313,8 @@ int qemuMonitorEmitPowerdown(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitStop(qemuMonitorPtr mon)
+int
+qemuMonitorEmitStop(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1299,7 +1324,8 @@ int qemuMonitorEmitStop(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitResume(qemuMonitorPtr mon)
+int
+qemuMonitorEmitResume(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1309,7 +1335,8 @@ int qemuMonitorEmitResume(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon)
+int
+qemuMonitorEmitGuestPanic(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1318,7 +1345,8 @@ int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
+int
+qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1328,7 +1356,8 @@ int qemuMonitorEmitRTCChange(qemuMonitorPtr mon, long long offset)
 }
 
 
-int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
+int
+qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1338,10 +1367,11 @@ int qemuMonitorEmitWatchdog(qemuMonitorPtr mon, int action)
 }
 
 
-int qemuMonitorEmitIOError(qemuMonitorPtr mon,
-                           const char *diskAlias,
-                           int action,
-                           const char *reason)
+int
+qemuMonitorEmitIOError(qemuMonitorPtr mon,
+                       const char *diskAlias,
+                       int action,
+                       const char *reason)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1352,17 +1382,18 @@ int qemuMonitorEmitIOError(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
-                            int phase,
-                            int localFamily,
-                            const char *localNode,
-                            const char *localService,
-                            int remoteFamily,
-                            const char *remoteNode,
-                            const char *remoteService,
-                            const char *authScheme,
-                            const char *x509dname,
-                            const char *saslUsername)
+int
+qemuMonitorEmitGraphics(qemuMonitorPtr mon,
+                        int phase,
+                        int localFamily,
+                        const char *localNode,
+                        const char *localService,
+                        int remoteFamily,
+                        const char *remoteNode,
+                        const char *remoteService,
+                        const char *authScheme,
+                        const char *x509dname,
+                        const char *saslUsername)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1374,9 +1405,11 @@ int qemuMonitorEmitGraphics(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
-                              const char *devAlias,
-                              int reason)
+
+int
+qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
+                          const char *devAlias,
+                          int reason)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1387,7 +1420,9 @@ int qemuMonitorEmitTrayChange(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon)
+
+int
+qemuMonitorEmitPMWakeup(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1397,7 +1432,9 @@ int qemuMonitorEmitPMWakeup(qemuMonitorPtr mon)
     return ret;
 }
 
-int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon)
+
+int
+qemuMonitorEmitPMSuspend(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1407,7 +1444,9 @@ int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon)
     return ret;
 }
 
-int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon)
+
+int
+qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1417,10 +1456,12 @@ int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon)
     return ret;
 }
 
-int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
-                            const char *diskAlias,
-                            int type,
-                            int status)
+
+int
+qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
+                        const char *diskAlias,
+                        int type,
+                        int status)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1431,8 +1472,9 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
-                                 unsigned long long actual)
+int
+qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
+                             unsigned long long actual)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p", mon);
@@ -1482,7 +1524,8 @@ qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetCapabilities(qemuMonitorPtr mon)
+int
+qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1569,7 +1612,8 @@ qemuMonitorGetStatus(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
+int
+qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1588,7 +1632,8 @@ int qemuMonitorSystemPowerdown(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorSystemReset(qemuMonitorPtr mon)
+int
+qemuMonitorSystemReset(qemuMonitorPtr mon)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1607,8 +1652,9 @@ int qemuMonitorSystemReset(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
-                          int **pids)
+int
+qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
+                      int **pids)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1626,9 +1672,11 @@ int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorSetLink(qemuMonitorPtr mon,
-                       const char *name,
-                       virDomainNetInterfaceLinkState state)
+
+int
+qemuMonitorSetLink(qemuMonitorPtr mon,
+                   const char *name,
+                   virDomainNetInterfaceLinkState state)
 {
     int ret;
     VIR_DEBUG("mon=%p, name=%p:%s, state=%u", mon, name, name, state);
@@ -1646,8 +1694,10 @@ int qemuMonitorSetLink(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorGetVirtType(qemuMonitorPtr mon,
-                           int *virtType)
+
+int
+qemuMonitorGetVirtType(qemuMonitorPtr mon,
+                       int *virtType)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1666,8 +1716,9 @@ int qemuMonitorGetVirtType(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
-                              unsigned long long *currmem)
+int
+qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
+                          unsigned long long *currmem)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -1686,9 +1737,10 @@ int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
-                              virDomainMemoryStatPtr stats,
-                              unsigned int nr_stats)
+int
+qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
+                          virDomainMemoryStatPtr stats,
+                          unsigned int nr_stats)
 {
     int ret;
     VIR_DEBUG("mon=%p stats=%p nstats=%u", mon, stats, nr_stats);
@@ -1710,6 +1762,7 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     return ret;
 }
 
+
 /**
  * qemuMonitorSetMemoryStatsPeriod:
  *
@@ -1717,8 +1770,9 @@ int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
  *
  * Returns 0 on success and -1 on error, but does *not* set an error.
  */
-int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
-                                    int period)
+int
+qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
+                                int period)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p period=%d", mon, period);
@@ -1749,6 +1803,7 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
     return ret;
 }
 
+
 int
 qemuMonitorBlockIOStatusToError(const char *status)
 {
@@ -1774,6 +1829,7 @@ qemuMonitorBlockIOStatusToError(const char *status)
     }
     return -1;
 }
+
 
 virHashTablePtr
 qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
@@ -1804,6 +1860,7 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 
     return table;
 }
+
 
 struct qemuDomainDiskInfo *
 qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
@@ -1896,9 +1953,10 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
-                              const char *dev_name,
-                              unsigned long long *extent)
+int
+qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
+                          const char *dev_name,
+                          unsigned long long *extent)
 {
     int ret;
     VIR_DEBUG("mon=%p, dev_name=%s", mon, dev_name);
@@ -1911,9 +1969,11 @@ int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorBlockResize(qemuMonitorPtr mon,
-                           const char *device,
-                           unsigned long long size)
+
+int
+qemuMonitorBlockResize(qemuMonitorPtr mon,
+                       const char *device,
+                       unsigned long long size)
 {
     int ret;
     VIR_DEBUG("mon=%p, device=%s size=%llu", mon, device, size);
@@ -1926,12 +1986,13 @@ int qemuMonitorBlockResize(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
-                              const char *password)
+
+int
+qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
+                          const char *password)
 {
     int ret;
-    VIR_DEBUG("mon=%p, password=%p",
-          mon, password);
+    VIR_DEBUG("mon=%p, password=%p", mon, password);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1949,7 +2010,9 @@ int qemuMonitorSetVNCPassword(qemuMonitorPtr mon,
     return ret;
 }
 
-static const char* qemuMonitorTypeToProtocol(int type)
+
+static const char *
+qemuMonitorTypeToProtocol(int type)
 {
     switch (type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -1964,11 +2027,13 @@ static const char* qemuMonitorTypeToProtocol(int type)
     }
 }
 
+
 /* Returns -2 if not supported with this monitor connection */
-int qemuMonitorSetPassword(qemuMonitorPtr mon,
-                           int type,
-                           const char *password,
-                           const char *action_if_connected)
+int
+qemuMonitorSetPassword(qemuMonitorPtr mon,
+                       int type,
+                       const char *password,
+                       const char *action_if_connected)
 {
     const char *protocol = qemuMonitorTypeToProtocol(type);
     int ret;
@@ -1998,9 +2063,11 @@ int qemuMonitorSetPassword(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorExpirePassword(qemuMonitorPtr mon,
-                              int type,
-                              const char *expire_time)
+
+int
+qemuMonitorExpirePassword(qemuMonitorPtr mon,
+                          int type,
+                          const char *expire_time)
 {
     const char *protocol = qemuMonitorTypeToProtocol(type);
     int ret;
@@ -2008,8 +2075,7 @@ int qemuMonitorExpirePassword(qemuMonitorPtr mon,
     if (!protocol)
         return -1;
 
-    VIR_DEBUG("mon=%p, protocol=%s, expire_time=%s",
-          mon, protocol, expire_time);
+    VIR_DEBUG("mon=%p, protocol=%s, expire_time=%s", mon, protocol, expire_time);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2027,8 +2093,10 @@ int qemuMonitorExpirePassword(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorSetBalloon(qemuMonitorPtr mon,
-                          unsigned long newmem)
+
+int
+qemuMonitorSetBalloon(qemuMonitorPtr mon,
+                      unsigned long newmem)
 {
     int ret;
     VIR_DEBUG("mon=%p newmem=%lu", mon, newmem);
@@ -2047,7 +2115,8 @@ int qemuMonitorSetBalloon(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online)
+int
+qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 {
     int ret;
     VIR_DEBUG("mon=%p cpu=%d online=%d", mon, cpu, online);
@@ -2066,9 +2135,10 @@ int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 }
 
 
-int qemuMonitorEjectMedia(qemuMonitorPtr mon,
-                          const char *dev_name,
-                          bool force)
+int
+qemuMonitorEjectMedia(qemuMonitorPtr mon,
+                      const char *dev_name,
+                      bool force)
 {
     int ret;
     VIR_DEBUG("mon=%p dev_name=%s force=%d", mon, dev_name, force);
@@ -2087,14 +2157,15 @@ int qemuMonitorEjectMedia(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorChangeMedia(qemuMonitorPtr mon,
-                           const char *dev_name,
-                           const char *newmedia,
-                           const char *format)
+int
+qemuMonitorChangeMedia(qemuMonitorPtr mon,
+                       const char *dev_name,
+                       const char *newmedia,
+                       const char *format)
 {
     int ret;
     VIR_DEBUG("mon=%p dev_name=%s newmedia=%s format=%s",
-          mon, dev_name, newmedia, format);
+              mon, dev_name, newmedia, format);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2110,14 +2181,15 @@ int qemuMonitorChangeMedia(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
-                                 unsigned long long offset,
-                                 size_t length,
-                                 const char *path)
+int
+qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
+                             unsigned long long offset,
+                             size_t length,
+                             const char *path)
 {
     int ret;
     VIR_DEBUG("mon=%p offset=%llu length=%zu path=%s",
-          mon, offset, length, path);
+              mon, offset, length, path);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2132,14 +2204,16 @@ int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
-                                  unsigned long long offset,
-                                  size_t length,
-                                  const char *path)
+
+int
+qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
+                              unsigned long long offset,
+                              size_t length,
+                              const char *path)
 {
     int ret;
     VIR_DEBUG("mon=%p offset=%llu length=%zu path=%s",
-          mon, offset, length, path);
+              mon, offset, length, path);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2155,8 +2229,9 @@ int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
-                                 unsigned long bandwidth)
+int
+qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
+                             unsigned long bandwidth)
 {
     int ret;
     VIR_DEBUG("mon=%p bandwidth=%lu", mon, bandwidth);
@@ -2182,8 +2257,9 @@ int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
-                                    unsigned long long downtime)
+int
+qemuMonitorSetMigrationDowntime(qemuMonitorPtr mon,
+                                unsigned long long downtime)
 {
     int ret;
     VIR_DEBUG("mon=%p downtime=%llu", mon, downtime);
@@ -2223,6 +2299,7 @@ qemuMonitorGetMigrationCacheSize(qemuMonitorPtr mon,
     return qemuMonitorJSONGetMigrationCacheSize(mon, cacheSize);
 }
 
+
 int
 qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
                                  unsigned long long cacheSize)
@@ -2245,8 +2322,9 @@ qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationStatusPtr status)
+int
+qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
+                              qemuMonitorMigrationStatusPtr status)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -2265,8 +2343,9 @@ int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
-                                       bool *spice_migrated)
+int
+qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
+                                   bool *spice_migrated)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -2289,13 +2368,13 @@ int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
-                           unsigned int flags,
-                           int fd)
+int
+qemuMonitorMigrateToFd(qemuMonitorPtr mon,
+                       unsigned int flags,
+                       int fd)
 {
     int ret;
-    VIR_DEBUG("mon=%p fd=%d flags=%x",
-          mon, fd, flags);
+    VIR_DEBUG("mon=%p fd=%d flags=%x", mon, fd, flags);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2320,23 +2399,22 @@ int qemuMonitorMigrateToFd(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
-                             unsigned int flags,
-                             const char *protocol,
-                             const char *hostname,
-                             int port)
+int
+qemuMonitorMigrateToHost(qemuMonitorPtr mon,
+                         unsigned int flags,
+                         const char *protocol,
+                         const char *hostname,
+                         int port)
 {
     int ret;
     char *uri = NULL;
-    VIR_DEBUG("mon=%p hostname=%s port=%d flags=%x",
-          mon, hostname, port, flags);
+    VIR_DEBUG("mon=%p hostname=%s port=%d flags=%x", mon, hostname, port, flags);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("monitor must not be NULL"));
         return -1;
     }
-
 
     if (virAsprintf(&uri, "%s:%s:%d", protocol, hostname, port) < 0)
         return -1;
@@ -2351,15 +2429,15 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                unsigned int flags,
-                                const char * const *argv)
+int
+qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
+                            unsigned int flags,
+                            const char * const *argv)
 {
     char *argstr;
     char *dest = NULL;
     int ret = -1;
-    VIR_DEBUG("mon=%p argv=%p flags=%x",
-          mon, argv, flags);
+    VIR_DEBUG("mon=%p argv=%p flags=%x", mon, argv, flags);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2385,11 +2463,13 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             unsigned int flags,
-                             const char * const *argv,
-                             const char *target,
-                             unsigned long long offset)
+
+int
+qemuMonitorMigrateToFile(qemuMonitorPtr mon,
+                         unsigned int flags,
+                         const char * const *argv,
+                         const char *target,
+                         unsigned long long offset)
 {
     char *argstr;
     char *dest = NULL;
@@ -2397,7 +2477,7 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     char *safe_target = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     VIR_DEBUG("mon=%p argv=%p target=%s offset=%llu flags=%x",
-          mon, argv, target, offset, flags);
+              mon, argv, target, offset, flags);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2448,14 +2528,15 @@ int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             unsigned int flags,
-                             const char *unixfile)
+
+int
+qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
+                         unsigned int flags,
+                         const char *unixfile)
 {
     char *dest = NULL;
     int ret = -1;
-    VIR_DEBUG("mon=%p, unixfile=%s flags=%x",
-          mon, unixfile, flags);
+    VIR_DEBUG("mon=%p, unixfile=%s flags=%x", mon, unixfile, flags);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2475,7 +2556,9 @@ int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
+
+int
+qemuMonitorMigrateCancel(qemuMonitorPtr mon)
 {
     int ret;
     VIR_DEBUG("mon=%p", mon);
@@ -2493,11 +2576,13 @@ int qemuMonitorMigrateCancel(qemuMonitorPtr mon)
     return ret;
 }
 
+
 /**
  * Returns 1 if @capability is supported, 0 if it's not, or -1 on error.
  */
-int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
-                                            const char *capability)
+int
+qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
+                                        const char *capability)
 {
     VIR_DEBUG("mon=%p capability=%s", mon, capability);
 
@@ -2513,6 +2598,7 @@ int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetDumpGuestMemoryCapability(mon, capability);
 }
+
 
 int
 qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd, const char *dumpformat)
@@ -2548,12 +2634,14 @@ qemuMonitorDumpToFd(qemuMonitorPtr mon, int fd, const char *dumpformat)
     return ret;
 }
 
-int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
-                                int type,
-                                const char *hostname,
-                                int port,
-                                int tlsPort,
-                                const char *tlsSubject)
+
+int
+qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
+                            int type,
+                            const char *hostname,
+                            int port,
+                            int tlsPort,
+                            const char *tlsSubject)
 {
     int ret;
     VIR_DEBUG("mon=%p type=%d hostname=%s port=%d tlsPort=%d tlsSubject=%s",
@@ -2578,8 +2666,9 @@ int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
-                          const char *path)
+int
+qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
+                      const char *path)
 {
     int ret;
     VIR_DEBUG("mon=%p path=%s", mon, path);
@@ -2598,9 +2687,10 @@ int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
-                                 int bus,
-                                 int dev)
+int
+qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
+                             int bus,
+                             int dev)
 {
     int ret;
     VIR_DEBUG("mon=%p bus=%d dev=%d", mon, bus, dev);
@@ -2618,13 +2708,14 @@ int qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
-                                 int vendor,
-                                 int product)
+
+int
+qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
+                             int vendor,
+                             int product)
 {
     int ret;
-    VIR_DEBUG("mon=%p vendor=%d product=%d",
-          mon, vendor, product);
+    VIR_DEBUG("mon=%p vendor=%d product=%d", mon, vendor, product);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2640,14 +2731,15 @@ int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                virDevicePCIAddress *hostAddr,
-                                virDevicePCIAddress *guestAddr)
+int
+qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
+                            virDevicePCIAddress *hostAddr,
+                            virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p domain=%d bus=%d slot=%d function=%d",
-          mon,
-          hostAddr->domain, hostAddr->bus, hostAddr->slot, hostAddr->function);
+              mon, hostAddr->domain, hostAddr->bus, hostAddr->slot,
+              hostAddr->function);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2663,14 +2755,14 @@ int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
-                          const char *path,
-                          const char *bus,
-                          virDevicePCIAddress *guestAddr)
+int
+qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
+                      const char *path,
+                      const char *bus,
+                      virDevicePCIAddress *guestAddr)
 {
     int ret;
-    VIR_DEBUG("mon=%p path=%s bus=%s",
-          mon, path, bus);
+    VIR_DEBUG("mon=%p path=%s bus=%s", mon, path, bus);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2686,9 +2778,10 @@ int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
-                             const char *nicstr,
-                             virDevicePCIAddress *guestAddr)
+int
+qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
+                         const char *nicstr,
+                         virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p nicstr=%s", mon, nicstr);
@@ -2707,8 +2800,9 @@ int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               virDevicePCIAddress *guestAddr)
+int
+qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
+                           virDevicePCIAddress *guestAddr)
 {
     int ret;
     VIR_DEBUG("mon=%p domain=%d bus=%d slot=%d function=%d",
@@ -2729,13 +2823,13 @@ int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
-                              const char *fdname,
-                              int fd)
+int
+qemuMonitorSendFileHandle(qemuMonitorPtr mon,
+                          const char *fdname,
+                          int fd)
 {
     int ret;
-    VIR_DEBUG("mon=%p, fdname=%s fd=%d",
-          mon, fdname, fd);
+    VIR_DEBUG("mon=%p, fdname=%s fd=%d", mon, fdname, fd);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2764,14 +2858,14 @@ int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
-                               const char *fdname)
+int
+qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
+                           const char *fdname)
 {
     int ret = -1;
     virErrorPtr error;
 
-    VIR_DEBUG("mon=%p fdname=%s",
-          mon, fdname);
+    VIR_DEBUG("mon=%p fdname=%s", mon, fdname);
 
     error = virSaveLastError();
 
@@ -2802,8 +2896,7 @@ int
 qemuMonitorAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p, fdset=%d, fd=%d, name=%s",
-              mon, fdset, fd, NULLSTR(name));
+    VIR_DEBUG("mon=%p, fdset=%d, fd=%d, name=%s", mon, fdset, fd, NULLSTR(name));
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2867,10 +2960,11 @@ qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd)
 }
 
 
-int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
-                              const char *netstr,
-                              int *tapfd, char **tapfdName, int tapfdSize,
-                              int *vhostfd, char **vhostfdName, int vhostfdSize)
+int
+qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
+                          const char *netstr,
+                          int *tapfd, char **tapfdName, int tapfdSize,
+                          int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
     size_t i = 0, j = 0;
@@ -2917,13 +3011,13 @@ int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
-                                 int vlan,
-                                 const char *netname)
+int
+qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
+                             int vlan,
+                             const char *netname)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p netname=%s",
-          mon, netname);
+    VIR_DEBUG("mon=%p netname=%s", mon, netname);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2940,10 +3034,11 @@ int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddNetdev(qemuMonitorPtr mon,
-                         const char *netdevstr,
-                         int *tapfd, char **tapfdName, int tapfdSize,
-                         int *vhostfd, char **vhostfdName, int vhostfdSize)
+int
+qemuMonitorAddNetdev(qemuMonitorPtr mon,
+                     const char *netdevstr,
+                     int *tapfd, char **tapfdName, int tapfdSize,
+                     int *vhostfd, char **vhostfdName, int vhostfdSize)
 {
     int ret = -1;
     size_t i = 0, j = 0;
@@ -2988,12 +3083,13 @@ int qemuMonitorAddNetdev(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
-                            const char *alias)
+
+int
+qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
+                        const char *alias)
 {
     int ret;
-    VIR_DEBUG("mon=%p alias=%s",
-          mon, alias);
+    VIR_DEBUG("mon=%p alias=%s", mon, alias);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3014,17 +3110,13 @@ qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
                          virNetDevRxFilterPtr *filter)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p alias=%s filter=%p",
-              mon, alias, filter);
+    VIR_DEBUG("mon=%p alias=%s filter=%p", mon, alias, filter);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("monitor must not be NULL"));
         return -1;
     }
-
-
-    VIR_DEBUG("mon=%p, alias=%s", mon, alias);
 
     if (mon->json)
         ret = qemuMonitorJSONQueryRxFilter(mon, alias, filter);
@@ -3082,9 +3174,10 @@ qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
-                                       const char *bus,
-                                       virDevicePCIAddress *guestAddr)
+int
+qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
+                                   const char *bus,
+                                   virDevicePCIAddress *guestAddr)
 {
     VIR_DEBUG("mon=%p type=%s", mon, bus);
     int ret;
@@ -3104,15 +3197,15 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAttachDrive(qemuMonitorPtr mon,
-                           const char *drivestr,
-                           virDevicePCIAddress *controllerAddr,
-                           virDomainDeviceDriveAddress *driveAddr)
+int
+qemuMonitorAttachDrive(qemuMonitorPtr mon,
+                       const char *drivestr,
+                       virDevicePCIAddress *controllerAddr,
+                       virDomainDeviceDriveAddress *driveAddr)
 {
     VIR_DEBUG("mon=%p drivestr=%s domain=%d bus=%d slot=%d function=%d",
-          mon, drivestr,
-          controllerAddr->domain, controllerAddr->bus,
-          controllerAddr->slot, controllerAddr->function);
+              mon, drivestr, controllerAddr->domain, controllerAddr->bus,
+              controllerAddr->slot, controllerAddr->function);
     int ret = 1;
 
     if (!mon) {
@@ -3130,8 +3223,10 @@ int qemuMonitorAttachDrive(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
-                                  qemuMonitorPCIAddress **addrs)
+
+int
+qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
+                              qemuMonitorPCIAddress **addrs)
 {
     VIR_DEBUG("mon=%p addrs=%p", mon, addrs);
     int ret;
@@ -3149,8 +3244,10 @@ int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorDriveDel(qemuMonitorPtr mon,
-                        const char *drivestr)
+
+int
+qemuMonitorDriveDel(qemuMonitorPtr mon,
+                    const char *drivestr)
 {
     VIR_DEBUG("mon=%p drivestr=%s", mon, drivestr);
     int ret;
@@ -3168,8 +3265,10 @@ int qemuMonitorDriveDel(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorDelDevice(qemuMonitorPtr mon,
-                         const char *devalias)
+
+int
+qemuMonitorDelDevice(qemuMonitorPtr mon,
+                     const char *devalias)
 {
     VIR_DEBUG("mon=%p devalias=%s", mon, devalias);
     int ret;
@@ -3188,10 +3287,11 @@ int qemuMonitorDelDevice(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
-                               const char *devicestr,
-                               int fd,
-                               const char *fdname)
+int
+qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
+                           const char *devicestr,
+                           int fd,
+                           const char *fdname)
 {
     VIR_DEBUG("mon=%p device=%s fd=%d fdname=%s", mon, devicestr, fd,
               NULLSTR(fdname));
@@ -3219,8 +3319,10 @@ int qemuMonitorAddDeviceWithFd(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorAddDevice(qemuMonitorPtr mon,
-                         const char *devicestr)
+
+int
+qemuMonitorAddDevice(qemuMonitorPtr mon,
+                     const char *devicestr)
 {
     return qemuMonitorAddDeviceWithFd(mon, devicestr, -1, NULL);
 }
@@ -3275,8 +3377,9 @@ qemuMonitorDelObject(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorAddDrive(qemuMonitorPtr mon,
-                        const char *drivestr)
+int
+qemuMonitorAddDrive(qemuMonitorPtr mon,
+                    const char *drivestr)
 {
     VIR_DEBUG("mon=%p drive=%s", mon, drivestr);
     int ret;
@@ -3295,9 +3398,10 @@ int qemuMonitorAddDrive(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
-                                  const char *alias,
-                                  const char *passphrase)
+int
+qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
+                              const char *alias,
+                              const char *passphrase)
 {
     VIR_DEBUG("mon=%p alias=%s passphrase=%p(value hidden)", mon, alias, passphrase);
     int ret;
@@ -3315,7 +3419,9 @@ int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
+
+int
+qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
@@ -3334,7 +3440,8 @@ int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
     return ret;
 }
 
-int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
+int
+qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
@@ -3353,7 +3460,9 @@ int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
     return ret;
 }
 
-int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
+
+int
+qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 {
     int ret;
 
@@ -3371,6 +3480,7 @@ int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
         ret = qemuMonitorTextDeleteSnapshot(mon, name);
     return ret;
 }
+
 
 /* Use the snapshot_blkdev command to convert the existing file for
  * device into a read-only backing file of a new qcow2 image located
@@ -3400,6 +3510,7 @@ qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
     return ret;
 }
 
+
 /* Start a drive-mirror block job.  bandwidth is in bytes/sec.  */
 int
 qemuMonitorDriveMirror(qemuMonitorPtr mon,
@@ -3424,6 +3535,7 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
     return ret;
 }
 
+
 /* Use the transaction QMP command to run atomic snapshot commands.  */
 int
 qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
@@ -3439,6 +3551,7 @@ qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
                        _("transaction requires JSON monitor"));
     return ret;
 }
+
 
 /* Start a block-commit block job.  bandwidth is in bytes/sec.  */
 int
@@ -3508,10 +3621,12 @@ qemuMonitorDrivePivot(qemuMonitorPtr mon,
     return qemuMonitorJSONDrivePivot(mon, device);
 }
 
-int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
-                                const char *cmd,
-                                char **reply,
-                                bool hmp)
+
+int
+qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
+                            const char *cmd,
+                            char **reply,
+                            bool hmp)
 {
     int ret;
 
@@ -3525,7 +3640,8 @@ int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorInjectNMI(qemuMonitorPtr mon)
+int
+qemuMonitorInjectNMI(qemuMonitorPtr mon)
 {
     int ret;
 
@@ -3538,15 +3654,16 @@ int qemuMonitorInjectNMI(qemuMonitorPtr mon)
     return ret;
 }
 
-int qemuMonitorSendKey(qemuMonitorPtr mon,
-                       unsigned int holdtime,
-                       unsigned int *keycodes,
-                       unsigned int nkeycodes)
+
+int
+qemuMonitorSendKey(qemuMonitorPtr mon,
+                   unsigned int holdtime,
+                   unsigned int *keycodes,
+                   unsigned int nkeycodes)
 {
     int ret;
 
-    VIR_DEBUG("mon=%p, holdtime=%u, nkeycodes=%u",
-              mon, holdtime, nkeycodes);
+    VIR_DEBUG("mon=%p, holdtime=%u, nkeycodes=%u", mon, holdtime, nkeycodes);
 
     if (mon->json)
         ret = qemuMonitorJSONSendKey(mon, holdtime, keycodes, nkeycodes);
@@ -3555,9 +3672,12 @@ int qemuMonitorSendKey(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorScreendump(qemuMonitorPtr mon,
-                          const char *file)
+
+int
+qemuMonitorScreendump(qemuMonitorPtr mon,
+                      const char *file)
 {
+
     int ret;
 
     VIR_DEBUG("mon=%p, file=%s", mon, file);
@@ -3574,6 +3694,7 @@ int qemuMonitorScreendump(qemuMonitorPtr mon,
         ret = qemuMonitorTextScreendump(mon, file);
     return ret;
 }
+
 
 /* bandwidth is in bytes/sec */
 int
@@ -3605,8 +3726,7 @@ qemuMonitorBlockJobCancel(qemuMonitorPtr mon,
                           const char *device,
                           bool modern)
 {
-    VIR_DEBUG("mon=%p, device=%s, modern=%d",
-              mon, device, modern);
+    VIR_DEBUG("mon=%p, device=%s, modern=%d", mon, device, modern);
 
     if (!mon->json) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3657,10 +3777,11 @@ qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
-                                  const char *device,
-                                  virDomainBlockIoTuneInfoPtr info,
-                                  bool supportMaxOptions)
+int
+qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
+                              const char *device,
+                              virDomainBlockIoTuneInfoPtr info,
+                              bool supportMaxOptions)
 {
     int ret;
 
@@ -3674,10 +3795,12 @@ int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
-                                  const char *device,
-                                  virDomainBlockIoTuneInfoPtr reply,
-                                  bool supportMaxOptions)
+
+int
+qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
+                              const char *device,
+                              virDomainBlockIoTuneInfoPtr reply,
+                              bool supportMaxOptions)
 {
     int ret;
 
@@ -3692,7 +3815,8 @@ int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorVMStatusToPausedReason(const char *status)
+int
+qemuMonitorVMStatusToPausedReason(const char *status)
 {
     int st;
 
@@ -3746,11 +3870,12 @@ int qemuMonitorVMStatusToPausedReason(const char *status)
 }
 
 
-int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
-                            const char *protocol,
-                            int fd,
-                            const char *fdname,
-                            bool skipauth)
+int
+qemuMonitorOpenGraphics(qemuMonitorPtr mon,
+                        const char *protocol,
+                        int fd,
+                        const char *fdname,
+                        bool skipauth)
 {
     VIR_DEBUG("mon=%p protocol=%s fd=%d fdname=%s skipauth=%d",
               mon, protocol, fd, NULLSTR(fdname), skipauth);
@@ -3778,7 +3903,9 @@ int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorSystemWakeup(qemuMonitorPtr mon)
+
+int
+qemuMonitorSystemWakeup(qemuMonitorPtr mon)
 {
     VIR_DEBUG("mon=%p", mon);
 
@@ -3797,11 +3924,13 @@ int qemuMonitorSystemWakeup(qemuMonitorPtr mon)
     return qemuMonitorJSONSystemWakeup(mon);
 }
 
-int qemuMonitorGetVersion(qemuMonitorPtr mon,
-                          int *major,
-                          int *minor,
-                          int *micro,
-                          char **package)
+
+int
+qemuMonitorGetVersion(qemuMonitorPtr mon,
+                      int *major,
+                      int *minor,
+                      int *micro,
+                      char **package)
 {
     VIR_DEBUG("mon=%p major=%p minor=%p micro=%p package=%p",
               mon, major, minor, micro, package);
@@ -3821,11 +3950,12 @@ int qemuMonitorGetVersion(qemuMonitorPtr mon,
     return qemuMonitorJSONGetVersion(mon, major, minor, micro, package);
 }
 
-int qemuMonitorGetMachines(qemuMonitorPtr mon,
-                           qemuMonitorMachineInfoPtr **machines)
+
+int
+qemuMonitorGetMachines(qemuMonitorPtr mon,
+                       qemuMonitorMachineInfoPtr **machines)
 {
-    VIR_DEBUG("mon=%p machines=%p",
-              mon, machines);
+    VIR_DEBUG("mon=%p machines=%p", mon, machines);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3842,7 +3972,9 @@ int qemuMonitorGetMachines(qemuMonitorPtr mon,
     return qemuMonitorJSONGetMachines(mon, machines);
 }
 
-void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
+
+void
+qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
 {
     if (!machine)
         return;
@@ -3851,11 +3983,12 @@ void qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
     VIR_FREE(machine);
 }
 
-int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
-                                 char ***cpus)
+
+int
+qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
+                             char ***cpus)
 {
-    VIR_DEBUG("mon=%p cpus=%p",
-              mon, cpus);
+    VIR_DEBUG("mon=%p cpus=%p", mon, cpus);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3873,11 +4006,11 @@ int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetCommands(qemuMonitorPtr mon,
-                           char ***commands)
+int
+qemuMonitorGetCommands(qemuMonitorPtr mon,
+                       char ***commands)
 {
-    VIR_DEBUG("mon=%p commands=%p",
-              mon, commands);
+    VIR_DEBUG("mon=%p commands=%p", mon, commands);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3895,11 +4028,11 @@ int qemuMonitorGetCommands(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetEvents(qemuMonitorPtr mon,
-                         char ***events)
+int
+qemuMonitorGetEvents(qemuMonitorPtr mon,
+                     char ***events)
 {
-    VIR_DEBUG("mon=%p events=%p",
-              mon, events);
+    VIR_DEBUG("mon=%p events=%p", mon, events);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3944,12 +4077,12 @@ qemuMonitorGetCommandLineOptionParameters(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetKVMState(qemuMonitorPtr mon,
-                           bool *enabled,
-                           bool *present)
+int
+qemuMonitorGetKVMState(qemuMonitorPtr mon,
+                       bool *enabled,
+                       bool *present)
 {
-    VIR_DEBUG("mon=%p enabled=%p present=%p",
-              mon, enabled, present);
+    VIR_DEBUG("mon=%p enabled=%p present=%p", mon, enabled, present);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3967,11 +4100,11 @@ int qemuMonitorGetKVMState(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
-                              char ***types)
+int
+qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
+                          char ***types)
 {
-    VIR_DEBUG("mon=%p types=%p",
-              mon, types);
+    VIR_DEBUG("mon=%p types=%p", mon, types);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -3989,12 +4122,12 @@ int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
-                              const char *type,
-                              char ***props)
+int
+qemuMonitorGetObjectProps(qemuMonitorPtr mon,
+                          const char *type,
+                          char ***props)
 {
-    VIR_DEBUG("mon=%p type=%s props=%p",
-              mon, type, props);
+    VIR_DEBUG("mon=%p type=%s props=%p", mon, type, props);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4012,10 +4145,10 @@ int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
 }
 
 
-char *qemuMonitorGetTargetArch(qemuMonitorPtr mon)
+char *
+qemuMonitorGetTargetArch(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("mon=%p",
-              mon);
+    VIR_DEBUG("mon=%p", mon);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4056,8 +4189,9 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 /**
  * Returns 1 if @capability is supported, 0 if it's not, or -1 on error.
  */
-int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability)
+int
+qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
+                                  qemuMonitorMigrationCaps capability)
 {
     VIR_DEBUG("mon=%p capability=%d", mon, capability);
 
@@ -4074,9 +4208,11 @@ int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
     return qemuMonitorJSONGetMigrationCapability(mon, capability);
 }
 
-int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability,
-                                      bool state)
+
+int
+qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
+                                  qemuMonitorMigrationCaps capability,
+                                  bool state)
 {
     VIR_DEBUG("mon=%p capability=%d", mon, capability);
 
@@ -4095,12 +4231,13 @@ int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
     return qemuMonitorJSONSetMigrationCapability(mon, capability, state);
 }
 
-int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
-                              const char *host,
-                              unsigned int port)
+
+int
+qemuMonitorNBDServerStart(qemuMonitorPtr mon,
+                          const char *host,
+                          unsigned int port)
 {
-    VIR_DEBUG("mon=%p host=%s port=%u",
-              mon, host, port);
+    VIR_DEBUG("mon=%p host=%s port=%u", mon, host, port);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4117,12 +4254,13 @@ int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
     return qemuMonitorJSONNBDServerStart(mon, host, port);
 }
 
-int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
-                            const char *deviceID,
-                            bool writable)
+
+int
+qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
+                        const char *deviceID,
+                        bool writable)
 {
-    VIR_DEBUG("mon=%p deviceID=%s",
-              mon, deviceID);
+    VIR_DEBUG("mon=%p deviceID=%s", mon, deviceID);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4139,7 +4277,9 @@ int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
     return qemuMonitorJSONNBDServerAdd(mon, deviceID, writable);
 }
 
-int qemuMonitorNBDServerStop(qemuMonitorPtr mon)
+
+int
+qemuMonitorNBDServerStop(qemuMonitorPtr mon)
 {
     VIR_DEBUG("mon=%p", mon);
 
@@ -4159,11 +4299,11 @@ int qemuMonitorNBDServerStop(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
+int
+qemuMonitorGetTPMModels(qemuMonitorPtr mon,
                             char ***tpmmodels)
 {
-    VIR_DEBUG("mon=%p tpmmodels=%p",
-              mon, tpmmodels);
+    VIR_DEBUG("mon=%p tpmmodels=%p", mon, tpmmodels);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4181,11 +4321,11 @@ int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
-                           char ***tpmtypes)
+int
+qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
+                       char ***tpmtypes)
 {
-    VIR_DEBUG("mon=%p tpmtypes=%p",
-              mon, tpmtypes);
+    VIR_DEBUG("mon=%p tpmtypes=%p", mon, tpmtypes);
 
     if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -4202,9 +4342,11 @@ int qemuMonitorGetTPMTypes(qemuMonitorPtr mon,
     return qemuMonitorJSONGetTPMTypes(mon, tpmtypes);
 }
 
-int qemuMonitorAttachCharDev(qemuMonitorPtr mon,
-                             const char *chrID,
-                             virDomainChrSourceDefPtr chr)
+
+int
+qemuMonitorAttachCharDev(qemuMonitorPtr mon,
+                         const char *chrID,
+                         virDomainChrSourceDefPtr chr)
 {
     VIR_DEBUG("mon=%p chrID=%s chr=%p", mon, chrID, chr);
 
@@ -4223,8 +4365,10 @@ int qemuMonitorAttachCharDev(qemuMonitorPtr mon,
     return qemuMonitorJSONAttachCharDev(mon, chrID, chr);
 }
 
-int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
-                             const char *chrID)
+
+int
+qemuMonitorDetachCharDev(qemuMonitorPtr mon,
+                         const char *chrID)
 {
     VIR_DEBUG("mon=%p chrID=%s", mon, chrID);
 
@@ -4242,6 +4386,7 @@ int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
 
     return qemuMonitorJSONDetachCharDev(mon, chrID);
 }
+
 
 int
 qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
@@ -4322,6 +4467,7 @@ qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
     return qemuMonitorJSONGetGuestCPU(mon, arch, data);
 }
 
+
 /**
  * qemuMonitorRTCResetReinjection:
  * @mon: Pointer to the monitor
@@ -4354,6 +4500,7 @@ qemuMonitorRTCResetReinjection(qemuMonitorPtr mon)
 
     return qemuMonitorJSONRTCResetReinjection(mon);
 }
+
 
 /**
  * qemuMonitorGetIOThreads:
@@ -4388,7 +4535,9 @@ qemuMonitorGetIOThreads(qemuMonitorPtr mon,
     return qemuMonitorJSONGetIOThreads(mon, iothreads);
 }
 
-void qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread)
+
+void
+qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread)
 {
     if (!iothread)
         return;
