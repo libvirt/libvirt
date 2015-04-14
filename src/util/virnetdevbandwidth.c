@@ -389,7 +389,7 @@ virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
  * virNetDevBandwidthPlug:
  * @brname: name of the bridge
  * @net_bandwidth: QoS settings on @brname
- * @ifmac: MAC of interface
+ * @ifmac_ptr: MAC of interface
  * @bandwidth: QoS settings for interface
  * @id: unique ID (MUST be greater than 2)
  *
