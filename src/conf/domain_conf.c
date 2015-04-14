@@ -18608,8 +18608,7 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
 
         virBufferAddLit(buf, "/>\n");
     }
-    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
-        def->data.network.actual && def->data.network.actual->class_id) {
+    if (def->data.network.actual && def->data.network.actual->class_id) {
         virBufferAsprintf(buf, "<class id='%u'/>\n",
                           def->data.network.actual->class_id);
     }
