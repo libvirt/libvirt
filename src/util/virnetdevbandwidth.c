@@ -209,8 +209,8 @@ virNetDevBandwidthSet(const char *ifname,
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "filter", "add", "dev", ifname, "parent",
-                             "1:0", "protocol", "all", "handle", "1", "fw",
-                             "flowid", "1", NULL);
+                             "1:0", "protocol", "all", "prio", "1", "handle",
+                             "1", "fw", "flowid", "1", NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
