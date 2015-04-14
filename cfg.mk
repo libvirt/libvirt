@@ -564,6 +564,11 @@ sc_avoid_attribute_unused_in_header:
 	halt='use ATTRIBUTE_UNUSED in .c rather than .h files'		\
 	  $(_sc_search_regexp)
 
+sc_prohibit_int_index:
+	@prohibit='\<(int|unsigned)\s*\*?index\>(\s|,|;)'	\
+	halt='use different name than 'index' for declaration'	        \
+	  $(_sc_search_regexp)
+
 sc_prohibit_int_ijk:
 	@prohibit='\<(int|unsigned) ([^(=]* )*(i|j|k)\>(\s|,|;)'	\
 	halt='use size_t, not int/unsigned int for loop vars i, j, k'	\
