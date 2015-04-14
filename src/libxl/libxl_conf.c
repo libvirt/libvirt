@@ -102,6 +102,7 @@ libxlDriverConfigDispose(void *obj)
     VIR_FREE(cfg->libDir);
     VIR_FREE(cfg->saveDir);
     VIR_FREE(cfg->autoDumpDir);
+    VIR_FREE(cfg->lockManagerName);
 }
 
 
@@ -1498,6 +1499,7 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename)
 {
     virConfPtr conf = NULL;
+    virConfValuePtr p;
     int ret = -1;
 
     /* Check the file is readable before opening it, otherwise
@@ -1514,6 +1516,18 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
     /* setup autoballoon */
     if (libxlGetAutoballoonConf(cfg, conf) < 0)
         goto cleanup;
+
+    if ((p = virConfGetValue(conf, "lock_manager"))) {
+        if (p->type != VIR_CONF_STRING) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s",
+                           _("Unexpected type for 'lock_manager' setting"));
+            goto cleanup;
+        }
+
+        if (VIR_STRDUP(cfg->lockManagerName, p->str) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 

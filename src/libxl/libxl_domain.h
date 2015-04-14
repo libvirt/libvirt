@@ -64,6 +64,7 @@ struct _libxlDomainObjPrivate {
     virChrdevsPtr devs;
     libxl_evgen_domain_death *deathW;
     unsigned short migrationPort;
+    char *lockState;
 
     struct libxlDomainJobObj job;
 };

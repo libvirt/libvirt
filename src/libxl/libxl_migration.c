@@ -41,6 +41,7 @@
 #include "libxl_driver.h"
 #include "libxl_conf.h"
 #include "libxl_migration.h"
+#include "locking/domain_lock.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -469,6 +470,7 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
                             const char *dname ATTRIBUTE_UNUSED,
                             unsigned int flags)
 {
+    libxlDomainObjPrivatePtr priv = vm->privateData;
     char *hostname = NULL;
     unsigned short port = 0;
     char portstr[100];
@@ -502,6 +504,10 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
 
     sockfd = virNetSocketDupFD(sock, true);
     virObjectUnref(sock);
+
+    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        VIR_WARN("Unable to release lease on %s", vm->def->name);
+    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
     /* suspend vm and send saved data to dst through socket fd */
     virObjectUnlock(vm);

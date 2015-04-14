@@ -34,6 +34,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "locking/domain_lock.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -217,12 +218,36 @@ libxlDomainObjPrivateFree(void *data)
 {
     libxlDomainObjPrivatePtr priv = data;
 
+    VIR_FREE(priv->lockState);
     virObjectUnref(priv);
+}
+
+static int
+libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+{
+    libxlDomainObjPrivatePtr priv = data;
+
+    priv->lockState = virXPathString("string(./lockstate)", ctxt);
+
+    return 0;
+}
+
+static int
+libxlDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+{
+    libxlDomainObjPrivatePtr priv = data;
+
+    if (priv->lockState)
+        virBufferAsprintf(buf, "<lockstate>%s</lockstate>\n", priv->lockState);
+
+    return 0;
 }
 
 virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks = {
     .alloc = libxlDomainObjPrivateAlloc,
     .free = libxlDomainObjPrivateFree,
+    .parse = libxlDomainObjPrivateXMLParse,
+    .format = libxlDomainObjPrivateXMLFormat,
 };
 
 
@@ -667,6 +692,11 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                     vm->def, VIR_HOSTDEV_SP_PCI, NULL);
 
+    VIR_FREE(priv->lockState);
+    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+        VIR_WARN("Unable to release lease on %s", vm->def->name);
+    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+
     vm->def->id = -1;
 
     if (priv->deathW) {
@@ -960,6 +990,20 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                        vm->def, VIR_HOSTDEV_SP_PCI) < 0)
         goto cleanup;
 
+    if (virDomainLockProcessStart(driver->lockManager,
+                                  "xen:///system",
+                                  vm,
+                                  true,
+                                  NULL) < 0)
+        goto cleanup;
+
+    if (virDomainLockProcessResume(driver->lockManager,
+                                  "xen:///system",
+                                  vm,
+                                  priv->lockState) < 0)
+        goto cleanup;
+    VIR_FREE(priv->lockState);
+
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
 
@@ -990,7 +1034,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to restore domain '%s'"),
                            d_config.c_info.name);
-        goto cleanup;
+        goto release_dom;
     }
 
     /*
@@ -1002,6 +1046,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
         goto cleanup_dom;
+
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
         goto cleanup_dom;
@@ -1040,6 +1085,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     goto cleanup;
 
  cleanup_dom:
+    ret = -1;
     if (priv->deathW) {
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
@@ -1047,6 +1093,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     libxlDomainDestroyInternal(driver, vm);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
+
+ release_dom:
+    virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState);
 
  cleanup:
     libxl_domain_config_dispose(&d_config);

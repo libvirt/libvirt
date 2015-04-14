@@ -57,6 +57,7 @@
 #include "viratomic.h"
 #include "virhostdev.h"
 #include "network/bridge_driver.h"
+#include "locking/domain_lock.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -411,6 +412,7 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->domains);
     virObjectUnref(libxl_driver->reservedVNCPorts);
     virObjectUnref(libxl_driver->migrationPorts);
+    virLockManagerPluginUnref(libxl_driver->lockManager);
 
     virObjectEventStateFree(libxl_driver->domainEventState);
     virSysinfoDefFree(libxl_driver->hostsysinfo);
@@ -589,6 +591,14 @@ libxlStateInitialize(bool privileged,
                        virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+
+    if (!(libxl_driver->lockManager =
+          virLockManagerPluginNew(cfg->lockManagerName ?
+                                  cfg->lockManagerName : "nop",
+                                  "libxl",
+                                  cfg->configBaseDir,
+                                  0)))
+        goto error;
 
     /* read the host sysinfo */
     libxl_driver->hostsysinfo = virSysinfoRead();
@@ -2859,11 +2869,21 @@ libxlDomainAttachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                 if (libxlMakeDisk(l_disk, &x_disk) < 0)
                     goto cleanup;
 
+                if (virDomainLockDiskAttach(libxl_driver->lockManager,
+                                            "xen:///system",
+                                            vm, l_disk) < 0)
+                    goto cleanup;
+
                 if ((ret = libxl_device_disk_add(cfg->ctx, vm->def->id,
                                                 &x_disk, NULL)) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("libxenlight failed to attach disk '%s'"),
                                    l_disk->dst);
+                    if (virDomainLockDiskDetach(libxl_driver->lockManager,
+                                                vm, l_disk) < 0) {
+                        VIR_WARN("Unable to release lock on %s",
+                                 virDomainDiskGetSource(l_disk));
+                    }
                     goto cleanup;
                 }
 
@@ -3003,6 +3023,11 @@ libxlDomainDetachDeviceDiskLive(virDomainObjPtr vm, virDomainDeviceDefPtr dev)
                                    l_disk->dst);
                     goto cleanup;
                 }
+
+                if (virDomainLockDiskDetach(libxl_driver->lockManager,
+                                            vm, l_disk) < 0)
+                    VIR_WARN("Unable to release lock on %s",
+                             virDomainDiskGetSource(l_disk));
 
                 virDomainDiskRemove(vm->def, idx);
                 virDomainDiskDefFree(l_disk);

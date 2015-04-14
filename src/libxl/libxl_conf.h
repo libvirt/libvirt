@@ -38,6 +38,7 @@
 # include "virobject.h"
 # include "virchrdev.h"
 # include "virhostdev.h"
+# include "locking/lock_manager.h"
 
 # define LIBXL_DRIVER_NAME "xenlight"
 # define LIBXL_VNC_PORT_MIN  5900
@@ -98,6 +99,8 @@ struct _libxlDriverConfig {
      * memory for new domains from domain0. */
     bool autoballoon;
 
+    char *lockManagerName;
+
     /* Once created, caps are immutable */
     virCapsPtr caps;
 
@@ -144,6 +147,9 @@ struct _libxlDriverPrivate {
 
     /* Immutable pointer, lockless APIs*/
     virSysinfoDefPtr hostsysinfo;
+
+    /* Immutable pointer. lockless access */
+    virLockManagerPluginPtr lockManager;
 };
 
 # define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"

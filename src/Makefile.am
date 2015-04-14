@@ -2247,6 +2247,12 @@ BUILT_SOURCES += locking/qemu-lockd.conf
 DISTCLEANFILES += locking/qemu-lockd.conf
 endif WITH_QEMU
 
+if WITH_LIBXL
+nodist_conf_DATA += locking/libxl-lockd.conf
+BUILT_SOURCES += locking/libxl-lockd.conf
+DISTCLEANFILES += locking/libxl-lockd.conf
+endif WITH_LIBXL
+
 locking/%-lockd.conf: $(srcdir)/locking/lockd.conf
 	$(AM_V_GEN)$(MKDIR_P) locking ; \
 	cp $< $@
@@ -2432,6 +2438,12 @@ nodist_conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf
 endif WITH_QEMU
+
+if WITH_LIBXL
+nodist_conf_DATA += locking/libxl-sanlock.conf
+BUILT_SOURCES += locking/libxl-sanlock.conf
+DISTCLEANFILES += locking/libxl-sanlock.conf
+endif WITH_LIBXL
 else ! WITH_SANLOCK
 EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
 endif ! WITH_SANLOCK
