@@ -1527,7 +1527,6 @@ qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
 int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
-    int ret;
     VIR_DEBUG("mon=%p", mon);
 
     if (!mon) {
@@ -1536,16 +1535,10 @@ qemuMonitorSetCapabilities(qemuMonitorPtr mon)
         return -1;
     }
 
-    if (mon->json) {
-        ret = qemuMonitorJSONSetCapabilities(mon);
-        if (ret < 0)
-            goto cleanup;
-    } else {
-        ret = 0;
-    }
+    if (!mon->json)
+        return 0;
 
- cleanup:
-    return ret;
+    return qemuMonitorJSONSetCapabilities(mon);
 }
 
 
