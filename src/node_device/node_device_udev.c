@@ -191,7 +191,9 @@ static int udevGetUintProperty(struct udev_device *udev_device,
 
 
 /* This function allocates memory from the heap for the property
- * value.  That memory must be later freed by some other code. */
+ * value.  That memory must be later freed by some other code.
+ * Any control characters that cannot be printed in the XML are stripped
+ * from the string */
 static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
                                   const char *attr_name,
                                   char **attr_value)
@@ -232,6 +234,8 @@ static int udevGetStringSysfsAttr(struct udev_device *udev_device,
     int ret = PROPERTY_MISSING;
 
     ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &tmp);
+
+    virStringStripControlChars(tmp);
 
     if (tmp != NULL && (STREQ(tmp, ""))) {
         VIR_FREE(tmp);
