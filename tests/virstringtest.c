@@ -522,6 +522,35 @@ testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+struct testStripData {
+    const char *string;
+    const char *result;
+};
+
+static int testStripControlChars(const void *args)
+{
+    const struct testStripData *data = args;
+    int ret = -1;
+    char *res = NULL;
+
+    if (VIR_STRDUP(res, data->string) < 0)
+        goto cleanup;
+
+    virStringStripControlChars(res);
+
+    if (STRNEQ_NULLABLE(res, data->result)) {
+        fprintf(stderr, "Returned '%s', expected '%s'\n",
+                NULLSTR(res), NULLSTR(data->result));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(res);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -734,6 +763,23 @@ mymain(void)
                     NULL) < 0)
         ret = -1;
 
+
+#define TEST_STRIP_CONTROL_CHARS(str, res)                              \
+    do {                                                                \
+        struct testStripData stripData = {                              \
+            .string = str,                                              \
+            .result = res,                                              \
+        };                                                              \
+        if (virtTestRun("Strip control chars from " #str,               \
+                        testStripControlChars, &stripData) < 0)         \
+            ret = -1;                                                   \
+    } while (0)
+
+    TEST_STRIP_CONTROL_CHARS(NULL, NULL);
+    TEST_STRIP_CONTROL_CHARS("\nhello \r hello\t", "\nhello \r hello\t");
+    TEST_STRIP_CONTROL_CHARS("\x01H\x02" "E\x03L\x04L\x05O", "HELLO");
+    TEST_STRIP_CONTROL_CHARS("\x01\x02\x03\x04HELL\x05O", "HELLO");
+    TEST_STRIP_CONTROL_CHARS("\nhello \x01\x07hello\t", "\nhello hello\t");
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

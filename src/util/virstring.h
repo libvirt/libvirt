@@ -270,4 +270,6 @@ char *virStringReplace(const char *haystack,
                        const char *newneedle)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+bool virStringHasControlChars(const char *str);
+void virStringStripControlChars(char *str);
 #endif /* __VIR_STRING_H__ */
