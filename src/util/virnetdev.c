@@ -1777,6 +1777,17 @@ virNetDevGetVirtualFunctionInfo(const char *vfname ATTRIBUTE_UNUSED,
                          _("Unable to get virtual function info on this platform"));
     return -1;
 }
+
+int
+virNetDevSysfsFile(char **pf_sysfs_device_link ATTRIBUTE_UNUSED,
+                   const char *ifname ATTRIBUTE_UNUSED,
+                   const char *file ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get sysfs info on this platform"));
+    return -1;
+}
+
 #endif /* !__linux__ */
 #if defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX)
 
