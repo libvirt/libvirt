@@ -1586,9 +1586,9 @@ qemuMonitorGetStatus(qemuMonitorPtr mon,
 {
     VIR_DEBUG("mon=%p, running=%p, reason=%p", mon, running, reason);
 
-    if (!mon || !running) {
+    if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("both monitor and running must not be NULL"));
+                       _("monitor must not be NULL"));
         return -1;
     }
 

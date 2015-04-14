@@ -335,7 +335,8 @@ int qemuMonitorVMStatusToPausedReason(const char *status);
 
 int qemuMonitorGetStatus(qemuMonitorPtr mon,
                          bool *running,
-                         virDomainPausedReason *reason);
+                         virDomainPausedReason *reason)
+    ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorSystemReset(qemuMonitorPtr mon);
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
