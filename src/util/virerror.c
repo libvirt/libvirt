@@ -1326,7 +1326,7 @@ virErrorMsg(virErrorNumber error, const char *info)
             if (info == NULL)
                 errmsg = _("resource busy");
             else
-                errmsg = _("resource busy %s");
+                errmsg = _("resource busy: %s");
             break;
         case VIR_ERR_ACCESS_DENIED:
             if (info == NULL)

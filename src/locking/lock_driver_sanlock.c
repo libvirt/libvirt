@@ -975,7 +975,7 @@ static int virLockManagerSanlockAcquire(virLockManagerPtr lock,
                                   priv->res_count, priv->res_args,
                                   opt)) < 0) {
             if (rv <= -200)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
+                virReportError(VIR_ERR_RESOURCE_BUSY,
                                _("Failed to acquire lock: error %d"), rv);
             else
                 virReportSystemError(-rv, "%s",
