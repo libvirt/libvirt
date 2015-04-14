@@ -1672,11 +1672,11 @@ qemuMonitorSetLink(qemuMonitorPtr mon,
                    virDomainNetInterfaceLinkState state)
 {
     int ret;
-    VIR_DEBUG("mon=%p, name=%p:%s, state=%u", mon, name, name, state);
+    VIR_DEBUG("mon=%p, name=%s, state=%u", mon, name, state);
 
-    if (!mon || !name) {
+    if (!mon) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("monitor || name must not be NULL"));
+                       _("monitor must not be NULL"));
         return -1;
     }
 

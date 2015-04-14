@@ -2355,6 +2355,12 @@ qemuProcessSetLinkStates(virDomainObjPtr vm)
 
     for (i = 0; i < def->nnets; i++) {
         if (def->nets[i]->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+            if (!def->nets[i]->info.alias) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing alias for network device"));
+                return -1;
+            }
+
             VIR_DEBUG("Setting link state: %s", def->nets[i]->info.alias);
 
             if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
