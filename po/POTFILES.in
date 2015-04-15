@@ -59,6 +59,7 @@ src/interface/interface_backend_netcf.c
 src/interface/interface_backend_udev.c
 src/internal.h
 src/libvirt.c
+src/libvirt-admin.c
 src/libvirt-domain.c
 src/libvirt-domain-snapshot.c
 src/libvirt-host.c

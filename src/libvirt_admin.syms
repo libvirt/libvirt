@@ -1,0 +1,18 @@
+#
+# Officially exported symbols, for which header
+# file definitions are installed in /usr/include/libvirt
+# from libvirt-admin.h
+#
+# Versions here are *fixed* to match the libvirt version
+# at which the symbol was introduced. This ensures that
+# a new client app requiring symbol foo() can't accidentally
+# run with old libvirt-admin.so not providing foo() - the global
+# soname version info can't enforce this since we never
+# change the soname
+#
+LIBVIRT_ADMIN_1.3.0 {
+    global:
+        virAdmConnectOpen;
+        virAdmConnectClose;
+        virAdmConnectRef;
+};

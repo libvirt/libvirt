@@ -1216,6 +1216,16 @@ Includes the Sanlock lock manager plugin for the QEMU
 driver
 %endif
 
+%package admin
+Summary: Client side library and binary for the libvirt admin interface
+Group: Development/Libraries
+Requires: readline
+Requires: %{name}-client = %{version}-%{release}
+
+%description admin
+Shared library and client for admin access to libvirt daemon
+
+
 %prep
 %setup -q
 
@@ -2209,6 +2219,12 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
 %endif
 
+%files admin
+%defattr(-, root, root)
+%{_mandir}/man1/virt-admin.1*
+%{_bindir}/virt-admin
+%{_libdir}/libvirt-admin.so.*
+
 %files client -f %{name}.lang
 %defattr(-, root, root)
 %doc COPYING COPYING.LESSER
@@ -2285,6 +2301,7 @@ exit 0
 %{_libdir}/libvirt.so
 %{_libdir}/libvirt-qemu.so
 %{_libdir}/libvirt-lxc.so
+%{_libdir}/libvirt-admin.so
 %dir %{_includedir}/libvirt
 %{_includedir}/libvirt/virterror.h
 %{_includedir}/libvirt/libvirt.h
@@ -2301,14 +2318,17 @@ exit 0
 %{_includedir}/libvirt/libvirt-stream.h
 %{_includedir}/libvirt/libvirt-qemu.h
 %{_includedir}/libvirt/libvirt-lxc.h
+%{_includedir}/libvirt/libvirt-admin.h
 %{_libdir}/pkgconfig/libvirt.pc
 %{_libdir}/pkgconfig/libvirt-qemu.pc
 %{_libdir}/pkgconfig/libvirt-lxc.pc
+%{_libdir}/pkgconfig/libvirt-admin.pc
 
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
+
 
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/libvirt-api.xml

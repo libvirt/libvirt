@@ -41,6 +41,8 @@ extern virClassPtr virStreamClass;
 extern virClassPtr virStorageVolClass;
 extern virClassPtr virStoragePoolClass;
 
+extern virClassPtr virAdmConnectClass;
+
 # define virCheckConnectReturn(obj, retval)                             \
     do {                                                                \
         if (!virObjectIsClass(obj, virConnectClass)) {                  \
@@ -295,6 +297,26 @@ extern virClassPtr virStoragePoolClass;
                   dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__);       \
     } while (0)
 
+# define virCheckAdmConnectReturn(obj, retval)                          \
+    do {                                                                \
+        if (!virObjectIsClass(obj, virAdmConnectClass)) {               \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckAdmConnectGoto(obj, label)                             \
+    do {                                                                \
+        if (!virObjectIsClass(obj, virAdmConnectClass)) {               \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 /**
  * VIR_DOMAIN_DEBUG:
  * @dom: domain
@@ -367,6 +389,19 @@ struct _virConnect {
     /* Per-connection close callback */
     virConnectCloseCallbackDataPtr closeCallback;
 };
+
+/**
+ * _virAdmConnect:
+ *
+ * Internal structure associated to an admin connection
+ */
+struct _virAdmConnect {
+    virObjectLockable object;
+
+    void *privateData;
+    virFreeCallback privateDataFreeFunc;
+};
+
 
 /**
 * _virDomain:
@@ -548,5 +583,7 @@ virNWFilterPtr virGetNWFilter(virConnectPtr conn,
                               const unsigned char *uuid);
 virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
                                           const char *name);
+
+virAdmConnectPtr virAdmConnectNew(void);
 
 #endif /* __VIR_DATATYPES_H__ */

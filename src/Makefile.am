@@ -503,6 +503,7 @@ PROTOCOL_STRUCTS = \
 	$(srcdir)/virkeepaliveprotocol-structs \
 	$(srcdir)/lxc_monitor_protocol-structs \
 	$(srcdir)/lock_protocol-structs \
+	$(srcdir)/admin_protocol-structs \
 	$(NULL)
 
 if WITH_REMOTE
@@ -524,6 +525,9 @@ $(srcdir)/lxc_monitor_protocol-struct: \
 $(srcdir)/lock_protocol-struct: \
 		$(srcdir)/%-struct: locking/lockd_la-%.lo
 	$(PDWTAGS)
+$(srcdir)/admin_protocol-struct: \
+		$(srcdir)/%-struct: admin/libvirt_admin_la-%.lo
+	$(PDWTAGS)
 
 else !WITH_REMOTE
 # The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be
@@ -536,6 +540,7 @@ check-drivername:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
 		$(srcdir)/driver.h \
 		$(srcdir)/libvirt_public.syms \
+		$(srcdir)/libvirt_admin.syms \
 		$(srcdir)/libvirt_qemu.syms \
 		$(srcdir)/libvirt_lxc.syms
 
@@ -1094,6 +1099,7 @@ USED_SYM_FILES = $(srcdir)/libvirt_private.syms
 GENERATED_SYM_FILES = \
 	$(ACCESS_DRIVER_SYM_FILES) \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
+	libvirt_admin.def \
 	$(NULL)
 
 if WITH_TEST
@@ -2003,6 +2009,7 @@ EXTRA_DIST += \
 	libvirt_public.syms		\
 	libvirt_lxc.syms		\
 	libvirt_qemu.syms		\
+	libvirt_admin.syms		\
 	$(SYM_FILES)			\
 	$(NULL)
 
@@ -2029,6 +2036,49 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp $@
+
+lib_LTLIBRARIES += libvirt-admin.la
+libvirt_admin_la_SOURCES = \
+		libvirt-admin.c			\
+		$(ADMIN_PROTOCOL_GENERATED)	\
+		$(DATATYPES_SOURCES)
+
+libvirt_admin_la_LDFLAGS = \
+		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE)	\
+		-version-info $(LIBVIRT_VERSION_INFO)			\
+		$(AM_LDFLAGS) 						\
+		$(CYGWIN_EXTRA_LDFLAGS) 				\
+		$(MINGW_EXTRA_LDFLAGS)
+
+libvirt_admin_la_LIBADD = \
+		libvirt.la		\
+		$(CYGWIN_EXTRA_LIBADD)
+
+libvirt_admin_la_CFLAGS = \
+		$(AM_CFLAGS)		\
+		-I$(srcdir)/remote	\
+		-I$(srcdir)/rpc		\
+		-I$(srcdir)/admin
+
+libvirt_admin_la_CFLAGS += \
+		$(CAPNG_CFLAGS)			\
+		$(YAJL_CFLAGS)			\
+		$(SSH2_CFLAGS)			\
+		$(SASL_CFLAGS)			\
+		$(GNUTLS_CFLAGS)
+
+libvirt_admin_la_LIBADD += \
+		$(CAPNG_LIBS)			\
+		$(YAJL_LIBS)			\
+		$(DEVMAPPER_LIBS)		\
+		$(LIBXML_LIBS)			\
+		$(SSH2_LIBS)			\
+		$(SASL_LIBS)			\
+		$(GNUTLS_LIBS)
+
+if WITH_DTRACE_PROBES
+libvirt_admin_la_LIBADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =

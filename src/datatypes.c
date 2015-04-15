@@ -59,6 +59,10 @@ static void virStreamDispose(void *obj);
 static void virStorageVolDispose(void *obj);
 static void virStoragePoolDispose(void *obj);
 
+virClassPtr virAdmConnectClass;
+
+static void virAdmConnectDispose(void *obj);
+
 static int
 virDataTypesOnceInit(void)
 {
@@ -85,6 +89,8 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virStream);
     DECLARE_CLASS(virStorageVol);
     DECLARE_CLASS(virStoragePool);
+
+    DECLARE_CLASS_LOCKABLE(virAdmConnect);
 
 #undef DECLARE_CLASS_COMMON
 #undef DECLARE_CLASS_LOCKABLE
@@ -802,4 +808,28 @@ virDomainSnapshotDispose(void *obj)
 
     VIR_FREE(snapshot->name);
     virObjectUnref(snapshot->domain);
+}
+
+
+virAdmConnectPtr
+virAdmConnectNew(void)
+{
+    virAdmConnectPtr ret;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    if (!(ret = virObjectLockableNew(virAdmConnectClass)))
+        return NULL;
+
+    return ret;
+}
+
+static void
+virAdmConnectDispose(void *obj)
+{
+    virAdmConnectPtr conn = obj;
+
+    if (conn->privateDataFreeFunc)
+        conn->privateDataFreeFunc(conn);
 }

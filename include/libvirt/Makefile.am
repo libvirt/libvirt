@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2011, 2013 Red Hat, Inc.
+## Copyright (C) 2005-2011, 2013-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,8 @@ virinc_HEADERS = libvirt.h		\
 		 libvirt-lxc.h		\
 		 libvirt-qemu.h		\
 		 virterror.h
+
+virinc_HEADERS += libvirt-admin.h
 
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)

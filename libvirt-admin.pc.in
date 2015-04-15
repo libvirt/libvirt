@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+
+libvirt_admin_api=@datadir@/libvirt/api/libvirt-admin-api.xml
+
+Name: libvirt-admin
+Version: @VERSION@
+Description: libvirt admin library
+Libs: -L${libdir} -lvirt-admin
+Cflags: -I${includedir}

@@ -58,6 +58,7 @@
 # include "libvirt/libvirt.h"
 # include "libvirt/libvirt-lxc.h"
 # include "libvirt/libvirt-qemu.h"
+# include "libvirt/libvirt-admin.h"
 # include "libvirt/virterror.h"
 
 # include "c-strcase.h"
