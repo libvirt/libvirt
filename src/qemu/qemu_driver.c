@@ -19301,8 +19301,13 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
             ret = 0;
             goto cleanup;
         }
-        if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0)
+
+        if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0) {
+            virResetLastError();
+            ret = 0;
             goto cleanup;
+        }
+
         if (src->allocation)
             QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                      "allocation", src->allocation);
