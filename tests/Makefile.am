@@ -132,6 +132,7 @@ EXTRA_DIST =		\
 	vboxsnapshotxmldata \
 	virsh-uriprecedence \
 	virfiledata \
+	virnetdevtestdata \
 	virpcitestdata \
 	virscsidata \
 	virusbtestdata \
