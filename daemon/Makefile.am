@@ -341,10 +341,10 @@ if WITH_SYSCTL
 install-sysctl:
 	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
 	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
-	  $(DESTDIR)$(prefix)/lib/sysctl.d/libvirtd.conf
+	  $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
 
 uninstall-sysctl:
-	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/libvirtd.conf
+	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
 	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
 else ! WITH_SYSCTL
 install-sysctl:

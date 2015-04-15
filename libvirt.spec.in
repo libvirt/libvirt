@@ -1609,7 +1609,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
 %endif
 
 %if 0%{?rhel} == 5
-rm -f $RPM_BUILD_ROOT%{_prefix}/lib/sysctl.d/libvirtd.conf
+rm -f $RPM_BUILD_ROOT%{_prefix}/lib/sysctl.d/60-libvirtd.conf
 %endif
 
 %clean
@@ -1897,7 +1897,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
     %if 0%{?fedora} || 0%{?rhel} >= 6
-%config(noreplace) %{_prefix}/lib/sysctl.d/libvirtd.conf
+%config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
     %endif
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
