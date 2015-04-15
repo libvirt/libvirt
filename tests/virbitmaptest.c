@@ -548,6 +548,7 @@ test10(const void *opaque ATTRIBUTE_UNUSED)
     virBitmapFree(b1);
     virBitmapFree(b2);
     virBitmapFree(b3);
+    virBitmapFree(b4);
     return ret;
 }
 
