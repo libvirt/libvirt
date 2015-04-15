@@ -28,6 +28,7 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virnetdev.h"
 #include "md5.h"
 #include "parallels_utils.h"
 #include "virstring.h"
@@ -38,8 +39,6 @@
 #define parallelsParseError()                                                  \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
-
-#define SYSFS_NET_DIR "/sys/class/net"
 
 static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj)
 {
@@ -56,8 +55,7 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
         goto cleanup;
     }
 
-    if (virAsprintf(&bridgeLink, "%s/%s/brport/bridge",
-                    SYSFS_NET_DIR, ifname) < 0)
+    if (virAsprintf(&bridgeLink, SYSFS_NET_DIR "%s/brport/bridge", ifname) < 0)
         goto cleanup;
 
     if (virFileResolveLink(bridgeLink, &bridgePath) < 0) {
@@ -68,8 +66,8 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
     if (VIR_STRDUP(def->bridge, last_component(bridgePath)) < 0)
         goto cleanup;
 
-    if (virAsprintf(&bridgeAddressPath, "%s/%s/brport/bridge/address",
-                    SYSFS_NET_DIR, ifname) < 0)
+    if (virAsprintf(&bridgeAddressPath, SYSFS_NET_DIR "%s/brport/bridge/address",
+                    ifname) < 0)
         goto cleanup;
 
     if ((len = virFileReadAll(bridgeAddressPath, 18, &bridgeAddress)) < 0) {

@@ -1612,14 +1612,13 @@ int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
 
 
 #ifdef __linux__
-# define NET_SYSFS "/sys/class/net/"
 
 int
 virNetDevSysfsFile(char **pf_sysfs_device_link, const char *ifname,
                    const char *file)
 {
 
-    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/%s", ifname, file) < 0)
+    if (virAsprintf(pf_sysfs_device_link, SYSFS_NET_DIR "%s/%s", ifname, file) < 0)
         return -1;
     return 0;
 }
@@ -1629,7 +1628,7 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
                      const char *file)
 {
 
-    if (virAsprintf(pf_sysfs_device_link, NET_SYSFS "%s/device/%s", ifname,
+    if (virAsprintf(pf_sysfs_device_link, SYSFS_NET_DIR "%s/device/%s", ifname,
                     file) < 0)
         return -1;
     return 0;
