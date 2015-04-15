@@ -15,4 +15,5 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmConnectOpen;
         virAdmConnectClose;
         virAdmConnectRef;
+        virAdmHello;
 };

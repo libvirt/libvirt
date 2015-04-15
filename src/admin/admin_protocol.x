@@ -43,6 +43,15 @@ struct admin_connect_open_args {
     unsigned int flags;
 };
 
+struct admin_hello_args {
+    unsigned int flags;
+};
+
+struct admin_hello_ret {
+    admin_string greeting;
+};
+
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -73,5 +82,10 @@ enum admin_procedure {
     /**
      * @generate: client
      */
-    ADMIN_PROC_CONNECT_CLOSE = 2
+    ADMIN_PROC_CONNECT_CLOSE = 2,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_HELLO = 3
 };

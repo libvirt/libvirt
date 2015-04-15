@@ -54,6 +54,7 @@ virAdmConnectPtr virAdmConnectOpen(const char *name, unsigned int flags);
 int virAdmConnectClose(virAdmConnectPtr conn);
 
 int virAdmConnectRef(virAdmConnectPtr conn);
+char *virAdmHello(virAdmConnectPtr conn, unsigned int flags);
 
 # ifdef __cplusplus
 }
