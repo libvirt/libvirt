@@ -128,9 +128,6 @@ static int udevGetDeviceProperty(struct udev_device *udev_device,
     /* If this allocation is changed, the comment at the beginning
      * of the function must also be changed. */
     if (VIR_STRDUP(*property_value, udev_value) < 0) {
-        VIR_ERROR(_("Failed to allocate memory for property value for "
-                    "property key '%s' on device with sysname '%s'"),
-                  property_key, udev_device_get_sysname(udev_device));
         ret = PROPERTY_ERROR;
         goto out;
     }
@@ -213,9 +210,6 @@ static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
     /* If this allocation is changed, the comment at the beginning
      * of the function must also be changed. */
     if (VIR_STRDUP(*attr_value, udev_value) < 0) {
-        VIR_ERROR(_("Failed to allocate memory for sysfs attribute value for "
-                    "sysfs attribute '%s' on device with sysname '%s'"),
-                  attr_name, udev_device_get_sysname(udev_device));
         ret = PROPERTY_ERROR;
         goto out;
     }
@@ -1428,11 +1422,8 @@ static int udevAddOneDevice(struct udev_device *device)
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
     dev = virNodeDeviceAssignDef(&driver->devs, def);
-
-    if (dev == NULL) {
-        VIR_ERROR(_("Failed to create device for '%s'"), def->name);
+    if (dev == NULL)
         goto out;
-    }
 
     virNodeDeviceObjUnlock(dev);
 
@@ -1686,10 +1677,8 @@ static int udevSetupSystemDev(void)
 #endif
 
     dev = virNodeDeviceAssignDef(&driver->devs, def);
-    if (dev == NULL) {
-        VIR_ERROR(_("Failed to create device for '%s'"), def->name);
+    if (dev == NULL)
         goto out;
-    }
 
     virNodeDeviceObjUnlock(dev);
 
