@@ -783,19 +783,20 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         goto cleanup;
     }
 
-    /* Again 4 loops; mark all devices as inactive before reset
+    /* Here are 4 loops; mark all devices as inactive before reset
      * them and reset all the devices before re-attach.
      * Attach mac and port profile parameters to devices
+     */
+
+    /* Loop 1: delete the copy of the dev from pcidevs if it's used by
+     * other domain. Or delete it from activePCIHostDevs if it had
+     * been used by this domain.
      */
     i = 0;
     while (i < virPCIDeviceListCount(pcidevs)) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         virPCIDevicePtr activeDev = NULL;
 
-        /* delete the copy of the dev from pcidevs if it's used by
-         * other domain. Or delete it from activePCIHostDevs if it had
-         * been used by this domain.
-         */
         activeDev = virPCIDeviceListFind(hostdev_mgr->activePCIHostdevs, dev);
         if (activeDev) {
             const char *usedby_drvname;
@@ -817,13 +818,33 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
      */
 
     /*
-     * For SRIOV net host devices, unset mac and port profile before
-     * reset and reattach device
+     * Loop 2: For SRIOV net host devices used by this domain,
+     * unset mac and port profile before resetting and reattaching device
      */
-    for (i = 0; i < nhostdevs; i++)
-        virHostdevNetConfigRestore(hostdevs[i], hostdev_mgr->stateDir,
-                                   oldStateDir);
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
 
+        if (virHostdevIsPCINetDevice(hostdev)) {
+            virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+            virPCIDevicePtr dev = NULL;
+            dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
+                                  pcisrc->addr.slot, pcisrc->addr.function);
+            if (dev) {
+                if (virPCIDeviceListFind(pcidevs, dev)) {
+                    virHostdevNetConfigRestore(hostdev, hostdev_mgr->stateDir,
+                                               oldStateDir);
+                }
+            } else {
+                virErrorPtr err = virGetLastError();
+                VIR_ERROR(_("Failed to new PCI device: %s"),
+                          err ? err->message : _("unknown error"));
+                virResetError(err);
+            }
+            virPCIDeviceFree(dev);
+        }
+    }
+
+    /* Loop 3: reset pci device used by this domain */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -836,6 +857,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
     }
 
+    /* Loop 4: reattach pci devices used by this domain
+     * and steal all the devices from pcidevs
+     */
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListStealIndex(pcidevs, 0);
         virHostdevReattachPCIDevice(dev, hostdev_mgr);
