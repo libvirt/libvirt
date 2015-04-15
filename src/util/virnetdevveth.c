@@ -47,7 +47,7 @@ static int virNetDevVethExists(int devNum)
 {
     int ret;
     char *path = NULL;
-    if (virAsprintf(&path, "/sys/class/net/vnet%d/", devNum) < 0)
+    if (virAsprintf(&path, SYSFS_NET_DIR "vnet%d/", devNum) < 0)
         return -1;
     ret = virFileExists(path) ? 1 : 0;
     VIR_DEBUG("Checked dev vnet%d usage: %d", devNum, ret);

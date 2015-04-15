@@ -114,7 +114,6 @@ static int virNetDevBridgeCmd(const char *brname,
 #endif
 
 #if defined(HAVE_STRUCT_IFREQ) && defined(__linux__)
-# define SYSFS_NET_DIR "/sys/class/net"
 /*
  * Bridge parameters can be set via sysfs on newish kernels,
  * or by  ioctl on older kernels. Perhaps we could just use
@@ -130,7 +129,7 @@ static int virNetDevBridgeSet(const char *brname,
     char *path = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0)
+    if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
 
     if (virFileExists(path)) {
@@ -177,7 +176,7 @@ static int virNetDevBridgeGet(const char *brname,
     char *path = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/bridge/%s", SYSFS_NET_DIR, brname, paramname) < 0)
+    if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
 
     if (virFileExists(path)) {
@@ -235,8 +234,8 @@ virNetDevBridgePortSet(const char *brname,
 
     snprintf(valuestr, sizeof(valuestr), "%lu", value);
 
-    if (virAsprintf(&path, "%s/%s/brif/%s/%s",
-                    SYSFS_NET_DIR, brname, ifname, paramname) < 0)
+    if (virAsprintf(&path, SYSFS_NET_DIR "%s/brif/%s/%s",
+                    brname, ifname, paramname) < 0)
         return -1;
 
     if (!virFileExists(path))
@@ -265,8 +264,8 @@ virNetDevBridgePortGet(const char *brname,
     char *valuestr = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/brif/%s/%s",
-                    SYSFS_NET_DIR, brname, ifname, paramname) < 0)
+    if (virAsprintf(&path, SYSFS_NET_DIR "%s/brif/%s/%s",
+                    brname, ifname, paramname) < 0)
         return -1;
 
     if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long), &valuestr) < 0)
