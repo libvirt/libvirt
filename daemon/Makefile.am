@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2014 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@ INCLUDES = \
 	-I$(top_srcdir)/src/conf \
 	-I$(top_srcdir)/src/rpc \
 	-I$(top_srcdir)/src/remote \
+	-I$(top_srcdir)/src/admin \
 	-I$(top_srcdir)/src/access \
 	$(GETTEXT_CPPFLAGS)
 
@@ -34,6 +35,7 @@ DAEMON_GENERATED =			\
 		remote_dispatch.h	\
 		lxc_dispatch.h		\
 		qemu_dispatch.h		\
+		admin_dispatch.h	\
 		$(NULL)
 
 DAEMON_SOURCES =					\
@@ -49,6 +51,7 @@ EXTRA_DIST =						\
 	remote_dispatch.h				\
 	lxc_dispatch.h					\
 	qemu_dispatch.h					\
+	admin_dispatch.h				\
 	libvirtd.conf					\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
@@ -78,6 +81,7 @@ BUILT_SOURCES =
 REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
 LXC_PROTOCOL = $(top_srcdir)/src/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
+ADMIN_PROTOCOL = $(top_srcdir)/src/admin/admin_protocol.x
 
 remote_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL)
@@ -97,6 +101,12 @@ qemu_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/qemu_dispatch.h
 
+admin_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
+		$(ADMIN_PROTOCOL)
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl \
+	  --mode=server admin ADMIN $(ADMIN_PROTOCOL) \
+	  > $(srcdir)/admin_dispatch.h
+
 if WITH_LIBVIRTD
 
 # Build a convenience library, for reuse in tests/libvirtdconftest
@@ -115,6 +125,25 @@ libvirtd_conf_la_LDFLAGS =				\
 	$(NO_INDIRECT_LDFLAGS)				\
 	$(NULL)
 libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
+
+noinst_LTLIBRARIES += libvirtd_admin.la
+libvirtd_admin_la_SOURCES = \
+		admin_server.c \
+		../src/admin/admin_protocol.c
+
+libvirtd_admin_la_CFLAGS = \
+		$(AM_CFLAGS)		\
+		$(XDR_CFLAGS)		\
+		$(PIE_CFLAGS)		\
+		$(WARN_CFLAGS)		\
+		$(LIBXML_CFLAGS)	\
+		$(COVERAGE_CFLAGS)
+
+libvirtd_admin_la_LDFLAGS = \
+		$(PIE_LDFLAGS)		\
+		$(RELRO_LDFLAGS)	\
+		$(COVERAGE_LDFLAGS)	\
+		$(NO_INDIRECT_LDFLAGS)
 
 man8_MANS = libvirtd.8
 
@@ -168,6 +197,7 @@ endif WITH_DTRACE_PROBES
 
 libvirtd_LDADD += \
 	libvirtd_conf.la \
+	libvirtd_admin.la \
 	../src/libvirt-lxc.la \
 	../src/libvirt-qemu.la \
 	../src/libvirt_driver_remote.la \

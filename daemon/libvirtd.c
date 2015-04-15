@@ -44,6 +44,7 @@
 #include "libvirtd.h"
 #include "libvirtd-config.h"
 
+#include "admin_server.h"
 #include "viruuid.h"
 #include "remote_driver.h"
 #include "viralloc.h"
@@ -112,6 +113,7 @@ VIR_LOG_INIT("daemon.libvirtd");
 virNetSASLContextPtr saslCtxt = NULL;
 #endif
 virNetServerProgramPtr remoteProgram = NULL;
+virNetServerProgramPtr adminProgram = NULL;
 virNetServerProgramPtr qemuProgram = NULL;
 virNetServerProgramPtr lxcProgram = NULL;
 
@@ -253,18 +255,24 @@ static int
 daemonUnixSocketPaths(struct daemonConfig *config,
                       bool privileged,
                       char **sockfile,
-                      char **rosockfile)
+                      char **rosockfile,
+                      char **admsockfile)
 {
     if (config->unix_sock_dir) {
         if (virAsprintf(sockfile, "%s/libvirt-sock", config->unix_sock_dir) < 0)
             goto error;
-        if (privileged &&
-            virAsprintf(rosockfile, "%s/libvirt-sock-ro", config->unix_sock_dir) < 0)
-            goto error;
+
+        if (privileged) {
+            if (virAsprintf(rosockfile, "%s/libvirt-sock-ro", config->unix_sock_dir) < 0)
+                goto error;
+            if (virAsprintf(admsockfile, "%s/libvirt-admin-sock", config->unix_sock_dir) < 0)
+                goto error;
+        }
     } else {
         if (privileged) {
             if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock") < 0 ||
-                VIR_STRDUP(*rosockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro") < 0)
+                VIR_STRDUP(*rosockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro") < 0 ||
+                VIR_STRDUP(*admsockfile, LOCALSTATEDIR "/run/libvirt/libvirt-admin-sock") < 0)
                 goto error;
         } else {
             char *rundir = NULL;
@@ -280,7 +288,8 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             }
             umask(old_umask);
 
-            if (virAsprintf(sockfile, "%s/libvirt-sock", rundir) < 0) {
+            if (virAsprintf(sockfile, "%s/libvirt-sock", rundir) < 0 ||
+                virAsprintf(admsockfile, "%s/libvirt-admin-sock", rundir) < 0) {
                 VIR_FREE(rundir);
                 goto error;
             }
@@ -427,13 +436,16 @@ static void daemonInitialize(void)
 
 static int ATTRIBUTE_NONNULL(3)
 daemonSetupNetworking(virNetServerPtr srv,
+                      virNetServerPtr srvAdm,
                       struct daemonConfig *config,
                       const char *sock_path,
                       const char *sock_path_ro,
+                      const char *sock_path_adm,
                       bool ipsock,
                       bool privileged)
 {
     virNetServerServicePtr svc = NULL;
+    virNetServerServicePtr svcAdm = NULL;
     virNetServerServicePtr svcRO = NULL;
     virNetServerServicePtr svcTCP = NULL;
 #if WITH_GNUTLS
@@ -442,6 +454,7 @@ daemonSetupNetworking(virNetServerPtr srv,
     gid_t unix_sock_gid = 0;
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
+    int unix_sock_adm_mask = 0;
 
     unsigned int cur_fd = STDERR_FILENO + 1;
     unsigned int nfds = virGetListenFDs();
@@ -458,6 +471,11 @@ daemonSetupNetworking(virNetServerPtr srv,
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_ro_perms);
+        goto error;
+    }
+
+    if (virStrToLong_i(config->unix_sock_admin_perms, NULL, 8, &unix_sock_adm_mask) != 0) {
+        VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_admin_perms);
         goto error;
     }
 
@@ -501,6 +519,24 @@ daemonSetupNetworking(virNetServerPtr srv,
 
     if (svcRO &&
         virNetServerAddService(srv, svcRO, NULL) < 0)
+        goto error;
+
+    if (sock_path_adm) {
+        VIR_DEBUG("Registering unix socket %s", sock_path_adm);
+        if (!(svcAdm = virNetServerServiceNewUNIX(sock_path_adm,
+                                                  unix_sock_adm_mask,
+                                                  unix_sock_gid,
+                                                  REMOTE_AUTH_NONE,
+#if WITH_GNUTLS
+                                                  NULL,
+#endif
+                                                  true,
+                                                  config->admin_max_queued_clients,
+                                                  config->admin_max_client_requests)))
+            goto error;
+    }
+
+    if (virNetServerAddService(srvAdm, svcAdm, NULL) < 0)
         goto error;
 
     if (ipsock) {
@@ -602,6 +638,7 @@ daemonSetupNetworking(virNetServerPtr srv,
     virObjectUnref(svcTCP);
     virObjectUnref(svc);
     virObjectUnref(svcRO);
+    virObjectUnref(svcAdm);
     return -1;
 }
 
@@ -1102,6 +1139,7 @@ daemonUsage(const char *argv0, bool privileged)
 int main(int argc, char **argv) {
     virNetDaemonPtr dmn = NULL;
     virNetServerPtr srv = NULL;
+    virNetServerPtr srvAdm = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
@@ -1109,6 +1147,7 @@ int main(int argc, char **argv) {
     char *pid_file = NULL;
     char *sock_file = NULL;
     char *sock_file_ro = NULL;
+    char *sock_file_adm = NULL;
     int timeout = -1;        /* -t: Shutdown timeout */
     int verbose = 0;
     int godaemon = 0;
@@ -1276,12 +1315,15 @@ int main(int argc, char **argv) {
     if (daemonUnixSocketPaths(config,
                               privileged,
                               &sock_file,
-                              &sock_file_ro) < 0) {
+                              &sock_file_ro,
+                              &sock_file_adm) < 0) {
         VIR_ERROR(_("Can't determine socket paths"));
         exit(EXIT_FAILURE);
     }
-    VIR_DEBUG("Decided on socket paths '%s' and '%s'",
-              sock_file, NULLSTR(sock_file_ro));
+    VIR_DEBUG("Decided on socket paths '%s', '%s' and '%s'",
+              sock_file,
+              NULLSTR(sock_file_ro),
+              NULLSTR(sock_file_adm));
 
     if (godaemon) {
         char ebuf[1024];
@@ -1413,6 +1455,40 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (!(srvAdm = virNetServerNew(config->admin_min_workers,
+                                   config->admin_max_workers,
+                                   0,
+                                   config->admin_max_clients,
+                                   0,
+                                   config->admin_keepalive_interval,
+                                   config->admin_keepalive_count,
+                                   !!config->admin_keepalive_required,
+                                   NULL,
+                                   remoteAdmClientInitHook,
+                                   NULL,
+                                   remoteAdmClientFreeFunc,
+                                   dmn))) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
+    if (virNetDaemonAddServer(dmn, srvAdm) < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
+    if (!(adminProgram = virNetServerProgramNew(ADMIN_PROGRAM,
+                                                ADMIN_PROTOCOL_VERSION,
+                                                adminProcs,
+                                                adminNProcs))) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+    if (virNetServerAddProgram(srvAdm, adminProgram) < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
         virNetDaemonAutoShutdown(dmn, timeout);
@@ -1453,8 +1529,11 @@ int main(int argc, char **argv) {
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-", VIR_HOOK_DAEMON_OP_START,
                 0, "start", NULL, NULL);
 
-    if (daemonSetupNetworking(srv, config,
-                              sock_file, sock_file_ro,
+    if (daemonSetupNetworking(srv, srvAdm,
+                              config,
+                              sock_file,
+                              sock_file_ro,
+                              sock_file_adm,
                               ipsock, privileged) < 0) {
         ret = VIR_DAEMON_ERR_NETWORK;
         goto cleanup;
@@ -1507,9 +1586,11 @@ int main(int argc, char **argv) {
     virObjectUnref(remoteProgram);
     virObjectUnref(lxcProgram);
     virObjectUnref(qemuProgram);
+    virObjectUnref(adminProgram);
     virNetDaemonClose(dmn);
     virObjectUnref(dmn);
     virObjectUnref(srv);
+    virObjectUnref(srvAdm);
     virNetlinkShutdown();
     if (statuswrite != -1) {
         if (ret != 0) {
@@ -1526,6 +1607,7 @@ int main(int argc, char **argv) {
 
     VIR_FREE(sock_file);
     VIR_FREE(sock_file_ro);
+    VIR_FREE(sock_file_adm);
     VIR_FREE(pid_file);
     VIR_FREE(remote_config_file);
     VIR_FREE(run_dir);

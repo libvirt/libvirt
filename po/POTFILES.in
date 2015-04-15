@@ -1,3 +1,4 @@
+daemon/admin_server.c
 daemon/libvirtd-config.c
 daemon/libvirtd.c
 daemon/qemu_dispatch.h

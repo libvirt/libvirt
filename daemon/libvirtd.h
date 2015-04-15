@@ -1,7 +1,7 @@
 /*
  * libvirtd.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -30,9 +30,11 @@
 # include <rpc/types.h>
 # include <rpc/xdr.h>
 # include "remote_protocol.h"
+# include "admin_protocol.h"
 # include "lxc_protocol.h"
 # include "qemu_protocol.h"
 # include "virthread.h"
+
 # if WITH_SASL
 #  include "virnetsaslcontext.h"
 # endif
@@ -42,6 +44,8 @@ typedef struct daemonClientStream daemonClientStream;
 typedef daemonClientStream *daemonClientStreamPtr;
 typedef struct daemonClientPrivate daemonClientPrivate;
 typedef daemonClientPrivate *daemonClientPrivatePtr;
+typedef struct daemonAdmClientPrivate daemonAdmClientPrivate;
+typedef daemonAdmClientPrivate *daemonAdmClientPrivatePtr;
 typedef struct daemonClientEventCallback daemonClientEventCallback;
 typedef daemonClientEventCallback *daemonClientEventCallbackPtr;
 
@@ -69,6 +73,14 @@ struct daemonClientPrivate {
 
     daemonClientStreamPtr streams;
     bool keepalive_supported;
+};
+
+/* Separate private data for admin connection */
+struct daemonAdmClientPrivate {
+    /* Just a placeholder, not that there is anything to be locked */
+    virMutex lock;
+
+    virNetDaemonPtr dmn;
 };
 
 # if WITH_SASL
