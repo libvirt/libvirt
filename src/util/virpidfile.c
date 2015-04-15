@@ -556,11 +556,8 @@ virPidFileConstructPath(bool privileged,
             goto cleanup;
         }
 
-        if (virAsprintf(pidfile, "%s/%s.pid", rundir, progname) < 0) {
-            VIR_FREE(rundir);
+        if (virAsprintf(pidfile, "%s/%s.pid", rundir, progname) < 0)
             goto cleanup;
-        }
-
     }
 
     ret = 0;
