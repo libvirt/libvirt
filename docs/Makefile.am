@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2014 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -128,8 +128,16 @@ lxc_xml = \
   libvirt-lxc-api.xml \
   libvirt-lxc-refs.xml
 
+admin_xml = \
+  libvirt-admin-api.xml \
+  libvirt-admin-refs.xml
+
 apidir = $(pkgdatadir)/api
-api_DATA = libvirt-api.xml libvirt-qemu-api.xml libvirt-lxc-api.xml
+api_DATA = \
+       libvirt-api.xml \
+       libvirt-qemu-api.xml \
+       libvirt-lxc-api.xml \
+       libvirt-admin-api.xml
 
 fig = \
   libvirt-net-logical.fig \
@@ -149,7 +157,7 @@ EXTRA_DIST=					\
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
-  $(xml) $(qemu_xml) $(lxc_xml) $(fig) $(png) $(css) \
+  $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in aclperms.htmlinc \
@@ -174,6 +182,7 @@ all-am: web
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 lxc_api: $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
+admin_api: $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 
 web: $(dot_html) $(internals_html) html/index.html devhelp/index.html \
   $(dot_php)
@@ -274,6 +283,7 @@ $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 python_generated_files = \
 		$(srcdir)/html/libvirt-libvirt-lxc.html \
 		$(srcdir)/html/libvirt-libvirt-qemu.html \
+		$(srcdir)/html/libvirt-libvirt-admin.html \
 		$(srcdir)/html/libvirt-virterror.html \
 		$(srcdir)/libvirt-api.xml \
 		$(srcdir)/libvirt-refs.xml \
@@ -281,6 +291,8 @@ python_generated_files = \
 		$(srcdir)/libvirt-lxc-refs.xml \
 		$(srcdir)/libvirt-qemu-api.xml \
 		$(srcdir)/libvirt-qemu-refs.xml \
+		$(srcdir)/libvirt-admin-api.xml \
+		$(srcdir)/libvirt-admin-refs.xml \
 		$(NULL)
 
 APIBUILD=$(srcdir)/apibuild.py
@@ -304,10 +316,12 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/include/libvirt/libvirt-stream.h \
 		$(top_srcdir)/include/libvirt/libvirt-lxc.h \
 		$(top_srcdir)/include/libvirt/libvirt-qemu.h \
+		$(top_srcdir)/include/libvirt/libvirt-admin.h \
 		$(top_srcdir)/include/libvirt/virterror.h \
 		$(top_srcdir)/src/libvirt.c \
 		$(top_srcdir)/src/libvirt-lxc.c \
 		$(top_srcdir)/src/libvirt-qemu.c \
+		$(top_srcdir)/src/libvirt-admin.c \
 		$(top_srcdir)/src/util/virerror.c \
 		$(top_srcdir)/src/util/virevent.c \
 		$(top_srcdir)/src/util/virtypedparam.c
@@ -326,9 +340,10 @@ maintainer-clean-local: clean-local
 		todo.html.in
 	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 	rm -rf $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
+	rm -rf $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 	rm -rf $(APIBUILD_STAMP)
 
-rebuild: api qemu_api lxc_api all
+rebuild: api qemu_api lxc_api admin_api all
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)

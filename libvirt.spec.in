@@ -2328,6 +2328,7 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
+%{_datadir}/libvirt/api/libvirt-admin-api.xml
 
 
 %doc docs/*.html docs/html docs/*.gif

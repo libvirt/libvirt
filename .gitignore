@@ -69,6 +69,7 @@
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
 /docs/hvsupport.html.in
+/docs/libvirt-admin-*.xml
 /docs/libvirt-api.xml
 /docs/libvirt-lxc-*.xml
 /docs/libvirt-qemu-*.xml
