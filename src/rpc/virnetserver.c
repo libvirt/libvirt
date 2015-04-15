@@ -884,3 +884,13 @@ virNetServerStart(virNetServerPtr srv)
 
     return virNetServerMDNSStart(srv->mdns);
 }
+
+size_t
+virNetServerGetNClients(virNetServerPtr srv)
+{
+    size_t ret = 0;
+    virObjectLock(srv);
+    ret = srv->nclients;
+    virObjectUnlock(srv);
+    return ret;
+}

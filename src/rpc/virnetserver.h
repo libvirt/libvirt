@@ -90,4 +90,6 @@ void virNetServerUpdateServices(virNetServerPtr srv, bool enabled);
 
 int virNetServerStart(virNetServerPtr srv);
 
+size_t virNetServerGetNClients(virNetServerPtr srv);
+
 #endif /* __VIR_NET_SERVER_H__ */
