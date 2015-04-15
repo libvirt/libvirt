@@ -1,0 +1,8 @@
+/* -*- c -*- */
+struct admin_connect_open_args {
+        u_int                      flags;
+};
+enum admin_procedure {
+        ADMIN_PROC_CONNECT_OPEN = 1,
+        ADMIN_PROC_CONNECT_CLOSE = 2,
+};

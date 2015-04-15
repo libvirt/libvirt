@@ -392,6 +392,16 @@ REMOTE_DRIVER_SOURCES =						\
 EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 		$(REMOTE_DRIVER_GENERATED)
 
+ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
+
+ADMIN_PROTOCOL_GENERATED = \
+		admin/admin_protocol.c	\
+		admin/admin_protocol.h
+
+EXTRA_DIST += $(ADMIN_PROTOCOL) $(ADMIN_PROTOCOL_GENERATED)
+BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
+MAINTAINERCLEANFILES += $(ADMIN_PROTOCOL_GENERATED)
+
 # Ensure that we don't change the struct or member names or member ordering
 # in remote_protocol.x  The embedded perl below needs a few comments, and
 # presumes you know what pdwtags output looks like:
@@ -412,7 +422,9 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 # The alternation of the following regexps matches both cases.
 r1 = /\* \d+ \*/
 r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
-struct_prefix = (remote_|qemu_|lxc_|keepalive|vir(Net|LockSpace|LXCMonitor))
+libs_prefix = remote_|qemu_|lxc_|admin_
+other_prefix = keepalive|vir(Net|LockSpace|LXCMonitor)
+struct_prefix = ($(libs_prefix)|$(other_prefix))
 
 # Depending on configure options, libtool creates one or both of
 # remote/{,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want
@@ -2078,7 +2090,8 @@ RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/remote/lxc_protocol.x \
 		  $(srcdir)/remote/qemu_protocol.x \
 		  $(srcdir)/lxc/lxc_monitor_protocol.x \
-		  $(srcdir)/locking/lock_protocol.x
+		  $(srcdir)/locking/lock_protocol.x \
+		  $(srcdir)/admin/admin_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gensystemtap.pl $(RPC_PROBE_FILES) > $@
