@@ -975,6 +975,13 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
         qemuDriverLock(driver);
     }
 
+    if (driver->caps->nguests == 0 && !refresh) {
+        VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
+            "refresh.");
+        qemuDriverUnlock(driver);
+        return virQEMUDriverGetCapabilities(driver, true);
+    }
+
     ret = virObjectRef(driver->caps);
     qemuDriverUnlock(driver);
     return ret;
