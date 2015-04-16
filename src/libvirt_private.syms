@@ -400,6 +400,8 @@ virDomainObjSetDefTransient;
 virDomainObjSetMetadata;
 virDomainObjSetState;
 virDomainObjTaint;
+virDomainOSTypeFromString;
+virDomainOSTypeToString;
 virDomainParseMemory;
 virDomainPausedReasonTypeFromString;
 virDomainPausedReasonTypeToString;

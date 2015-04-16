@@ -32,6 +32,7 @@
 #include "cpu_conf.h"
 #include "virerror.h"
 #include "virstring.h"
+#include "domain_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
@@ -154,8 +155,6 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     size_t i;
     if (guest == NULL)
         return;
-
-    VIR_FREE(guest->ostype);
 
     VIR_FREE(guest->arch.defaultInfo.emulator);
     VIR_FREE(guest->arch.defaultInfo.loader);
@@ -408,7 +407,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
  */
 virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
-                        const char *ostype,
+                        const char *ostypestr,
                         virArch arch,
                         const char *emulator,
                         const char *loader,
@@ -416,13 +415,18 @@ virCapabilitiesAddGuest(virCapsPtr caps,
                         virCapsGuestMachinePtr *machines)
 {
     virCapsGuestPtr guest;
+    int ostype;
 
     if (VIR_ALLOC(guest) < 0)
         goto error;
 
-    if (VIR_STRDUP(guest->ostype, ostype) < 0)
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
         goto error;
+    }
 
+    guest->ostype = ostype;
     guest->arch.id = arch;
     guest->arch.wordsize = virArchGetWordSize(arch);
 
@@ -603,11 +607,19 @@ virCapabilitiesSupportsGuestArch(virCapsPtr caps,
  */
 extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
-                                   const char *ostype)
+                                   const char *ostypestr)
 {
     size_t i;
+    int ostype;
+
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
+        return 0;
+    }
+
     for (i = 0; i < caps->nguests; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype))
+        if (caps->guests[i]->ostype == ostype)
             return 1;
     }
     return 0;
@@ -625,12 +637,20 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
  */
 extern int
 virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
-                                       const char *ostype,
+                                       const char *ostypestr,
                                        virArch arch)
 {
     size_t i;
+    int ostype;
+
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
+        return 0;
+    }
+
     for (i = 0; i < caps->nguests; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype) &&
+        if (caps->guests[i]->ostype == ostype &&
             caps->guests[i]->arch.id == arch)
             return 1;
     }
@@ -648,14 +668,21 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
  */
 extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                const char *ostype,
+                                const char *ostypestr,
                                 const char *domain)
 {
     size_t i, j;
+    int ostype;
+
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
+        return VIR_ARCH_NONE;
+    }
 
     /* First try to find one matching host arch */
     for (i = 0; i < caps->nguests; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype)) {
+        if (caps->guests[i]->ostype == ostype) {
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
                 if (STREQ(caps->guests[i]->arch.domains[j]->type, domain) &&
                     caps->guests[i]->arch.id == caps->host.arch)
@@ -666,7 +693,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
 
     /* Otherwise find the first match */
     for (i = 0; i < caps->nguests; i++) {
-        if (STREQ(caps->guests[i]->ostype, ostype)) {
+        if (caps->guests[i]->ostype == ostype) {
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
                 if (STREQ(caps->guests[i]->arch.domains[j]->type, domain))
                     return caps->guests[i]->arch.id;
@@ -690,17 +717,24 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
  */
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
-                                   const char *ostype,
+                                   const char *ostypestr,
                                    virArch arch,
                                    const char *domain)
 {
     size_t i;
+    int ostype;
+
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
+        return NULL;
+    }
 
     for (i = 0; i < caps->nguests; i++) {
         virCapsGuestPtr guest = caps->guests[i];
         size_t j;
 
-        if (!STREQ(guest->ostype, ostype) ||
+        if (guest->ostype != ostype ||
             guest->arch.id != arch)
             continue;
 
@@ -736,14 +770,22 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
  */
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
-                                    const char *ostype,
+                                    const char *ostypestr,
                                     virArch arch,
                                     const char *domain)
 {
     size_t i, j;
+    int ostype;
+
+    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown OS type '%s'"), ostypestr);
+        return NULL;
+    }
+
     for (i = 0; i < caps->nguests; i++) {
         char *emulator;
-        if (STREQ(caps->guests[i]->ostype, ostype) &&
+        if (caps->guests[i]->ostype == ostype &&
             caps->guests[i]->arch.id == arch) {
             emulator = caps->guests[i]->arch.defaultInfo.emulator;
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
@@ -944,7 +986,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&buf, "<guest>\n");
         virBufferAdjustIndent(&buf, 2);
         virBufferAsprintf(&buf, "<os_type>%s</os_type>\n",
-                          caps->guests[i]->ostype);
+                          virDomainOSTypeToString(caps->guests[i]->ostype));
         if (caps->guests[i]->arch.id)
             virBufferAsprintf(&buf, "<arch name='%s'>\n",
                               virArchToString(caps->guests[i]->arch.id));

@@ -79,7 +79,7 @@ struct _virCapsGuestArch {
 typedef struct _virCapsGuest virCapsGuest;
 typedef virCapsGuest *virCapsGuestPtr;
 struct _virCapsGuest {
-    char *ostype;
+    int ostype;
     virCapsGuestArch arch;
     size_t nfeatures;
     size_t nfeatures_max;

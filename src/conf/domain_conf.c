@@ -122,6 +122,14 @@ VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "parallels",
               "bhyve")
 
+VIR_ENUM_IMPL(virDomainOS, VIR_DOMAIN_OSTYPE_LAST,
+              "hvm",
+              "xen",
+              "linux",
+              "exe",
+              "uml",
+              "aix")
+
 VIR_ENUM_IMPL(virDomainBoot, VIR_DOMAIN_BOOT_LAST,
               "fd",
               "cdrom",

@@ -68,7 +68,7 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         const char *boot;
 
         for (i = 0; i < caps->nguests; i++) {
-            if (STREQ(caps->guests[i]->ostype, "hvm") &&
+            if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
                 caps->guests[i]->arch.id == def->os.arch) {
                 if (VIR_ALLOC(def->os.loader) < 0 ||
                     VIR_STRDUP(def->os.loader->path,
