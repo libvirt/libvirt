@@ -164,7 +164,7 @@ int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms)
     struct timespec ts;
 
     ts.tv_sec = whenms / 1000;
-    ts.tv_nsec = (whenms % 1000) * 1000;
+    ts.tv_nsec = (whenms % 1000) * 1000000;
 
     if ((ret = pthread_cond_timedwait(&c->cond, &m->lock, &ts)) != 0) {
         errno = ret;
