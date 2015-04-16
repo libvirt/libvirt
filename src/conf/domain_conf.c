@@ -14638,8 +14638,8 @@ virDomainDefParseXML(xmlDocPtr xml,
             if (VIR_STRDUP(def->os.type, "xen") < 0)
                 goto error;
         } else {
-            virReportError(VIR_ERR_OS_TYPE,
-                           "%s", _("no OS type"));
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("an os <type> must be specified"));
             goto error;
         }
     }
@@ -14656,8 +14656,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
-        virReportError(VIR_ERR_OS_TYPE,
-                       "%s", def->os.type);
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("no support found for os <type> '%s'"),
+                       def->os.type);
         goto error;
     }
 
