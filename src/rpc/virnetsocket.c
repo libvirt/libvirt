@@ -622,7 +622,7 @@ int virNetSocketNewConnectUNIX(const char *path,
         usleep(5000);
     }
 
-    if (lockfd) {
+    if (lockfd != -1) {
         unlink(lockpath);
         VIR_FORCE_CLOSE(lockfd);
         VIR_FREE(lockpath);
@@ -640,12 +640,13 @@ int virNetSocketNewConnectUNIX(const char *path,
     return 0;
 
  error:
-    if (lockfd)
+    if (lockfd != -1) {
         unlink(lockpath);
+        VIR_FORCE_CLOSE(lockfd);
+    }
     VIR_FREE(lockpath);
     VIR_FREE(rundir);
     VIR_FORCE_CLOSE(fd);
-    VIR_FORCE_CLOSE(lockfd);
     return -1;
 }
 #else
