@@ -466,11 +466,8 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
                            _("Missing ID parameter for domain object"));
             return -1;
         }
-        if (priv->pid == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing PID parameter for domain object"));
-            return -1;
-        }
+        if (priv->pid == 0)
+            VIR_DEBUG("Missing PID parameter for domain object");
         if (!priv->name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing name parameter for domain object"));

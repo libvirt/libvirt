@@ -678,7 +678,7 @@ virLockDaemonClientFree(void *opaque)
                     signum = SIGKILL;
                 else
                     signum = 0;
-                if (virProcessKill(priv->clientPid, signum) < 0) {
+                if (priv->clientPid != 0 && virProcessKill(priv->clientPid, signum) < 0) {
                     if (errno == ESRCH)
                         break;
 
