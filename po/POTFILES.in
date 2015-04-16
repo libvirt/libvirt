@@ -112,6 +112,7 @@ src/parallels/parallels_utils.h
 src/parallels/parallels_storage.c
 src/phyp/phyp_driver.c
 src/qemu/qemu_agent.c
+src/qemu/qemu_blockjob.c
 src/qemu/qemu_capabilities.c
 src/qemu/qemu_cgroup.c
 src/qemu/qemu_command.c

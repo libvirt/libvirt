@@ -31,6 +31,8 @@
 
 #include "virlog.h"
 #include "virstoragefile.h"
+#include "virthread.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -164,4 +166,166 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         qemuDomainEventQueue(driver, event2);
 
     virObjectUnref(cfg);
+}
+
+
+/**
+ * qemuBlockJobSyncBegin:
+ * @disk: domain disk
+ *
+ * Begin a new synchronous block job for @disk. The synchronous
+ * block job is ended by a call to qemuBlockJobSyncEnd, or by
+ * the guest quitting.
+ *
+ * During a synchronous block job, a block job event for @disk
+ * will not be processed asynchronously. Instead, it will be
+ * processed only when qemuBlockJobSyncWait* or
+ * qemuBlockJobSyncEnd is called.
+ */
+void
+qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
+{
+    if (disk->blockJobSync)
+        VIR_WARN("Disk %s already has synchronous block job",
+                 disk->dst);
+
+    disk->blockJobSync = true;
+}
+
+
+/**
+ * qemuBlockJobSyncEnd:
+ * @driver: qemu driver
+ * @vm: domain
+ * @disk: domain disk
+ * @ret_status: pointer to virConnectDomainEventBlockJobStatus
+ *
+ * End a synchronous block job for @disk. Any pending block job event
+ * for the disk is processed, and its status is recorded in the
+ * virConnectDomainEventBlockJobStatus field pointed to by
+ * @ret_status.
+ */
+void
+qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
+                    virDomainObjPtr vm,
+                    virDomainDiskDefPtr disk,
+                    virConnectDomainEventBlockJobStatus *ret_status)
+{
+    if (disk->blockJobSync && disk->blockJobStatus != -1) {
+        if (ret_status)
+            *ret_status = disk->blockJobStatus;
+        qemuBlockJobEventProcess(driver, vm, disk,
+                                 disk->blockJobType,
+                                 disk->blockJobStatus);
+        disk->blockJobStatus = -1;
+    }
+    disk->blockJobSync = false;
+}
+
+
+/**
+ * qemuBlockJobSyncWaitWithTimeout:
+ * @driver: qemu driver
+ * @vm: domain
+ * @disk: domain disk
+ * @timeout: timeout in milliseconds
+ * @ret_status: pointer to virConnectDomainEventBlockJobStatus
+ *
+ * Wait up to @timeout milliseconds for a block job event for @disk.
+ * If an event is received it is processed, and its status is recorded
+ * in the virConnectDomainEventBlockJobStatus field pointed to by
+ * @ret_status.
+ *
+ * If @timeout is not 0, @vm will be unlocked while waiting for the event.
+ *
+ * Returns 0 if an event was received or the timeout expired,
+ *        -1 otherwise.
+ */
+int
+qemuBlockJobSyncWaitWithTimeout(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainDiskDefPtr disk,
+                                unsigned long long timeout,
+                                virConnectDomainEventBlockJobStatus *ret_status)
+{
+    if (!disk->blockJobSync) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No current synchronous block job"));
+        return -1;
+    }
+
+    while (disk->blockJobSync && disk->blockJobStatus == -1) {
+        int r;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("guest unexpectedly quit"));
+            disk->blockJobSync = false;
+            return -1;
+        }
+
+        if (timeout == (unsigned long long)-1) {
+            r = virCondWait(&disk->blockJobSyncCond, &vm->parent.lock);
+        } else if (timeout) {
+            unsigned long long now;
+            if (virTimeMillisNow(&now) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to get current time"));
+                return -1;
+            }
+            r = virCondWaitUntil(&disk->blockJobSyncCond, &vm->parent.lock,
+                                 now + timeout);
+            if (r < 0 && errno == ETIMEDOUT)
+                return 0;
+        } else {
+            errno = ETIMEDOUT;
+            return 0;
+        }
+
+        if (r < 0) {
+            disk->blockJobSync = false;
+            virReportSystemError(errno, "%s",
+                                 _("Unable to wait on block job sync "
+                                   "condition"));
+            return -1;
+        }
+    }
+
+    if (ret_status)
+        *ret_status = disk->blockJobStatus;
+    qemuBlockJobEventProcess(driver, vm, disk,
+                             disk->blockJobType,
+                             disk->blockJobStatus);
+    disk->blockJobStatus = -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockJobSyncWait:
+ * @driver: qemu driver
+ * @vm: domain
+ * @disk: domain disk
+ * @ret_status: pointer to virConnectDomainEventBlockJobStatus
+ *
+ * Wait for a block job event for @disk. If an event is received it
+ * is processed, and its status is recorded in the
+ * virConnectDomainEventBlockJobStatus field pointed to by
+ * @ret_status.
+ *
+ * @vm will be unlocked while waiting for the event.
+ *
+ * Returns 0 if an event was received,
+ *        -1 otherwise.
+ */
+int
+qemuBlockJobSyncWait(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     virDomainDiskDefPtr disk,
+                     virConnectDomainEventBlockJobStatus *ret_status)
+{
+    return qemuBlockJobSyncWaitWithTimeout(driver, vm, disk,
+                                           (unsigned long long)-1,
+                                           ret_status);
 }
