@@ -396,7 +396,14 @@ ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 
 ADMIN_PROTOCOL_GENERATED = \
 		admin/admin_protocol.c	\
-		admin/admin_protocol.h
+		admin/admin_protocol.h	\
+		admin/admin_client.h
+
+admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
+		$(ADMIN_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
+	  admin ADMIN $(ADMIN_PROTOCOL) \
+	  > $(srcdir)/admin/admin_client.h
 
 EXTRA_DIST += $(ADMIN_PROTOCOL) $(ADMIN_PROTOCOL_GENERATED)
 BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)

@@ -1070,13 +1070,16 @@ bracket-spacing-check:
 sc_po_check: \
 		$(srcdir)/daemon/remote_dispatch.h \
 		$(srcdir)/daemon/qemu_dispatch.h \
-		$(srcdir)/src/remote/remote_client_bodies.h
+		$(srcdir)/src/remote/remote_client_bodies.h \
+		$(srcdir)/src/admin/admin_client.h
 $(srcdir)/daemon/remote_dispatch.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C daemon remote_dispatch.h
 $(srcdir)/daemon/qemu_dispatch.h: $(srcdir)/src/remote/qemu_protocol.x
 	$(MAKE) -C daemon qemu_dispatch.h
 $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C src remote/remote_client_bodies.h
+$(srcdir)/src/admin/admin_client.h: $(srcdir)/src/admin/admin_protocol.x
+	$(MAKE) -C src admin/admin_client.h
 
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/virsh\.h$$

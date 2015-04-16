@@ -111,6 +111,7 @@
 /src/access/viraccessapichecklxc.h
 /src/access/viraccessapicheckqemu.c
 /src/access/viraccessapicheckqemu.h
+/src/admin/admin_client.h
 /src/admin/admin_protocol.[ch]
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
