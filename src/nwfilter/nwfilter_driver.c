@@ -176,9 +176,6 @@ nwfilterStateInitialize(bool privileged,
     char *base = NULL;
     DBusConnection *sysbus = NULL;
 
-    if (!privileged)
-        return 0;
-
     if (virDBusHasSystemBus() &&
         !(sysbus = virDBusGetSystemBus()))
         return -1;
@@ -192,6 +189,9 @@ nwfilterStateInitialize(bool privileged,
     /* remember that we are going to use firewalld */
     driver->watchingFirewallD = (sysbus != NULL);
     driver->privileged = privileged;
+
+    if (!privileged)
+        return 0;
 
     nwfilterDriverLock();
 
@@ -534,6 +534,12 @@ nwfilterDefineXML(virConnectPtr conn,
     virNWFilterDefPtr def;
     virNWFilterObjPtr nwfilter = NULL;
     virNWFilterPtr ret = NULL;
+
+    if (!driver->privileged) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Can't define NWFilters in session mode"));
+        return NULL;
+    }
 
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
