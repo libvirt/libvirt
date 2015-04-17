@@ -35,7 +35,7 @@ testCapsInit(void)
 
     /* i686 guest */
     guest =
-      virCapabilitiesAddGuest(caps, "hvm",
+      virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                               VIR_ARCH_I686,
                               NULL, NULL, 0, NULL);
 
@@ -49,7 +49,7 @@ testCapsInit(void)
 
     /* x86_64 guest */
     guest =
-      virCapabilitiesAddGuest(caps, "hvm",
+      virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                               VIR_ARCH_X86_64,
                               NULL, NULL, 0, NULL);
 

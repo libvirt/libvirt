@@ -322,7 +322,7 @@ static virCapsPtr vboxCapsInit(void)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,
-                                         "hvm",
+                                         VIR_DOMAIN_OSTYPE_HVM,
                                          caps->host.arch,
                                          NULL,
                                          NULL,

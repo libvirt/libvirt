@@ -314,7 +314,8 @@ testBuildCapabilities(virConnectPtr conn)
     testConnPtr privconn = conn->privateData;
     virCapsPtr caps;
     virCapsGuestPtr guest;
-    const char *const guest_types[] = { "hvm", "xen" };
+    int guest_types[] = { VIR_DOMAIN_OSTYPE_HVM,
+                          VIR_DOMAIN_OSTYPE_XEN };
     size_t i;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686, false, false)) == NULL)

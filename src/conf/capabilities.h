@@ -236,7 +236,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
 
 extern virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
-                        const char *ostype,
+                        int ostype,
                         virArch arch,
                         const char *emulator,
                         const char *loader,

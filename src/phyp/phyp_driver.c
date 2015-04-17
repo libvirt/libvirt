@@ -342,7 +342,7 @@ phypCapsInit(void)
     }
 
     if ((guest = virCapabilitiesAddGuest(caps,
-                                         "linux",
+                                         VIR_DOMAIN_OSTYPE_LINUX,
                                          caps->host.arch,
                                          NULL, NULL, 0, NULL)) == NULL)
         goto no_memory;

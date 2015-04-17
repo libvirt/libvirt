@@ -146,7 +146,7 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC64,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
                                     "/usr/bin/qemu-system-ppc64", NULL,
                                      1, machines);
     if (!guest)
@@ -173,7 +173,7 @@ static int testQemuAddPPC64LEGuest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC64LE,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64LE,
                                     "/usr/bin/qemu-system-ppc64", NULL,
                                      1, machines);
     if (!guest)
@@ -203,7 +203,7 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_PPC,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC,
                                     "/usr/bin/qemu-system-ppc", NULL,
                                      1, machines);
     if (!guest)
@@ -232,7 +232,7 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     if (!machines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_S390X,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
                                     "/usr/bin/qemu-system-s390x", NULL,
                                     ARRAY_CARDINALITY(s390_machines),
                                     machines);
@@ -262,7 +262,7 @@ static int testQemuAddArmGuest(virCapsPtr caps)
     if (!capsmachines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_ARMV7L,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV7L,
                                     "/usr/bin/qemu-system-arm", NULL,
                                     ARRAY_CARDINALITY(machines),
                                     capsmachines);
@@ -290,7 +290,7 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
     if (!capsmachines)
         goto error;
 
-    guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_AARCH64,
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
                                     "/usr/bin/qemu-system-aarch64", NULL,
                                     ARRAY_CARDINALITY(machines),
                                     capsmachines);
@@ -339,7 +339,7 @@ virCapsPtr testQemuCapsInit(void)
     if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
                                          "/usr/bin/qemu", NULL,
                                          nmachines, machines)) == NULL ||
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
@@ -357,7 +357,7 @@ virCapsPtr testQemuCapsInit(void)
     if ((machines = testQemuAllocNewerMachines(&nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                          "/usr/bin/qemu-system-x86_64", NULL,
                                          nmachines, machines)) == NULL ||
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
@@ -388,7 +388,7 @@ virCapsPtr testQemuCapsInit(void)
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_X86_64,
                                          "/usr/bin/xenner", NULL,
                                          nmachines, machines)) == NULL)
         goto cleanup;

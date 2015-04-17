@@ -707,7 +707,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
 static int
 get_definition(vahControl * ctl, const char *xmlStr)
 {
-    int rc = -1;
+    int rc = -1, ostype;
     virCapsGuestPtr guest;  /* this is freed when caps is freed */
 
     /*
@@ -727,8 +727,13 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
+    if ((ostype = virDomainOSTypeFromString(ctl->hvm)) < 0) {
+        vah_error(ctl, 0, _("unknown OS type"));
+        goto exit;
+    }
+
     if ((guest = virCapabilitiesAddGuest(ctl->caps,
-                                         ctl->hvm,
+                                         ostype,
                                          ctl->arch,
                                          NULL,
                                          NULL,

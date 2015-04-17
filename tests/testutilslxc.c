@@ -17,7 +17,8 @@ virCapsPtr testLXCCapsInit(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_I686,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                         VIR_ARCH_I686,
                                          "/usr/libexec/libvirt_lxc", NULL,
                                          0, NULL)) == NULL)
         goto error;
@@ -26,7 +27,8 @@ virCapsPtr testLXCCapsInit(void)
         goto error;
 
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                         VIR_ARCH_X86_64,
                                          "/usr/libexec/libvirt_lxc", NULL,
                                          0, NULL)) == NULL)
         goto error;

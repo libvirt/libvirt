@@ -393,7 +393,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
 /**
  * virCapabilitiesAddGuest:
  * @caps: capabilities to extend
- * @ostype: guest operating system type ('hvm' or 'xen')
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: guest CPU architecture
  * @wordsize: number of bits in CPU word
  * @emulator: path to default device emulator for arch/ostype
@@ -407,7 +407,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
  */
 virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
-                        const char *ostypestr,
+                        int ostype,
                         virArch arch,
                         const char *emulator,
                         const char *loader,
@@ -415,16 +415,9 @@ virCapabilitiesAddGuest(virCapsPtr caps,
                         virCapsGuestMachinePtr *machines)
 {
     virCapsGuestPtr guest;
-    int ostype;
 
     if (VIR_ALLOC(guest) < 0)
         goto error;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        goto error;
-    }
 
     guest->ostype = ostype;
     guest->arch.id = arch;

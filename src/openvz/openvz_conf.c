@@ -179,7 +179,7 @@ virCapsPtr openvzCapsInit(void)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,
-                                         "exe",
+                                         VIR_DOMAIN_OSTYPE_EXE,
                                          caps->host.arch,
                                          NULL,
                                          NULL,

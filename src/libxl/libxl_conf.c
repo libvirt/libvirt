@@ -425,7 +425,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
             return -1;
 
         if ((guest = virCapabilitiesAddGuest(caps,
-                                             guest_archs[i].hvm ? "hvm" : "xen",
+                                             guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_XEN,
                                              guest_archs[i].arch,
                                              LIBXL_EXECBIN_DIR "/qemu-system-i386",
                                              (guest_archs[i].hvm ?

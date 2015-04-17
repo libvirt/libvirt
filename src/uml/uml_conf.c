@@ -80,7 +80,7 @@ virCapsPtr umlCapsInit(void)
     }
 
     if ((guest = virCapabilitiesAddGuest(caps,
-                                         "uml",
+                                         VIR_DOMAIN_OSTYPE_UML,
                                          caps->host.arch,
                                          NULL,
                                          NULL,

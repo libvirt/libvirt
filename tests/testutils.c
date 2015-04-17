@@ -935,7 +935,7 @@ virCapsPtr virTestGenericCapsInit(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
                                          "/usr/bin/acme-virt", NULL,
                                          0, NULL)) == NULL)
         goto error;
@@ -944,7 +944,7 @@ virCapsPtr virTestGenericCapsInit(void)
         goto error;
 
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                          "/usr/bin/acme-virt", NULL,
                                          0, NULL)) == NULL)
         goto error;

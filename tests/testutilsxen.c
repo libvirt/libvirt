@@ -30,7 +30,7 @@ virCapsPtr testXenCapsInit(void)
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_I686,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
                                          "/usr/lib/xen/bin/qemu-dm", NULL,
                                          nmachines, machines)) == NULL)
         goto cleanup;
@@ -48,7 +48,7 @@ virCapsPtr testXenCapsInit(void)
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_I686,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_I686,
                                          "/usr/lib/xen/bin/qemu-dm", NULL,
                                          nmachines, machines)) == NULL)
         goto cleanup;
@@ -91,7 +91,8 @@ testXLInitCaps(void)
     nmachines = ARRAY_CARDINALITY(x86_machines);
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
         goto cleanup;
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                         VIR_ARCH_X86_64,
                                          "/usr/lib/xen/bin/qemu-system-i386",
                                          "/usr/lib/xen/boot/hvmloader",
                                          nmachines, machines)) == NULL)
@@ -104,7 +105,8 @@ testXLInitCaps(void)
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "xen", VIR_ARCH_X86_64,
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN,
+                                         VIR_ARCH_X86_64,
                                          "/usr/lib/xen/bin/qemu-system-i386",
                                          NULL,
                                          nmachines, machines)) == NULL)

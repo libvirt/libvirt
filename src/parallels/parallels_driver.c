@@ -93,13 +93,13 @@ parallelsBuildCapabilities(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto error;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                          VIR_ARCH_X86_64,
                                          "parallels",
                                          NULL, 0, NULL)) == NULL)
         goto error;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                          VIR_ARCH_I686,
                                          "parallels",
                                          NULL, 0, NULL)) == NULL)
@@ -110,7 +110,7 @@ parallelsBuildCapabilities(void)
                                       "parallels", NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "exe",
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
                                          VIR_ARCH_X86_64,
                                          "parallels",
                                          NULL, 0, NULL)) == NULL)

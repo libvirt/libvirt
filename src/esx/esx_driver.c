@@ -573,7 +573,7 @@ esxCapsInit(esxPrivate *priv)
         goto failure;
 
     /* i686 */
-    guest = virCapabilitiesAddGuest(caps, "hvm",
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     VIR_ARCH_I686,
                                     NULL, NULL, 0,
                                     NULL);
@@ -586,7 +586,7 @@ esxCapsInit(esxPrivate *priv)
 
     /* x86_64 */
     if (supportsLongMode == esxVI_Boolean_True) {
-        guest = virCapabilitiesAddGuest(caps, "hvm",
+        guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                         VIR_ARCH_X86_64,
                                         NULL, NULL,
                                         0, NULL);

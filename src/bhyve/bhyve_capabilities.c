@@ -86,7 +86,7 @@ virBhyveCapsBuild(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps, "hvm",
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                          VIR_ARCH_X86_64,
                                          "bhyve",
                                          NULL, 0, NULL)) == NULL)
