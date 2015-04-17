@@ -817,6 +817,8 @@ mymain(void)
                     QEMU_CAPS_DRIVE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-no-boot",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
+    DO_TEST_FAILURE("disk-device-lun-type-invalid",
+                    QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-usb",  NONE);
     DO_TEST("disk-usb-device",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_USB_STORAGE,

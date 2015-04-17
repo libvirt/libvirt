@@ -1180,12 +1180,14 @@
               </choice>
             </attribute>
           </optional>
+          <interleave>
+            <ref name="diskSource"/>
+            <ref name="diskSpecsExtra"/>
+          </interleave>
         </group>
         <group>
           <attribute name="device">
-            <choice>
-              <value>lun</value>
-            </choice>
+            <value>lun</value>
           </attribute>
           <optional>
             <ref name="rawIO"/>
@@ -1198,17 +1200,26 @@
               </choice>
             </attribute>
           </optional>
+          <interleave>
+            <choice>
+              <ref name="diskSourceNetwork"/>
+              <ref name="diskSourceBlock"/>
+            </choice>
+            <ref name="diskSpecsExtra"/>
+          </interleave>
         </group>
       </choice>
       <optional>
         <ref name="snapshot"/>
       </optional>
-      <interleave>
-        <ref name="diskSource"/>
-        <ref name="storageSourceExtra"/>
-        <ref name="diskBackingChain"/>
-      </interleave>
     </element>
+  </define>
+
+  <define name="diskSpecsExtra">
+    <interleave>
+      <ref name="storageSourceExtra"/>
+      <ref name="diskBackingChain"/>
+    </interleave>
   </define>
 
   <define name="diskBackingChain">
