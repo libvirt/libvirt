@@ -2477,6 +2477,10 @@ typedef enum {
     /* parse only source half of <disk> */
     VIR_DOMAIN_DEF_PARSE_DISK_SOURCE     = 1 << 7,
     VIR_DOMAIN_DEF_PARSE_VALIDATE        = 1 << 8,
+    /* don't validate os.type and arch against capabilities. Prevents
+     * VMs from disappearing when qemu is removed and libvirtd is restarted
+     */
+    VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS = 1 << 9,
 } virDomainDefParseFlags;
 
 typedef enum {
