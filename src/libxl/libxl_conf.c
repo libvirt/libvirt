@@ -1242,6 +1242,7 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
     switch (l_vfb->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
+            libxl_defbool_set(&x_vfb->vnc.enable, 0);
             if (VIR_STRDUP(x_vfb->sdl.display, l_vfb->data.sdl.display) < 0)
                 return -1;
             if (VIR_STRDUP(x_vfb->sdl.xauthority, l_vfb->data.sdl.xauth) < 0)
@@ -1249,6 +1250,7 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
             break;
         case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             libxl_defbool_set(&x_vfb->vnc.enable, 1);
+            libxl_defbool_set(&x_vfb->sdl.enable, 0);
             /* driver handles selection of free port */
             libxl_defbool_set(&x_vfb->vnc.findunused, 0);
             if (l_vfb->data.vnc.autoport) {
