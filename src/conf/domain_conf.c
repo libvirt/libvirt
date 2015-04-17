@@ -102,6 +102,7 @@ typedef enum {
    VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST    = 1 << 21,
    /* parse only source half of <disk> */
    VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE     = 1 << 22,
+   VIR_DOMAIN_XML_INTERNAL_SKIP_OSTYPE_CHECKS     = 1 << 23,
 } virDomainXMLInternalFlags;
 
 #define DUMPXML_FLAGS                           \
@@ -116,7 +117,8 @@ verify(((VIR_DOMAIN_XML_INTERNAL_STATUS |
          VIR_DOMAIN_XML_INTERNAL_ALLOW_ROM |
          VIR_DOMAIN_XML_INTERNAL_ALLOW_BOOT |
          VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST |
-         VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE)
+         VIR_DOMAIN_XML_INTERNAL_DISK_SOURCE |
+         VIR_DOMAIN_XML_INTERNAL_SKIP_OSTYPE_CHECKS)
         & DUMPXML_FLAGS) == 0);
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -12941,61 +12943,64 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
     }
 
-    if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
+    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
+    if (tmp && !(def->os.arch = virArchFromString(tmp))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("no support found for os <type> '%s'"),
-                       def->os.type);
+                       _("Unknown architecture %s"),
+                       tmp);
         goto error;
     }
+    VIR_FREE(tmp);
 
-    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
-    if (tmp) {
-        def->os.arch = virArchFromString(tmp);
-        if (!def->os.arch) {
+    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
+
+    if (!(flags & VIR_DOMAIN_XML_INTERNAL_SKIP_OSTYPE_CHECKS)) {
+        if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown architecture %s"),
-                           tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-
-        if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("No guest options available for arch '%s'"),
-                           virArchToString(def->os.arch));
-            goto error;
-        }
-
-        if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
-                                                    def->os.type,
-                                                    def->os.arch)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("No os type '%s' available for arch '%s'"),
-                           def->os.type, virArchToString(def->os.arch));
-            goto error;
-        }
-    } else {
-        def->os.arch =
-            virCapabilitiesDefaultGuestArch(caps,
-                                            def->os.type,
-                                            virDomainVirtTypeToString(def->virtType));
-        if (!def->os.arch) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no supported architecture for os type '%s'"),
+                           _("no support found for os <type> '%s'"),
                            def->os.type);
             goto error;
         }
+
+        if (def->os.arch) {
+            if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("No guest options available for arch '%s'"),
+                               virArchToString(def->os.arch));
+                goto error;
+            }
+
+            if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
+                                                        def->os.type,
+                                                        def->os.arch)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("No os type '%s' available for arch '%s'"),
+                               def->os.type, virArchToString(def->os.arch));
+                goto error;
+            }
+        } else {
+            def->os.arch =
+                virCapabilitiesDefaultGuestArch(caps,
+                                                def->os.type,
+                                                virDomainVirtTypeToString(def->virtType));
+            if (!def->os.arch) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("no supported architecture for os type '%s'"),
+                               def->os.type);
+                goto error;
+            }
+        }
+
+        if (!def->os.machine) {
+            const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
+                                                                            def->os.type,
+                                                                            def->os.arch,
+                                                                            virDomainVirtTypeToString(def->virtType));
+            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
+                goto error;
+        }
     }
 
-    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
-    if (!def->os.machine) {
-        const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
-                                                                        def->os.type,
-                                                                        def->os.arch,
-                                                                        virDomainVirtTypeToString(def->virtType));
-        if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-            goto error;
-    }
 
     /*
      * Booting options for different OS types....
@@ -19364,7 +19369,8 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
                                       expectedVirtTypes,
-                                      VIR_DOMAIN_XML_INACTIVE)))
+                                      VIR_DOMAIN_XML_INACTIVE |
+                                      VIR_DOMAIN_XML_INTERNAL_SKIP_OSTYPE_CHECKS)))
         goto error;
 
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
@@ -19414,7 +19420,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
                                       VIR_DOMAIN_XML_INTERNAL_STATUS |
                                       VIR_DOMAIN_XML_INTERNAL_ACTUAL_NET |
                                       VIR_DOMAIN_XML_INTERNAL_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST)))
+                                      VIR_DOMAIN_XML_INTERNAL_CLOCK_ADJUST |
+                                      VIR_DOMAIN_XML_INTERNAL_SKIP_OSTYPE_CHECKS)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
