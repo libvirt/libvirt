@@ -188,7 +188,7 @@ virCapsPtr openvzCapsInit(void)
         goto no_memory;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "openvz",
+                                      VIR_DOMAIN_VIRT_OPENVZ,
                                       NULL,
                                       NULL,
                                       0,

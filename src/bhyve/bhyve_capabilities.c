@@ -92,8 +92,8 @@ virBhyveCapsBuild(void)
                                          NULL, 0, NULL)) == NULL)
         goto error;
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "bhyve", NULL, NULL, 0, NULL) == NULL)
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_BHYVE,
+                                      NULL, NULL, 0, NULL) == NULL)
         goto error;
 
     if (virBhyveCapsInitCPU(caps, virArchFromHost()) < 0)

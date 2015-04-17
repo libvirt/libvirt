@@ -2158,7 +2158,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn, virArch hostarch,
         machines = NULL;
 
         if (virCapabilitiesAddGuestDomain(guest,
-                                          "xen",
+                                          VIR_DOMAIN_VIRT_XEN,
                                           NULL,
                                           NULL,
                                           0,

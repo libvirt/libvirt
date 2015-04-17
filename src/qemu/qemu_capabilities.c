@@ -858,7 +858,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
         goto cleanup;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "qemu",
+                                      VIR_DOMAIN_VIRT_QEMU,
                                       NULL,
                                       NULL,
                                       0,
@@ -867,7 +867,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     if (haskqemu &&
         virCapabilitiesAddGuestDomain(guest,
-                                      "kqemu",
+                                      VIR_DOMAIN_VIRT_KQEMU,
                                       NULL,
                                       NULL,
                                       0,
@@ -882,7 +882,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
             goto cleanup;
 
         if ((dom = virCapabilitiesAddGuestDomain(guest,
-                                                 "kvm",
+                                                 VIR_DOMAIN_VIRT_KVM,
                                                  kvmbin ? kvmbin : binary,
                                                  NULL,
                                                  nmachines,
@@ -1899,7 +1899,7 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
     if ((binary = virCapabilitiesDefaultGuestEmulator(caps,
                                                       VIR_DOMAIN_OSTYPE_HVM,
                                                       hostarch,
-                                                      "qemu")) == NULL) {
+                                                      VIR_DOMAIN_VIRT_QEMU)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot find suitable emulator for %s"),
                        virArchToString(hostarch));

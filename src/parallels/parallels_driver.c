@@ -106,8 +106,8 @@ parallelsBuildCapabilities(void)
         goto error;
 
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "parallels", NULL, NULL, 0, NULL) == NULL)
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_PARALLELS,
+                                      NULL, NULL, 0, NULL) == NULL)
         goto error;
 
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
@@ -116,8 +116,8 @@ parallelsBuildCapabilities(void)
                                          NULL, 0, NULL)) == NULL)
         goto error;
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "parallels", NULL, NULL, 0, NULL) == NULL)
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_PARALLELS,
+                                      NULL, NULL, 0, NULL) == NULL)
         goto error;
 
     if (nodeGetInfo(&nodeinfo))

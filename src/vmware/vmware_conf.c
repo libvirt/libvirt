@@ -79,7 +79,7 @@ vmwareCapsInit(void)
         goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "vmware",
+                                      VIR_DOMAIN_VIRT_VMWARE,
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
@@ -111,7 +111,7 @@ vmwareCapsInit(void)
             goto error;
 
         if (virCapabilitiesAddGuestDomain(guest,
-                                          "vmware",
+                                          VIR_DOMAIN_VIRT_VMWARE,
                                           NULL, NULL, 0, NULL) == NULL)
             goto error;
     }

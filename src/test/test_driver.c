@@ -353,7 +353,7 @@ testBuildCapabilities(virConnectPtr conn)
             goto error;
 
         if (virCapabilitiesAddGuestDomain(guest,
-                                          "test",
+                                          VIR_DOMAIN_VIRT_TEST,
                                           NULL,
                                           NULL,
                                           0,

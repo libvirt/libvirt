@@ -89,7 +89,7 @@ virCapsPtr umlCapsInit(void)
         goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "uml",
+                                      VIR_DOMAIN_VIRT_UML,
                                       NULL,
                                       NULL,
                                       0,

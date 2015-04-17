@@ -1002,7 +1002,7 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     def->os.arch =
         virCapabilitiesDefaultGuestArch(caps,
                                         def->os.type,
-                                        virDomainVirtTypeToString(def->virtType));
+                                        def->virtType);
     if (!def->os.arch) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no supported architecture for os type '%s'"),
@@ -1013,7 +1013,7 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
                                                         def->os.type,
                                                         def->os.arch,
-                                                        virDomainVirtTypeToString(def->virtType));
+                                                        def->virtType);
     if (defaultMachine != NULL) {
         if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
             return -1;

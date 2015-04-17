@@ -940,7 +940,7 @@ virCapsPtr virTestGenericCapsInit(void)
                                          0, NULL)) == NULL)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "test", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
         goto error;
 
 
@@ -949,7 +949,7 @@ virCapsPtr virTestGenericCapsInit(void)
                                          0, NULL)) == NULL)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "test", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
         goto error;
 
 

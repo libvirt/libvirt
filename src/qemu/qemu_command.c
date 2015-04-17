@@ -13149,7 +13149,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                         virCapabilitiesDefaultGuestMachine(qemuCaps,
                                                            def->os.type,
                                                            def->os.arch,
-                                                           virDomainVirtTypeToString(def->virtType));
+                                                           def->virtType);
         if (defaultMachine != NULL)
             if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
                 goto error;

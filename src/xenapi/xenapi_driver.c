@@ -109,13 +109,13 @@ getCapsObject(void)
     guest1 = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64, "", "", 0, NULL);
     if (!guest1)
         goto error_cleanup;
-    domain1 = virCapabilitiesAddGuestDomain(guest1, "xen", "", "", 0, NULL);
+    domain1 = virCapabilitiesAddGuestDomain(guest1, VIR_DOMAIN_VIRT_XEN, "", "", 0, NULL);
     if (!domain1)
         goto error_cleanup;
     guest2 = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_X86_64, "", "", 0, NULL);
     if (!guest2)
         goto error_cleanup;
-    domain2 = virCapabilitiesAddGuestDomain(guest2, "xen", "", "", 0, NULL);
+    domain2 = virCapabilitiesAddGuestDomain(guest2, VIR_DOMAIN_VIRT_XEN, "", "", 0, NULL);
     if (!domain2)
         goto error_cleanup;
 

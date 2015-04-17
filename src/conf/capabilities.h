@@ -61,7 +61,7 @@ struct _virCapsGuestDomainInfo {
 typedef struct _virCapsGuestDomain virCapsGuestDomain;
 typedef virCapsGuestDomain *virCapsGuestDomainPtr;
 struct _virCapsGuestDomain {
-    char *type;
+    int type;
     virCapsGuestDomainInfo info;
 };
 
@@ -245,7 +245,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
 
 extern virCapsGuestDomainPtr
 virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
-                              const char *hvtype,
+                              int hvtype,
                               const char *emulator,
                               const char *loader,
                               int nmachines,
@@ -280,17 +280,17 @@ virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
 extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 int ostype,
-                                const char *domain);
+                                int domain);
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    int ostype,
                                    virArch arch,
-                                   const char *domain);
+                                   int domain);
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     int ostype,
                                     virArch arch,
-                                    const char *domain);
+                                    int domain);
 
 extern char *
 virCapabilitiesFormatXML(virCapsPtr caps);

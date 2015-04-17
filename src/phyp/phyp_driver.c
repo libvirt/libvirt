@@ -347,8 +347,8 @@ phypCapsInit(void)
                                          NULL, NULL, 0, NULL)) == NULL)
         goto no_memory;
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "phyp", NULL, NULL, 0, NULL) == NULL)
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_PHYP,
+                                      NULL, NULL, 0, NULL) == NULL)
         goto no_memory;
 
     return caps;

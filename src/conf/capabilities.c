@@ -135,7 +135,6 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
     for (i = 0; i < dom->info.nmachines; i++)
         virCapabilitiesFreeGuestMachine(dom->info.machines[i]);
     VIR_FREE(dom->info.machines);
-    VIR_FREE(dom->type);
 
     VIR_FREE(dom);
 }
@@ -459,7 +458,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
  */
 virCapsGuestDomainPtr
 virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
-                              const char *hvtype,
+                              int hvtype,
                               const char *emulator,
                               const char *loader,
                               int nmachines,
@@ -470,8 +469,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
     if (VIR_ALLOC(dom) < 0)
         goto error;
 
-    if (VIR_STRDUP(dom->type, hvtype) < 0 ||
-        VIR_STRDUP(dom->info.emulator, emulator) < 0 ||
+    dom->type = hvtype;
+    if (VIR_STRDUP(dom->info.emulator, emulator) < 0 ||
         VIR_STRDUP(dom->info.loader, loader) < 0)
         goto error;
 
@@ -641,6 +640,7 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
  * virCapabilitiesDefaultGuestArch:
  * @caps: capabilities to query
  * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
+ * @domain: domain type to search for, of enum VIR_DOMAIN_VIRT
  *
  * Returns the first architecture able to run the
  * requested operating system type
@@ -648,7 +648,7 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
 extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
                                 int ostype,
-                                const char *domain)
+                                int domain)
 {
     size_t i, j;
 
@@ -656,7 +656,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
     for (i = 0; i < caps->nguests; i++) {
         if (caps->guests[i]->ostype == ostype) {
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
-                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain) &&
+                if (caps->guests[i]->arch.domains[j]->type == domain &&
                     caps->guests[i]->arch.id == caps->host.arch)
                     return caps->guests[i]->arch.id;
             }
@@ -667,7 +667,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
     for (i = 0; i < caps->nguests; i++) {
         if (caps->guests[i]->ostype == ostype) {
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
-                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain))
+                if (caps->guests[i]->arch.domains[j]->type == domain)
                     return caps->guests[i]->arch.id;
             }
         }
@@ -681,7 +681,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
  * @caps: capabilities to query
  * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: architecture to search for
- * @domain: domain type to search for
+ * @domain: domain type to search for, of enum VIR_DOMAIN_VIRT
  *
  * Returns the first machine variant associated with
  * the requested operating system type, architecture
@@ -691,7 +691,7 @@ extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
                                    int ostype,
                                    virArch arch,
-                                   const char *domain)
+                                   int domain)
 {
     size_t i;
 
@@ -706,7 +706,7 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
         for (j = 0; j < guest->arch.ndomains; j++) {
             virCapsGuestDomainPtr dom = guest->arch.domains[j];
 
-            if (!STREQ(dom->type, domain))
+            if (dom->type != domain)
                 continue;
 
             if (!dom->info.nmachines)
@@ -727,7 +727,7 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
  * @caps: capabilities to query
  * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: architecture to search for
- * @domain: domain type ('xen', 'qemu', 'kvm')
+ * @domain: domain type to search for, of enum VIR_DOMAIN_VIRT
  *
  * Returns the first emulator path associated with
  * the requested operating system type, architecture
@@ -737,7 +737,7 @@ extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
                                     int ostype,
                                     virArch arch,
-                                    const char *domain)
+                                    int domain)
 {
     size_t i, j;
 
@@ -747,7 +747,7 @@ virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
             caps->guests[i]->arch.id == arch) {
             emulator = caps->guests[i]->arch.defaultInfo.emulator;
             for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
-                if (STREQ(caps->guests[i]->arch.domains[j]->type, domain)) {
+                if (caps->guests[i]->arch.domains[j]->type == domain) {
                     if (caps->guests[i]->arch.domains[j]->info.emulator)
                         emulator = caps->guests[i]->arch.domains[j]->info.emulator;
                 }
@@ -970,7 +970,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
         for (j = 0; j < caps->guests[i]->arch.ndomains; j++) {
             virBufferAsprintf(&buf, "<domain type='%s'",
-                                  caps->guests[i]->arch.domains[j]->type);
+                virDomainVirtTypeToString(caps->guests[i]->arch.domains[j]->type));
             if (!caps->guests[i]->arch.domains[j]->info.emulator &&
                 !caps->guests[i]->arch.domains[j]->info.loader &&
                 !caps->guests[i]->arch.domains[j]->info.nmachines) {

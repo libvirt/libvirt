@@ -581,7 +581,7 @@ esxCapsInit(esxPrivate *priv)
     if (!guest)
         goto failure;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VMWARE, NULL, NULL, 0, NULL))
         goto failure;
 
     /* x86_64 */
@@ -594,7 +594,7 @@ esxCapsInit(esxPrivate *priv)
         if (!guest)
             goto failure;
 
-        if (!virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0, NULL))
+        if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VMWARE, NULL, NULL, 0, NULL))
             goto failure;
     }
 

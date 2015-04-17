@@ -108,7 +108,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         goto error;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "lxc",
+                                      VIR_DOMAIN_VIRT_LXC,
                                       NULL,
                                       NULL,
                                       0,
@@ -127,7 +127,7 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
             goto error;
 
         if (virCapabilitiesAddGuestDomain(guest,
-                                          "lxc",
+                                          VIR_DOMAIN_VIRT_LXC,
                                           NULL,
                                           NULL,
                                           0,

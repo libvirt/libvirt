@@ -12959,27 +12959,20 @@ char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
 {
-    const char *type;
     const char *emulator;
     char *retemu;
-
-    type = virDomainVirtTypeToString(def->virtType);
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unknown virt type"));
-        return NULL;
-    }
 
     emulator = virCapabilitiesDefaultGuestEmulator(caps,
                                                    def->os.type,
                                                    def->os.arch,
-                                                   type);
+                                                   def->virtType);
 
     if (!emulator) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no emulator for domain %s os type %s "
                          "on architecture %s"),
-                       type, virDomainOSTypeToString(def->os.type),
+                       virDomainVirtTypeToString(def->virtType),
+                       virDomainOSTypeToString(def->os.type),
                        virArchToString(def->os.arch));
         return NULL;
     }
@@ -14696,7 +14689,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             def->os.arch =
                 virCapabilitiesDefaultGuestArch(caps,
                                                 def->os.type,
-                                                virDomainVirtTypeToString(def->virtType));
+                                                def->virtType);
             if (!def->os.arch) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("no supported architecture for os type '%s'"),
@@ -14709,7 +14702,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
                                                                             def->os.type,
                                                                             def->os.arch,
-                                                                            virDomainVirtTypeToString(def->virtType));
+                                                                            def->virtType);
             if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
                 goto error;
         }

@@ -331,7 +331,7 @@ static virCapsPtr vboxCapsInit(void)
         goto no_memory;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "vbox",
+                                      VIR_DOMAIN_VIRT_VBOX,
                                       NULL,
                                       NULL,
                                       0,

@@ -41,7 +41,7 @@ testCapsInit(void)
     if (guest == NULL)
         goto failure;
 
-    if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VMWARE, NULL, NULL, 0,
                                       NULL) == NULL) {
         goto failure;
     }
@@ -55,7 +55,7 @@ testCapsInit(void)
     if (guest == NULL)
         goto failure;
 
-    if (virCapabilitiesAddGuestDomain(guest, "vmware", NULL, NULL, 0,
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VMWARE, NULL, NULL, 0,
                                       NULL) == NULL) {
         goto failure;
     }

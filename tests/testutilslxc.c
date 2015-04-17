@@ -23,7 +23,7 @@ virCapsPtr testLXCCapsInit(void)
                                          0, NULL)) == NULL)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "lxc", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL))
         goto error;
 
 
@@ -33,7 +33,7 @@ virCapsPtr testLXCCapsInit(void)
                                          0, NULL)) == NULL)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "lxc", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL))
         goto error;
 
 

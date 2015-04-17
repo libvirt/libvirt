@@ -152,7 +152,7 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -179,7 +179,7 @@ static int testQemuAddPPC64LEGuest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -209,7 +209,7 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -239,7 +239,7 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -269,7 +269,7 @@ static int testQemuAddArmGuest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -297,7 +297,7 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
     if (!guest)
         goto error;
 
-    if (!virCapabilitiesAddGuestDomain(guest, "qemu", NULL, NULL, 0, NULL))
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -347,7 +347,7 @@ virCapsPtr testQemuCapsInit(void)
     machines = NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "qemu",
+                                      VIR_DOMAIN_VIRT_QEMU,
                                       NULL,
                                       NULL,
                                       0,
@@ -365,7 +365,7 @@ virCapsPtr testQemuCapsInit(void)
     machines = NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "qemu",
+                                      VIR_DOMAIN_VIRT_QEMU,
                                       NULL,
                                       NULL,
                                       0,
@@ -376,7 +376,7 @@ virCapsPtr testQemuCapsInit(void)
         goto cleanup;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "kvm",
+                                      VIR_DOMAIN_VIRT_KVM,
                                       "/usr/bin/kvm",
                                       NULL,
                                       nmachines,
@@ -395,7 +395,7 @@ virCapsPtr testQemuCapsInit(void)
     machines = NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "kvm",
+                                      VIR_DOMAIN_VIRT_KVM,
                                       "/usr/bin/kvm",
                                       NULL,
                                       0,

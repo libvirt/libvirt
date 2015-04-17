@@ -37,7 +37,7 @@ virCapsPtr testXenCapsInit(void)
     machines = NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "xen",
+                                      VIR_DOMAIN_VIRT_XEN,
                                       NULL,
                                       NULL,
                                       0,
@@ -55,7 +55,7 @@ virCapsPtr testXenCapsInit(void)
     machines = NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
-                                      "xen",
+                                      VIR_DOMAIN_VIRT_XEN,
                                       NULL,
                                       NULL,
                                       0,
@@ -98,7 +98,7 @@ testXLInitCaps(void)
                                          nmachines, machines)) == NULL)
         goto cleanup;
     machines = NULL;
-    if (virCapabilitiesAddGuestDomain(guest, "xen", NULL,
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
                                       NULL, 0, NULL) == NULL)
         goto cleanup;
     nmachines = ARRAY_CARDINALITY(xen_machines);
@@ -113,7 +113,7 @@ testXLInitCaps(void)
         goto cleanup;
     machines = NULL;
 
-    if (virCapabilitiesAddGuestDomain(guest, "xen", NULL,
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
                                       NULL, 0, NULL) == NULL)
         goto cleanup;
     return caps;
