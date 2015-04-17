@@ -13729,51 +13729,28 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
-        if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("no support found for os <type> '%s'"),
-                           virDomainOSTypeToString(def->os.type));
+        /* If the logic here seems fairly arbitrary, that's because it is :)
+         * This is duplicating how the code worked before
+         * CapabilitiesDomainDataLookup was added. We can simplify this,
+         * but it would take a bit of work because the test suite fails
+         * in numerous minor ways. */
+        bool use_virttype = ((def->os.arch == VIR_ARCH_NONE) ||
+            !def->os.machine);
+        virCapsDomainDataPtr capsdata = NULL;
+
+        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+                def->os.arch, use_virttype ? def->virtType : -1,
+                NULL, NULL)))
+            goto error;
+
+        if (!def->os.arch)
+            def->os.arch = capsdata->arch;
+        if ((!def->os.machine &&
+             VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0)) {
+            VIR_FREE(capsdata);
             goto error;
         }
-
-        if (def->os.arch) {
-            if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("No guest options available for arch '%s'"),
-                               virArchToString(def->os.arch));
-                goto error;
-            }
-
-            if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
-                                                        def->os.type,
-                                                        def->os.arch)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("No os type '%s' available for arch '%s'"),
-                               virDomainOSTypeToString(def->os.type),
-                               virArchToString(def->os.arch));
-                goto error;
-            }
-        } else {
-            def->os.arch =
-                virCapabilitiesDefaultGuestArch(caps,
-                                                def->os.type,
-                                                def->virtType);
-            if (!def->os.arch) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("no supported architecture for os type '%s'"),
-                               virDomainOSTypeToString(def->os.type));
-                goto error;
-            }
-        }
-
-        if (!def->os.machine) {
-            const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
-                                                                            def->os.type,
-                                                                            def->os.arch,
-                                                                            def->virtType);
-            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-                goto error;
-        }
+        VIR_FREE(capsdata);
     }
 
     /* Extract domain name */
