@@ -270,6 +270,9 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * clients will have to decide between best effort
          * initialization or outright failure.  */
         if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
+            int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+            if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL)
+                domainflags |= VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS;
             xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
 
             VIR_FREE(tmp);
@@ -280,8 +283,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             }
             def->dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
                                              caps, xmlopt,
-                                             expectedVirtTypes,
-                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                             expectedVirtTypes, domainflags);
             if (!def->dom)
                 goto cleanup;
         } else {
