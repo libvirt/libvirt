@@ -877,8 +877,12 @@ virkmodtest_SOURCES = \
 virkmodtest_LDADD = $(LDADDS)
 
 vircapstest_SOURCES = \
-	vircapstest.c testutils.h testutils.c
-vircapstest_LDADD = $(LDADDS)
+	vircapstest.c testutils.h testutils.c \
+	testutilsqemu.c testutilsqemu.h \
+	testutilslxc.c testutilslxc.h \
+	testutilsxen.c testutilsxen.h \
+	$(NULL)
+vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
 vircaps2xmltest_SOURCES = \
 	vircaps2xmltest.c testutils.h testutils.c

@@ -225,7 +225,6 @@ virCapabilitiesDispose(void *object)
     virCPUDefFree(caps->host.cpu);
 }
 
-
 /**
  * virCapabilitiesAddHostFeature:
  * @caps: capabilities to extend
@@ -566,6 +565,168 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
     VIR_FREE(l);
     VIR_FREE(t);
     return -1;
+}
+
+static bool
+virCapsDomainDataCompare(virCapsGuestPtr guest,
+                         virCapsGuestDomainPtr domain,
+                         virCapsGuestMachinePtr machine,
+                         int ostype,
+                         virArch arch,
+                         int domaintype,
+                         const char *emulator,
+                         const char *machinetype)
+{
+    const char *check_emulator = NULL;
+
+    if (ostype != -1 && guest->ostype != ostype)
+        return false;
+    if ((arch != VIR_ARCH_NONE) && (guest->arch.id != arch))
+        return false;
+
+    if (domaintype != -1 && (!domain || domain->type != domaintype))
+        return false;
+
+    if (emulator) {
+        if (domain)
+            check_emulator = domain->info.emulator;
+        if (!check_emulator)
+            check_emulator = guest->arch.defaultInfo.emulator;
+        if (STRNEQ_NULLABLE(check_emulator, emulator))
+            return false;
+    }
+
+    if (machinetype) {
+        if (!machine)
+            return false;
+        if (STRNEQ(machine->name, machinetype) &&
+            (STRNEQ_NULLABLE(machine->canonical, machinetype)))
+            return false;
+    }
+
+    return true;
+}
+
+/**
+ * virCapabilitiesDomainDataLookup:
+ * @caps: capabilities to query
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
+ * @arch: Architecture to search for
+ * @domaintype: domain type to search for, of enum VIR_DOMAIN_VIRT
+ * @emulator: Emulator path to search for
+ * @machinetype: Machine type to search for
+ *
+ * Search capabilities for the passed values, and if found return
+ * virCapabilitiesDomainDataLookup filled in with the default values
+ */
+virCapsDomainDataPtr
+virCapabilitiesDomainDataLookup(virCapsPtr caps,
+                                int ostype,
+                                virArch arch,
+                                int domaintype,
+                                const char *emulator,
+                                const char *machinetype)
+{
+    virCapsGuestPtr foundguest = NULL;
+    virCapsGuestDomainPtr founddomain = NULL;
+    virCapsGuestMachinePtr foundmachine = NULL;
+    virCapsDomainDataPtr ret = NULL;
+    size_t i, j, k;
+
+    for (i = 0; i < caps->nguests; i++) {
+        virCapsGuestPtr guest = caps->guests[i];
+
+        for (j = 0; j < guest->arch.ndomains; j++) {
+            virCapsGuestDomainPtr domain = guest->arch.domains[j];
+            virCapsGuestMachinePtr *machinelist;
+            int nmachines;
+
+            if (domain->info.nmachines) {
+                nmachines = domain->info.nmachines;
+                machinelist = domain->info.machines;
+            } else {
+                nmachines = guest->arch.defaultInfo.nmachines;
+                machinelist = guest->arch.defaultInfo.machines;
+            }
+
+            for (k = 0; k < nmachines; k++) {
+                virCapsGuestMachinePtr machine = machinelist[k];
+                if (!virCapsDomainDataCompare(guest, domain, machine,
+                                              ostype, arch, domaintype,
+                                              emulator, machinetype))
+                    continue;
+
+                foundmachine = machine;
+                break;
+            }
+
+            if (!foundmachine) {
+                if (!virCapsDomainDataCompare(guest, domain, NULL,
+                                              ostype, arch, domaintype,
+                                              emulator, machinetype))
+                    continue;
+            }
+
+            founddomain = domain;
+            break;
+        }
+
+        if (!founddomain) {
+            if (!virCapsDomainDataCompare(guest, NULL, NULL,
+                                          ostype, arch, domaintype,
+                                          emulator, machinetype))
+                continue;
+        }
+
+        foundguest = guest;
+        break;
+    }
+
+    /* XXX check default_emulator, see how it uses this */
+    if (!foundguest) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        if (ostype)
+            virBufferAsprintf(&buf, "ostype=%s ",
+                              virDomainOSTypeToString(ostype));
+        if (arch)
+            virBufferAsprintf(&buf, "arch=%s ", virArchToString(arch));
+        if (domaintype)
+            virBufferAsprintf(&buf, "domaintype=%s ",
+                              virDomainVirtTypeToString(domaintype));
+        if (emulator)
+            virBufferAsprintf(&buf, "emulator=%s ", emulator);
+        if (machinetype)
+            virBufferAsprintf(&buf, "machine=%s ", machinetype);
+        if (virBufferCurrentContent(&buf) &&
+            !virBufferCurrentContent(&buf)[0])
+            virBufferAsprintf(&buf, "%s", _("any configuration"));
+        if (virBufferCheckError(&buf) < 0) {
+            virBufferContentAndReset(&buf);
+            goto error;
+        }
+
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("could not find capabilities for %s"),
+                       virBufferContentAndReset(&buf));
+        goto error;
+    }
+
+    if (VIR_ALLOC(ret) < 0)
+        goto error;
+
+    ret->ostype = foundguest->ostype;
+    ret->arch = foundguest->arch.id;
+    if (founddomain) {
+        ret->domaintype = founddomain->type;
+        ret->emulator = founddomain->info.emulator;
+    }
+    if (!ret->emulator)
+        ret->emulator = foundguest->arch.defaultInfo.emulator;
+    if (foundmachine)
+        ret->machinetype = foundmachine->name;
+
+ error:
+    return ret;
 }
 
 /**

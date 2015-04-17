@@ -21,6 +21,9 @@
 #include <stdlib.h>
 
 #include "testutils.h"
+#include "testutilslxc.h"
+#include "testutilsxen.h"
+#include "testutilsqemu.h"
 #include "capabilities.h"
 #include "virbitmap.h"
 
@@ -66,8 +69,8 @@ buildNUMATopology(int seq)
         if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
                                            MAX_MEM_IN_CELL,
                                            MAX_CPUS_IN_CELL, cell_cpus,
-                                           0, NULL,
-                                           0, NULL) < 0)
+                                           VIR_ARCH_NONE, NULL,
+                                           VIR_ARCH_NONE, NULL) < 0)
            goto error;
 
         cell_cpus = NULL;
@@ -101,7 +104,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
     if (!(caps = buildNUMATopology(3)))
         goto error;
 
-    if (virBitmapParse(nodestr, 0, &nodemask, mask_size) < 0)
+    if (virBitmapParse(nodestr, VIR_ARCH_NONE, &nodemask, mask_size) < 0)
         goto error;
 
     if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, nodemask)))
@@ -118,6 +121,197 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
 }
 
 
+static bool
+doCapsExpectFailure(virCapsPtr caps,
+                    int ostype,
+                    virArch arch,
+                    int domaintype,
+                    const char *emulator,
+                    const char *machinetype)
+{
+    virCapsDomainDataPtr data = virCapabilitiesDomainDataLookup(caps, ostype,
+        arch, domaintype, emulator, machinetype);
+
+    if (data) {
+        VIR_FREE(data);
+        return false;
+    }
+
+    return true;
+}
+
+static bool
+doCapsCompare(virCapsPtr caps,
+              int ostype,
+              virArch arch,
+              int domaintype,
+              const char *emulator,
+              const char *machinetype,
+              int expect_ostype,
+              virArch expect_arch,
+              int expect_domaintype,
+              const char *expect_emulator,
+              const char *expect_machinetype)
+{
+    bool ret = false;
+    virCapsDomainDataPtr data = virCapabilitiesDomainDataLookup(caps, ostype,
+        arch, domaintype, emulator, machinetype);
+
+    if (!data)
+        goto error;
+
+    if (data->ostype != expect_ostype) {
+        fprintf(stderr, "data->ostype=%s doesn't match expect_ostype=%s\n",
+                virDomainOSTypeToString(data->ostype),
+                virDomainOSTypeToString(expect_ostype));
+        goto error;
+    }
+
+    if (data->arch != expect_arch) {
+        fprintf(stderr, "data->arch=%s doesn't match expect_arch=%s\n",
+                virArchToString(data->arch),
+                virArchToString(expect_arch));
+        goto error;
+    }
+
+    if (data->domaintype != expect_domaintype) {
+        fprintf(stderr, "data->domaintype=%s doesn't match "
+                "expect_domaintype=%s\n",
+                virDomainVirtTypeToString(data->domaintype),
+                virDomainVirtTypeToString(expect_domaintype));
+        goto error;
+    }
+
+    if (STRNEQ(data->emulator, expect_emulator)) {
+        fprintf(stderr, "data->emulator=%s doesn't match expect_emulator=%s\n",
+                data->emulator, expect_emulator);
+        goto error;
+    }
+
+    if (data->machinetype != expect_machinetype &&
+        STRNEQ(data->machinetype, expect_machinetype)) {
+        fprintf(stderr, "data->machinetype=%s doesn't match "
+                "expect_machinetype=%s\n",
+                data->machinetype, expect_machinetype);
+        goto error;
+    }
+
+    ret = true;
+ error:
+    VIR_FREE(data);
+    return ret;
+}
+
+#define CAPSCOMP(o, a, d, e, m, fo, fa, fd, fe, fm) \
+    if (!doCapsCompare(caps, o, a, d, e, m, fo, fa, fd, fe, fm)) \
+        ret = 1;
+
+#define CAPS_EXPECT_ERR(o, a, d, e, m) \
+    if (!doCapsExpectFailure(caps, o, a, d, e, m)) \
+        ret = 1;
+
+static int
+test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
+{
+    int ret = 0;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = testQemuCapsInit())) {
+        ret = -1;
+        goto out;
+    }
+
+    /* Checking each parameter individually */
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu", "pc");
+    CAPSCOMP(VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_NONE, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu", "pc");
+    CAPSCOMP(-1, VIR_ARCH_AARCH64, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");
+    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
+        VIR_DOMAIN_VIRT_KVM, "/usr/bin/kvm", "pc");
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, "/usr/bin/qemu-system-ppc64", NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, "s390-virtio",
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-s390x",
+        "s390-virtio");
+
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, "pseries",
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
+    CAPSCOMP(-1, VIR_ARCH_PPC64LE, -1, NULL, "pseries",
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64LE,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
+
+    CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_AIX, VIR_ARCH_NONE, -1, NULL, NULL);
+    CAPS_EXPECT_ERR(-1, VIR_ARCH_PPC64LE, -1, NULL, "pc");
+    CAPS_EXPECT_ERR(-1, VIR_ARCH_MIPS, -1, NULL, NULL);
+    CAPS_EXPECT_ERR(-1, VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM,
+        "/usr/bin/qemu-system-aarch64", NULL);
+    CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, -1,
+        "/usr/bin/qemu-system-aarch64", "pc");
+    CAPS_EXPECT_ERR(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_VMWARE, NULL, "pc");
+
+ out:
+    virObjectUnref(caps);
+    return ret;
+}
+
+static int
+test_virCapsDomainDataLookupXen(const void *data ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = testXenCapsInit())) {
+        ret = -1;
+        goto out;
+    }
+
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
+        "/usr/lib/xen/bin/qemu-dm", "xenfv");
+    CAPSCOMP(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
+        "/usr/lib/xen/bin/qemu-dm", "xenpv");
+
+    CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, -1, NULL, "xenfv");
+
+    ret = 0;
+ out:
+    virObjectUnref(caps);
+    return ret;
+}
+
+static int
+test_virCapsDomainDataLookupLXC(const void *data ATTRIBUTE_UNUSED)
+{
+    int ret = 0;
+    virCapsPtr caps = NULL;
+
+    if (!(caps = testLXCCapsInit())) {
+        ret = -1;
+        goto out;
+    }
+
+    CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_EXE, VIR_ARCH_I686,
+        VIR_DOMAIN_VIRT_LXC, "/usr/libexec/libvirt_lxc", NULL);
+    CAPSCOMP(-1, VIR_ARCH_X86_64, -1, NULL, NULL,
+        VIR_DOMAIN_OSTYPE_EXE, VIR_ARCH_X86_64,
+        VIR_DOMAIN_VIRT_LXC, "/usr/libexec/libvirt_lxc", NULL);
+
+ out:
+    virObjectUnref(caps);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -125,6 +319,15 @@ mymain(void)
 
     if (virtTestRun("virCapabilitiesGetCpusForNodemask",
                     test_virCapabilitiesGetCpusForNodemask, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("virCapsDomainDataLookupQEMU",
+                    test_virCapsDomainDataLookupQEMU, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("virCapsDomainDataLookupXen",
+                    test_virCapsDomainDataLookupXen, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("virCapsDomainDataLookupLXC",
+                    test_virCapsDomainDataLookupLXC, NULL) < 0)
         ret = -1;
 
     return ret;

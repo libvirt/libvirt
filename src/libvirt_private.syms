@@ -54,6 +54,7 @@ virCapabilitiesClearHostNUMACellCPUTopology;
 virCapabilitiesDefaultGuestArch;
 virCapabilitiesDefaultGuestEmulator;
 virCapabilitiesDefaultGuestMachine;
+virCapabilitiesDomainDataLookup;
 virCapabilitiesFormatXML;
 virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;

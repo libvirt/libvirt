@@ -192,6 +192,16 @@ struct _virCaps {
     virCapsGuestPtr *guests;
 };
 
+typedef struct _virCapsDomainData virCapsDomainData;
+typedef virCapsDomainData *virCapsDomainDataPtr;
+struct _virCapsDomainData {
+    int ostype;
+    int arch;
+    int domaintype;
+    const char *emulator;
+    const char *machinetype;
+};
+
 
 extern virCapsPtr
 virCapabilitiesNew(virArch hostarch,
@@ -261,6 +271,14 @@ extern int
 virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
                                         const char *type,
                                         const char *label);
+
+virCapsDomainDataPtr
+virCapabilitiesDomainDataLookup(virCapsPtr caps,
+                                int ostype,
+                                virArch arch,
+                                int domaintype,
+                                const char *emulator,
+                                const char *machinetype);
 
 extern int
 virCapabilitiesSupportsGuestArch(virCapsPtr caps,
