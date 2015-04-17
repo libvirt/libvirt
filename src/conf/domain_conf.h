@@ -1783,7 +1783,7 @@ void virDomainLoaderDefFree(virDomainLoaderDefPtr loader);
 typedef struct _virDomainOSDef virDomainOSDef;
 typedef virDomainOSDef *virDomainOSDefPtr;
 struct _virDomainOSDef {
-    char *type;
+    int type;
     virArch arch;
     char *machine;
     size_t nBootDevs;

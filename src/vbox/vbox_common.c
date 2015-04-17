@@ -930,7 +930,7 @@ vboxSetBootDeviceOrder(virDomainDefPtr def, vboxGlobalData *data,
     PRUint32 maxBootPosition            = 0;
     size_t i = 0;
 
-    VIR_DEBUG("def->os.type             %s", def->os.type);
+    VIR_DEBUG("def->os.type             %s", virDomainOSTypeToString(def->os.type));
     VIR_DEBUG("def->os.arch             %s", virArchToString(def->os.arch));
     VIR_DEBUG("def->os.machine          %s", def->os.machine);
     VIR_DEBUG("def->os.nBootDevs        %zu", def->os.nBootDevs);
@@ -3906,9 +3906,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
 
-    if (VIR_STRDUP(def->os.type, "hvm") < 0)
-        goto cleanup;
-
+    def->os.type = VIR_DOMAIN_OSTYPE_HVM;
     def->os.arch = virArchFromHost();
 
     def->os.nBootDevs = 0;
@@ -4122,8 +4120,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     if (!(def = virDomainDefNew()))
         return ret;
 
-    if (VIR_STRDUP(def->os.type, "hvm") < 0)
-        goto cleanup;
+    def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
@@ -4254,8 +4251,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     if (!(def = virDomainDefNew()))
         return ret;
 
-    if (VIR_STRDUP(def->os.type, "hvm") < 0)
-        goto cleanup;
+    def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
@@ -6061,8 +6057,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
          * reading and while dumping xml
          */
         virDomainDefSetMemoryInitial(def->dom, memorySize * 1024);
-        if (VIR_STRDUP(def->dom->os.type, "hvm") < 0)
-            goto cleanup;
+        def->dom->os.type = VIR_DOMAIN_OSTYPE_HVM;
         def->dom->os.arch = virArchFromHost();
         gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
         def->dom->maxvcpus = def->dom->vcpus = CPUCount;

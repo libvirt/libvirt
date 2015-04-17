@@ -1025,9 +1025,7 @@ lxcParseConfigString(const char *config)
     vmdef->vcpus = 1;
 
     vmdef->nfss = 0;
-
-    if (VIR_STRDUP(vmdef->os.type, "exe") < 0)
-        goto error;
+    vmdef->os.type = VIR_DOMAIN_OSTYPE_EXE;
 
     if ((value = virConfGetValue(properties, "lxc.arch")) && value->str) {
         virArch arch = virArchFromString(value->str);

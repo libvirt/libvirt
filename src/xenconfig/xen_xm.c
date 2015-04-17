@@ -42,7 +42,7 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         const char *boot;
 
         if (VIR_ALLOC(def->os.loader) < 0 ||
@@ -108,7 +108,7 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 {
     const char *str = NULL;
     virDomainDiskDefPtr disk = NULL;
-    int hvm = STREQ(def->os.type, "hvm");
+    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virConfValuePtr list = virConfGetValue(conf, "disk");
 
     if (list && list->type == VIR_CONF_LIST) {
@@ -391,7 +391,7 @@ xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 {
     virConfValuePtr diskVal = NULL;
     size_t i = 0;
-    int hvm = STREQ(def->os.type, "hvm");
+    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
     if (VIR_ALLOC(diskVal) < 0)
         goto cleanup;
@@ -436,7 +436,7 @@ xenParseXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 {
     const char *str;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetString(conf, "usbdevice", &str, NULL) < 0)
             return -1;
         if (str &&
@@ -503,7 +503,7 @@ xenFormatXMOS(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
@@ -573,7 +573,7 @@ xenFormatXMInputDevs(virConfPtr conf, virDomainDefPtr def)
     size_t i;
     const char *devtype;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         for (i = 0; i < def->ninputs; i++) {
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenConfigSetInt(conf, "usb", 1) < 0)

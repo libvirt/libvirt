@@ -184,7 +184,7 @@ parallelsDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
         !dev->data.net->model &&
-        STREQ(def->os.type, "hvm") &&
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
         VIR_STRDUP(dev->data.net->model, "e1000") < 0)
         goto cleanup;
 
@@ -575,7 +575,7 @@ parallelsDomainGetOSType(virDomainPtr domain)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, privdom->def->os.type));
+    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(privdom->def->os.type)));
 
  cleanup:
     if (privdom)
@@ -712,15 +712,16 @@ parallelsDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int 
     olddom = virDomainObjListFindByUUID(privconn->domains, def->uuid);
     if (olddom == NULL) {
         virResetLastError();
-        if (STREQ(def->os.type, "hvm")) {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if (prlsdkCreateVm(conn, def))
                 goto cleanup;
-        } else if (STREQ(def->os.type, "exe")) {
+        } else if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
             if (prlsdkCreateCt(conn, def))
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unsupported OS type: %s"), def->os.type);
+                           _("Unsupported OS type: %s"),
+                           virDomainOSTypeToString(def->os.type));
             goto cleanup;
         }
 

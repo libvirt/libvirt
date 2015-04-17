@@ -564,8 +564,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
             goto cleanup;
         }
 
-        if (VIR_STRDUP(def->os.type, "exe") < 0)
-            goto cleanup;
+        def->os.type = VIR_DOMAIN_OSTYPE_EXE;
         if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
             goto cleanup;
 

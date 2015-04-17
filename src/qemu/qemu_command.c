@@ -8834,8 +8834,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_UUID))
         virCommandAddArgList(cmd, "-uuid", uuid, NULL);
     if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
-        STREQ(def->os.type, "xen") ||
-        STREQ(def->os.type, "linux")) {
+        def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_LINUX) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_XEN_DOMID)) {
             virCommandAddArg(cmd, "-xen-attach");
             virCommandAddArg(cmd, "-xen-domid");
@@ -12315,11 +12315,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
     if (strstr(path, "xenner")) {
         def->virtType = VIR_DOMAIN_VIRT_KVM;
-        if (VIR_STRDUP(def->os.type, "xen") < 0)
-            goto error;
+        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
     } else {
-        if (VIR_STRDUP(def->os.type, "hvm") < 0)
-            goto error;
+        def->os.type = VIR_DOMAIN_OSTYPE_HVM;
         if (strstr(path, "kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_KVM;
             def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;

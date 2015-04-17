@@ -267,10 +267,10 @@ virCapabilitiesSupportsGuestArch(virCapsPtr caps,
                                  virArch arch);
 extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
-                                   const char *ostype);
+                                   int ostype);
 extern int
 virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
-                                       const char *ostype,
+                                       int ostype,
                                        virArch arch);
 
 void
@@ -279,16 +279,16 @@ virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
 
 extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                const char *ostype,
+                                int ostype,
                                 const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
-                                   const char *ostype,
+                                   int ostype,
                                    virArch arch,
                                    const char *domain);
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
-                                    const char *ostype,
+                                    int ostype,
                                     virArch arch,
                                     const char *domain);
 

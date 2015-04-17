@@ -499,7 +499,7 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 
     libxl_domain_create_info_init(c_info);
 
-    if (STREQ(def->os.type, "hvm"))
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
         c_info->type = LIBXL_DOMAIN_TYPE_HVM;
     else
         c_info->type = LIBXL_DOMAIN_TYPE_PV;
@@ -625,7 +625,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                       libxl_domain_config *d_config)
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
-    int hvm = STREQ(def->os.type, "hvm");
+    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     size_t i;
 
     libxl_domain_build_info_init(b_info);
@@ -875,7 +875,7 @@ libxlDomainGetEmulatorType(const virDomainDef *def)
     virCommandPtr cmd = NULL;
     char *output = NULL;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (def->emulator) {
             cmd = virCommandNew(def->emulator);
 
@@ -1070,7 +1070,7 @@ libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
              libxl_device_nic *x_nic)
 {
-    bool ioemu_nic = STREQ(def->os.type, "hvm");
+    bool ioemu_nic = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virDomainNetType actual_type = virDomainNetGetActualType(l_nic);
 
     /* TODO: Where is mtu stored?
@@ -1309,7 +1309,7 @@ libxlMakeVfbList(virPortAllocatorPtr graphicsports,
      * VNC or SDL info must also be set in libxl_domain_build_info
      * for HVM domains.  Use the first vfb device.
      */
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         libxl_domain_build_info *b_info = &d_config->b_info;
         libxl_device_vfb vfb = d_config->vfbs[0];
 

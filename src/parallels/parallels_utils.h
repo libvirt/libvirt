@@ -37,7 +37,7 @@
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
-# define IS_CT(def)  (STREQ_NULLABLE(def->os.type, "exe"))
+# define IS_CT(def)  (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
 
 # define parallelsDomNotFoundError(domain)                               \
     do {                                                                 \

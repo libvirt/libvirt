@@ -464,7 +464,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     virUUIDFormat(def->uuid, uuidStr);
     if (VIR_STRDUP((*record)->uuid, uuidStr) < 0)
         goto error;
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         char *boot_order = NULL;
         if (VIR_STRDUP((*record)->hvm_boot_policy, "BIOS order") < 0)
             goto error;
@@ -476,7 +476,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
             (*record)->hvm_boot_params = hvm_boot_params;
             VIR_FREE(boot_order);
         }
-    } else if (STREQ(def->os.type, "xen")) {
+    } else if (def->os.type == VIR_DOMAIN_OSTYPE_XEN) {
         if (VIR_STRDUP((*record)->pv_bootloader, "pygrub") < 0)
             goto error;
         if (def->os.kernel) {

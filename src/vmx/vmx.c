@@ -1522,8 +1522,7 @@ virVMXParseConfig(virVMXContext *ctx,
     def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
 
     /* def:os */
-    if (VIR_STRDUP(def->os.type, "hvm") < 0)
-        goto cleanup;
+    def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     /* vmx:guestOS -> def:os.arch */
     if (virVMXGetConfigString(conf, "guestOS", &guestOS, true) < 0)

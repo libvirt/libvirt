@@ -64,7 +64,7 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     size_t i;
     const char *extra, *root;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         const char *boot;
 
         for (i = 0; i < caps->nguests; i++) {
@@ -159,7 +159,7 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
     char *listenAddr = NULL;
     int val;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetBool(conf, "spice", &val, 0) < 0)
             return -1;
 
@@ -353,7 +353,8 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
                 }
             }
 
-            if (STRPREFIX(libxldisk->vdev, "xvd") || !STREQ(def->os.type, "hvm"))
+            if (STRPREFIX(libxldisk->vdev, "xvd") ||
+                def->os.type != VIR_DOMAIN_OSTYPE_HVM)
                 disk->bus = VIR_DOMAIN_DISK_BUS_XEN;
             else if (STRPREFIX(libxldisk->vdev, "sd"))
                 disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
@@ -388,7 +389,7 @@ xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
     const char *str;
     virConfValuePtr val;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         val = virConfGetValue(conf, "usbdevice");
         /* usbdevice can be defined as either a single string or a list */
         if (val && val->type == VIR_CONF_LIST) {
@@ -475,7 +476,7 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
@@ -667,7 +668,7 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
 {
     const char *listenAddr = NULL;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             /* set others to false but may not be necessary */
             if (xenConfigSetInt(conf, "sdl", 0) < 0)
@@ -726,7 +727,7 @@ xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
     const char *devtype;
     virConfValuePtr usbdevices = NULL, lastdev;
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (VIR_ALLOC(usbdevices) < 0)
             goto error;
 

@@ -1145,8 +1145,7 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
     }
 
-    if (VIR_STRDUP(def->os.type, hvm ? "hvm" : "linux") < 0)
-        goto error;
+    def->os.type = (hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_LINUX);
 
     if (def->id != 0) {
         if (sexpr_lookup(root, "domain/image")) {
@@ -2273,7 +2272,7 @@ xenFormatSxpr(virConnectPtr conn,
     }
     virBufferAsprintf(&buf, "(on_crash '%s')", tmp);
 
-    if (STREQ(def->os.type, "hvm"))
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
         hvm = 1;
 
     if (!def->os.bootloader) {

@@ -235,7 +235,7 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
-        STRNEQ(def->os.type, "hvm"))
+        def->os.type != VIR_DOMAIN_OSTYPE_HVM)
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
@@ -278,7 +278,7 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO && STREQ(def->os.type, "hvm")) {
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO && def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         int dm_type = libxlDomainGetEmulatorType(def);
 
         switch (dev->data.video->type) {
@@ -315,7 +315,7 @@ libxlDomainDefPostParse(virDomainDefPtr def,
 {
     /* Xen PV domains always have a PV console, so add one to the domain config
      * via post-parse callback if not explicitly specified in the XML. */
-    if (STRNEQ(def->os.type, "hvm") && def->nconsoles == 0) {
+    if (def->os.type != VIR_DOMAIN_OSTYPE_HVM && def->nconsoles == 0) {
         virDomainChrDefPtr chrdef;
 
         if (!(chrdef = virDomainChrDefNew()))

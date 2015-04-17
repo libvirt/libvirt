@@ -1773,7 +1773,7 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(type, vm->def->os.type) < 0)
+    if (VIR_STRDUP(type, virDomainOSTypeToString(vm->def->os.type)) < 0)
         goto cleanup;
 
  cleanup:

@@ -103,11 +103,11 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
         "</domain>\n";
 
     if (!(def = virDomainDefNew()) ||
-        VIR_STRDUP(def->os.type, "exe") < 0 ||
         VIR_STRDUP(def->os.init, "/sbin/init") < 0)
         goto cleanup;
 
     def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
+    def->os.type = VIR_DOMAIN_OSTYPE_EXE;
 
     if (openvzReadNetworkConf(def, 1) < 0) {
         err = virGetLastError();

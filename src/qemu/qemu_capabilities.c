@@ -1897,7 +1897,7 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
 
     hostarch = virArchFromHost();
     if ((binary = virCapabilitiesDefaultGuestEmulator(caps,
-                                                      "hvm",
+                                                      VIR_DOMAIN_OSTYPE_HVM,
                                                       hostarch,
                                                       "qemu")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

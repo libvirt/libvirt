@@ -2276,7 +2276,6 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->idmap.uidmap);
     VIR_FREE(def->idmap.gidmap);
 
-    VIR_FREE(def->os.type);
     VIR_FREE(def->os.machine);
     VIR_FREE(def->os.init);
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
@@ -3065,7 +3064,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             i == 0 &&
             (def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
              def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
-             STREQ_NULLABLE(def->os.type, "hvm"))
+             def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             continue;
         device.data.chr = def->consoles[i];
         if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
@@ -3299,14 +3298,8 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 {
     size_t i;
 
-    if (!def->os.type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("hypervisor type must be specified"));
-        return -1;
-    }
-
     /* verify init path for container based domains */
-    if (STREQ(def->os.type, "exe") && !def->os.init) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("init binary must be specified"));
         return -1;
@@ -3384,7 +3377,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
             return -1;
         }
     }
-    if (def->nconsoles > 0 && STREQ(def->os.type, "hvm") &&
+    if (def->nconsoles > 0 && def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
         (def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
          def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)) {
 
@@ -9451,7 +9444,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
             goto error;
         }
 
-        if (STREQ(dom->os.type, "hvm")) {
+        if (dom->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
                 def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
                 def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
@@ -9466,7 +9459,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
                                bus);
                 goto error;
             }
-        } else if (STREQ(dom->os.type, "xen")) {
+        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN) {
             if (def->bus != VIR_DOMAIN_INPUT_BUS_XEN) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unsupported input bus %s"),
@@ -9506,7 +9499,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
             }
         }
     } else {
-        if (STREQ(dom->os.type, "hvm")) {
+        if (dom->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if ((def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
                 def->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
                 (ARCH_IS_X86(dom->os.arch) || dom->os.arch == VIR_ARCH_NONE)) {
@@ -9514,7 +9507,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
             } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
             }
-        } else if (STREQ(dom->os.type, "xen")) {
+        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN) {
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         } else {
             if ((dom->virtType == VIR_DOMAIN_VIRT_PARALLELS))
@@ -10989,9 +10982,8 @@ virDomainVideoDefaultType(const virDomainDef *def)
     case VIR_DOMAIN_VIRT_KQEMU:
     case VIR_DOMAIN_VIRT_KVM:
     case VIR_DOMAIN_VIRT_XEN:
-        if (def->os.type &&
-            (STREQ(def->os.type, "xen") ||
-             STREQ(def->os.type, "linux")))
+        if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+            def->os.type == VIR_DOMAIN_OSTYPE_LINUX)
             return VIR_DOMAIN_VIDEO_TYPE_XEN;
         else if ARCH_IS_PPC64(def->os.arch)
             return VIR_DOMAIN_VIDEO_TYPE_VGA;
@@ -11005,15 +10997,10 @@ virDomainVideoDefaultType(const virDomainDef *def)
         return VIR_DOMAIN_VIDEO_TYPE_VMVGA;
 
     case VIR_DOMAIN_VIRT_PARALLELS:
-        if (def->os.type) {
-            if (STREQ(def->os.type, "hvm"))
-                return VIR_DOMAIN_VIDEO_TYPE_VGA;
-            else
-                return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
-        } else {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             return VIR_DOMAIN_VIDEO_TYPE_VGA;
-        }
-
+        else
+            return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     default:
         return -1;
     }
@@ -12992,7 +12979,8 @@ virDomainDefGetDefaultEmulator(virDomainDefPtr def,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no emulator for domain %s os type %s "
                          "on architecture %s"),
-                       type, def->os.type, virArchToString(def->os.arch));
+                       type, virDomainOSTypeToString(def->os.type),
+                       virArchToString(def->os.arch));
         return NULL;
     }
 
@@ -14640,27 +14628,32 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
 
-    def->os.type = virXPathString("string(./os/type[1])", ctxt);
-    if (!def->os.type) {
+    tmp = virXPathString("string(./os/type[1])", ctxt);
+    if (!tmp) {
         if (def->os.bootloader) {
-            if (VIR_STRDUP(def->os.type, "xen") < 0)
-                goto error;
+            def->os.type = VIR_DOMAIN_OSTYPE_XEN;
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("an os <type> must be specified"));
             goto error;
         }
+    } else {
+        if ((def->os.type = virDomainOSTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown OS type '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
     }
+
     /*
      * HACK: For xen driver we previously used bogus 'linux' as the
      * os type for paravirt, whereas capabilities declare it to
      * be 'xen'. So we accept the former and convert
      */
-    if (STREQ(def->os.type, "linux") &&
+    if (def->os.type == VIR_DOMAIN_OSTYPE_LINUX &&
         def->virtType == VIR_DOMAIN_VIRT_XEN) {
-        VIR_FREE(def->os.type);
-        if (VIR_STRDUP(def->os.type, "xen") < 0)
-            goto error;
+        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
     }
 
     tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
@@ -14678,7 +14671,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("no support found for os <type> '%s'"),
-                           def->os.type);
+                           virDomainOSTypeToString(def->os.type));
             goto error;
         }
 
@@ -14695,7 +14688,8 @@ virDomainDefParseXML(xmlDocPtr xml,
                                                         def->os.arch)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("No os type '%s' available for arch '%s'"),
-                               def->os.type, virArchToString(def->os.arch));
+                               virDomainOSTypeToString(def->os.type),
+                               virArchToString(def->os.arch));
                 goto error;
             }
         } else {
@@ -14706,7 +14700,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if (!def->os.arch) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("no supported architecture for os type '%s'"),
-                               def->os.type);
+                               virDomainOSTypeToString(def->os.type));
                 goto error;
             }
         }
@@ -14731,7 +14725,7 @@ virDomainDefParseXML(xmlDocPtr xml,
      *   - An init script                             (exe)
      */
 
-    if (STREQ(def->os.type, "exe")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
         def->os.init = virXPathString("string(./os/init[1])", ctxt);
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
 
@@ -14755,9 +14749,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(nodes);
     }
 
-    if (STREQ(def->os.type, "xen") ||
-        STREQ(def->os.type, "hvm") ||
-        STREQ(def->os.type, "uml")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
+        def->os.type == VIR_DOMAIN_OSTYPE_UML) {
         xmlNodePtr loader_node;
 
         def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
@@ -14777,7 +14771,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
     }
 
-    if (STREQ(def->os.type, "hvm")) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (virDomainDefParseBootXML(ctxt, def) < 0)
             goto error;
         if (!(bootHash = virHashCreate(5, NULL)))
@@ -15055,15 +15049,15 @@ virDomainDefParseXML(xmlDocPtr xml,
         /* With QEMU / KVM / Xen graphics, mouse + PS/2 is implicit
          * with graphics, so don't store it.
          * XXX will this be true for other virt types ? */
-        if ((STREQ(def->os.type, "hvm") &&
+        if ((def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
              input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
-            (STREQ(def->os.type, "xen") &&
+            (def->os.type == VIR_DOMAIN_OSTYPE_XEN &&
              input->bus == VIR_DOMAIN_INPUT_BUS_XEN &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
-            (STREQ(def->os.type, "exe") &&
+            (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
              def->virtType == VIR_DOMAIN_VIRT_PARALLELS &&
              input->bus == VIR_DOMAIN_INPUT_BUS_PARALLELS &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
@@ -15097,9 +15091,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         (ARCH_IS_X86(def->os.arch) || def->os.arch == VIR_ARCH_NONE)) {
         int input_bus = VIR_DOMAIN_INPUT_BUS_XEN;
 
-        if (STREQ(def->os.type, "hvm"))
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             input_bus = VIR_DOMAIN_INPUT_BUS_PS2;
-        if (STREQ(def->os.type, "exe") &&
+        if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
             def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
             input_bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
 
@@ -16795,10 +16789,11 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
-    if (STRNEQ(src->os.type, dst->os.type)) {
+    if (src->os.type != dst->os.type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain OS type %s does not match source %s"),
-                       dst->os.type, src->os.type);
+                       virDomainOSTypeToString(dst->os.type),
+                       virDomainOSTypeToString(src->os.type));
         goto error;
     }
     if (src->os.arch != dst->os.arch) {
@@ -16810,8 +16805,8 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     }
     if (STRNEQ_NULLABLE(src->os.machine, dst->os.machine)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain OS type %s does not match source %s"),
-                       dst->os.machine, src->os.machine);
+                    _("Target domain machine type %s does not match source %s"),
+                    dst->os.machine, src->os.machine);
         goto error;
     }
 
@@ -20819,10 +20814,12 @@ virDomainDefFormatInternal(virDomainDefPtr def,
      * be 'xen'. So we convert to the former for backcompat
      */
     if (def->virtType == VIR_DOMAIN_VIRT_XEN &&
-        STREQ(def->os.type, "xen"))
-        virBufferAsprintf(buf, ">%s</type>\n", "linux");
+        def->os.type == VIR_DOMAIN_OSTYPE_XEN)
+        virBufferAsprintf(buf, ">%s</type>\n",
+                          virDomainOSTypeToString(VIR_DOMAIN_OSTYPE_LINUX));
     else
-        virBufferAsprintf(buf, ">%s</type>\n", def->os.type);
+        virBufferAsprintf(buf, ">%s</type>\n",
+                          virDomainOSTypeToString(def->os.type));
 
     virBufferEscapeString(buf, "<init>%s</init>\n",
                           def->os.init);
@@ -21194,7 +21191,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         /* Back compat, ignore the console element for hvm guests
          * if it is type == serial
          */
-        if (STREQ(def->os.type, "hvm") &&
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
             (def->consoles[n]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
              def->consoles[n]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
             (n < def->nserials)) {
@@ -21207,7 +21204,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
             goto error;
     }
-    if (STREQ(def->os.type, "hvm") &&
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
         def->nconsoles == 0 &&
         def->nserials > 0) {
         virDomainChrDef console;
@@ -21240,9 +21237,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 .info = { .alias = NULL },
             };
 
-            if (STREQ(def->os.type, "hvm"))
+            if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
                 autoInput.bus = VIR_DOMAIN_INPUT_BUS_PS2;
-            else if (STREQ(def->os.type, "exe") &&
+            else if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
                      def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
                 autoInput.bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
             else
@@ -21479,7 +21476,7 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
         return 0;
 
     if (!virDomainDefHasUSB(def) &&
-        STRNEQ(def->os.type, "exe") &&
+        def->os.type != VIR_DOMAIN_OSTYPE_EXE &&
         virDomainDeviceIsUSB(dev)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Device configuration is not compatible: "

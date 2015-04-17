@@ -2241,7 +2241,7 @@ static char *qemuDomainGetOSType(virDomainPtr dom) {
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(type, vm->def->os.type));
+    ignore_value(VIR_STRDUP(type, virDomainOSTypeToString(vm->def->os.type)));
 
  cleanup:
     qemuDomObjEndAPI(&vm);

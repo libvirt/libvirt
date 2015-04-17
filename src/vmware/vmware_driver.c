@@ -870,7 +870,7 @@ vmwareDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, vm->def->os.type));
+    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)));
 
  cleanup:
     if (vm)

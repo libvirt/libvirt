@@ -593,23 +593,16 @@ virCapabilitiesSupportsGuestArch(virCapsPtr caps,
 /**
  * virCapabilitiesSupportsGuestOSType:
  * @caps: capabilities to query
- * @ostype: OS type to search for (eg 'hvm', 'xen')
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  *
  * Returns non-zero if the capabilities support the
  * requested operating system type
  */
 extern int
 virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
-                                   const char *ostypestr)
+                                   int ostype)
 {
     size_t i;
-    int ostype;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        return 0;
-    }
 
     for (i = 0; i < caps->nguests; i++) {
         if (caps->guests[i]->ostype == ostype)
@@ -622,7 +615,7 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
 /**
  * virCapabilitiesSupportsGuestOSTypeArch:
  * @caps: capabilities to query
- * @ostype: OS type to search for (eg 'hvm', 'xen')
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: Architecture to search for
  *
  * Returns non-zero if the capabilities support the
@@ -630,17 +623,10 @@ virCapabilitiesSupportsGuestOSType(virCapsPtr caps,
  */
 extern int
 virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
-                                       const char *ostypestr,
+                                       int ostype,
                                        virArch arch)
 {
     size_t i;
-    int ostype;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        return 0;
-    }
 
     for (i = 0; i < caps->nguests; i++) {
         if (caps->guests[i]->ostype == ostype &&
@@ -654,24 +640,17 @@ virCapabilitiesSupportsGuestOSTypeArch(virCapsPtr caps,
 /**
  * virCapabilitiesDefaultGuestArch:
  * @caps: capabilities to query
- * @ostype: OS type to search for
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  *
  * Returns the first architecture able to run the
  * requested operating system type
  */
 extern virArch
 virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                const char *ostypestr,
+                                int ostype,
                                 const char *domain)
 {
     size_t i, j;
-    int ostype;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        return VIR_ARCH_NONE;
-    }
 
     /* First try to find one matching host arch */
     for (i = 0; i < caps->nguests; i++) {
@@ -700,7 +679,7 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
 /**
  * virCapabilitiesDefaultGuestMachine:
  * @caps: capabilities to query
- * @ostype: OS type to search for
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: architecture to search for
  * @domain: domain type to search for
  *
@@ -710,18 +689,11 @@ virCapabilitiesDefaultGuestArch(virCapsPtr caps,
  */
 extern const char *
 virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
-                                   const char *ostypestr,
+                                   int ostype,
                                    virArch arch,
                                    const char *domain)
 {
     size_t i;
-    int ostype;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        return NULL;
-    }
 
     for (i = 0; i < caps->nguests; i++) {
         virCapsGuestPtr guest = caps->guests[i];
@@ -753,7 +725,7 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
 /**
  * virCapabilitiesDefaultGuestEmulator:
  * @caps: capabilities to query
- * @ostype: OS type to search for ('xen', 'hvm')
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: architecture to search for
  * @domain: domain type ('xen', 'qemu', 'kvm')
  *
@@ -763,18 +735,11 @@ virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
  */
 extern const char *
 virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
-                                    const char *ostypestr,
+                                    int ostype,
                                     virArch arch,
                                     const char *domain)
 {
     size_t i, j;
-    int ostype;
-
-    if ((ostype = virDomainOSTypeFromString(ostypestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown OS type '%s'"), ostypestr);
-        return NULL;
-    }
 
     for (i = 0; i < caps->nguests; i++) {
         char *emulator;

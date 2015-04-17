@@ -859,7 +859,7 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
         if (i == 0 &&
             (vm->def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
              vm->def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
-             STREQ_NULLABLE(vm->def->os.type, "hvm"))
+             vm->def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             continue;
 
         virDomainAuditChardev(vm, NULL, vm->def->consoles[i], "start", true);

@@ -2261,7 +2261,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
     case VIR_DOMAIN_DEVICE_DISK:
         if (xenFormatSxprDisk(dev->data.disk,
                               &buf,
-                              STREQ(def->os.type, "hvm") ? 1 : 0,
+                              def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
                               priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
@@ -2274,7 +2274,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
         if (xenFormatSxprNet(conn,
                              dev->data.net,
                              &buf,
-                             STREQ(def->os.type, "hvm") ? 1 : 0,
+                             def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
                              priv->xendConfigVersion, 1) < 0)
             goto cleanup;
 
@@ -2409,7 +2409,7 @@ xenDaemonUpdateDeviceFlags(virConnectPtr conn,
     case VIR_DOMAIN_DEVICE_DISK:
         if (xenFormatSxprDisk(dev->data.disk,
                               &buf,
-                              STREQ(def->os.type, "hvm") ? 1 : 0,
+                              def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
                               priv->xendConfigVersion, 1) < 0)
             goto cleanup;
         break;

@@ -92,7 +92,7 @@ openvzDomainDefPostParse(virDomainDefPtr def,
                          void *opaque ATTRIBUTE_UNUSED)
 {
     /* fill the init path */
-    if (STREQ(def->os.type, "exe") && !def->os.init) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
         if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
             return -1;
     }
@@ -371,7 +371,7 @@ static char *openvzDomainGetOSType(virDomainPtr dom)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, vm->def->os.type));
+    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)));
 
  cleanup:
     if (vm)

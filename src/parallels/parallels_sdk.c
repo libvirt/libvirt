@@ -1174,12 +1174,10 @@ prlsdkConvertDomainType(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     switch (domainType) {
     case PVT_VM:
-        if (VIR_STRDUP(def->os.type, "hvm") < 0)
-            return -1;
+        def->os.type = VIR_DOMAIN_OSTYPE_HVM;
         break;
     case PVT_CT:
-        if (VIR_STRDUP(def->os.type, "exe") < 0)
-            return -1;
+        def->os.type = VIR_DOMAIN_OSTYPE_EXE;
         if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
             return -1;
         break;

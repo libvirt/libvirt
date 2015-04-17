@@ -52,7 +52,7 @@ xenapiDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
-        STRNEQ(def->os.type, "hvm"))
+        def->os.type != VIR_DOMAIN_OSTYPE_HVM)
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
     /* forbid capabilities mode hostdev in this kind of hypervisor */
@@ -1427,10 +1427,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto error;
     xen_vm_get_hvm_boot_policy(session, &boot_policy, vm);
     if (STREQ(boot_policy, "BIOS order")) {
-        if (VIR_STRDUP(defPtr->os.type, "hvm") < 0) {
-            VIR_FREE(boot_policy);
-            goto error;
-        }
+        defPtr->os.type = VIR_DOMAIN_OSTYPE_HVM;
         xen_vm_get_hvm_boot_params(session, &result, vm);
         if (result != NULL) {
             size_t i;
@@ -1450,10 +1447,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         VIR_FREE(boot_policy);
     } else {
         char *value = NULL;
-        if (VIR_STRDUP(defPtr->os.type, "xen") < 0) {
-            VIR_FREE(boot_policy);
-            goto error;
-        }
+        defPtr->os.type = VIR_DOMAIN_OSTYPE_XEN;
         if (VIR_ALLOC(defPtr->os.loader) < 0 ||
             VIR_STRDUP(defPtr->os.loader->path, "pygrub") < 0) {
             VIR_FREE(boot_policy);
