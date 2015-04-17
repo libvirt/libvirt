@@ -2004,6 +2004,8 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
+    qemuDomainSetFakeReboot(driver, vm, isReboot);
+
     if (useAgent) {
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentShutdown(priv->agent, agentFlag);
@@ -2015,7 +2017,6 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
      */
     if (!useAgent ||
         (ret < 0 && (acpiRequested || !flags))) {
-        qemuDomainSetFakeReboot(driver, vm, isReboot);
 
         /* Even if agent failed, we have to check if guest went away
          * by itself while our locks were down.  */
