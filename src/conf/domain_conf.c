@@ -13685,6 +13685,97 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
+    def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
+    def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
+
+    tmp = virXPathString("string(./os/type[1])", ctxt);
+    if (!tmp) {
+        if (def->os.bootloader) {
+            def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+        } else {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("an os <type> must be specified"));
+            goto error;
+        }
+    } else {
+        if ((def->os.type = virDomainOSTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown OS type '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    /*
+     * HACK: For xen driver we previously used bogus 'linux' as the
+     * os type for paravirt, whereas capabilities declare it to
+     * be 'xen'. So we accept the former and convert
+     */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_LINUX &&
+        def->virtType == VIR_DOMAIN_VIRT_XEN) {
+        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+    }
+
+    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
+    if (tmp && !(def->os.arch = virArchFromString(tmp))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unknown architecture %s"),
+                       tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
+    def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
+        if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("no support found for os <type> '%s'"),
+                           virDomainOSTypeToString(def->os.type));
+            goto error;
+        }
+
+        if (def->os.arch) {
+            if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("No guest options available for arch '%s'"),
+                               virArchToString(def->os.arch));
+                goto error;
+            }
+
+            if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
+                                                        def->os.type,
+                                                        def->os.arch)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("No os type '%s' available for arch '%s'"),
+                               virDomainOSTypeToString(def->os.type),
+                               virArchToString(def->os.arch));
+                goto error;
+            }
+        } else {
+            def->os.arch =
+                virCapabilitiesDefaultGuestArch(caps,
+                                                def->os.type,
+                                                def->virtType);
+            if (!def->os.arch) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("no supported architecture for os type '%s'"),
+                               virDomainOSTypeToString(def->os.type));
+                goto error;
+            }
+        }
+
+        if (!def->os.machine) {
+            const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
+                                                                            def->os.type,
+                                                                            def->os.arch,
+                                                                            def->virtType);
+            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
+                goto error;
+        }
+    }
+
     /* Extract domain name */
     if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
         virReportError(VIR_ERR_NO_NAME, NULL);
@@ -14618,96 +14709,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
-    def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
-
-    tmp = virXPathString("string(./os/type[1])", ctxt);
-    if (!tmp) {
-        if (def->os.bootloader) {
-            def->os.type = VIR_DOMAIN_OSTYPE_XEN;
-        } else {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("an os <type> must be specified"));
-            goto error;
-        }
-    } else {
-        if ((def->os.type = virDomainOSTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown OS type '%s'"), tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-    }
-
-    /*
-     * HACK: For xen driver we previously used bogus 'linux' as the
-     * os type for paravirt, whereas capabilities declare it to
-     * be 'xen'. So we accept the former and convert
-     */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_LINUX &&
-        def->virtType == VIR_DOMAIN_VIRT_XEN) {
-        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
-    }
-
-    tmp = virXPathString("string(./os/type[1]/@arch)", ctxt);
-    if (tmp && !(def->os.arch = virArchFromString(tmp))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown architecture %s"),
-                       tmp);
-        goto error;
-    }
-    VIR_FREE(tmp);
-
-    def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
-
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
-        if (!virCapabilitiesSupportsGuestOSType(caps, def->os.type)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("no support found for os <type> '%s'"),
-                           virDomainOSTypeToString(def->os.type));
-            goto error;
-        }
-
-        if (def->os.arch) {
-            if (!virCapabilitiesSupportsGuestArch(caps, def->os.arch)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("No guest options available for arch '%s'"),
-                               virArchToString(def->os.arch));
-                goto error;
-            }
-
-            if (!virCapabilitiesSupportsGuestOSTypeArch(caps,
-                                                        def->os.type,
-                                                        def->os.arch)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("No os type '%s' available for arch '%s'"),
-                               virDomainOSTypeToString(def->os.type),
-                               virArchToString(def->os.arch));
-                goto error;
-            }
-        } else {
-            def->os.arch =
-                virCapabilitiesDefaultGuestArch(caps,
-                                                def->os.type,
-                                                def->virtType);
-            if (!def->os.arch) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("no supported architecture for os type '%s'"),
-                               virDomainOSTypeToString(def->os.type));
-                goto error;
-            }
-        }
-
-        if (!def->os.machine) {
-            const char *defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
-                                                                            def->os.type,
-                                                                            def->os.arch,
-                                                                            def->virtType);
-            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-                goto error;
-        }
-    }
-
 
     /*
      * Booting options for different OS types....
@@ -14771,7 +14772,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
     }
 
-    def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
