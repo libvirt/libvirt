@@ -434,10 +434,9 @@ processLU(virStoragePoolObjPtr pool,
 }
 
 
-static int
-virStorageBackendSCSIFindLUsInternal(virStoragePoolObjPtr pool,
-                                     uint32_t scanhost,
-                                     bool *found)
+int
+virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
+                              uint32_t scanhost)
 {
     int retval = 0;
     uint32_t bus, target, lun;
@@ -445,6 +444,7 @@ virStorageBackendSCSIFindLUsInternal(virStoragePoolObjPtr pool,
     DIR *devicedir = NULL;
     struct dirent *lun_dirent = NULL;
     char devicepattern[64];
+    int found = 0;
 
     VIR_DEBUG("Discovering LUs on host %u", scanhost);
 
@@ -460,7 +460,6 @@ virStorageBackendSCSIFindLUsInternal(virStoragePoolObjPtr pool,
 
     snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
 
-    *found = false;
     while ((retval = virDirRead(devicedir, &lun_dirent, device_path)) > 0) {
         if (sscanf(lun_dirent->d_name, devicepattern,
                    &bus, &target, &lun) != 3) {
@@ -470,24 +469,19 @@ virStorageBackendSCSIFindLUsInternal(virStoragePoolObjPtr pool,
         VIR_DEBUG("Found possible LU '%s'", lun_dirent->d_name);
 
         if (processLU(pool, scanhost, bus, target, lun) == 0)
-            *found = true;
+            found++;
     }
-
-    if (!*found)
-        VIR_DEBUG("No LU found for pool %s", pool->def->name);
 
     closedir(devicedir);
 
-    return retval;
+    if (retval < 0)
+        return -1;
+
+    VIR_DEBUG("Found %d LUs for pool %s", found, pool->def->name);
+
+    return found;
 }
 
-int
-virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
-                             uint32_t scanhost)
-{
-    bool found;  /* This path doesn't care whether found or not */
-    return virStorageBackendSCSIFindLUsInternal(pool, scanhost, &found);
-}
 
 static int
 virStorageBackendSCSITriggerRescan(uint32_t host)
@@ -575,7 +569,7 @@ virStoragePoolFCRefreshThread(void *opaque)
     const char *name = cbdata->name;
     virStoragePoolObjPtr pool = cbdata->pool;
     unsigned int host;
-    bool found = false;
+    int found;
     int tries = 2;
 
     do {
@@ -591,7 +585,7 @@ virStoragePoolFCRefreshThread(void *opaque)
             virGetSCSIHostNumber(name, &host) == 0 &&
             virStorageBackendSCSITriggerRescan(host) == 0) {
             virStoragePoolObjClearVols(pool);
-            virStorageBackendSCSIFindLUsInternal(pool, host, &found);
+            found = virStorageBackendSCSIFindLUs(pool, host);
         }
         virStoragePoolObjUnlock(pool);
     } while (!found && --tries);
@@ -914,7 +908,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virStorageBackendSCSITriggerRescan(host) < 0)
         goto out;
 
-    virStorageBackendSCSIFindLUs(pool, host);
+    ignore_value(virStorageBackendSCSIFindLUs(pool, host));
 
     ret = 0;
  out:
