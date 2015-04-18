@@ -193,9 +193,7 @@ testSELinuxLoadDef(const char *testname)
     if (virFileReadAll(xmlfile, 1024*1024, &xmlstr) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseString(xmlstr, caps, xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
-                                        0)))
+    if (!(def = virDomainDefParseString(xmlstr, caps, xmlopt, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {

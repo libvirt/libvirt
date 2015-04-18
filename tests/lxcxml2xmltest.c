@@ -37,7 +37,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
         goto fail;
 
     if (!(def = virDomainDefParseString(inXmlData, caps, xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_LXC,
                                         live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 

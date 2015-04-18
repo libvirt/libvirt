@@ -56,8 +56,7 @@ static int testGetFilesystem(const void *opaque)
     if (virtTestLoadFile(filename, &xmlData) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseString(xmlData, caps, xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_TEST, 0)))
+    if (!(def = virDomainDefParseString(xmlData, caps, xmlopt, 0)))
         goto cleanup;
 
     fsdef = virDomainGetFilesystemForTarget(def,

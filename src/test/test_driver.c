@@ -758,7 +758,6 @@ testOpenDefault(virConnectPtr conn)
     if (!(domdef = virDomainDefParseString(defaultDomainXML,
                                            privconn->caps,
                                            privconn->xmlopt,
-                                           1 << VIR_DOMAIN_VIRT_TEST,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto error;
 
@@ -1024,7 +1023,6 @@ testParseDomainSnapshots(testConnPtr privconn,
         def = virDomainSnapshotDefParseNode(ctxt->doc, node,
                                             privconn->caps,
                                             privconn->xmlopt,
-                                            1 << VIR_DOMAIN_VIRT_TEST,
                                             VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
@@ -1082,7 +1080,6 @@ testParseDomains(testConnPtr privconn,
 
         def = virDomainDefParseNode(ctxt->doc, node,
                                     privconn->caps, privconn->xmlopt,
-                                    1 << VIR_DOMAIN_VIRT_TEST,
                                     VIR_DOMAIN_DEF_PARSE_INACTIVE);
         if (!def)
             goto error;
@@ -1754,7 +1751,6 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_TEST,
                                        parse_flags)) == NULL)
         goto cleanup;
 
@@ -2367,7 +2363,6 @@ testDomainRestoreFlags(virConnectPtr conn,
     xml[len] = '\0';
 
     def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                  1 << VIR_DOMAIN_VIRT_TEST,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!def)
         goto cleanup;
@@ -2952,7 +2947,6 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_TEST,
                                        parse_flags)) == NULL)
         goto cleanup;
 
@@ -6716,7 +6710,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 privconn->caps,
                                                 privconn->xmlopt,
-                                                1 << VIR_DOMAIN_VIRT_TEST,
                                                 parse_flags)))
         goto cleanup;
 

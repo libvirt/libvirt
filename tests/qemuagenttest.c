@@ -186,7 +186,6 @@ testQemuAgentGetFSInfo(const void *data)
         goto cleanup;
 
     if (!(def = virDomainDefParseString(domain_xml, caps, xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 

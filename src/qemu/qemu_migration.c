@@ -1246,7 +1246,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         }
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
                                                 caps, driver->xmlopt,
-                                                -1, VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                                VIR_DOMAIN_DEF_PARSE_INACTIVE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
              * an error for us */
@@ -2704,7 +2704,6 @@ static char
 
     if (xmlin) {
         if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
-                                            QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto cleanup;
 
@@ -2907,7 +2906,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
                 newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt,
-                                                 QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
                 if (!newdef)
                     goto cleanup;
@@ -3393,7 +3391,6 @@ qemuMigrationPrepareDef(virQEMUDriverPtr driver,
         return NULL;
 
     if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 

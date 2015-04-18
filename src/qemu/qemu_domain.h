@@ -35,12 +35,6 @@
 # include "qemu_capabilities.h"
 # include "virchrdev.h"
 
-# define QEMU_EXPECTED_VIRT_TYPES      \
-    ((1 << VIR_DOMAIN_VIRT_QEMU) |     \
-     (1 << VIR_DOMAIN_VIRT_KQEMU) |    \
-     (1 << VIR_DOMAIN_VIRT_KVM) |      \
-     (1 << VIR_DOMAIN_VIRT_XEN))
-
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
     (VIR_DOMAIN_XML_SECURE |                \
      VIR_DOMAIN_XML_UPDATE_CPU)

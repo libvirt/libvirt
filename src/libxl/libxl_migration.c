@@ -239,7 +239,6 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     if (xmlin) {
         if (!(tmpdef = virDomainDefParseString(xmlin, cfg->caps,
                                                driver->xmlopt,
-                                               1 << VIR_DOMAIN_VIRT_XEN,
                                                VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
@@ -285,7 +284,6 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
     }
 
     if (!(def = virDomainDefParseString(dom_xml, cfg->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 

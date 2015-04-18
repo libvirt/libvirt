@@ -97,7 +97,6 @@ testCompareXMLToXMLFiles(const char *inxml,
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
                                                 driver.xmlopt,
-                                                QEMU_EXPECTED_VIRT_TYPES,
                                                 flags)))
         goto cleanup;
 

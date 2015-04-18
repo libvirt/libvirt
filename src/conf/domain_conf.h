@@ -2577,29 +2577,24 @@ virStorageSourcePtr virDomainDiskDefSourceParse(const char *xmlStr,
 virDomainDefPtr virDomainDefParseString(const char *xmlStr,
                                         virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
-                                        unsigned int expectedVirtTypes,
                                         unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(const char *filename,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
-                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       xmlNodePtr root,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
-                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 virDomainObjPtr virDomainObjParseNode(xmlDocPtr xml,
                                       xmlNodePtr root,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
-                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 virDomainObjPtr virDomainObjParseFile(const char *filename,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
-                                      unsigned int expectedVirtTypes,
                                       unsigned int flags);
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
@@ -2803,7 +2798,6 @@ int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                    int liveStatus,
                                    virCapsPtr caps,
                                    virDomainXMLOptionPtr xmlopt,
-                                   unsigned int expectedVirtTypes,
                                    virDomainLoadConfigNotify notify,
                                    void *opaque);
 

@@ -181,7 +181,6 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
     if ((ctrl->vm = virDomainObjParseFile(configFile,
                                           caps, xmlopt,
-                                          1 << VIR_DOMAIN_VIRT_LXC,
                                           0)) == NULL)
         goto error;
     ctrl->def = ctrl->vm->def;

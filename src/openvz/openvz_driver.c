@@ -999,7 +999,6 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          parse_flags)) == NULL)
         goto cleanup;
 
@@ -1096,7 +1095,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
     openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                         1 << VIR_DOMAIN_VIRT_OPENVZ,
                                          parse_flags)) == NULL)
         goto cleanup;
 
@@ -2331,7 +2329,6 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     }
 
     if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_OPENVZ,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto error;
 

@@ -507,7 +507,6 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
         return NULL;
 
     if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_BHYVE,
                                        parse_flags)) == NULL)
         goto cleanup;
 
@@ -695,7 +694,6 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xmlData, caps, privconn->xmlopt,
-                                  1 << VIR_DOMAIN_VIRT_BHYVE,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -910,7 +908,6 @@ bhyveDomainCreateXML(virConnectPtr conn,
         return NULL;
 
     if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_BHYVE,
                                        parse_flags)) == NULL)
         goto cleanup;
 
@@ -1220,7 +1217,6 @@ bhyveStateInitialize(bool privileged,
                                        NULL, 1,
                                        bhyve_driver->caps,
                                        bhyve_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_BHYVE,
                                        NULL, NULL) < 0)
         goto cleanup;
 
@@ -1229,7 +1225,6 @@ bhyveStateInitialize(bool privileged,
                                        BHYVE_AUTOSTART_DIR, 0,
                                        bhyve_driver->caps,
                                        bhyve_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_BHYVE,
                                        NULL, NULL) < 0)
         goto cleanup;
 

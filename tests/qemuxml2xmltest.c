@@ -55,7 +55,7 @@ testXML2XMLHelper(const char *inxml,
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES, parse_flags)))
+                                        parse_flags)))
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
@@ -177,7 +177,6 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     if (!(xml = virXMLParseString(source, "(domain_status_test_XML)")) ||
         !(obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
                                       driver.caps, driver.xmlopt,
-                                      QEMU_EXPECTED_VIRT_TYPES,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |

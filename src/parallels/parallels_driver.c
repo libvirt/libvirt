@@ -705,7 +705,6 @@ parallelsDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int 
 
     parallelsDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_PARALLELS,
                                        parse_flags)) == NULL)
         goto cleanup;
 

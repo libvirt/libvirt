@@ -605,7 +605,6 @@ libxlStateInitialize(bool privileged,
                                        1,
                                        cfg->caps,
                                        libxl_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_XEN,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -618,7 +617,6 @@ libxlStateInitialize(bool privileged,
                                        0,
                                        cfg->caps,
                                        libxl_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_XEN,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -658,7 +656,6 @@ libxlStateReload(void)
                                    1,
                                    cfg->caps,
                                    libxl_driver->xmlopt,
-                                   1 << VIR_DOMAIN_VIRT_XEN,
                                    NULL, libxl_driver);
 
     virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
@@ -879,7 +876,6 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         parse_flags)))
         goto cleanup;
 
@@ -2520,7 +2516,6 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
 
     if (!(def = virDomainDefParseString(domainXml,
                                         cfg->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -2647,7 +2642,6 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_XEN,
                                         parse_flags)))
         goto cleanup;
 

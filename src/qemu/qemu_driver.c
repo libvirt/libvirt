@@ -517,7 +517,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
         def = virDomainSnapshotDefParseString(xmlStr, caps,
                                               qemu_driver->xmlopt,
-                                              QEMU_EXPECTED_VIRT_TYPES,
                                               flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
@@ -847,7 +846,6 @@ qemuStateInitialize(bool privileged,
                                        NULL, 1,
                                        qemu_driver->caps,
                                        qemu_driver->xmlopt,
-                                       QEMU_EXPECTED_VIRT_TYPES,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -870,7 +868,6 @@ qemuStateInitialize(bool privileged,
                                        cfg->autostartDir, 0,
                                        qemu_driver->caps,
                                        qemu_driver->xmlopt,
-                                       QEMU_EXPECTED_VIRT_TYPES,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -952,7 +949,6 @@ qemuStateReload(void)
                                    cfg->configDir,
                                    cfg->autostartDir, 0,
                                    caps, qemu_driver->xmlopt,
-                                   QEMU_EXPECTED_VIRT_TYPES,
                                    qemuNotifyLoadDomain, qemu_driver);
  cleanup:
     virObjectUnref(cfg);
@@ -1692,7 +1688,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         parse_flags)))
         goto cleanup;
 
@@ -3210,7 +3205,6 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         virDomainDefPtr def = NULL;
 
         if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
-                                            QEMU_EXPECTED_VIRT_TYPES,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
             goto endjob;
         }
@@ -6371,7 +6365,6 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (!(newdef = virDomainDefParseString(newxml, caps, driver->xmlopt,
-                                           QEMU_EXPECTED_VIRT_TYPES,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -6528,7 +6521,6 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
 
     /* Create a domain from this XML */
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto error;
 
@@ -7108,7 +7100,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
-                                  QEMU_EXPECTED_VIRT_TYPES,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!def)
         goto cleanup;
@@ -7437,7 +7428,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         parse_flags)))
         goto cleanup;
 
@@ -14704,7 +14694,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, caps, driver->xmlopt,
-                                                QEMU_EXPECTED_VIRT_TYPES,
                                                 parse_flags)))
         goto cleanup;
 
@@ -14782,7 +14771,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * conversion in and back out of xml.  */
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)) ||
             !(def->dom = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                                 QEMU_EXPECTED_VIRT_TYPES,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 

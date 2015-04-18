@@ -1868,7 +1868,6 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
 
     VBOX_IID_INITIALIZE(&mchiid);
     if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_VBOX,
                                         parse_flags))) {
         goto cleanup;
     }
@@ -5335,7 +5334,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT, NULL);
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
-                                                data->xmlopt, -1,
+                                                data->xmlopt,
                                                 VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                                 VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE)))
         goto cleanup;
@@ -6756,7 +6755,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     def = virDomainSnapshotDefParseString(defXml,
                                           data->caps,
                                           data->xmlopt,
-                                          -1,
                                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                           VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
     if (!def) {

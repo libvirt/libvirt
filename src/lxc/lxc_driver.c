@@ -467,7 +467,6 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_LXC,
                                         parse_flags)))
         goto cleanup;
 
@@ -1213,7 +1212,6 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_LXC,
                                         parse_flags)))
         goto cleanup;
 
@@ -1661,7 +1659,6 @@ static int lxcStateInitialize(bool privileged,
                                        NULL, 1,
                                        caps,
                                        lxc_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_LXC,
                                        NULL, NULL) < 0)
         goto cleanup;
 
@@ -1673,7 +1670,6 @@ static int lxcStateInitialize(bool privileged,
                                        cfg->autostartDir, 0,
                                        caps,
                                        lxc_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_LXC,
                                        NULL, NULL) < 0)
         goto cleanup;
 
@@ -1738,7 +1734,6 @@ lxcStateReload(void)
                                    cfg->autostartDir, 0,
                                    caps,
                                    lxc_driver->xmlopt,
-                                   1 << VIR_DOMAIN_VIRT_LXC,
                                    lxcNotifyLoadDomain, lxc_driver);
     virObjectUnref(caps);
     virObjectUnref(cfg);

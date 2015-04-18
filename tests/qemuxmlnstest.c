@@ -55,7 +55,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         expectargv[len - 1] = '\0';
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 

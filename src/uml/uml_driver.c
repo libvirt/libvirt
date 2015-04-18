@@ -588,7 +588,6 @@ umlStateInitialize(bool privileged,
                                        uml_driver->autostartDir, 0,
                                        uml_driver->caps,
                                        uml_driver->xmlopt,
-                                       1 << VIR_DOMAIN_VIRT_UML,
                                        NULL, NULL) < 0)
         goto error;
 
@@ -657,7 +656,6 @@ umlStateReload(void)
                                    uml_driver->autostartDir, 0,
                                    uml_driver->caps,
                                    uml_driver->xmlopt,
-                                   1 << VIR_DOMAIN_VIRT_UML,
                                    umlNotifyLoadDomain, uml_driver);
     umlDriverUnlock(uml_driver);
 
@@ -1620,7 +1618,6 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_UML,
                                         parse_flags)))
         goto cleanup;
 
@@ -2100,7 +2097,6 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_UML,
                                         parse_flags)))
         goto cleanup;
 

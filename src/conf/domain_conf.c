@@ -26,7 +26,6 @@
 
 #include <dirent.h>
 #include <fcntl.h>
-#include <strings.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -37,7 +36,6 @@
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "viralloc.h"
-#include "verify.h"
 #include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
@@ -60,11 +58,6 @@
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
 VIR_LOG_INIT("conf.domain_conf");
-
-/* virDomainVirtType is used to set bits in the expectedVirtTypes bitmask,
- * verify that it doesn't overflow an unsigned int when shifting */
-verify(VIR_DOMAIN_VIRT_LAST <= 32);
-
 
 struct _virDomainObjList {
     virObjectLockable parent;
@@ -13590,7 +13583,6 @@ virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
-                     unsigned int expectedVirtTypes,
                      unsigned int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
@@ -13641,42 +13633,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     VIR_FREE(tmp);
-
-    if ((expectedVirtTypes & (1 << def->virtType)) == 0) {
-        if (count_one_bits(expectedVirtTypes) == 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected domain type %s, expecting %s"),
-                           virDomainVirtTypeToString(def->virtType),
-                           virDomainVirtTypeToString(ffs(expectedVirtTypes) - 1));
-        } else {
-            virBuffer buffer = VIR_BUFFER_INITIALIZER;
-            char *string;
-
-            for (i = 0; i < VIR_DOMAIN_VIRT_LAST; ++i) {
-                if ((expectedVirtTypes & (1 << i)) != 0) {
-                    if (virBufferUse(&buffer) > 0)
-                        virBufferAddLit(&buffer, ", ");
-
-                    virBufferAdd(&buffer, virDomainVirtTypeToString(i), -1);
-                }
-            }
-
-            if (virBufferCheckError(&buffer) < 0)
-                goto error;
-
-            string = virBufferContentAndReset(&buffer);
-
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected domain type %s, "
-                             "expecting one of these: %s"),
-                           virDomainVirtTypeToString(def->virtType),
-                           string);
-
-            VIR_FREE(string);
-        }
-
-        goto error;
-    }
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
     def->os.bootloaderArgs = virXPathString("string(./bootloader_args)", ctxt);
@@ -15472,7 +15428,6 @@ virDomainObjParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
-                     unsigned int expectedVirtTypes,
                      unsigned int flags)
 {
     char *tmp = NULL;
@@ -15497,8 +15452,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt,
-                                    expectedVirtTypes, flags);
+    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -15571,7 +15525,6 @@ virDomainDefParse(const char *xmlStr,
                   const char *filename,
                   virCapsPtr caps,
                   virDomainXMLOptionPtr xmlopt,
-                  unsigned int expectedVirtTypes,
                   unsigned int flags)
 {
     xmlDocPtr xml;
@@ -15580,7 +15533,7 @@ virDomainDefParse(const char *xmlStr,
 
     if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
         def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
-                                    xmlopt, expectedVirtTypes, flags);
+                                    xmlopt, flags);
         xmlFreeDoc(xml);
     }
 
@@ -15592,22 +15545,18 @@ virDomainDefPtr
 virDomainDefParseString(const char *xmlStr,
                         virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
-                        unsigned int expectedVirtTypes,
                         unsigned int flags)
 {
-    return virDomainDefParse(xmlStr, NULL, caps, xmlopt,
-                             expectedVirtTypes, flags);
+    return virDomainDefParse(xmlStr, NULL, caps, xmlopt, flags);
 }
 
 virDomainDefPtr
 virDomainDefParseFile(const char *filename,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
-    return virDomainDefParse(NULL, filename, caps, xmlopt,
-                             expectedVirtTypes, flags);
+    return virDomainDefParse(NULL, filename, caps, xmlopt, flags);
 }
 
 
@@ -15616,7 +15565,6 @@ virDomainDefParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
@@ -15637,8 +15585,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt,
-                               expectedVirtTypes, flags);
+    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, flags);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -15651,7 +15598,6 @@ virDomainObjParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
@@ -15671,7 +15617,7 @@ virDomainObjParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, expectedVirtTypes, flags);
+    obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, flags);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -15683,7 +15629,6 @@ virDomainObjPtr
 virDomainObjParseFile(const char *filename,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
-                      unsigned int expectedVirtTypes,
                       unsigned int flags)
 {
     xmlDocPtr xml;
@@ -15692,8 +15637,7 @@ virDomainObjParseFile(const char *filename,
 
     if ((xml = virXMLParseFile(filename))) {
         obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
-                                    caps, xmlopt,
-                                    expectedVirtTypes, flags);
+                                    caps, xmlopt, flags);
         xmlFreeDoc(xml);
     }
 
@@ -21548,7 +21492,6 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
                            const char *configDir,
                            const char *autostartDir,
                            const char *name,
-                           unsigned int expectedVirtTypes,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
 {
@@ -21561,7 +21504,6 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
-                                      expectedVirtTypes,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)))
         goto error;
@@ -21598,7 +21540,6 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
                            const char *name,
                            virCapsPtr caps,
                            virDomainXMLOptionPtr xmlopt,
-                           unsigned int expectedVirtTypes,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
 {
@@ -21609,7 +21550,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
         goto error;
 
-    if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt, expectedVirtTypes,
+    if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
@@ -21648,7 +21589,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                int liveStatus,
                                virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
-                               unsigned int expectedVirtTypes,
                                virDomainLoadConfigNotify notify,
                                void *opaque)
 {
@@ -21687,7 +21627,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                              entry->d_name,
                                              caps,
                                              xmlopt,
-                                             expectedVirtTypes,
                                              notify,
                                              opaque);
         else
@@ -21697,7 +21636,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                              configDir,
                                              autostartDir,
                                              entry->d_name,
-                                             expectedVirtTypes,
                                              notify,
                                              opaque);
         if (dom) {
@@ -22148,7 +22086,7 @@ virDomainDefCopy(virDomainDefPtr src,
     if (!(xml = virDomainDefFormat(src, format_flags)))
         return NULL;
 
-    ret = virDomainDefParseString(xml, caps, xmlopt, -1, parse_flags);
+    ret = virDomainDefParseString(xml, caps, xmlopt, parse_flags);
 
     VIR_FREE(xml);
     return ret;

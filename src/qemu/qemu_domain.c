@@ -1788,7 +1788,6 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (!(ret = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        QEMU_EXPECTED_VIRT_TYPES,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
