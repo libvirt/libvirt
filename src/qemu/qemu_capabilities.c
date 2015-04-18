@@ -1888,25 +1888,26 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
                                  virQEMUCapsCachePtr capsCache,
                                  unsigned int *version)
 {
-    const char *binary;
     virQEMUCapsPtr qemucaps;
     virArch hostarch;
+    virCapsDomainDataPtr capsdata;
 
     if (*version > 0)
         return 0;
 
     hostarch = virArchFromHost();
-    if ((binary = virCapabilitiesDefaultGuestEmulator(caps,
-                                                      VIR_DOMAIN_OSTYPE_HVM,
-                                                      hostarch,
-                                                      VIR_DOMAIN_VIRT_QEMU)) == NULL) {
+    if (!(capsdata = virCapabilitiesDomainDataLookup(caps,
+            VIR_DOMAIN_OSTYPE_HVM, hostarch, VIR_DOMAIN_VIRT_QEMU,
+            NULL, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot find suitable emulator for %s"),
                        virArchToString(hostarch));
         return -1;
     }
 
-    if (!(qemucaps = virQEMUCapsCacheLookup(capsCache, binary)))
+    qemucaps = virQEMUCapsCacheLookup(capsCache, capsdata->emulator);
+    VIR_FREE(capsdata);
+    if (!qemucaps)
         return -1;
 
     *version = virQEMUCapsGetVersion(qemucaps);

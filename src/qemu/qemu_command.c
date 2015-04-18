@@ -13145,14 +13145,17 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     }
 
     if (!def->os.machine) {
-        const char *defaultMachine =
-                        virCapabilitiesDefaultGuestMachine(qemuCaps,
-                                                           def->os.type,
-                                                           def->os.arch,
-                                                           def->virtType);
-        if (defaultMachine != NULL)
-            if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-                goto error;
+        virCapsDomainDataPtr capsdata;
+
+        if (!(capsdata = virCapabilitiesDomainDataLookup(qemuCaps, def->os.type,
+                def->os.arch, def->virtType, NULL, NULL)))
+            goto error;
+
+        if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0) {
+            VIR_FREE(capsdata);
+            goto error;
+        }
+        VIR_FREE(capsdata);
     }
 
     if (!nographics && def->ngraphics == 0) {

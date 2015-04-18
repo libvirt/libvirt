@@ -12959,25 +12959,18 @@ char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
 {
-    const char *emulator;
     char *retemu;
+    virCapsDomainDataPtr capsdata;
 
-    emulator = virCapabilitiesDefaultGuestEmulator(caps,
-                                                   def->os.type,
-                                                   def->os.arch,
-                                                   def->virtType);
+    if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+            def->os.arch, def->virtType, NULL, NULL)))
+        return NULL;
 
-    if (!emulator) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no emulator for domain %s os type %s "
-                         "on architecture %s"),
-                       virDomainVirtTypeToString(def->virtType),
-                       virDomainOSTypeToString(def->os.type),
-                       virArchToString(def->os.arch));
+    if (VIR_STRDUP(retemu, capsdata->emulator) < 0) {
+        VIR_FREE(capsdata);
         return NULL;
     }
-
-    ignore_value(VIR_STRDUP(retemu, emulator));
+    VIR_FREE(capsdata);
     return retemu;
 }
 

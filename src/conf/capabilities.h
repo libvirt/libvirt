@@ -284,21 +284,6 @@ void
 virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
                                             size_t ncpus);
 
-extern virArch
-virCapabilitiesDefaultGuestArch(virCapsPtr caps,
-                                int ostype,
-                                int domain);
-extern const char *
-virCapabilitiesDefaultGuestMachine(virCapsPtr caps,
-                                   int ostype,
-                                   virArch arch,
-                                   int domain);
-extern const char *
-virCapabilitiesDefaultGuestEmulator(virCapsPtr caps,
-                                    int ostype,
-                                    virArch arch,
-                                    int domain);
-
 extern char *
 virCapabilitiesFormatXML(virCapsPtr caps);
 

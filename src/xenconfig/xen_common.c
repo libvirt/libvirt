@@ -983,15 +983,15 @@ xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
-    const char *defaultMachine;
+    virCapsDomainDataPtr capsdata = NULL;
     const char *str;
-    int hvm = 0;
+    int hvm = 0, ret = -1;
 
     if (xenConfigCopyString(conf, "name", &def->name) < 0)
-        return -1;
+        goto out;
 
     if (xenConfigGetUUID(conf, "uuid", def->uuid) < 0)
-        return -1;
+        goto out;
 
     if ((xenConfigGetString(conf, "builder", &str, "linux") == 0) &&
         STREQ(str, "hvm"))
@@ -999,27 +999,18 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 
     def->os.type = (hvm ? VIR_DOMAIN_OSTYPE_HVM : VIR_DOMAIN_OSTYPE_XEN);
 
-    def->os.arch =
-        virCapabilitiesDefaultGuestArch(caps,
-                                        def->os.type,
-                                        def->virtType);
-    if (!def->os.arch) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no supported architecture for os type '%s'"),
-                       virDomainOSTypeToString(def->os.type));
-        return -1;
-    }
+    if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+            VIR_ARCH_NONE, def->virtType, NULL, NULL)))
+        goto out;
 
-    defaultMachine = virCapabilitiesDefaultGuestMachine(caps,
-                                                        def->os.type,
-                                                        def->os.arch,
-                                                        def->virtType);
-    if (defaultMachine != NULL) {
-        if (VIR_STRDUP(def->os.machine, defaultMachine) < 0)
-            return -1;
-    }
+    def->os.arch = capsdata->arch;
+    if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0)
+        goto out;
 
-    return 0;
+    ret = 0;
+ out:
+    VIR_FREE(capsdata);
+    return ret;
 }
 
 
