@@ -346,8 +346,8 @@ do_top(virConnectPtr conn,
 
     ret = 0;
  cleanup:
-    virTypedParamsFree(now_params, now_nparams * max_id);
-    virTypedParamsFree(then_params, then_nparams * max_id);
+    virTypedParamsFree(now_params, nparams * max_id);
+    virTypedParamsFree(then_params, nparams * max_id);
     if (dom)
         virDomainFree(dom);
     return ret;
