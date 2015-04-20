@@ -494,7 +494,7 @@ parallelsStorageOpen(virConnectPtr conn,
  error:
     parallelsStorageUnlock(storageState);
     parallelsStorageClose(conn);
-    return -1;
+    return VIR_DRV_OPEN_ERROR;
 }
 
 static int

@@ -347,7 +347,7 @@ parallelsNetworkOpen(virConnectPtr conn,
  error:
     virObjectUnref(privconn->networks);
     privconn->networks = NULL;
-    return VIR_DRV_OPEN_DECLINED;
+    return VIR_DRV_OPEN_ERROR;
 }
 
 int parallelsNetworkClose(virConnectPtr conn)
