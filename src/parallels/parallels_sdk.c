@@ -462,7 +462,7 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
     PRL_UINT32 emulatedType;
     PRL_UINT32 ifType;
     PRL_UINT32 pos;
-    PRL_UINT32 prldiskIndex;
+    virDomainDeviceDriveAddressPtr address;
     int ret = -1;
 
     pret = PrlVmDev_GetEmulatedType(prldisk, &emulatedType);
@@ -499,15 +499,32 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
 
     pret = PrlVmDev_GetIfaceType(prldisk, &ifType);
     prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_GetStackIndex(prldisk, &pos);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    address = &disk->info.addr.drive;
     switch (ifType) {
     case PMS_IDE_DEVICE:
         disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
+        disk->dst = virIndexToDiskName(pos, "hd");
+        address->bus = pos / 2;
+        address->target = 0;
+        address->unit = pos % 2;
         break;
     case PMS_SCSI_DEVICE:
         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        disk->dst = virIndexToDiskName(pos, "sd");
+        address->bus = 0;
+        address->target = 0;
+        address->unit = pos;
         break;
     case PMS_SATA_DEVICE:
         disk->bus = VIR_DOMAIN_DISK_BUS_SATA;
+        disk->dst = virIndexToDiskName(pos, "sd");
+        address->bus = 0;
+        address->target = 0;
+        address->unit = pos;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -516,17 +533,10 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
         break;
     }
 
-    pret = PrlVmDev_GetStackIndex(prldisk, &pos);
-    prlsdkCheckRetGoto(pret, cleanup);
+    if (!disk->dst)
+        goto cleanup;
 
     disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-    disk->info.addr.drive.target = pos;
-
-    pret = PrlVmDev_GetIndex(prldisk, &prldiskIndex);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    if (!(disk->dst = virIndexToDiskName(prldiskIndex, "sd")))
-        goto cleanup;
 
     ret = 0;
 
@@ -2850,6 +2860,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootD
     virDomainDeviceDriveAddressPtr drive;
     PRL_UINT32 devIndex;
     PRL_DEVICE_TYPE devType;
+    char *dst = NULL;
 
     if (prlsdkCheckDiskUnsupportedParams(disk) < 0)
         return -1;
@@ -2907,27 +2918,65 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootD
         /* We have only one controller of each type */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
                        "address of disk %s, Parallels Cloud Server has "
-                       "only one controller."), disk->src->path);
+                       "only one controller."), disk->dst);
+        goto cleanup;
+    }
+
+    if (drive->target > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                       "address of disk %s, Parallels Cloud Server has "
+                       "only target 0."), disk->dst);
         goto cleanup;
     }
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
+        if (drive->unit > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                           "address of disk %s, Parallels Cloud Server has "
+                           "only units 0-1 for IDE bus."), disk->dst);
+            goto cleanup;
+        }
         sdkbus = PMS_IDE_DEVICE;
         idx = 2 * drive->bus + drive->unit;
+        dst = virIndexToDiskName(idx, "hd");
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (drive->bus > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                           "address of disk %s, Parallels Cloud Server has "
+                           "only bus 0 for SCSI bus."), disk->dst);
+            goto cleanup;
+        }
         sdkbus = PMS_SCSI_DEVICE;
         idx = drive->unit;
+        dst = virIndexToDiskName(idx, "sd");
         break;
     case VIR_DOMAIN_DISK_BUS_SATA:
+        if (drive->bus > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                           "address of disk %s, Parallels Cloud Server has "
+                           "only bus 0 for SATA bus."), disk->dst);
+            goto cleanup;
+        }
         sdkbus = PMS_SATA_DEVICE;
         idx = drive->unit;
+        dst = virIndexToDiskName(idx, "sd");
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified disk bus is not "
                          "supported by Parallels Cloud Server."));
+        goto cleanup;
+    }
+
+    if (!dst)
+        goto cleanup;
+
+    if (STRNEQ(dst, disk->dst)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
+                       "address of disk %s, Parallels Cloud Server supports "
+                       "only defaults address to logical device name."), disk->dst);
         goto cleanup;
     }
 
@@ -2966,6 +3015,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootD
     return 0;
  cleanup:
     PrlHandle_Free(sdkdisk);
+    VIR_FREE(dst);
     return ret;
 }
 
