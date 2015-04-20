@@ -129,10 +129,6 @@
   /sys/bus/ r,
   /sys/class/ r,
 
-  # nscd pieces
-  /run/nscd/group r,
-  /run/nscd/passwd r,
-
   /usr/{lib,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
   # child profile for bridge helper process
   profile qemu_bridge_helper {
