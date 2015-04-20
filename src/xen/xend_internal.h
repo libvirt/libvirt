@@ -84,10 +84,6 @@ xenDaemonDomainFetch(virConnectPtr xend,
                      const char *cpus);
 
 
-  int is_sound_model_valid(const char *model);
-  int is_sound_model_conflict(const char *model, const char *soundstr);
-
-
 /* refactored ones */
 int xenDaemonOpen(virConnectPtr conn, virConnectAuthPtr auth,
                   unsigned int flags);
