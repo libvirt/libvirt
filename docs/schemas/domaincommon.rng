@@ -1193,12 +1193,7 @@
             <ref name="rawIO"/>
           </optional>
           <optional>
-            <attribute name="sgio">
-              <choice>
-                <value>filtered</value>
-                <value>unfiltered</value>
-              </choice>
-            </attribute>
+            <ref name="sgIO"/>
           </optional>
           <interleave>
             <choice>
@@ -3680,12 +3675,7 @@
       <value>scsi</value>
     </attribute>
     <optional>
-      <attribute name="sgio">
-        <choice>
-          <value>filtered</value>
-          <value>unfiltered</value>
-        </choice>
-      </attribute>
+        <ref name="sgIO"/>
     </optional>
     <optional>
       <ref name="rawIO"/>
@@ -5188,6 +5178,14 @@
   <define name="rawIO">
     <attribute name="rawio">
       <ref name="virYesNo"/>
+    </attribute>
+  </define>
+  <define name="sgIO">
+    <attribute name="sgio">
+      <choice>
+        <value>filtered</value>
+        <value>unfiltered</value>
+      </choice>
     </attribute>
   </define>
 </grammar>
