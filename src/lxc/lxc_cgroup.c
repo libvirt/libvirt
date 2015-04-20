@@ -82,8 +82,10 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
     }
 
     if (virDomainNumatuneGetMode(def->numa, -1) !=
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT)
+        VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        ret = 0;
         goto cleanup;
+    }
 
     if (virDomainNumatuneMaybeFormatNodeset(def->numa, nodemask,
                                             &mask, -1) < 0)
