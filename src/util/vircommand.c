@@ -2093,7 +2093,7 @@ virCommandProcessIO(virCommandPtr cmd)
                 }
             }
 
-            if (fds[i].revents & (POLLOUT | POLLERR) &&
+            if (fds[i].revents & (POLLOUT | POLLHUP | POLLERR) &&
                 fds[i].fd == cmd->inpipe) {
                 int done;
 
