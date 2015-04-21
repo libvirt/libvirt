@@ -38,7 +38,7 @@
 /*
  * Build  NUMA Toplogy with cell id starting from (0 + seq)
  * for testing
-*/
+ */
 static virCapsPtr
 buildNUMATopology(int seq)
 {
@@ -121,7 +121,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static bool
+static bool ATTRIBUTE_UNUSED
 doCapsExpectFailure(virCapsPtr caps,
                     int ostype,
                     virArch arch,
@@ -140,7 +140,7 @@ doCapsExpectFailure(virCapsPtr caps,
     return true;
 }
 
-static bool
+static bool ATTRIBUTE_UNUSED
 doCapsCompare(virCapsPtr caps,
               int ostype,
               virArch arch,
@@ -210,6 +210,7 @@ doCapsCompare(virCapsPtr caps,
     if (!doCapsExpectFailure(caps, o, a, d, e, m)) \
         ret = 1;
 
+#ifdef WITH_QEMU
 static int
 test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
 {
@@ -262,7 +263,9 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
     virObjectUnref(caps);
     return ret;
 }
+#endif /* WITH_QEMU */
 
+#ifdef WITH_XEN
 static int
 test_virCapsDomainDataLookupXen(const void *data ATTRIBUTE_UNUSED)
 {
@@ -288,7 +291,9 @@ test_virCapsDomainDataLookupXen(const void *data ATTRIBUTE_UNUSED)
     virObjectUnref(caps);
     return ret;
 }
+#endif /* WITH_XEN */
 
+#ifdef WITH_LXC
 static int
 test_virCapsDomainDataLookupLXC(const void *data ATTRIBUTE_UNUSED)
 {
@@ -311,6 +316,7 @@ test_virCapsDomainDataLookupLXC(const void *data ATTRIBUTE_UNUSED)
     virObjectUnref(caps);
     return ret;
 }
+#endif /* WITH_LXC */
 
 static int
 mymain(void)
@@ -320,15 +326,21 @@ mymain(void)
     if (virtTestRun("virCapabilitiesGetCpusForNodemask",
                     test_virCapabilitiesGetCpusForNodemask, NULL) < 0)
         ret = -1;
+#ifdef WITH_QEMU
     if (virtTestRun("virCapsDomainDataLookupQEMU",
                     test_virCapsDomainDataLookupQEMU, NULL) < 0)
         ret = -1;
+#endif
+#ifdef WITH_XEN
     if (virtTestRun("virCapsDomainDataLookupXen",
                     test_virCapsDomainDataLookupXen, NULL) < 0)
         ret = -1;
+#endif
+#ifdef WITH_LXC
     if (virtTestRun("virCapsDomainDataLookupLXC",
                     test_virCapsDomainDataLookupLXC, NULL) < 0)
         ret = -1;
+#endif /* WITH_LXC */
 
     return ret;
 }
