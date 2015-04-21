@@ -1149,7 +1149,7 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     virCgroupPtr cgroup_iothread = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    size_t i, j;
+    size_t i;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
     char *mem_mask = NULL;
@@ -1211,20 +1211,12 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
                                    VIR_CGROUP_CONTROLLER_CPUSET)) {
             virBitmapPtr cpumask = NULL;
 
-            /* default cpu masks */
-            if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+            if (def->iothreadids[i]->cpumask)
+                cpumask = def->iothreadids[i]->cpumask;
+            else if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
                 cpumask = priv->autoCpuset;
             else
                 cpumask = def->cpumask;
-
-            /* specific cpu mask */
-            for (j = 0; j < def->cputune.niothreadspin; j++) {
-                if (def->cputune.iothreadspin[j]->id ==
-                    def->iothreadids[i]->iothread_id) {
-                    cpumask = def->cputune.iothreadspin[j]->cpumask;
-                    break;
-                }
-            }
 
             if (cpumask &&
                 qemuSetupCgroupCpusetCpus(cgroup_iothread, cpumask) < 0)

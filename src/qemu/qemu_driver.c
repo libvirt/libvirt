@@ -5991,19 +5991,14 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
         goto cleanup;
 
     for (i = 0; i < targetDef->niothreadids; i++) {
-        virDomainPinDefPtr pininfo;
-
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto cleanup;
 
         /* IOThread ID's are taken from the iothreadids list */
         info_ret[i]->iothread_id = targetDef->iothreadids[i]->iothread_id;
 
-        /* Initialize the cpumap */
-        pininfo = virDomainPinFind(targetDef->cputune.iothreadspin,
-                                   targetDef->cputune.niothreadspin,
-                                   targetDef->iothreadids[i]->iothread_id);
-        if (!pininfo) {
+        cpumask = targetDef->iothreadids[i]->cpumask;
+        if (!cpumask) {
             if (targetDef->cpumask) {
                 cpumask = targetDef->cpumask;
             } else {
@@ -6012,8 +6007,6 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
                 virBitmapSetAll(bitmap);
                 cpumask = bitmap;
             }
-        } else {
-            cpumask = pininfo->cpumask;
         }
         if (virBitmapToData(cpumask, &info_ret[i]->cpumap,
                             &info_ret[i]->cpumaplen) < 0)
@@ -6096,8 +6089,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     virBitmapPtr pcpumap = NULL;
     qemuDomainObjPrivatePtr priv;
-    virDomainPinDefPtr *newIOThreadsPin = NULL;
-    size_t newIOThreadsPinNum = 0;
     virCgroupPtr cgroup_iothread = NULL;
     virObjectEventPtr event = NULL;
     char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
@@ -6147,33 +6138,19 @@ qemuDomainPinIOThread(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
         virDomainIOThreadIDDefPtr iothrid;
+        virBitmapPtr cpumask;
 
         if (!(iothrid = virDomainIOThreadIDFind(vm->def, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("iothread value %d not found"), iothread_id);
+                           _("iothread %d not found"), iothread_id);
             goto endjob;
         }
 
-        if (vm->def->cputune.iothreadspin) {
-            newIOThreadsPin =
-                virDomainPinDefCopy(vm->def->cputune.iothreadspin,
-                                    vm->def->cputune.niothreadspin);
-            if (!newIOThreadsPin)
-                goto endjob;
-
-            newIOThreadsPinNum = vm->def->cputune.niothreadspin;
-        } else {
-            if (VIR_ALLOC(newIOThreadsPin) < 0)
-                goto endjob;
-            newIOThreadsPinNum = 0;
-        }
-
-        if (virDomainPinAdd(&newIOThreadsPin, &newIOThreadsPinNum,
-                            cpumap, maplen, iothread_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to update iothreadspin"));
+        if (!(cpumask = virBitmapNewData(cpumap, maplen)))
             goto endjob;
-        }
+
+        virBitmapFree(iothrid->cpumask);
+        iothrid->cpumask = cpumask;
 
         /* Configure the corresponding cpuset cgroup before set affinity. */
         if (virCgroupHasController(priv->cgroup,
@@ -6196,14 +6173,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
             }
         }
 
-        if (vm->def->cputune.iothreadspin)
-            virDomainPinDefArrayFree(vm->def->cputune.iothreadspin,
-                                     vm->def->cputune.niothreadspin);
-
-        vm->def->cputune.iothreadspin = newIOThreadsPin;
-        vm->def->cputune.niothreadspin = newIOThreadsPinNum;
-        newIOThreadsPin = NULL;
-
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
 
@@ -6221,31 +6190,23 @@ qemuDomainPinIOThread(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        virDomainIOThreadIDDefPtr iothrid;
+        virBitmapPtr cpumask;
+
         /* Coverity didn't realize that targetDef must be set if we got here. */
         sa_assert(persistentDef);
 
-        if (iothread_id > persistentDef->iothreads) {
+        if (!(iothrid = virDomainIOThreadIDFind(persistentDef, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("iothread value out of range %d > %d"),
-                           iothread_id, persistentDef->iothreads);
+                           _("iothreadid %d not found"), iothread_id);
             goto endjob;
         }
 
-        if (!persistentDef->cputune.iothreadspin) {
-            if (VIR_ALLOC(persistentDef->cputune.iothreadspin) < 0)
-                goto endjob;
-            persistentDef->cputune.niothreadspin = 0;
-        }
-        if (virDomainPinAdd(&persistentDef->cputune.iothreadspin,
-                            &persistentDef->cputune.niothreadspin,
-                            cpumap,
-                            maplen,
-                            iothread_id) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to update or add iothreadspin xml "
-                             "of a persistent domain"));
+        if (!(cpumask = virBitmapNewData(cpumap, maplen)))
             goto endjob;
-        }
+
+        virBitmapFree(iothrid->cpumask);
+        iothrid->cpumask = cpumask;
 
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         goto endjob;
@@ -6257,8 +6218,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (newIOThreadsPin)
-        virDomainPinDefArrayFree(newIOThreadsPin, newIOThreadsPinNum);
     if (cgroup_iothread)
         virCgroupFree(&cgroup_iothread);
     if (event)

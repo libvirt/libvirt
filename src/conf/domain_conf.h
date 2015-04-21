@@ -2057,6 +2057,7 @@ struct _virDomainIOThreadIDDef {
     bool autofill;
     unsigned int iothread_id;
     int thread_id;
+    virBitmapPtr cpumask;
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
@@ -2074,8 +2075,6 @@ struct _virDomainCputune {
     size_t nvcpupin;
     virDomainPinDefPtr *vcpupin;
     virDomainPinDefPtr emulatorpin;
-    size_t niothreadspin;
-    virDomainPinDefPtr *iothreadspin;
 
     size_t nvcpusched;
     virDomainThreadSchedParamPtr vcpusched;

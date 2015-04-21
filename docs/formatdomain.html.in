@@ -624,11 +624,11 @@
          and attribute <code>cpuset</code> of element <code>vcpu</code> is
          not specified, the IOThreads are pinned to all the physical CPUs
          by default. There are two required attributes, the attribute
-         <code>iothread</code> specifies the IOThread id and the attribute
-         <code>cpuset</code> specifying which physical CPUs to pin to. The
-         <code>iothread</code> value begins at "1" through the number of
-          <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
-         allocated to the domain. A value of "0" is not permitted.
+         <code>iothread</code> specifies the IOThread ID and the attribute
+         <code>cpuset</code> specifying which physical CPUs to pin to. See
+         the <code>iothreadids</code>
+         <a href="#elementsIOThreadsAllocation"><code>description</code></a>
+         for valid <code>iothread</code> values.
         <span class="since">Since 1.2.9</span>
        </dd>
       <dt><code>shares</code></dt>

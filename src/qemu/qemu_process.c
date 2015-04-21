@@ -2443,22 +2443,16 @@ static int
 qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
 {
     virDomainDefPtr def = vm->def;
-    virDomainPinDefPtr pininfo;
     size_t i;
     int ret = -1;
 
-    if (!def->cputune.niothreadspin)
-        return 0;
-
     for (i = 0; i < def->niothreadids; i++) {
         /* set affinity only for existing iothreads */
-        if (!(pininfo = virDomainPinFind(def->cputune.iothreadspin,
-                                         def->cputune.niothreadspin,
-                                         def->iothreadids[i]->iothread_id)))
+        if (!def->iothreadids[i]->cpumask)
             continue;
 
         if (virProcessSetAffinity(def->iothreadids[i]->thread_id,
-                                  pininfo->cpumask) < 0)
+                                  def->iothreadids[i]->cpumask) < 0)
             goto cleanup;
     }
     ret = 0;

@@ -2103,11 +2103,25 @@ virDomainPinDefCopy(virDomainPinDefPtr *src, int npin)
 }
 
 
+static bool
+virDomainIOThreadIDArrayHasPin(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->niothreadids; i++) {
+        if (def->iothreadids[i]->cpumask)
+            return true;
+    }
+    return false;
+}
+
+
 void
 virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def)
 {
     if (!def)
         return;
+    virBitmapFree(def->cpumask);
     VIR_FREE(def);
 }
 
@@ -2329,9 +2343,6 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
     virDomainPinDefFree(def->cputune.emulatorpin);
-
-    virDomainPinDefArrayFree(def->cputune.iothreadspin,
-                                 def->cputune.niothreadspin);
 
     for (i = 0; i < def->cputune.nvcpusched; i++)
         virBitmapFree(def->cputune.vcpusched[i].ids);
@@ -13324,74 +13335,77 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
  * and an iothreadspin has the form
  *   <iothreadpin iothread='1' cpuset='2'/>
  */
-static virDomainPinDefPtr
+static int
 virDomainIOThreadPinDefParseXML(xmlNodePtr node,
                                 xmlXPathContextPtr ctxt,
-                                int iothreads)
+                                virDomainDefPtr def)
 {
-    virDomainPinDefPtr def;
+    int ret = -1;
+    virDomainIOThreadIDDefPtr iothrid;
+    virBitmapPtr cpumask;
     xmlNodePtr oldnode = ctxt->node;
     unsigned int iothreadid;
     char *tmp = NULL;
-
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
 
     ctxt->node = node;
 
     if (!(tmp = virXPathString("string(./@iothread)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing iothread id in iothreadpin"));
-        goto error;
+        goto cleanup;
     }
 
     if (virStrToLong_uip(tmp, NULL, 10, &iothreadid) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("invalid setting for iothread '%s'"), tmp);
-        goto error;
+        goto cleanup;
     }
     VIR_FREE(tmp);
 
     if (iothreadid == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("zero is an invalid iothread id value"));
-        goto error;
+        goto cleanup;
     }
 
-    /* IOThreads are numbered "iothread1...iothread<n>", where
-     * "n" is the iothreads value */
-    if (iothreadid > iothreads) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("iothread id must not exceed iothreads"));
-        goto error;
+    if (!(iothrid = virDomainIOThreadIDFind(def, iothreadid))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot find 'iothread' : %u"),
+                       iothreadid);
     }
-
-    def->id = iothreadid;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing cpuset for iothreadpin"));
-        goto error;
+        goto cleanup;
     }
 
-    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-        goto error;
+    if (virBitmapParse(tmp, 0, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto cleanup;
 
-    if (virBitmapIsAllClear(def->cpumask)) {
+    if (virBitmapIsAllClear(cpumask)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid value of 'cpuset': %s"),
                        tmp);
-        goto error;
+        goto cleanup;
     }
+
+    if (iothrid->cpumask) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("duplicate iothreadpin for same iothread '%u'"),
+                       iothreadid);
+        goto cleanup;
+    }
+
+    iothrid->cpumask = cpumask;
+    cpumask = NULL;
+    ret = 0;
 
  cleanup:
     VIR_FREE(tmp);
+    virBitmapFree(cpumask);
     ctxt->node = oldnode;
-    return def;
-
- error:
-    VIR_FREE(def);
-    goto cleanup;
+    return ret;
 }
 
 
@@ -14275,27 +14289,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if (n && VIR_ALLOC_N(def->cputune.iothreadspin, n) < 0)
-        goto error;
-
     for (i = 0; i < n; i++) {
-        virDomainPinDefPtr iothreadpin = NULL;
-        iothreadpin = virDomainIOThreadPinDefParseXML(nodes[i], ctxt,
-                                                      def->iothreads);
-        if (!iothreadpin)
+        if (virDomainIOThreadPinDefParseXML(nodes[i], ctxt, def) < 0)
             goto error;
-
-        if (virDomainPinIsDuplicate(def->cputune.iothreadspin,
-                                    def->cputune.niothreadspin,
-                                    iothreadpin->id)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("duplicate iothreadpin for same iothread"));
-            virDomainPinDefFree(iothreadpin);
-            goto error;
-        }
-
-        def->cputune.iothreadspin[def->cputune.niothreadspin++] =
-            iothreadpin;
     }
     VIR_FREE(nodes);
 
@@ -14409,7 +14405,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (virDomainNumatuneHasPlacementAuto(def->numa) &&
         !def->cpumask && !def->cputune.vcpupin &&
-        !def->cputune.emulatorpin && !def->cputune.iothreadspin)
+        !def->cputune.emulatorpin &&
+        !virDomainIOThreadIDArrayHasPin(def))
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
 
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
@@ -20809,7 +20806,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         def->cputune.period || def->cputune.quota ||
         def->cputune.emulatorpin ||
         def->cputune.emulator_period || def->cputune.emulator_quota ||
-        def->cputune.niothreadspin ||
+        virDomainIOThreadIDArrayHasPin(def) ||
         def->cputune.vcpusched || def->cputune.iothreadsched) {
         virBufferAddLit(buf, "<cputune>\n");
         cputune = true;
@@ -20863,16 +20860,17 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         VIR_FREE(cpumask);
     }
 
-    for (i = 0; i < def->cputune.niothreadspin; i++) {
+    for (i = 0; i < def->niothreadids; i++) {
         char *cpumask;
-        /* Ignore the iothreadpin which inherit from "cpuset of "<vcpu>." */
-        if (virBitmapEqual(def->cpumask, def->cputune.iothreadspin[i]->cpumask))
+
+        /* Ignore iothreadids with no cpumask */
+        if (!def->iothreadids[i]->cpumask)
             continue;
 
         virBufferAsprintf(buf, "<iothreadpin iothread='%u' ",
-                          def->cputune.iothreadspin[i]->id);
+                          def->iothreadids[i]->iothread_id);
 
-        if (!(cpumask = virBitmapFormat(def->cputune.iothreadspin[i]->cpumask)))
+        if (!(cpumask = virBitmapFormat(def->iothreadids[i]->cpumask)))
             goto error;
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
