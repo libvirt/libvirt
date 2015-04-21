@@ -1391,20 +1391,21 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     if (idx) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find backing store %u in chain for '%s'"),
-                       idx, start);
+                       idx, NULLSTR(start));
     } else if (name) {
         if (startFrom)
             virReportError(VIR_ERR_INVALID_ARG,
                            _("could not find image '%s' beneath '%s' in "
-                             "chain for '%s'"), name, startFrom->path, start);
+                             "chain for '%s'"), name, NULLSTR(startFrom->path),
+                           NULLSTR(start));
         else
             virReportError(VIR_ERR_INVALID_ARG,
                            _("could not find image '%s' in chain for '%s'"),
-                           name, start);
+                           name, NULLSTR(start));
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find base image in chain for '%s'"),
-                       start);
+                       NULLSTR(start));
     }
     *parent = NULL;
     return NULL;
