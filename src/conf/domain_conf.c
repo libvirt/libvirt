@@ -13246,6 +13246,25 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
 }
 
 
+/* Check if pin with same id already exists. */
+static bool
+virDomainPinIsDuplicate(virDomainPinDefPtr *def,
+                        int npin,
+                        int id)
+{
+    size_t i;
+
+    if (!def || !npin)
+        return false;
+
+    for (i = 0; i < npin; i++) {
+        if (def[i]->id == id)
+            return true;
+    }
+
+    return false;
+}
+
 /* Parse the XML definition for a vcpupin
  *
  * vcpupin has the form of
@@ -17438,25 +17457,6 @@ virDomainIOThreadIDDel(virDomainDefPtr def,
             return;
         }
     }
-}
-
-/* Check if vcpupin with same id already exists. */
-bool
-virDomainPinIsDuplicate(virDomainPinDefPtr *def,
-                        int npin,
-                        int id)
-{
-    size_t i;
-
-    if (!def || !npin)
-        return false;
-
-    for (i = 0; i < npin; i++) {
-        if (def[i]->id == id)
-            return true;
-    }
-
-    return false;
 }
 
 virDomainPinDefPtr

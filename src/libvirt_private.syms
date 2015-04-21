@@ -414,7 +414,6 @@ virDomainPinDefCopy;
 virDomainPinDefFree;
 virDomainPinDel;
 virDomainPinFind;
-virDomainPinIsDuplicate;
 virDomainPMSuspendedReasonTypeFromString;
 virDomainPMSuspendedReasonTypeToString;
 virDomainRedirdevBusTypeFromString;
