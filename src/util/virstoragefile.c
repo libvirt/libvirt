@@ -1338,6 +1338,15 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             chain = chain->backingStore;
             i++;
         }
+
+        if (idx && idx < i) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("requested backing store index %u is above '%s' "
+                             "in chain for '%s'"),
+                           idx, NULLSTR(startFrom->path), NULLSTR(start));
+            return NULL;
+        }
+
         *parent = startFrom;
     }
 
