@@ -1390,7 +1390,8 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
  error:
     if (idx) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("could not find backing store %u in chain for '%s'"),
+                       _("could not find backing store index %u in chain "
+                         "for '%s'"),
                        idx, NULLSTR(start));
     } else if (name) {
         if (startFrom)
