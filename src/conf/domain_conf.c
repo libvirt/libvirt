@@ -14348,11 +14348,23 @@ virDomainDefParseXML(xmlDocPtr xml,
         def->cputune.niothreadsched = n;
 
         for (i = 0; i < def->cputune.niothreadsched; i++) {
+            ssize_t pos = -1;
+
             if (virDomainThreadSchedParse(nodes[i],
-                                          1, def->iothreads,
+                                          1, UINT_MAX,
                                           "iothreads",
                                           &def->cputune.iothreadsched[i]) < 0)
                 goto error;
+
+            while ((pos = virBitmapNextSetBit(def->cputune.iothreadsched[i].ids,
+                                              pos)) > -1) {
+                if (!virDomainIOThreadIDFind(def, pos)) {
+                    virReportError(VIR_ERR_XML_DETAIL, "%s",
+                                   _("iothreadsched attribute 'iothreads' "
+                                     "uses undefined iothread ids"));
+                    goto error;
+                }
+            }
 
             for (j = 0; j < i; j++) {
                 if (virBitmapOverlaps(def->cputune.iothreadsched[i].ids,

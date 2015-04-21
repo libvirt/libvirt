@@ -691,10 +691,18 @@
         type (values <code>batch</code>, <code>idle</code>, <code>fifo</code>,
         <code>rr</code>) for particular vCPU/IOThread threads (based on
         <code>vcpus</code> and <code>iothreads</code>, leaving out
-        <code>vcpus</code>/<code>iothreads</code> sets the default).  For
-        real-time schedulers (<code>fifo</code>, <code>rr</code>), priority must
-        be specified as well (and is ignored for non-real-time ones). The value
-        range for the priority depends on the host kernel (usually 1-99).
+        <code>vcpus</code>/<code>iothreads</code> sets the default). Valid
+        <code>vcpus</code> values start at 0 through one less than the
+        number of vCPU's defined for the domain. Valid <code>iothreads</code>
+        values are described in the <code>iothreadids</code>
+        <a href="#elementsIOThreadsAllocation"><code>description</code></a>.
+        If no <code>iothreadids</code> are defined, then libvirt numbers
+        IOThreads from 1 to the number of <code>iothreads</code> available
+        for the domain. For real-time schedulers (<code>fifo</code>,
+        <code>rr</code>), priority must real-time schedulers
+        (<code>fifo</code>, <code>rr</code>), priority must be specified as
+        well (and is ignored for non-real-time ones). The value range
+        for the priority depends on the host kernel (usually 1-99).
         <span class="since">Since 1.2.13</span>
       </dd>
 
