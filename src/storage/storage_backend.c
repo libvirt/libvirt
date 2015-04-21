@@ -1680,7 +1680,7 @@ virStorageBackendPoolPathIsStable(const char *path)
     if (path == NULL || STREQ(path, "/dev") || STREQ(path, "/dev/"))
         return false;
 
-    if (!STRPREFIX(path, "/dev"))
+    if (!STRPREFIX(path, "/dev/"))
         return false;
 
     return true;
