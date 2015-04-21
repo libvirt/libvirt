@@ -263,6 +263,9 @@ bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
                                virDomainDefPtr def);
 
+bool virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
+                               const virDomainDef *def);
+
 char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps);
 
 const char *virQEMUCapsGetBinary(virQEMUCapsPtr qemuCaps);

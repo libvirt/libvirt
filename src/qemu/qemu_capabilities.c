@@ -3725,6 +3725,19 @@ virQEMUCapsSupportsChardev(virDomainDefPtr def,
 
 
 bool
+virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
+                          const virDomainDef *def)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT))
+        return false;
+
+    return qemuDomainMachineIsI440FX(def) ||
+        qemuDomainMachineIsQ35(def) ||
+        STREQ(def->os.machine, "isapc");
+}
+
+
+bool
 virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
                               const char *canonical_machine)
 {
