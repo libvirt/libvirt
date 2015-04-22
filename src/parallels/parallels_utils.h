@@ -57,7 +57,10 @@
 
 struct _parallelsConn {
     virMutex lock;
+
+    /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
+
     PRL_HANDLE server;
     PRL_UINT32 jobTimeout;
     virStoragePoolObjList pools;
