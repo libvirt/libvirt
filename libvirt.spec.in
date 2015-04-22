@@ -337,6 +337,12 @@
 %endif
 
 
+# Advertise OVMF and AAVMF from nightly firmware repo
+%if 0%{?fedora}
+    %define with_loader_nvram --with-loader-nvram="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
+%endif
+
+
 # The RHEL-5 Xen package has some feature backports. This
 # flag is set to enable use of those special bits on RHEL-5
 %if 0%{?rhel} == 5
@@ -1510,6 +1516,7 @@ rm -f po/stamp-po
            %{with_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
+           %{?with_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
            %{init_scripts}
