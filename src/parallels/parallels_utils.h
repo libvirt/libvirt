@@ -91,6 +91,8 @@ virDrvOpenStatus parallelsNetworkOpen(virConnectPtr conn, unsigned int flags);
 int parallelsNetworkClose(virConnectPtr conn);
 extern virNetworkDriver parallelsNetworkDriver;
 
+virDomainObjPtr parallelsDomObjFromDomain(virDomainPtr domain);
+
 virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 char * parallelsGetOutput(const char *binary, ...)

@@ -30,8 +30,40 @@
 #include "virjson.h"
 #include "parallels_utils.h"
 #include "virstring.h"
+#include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
+
+/**
+ * parallelsDomObjFromDomain:
+ * @domain: Domain pointer that has to be looked up
+ *
+ * This function looks up @domain and returns the appropriate virDomainObjPtr
+ * that has to be unlocked by virObjectUnlock().
+ *
+ * Returns the domain object without incremented reference counter which is locked
+ * on success, NULL otherwise.
+ */
+virDomainObjPtr
+parallelsDomObjFromDomain(virDomainPtr domain)
+{
+    virDomainObjPtr vm;
+    parallelsConnPtr privconn = domain->conn->privateData;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    vm = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    if (!vm) {
+        virUUIDFormat(domain->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, domain->name);
+        return NULL;
+    }
+
+    return vm;
+
+}
+
 
 static int
 parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
