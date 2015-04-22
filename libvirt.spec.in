@@ -2127,6 +2127,9 @@ exit 0
         %if %{with_libxl}
 %files daemon-driver-libxl
 %defattr(-, root, root)
+%config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
+%{_datadir}/augeas/lenses/libvirtd_libxl.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_localstatedir}/run/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
