@@ -1951,7 +1951,6 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
 {
     int nsnapshots;
     int pauseReason;
-    bool forbid;
     size_t i;
 
     if (vm) {
@@ -1995,21 +1994,15 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
     }
 
     /* Migration with USB host devices is allowed, all other devices are
-     * forbidden.
-     */
-    forbid = false;
+     * forbidden. */
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            forbid = true;
-            break;
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain has assigned non-USB host devices"));
+            return false;
         }
-    }
-    if (forbid) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain has assigned non-USB host devices"));
-        return false;
     }
 
     if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
