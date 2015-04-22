@@ -352,6 +352,16 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
 
 
 static int
+virHostdevIsPCINetDevice(virDomainHostdevDefPtr hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+        hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+        hostdev->parent.data.net;
+}
+
+
+static int
 virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                    virNetDevVPortProfilePtr virtPort,
                                    const virMacAddr *macaddr,
@@ -481,10 +491,7 @@ virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     /* This is only needed for PCI devices that have been defined
      * using <interface type='hostdev'>. For all others, it is a NOP.
      */
-    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI ||
-        hostdev->parent.type != VIR_DOMAIN_DEVICE_NET ||
-        !hostdev->parent.data.net)
+    if (!virHostdevIsPCINetDevice(hostdev))
        return 0;
 
     isvf = virHostdevIsVirtualFunction(hostdev);
@@ -604,16 +611,11 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
      * the network device, set the netdev config */
     for (i = 0; i < nhostdevs; i++) {
          virDomainHostdevDefPtr hostdev = hostdevs[i];
-         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+         if (!virHostdevIsPCINetDevice(hostdev))
              continue;
-         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-             continue;
-         if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
-             hostdev->parent.data.net) {
-             if (virHostdevNetConfigReplace(hostdev, uuid,
-                                            hostdev_mgr->stateDir) < 0) {
-                 goto resetvfnetconfig;
-             }
+         if (virHostdevNetConfigReplace(hostdev, uuid,
+                                        hostdev_mgr->stateDir) < 0) {
+             goto resetvfnetconfig;
          }
          last_processed_hostdev_vf = i;
     }
