@@ -2811,7 +2811,7 @@ AC_ARG_WITH([loader-nvram],
       fi
       AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM],
                           ["$withval"],
-                          [List of laoder:nvram pairs])])
+                          [List of loader:nvram pairs])])
 
 # Some GNULIB base64 symbols clash with a kerberos library
 AC_DEFINE_UNQUOTED([isbase64],[libvirt_gl_isbase64],[Hack to avoid symbol clash])
