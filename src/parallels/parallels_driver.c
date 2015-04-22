@@ -1109,7 +1109,7 @@ static int parallelsDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     privdom = virDomainObjListFindByUUID(privconn->domains, dom->uuid);
     if (privdom == NULL) {
         parallelsDomNotFoundError(dom);
-        goto cleanup;
+        return -1;
     }
 
     if (!(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
@@ -1148,13 +1148,14 @@ static int parallelsDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("device type '%s' cannot be detached"),
+                       _("device type '%s' cannot be attached"),
                        virDomainDeviceTypeToString(dev->type));
         break;
     }
 
     ret = 0;
  cleanup:
+    virObjectUnlock(privdom);
     return ret;
 }
 
