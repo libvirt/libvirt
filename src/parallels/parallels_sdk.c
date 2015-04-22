@@ -1838,11 +1838,8 @@ prlsdkDomainChangeState(virDomainPtr domain,
     virDomainObjPtr dom;
     int ret = -1;
 
-    dom = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
-    if (dom == NULL) {
-        parallelsDomNotFoundError(domain);
+    if (!(dom = parallelsDomObjFromDomain(domain)))
         return -1;
-    }
 
     ret = prlsdkDomainChangeStateLocked(privconn, dom, chstate);
     virObjectUnlock(dom);
