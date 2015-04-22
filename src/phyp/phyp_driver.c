@@ -1720,7 +1720,7 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
     if (domain_name == NULL)
         goto cleanup;
 
-    def->os.type = VIR_DOMAIN_OSTYPE_AIX;
+    def->os.type = VIR_DOMAIN_OSTYPE_LINUX;
 
     dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
