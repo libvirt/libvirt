@@ -2851,6 +2851,25 @@ static void prlsdkDelNet(parallelsConnPtr privconn, virDomainNetDefPtr net)
     PrlHandle_Free(vnet);
 }
 
+static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
+{
+    int ret = -1;
+    PRL_RESULT pret;
+    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
+
+    pret = PrlVmCfg_GetHardDisk(sdkdom, idx, &sdkdisk);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_Remove(sdkdisk);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(sdkdisk);
+    return ret;
+}
+
 static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootDisk)
 {
     PRL_RESULT pret;
@@ -3046,6 +3065,52 @@ prlsdkAttachVolume(virConnectPtr conn,
 
  cleanup:
     return ret;
+}
+
+static int
+prlsdkGetDiskIndex(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
+{
+    int idx = -1;
+    char *buf = NULL;
+    PRL_UINT32 buflen = 0;
+    PRL_RESULT pret;
+    PRL_UINT32 hddCount;
+    PRL_UINT32 i;
+    PRL_HANDLE hdd = PRL_INVALID_HANDLE;
+
+    pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    for (i = 0; i < hddCount; ++i) {
+
+        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlVmDev_GetFriendlyName(hdd, 0, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (VIR_ALLOC_N(buf, buflen) < 0)
+            goto cleanup;
+
+        pret = PrlVmDev_GetFriendlyName(hdd, buf, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (STRNEQ(disk->src->path, buf)) {
+
+            PrlHandle_Free(hdd);
+            hdd = PRL_INVALID_HANDLE;
+            VIR_FREE(buf);
+            continue;
+        }
+
+        VIR_FREE(buf);
+        idx = i;
+        break;
+    }
+
+ cleanup:
+    PrlHandle_Free(hdd);
+    return idx;
 }
 
 static int
