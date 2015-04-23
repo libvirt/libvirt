@@ -2764,8 +2764,9 @@ static int networkIsPersistent(virNetworkPtr net)
 
 /*
  * networkFindUnusedBridgeName() - try to find a bridge name that is
- * unused by the currently configured libvirt networks, and set this
- * network's name to that new name.
+ * unused by the currently configured libvirt networks, as well as by
+ * the host system itself (possibly created by someone/something other
+ * than libvirt). Set this network's name to that new name.
  */
 static int
 networkFindUnusedBridgeName(virNetworkObjListPtr nets,
@@ -2779,7 +2780,13 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
     do {
         if (virAsprintf(&newname, templ, id) < 0)
             goto cleanup;
-        if (!virNetworkBridgeInUse(nets, newname, def->name)) {
+        /* check if this name is used in another libvirt network or
+         * there is an existing device with that name. ignore errors
+         * from virNetDevExists(), just in case it isn't implemented
+         * on this platform (probably impossible).
+         */
+        if (!(virNetworkBridgeInUse(nets, newname, def->name) ||
+              virNetDevExists(newname) == 1)) {
             VIR_FREE(def->bridge); /*could contain template */
             def->bridge = newname;
             ret = 0;
