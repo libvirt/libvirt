@@ -1098,6 +1098,20 @@ static int parallelsDomainAttachDevice(virDomainPtr dom, const char *xml)
                                             VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
+static unsigned long long
+parallelsDomainGetMaxMemory(virDomainPtr domain)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    if (!(dom = parallelsDomObjFromDomain(domain)))
+        return -1;
+
+    ret = dom->def->mem.max_balloon;
+    virObjectUnlock(dom);
+    return ret;
+}
+
 static virHypervisorDriver parallelsDriver = {
     .name = "Parallels",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -1144,6 +1158,7 @@ static virHypervisorDriver parallelsDriver = {
     .domainHasManagedSaveImage = parallelsDomainHasManagedSaveImage, /* 1.2.13 */
     .domainManagedSave = parallelsDomainManagedSave, /* 1.2.14 */
     .domainManagedSaveRemove = parallelsDomainManagedSaveRemove, /* 1.2.14 */
+    .domainGetMaxMemory = parallelsDomainGetMaxMemory, /* 1.2.15 */
 };
 
 static virConnectDriver parallelsConnectDriver = {
