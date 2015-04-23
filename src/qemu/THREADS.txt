@@ -31,7 +31,7 @@ There are a number of locks on various objects
     finds the domain in the domain list without blocking all other lookups.
     When the domain is locked and the reference increased, the preferred way of
     decrementing the reference counter and unlocking the domain is using the
-    qemuDomObjEndAPI() function.
+    virDomainObjEndAPI() function.
 
     Lock must be held when changing/reading any variable in the virDomainObjPtr
 
@@ -206,7 +206,7 @@ Design patterns
 
      ...do work...
 
-     qemuDomObjEndAPI(&obj);
+     virDomainObjEndAPI(&obj);
 
 
  * Updating something directly to do with a virDomainObjPtr
@@ -221,7 +221,7 @@ Design patterns
 
      qemuDomainObjEndJob(obj);
 
-     qemuDomObjEndAPI(&obj);
+     virDomainObjEndAPI(&obj);
 
 
  * Invoking a monitor command on a virDomainObjPtr
@@ -244,7 +244,7 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndJob(obj);
-     qemuDomObjEndAPI(&obj);
+     virDomainObjEndAPI(&obj);
 
 
  * Running asynchronous job
@@ -284,7 +284,7 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndAsyncJob(obj);
-     qemuDomObjEndAPI(&obj);
+     virDomainObjEndAPI(&obj);
 
 
  * Coordinating with a remote server for migration
@@ -312,4 +312,4 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndAsyncJob(obj);
-     qemuDomObjEndAPI(&obj);
+     virDomainObjEndAPI(&obj);

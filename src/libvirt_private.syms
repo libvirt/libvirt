@@ -374,6 +374,7 @@ virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
 virDomainObjAssignDef;
 virDomainObjCopyPersistentDef;
+virDomainObjEndAPI;
 virDomainObjFormat;
 virDomainObjGetMetadata;
 virDomainObjGetPersistentDef;

@@ -2397,6 +2397,8 @@ virDomainObjPtr virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
 virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
                                            const char *name);
 
+void virDomainObjEndAPI(virDomainObjPtr *vm);
+
 bool virDomainObjTaint(virDomainObjPtr obj,
                        virDomainTaintFlags taint);
 

@@ -3393,7 +3393,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
     if (monpath)
         ignore_value(unlink(monpath));
     VIR_FREE(monpath);
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(xmlopt);
 
     if (pid != 0) {

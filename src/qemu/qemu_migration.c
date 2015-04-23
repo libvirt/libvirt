@@ -2774,7 +2774,7 @@ qemuMigrationBegin(virConnectPtr conn,
     }
 
  cleanup:
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     return xml;
 
  endjob:
@@ -3141,7 +3141,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         priv->nbdPort = 0;
         qemuDomainRemoveInactive(driver, vm);
     }
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
@@ -3538,7 +3538,7 @@ qemuMigrationConfirm(virConnectPtr conn,
     }
 
  cleanup:
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4913,7 +4913,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
@@ -4979,7 +4979,7 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     return ret;
@@ -5323,7 +5323,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, -1);
     VIR_FREE(priv->origname);
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);

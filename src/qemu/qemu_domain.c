@@ -2977,25 +2977,6 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
     return true;
 }
 
-/*
- * Finish working with a domain object in an API.  This function
- * clears whatever was left of a domain that was gathered using
- * qemuDomObjFromDomain().  Currently that means only unlocking and
- * decrementing the reference counter of that domain.  And in order to
- * make sure the caller does not access the domain, the pointer is
- * cleared.
- */
-void
-qemuDomObjEndAPI(virDomainObjPtr *vm)
-{
-    if (!*vm)
-        return;
-
-    virObjectUnlock(*vm);
-    virObjectUnref(*vm);
-    *vm = NULL;
-}
-
 
 int
 qemuDomainAlignMemorySizes(virDomainDefPtr def)

@@ -623,7 +623,7 @@ qemuProcessFakeReboot(void *opaque)
  cleanup:
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
-    qemuDomObjEndAPI(&vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
@@ -3845,7 +3845,7 @@ qemuProcessReconnect(void *opaque)
         qemuDomainRemoveInactive(driver, obj);
 
  cleanup:
-    qemuDomObjEndAPI(&obj);
+    virDomainObjEndAPI(&obj);
     virObjectUnref(conn);
     virObjectUnref(cfg);
     virNWFilterUnlockFilterUpdates();
@@ -3889,7 +3889,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
         if (!obj->persistent)
             qemuDomainRemoveInactive(src->driver, obj);
 
-        qemuDomObjEndAPI(&obj);
+        virDomainObjEndAPI(&obj);
         virObjectUnref(data->conn);
         VIR_FREE(data);
         return -1;
