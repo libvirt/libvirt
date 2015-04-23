@@ -683,6 +683,11 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
             if (xenConfigSetInt(conf, "spice", 1) < 0)
                 return -1;
 
+            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+            if (listenAddr &&
+                xenConfigSetString(conf, "spicehost", listenAddr) < 0)
+                return -1;
+
             if (xenConfigSetInt(conf, "spiceport",
                                 graphics->data.spice.port) < 0)
                 return -1;
@@ -700,11 +705,6 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
                                 graphics->data.spice.auth.passwd) < 0)
                     return -1;
             }
-
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            if (listenAddr &&
-                xenConfigSetString(conf, "spicehost", listenAddr) < 0)
-                return -1;
 
             if (xenConfigSetInt(conf, "spiceagent_mouse",
                                 graphics->data.spice.mousemode) < 0)
