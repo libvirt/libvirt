@@ -3113,6 +3113,36 @@ prlsdkGetDiskIndex(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     return idx;
 }
 
+int prlsdkDetachVolume(virConnectPtr conn,
+                   virDomainObjPtr dom,
+                   virDomainDiskDefPtr disk)
+{
+    int ret = -1, idx;
+    parallelsConnPtr privconn = conn->privateData;
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    idx = prlsdkGetDiskIndex(privdom->sdkdom, disk);
+    if (idx < 0)
+        goto cleanup;
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+        goto cleanup;
+
+    ret = prlsdkDelDisk(privdom->sdkdom, idx);
+    if (ret == 0) {
+        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+        if (PRL_FAILED(waitJob(job, privconn->jobTimeout))) {
+            ret = -1;
+            goto cleanup;
+        }
+    }
+
+ cleanup:
+    return ret;
+}
+
 static int
 prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
 {

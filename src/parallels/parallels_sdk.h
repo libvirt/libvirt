@@ -64,3 +64,6 @@ int
 prlsdkAttachVolume(virConnectPtr conn,
                    virDomainObjPtr dom,
                    virDomainDiskDefPtr disk);
+int prlsdkDetachVolume(virConnectPtr conn,
+                   virDomainObjPtr dom,
+                   virDomainDiskDefPtr disk);
