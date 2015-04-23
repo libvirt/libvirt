@@ -192,9 +192,9 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
 
             if (xenConfigGetBool(conf, "spicedisable_ticketing", &val, 0) < 0)
                 goto cleanup;
-            if (val) {
-                if (xenConfigCopyStringOpt(conf, "spicepasswd",
-                                           &graphics->data.spice.auth.passwd) < 0)
+            if (!val) {
+                if (xenConfigCopyString(conf, "spicepasswd",
+                                        &graphics->data.spice.auth.passwd) < 0)
                     goto cleanup;
             }
 
@@ -697,12 +697,14 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
                 return -1;
 
             if (graphics->data.spice.auth.passwd) {
-                if (xenConfigSetInt(conf, "spicedisable_ticketing", 1) < 0)
+                if (xenConfigSetInt(conf, "spicedisable_ticketing", 0) < 0)
                     return -1;
 
-                if (graphics->data.spice.auth.passwd &&
-                    xenConfigSetString(conf, "spicepasswd",
-                                graphics->data.spice.auth.passwd) < 0)
+                if (xenConfigSetString(conf, "spicepasswd",
+                                       graphics->data.spice.auth.passwd) < 0)
+                    return -1;
+            } else {
+                if (xenConfigSetInt(conf, "spicedisable_ticketing", 1) < 0)
                     return -1;
             }
 
