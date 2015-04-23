@@ -612,6 +612,8 @@ mymain(void)
     DO_TEST("memory-hotplug-nonuma");
     DO_TEST("memory-hotplug-dimm");
 
+    DO_TEST("aarch64-cpu-model-host");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

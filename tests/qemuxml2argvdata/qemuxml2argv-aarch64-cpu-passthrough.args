@@ -1,0 +1,5 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 -S -M virt -cpu host -m 1024 -smp 1 -nographic \
+-nodefconfig -nodefaults -monitor unix:/tmp/test-monitor,server,nowait \
+-boot c -usb -drive file=/aarch64.raw,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0
