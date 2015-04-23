@@ -2490,7 +2490,7 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (oldDef)
-        *oldDef = false;
+        *oldDef = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
 
