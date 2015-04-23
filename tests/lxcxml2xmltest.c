@@ -25,13 +25,9 @@ static virDomainXMLOptionPtr xmlopt;
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
 {
-    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
-
-    if (virtTestLoadFile(outxml, &outXmlData) < 0)
-        goto fail;
 
     if (!(def = virDomainDefParseFile(inxml, caps, xmlopt,
                                       live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE)))
@@ -45,14 +41,11 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml, bool live)
     if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
-    if (STRNEQ(outXmlData, actual)) {
-        virtTestDifference(stderr, outXmlData, actual);
+    if (virtTestCompareToFile(actual, outxml) < 0)
         goto fail;
-    }
 
     ret = 0;
  fail:
-    VIR_FREE(outXmlData);
     VIR_FREE(actual);
     virDomainDefFree(def);
     return ret;

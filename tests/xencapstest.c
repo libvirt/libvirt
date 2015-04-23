@@ -18,7 +18,6 @@ static int
 testCompareFiles(virArch hostmachine, const char *xml_rel,
                  const char *cpuinfo_rel, const char *capabilities_rel)
 {
-  char *expectxml = NULL;
   char *actualxml = NULL;
   FILE *fp1 = NULL, *fp2 = NULL;
   virCapsPtr caps = NULL;
@@ -34,9 +33,6 @@ testCompareFiles(virArch hostmachine, const char *xml_rel,
       virAsprintf(&capabilities, "%s/%s", abs_srcdir, capabilities_rel) < 0)
       goto fail;
 
-  if (virtTestLoadFile(xml, &expectxml) < 0)
-      goto fail;
-
   if (!(fp1 = fopen(cpuinfo, "r")))
       goto fail;
 
@@ -49,15 +45,12 @@ testCompareFiles(virArch hostmachine, const char *xml_rel,
   if (!(actualxml = virCapabilitiesFormatXML(caps)))
       goto fail;
 
-  if (STRNEQ(expectxml, actualxml)) {
-      virtTestDifference(stderr, expectxml, actualxml);
+  if (virtTestCompareToFile(actualxml, xml) < 0)
       goto fail;
-  }
 
   ret = 0;
 
  fail:
-  VIR_FREE(expectxml);
   VIR_FREE(actualxml);
   VIR_FREE(xml);
   VIR_FREE(cpuinfo);

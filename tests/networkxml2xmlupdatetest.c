@@ -23,7 +23,6 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
                          int parentIndex, bool expectFailure)
 {
     char *updateXmlData = NULL;
-    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virNetworkDefPtr def = NULL;
@@ -42,13 +41,8 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
         goto fail;
 
     if (!expectFailure) {
-        if (virtTestLoadFile(outxml, &outXmlData) < 0)
+        if (virtTestCompareToFile(actual, outxml) < 0)
             goto error;
-
-        if (STRNEQ(outXmlData, actual)) {
-            virtTestDifference(stderr, outXmlData, actual);
-            goto fail;
-        }
     }
 
     ret = 0;
@@ -65,7 +59,6 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
     }
  error:
     VIR_FREE(updateXmlData);
-    VIR_FREE(outXmlData);
     VIR_FREE(actual);
     virNetworkDefFree(def);
     return ret;

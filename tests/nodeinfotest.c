@@ -31,12 +31,8 @@ linuxTestCompareFiles(const char *cpuinfofile,
 {
     int ret = -1;
     char *actualData = NULL;
-    char *expectData = NULL;
     virNodeInfo nodeinfo;
     FILE *cpuinfo;
-
-    if (virtTestLoadFile(outputfile, &expectData) < 0)
-        goto fail;
 
     cpuinfo = fopen(cpuinfofile, "r");
     if (!cpuinfo) {
@@ -66,15 +62,12 @@ linuxTestCompareFiles(const char *cpuinfofile,
                     nodeinfo.cores, nodeinfo.threads) < 0)
         goto fail;
 
-    if (STRNEQ(actualData, expectData)) {
-        virtTestDifference(stderr, expectData, actualData);
+    if (virtTestCompareToFile(actualData, outputfile) < 0)
         goto fail;
-    }
 
     ret = 0;
 
  fail:
-    VIR_FREE(expectData);
     VIR_FREE(actualData);
     return ret;
 }
@@ -109,15 +102,11 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 {
     int ret = -1;
     char *actualData = NULL;
-    char *expectData = NULL;
     FILE *cpustat = NULL;
     virNodeCPUStatsPtr params = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int nparams = 0;
-
-    if (virtTestLoadFile(outfile, &expectData) < 0)
-        goto fail;
 
     if (!(cpustat = fopen(cpustatfile, "r"))) {
         virReportSystemError(errno, "failed to open '%s': ", cpustatfile);
@@ -150,17 +139,14 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
         goto fail;
     }
 
-    if (STRNEQ(actualData, expectData)) {
-        virtTestDifference(stderr, expectData, actualData);
+    if (virtTestCompareToFile(actualData, outfile) < 0)
         goto fail;
-    }
 
     ret = 0;
 
  fail:
     virBufferFreeAndReset(&buf);
     VIR_FORCE_FCLOSE(cpustat);
-    VIR_FREE(expectData);
     VIR_FREE(actualData);
     VIR_FREE(params);
     return ret;

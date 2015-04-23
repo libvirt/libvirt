@@ -178,14 +178,10 @@ test_virDomainCapsFormat(const void *opaque)
     virDomainCapsPtr domCaps = NULL;
     char *path = NULL;
     char *domCapsXML = NULL;
-    char *domCapsFromFile = NULL;
     int ret = -1;
 
     if (virAsprintf(&path, "%s/domaincapsschemadata/domaincaps-%s.xml",
                     abs_srcdir, data->filename) < 0)
-        goto cleanup;
-
-    if (virFileReadAll(path, 8192, &domCapsFromFile) < 0)
         goto cleanup;
 
     if (!(domCaps = buildVirDomainCaps(data->emulatorbin, data->machine,
@@ -196,14 +192,11 @@ test_virDomainCapsFormat(const void *opaque)
     if (!(domCapsXML = virDomainCapsFormat(domCaps)))
         goto cleanup;
 
-    if (STRNEQ(domCapsFromFile, domCapsXML)) {
-        virtTestDifference(stderr, domCapsFromFile, domCapsXML);
+    if (virtTestCompareToFile(domCapsXML, path) < 0)
         goto cleanup;
-    }
 
     ret = 0;
  cleanup:
-    VIR_FREE(domCapsFromFile);
     VIR_FREE(domCapsXML);
     VIR_FREE(path);
     virObjectUnref(domCaps);

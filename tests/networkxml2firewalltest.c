@@ -48,7 +48,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
     char *expectargv = NULL;
-    int len;
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNetworkDefPtr def = NULL;
@@ -69,14 +68,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virtTestClearCommandPath(actualargv);
     virCommandSetDryRun(NULL, NULL, NULL);
 
-    len = virtTestLoadFile(cmdline, &expectargv);
-    if (len < 0)
+    if (virtTestCompareToFile(actualargv, cmdline) < 0)
         goto cleanup;
-
-    if (STRNEQ(expectargv, actualargv)) {
-        virtTestDifference(stderr, expectargv, actualargv);
-        goto cleanup;
-    }
 
     ret = 0;
 

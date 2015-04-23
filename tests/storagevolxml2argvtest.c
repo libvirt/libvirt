@@ -43,11 +43,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
                           int imgformat,
                           unsigned long parse_flags)
 {
-    char *expectedCmdline = NULL;
     char *actualCmdline = NULL;
     int ret = -1;
-
-    int len;
 
     virCommandPtr cmd = NULL;
     virConnectPtr conn;
@@ -98,16 +95,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
     if (!(actualCmdline = virCommandToString(cmd)))
         goto cleanup;
 
-    len = virtTestLoadFile(cmdline, &expectedCmdline);
-    if (len < 0)
+    if (virtTestCompareToFile(actualCmdline, cmdline) < 0)
         goto cleanup;
-    if (len && expectedCmdline[len-1] == '\n')
-        expectedCmdline[len-1] = '\0';
-
-    if (STRNEQ_NULLABLE(expectedCmdline, actualCmdline)) {
-        virtTestDifference(stderr, expectedCmdline, actualCmdline);
-        goto cleanup;
-    }
 
     ret = 0;
 
@@ -118,7 +107,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virStorageVolDefFree(inputvol);
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
-    VIR_FREE(expectedCmdline);
     virObjectUnref(conn);
     return ret;
 }

@@ -106,7 +106,6 @@ test_virCapabilitiesFormat(const void *opaque)
     struct virCapabilitiesFormatData *data = (struct virCapabilitiesFormatData *) opaque;
     virCapsPtr caps = NULL;
     char *capsXML = NULL;
-    char *capsFromFile = NULL;
     char *path = NULL;
     int ret = -1;
 
@@ -121,20 +120,13 @@ test_virCapabilitiesFormat(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    if (virFileReadAll(path, 8192, &capsFromFile) < 0)
+    if (virtTestCompareToFile(capsXML, path) < 0)
         goto cleanup;
-
-
-    if (STRNEQ(capsXML, capsFromFile)) {
-        virtTestDifference(stderr, capsFromFile, capsXML);
-        goto cleanup;
-    }
 
     ret = 0;
 
  cleanup:
     VIR_FREE(path);
-    VIR_FREE(capsFromFile);
     VIR_FREE(capsXML);
     virObjectUnref(caps);
     return ret;

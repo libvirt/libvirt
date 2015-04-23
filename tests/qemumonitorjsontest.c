@@ -2129,7 +2129,6 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     char *jsonFile = NULL;
     char *dataFile = NULL;
     char *jsonStr = NULL;
-    char *expected = NULL;
     char *actual = NULL;
     int ret = -1;
 
@@ -2144,8 +2143,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
                     abs_srcdir, data->name) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(jsonFile, &jsonStr) < 0 ||
-        virtTestLoadFile(dataFile, &expected) < 0)
+    if (virtTestLoadFile(jsonFile, &jsonStr) < 0)
         goto cleanup;
 
     if (qemuMonitorTestAddItem(test, "qom-list",
@@ -2175,17 +2173,14 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     if (!(actual = cpuDataFormat(cpuData)))
         goto cleanup;
 
-    if (STRNEQ(expected, actual)) {
-        virtTestDifference(stderr, expected, actual);
+    if (virtTestCompareToFile(actual, dataFile) < 0)
         goto cleanup;
-    }
 
     ret = 0;
  cleanup:
     VIR_FREE(jsonFile);
     VIR_FREE(dataFile);
     VIR_FREE(jsonStr);
-    VIR_FREE(expected);
     VIR_FREE(actual);
     cpuDataFree(cpuData);
     qemuMonitorTestFree(test);

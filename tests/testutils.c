@@ -596,6 +596,39 @@ int virtTestDifferenceBin(FILE *stream,
     return 0;
 }
 
+/*
+ * @param strcontent: String input content
+ * @param filename: File to compare strcontent against
+ */
+int
+virtTestCompareToFile(const char *strcontent,
+                      const char *filename)
+{
+    int ret = -1;
+    char *filecontent = NULL;
+    char *fixedcontent = NULL;
+
+    if (virtTestLoadFile(filename, &filecontent) < 0)
+        goto failure;
+
+    if (filecontent[strlen(filecontent) - 1] == '\n' &&
+        strcontent[strlen(strcontent) - 1] != '\n') {
+        if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
+            goto failure;
+    }
+
+    if (STRNEQ(fixedcontent ? fixedcontent : strcontent, filecontent)) {
+        virtTestDifference(stderr, strcontent, filecontent);
+        goto failure;
+    }
+
+    ret = 0;
+ failure:
+    VIR_FREE(fixedcontent);
+    VIR_FREE(filecontent);
+    return ret;
+}
+
 static void
 virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
                        virErrorPtr err ATTRIBUTE_UNUSED)

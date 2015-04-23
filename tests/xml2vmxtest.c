@@ -73,12 +73,8 @@ static int
 testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
 {
     int result = -1;
-    char *vmxData = NULL;
     char *formatted = NULL;
     virDomainDefPtr def = NULL;
-
-    if (virtTestLoadFile(vmx, &vmxData) < 0)
-        goto failure;
 
     def = virDomainDefParseFile(xml, caps, xmlopt,
                                 VIR_DOMAIN_DEF_PARSE_INACTIVE);
@@ -92,19 +88,15 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     }
 
     formatted = virVMXFormatConfig(&ctx, xmlopt, def, virtualHW_version);
-
     if (formatted == NULL)
         goto failure;
 
-    if (STRNEQ(vmxData, formatted)) {
-        virtTestDifference(stderr, vmxData, formatted);
+    if (virtTestCompareToFile(formatted, vmx) < 0)
         goto failure;
-    }
 
     result = 0;
 
  failure:
-    VIR_FREE(vmxData);
     VIR_FREE(formatted);
     virDomainDefFree(def);
 

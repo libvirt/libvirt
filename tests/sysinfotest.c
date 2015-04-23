@@ -62,7 +62,6 @@ static int
 testSysinfo(const void *data)
 {
     int result = -1;
-    char *sysfsExpectData = NULL;
     const char *sysfsActualData;
     virSysinfoDefPtr ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -71,10 +70,8 @@ testSysinfo(const void *data)
     virSysinfoSetup(testdata->decoder, testdata->sysinfo, testdata->cpuinfo);
 
     if (!testdata->expected ||
-        virtTestLoadFile(testdata->expected, &sysfsExpectData) < 0 ||
-        !(ret = virSysinfoRead())) {
+        !(ret = virSysinfoRead()))
         goto cleanup;
-    }
 
     if (virSysinfoFormat(&buf, ret) < 0)
         goto cleanup;
@@ -82,15 +79,12 @@ testSysinfo(const void *data)
     if (!(sysfsActualData = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (STRNEQ(sysfsActualData, sysfsExpectData)) {
-        virtTestDifference(stderr, sysfsExpectData, sysfsActualData);
+    if (virtTestCompareToFile(sysfsActualData, testdata->expected) < 0)
         goto cleanup;
-    }
 
     result = 0;
 
  cleanup:
-    VIR_FREE(sysfsExpectData);
     virSysinfoDefFree(ret);
     virBufferFreeAndReset(&buf);
 

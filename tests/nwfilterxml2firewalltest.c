@@ -372,8 +372,6 @@ static int testSetDefaultParameters(virNWFilterHashTablePtr vars)
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
-    char *expectargv = NULL;
-    int len;
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNWFilterHashTablePtr vars = virNWFilterHashTableCreate(0);
@@ -407,20 +405,13 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     testRemoveCommonRules(actualargv);
 
-    len = virtTestLoadFile(cmdline, &expectargv);
-    if (len < 0)
+    if (virtTestCompareToFile(actualargv, cmdline) < 0)
         goto cleanup;
-
-    if (STRNEQ(expectargv, actualargv)) {
-        virtTestDifference(stderr, expectargv, actualargv);
-        goto cleanup;
-    }
 
     ret = 0;
 
  cleanup:
     virBufferFreeAndReset(&buf);
-    VIR_FREE(expectargv);
     VIR_FREE(actualargv);
     virNWFilterInstReset(&inst);
     virNWFilterHashTableFree(vars);

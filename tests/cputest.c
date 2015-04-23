@@ -158,7 +158,6 @@ cpuTestCompareXML(const char *arch,
                   bool updateCPU)
 {
     char *xml = NULL;
-    char *expected = NULL;
     char *actual = NULL;
     int ret = -1;
 
@@ -166,24 +165,16 @@ cpuTestCompareXML(const char *arch,
                     abs_srcdir, arch, name) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(xml, &expected) < 0)
-        goto cleanup;
-
     if (!(actual = virCPUDefFormat(cpu, NULL, updateCPU)))
         goto cleanup;
 
-    if (STRNEQ(expected, actual)) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "\nCompared to %s-%s.xml", arch, name);
-        virtTestDifference(stderr, expected, actual);
+    if (virtTestCompareToFile(actual, xml) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
  cleanup:
     VIR_FREE(xml);
-    VIR_FREE(expected);
     VIR_FREE(actual);
     return ret;
 }

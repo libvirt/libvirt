@@ -21,7 +21,6 @@
 static int
 testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr caps)
 {
-    char *outConfData = NULL;
     char *actual = NULL;
     int ret = -1;
     virNetworkDefPtr dev = NULL;
@@ -29,9 +28,6 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
-
-    if (virtTestLoadFile(outconf, &outConfData) < 0)
-        goto fail;
 
     if (!(dev = virNetworkDefParseFile(inxml)))
         goto fail;
@@ -49,15 +45,12 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
                         dctx, caps) < 0)
         goto fail;
 
-    if (STRNEQ(outConfData, actual)) {
-        virtTestDifference(stderr, outConfData, actual);
+    if (virtTestCompareToFile(actual, outconf) < 0)
         goto fail;
-    }
 
     ret = 0;
 
  fail:
-    VIR_FREE(outConfData);
     VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);

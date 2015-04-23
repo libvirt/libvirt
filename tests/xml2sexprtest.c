@@ -23,13 +23,9 @@ static virDomainXMLOptionPtr xmlopt;
 static int
 testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
 {
-  char *sexprData = NULL;
   char *gotsexpr = NULL;
   int ret = -1;
   virDomainDefPtr def = NULL;
-
-  if (virtTestLoadFile(sexpr, &sexprData) < 0)
-      goto fail;
 
   if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
                                     VIR_DOMAIN_DEF_PARSE_INACTIVE)))
@@ -43,15 +39,12 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (!(gotsexpr = xenFormatSxpr(NULL, def, xendConfigVersion)))
       goto fail;
 
-  if (STRNEQ(sexprData, gotsexpr)) {
-      virtTestDifference(stderr, sexprData, gotsexpr);
+  if (virtTestCompareToFile(gotsexpr, sexpr) < 0)
       goto fail;
-  }
 
   ret = 0;
 
  fail:
-  VIR_FREE(sexprData);
   VIR_FREE(gotsexpr);
   virDomainDefFree(def);
 

@@ -253,8 +253,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      int migrateFd,
                                      virQemuXML2ArgvTestFlags flags)
 {
-    char *expectargv = NULL;
-    int len;
     char *actualargv = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
@@ -373,16 +371,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(actualargv = virCommandToString(cmd)))
         goto out;
 
-    len = virtTestLoadFile(cmdline, &expectargv);
-    if (len < 0)
+    if (virtTestCompareToFile(actualargv, cmdline) < 0)
         goto out;
-    if (len && expectargv[len - 1] == '\n')
-        expectargv[len - 1] = '\0';
-
-    if (STRNEQ(expectargv, actualargv)) {
-        virtTestDifference(stderr, expectargv, actualargv);
-        goto out;
-    }
 
  ok:
     if (!virtTestOOMActive() &&
@@ -395,7 +385,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
  out:
     VIR_FREE(log);
-    VIR_FREE(expectargv);
     VIR_FREE(actualargv);
     virCommandFree(cmd);
     virDomainDefFree(vmdef);

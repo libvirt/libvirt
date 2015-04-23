@@ -21,7 +21,6 @@ static virCapsPtr caps;
 static int
 testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
 {
-  char *xmlData = NULL;
   char *sexprData = NULL;
   char *gotxml = NULL;
   int id;
@@ -35,9 +34,6 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
 
   conn = virGetConnect();
   if (!conn) goto fail;
-
-  if (virtTestLoadFile(xml, &xmlData) < 0)
-      goto fail;
 
   if (virtTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
@@ -68,15 +64,12 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   if (!(gotxml = virDomainDefFormat(def, 0)))
       goto fail;
 
-  if (STRNEQ(xmlData, gotxml)) {
-      virtTestDifference(stderr, xmlData, gotxml);
+  if (virtTestCompareToFile(gotxml, xml) < 0)
       goto fail;
-  }
 
   ret = 0;
 
  fail:
-  VIR_FREE(xmlData);
   VIR_FREE(sexprData);
   VIR_FREE(gotxml);
   virDomainDefFree(def);

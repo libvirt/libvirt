@@ -20,14 +20,10 @@ static int
 testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
                          const char *outxml, unsigned int flags)
 {
-    char *outXmlData = NULL;
     char *actual = NULL;
     int ret = -1;
     virStoragePoolDefPtr pool = NULL;
     virStorageVolDefPtr dev = NULL;
-
-    if (virtTestLoadFile(outxml, &outXmlData) < 0)
-        goto fail;
 
     if (!(pool = virStoragePoolDefParseFile(poolxml)))
         goto fail;
@@ -38,15 +34,12 @@ testCompareXMLToXMLFiles(const char *poolxml, const char *inxml,
     if (!(actual = virStorageVolDefFormat(pool, dev)))
         goto fail;
 
-    if (STRNEQ(outXmlData, actual)) {
-        virtTestDifference(stderr, outXmlData, actual);
+    if (virtTestCompareToFile(actual, outxml) < 0)
         goto fail;
-    }
 
     ret = 0;
 
  fail:
-    VIR_FREE(outXmlData);
     VIR_FREE(actual);
     virStoragePoolDefFree(pool);
     virStorageVolDefFree(dev);

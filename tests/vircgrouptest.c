@@ -166,7 +166,6 @@ testCgroupDetectMounts(const void *args)
     const char *file = args;
     char *mounts = NULL;
     char *parsed = NULL;
-    char *expected = NULL;
     const char *actual;
     virCgroupPtr group = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -182,9 +181,6 @@ testCgroupDetectMounts(const void *args)
     if (virCgroupDetectMountsFromFile(group, mounts, false) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(parsed, &expected) < 0)
-        goto cleanup;
-
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
         virBufferAsprintf(&buf, "%-12s %s\n",
                           virCgroupControllerTypeToString(i),
@@ -194,17 +190,14 @@ testCgroupDetectMounts(const void *args)
         goto cleanup;
 
     actual = virBufferCurrentContent(&buf);
-    if (STRNEQ(expected, actual)) {
-        virtTestDifference(stderr, expected, actual);
+    if (virtTestCompareToFile(actual, parsed) < 0)
         goto cleanup;
-    }
 
     result = 0;
 
  cleanup:
     VIR_FREE(mounts);
     VIR_FREE(parsed);
-    VIR_FREE(expected);
     virCgroupFree(&group);
     virBufferFreeAndReset(&buf);
     return result;
