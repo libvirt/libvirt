@@ -65,6 +65,10 @@ struct _virDomainObjList {
     /* uuid string -> virDomainObj  mapping
      * for O(1), lockless lookup-by-uuid */
     virHashTable *objs;
+
+    /* name -> virDomainObj mapping for O(1),
+     * lockless lookup-by-name */
+    virHashTable *objsName;
 };
 
 
@@ -1042,7 +1046,8 @@ virDomainObjListPtr virDomainObjListNew(void)
     if (!(doms = virObjectLockableNew(virDomainObjListClass)))
         return NULL;
 
-    if (!(doms->objs = virHashCreate(50, virObjectFreeHashData))) {
+    if (!(doms->objs = virHashCreate(50, virObjectFreeHashData)) ||
+        !(doms->objsName = virHashCreate(50, virObjectFreeHashData))) {
         virObjectUnref(doms);
         return NULL;
     }
@@ -1056,6 +1061,7 @@ static void virDomainObjListDispose(void *obj)
     virDomainObjListPtr doms = obj;
 
     virHashFree(doms->objs);
+    virHashFree(doms->objsName);
 }
 
 
@@ -1137,27 +1143,15 @@ virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
     return virDomainObjListFindByUUIDInternal(doms, uuid, true);
 }
 
-static int virDomainObjListSearchName(const void *payload,
-                                      const void *name ATTRIBUTE_UNUSED,
-                                      const void *data)
-{
-    virDomainObjPtr obj = (virDomainObjPtr)payload;
-    int want = 0;
-
-    virObjectLock(obj);
-    if (STREQ(obj->def->name, (const char *)data))
-        want = 1;
-    virObjectUnlock(obj);
-    return want;
-}
-
 virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
                                            const char *name)
 {
     virDomainObjPtr obj;
+
     virObjectLock(doms);
-    obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
+    obj = virHashLookup(doms->objsName, name);
     virObjectRef(obj);
+    virObjectUnlock(doms);
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
@@ -1166,7 +1160,6 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
             obj = NULL;
         }
     }
-    virObjectUnlock(doms);
     return obj;
 }
 
@@ -2545,7 +2538,7 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
                               oldDef);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        if ((vm = virHashSearch(doms->objs, virDomainObjListSearchName, def->name))) {
+        if ((vm = virHashLookup(doms->objsName, def->name))) {
             virObjectLock(vm);
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -2563,6 +2556,15 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             virObjectUnref(vm);
             return NULL;
         }
+
+        if (virHashAddEntry(doms->objsName, def->name, vm) < 0) {
+            virHashRemoveEntry(doms->objs, uuidstr);
+            return NULL;
+        }
+
+        /* Since domain is in two hash tables, increment the
+         * reference counter */
+        virObjectRef(vm);
     }
  cleanup:
     return vm;
@@ -2720,6 +2722,7 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
     virObjectLock(doms);
     virObjectLock(dom);
     virHashRemoveEntry(doms->objs, uuidstr);
+    virHashRemoveEntry(doms->objsName, dom->def->name);
     virObjectUnlock(dom);
     virObjectUnref(dom);
     virObjectUnlock(doms);
@@ -2737,9 +2740,10 @@ void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(dom->def->uuid, uuidstr);
-    virObjectUnlock(dom);
 
     virHashRemoveEntry(doms->objs, uuidstr);
+    virHashRemoveEntry(doms->objsName, dom->def->name);
+    virObjectUnlock(dom);
 }
 
 static int
@@ -21587,6 +21591,15 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
 
     if (virHashAddEntry(doms->objs, uuidstr, obj) < 0)
         goto error;
+
+    if (virHashAddEntry(doms->objsName, obj->def->name, obj) < 0) {
+        virHashRemoveEntry(doms->objs, uuidstr);
+        goto error;
+    }
+
+    /* Since domain is in two hash tables, increment the
+     * reference counter */
+    virObjectRef(obj);
 
     if (notify)
         (*notify)(obj, 1, opaque);
