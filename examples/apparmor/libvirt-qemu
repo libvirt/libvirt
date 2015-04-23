@@ -114,6 +114,7 @@
   /usr/bin/qemu-sparc64 rmix,
   /usr/bin/qemu-x86_64 rmix,
   /usr/{lib,lib64}/qemu/block-curl.so mr,
+  /usr/{lib,lib64}/qemu/block-rbd.so mr,
 
   # for save and resume
   /bin/dash rmix,
