@@ -349,8 +349,9 @@
   </define>
 
   <define name="PortNumber">
-    <data type="short">
+    <data type="int">
       <param name="minInclusive">-1</param>
+      <param name="maxInclusive">65535</param>
     </data>
   </define>
 
