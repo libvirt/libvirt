@@ -1955,11 +1955,13 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     while ((direrr = virDirRead(dir, &ent, pcidir)) > 0) {
         /* Device assignment requires:
          *   $PCIDIR/config, $PCIDIR/resource, $PCIDIR/resourceNNN,
-         *   $PCIDIR/rom, $PCIDIR/reset
+         *   $PCIDIR/rom, $PCIDIR/reset, $PCIDIR/vendor, $PCIDIR/device
          */
         if (STREQ(ent->d_name, "config") ||
             STRPREFIX(ent->d_name, "resource") ||
             STREQ(ent->d_name, "rom") ||
+            STREQ(ent->d_name, "vendor") ||
+            STREQ(ent->d_name, "device") ||
             STREQ(ent->d_name, "reset")) {
             if (virAsprintf(&file, "%s/%s", pcidir, ent->d_name) < 0)
                 goto cleanup;
