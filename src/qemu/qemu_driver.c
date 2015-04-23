@@ -1511,8 +1511,7 @@ static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
     if (dom) dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -12287,11 +12286,10 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
     }
 
     if (virDomainMigrateFinish2EnsureACL(dconn, vm->def) < 0) {
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
         goto cleanup;
     }
 
-    virObjectRef(vm);
     /* Do not use cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
@@ -12702,11 +12700,9 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     }
 
     if (virDomainMigrateFinish3EnsureACL(dconn, vm->def) < 0) {
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
         return NULL;
     }
-
-    virObjectRef(vm);
 
     return qemuMigrationFinish(driver, dconn, vm,
                                cookiein, cookieinlen,
@@ -12747,11 +12743,9 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
     }
 
     if (virDomainMigrateFinish3ParamsEnsureACL(dconn, vm->def) < 0) {
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
         return NULL;
     }
-
-    virObjectRef(vm);
 
     return qemuMigrationFinish(driver, dconn, vm,
                                cookiein, cookieinlen,

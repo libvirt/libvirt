@@ -526,8 +526,7 @@ parallelsDomainLookupByName(virConnectPtr conn, const char *name)
         ret->id = dom->def->id;
 
  cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 

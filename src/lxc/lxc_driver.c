@@ -321,8 +321,7 @@ static virDomainPtr lxcDomainLookupByName(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 

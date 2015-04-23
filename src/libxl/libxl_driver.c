@@ -1001,8 +1001,7 @@ libxlDomainLookupByName(virConnectPtr conn, const char *name)
         dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -4955,12 +4954,12 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
     }
 
     if (virDomainMigrateFinish3ParamsEnsureACL(dconn, vm->def) < 0) {
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
         return NULL;
     }
 
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0) {
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
         return NULL;
     }
 
@@ -4969,8 +4968,7 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
     if (!libxlDomainObjEndJob(driver, vm))
         vm = NULL;
 
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
 
     return ret;
 }

@@ -797,8 +797,7 @@ static virDomainPtr bhyveDomainLookupByName(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 

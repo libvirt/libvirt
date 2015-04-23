@@ -1157,10 +1157,12 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
     virDomainObjPtr obj;
     virObjectLock(doms);
     obj = virHashSearch(doms->objs, virDomainObjListSearchName, name);
+    virObjectRef(obj);
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
             virObjectUnlock(obj);
+            virObjectUnref(obj);
             obj = NULL;
         }
     }

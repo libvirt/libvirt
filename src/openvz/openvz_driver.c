@@ -427,8 +427,7 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
         dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -1007,6 +1006,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Already an OPENVZ VM active with the id '%s'"),
                        vmdef->name);
+        virDomainObjEndAPI(&vm);
         goto cleanup;
     }
     if (!(vm = virDomainObjListAdd(driver->domains, vmdef,
@@ -1103,6 +1103,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Already an OPENVZ VM defined with the id '%s'"),
                        vmdef->name);
+        virDomainObjEndAPI(&vm);
         goto cleanup;
     }
     if (!(vm = virDomainObjListAdd(driver->domains,
@@ -1208,8 +1209,7 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2508,8 +2508,7 @@ openvzDomainMigrateFinish3Params(virConnectPtr dconn,
         dom->id = vm->def->id;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
