@@ -1032,13 +1032,6 @@ virDomainDeviceDefCheckUnsupportedMemoryDevice(virDomainDeviceDefPtr dev)
 }
 
 
-static void
-virDomainObjListDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
-{
-    virDomainObjPtr obj = payload;
-    virObjectUnref(obj);
-}
-
 virDomainObjListPtr virDomainObjListNew(void)
 {
     virDomainObjListPtr doms;
@@ -1049,7 +1042,7 @@ virDomainObjListPtr virDomainObjListNew(void)
     if (!(doms = virObjectLockableNew(virDomainObjListClass)))
         return NULL;
 
-    if (!(doms->objs = virHashCreate(50, virDomainObjListDataFree))) {
+    if (!(doms->objs = virHashCreate(50, virObjectFreeHashData))) {
         virObjectUnref(doms);
         return NULL;
     }
