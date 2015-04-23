@@ -32,7 +32,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_BHYVE,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto out;
 

@@ -27,7 +27,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
         goto fail;
 
     if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
-                                        1 << VIR_DOMAIN_VIRT_BHYVE,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
