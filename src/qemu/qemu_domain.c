@@ -1158,11 +1158,11 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         !dev->data.chr->source.data.nix.path &&
         (driver && (cfg = virQEMUDriverGetConfig(driver)))) {
 
-        if (virAsprintf(&dev->data.chr->source.data.nix.path,
-                        "%s/channel/target/%s.%s",
-                        cfg->libDir, def->name,
-                        dev->data.chr->target.name) < 0)
+        if (virAsprintf(&dev->data.chr->source.data.nix.path, "%s/%s.%s",
+                        cfg->channelTargetDir,
+                        def->name, dev->data.chr->target.name) < 0)
             goto cleanup;
+
         dev->data.chr->source.data.nix.listen = true;
     }
 

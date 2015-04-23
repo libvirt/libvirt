@@ -97,6 +97,7 @@
 #include "virhostdev.h"
 #include "domain_capabilities.h"
 #include "vircgroup.h"
+#include "dirname.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -701,6 +702,12 @@ qemuStateInitialize(bool privileged,
                   cfg->autoDumpPath, virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+    if (virFileMakePath(cfg->channelTargetDir) < 0) {
+        VIR_ERROR(_("Failed to create channel target dir '%s': %s"),
+                  cfg->channelTargetDir,
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        goto error;
+    }
 
     qemu_driver->qemuImgBinary = virFindFileInPath("kvm-img");
     if (!qemu_driver->qemuImgBinary)
@@ -760,6 +767,8 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     if (privileged) {
+        char *channeldir;
+
         if (chown(cfg->libDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to user %d:%d"),
@@ -792,6 +801,26 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->autoDumpPath, (int) cfg->user,
+                                 (int) cfg->group);
+            goto error;
+        }
+        if (!(channeldir = mdir_name(cfg->channelTargetDir))) {
+            virReportOOMError();
+            goto error;
+        }
+        if (chown(channeldir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 channeldir, (int) cfg->user,
+                                 (int) cfg->group);
+            VIR_FREE(channeldir);
+            goto error;
+        }
+        VIR_FREE(channeldir);
+        if (chown(cfg->channelTargetDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->channelTargetDir, (int) cfg->user,
                                  (int) cfg->group);
             goto error;
         }
