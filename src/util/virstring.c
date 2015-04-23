@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2012-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1003,7 +1003,7 @@ virStringStripControlChars(char *str)
 
     len = strlen(str);
     for (i = 0, j = 0; i < len; i++) {
-        if (index(control_chars, str[i]))
+        if (strchr(control_chars, str[i]))
             continue;
 
         str[j++] = str[i];
