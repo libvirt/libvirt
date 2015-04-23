@@ -76,6 +76,7 @@
 #include "virjson.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
+#define MAX_BRIDGE_ID 256
 
 /**
  * VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX:
@@ -448,6 +449,7 @@ networkUpdateState(virNetworkObjPtr obj,
     virObjectUnref(dnsmasq_caps);
     return ret;
 }
+
 
 static int
 networkAutostartConfig(virNetworkObjPtr net,
@@ -2034,6 +2036,20 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         return -1;
 
     /* Create and configure the bridge device */
+    if (!network->def->bridge) {
+        /* bridge name can only be empty if the config files were
+         * edited directly. Otherwise networkValidate() (called after
+         * parsing the XML from networkCreateXML() and
+         * networkDefine()) guarantees we will have a valid bridge
+         * name before this point. Since hand editing of the config
+         * files is explicitly prohibited we can, with clear
+         * conscience, log an error and fail at this point.
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("network '%s' has no bridge name defined"),
+                       network->def->name);
+        return -1;
+    }
     if (virNetDevBridgeCreate(network->def->bridge) < 0)
         return -1;
 
@@ -2746,6 +2762,76 @@ static int networkIsPersistent(virNetworkPtr net)
 }
 
 
+/*
+ * networkFindUnusedBridgeName() - try to find a bridge name that is
+ * unused by the currently configured libvirt networks, and set this
+ * network's name to that new name.
+ */
+static int
+networkFindUnusedBridgeName(virNetworkObjListPtr nets,
+                            virNetworkDefPtr def)
+{
+
+    int ret = -1, id = 0;
+    char *newname = NULL;
+    const char *templ = def->bridge ? def->bridge : "virbr%d";
+
+    do {
+        if (virAsprintf(&newname, templ, id) < 0)
+            goto cleanup;
+        if (!virNetworkBridgeInUse(nets, newname, def->name)) {
+            VIR_FREE(def->bridge); /*could contain template */
+            def->bridge = newname;
+            ret = 0;
+            goto cleanup;
+        }
+        VIR_FREE(newname);
+    } while (++id <= MAX_BRIDGE_ID);
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Bridge generation exceeded max id %d"),
+                   MAX_BRIDGE_ID);
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(newname);
+    return ret;
+}
+
+
+
+/*
+ * networkValidateBridgeName() - if no bridge name is set, or if the
+ * bridge name contains a %d (indicating that this is a template for
+ * the actual name) try to set an appropriate bridge name.  If a
+ * bridge name *is* set, make sure it doesn't conflict with any other
+ * network's bridge name.
+ */
+static int
+networkBridgeNameValidate(virNetworkObjListPtr nets,
+                          virNetworkDefPtr def)
+{
+    int ret = -1;
+
+    if (def->bridge && !strstr(def->bridge, "%d")) {
+        if (virNetworkBridgeInUse(nets, def->bridge, def->name)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("bridge name '%s' already in use."),
+                           def->bridge);
+            goto cleanup;
+        }
+    } else {
+        /* Allocate a bridge name */
+        if (networkFindUnusedBridgeName(nets, def) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 static int
 networkValidate(virNetworkDriverStatePtr driver,
                 virNetworkDefPtr def)
@@ -2765,7 +2851,10 @@ networkValidate(virNetworkDriverStatePtr driver,
         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
         def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
 
-        if (virNetworkSetBridgeName(driver->networks, def, 1))
+        /* if no bridge name was given in the config, find a name
+         * unused by any other libvirt networks and assign it.
+         */
+        if (networkBridgeNameValidate(driver->networks, def) < 0)
             return -1;
 
         virNetworkSetBridgeMacAddr(def);

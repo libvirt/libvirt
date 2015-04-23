@@ -1,7 +1,7 @@
 /*
  * network_conf.h: network XML handling
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -400,13 +400,6 @@ char *virNetworkConfigFile(const char *dir,
 int virNetworkBridgeInUse(virNetworkObjListPtr nets,
                           const char *bridge,
                           const char *skipname);
-
-char *virNetworkAllocateBridge(virNetworkObjListPtr nets,
-                               const char *template);
-
-int virNetworkSetBridgeName(virNetworkObjListPtr nets,
-                            virNetworkDefPtr def,
-                            int check_collision);
 
 void virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 

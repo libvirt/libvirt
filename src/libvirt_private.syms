@@ -576,6 +576,7 @@ virNetDevVPortTypeToString;
 
 # conf/network_conf.h
 virNetworkAssignDef;
+virNetworkBridgeInUse;
 virNetworkBridgeMACTableManagerTypeFromString;
 virNetworkBridgeMACTableManagerTypeToString;
 virNetworkConfigChangeSetup;
@@ -618,7 +619,6 @@ virNetworkRemoveInactive;
 virNetworkSaveConfig;
 virNetworkSaveStatus;
 virNetworkSetBridgeMacAddr;
-virNetworkSetBridgeName;
 virNetworkTaintTypeFromString;
 virNetworkTaintTypeToString;
 virPortGroupFindByName;
