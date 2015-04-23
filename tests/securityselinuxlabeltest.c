@@ -336,9 +336,9 @@ testSELinuxLabeling(const void *opaque)
         VIR_FREE(files[i].context);
     }
     VIR_FREE(files);
-    if (ret < 0 && virTestGetVerbose()) {
+    if (ret < 0) {
         virErrorPtr err = virGetLastError();
-        fprintf(stderr, "%s\n", err ? err->message : "<unknown>");
+        VIR_TEST_VERBOSE("%s\n", err ? err->message : "<unknown>");
     }
     return ret;
 }
@@ -358,7 +358,7 @@ mymain(void)
 
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false))) {
         virErrorPtr err = virGetLastError();
-        fprintf(stderr, "Unable to initialize security driver: %s\n",
+        VIR_TEST_VERBOSE("Unable to initialize security driver: %s\n",
                 err->message);
         return EXIT_FAILURE;
     }

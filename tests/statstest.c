@@ -18,8 +18,7 @@ static int testDevice(const char *path, int expect)
     if (actual == expect) {
         return 0;
     } else {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expect %-6d Actual %-6d\n", expect, actual);
+        VIR_TEST_DEBUG("Expect %-6d Actual %-6d\n", expect, actual);
         return -1;
     }
 }

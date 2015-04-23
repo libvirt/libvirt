@@ -63,10 +63,8 @@ testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
         idx = virDiskNameToIndex(diskName);
 
         if (idx < 0 || idx != i) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nExpect [%zu]\n", i);
-                fprintf(stderr, "Actual [%d]\n", idx);
-            }
+            VIR_TEST_DEBUG("\nExpect [%zu]\n", i);
+            VIR_TEST_DEBUG("Actual [%d]\n", idx);
 
             VIR_FREE(diskName);
 
@@ -115,11 +113,9 @@ testParseVersionString(const void *data ATTRIBUTE_UNUSED)
                                        versions[i].allowMissing);
 
         if (result != versions[i].result) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nVersion string [%s]\n", versions[i].string);
-                fprintf(stderr, "Expect result [%d]\n", versions[i].result);
-                fprintf(stderr, "Actual result [%d]\n", result);
-            }
+            VIR_TEST_DEBUG("\nVersion string [%s]\n", versions[i].string);
+            VIR_TEST_DEBUG("Expect result [%d]\n", versions[i].result);
+            VIR_TEST_DEBUG("Actual result [%d]\n", result);
 
             return -1;
         }
@@ -128,11 +124,9 @@ testParseVersionString(const void *data ATTRIBUTE_UNUSED)
             continue;
 
         if (version != versions[i].version) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nVersion string [%s]\n", versions[i].string);
-                fprintf(stderr, "Expect version [%lu]\n", versions[i].version);
-                fprintf(stderr, "Actual version [%lu]\n", version);
-            }
+            VIR_TEST_DEBUG("\nVersion string [%s]\n", versions[i].string);
+            VIR_TEST_DEBUG("Expect version [%lu]\n", versions[i].version);
+            VIR_TEST_DEBUG("Actual version [%lu]\n", version);
 
             return -1;
         }
@@ -166,11 +160,9 @@ testRoundValueToPowerOfTwo(const void *data ATTRIBUTE_UNUSED)
     for (i = 0; i < ARRAY_CARDINALITY(roundData); i++) {
         result = VIR_ROUND_UP_POWER_OF_TWO(roundData[i].input);
         if (roundData[i].output != result) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nInput number [%u]\n", roundData[i].input);
-                fprintf(stderr, "Expected number [%u]\n", roundData[i].output);
-                fprintf(stderr, "Actual number [%u]\n", result);
-            }
+            VIR_TEST_DEBUG("\nInput number [%u]\n", roundData[i].input);
+            VIR_TEST_DEBUG("Expected number [%u]\n", roundData[i].output);
+            VIR_TEST_DEBUG("Actual number [%u]\n", result);
 
             return -1;
         }

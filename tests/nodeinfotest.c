@@ -50,7 +50,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
         if (virTestGetDebug()) {
             virErrorPtr error = virSaveLastError();
             if (error && error->code != VIR_ERR_OK)
-                fprintf(stderr, "\n%s\n", error->message);
+                VIR_TEST_DEBUG("\n%s\n", error->message);
             virFreeError(error);
         }
         VIR_FORCE_FCLOSE(cpuinfo);

@@ -960,7 +960,7 @@ virCapsPtr virTestGenericCapsInit(void)
         if (!caps_str)
             goto error;
 
-        fprintf(stderr, "Generic driver capabilities:\n%s", caps_str);
+        VIR_TEST_DEBUG("Generic driver capabilities:\n%s", caps_str);
 
         VIR_FREE(caps_str);
     }

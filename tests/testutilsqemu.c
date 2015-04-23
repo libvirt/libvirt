@@ -427,7 +427,7 @@ virCapsPtr testQemuCapsInit(void)
         if (!caps_str)
             goto cleanup;
 
-        fprintf(stderr, "QEMU driver capabilities:\n%s", caps_str);
+        VIR_TEST_DEBUG("QEMU driver capabilities:\n%s", caps_str);
 
         VIR_FREE(caps_str);
     }

@@ -235,13 +235,11 @@ cpuTestCompare(const void *arg)
         virResetLastError();
 
     if (data->result != result) {
-        if (virTestGetVerbose()) {
-            fprintf(stderr, "\nExpected result %s, got %s\n",
+        VIR_TEST_VERBOSE("\nExpected result %s, got %s\n",
                     cpuTestCompResStr(data->result),
                     cpuTestCompResStr(result));
-            /* Pad to line up with test name ... in virTestRun */
-            fprintf(stderr, "%74s", "... ");
-        }
+        /* Pad to line up with test name ... in virTestRun */
+        VIR_TEST_VERBOSE("%74s", "... ");
         goto cleanup;
     }
 
@@ -337,8 +335,8 @@ cpuTestBaseline(const void *arg)
         virResetLastError();
         if (!baseline) {
             ret = 0;
-        } else if (virTestGetVerbose()) {
-            fprintf(stderr, "\n%-70s... ",
+        } else {
+            VIR_TEST_VERBOSE("\n%-70s... ",
                     "cpuBaseline was expected to fail but it succeeded");
         }
         goto cleanup;
@@ -364,11 +362,9 @@ cpuTestBaseline(const void *arg)
         cmp = cpuCompare(cpus[i], baseline, false);
         if (cmp != VIR_CPU_COMPARE_SUPERSET &&
             cmp != VIR_CPU_COMPARE_IDENTICAL) {
-            if (virTestGetVerbose()) {
-                fprintf(stderr,
-                        "\nbaseline CPU is incompatible with CPU %zu\n", i);
-                fprintf(stderr, "%74s", "... ");
-            }
+            VIR_TEST_VERBOSE("\nbaseline CPU is incompatible with CPU %zu\n",
+                             i);
+            VIR_TEST_VERBOSE("%74s", "... ");
             ret = -1;
             goto cleanup;
         }
@@ -438,13 +434,11 @@ cpuTestHasFeature(const void *arg)
         virResetLastError();
 
     if (data->result != result) {
-        if (virTestGetVerbose()) {
-            fprintf(stderr, "\nExpected result %s, got %s\n",
-                    cpuTestBoolWithErrorStr(data->result),
-                    cpuTestBoolWithErrorStr(result));
-            /* Pad to line up with test name ... in virTestRun */
-            fprintf(stderr, "%74s", "... ");
-        }
+        VIR_TEST_VERBOSE("\nExpected result %s, got %s\n",
+            cpuTestBoolWithErrorStr(data->result),
+            cpuTestBoolWithErrorStr(result));
+        /* Pad to line up with test name ... in virTestRun */
+        VIR_TEST_VERBOSE("%74s", "... ");
         goto cleanup;
     }
 
@@ -483,7 +477,7 @@ cpuTestRun(const char *name, const struct data *data)
             char *log;
             if ((log = virtTestLogContentAndReset()) &&
                  strlen(log) > 0)
-                fprintf(stderr, "\n%s\n", log);
+                VIR_TEST_DEBUG("\n%s\n", log);
             VIR_FREE(log);
         }
 

@@ -59,7 +59,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
-        fprintf(stderr, "ABI stability check failed on %s", xml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto fail;
     }
 
@@ -121,8 +121,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!virtTestOOMActive()) {
         if (!!virGetLastError() != expectError) {
-            if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
-                fprintf(stderr, "\n%s", log);
+            if ((log = virtTestLogContentAndReset()))
+                VIR_TEST_DEBUG("\n%s", log);
             goto fail;
         }
 

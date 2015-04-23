@@ -64,22 +64,17 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto fail;
         if (flags & FLAG_EXPECT_WARNING) {
             if (*log) {
-                if (virTestGetDebug() > 1)
-                    fprintf(stderr,
-                            "Got expected warning from "
+                VIR_TEST_DEBUG("Got expected warning from "
                             "qemuParseCommandLineString:\n%s",
                             log);
             } else {
-                if (virTestGetDebug())
-                    fprintf(stderr, "qemuParseCommandLineString "
-                            "should have logged a warning\n");
+                VIR_TEST_DEBUG("qemuParseCommandLineString "
+                        "should have logged a warning\n");
                 goto fail;
             }
         } else { /* didn't expect a warning */
             if (*log) {
-                if (virTestGetDebug())
-                    fprintf(stderr,
-                            "Got unexpected warning from "
+                VIR_TEST_DEBUG("Got unexpected warning from "
                             "qemuParseCommandLineString:\n%s",
                             log);
                 goto fail;
@@ -88,7 +83,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
-        fprintf(stderr, "ABI stability check failed on %s", xml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto fail;
     }
 

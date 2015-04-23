@@ -78,6 +78,18 @@ unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
 
+# define VIR_TEST_DEBUG(...)                    \
+    do {                                        \
+        if (virTestGetDebug())                  \
+            fprintf(stderr, __VA_ARGS__);       \
+    } while (0)
+
+# define VIR_TEST_VERBOSE(...)                  \
+    do {                                        \
+        if (virTestGetVerbose())                \
+            fprintf(stderr, __VA_ARGS__);       \
+    } while (0)
+
 char *virtTestLogContentAndReset(void);
 
 void virtTestQuiesceLibvirtErrors(bool always);

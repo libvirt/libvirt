@@ -49,7 +49,7 @@ static void init_syms(void)
     realsocket = dlsym(RTLD_NEXT, "socket");
 
     if (!realsocket) {
-        fprintf(stderr, "Unable to find 'socket' symbol\n");
+        VIR_TEST_DEBUG("Unable to find 'socket' symbol\n");
         abort();
     }
 
@@ -132,54 +132,47 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
     if (virPortAllocatorAcquire(alloc, &p1) < 0)
         goto cleanup;
     if (p1 != 5901) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5901, got %d", p1);
+        VIR_TEST_DEBUG("Expected 5901, got %d", p1);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p2) < 0)
         goto cleanup;
     if (p2 != 5902) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5902, got %d", p2);
+        VIR_TEST_DEBUG("Expected 5902, got %d", p2);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p3) < 0)
         goto cleanup;
     if (p3 != 5903) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5903, got %d", p3);
+        VIR_TEST_DEBUG("Expected 5903, got %d", p3);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p4) < 0)
         goto cleanup;
     if (p4 != 5907) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5907, got %d", p4);
+        VIR_TEST_DEBUG("Expected 5907, got %d", p4);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p5) < 0)
         goto cleanup;
     if (p5 != 5908) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5908, got %d", p5);
+        VIR_TEST_DEBUG("Expected 5908, got %d", p5);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p6) < 0)
         goto cleanup;
     if (p6 != 5909) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5909, got %d", p6);
+        VIR_TEST_DEBUG("Expected 5909, got %d", p6);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p7) == 0) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected error, got %d", p7);
+        VIR_TEST_DEBUG("Expected error, got %d", p7);
         goto cleanup;
     }
 
@@ -203,24 +196,21 @@ static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
     if (virPortAllocatorAcquire(alloc, &p1) < 0)
         goto cleanup;
     if (p1 != 5901) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5901, got %d", p1);
+        VIR_TEST_DEBUG("Expected 5901, got %d", p1);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p2) < 0)
         goto cleanup;
     if (p2 != 5902) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5902, got %d", p2);
+        VIR_TEST_DEBUG("Expected 5902, got %d", p2);
         goto cleanup;
     }
 
     if (virPortAllocatorAcquire(alloc, &p3) < 0)
         goto cleanup;
     if (p3 != 5903) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5903, got %d", p3);
+        VIR_TEST_DEBUG("Expected 5903, got %d", p3);
         goto cleanup;
     }
 
@@ -231,8 +221,7 @@ static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
     if (virPortAllocatorAcquire(alloc, &p4) < 0)
         goto cleanup;
     if (p4 != 5902) {
-        if (virTestGetDebug())
-            fprintf(stderr, "Expected 5902, got %d", p4);
+        VIR_TEST_DEBUG("Expected 5902, got %d", p4);
         goto cleanup;
     }
 

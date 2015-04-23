@@ -359,12 +359,12 @@ mymain(void)
     char *fakesysfsdir;
 
     if (VIR_STRDUP_QUIET(fakesysfsdir, FAKESYSFSDIRTEMPLATE) < 0) {
-        fprintf(stderr, "Out of memory\n");
+        VIR_TEST_DEBUG("Out of memory\n");
         abort();
     }
 
     if (!mkdtemp(fakesysfsdir)) {
-        fprintf(stderr, "Cannot create fakesysfsdir");
+        VIR_TEST_DEBUG("Cannot create fakesysfsdir");
         abort();
     }
 

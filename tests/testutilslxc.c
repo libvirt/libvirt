@@ -44,7 +44,7 @@ virCapsPtr testLXCCapsInit(void)
         if (!caps_str)
             goto error;
 
-        fprintf(stderr, "LXC driver capabilities:\n%s", caps_str);
+        VIR_TEST_DEBUG("LXC driver capabilities:\n%s", caps_str);
 
         VIR_FREE(caps_str);
     }

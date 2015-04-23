@@ -282,7 +282,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
-        fprintf(stderr, "ABI stability check failed on %s", xml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto out;
     }
 
@@ -353,22 +353,20 @@ static int testCompareXMLToArgvFiles(const char *xml,
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;
-            if (virTestGetDebug() > 1)
-                fprintf(stderr, "Got expected error: %s\n",
-                        virGetLastErrorMessage());
+            VIR_TEST_DEBUG("Got expected error: %s\n",
+                    virGetLastErrorMessage());
             virResetLastError();
         }
         goto out;
     } else if (flags & FLAG_EXPECT_FAILURE) {
-        if (virTestGetDebug())
-            fprintf(stderr, "qemuBuildCommandLine should have failed\n");
+        VIR_TEST_DEBUG("qemuBuildCommandLine should have failed\n");
         goto out;
     }
 
     if (!virtTestOOMActive() &&
         (!!virGetLastError() != !!(flags & FLAG_EXPECT_ERROR))) {
-        if (virTestGetDebug() && (log = virtTestLogContentAndReset()))
-            fprintf(stderr, "\n%s", log);
+        if ((log = virtTestLogContentAndReset()))
+            VIR_TEST_DEBUG("\n%s", log);
         goto out;
     }
 

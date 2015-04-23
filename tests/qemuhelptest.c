@@ -90,10 +90,8 @@ static int testHelpStrParsing(const void *data)
         goto cleanup;
 
     if (STRNEQ(got, expected)) {
-        if (virTestGetVerbose() || virTestGetDebug())
-            fprintf(stderr,
-                    "%s: computed flags do not match: got %s, expected %s\n",
-                    info->name, got, expected);
+        VIR_TEST_DEBUG("%s: computed flags do not match: got %s, expected %s\n",
+            info->name, got, expected);
 
         if (virTestGetDebug())
             printMismatchedFlags(flags, info->flags);

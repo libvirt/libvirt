@@ -43,13 +43,11 @@ static int testEscapeArg(const void *data ATTRIBUTE_UNUSED)
     for (i = 0; i < ARRAY_CARDINALITY(escapeStrings); ++i) {
         escaped = qemuMonitorEscapeArg(escapeStrings[i].unescaped);
         if (!escaped) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nUnescaped string [%s]\n",
-                        escapeStrings[i].unescaped);
-                fprintf(stderr, "Expect result [%s]\n",
-                        escapeStrings[i].escaped);
-                fprintf(stderr, "Actual result [(null)]\n");
-            }
+            VIR_TEST_DEBUG("\nUnescaped string [%s]\n",
+                    escapeStrings[i].unescaped);
+            VIR_TEST_DEBUG("Expect result [%s]\n",
+                    escapeStrings[i].escaped);
+            VIR_TEST_DEBUG("Actual result [(null)]\n");
             return -1;
         }
         if (STRNEQ(escapeStrings[i].escaped, escaped)) {
@@ -70,13 +68,11 @@ static int testUnescapeArg(const void *data ATTRIBUTE_UNUSED)
     for (i = 0; i < ARRAY_CARDINALITY(escapeStrings); ++i) {
         unescaped = qemuMonitorUnescapeArg(escapeStrings[i].escaped);
         if (!unescaped) {
-            if (virTestGetDebug() > 0) {
-                fprintf(stderr, "\nEscaped string [%s]\n",
-                        escapeStrings[i].escaped);
-                fprintf(stderr, "Expect result [%s]\n",
-                        escapeStrings[i].unescaped);
-                fprintf(stderr, "Actual result [(null)]\n");
-            }
+            VIR_TEST_DEBUG("\nEscaped string [%s]\n",
+                    escapeStrings[i].escaped);
+            VIR_TEST_DEBUG("Expect result [%s]\n",
+                    escapeStrings[i].unescaped);
+            VIR_TEST_DEBUG("Actual result [(null)]\n");
             return -1;
         }
         if (STRNEQ(escapeStrings[i].unescaped, unescaped)) {
