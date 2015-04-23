@@ -2725,7 +2725,8 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
 
 static int prlsdkAddNet(PRL_HANDLE sdkdom,
                         parallelsConnPtr privconn,
-                        virDomainNetDefPtr net)
+                        virDomainNetDefPtr net,
+                        bool isCt)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
@@ -2757,19 +2758,25 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     pret = PrlVmDevNet_SetMacAddress(sdknet, macstr);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (STREQ(net->model, "rtl8139")) {
-        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);
-    } else if (STREQ(net->model, "e1000")) {
-        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_E1000);
-    } else if (STREQ(net->model, "virtio")) {
-        pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_VIRTIO);
+    if (isCt) {
+        if (net->model)
+             VIR_WARN("Setting network adapter for containers is not "
+                      "supported by Parallels Cloud Server.");
     } else {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+        if (STREQ(net->model, "rtl8139")) {
+            pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);
+        } else if (STREQ(net->model, "e1000")) {
+            pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_E1000);
+        } else if (STREQ(net->model, "virtio")) {
+            pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_VIRTIO);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified network adapter model is not "
                          "supported by Parallels Cloud Server."));
-        goto cleanup;
+            goto cleanup;
+        }
+        prlsdkCheckRetGoto(pret, cleanup);
     }
-    prlsdkCheckRetGoto(pret, cleanup);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
@@ -3153,7 +3160,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i]) < 0)
+        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i], IS_CT(def)) < 0)
            goto error;
     }
 
