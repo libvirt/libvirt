@@ -667,9 +667,12 @@ static int
 xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
 {
     const char *listenAddr = NULL;
+    virDomainGraphicsDefPtr graphics;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        if (def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        graphics = def->graphics[0];
+
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             /* set others to false but may not be necessary */
             if (xenConfigSetInt(conf, "sdl", 0) < 0)
                 return -1;
@@ -681,37 +684,37 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
                 return -1;
 
             if (xenConfigSetInt(conf, "spiceport",
-                                def->graphics[0]->data.spice.port) < 0)
+                                graphics->data.spice.port) < 0)
                 return -1;
 
             if (xenConfigSetInt(conf, "spicetls_port",
-                                def->graphics[0]->data.spice.tlsPort) < 0)
+                                graphics->data.spice.tlsPort) < 0)
                 return -1;
 
-            if (def->graphics[0]->data.spice.auth.passwd) {
+            if (graphics->data.spice.auth.passwd) {
                 if (xenConfigSetInt(conf, "spicedisable_ticketing", 1) < 0)
                     return -1;
 
-                if (def->graphics[0]->data.spice.auth.passwd &&
+                if (graphics->data.spice.auth.passwd &&
                     xenConfigSetString(conf, "spicepasswd",
-                                def->graphics[0]->data.spice.auth.passwd) < 0)
+                                graphics->data.spice.auth.passwd) < 0)
                     return -1;
             }
 
-            listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
             if (listenAddr &&
                 xenConfigSetString(conf, "spicehost", listenAddr) < 0)
                 return -1;
 
             if (xenConfigSetInt(conf, "spiceagent_mouse",
-                                def->graphics[0]->data.spice.mousemode) < 0)
+                                graphics->data.spice.mousemode) < 0)
                 return -1;
 
-            if (def->graphics[0]->data.spice.copypaste) {
+            if (graphics->data.spice.copypaste) {
                 if (xenConfigSetInt(conf, "spicedvagent", 1) < 0)
                     return -1;
                 if (xenConfigSetInt(conf, "spice_clipboard_sharing",
-                                def->graphics[0]->data.spice.copypaste) < 0)
+                                graphics->data.spice.copypaste) < 0)
                 return -1;
             }
         }
