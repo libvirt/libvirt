@@ -91,6 +91,21 @@ bool virtTestOOMActive(void)
     return testOOMActive;
 }
 
+static unsigned int
+virTestGetFlag(const char *name)
+{
+    char *flagStr;
+    unsigned int flag;
+
+    if ((flagStr = getenv(name)) == NULL)
+        return 0;
+
+    if (virStrToLong_ui(flagStr, NULL, 10, &flag) < 0)
+        return 0;
+
+    return flag;
+}
+
 #ifdef TEST_OOM_TRACE
 static void virTestAllocHook(int nalloc ATTRIBUTE_UNUSED,
                              void *opaque ATTRIBUTE_UNUSED)
@@ -607,21 +622,30 @@ virtTestCompareToFile(const char *strcontent,
     int ret = -1;
     char *filecontent = NULL;
     char *fixedcontent = NULL;
+    bool regenerate = !!virTestGetFlag("VIR_TEST_REGENERATE_OUTPUT");
 
-    if (virtTestLoadFile(filename, &filecontent) < 0)
+    if (virtTestLoadFile(filename, &filecontent) < 0 && !regenerate)
         goto failure;
 
-    if (filecontent[strlen(filecontent) - 1] == '\n' &&
+    if (filecontent &&
+        filecontent[strlen(filecontent) - 1] == '\n' &&
         strcontent[strlen(strcontent) - 1] != '\n') {
         if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
             goto failure;
     }
 
-    if (STRNEQ(fixedcontent ? fixedcontent : strcontent, filecontent)) {
+    if (STRNEQ_NULLABLE(fixedcontent ? fixedcontent : strcontent,
+                        filecontent)) {
+        if (regenerate) {
+            if (virFileWriteStr(filename, strcontent, 0666) < 0)
+                goto failure;
+            goto out;
+        }
         virtTestDifference(stderr, strcontent, filecontent);
         goto failure;
     }
 
+ out:
     ret = 0;
  failure:
     VIR_FREE(fixedcontent);
@@ -691,21 +715,6 @@ virtTestLogContentAndReset(void)
     return ret;
 }
 
-
-static unsigned int
-virTestGetFlag(const char *name)
-{
-    char *flagStr;
-    unsigned int flag;
-
-    if ((flagStr = getenv(name)) == NULL)
-        return 0;
-
-    if (virStrToLong_ui(flagStr, NULL, 10, &flag) < 0)
-        return 0;
-
-    return flag;
-}
 
 unsigned int
 virTestGetDebug(void)

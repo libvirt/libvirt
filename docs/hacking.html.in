@@ -164,6 +164,18 @@
 <pre>
   ./qemuxml2xmltest
 </pre>
+
+        <p>
+          If you are adding new test cases, or making changes that alter
+          existing test output, you can use the environment variable
+          VIR_TEST_REGENERATE_OUTPUT to quickly update the saved test data.
+          Of course you still need to review the changes VERY CAREFULLY to
+          ensure they are correct.
+        </p>
+<pre>
+  VIR_TEST_REGENERATE_OUTPUT=1 ./qemuxml2argvtest
+</pre>
+
         <p>There is also a <code>./run</code> script at the top level,
           to make it easier to run programs that have not yet been
           installed, as well as to wrap invocations of various tests
