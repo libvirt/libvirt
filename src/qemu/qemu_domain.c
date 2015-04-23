@@ -288,6 +288,13 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 jobInfo->timeElapsed) < 0)
         goto error;
 
+    if (jobInfo->timeDeltaSet &&
+        jobInfo->timeElapsed > jobInfo->timeDelta &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_TIME_ELAPSED_NET,
+                                jobInfo->timeElapsed - jobInfo->timeDelta) < 0)
+        goto error;
+
     if (jobInfo->type == VIR_DOMAIN_JOB_BOUNDED &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_TIME_REMAINING,
@@ -298,6 +305,14 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DOWNTIME,
                                 status->downtime) < 0)
+        goto error;
+
+    if (status->downtime_set &&
+        jobInfo->timeDeltaSet &&
+        status->downtime > jobInfo->timeDelta &&
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DOWNTIME_NET,
+                                status->downtime - jobInfo->timeDelta) < 0)
         goto error;
 
     if (status->setup_time_set &&

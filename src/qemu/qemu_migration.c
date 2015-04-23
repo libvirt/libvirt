@@ -688,6 +688,9 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<started>%llu</started>\n", jobInfo->started);
     virBufferAsprintf(buf, "<stopped>%llu</stopped>\n", jobInfo->stopped);
+    virBufferAsprintf(buf, "<sent>%llu</sent>\n", jobInfo->sent);
+    if (jobInfo->timeDeltaSet)
+        virBufferAsprintf(buf, "<delta>%lld</delta>\n", jobInfo->timeDelta);
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_TIME_ELAPSED,
@@ -1046,11 +1049,15 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 
     virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);
     virXPathULongLong("string(./stopped[1])", ctxt, &jobInfo->stopped);
+    virXPathULongLong("string(./sent[1])", ctxt, &jobInfo->sent);
+    if (virXPathLongLong("string(./delta[1])", ctxt, &jobInfo->timeDelta) == 0)
+        jobInfo->timeDeltaSet = true;
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_ELAPSED "[1])",
                       ctxt, &jobInfo->timeElapsed);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_REMAINING "[1])",
                       ctxt, &jobInfo->timeRemaining);
+
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_DOWNTIME "[1])",
                           ctxt, &status->downtime) == 0)
         status->downtime_set = true;
@@ -3438,18 +3445,9 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
     /* Update total times with the values sent by the destination daemon */
     if (mig->jobInfo) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
-        if (priv->job.completed) {
-            qemuDomainJobInfoPtr jobInfo = priv->job.completed;
-            if (mig->jobInfo->status.downtime_set) {
-                jobInfo->status.downtime = mig->jobInfo->status.downtime;
-                jobInfo->status.downtime_set = true;
-            }
-            if (mig->jobInfo->timeElapsed)
-                jobInfo->timeElapsed = mig->jobInfo->timeElapsed;
-        } else {
-            priv->job.completed = mig->jobInfo;
-            mig->jobInfo = NULL;
-        }
+        VIR_FREE(priv->job.completed);
+        priv->job.completed = mig->jobInfo;
+        mig->jobInfo = NULL;
     }
 
     if (flags & VIR_MIGRATE_OFFLINE)
@@ -4041,6 +4039,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (priv->job.completed) {
         qemuDomainJobInfoUpdateTime(priv->job.completed);
         qemuDomainJobInfoUpdateDowntime(priv->job.completed);
+        ignore_value(virTimeMillisNow(&priv->job.completed->sent));
     }
 
     if (priv->job.current->type == VIR_DOMAIN_JOB_UNBOUNDED)
@@ -5164,8 +5163,13 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         if (mig->jobInfo) {
-            priv->job.completed = mig->jobInfo;
+            qemuDomainJobInfoPtr jobInfo = mig->jobInfo;
+            priv->job.completed = jobInfo;
             mig->jobInfo = NULL;
+            if (jobInfo->sent && virTimeMillisNow(&jobInfo->received) == 0) {
+                jobInfo->timeDelta = jobInfo->received - jobInfo->sent;
+                jobInfo->timeDeltaSet = true;
+            }
         }
 
         if (!(flags & VIR_MIGRATE_OFFLINE)) {

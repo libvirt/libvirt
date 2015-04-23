@@ -100,9 +100,19 @@ struct _qemuDomainJobInfo {
     virDomainJobType type;
     unsigned long long started; /* When the async job started */
     unsigned long long stopped; /* When the domain's CPUs were stopped */
+    unsigned long long sent; /* When the source sent status info to the
+                                destination (only for migrations). */
+    unsigned long long received; /* When the destination host received status
+                                    info from the source (migrations only). */
     /* Computed values */
     unsigned long long timeElapsed;
     unsigned long long timeRemaining;
+    long long timeDelta; /* delta = sent - received, i.e., the difference
+                            between the source and the destination time plus
+                            the time between the end of Perform phase on the
+                            source and the beginning of Finish phase on the
+                            destination. */
+    bool timeDeltaSet;
     /* Raw values from QEMU */
     qemuMonitorMigrationStatus status;
 };

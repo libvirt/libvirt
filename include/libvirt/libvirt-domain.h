@@ -2548,6 +2548,16 @@ int virDomainAbortJob(virDomainPtr dom);
 # define VIR_DOMAIN_JOB_TIME_ELAPSED             "time_elapsed"
 
 /**
+ * VIR_DOMAIN_JOB_TIME_ELAPSED_NET:
+ *
+ * virDomainGetJobStats field: time (ms) since the beginning of the
+ * migration job NOT including the time required to transfer control
+ * flow from the source host to the destination host,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_JOB_TIME_ELAPSED_NET         "time_elapsed_net"
+
+/**
  * VIR_DOMAIN_JOB_TIME_REMAINING:
  *
  * virDomainGetJobStats field: remaining time (ms) for VIR_DOMAIN_JOB_BOUNDED
@@ -2561,9 +2571,20 @@ int virDomainAbortJob(virDomainPtr dom);
  * VIR_DOMAIN_JOB_DOWNTIME:
  *
  * virDomainGetJobStats field: downtime (ms) that is expected to happen
- * during migration, as VIR_TYPED_PARAM_ULLONG.
+ * during migration, as VIR_TYPED_PARAM_ULLONG. The real computed downtime
+ * between the time guest CPUs were paused and the time they were resumed
+ * is reported for completed migration.
  */
 # define VIR_DOMAIN_JOB_DOWNTIME                 "downtime"
+
+/**
+ * VIR_DOMAIN_JOB_DOWNTIME_NET:
+ *
+ * virDomainGetJobStats field: real measured downtime (ms) NOT including
+ * the time required to transfer control flow from the source host to the
+ * destination host, as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_JOB_DOWNTIME_NET             "downtime_net"
 
 /**
  * VIR_DOMAIN_JOB_SETUP_TIME:

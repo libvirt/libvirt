@@ -5764,6 +5764,15 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_TIME_ELAPSED_NET,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed w/o network:"),
+                 value);
+    }
+
     if (info.type == VIR_DOMAIN_JOB_BOUNDED)
         vshPrint(ctl, "%-17s %-12llu ms\n", _("Time remaining:"),
                  info.timeRemaining);
@@ -5851,6 +5860,13 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
                      _("Expected downtime:"), value);
         }
     }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_DOWNTIME_NET,
+                                      &value)) < 0)
+        goto save_error;
+    else if (rc)
+        vshPrint(ctl, "%-17s %-12llu ms\n", _("Downtime w/o network:"), value);
 
     if ((rc = virTypedParamsGetULLong(params, nparams,
                                       VIR_DOMAIN_JOB_SETUP_TIME,
