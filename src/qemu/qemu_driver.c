@@ -2002,20 +2002,13 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    bool useAgent = false;
+    bool useAgent = false, agentRequested, acpiRequested;
     bool isReboot = true;
+    bool agentForced;
     int agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
                   VIR_DOMAIN_REBOOT_GUEST_AGENT, -1);
-
-    /* At most one of these two flags should be set.  */
-    if ((flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN) &&
-        (flags & VIR_DOMAIN_REBOOT_GUEST_AGENT)) {
-        virReportInvalidArg(flags, "%s",
-                            _("flags for acpi power button and guest agent are mutually exclusive"));
-        return -1;
-    }
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -2028,38 +2021,25 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
     priv = vm->privateData;
+    agentRequested = flags & VIR_DOMAIN_REBOOT_GUEST_AGENT;
+    acpiRequested  = flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN;
+
+    /* Prefer agent unless we were requested to not to. */
+    if (agentRequested || (!flags && priv->agent))
+        useAgent = true;
 
     if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if ((flags & VIR_DOMAIN_REBOOT_GUEST_AGENT) ||
-        (!(flags & VIR_DOMAIN_REBOOT_ACPI_POWER_BTN) &&
-         priv->agent))
-        useAgent = true;
-
-    if (!useAgent) {
-#if WITH_YAJL
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Reboot is not supported with this QEMU binary"));
-                goto cleanup;
-            }
-        } else {
-#endif
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Reboot is not supported without the JSON monitor"));
-            goto cleanup;
-#if WITH_YAJL
-        }
-#endif
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (useAgent && !qemuDomainAgentAvailable(vm, true))
-        goto endjob;
+    agentForced = agentRequested && !acpiRequested;
+    if (!qemuDomainAgentAvailable(vm, agentForced)) {
+        if (agentForced)
+            goto endjob;
+        useAgent = false;
+    }
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2067,18 +2047,38 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
+    qemuDomainSetFakeReboot(driver, vm, isReboot);
+
     if (useAgent) {
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentShutdown(priv->agent, agentFlag);
         qemuDomainObjExitAgent(vm);
-    } else {
+    }
+
+    /* If we are not enforced to use just an agent, try ACPI
+     * shutdown as well in case agent did not succeed.
+     */
+    if ((!useAgent) ||
+        (ret < 0 && (acpiRequested || !flags))) {
+#if WITH_YAJL
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("ACPI reboot is not supported with this QEMU binary"));
+                goto endjob;
+            }
+        } else {
+#endif
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("ACPI reboot is not supported without the JSON monitor"));
+            goto endjob;
+#if WITH_YAJL
+        }
+#endif
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
-
-        if (ret == 0)
-            qemuDomainSetFakeReboot(driver, vm, isReboot);
     }
 
  endjob:
