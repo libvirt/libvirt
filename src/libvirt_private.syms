@@ -328,6 +328,7 @@ virDomainIOThreadIDAdd;
 virDomainIOThreadIDDefFree;
 virDomainIOThreadIDDel;
 virDomainIOThreadIDFind;
+virDomainIOThreadSchedDelId;
 virDomainLeaseDefFree;
 virDomainLeaseIndex;
 virDomainLeaseInsert;

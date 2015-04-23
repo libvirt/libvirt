@@ -2617,6 +2617,7 @@ virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(virDomainDefPtr def,
 virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
                                                  unsigned int iothread_id);
 void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
+void virDomainIOThreadSchedDelId(virDomainDefPtr def, unsigned int iothread_id);
 
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 

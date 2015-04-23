@@ -17468,6 +17468,29 @@ virDomainIOThreadIDDel(virDomainDefPtr def,
     }
 }
 
+void
+virDomainIOThreadSchedDelId(virDomainDefPtr def,
+                            unsigned int iothreadid)
+{
+    size_t i;
+
+    if (!def->cputune.iothreadsched || !def->cputune.niothreadsched)
+        return;
+
+    for (i = 0; i < def->cputune.niothreadsched; i++) {
+        if (virBitmapIsBitSet(def->cputune.iothreadsched[i].ids, iothreadid)) {
+            ignore_value(virBitmapClearBit(def->cputune.iothreadsched[i].ids,
+                                           iothreadid));
+            if (virBitmapIsAllClear(def->cputune.iothreadsched[i].ids)) {
+                virBitmapFree(def->cputune.iothreadsched[i].ids);
+                VIR_DELETE_ELEMENT(def->cputune.iothreadsched, i,
+                                   def->cputune.niothreadsched);
+            }
+            return;
+        }
+    }
+}
+
 virDomainPinDefPtr
 virDomainPinFind(virDomainPinDefPtr *def,
                  int npin,
