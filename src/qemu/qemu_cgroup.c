@@ -1110,10 +1110,10 @@ qemuSetupCgroupForEmulator(virDomainObjPtr vm)
     if (virCgroupMoveTask(priv->cgroup, cgroup_emulator) < 0)
         goto cleanup;
 
-    if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
-        cpumask = priv->autoCpuset;
-    else if (def->cputune.emulatorpin)
+    if (def->cputune.emulatorpin)
         cpumask = def->cputune.emulatorpin->cpumask;
+    else if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+        cpumask = priv->autoCpuset;
     else if (def->cpumask)
         cpumask = def->cpumask;
 
