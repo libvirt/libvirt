@@ -199,16 +199,22 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
             }
 
             if (xenConfigGetBool(conf, "spiceagent_mouse",
-                                 &graphics->data.spice.mousemode, 0) < 0)
-                goto cleanup;
-            if (xenConfigGetBool(conf, "spicedvagent", &val, 0) < 0)
+                                 &val, 0) < 0)
                 goto cleanup;
             if (val) {
-                if (xenConfigGetBool(conf, "spice_clipboard_sharing",
-                                     &graphics->data.spice.copypaste,
-                                     0) < 0)
-                    goto cleanup;
+                graphics->data.spice.mousemode =
+                    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT;
+            } else {
+                graphics->data.spice.mousemode =
+                    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER;
             }
+
+            if (xenConfigGetBool(conf, "spice_clipboard_sharing", &val, 0) < 0)
+                goto cleanup;
+            if (val)
+                graphics->data.spice.copypaste = VIR_TRISTATE_BOOL_YES;
+            else
+                graphics->data.spice.copypaste = VIR_TRISTATE_BOOL_NO;
 
             if (VIR_ALLOC_N(def->graphics, 1) < 0)
                 goto cleanup;
@@ -708,16 +714,36 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
                     return -1;
             }
 
-            if (xenConfigSetInt(conf, "spiceagent_mouse",
-                                graphics->data.spice.mousemode) < 0)
-                return -1;
+            if (graphics->data.spice.mousemode) {
+                switch (graphics->data.spice.mousemode) {
+                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
+                    if (xenConfigSetInt(conf, "spiceagent_mouse", 0) < 0)
+                        return -1;
+                    break;
+                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
+                    if (xenConfigSetInt(conf, "spiceagent_mouse", 1) < 0)
+                        return -1;
+                    /*
+                     * spicevdagent must be enabled if using client
+                     * mode mouse
+                     */
+                    if (xenConfigSetInt(conf, "spicevdagent", 1) < 0)
+                        return -1;
+                    break;
+                default:
+                    break;
+                }
+            }
 
-            if (graphics->data.spice.copypaste) {
-                if (xenConfigSetInt(conf, "spicedvagent", 1) < 0)
+            if (graphics->data.spice.copypaste == VIR_TRISTATE_BOOL_YES) {
+                if (xenConfigSetInt(conf, "spice_clipboard_sharing", 1) < 0)
                     return -1;
-                if (xenConfigSetInt(conf, "spice_clipboard_sharing",
-                                graphics->data.spice.copypaste) < 0)
-                return -1;
+                /*
+                 * spicevdagent must be enabled if spice_clipboard_sharing
+                 * is enabled
+                 */
+                if (xenConfigSetInt(conf, "spicevdagent", 1) < 0)
+                    return -1;
             }
         }
     }

@@ -41,8 +41,8 @@
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice' port='590' tlsPort='500' autoport='no' listen='127.0.0.1' passwd='thebeast'>
       <listen type='address' address='127.0.0.1'/>
-      <mouse mode='server'/>
-      <clipboard copypaste='no'/>
+      <mouse mode='client'/>
+      <clipboard copypaste='yes'/>
     </graphics>
   </devices>
 </domain>
