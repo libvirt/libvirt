@@ -1151,12 +1151,11 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
         dev->data.chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
         !dev->data.chr->source.data.nix.path && cfg) {
-
-        if (virAsprintf(&dev->data.chr->source.data.nix.path,
-                        "%s/channel/target/%s.%s",
-                        cfg->libDir, def->name,
-                        dev->data.chr->target.name) < 0)
+        if (virAsprintf(&dev->data.chr->source.data.nix.path, "%s/%s.%s",
+                        cfg->channelTargetDir,
+                        def->name, dev->data.chr->target.name) < 0)
             goto cleanup;
+
         dev->data.chr->source.data.nix.listen = true;
     }
 
