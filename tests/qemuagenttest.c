@@ -170,7 +170,6 @@ testQemuAgentGetFSInfo(const void *data)
     virCapsPtr caps = testQemuCapsInit();
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
     char *domain_filename = NULL;
-    char *domain_xml = NULL;
     virDomainDefPtr def = NULL;
     virDomainFSInfoPtr *info = NULL;
     int ret = -1, ninfo = 0, i;
@@ -182,11 +181,8 @@ testQemuAgentGetFSInfo(const void *data)
                     abs_srcdir) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(domain_filename, &domain_xml) < 0)
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(domain_xml, caps, xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+    if (!(def = virDomainDefParseFile(domain_filename, caps, xmlopt,
+                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
@@ -297,7 +293,6 @@ testQemuAgentGetFSInfo(const void *data)
         virDomainFSInfoFree(info[i]);
     VIR_FREE(info);
     VIR_FREE(domain_filename);
-    VIR_FREE(domain_xml);
     virObjectUnref(caps);
     virDomainDefFree(def);
     qemuMonitorTestFree(test);

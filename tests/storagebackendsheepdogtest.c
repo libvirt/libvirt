@@ -50,13 +50,9 @@ test_node_info_parser(collie_test test, char *poolxml)
 {
     int ret = -1;
     char *output = NULL;
-    char *poolXmlData = NULL;
     virStoragePoolDefPtr pool = NULL;
 
-    if (virtTestLoadFile(poolxml, &poolXmlData) < 0)
-        goto cleanup;
-
-    if (!(pool = virStoragePoolDefParseString(poolXmlData)))
+    if (!(pool = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
 
     if (VIR_STRDUP(output, test.output) < 0)
@@ -77,7 +73,6 @@ test_node_info_parser(collie_test test, char *poolxml)
 
  cleanup:
     VIR_FREE(output);
-    VIR_FREE(poolXmlData);
     virStoragePoolDefFree(pool);
     return ret;
 }
@@ -86,21 +81,14 @@ static int
 test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
 {
     int ret = -1;
-    char *poolXmlData = NULL;
-    char *volXmlData = NULL;
     char *output = NULL;
     virStoragePoolDefPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
 
-    if (virtTestLoadFile(poolxml, &poolXmlData) < 0)
-        goto cleanup;
-    if (virtTestLoadFile(volxml, &volXmlData) < 0)
+    if (!(pool = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
 
-    if (!(pool = virStoragePoolDefParseString(poolXmlData)))
-        goto cleanup;
-
-    if (!(vol = virStorageVolDefParseString(pool, volXmlData, 0)))
+    if (!(vol = virStorageVolDefParseFile(pool, volxml, 0)))
         goto cleanup;
 
     if (VIR_STRDUP(output, test.output) < 0)
@@ -121,8 +109,6 @@ test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
 
  cleanup:
     VIR_FREE(output);
-    VIR_FREE(poolXmlData);
-    VIR_FREE(volXmlData);
     virStoragePoolDefFree(pool);
     virStorageVolDefFree(vol);
     return ret;

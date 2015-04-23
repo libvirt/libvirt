@@ -182,7 +182,6 @@ static virDomainDefPtr
 testSELinuxLoadDef(const char *testname)
 {
     char *xmlfile = NULL;
-    char *xmlstr = NULL;
     virDomainDefPtr def = NULL;
     size_t i;
 
@@ -190,10 +189,7 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (virFileReadAll(xmlfile, 1024*1024, &xmlstr) < 0)
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(xmlstr, caps, xmlopt, 0)))
+    if (!(def = virDomainDefParseFile(xmlfile, caps, xmlopt, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -230,7 +226,6 @@ testSELinuxLoadDef(const char *testname)
 
  cleanup:
     VIR_FREE(xmlfile);
-    VIR_FREE(xmlstr);
     return def;
 }
 

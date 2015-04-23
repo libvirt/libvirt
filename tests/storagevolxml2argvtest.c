@@ -43,10 +43,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
                           int imgformat,
                           unsigned long parse_flags)
 {
-    char *volXmlData = NULL;
-    char *poolXmlData = NULL;
-    char *inputpoolXmlData = NULL;
-    char *inputvolXmlData = NULL;
     char *expectedCmdline = NULL;
     char *actualCmdline = NULL;
     int ret = -1;
@@ -65,34 +61,24 @@ testCompareXMLToArgvFiles(bool shouldFail,
     if (!(conn = virGetConnect()))
         goto cleanup;
 
-    if (virtTestLoadFile(poolxml, &poolXmlData) < 0)
-        goto cleanup;
-    if (virtTestLoadFile(volxml, &volXmlData) < 0)
-        goto cleanup;
-    if (inputvolxml &&
-        virtTestLoadFile(inputvolxml, &inputvolXmlData) < 0)
-        goto cleanup;
-
-    if (!(pool = virStoragePoolDefParseString(poolXmlData)))
+    if (!(pool = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
 
     poolobj.def = pool;
 
     if (inputpoolxml) {
-        if (virtTestLoadFile(inputpoolxml, &inputpoolXmlData) < 0)
-            goto cleanup;
-        if (!(inputpool = virStoragePoolDefParseString(inputpoolXmlData)))
+        if (!(inputpool = virStoragePoolDefParseFile(inputpoolxml)))
             goto cleanup;
     }
 
     if (inputvolxml)
         parse_flags |= VIR_VOL_XML_PARSE_NO_CAPACITY;
 
-    if (!(vol = virStorageVolDefParseString(pool, volXmlData, parse_flags)))
+    if (!(vol = virStorageVolDefParseFile(pool, volxml, parse_flags)))
         goto cleanup;
 
     if (inputvolxml &&
-        !(inputvol = virStorageVolDefParseString(inputpool, inputvolXmlData, 0)))
+        !(inputvol = virStorageVolDefParseFile(inputpool, inputvolxml, 0)))
         goto cleanup;
 
     testSetVolumeType(vol, pool);
@@ -133,10 +119,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
     VIR_FREE(expectedCmdline);
-    VIR_FREE(inputpoolXmlData);
-    VIR_FREE(poolXmlData);
-    VIR_FREE(volXmlData);
-    VIR_FREE(inputvolXmlData);
     virObjectUnref(conn);
     return ret;
 }

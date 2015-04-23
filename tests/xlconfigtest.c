@@ -48,7 +48,6 @@ static virDomainXMLOptionPtr xmlopt;
 static int
 testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
 {
-    char *xmlData = NULL;
     char *xmcfgData = NULL;
     char *gotxmcfgData = NULL;
     virConfPtr conf = NULL;
@@ -63,14 +62,11 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (virtTestLoadFile(xml, &xmlData) < 0)
-        goto fail;
-
     if (virtTestLoadFile(xmcfg, &xmcfgData) < 0)
         goto fail;
 
-    if (!(def = virDomainDefParseString(xmlData, caps, xmlopt,
-                                        VIR_DOMAIN_XML_INACTIVE)))
+    if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
+                                      VIR_DOMAIN_XML_INACTIVE)))
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
@@ -93,7 +89,6 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     ret = 0;
 
  fail:
-    VIR_FREE(xmlData);
     VIR_FREE(xmcfgData);
     VIR_FREE(gotxmcfgData);
     if (conf)

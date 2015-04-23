@@ -43,7 +43,6 @@ struct testGetFilesystemData {
 static int testGetFilesystem(const void *opaque)
 {
     int ret = -1;
-    char *xmlData = NULL;
     virDomainDefPtr def = NULL;
     char *filename = NULL;
     const struct testGetFilesystemData *data = opaque;
@@ -53,10 +52,7 @@ static int testGetFilesystem(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(filename, &xmlData) < 0)
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(xmlData, caps, xmlopt, 0)))
+    if (!(def = virDomainDefParseFile(filename, caps, xmlopt, 0)))
         goto cleanup;
 
     fsdef = virDomainGetFilesystemForTarget(def,
@@ -79,7 +75,6 @@ static int testGetFilesystem(const void *opaque)
 
  cleanup:
     virDomainDefFree(def);
-    VIR_FREE(xmlData);
     VIR_FREE(filename);
     return ret;
 }
