@@ -164,6 +164,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         if (virAsprintf(&cfg->channelTargetDir,
                         "%s/channel/target", cfg->libDir) < 0)
             goto error;
+        if (virAsprintf(&cfg->nvramDir, "%s/nvram", cfg->libDir) < 0)
+            goto error;
     } else {
         char *rundir;
         char *cachedir;
@@ -205,6 +207,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->channelTargetDir,
                         "%s/qemu/channel/target", cfg->configBaseDir) < 0)
+            goto error;
+        if (virAsprintf(&cfg->nvramDir,
+                        "%s/qemu/nvram", cfg->configBaseDir) < 0)
             goto error;
     }
 
@@ -296,6 +301,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->saveDir);
     VIR_FREE(cfg->snapshotDir);
     VIR_FREE(cfg->channelTargetDir);
+    VIR_FREE(cfg->nvramDir);
 
     VIR_FREE(cfg->vncTLSx509certdir);
     VIR_FREE(cfg->vncListen);

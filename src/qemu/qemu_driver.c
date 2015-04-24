@@ -708,6 +708,11 @@ qemuStateInitialize(bool privileged,
                   virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+    if (virFileMakePath(cfg->nvramDir) < 0) {
+        VIR_ERROR(_("Failed to create nvram dir '%s': %s"),
+                  cfg->nvramDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        goto error;
+    }
 
     qemu_driver->qemuImgBinary = virFindFileInPath("kvm-img");
     if (!qemu_driver->qemuImgBinary)
@@ -821,6 +826,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->channelTargetDir, (int) cfg->user,
+                                 (int) cfg->group);
+            goto error;
+        }
+        if (chown(cfg->nvramDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->nvramDir, (int) cfg->user,
                                  (int) cfg->group);
             goto error;
         }
