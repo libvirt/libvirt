@@ -788,6 +788,14 @@ qemuStateInitialize(bool privileged,
                                  (int) cfg->group);
             goto error;
         }
+        if (chown(cfg->autoDumpPath, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->autoDumpPath, (int) cfg->user,
+                                 (int) cfg->group);
+            goto error;
+        }
+
         run_uid = cfg->user;
         run_gid = cfg->group;
     }
