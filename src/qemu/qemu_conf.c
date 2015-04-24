@@ -148,21 +148,18 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                       "%s/run/libvirt/qemu", LOCALSTATEDIR) < 0)
             goto error;
 
-        if (virAsprintf(&cfg->libDir,
-                      "%s/lib/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto error;
-
         if (virAsprintf(&cfg->cacheDir,
                       "%s/cache/libvirt/qemu", LOCALSTATEDIR) < 0)
             goto error;
-        if (virAsprintf(&cfg->saveDir,
-                      "%s/lib/libvirt/qemu/save", LOCALSTATEDIR) < 0)
+
+        if (virAsprintf(&cfg->libDir,
+                      "%s/lib/libvirt/qemu", LOCALSTATEDIR) < 0)
             goto error;
-        if (virAsprintf(&cfg->snapshotDir,
-                        "%s/lib/libvirt/qemu/snapshot", LOCALSTATEDIR) < 0)
+        if (virAsprintf(&cfg->saveDir, "%s/save", cfg->libDir) < 0)
             goto error;
-        if (virAsprintf(&cfg->autoDumpPath,
-                        "%s/lib/libvirt/qemu/dump", LOCALSTATEDIR) < 0)
+        if (virAsprintf(&cfg->snapshotDir, "%s/snapshot", cfg->libDir) < 0)
+            goto error;
+        if (virAsprintf(&cfg->autoDumpPath, "%s/dump", cfg->libDir) < 0)
             goto error;
     } else {
         char *rundir;
