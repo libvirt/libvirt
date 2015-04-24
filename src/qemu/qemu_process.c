@@ -4216,8 +4216,8 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
     /* Autogenerate nvram path if needed.*/
     if (!loader->nvram) {
         if (virAsprintf(&loader->nvram,
-                        "%s/lib/libvirt/qemu/nvram/%s_VARS.fd",
-                        LOCALSTATEDIR, vm->def->name) < 0)
+                        "%s/%s_VARS.fd",
+                        cfg->nvramDir, vm->def->name) < 0)
             goto cleanup;
 
         generated = true;
