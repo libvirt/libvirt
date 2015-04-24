@@ -19838,8 +19838,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
