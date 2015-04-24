@@ -2901,9 +2901,6 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
 
     libxl_device_pci_init(&pcidev);
 
-    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-        goto cleanup;
-
     if (virDomainHostdevFind(vm->def, hostdev, &found) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("target pci device %.4x:%.2x:%.2x.%.1x already exists"),
@@ -3238,9 +3235,6 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     int ret = -1;
 
     libxl_device_pci_init(&pcidev);
-
-    if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-        goto cleanup;
 
     idx = virDomainHostdevFind(vm->def, hostdev, &detach);
     if (idx < 0) {
