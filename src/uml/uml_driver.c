@@ -1659,7 +1659,7 @@ static int umlDomainShutdownFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByID(driver->domains, dom->id);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     umlDriverUnlock(driver);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -1704,7 +1704,7 @@ umlDomainDestroyFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByID(driver->domains, dom->id);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching id %d"), dom->id);
