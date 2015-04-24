@@ -986,6 +986,16 @@ virStringHasControlChars(const char *str)
 }
 
 
+/* Work around spurious strchr() diagnostics given by -Wlogical-op
+ * for gcc < 4.6.  Doing it via a local pragma keeps the damage
+ * smaller than disabling it on the package level.  Unfortunately, the
+ * affected GCCs don't allow diagnostic push/pop which would have
+ * further reduced the impact. */
+#if BROKEN_GCC_WLOGICALOP
+# pragma GCC diagnostic ignored "-Wlogical-op"
+#endif
+
+
 /**
  * virStringStripControlChars:
  * @str: the string to strip
