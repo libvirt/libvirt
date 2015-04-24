@@ -2975,11 +2975,19 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
         return false;
     }
     if (!priv->agent) {
-        if (reportError) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
+        if (qemuFindAgentConfig(vm->def)) {
+            if (reportError) {
+                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                               _("QEMU guest agent is not connected"));
+            }
+            return false;
+        } else {
+            if (reportError) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("QEMU guest agent is not configured"));
+            }
+            return false;
         }
-        return false;
     }
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         if (reportError) {
@@ -3076,4 +3084,33 @@ qemuDomainSupportsBlockJobs(virDomainObjPtr vm,
         *modern = asynchronous;
 
     return 0;
+}
+
+
+/**
+ * qemuFindAgentConfig:
+ * @def: domain definition
+ *
+ * Returns the pointer to the channel definition that is used to access the
+ * guest agent if the agent is configured or NULL otherwise.
+ */
+virDomainChrSourceDefPtr
+qemuFindAgentConfig(virDomainDefPtr def)
+{
+    virDomainChrSourceDefPtr config = NULL;
+    size_t i;
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDefPtr channel = def->channels[i];
+
+        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            continue;
+
+        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0")) {
+            config = &channel->source;
+            break;
+        }
+    }
+
+    return config;
 }

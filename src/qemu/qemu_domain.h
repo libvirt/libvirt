@@ -439,4 +439,6 @@ bool qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk);
 int qemuDomainAlignMemorySizes(virDomainDefPtr def);
 void qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem);
 
+virDomainChrSourceDefPtr qemuFindAgentConfig(virDomainDefPtr def);
+
 #endif /* __QEMU_DOMAIN_H__ */

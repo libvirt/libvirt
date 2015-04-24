@@ -201,26 +201,6 @@ static qemuAgentCallbacks agentCallbacks = {
     .errorNotify = qemuProcessHandleAgentError,
 };
 
-static virDomainChrSourceDefPtr
-qemuFindAgentConfig(virDomainDefPtr def)
-{
-    virDomainChrSourceDefPtr config = NULL;
-    size_t i;
-
-    for (i = 0; i < def->nchannels; i++) {
-        virDomainChrDefPtr channel = def->channels[i];
-
-        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
-            continue;
-
-        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0")) {
-            config = &channel->source;
-            break;
-        }
-    }
-
-    return config;
-}
 
 static int
 qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
