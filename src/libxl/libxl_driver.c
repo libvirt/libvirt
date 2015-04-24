@@ -2893,11 +2893,13 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
                                virDomainHostdevDefPtr hostdev)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-     libxl_device_pci pcidev;
+    libxl_device_pci pcidev;
     virDomainHostdevDefPtr found;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
     int ret = -1;
+
+    libxl_device_pci_init(&pcidev);
 
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         goto cleanup;
@@ -2939,6 +2941,7 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
 
  cleanup:
     virObjectUnref(cfg);
+    libxl_device_pci_dispose(&pcidev);
     return ret;
 }
 
@@ -3234,6 +3237,8 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     int ret = -1;
 
+    libxl_device_pci_init(&pcidev);
+
     if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
         goto cleanup;
 
@@ -3255,8 +3260,6 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     }
 
 
-    libxl_device_pci_init(&pcidev);
-
     if (libxlMakePCI(detach, &pcidev) < 0)
         goto error;
 
@@ -3269,7 +3272,6 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
         goto error;
     }
 
-    libxl_device_pci_dispose(&pcidev);
 
     virDomainHostdevRemove(vm->def, idx);
 
@@ -3283,6 +3285,7 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 
  cleanup:
     virObjectUnref(cfg);
+    libxl_device_pci_dispose(&pcidev);
     return ret;
 }
 
