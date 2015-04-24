@@ -783,14 +783,15 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         goto cleanup;
     }
 
-    /* Here are 4 loops; mark all devices as inactive before reset
-     * them and reset all the devices before re-attach.
-     * Attach mac and port profile parameters to devices
+    /* Loop through the assigned devices 4 times: 1) delete them all from
+     * activePCIHostdevs, 2) restore network config of SRIOV netdevs, 3) Do a
+     * PCI reset on each device, 4) reattach the devices to their host drivers
+     * (managed) or add them to inactivePCIHostdevs (!managed).
      */
 
-    /* Loop 1: delete the copy of the dev from pcidevs if it's used by
-     * other domain. Or delete it from activePCIHostDevs if it had
-     * been used by this domain.
+    /*
+     * Loop 1: verify that each device in the hostdevs list really was in use
+     * by this domain, and remove them all from the activePCIHostdevs list.
      */
     i = 0;
     while (i < virPCIDeviceListCount(pcidevs)) {
@@ -818,8 +819,8 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
      */
 
     /*
-     * Loop 2: For SRIOV net host devices used by this domain,
-     * unset mac and port profile before resetting and reattaching device
+     * Loop 2: restore original network config of hostdevs that used
+     * <interface type='hostdev'>
      */
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
@@ -834,17 +835,12 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                     virHostdevNetConfigRestore(hostdev, hostdev_mgr->stateDir,
                                                oldStateDir);
                 }
-            } else {
-                virErrorPtr err = virGetLastError();
-                VIR_ERROR(_("Failed to new PCI device: %s"),
-                          err ? err->message : _("unknown error"));
-                virResetError(err);
             }
             virPCIDeviceFree(dev);
         }
     }
 
-    /* Loop 3: reset pci device used by this domain */
+    /* Loop 3: perform a PCI Reset on all devices */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -857,8 +853,8 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
     }
 
-    /* Loop 4: reattach pci devices used by this domain
-     * and steal all the devices from pcidevs
+    /* Loop 4: reattach devices to their host drivers (if managed) or place
+     * them on the inactive list (if not managed)
      */
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListStealIndex(pcidevs, 0);
