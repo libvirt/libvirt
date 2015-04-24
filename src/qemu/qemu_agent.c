@@ -1136,7 +1136,6 @@ qemuAgentMakeCommand(const char *cmdname,
     virJSONValuePtr obj;
     virJSONValuePtr jargs = NULL;
     va_list args;
-    char *key;
 
     va_start(args, cmdname);
 
@@ -1146,76 +1145,8 @@ qemuAgentMakeCommand(const char *cmdname,
     if (virJSONValueObjectAppendString(obj, "execute", cmdname) < 0)
         goto error;
 
-    while ((key = va_arg(args, char *)) != NULL) {
-        int ret;
-        char type;
-
-        if (strlen(key) < 3) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("argument key '%s' is too short, missing type prefix"),
-                           key);
-            goto error;
-        }
-
-        /* Keys look like   s:name  the first letter is a type code */
-        type = key[0];
-        key += 2;
-
-        if (!jargs &&
-            !(jargs = virJSONValueNewObject()))
-            goto error;
-
-        /* This doesn't support maps/arrays.  This hasn't
-         * proved to be a problem..... yet :-)  */
-        switch (type) {
-        case 's': {
-            char *val = va_arg(args, char *);
-            ret = virJSONValueObjectAppendString(jargs, key, val);
-        }   break;
-        case 'i': {
-            int val = va_arg(args, int);
-            ret = virJSONValueObjectAppendNumberInt(jargs, key, val);
-        }   break;
-        case 'u': {
-            unsigned int val = va_arg(args, unsigned int);
-            ret = virJSONValueObjectAppendNumberUint(jargs, key, val);
-        }   break;
-        case 'I': {
-            long long val = va_arg(args, long long);
-            ret = virJSONValueObjectAppendNumberLong(jargs, key, val);
-        }   break;
-        case 'U': {
-            /* qemu silently truncates numbers larger than LLONG_MAX,
-             * so passing the full range of unsigned 64 bit integers
-             * is not safe here.  Pass them as signed 64 bit integers
-             * instead.
-             */
-            long long val = va_arg(args, long long);
-            ret = virJSONValueObjectAppendNumberLong(jargs, key, val);
-        }   break;
-        case 'd': {
-            double val = va_arg(args, double);
-            ret = virJSONValueObjectAppendNumberDouble(jargs, key, val);
-        }   break;
-        case 'b': {
-            int val = va_arg(args, int);
-            ret = virJSONValueObjectAppendBoolean(jargs, key, val);
-        }   break;
-        case 'n': {
-            ret = virJSONValueObjectAppendNull(jargs, key);
-        }   break;
-        case 'a': {
-            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
-            ret = virJSONValueObjectAppend(jargs, key, val);
-        }   break;
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unsupported data type '%c' for arg '%s'"), type, key - 2);
-            goto error;
-        }
-        if (ret < 0)
-            goto error;
-    }
+    if (virJSONValueObjectCreateVArgs(&jargs, args) < 0)
+        goto error;
 
     if (jargs &&
         virJSONValueObjectAppend(obj, "arguments", jargs) < 0)
