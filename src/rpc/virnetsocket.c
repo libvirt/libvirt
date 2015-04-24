@@ -546,6 +546,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
     char *rundir = NULL;
+    int ret = -1;
 
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
@@ -559,50 +560,50 @@ int virNetSocketNewConnectUNIX(const char *path,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Auto-spawn of daemon requested, "
                              "but no binary specified"));
-            goto error;
+            goto cleanup;
         }
 
         if (!(binname = last_component(binary)) || binname[0] == '\0') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot determine basename for binary '%s'"),
                            binary);
-            goto error;
+            goto cleanup;
         }
 
         if (!(rundir = virGetUserRuntimeDirectory()))
-            goto error;
+            goto cleanup;
 
         if (virFileMakePathWithMode(rundir, 0700) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create user runtime directory '%s'"),
                                  rundir);
-            goto error;
+            goto cleanup;
         }
 
         if (virAsprintf(&lockpath, "%s/%s.lock", rundir, binname) < 0)
-            goto error;
+            goto cleanup;
 
         if ((lockfd = open(lockpath, O_RDWR | O_CREAT, 0600)) < 0 ||
             virSetCloseExec(lockfd) < 0) {
             virReportSystemError(errno, _("Unable to create lock '%s'"), lockpath);
-            goto error;
+            goto cleanup;
         }
 
         if (virFileLock(lockfd, false, 0, 1, true) < 0) {
             virReportSystemError(errno, _("Unable to lock '%s'"), lockpath);
-            goto error;
+            goto cleanup;
         }
     }
 
     if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno, "%s", _("Failed to create socket"));
-        goto error;
+        goto cleanup;
     }
 
     remoteAddr.data.un.sun_family = AF_UNIX;
     if (virStrcpyStatic(remoteAddr.data.un.sun_path, path) == NULL) {
         virReportSystemError(ENOMEM, _("Path %s too long for unix socket"), path);
-        goto error;
+        goto cleanup;
     }
     if (remoteAddr.data.un.sun_path[0] == '@')
         remoteAddr.data.un.sun_path[0] = '\0';
@@ -612,42 +613,39 @@ int virNetSocketNewConnectUNIX(const char *path,
         if (!(spawnDaemon && errno == ENOENT)) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
-            goto error;
+            goto cleanup;
         }
 
         if (virNetSocketForkDaemon(binary) < 0)
-            goto error;
+            goto cleanup;
 
         retries--;
         usleep(5000);
     }
 
-    if (lockfd != -1) {
-        unlink(lockpath);
-        VIR_FORCE_CLOSE(lockfd);
-        VIR_FREE(lockpath);
-    }
-
     localAddr.len = sizeof(localAddr.data);
     if (getsockname(fd, &localAddr.data.sa, &localAddr.len) < 0) {
         virReportSystemError(errno, "%s", _("Unable to get local socket name"));
-        goto error;
+        goto cleanup;
     }
 
     if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0)))
-        goto error;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
 
- error:
+ cleanup:
     if (lockfd != -1) {
         unlink(lockpath);
         VIR_FORCE_CLOSE(lockfd);
     }
     VIR_FREE(lockpath);
     VIR_FREE(rundir);
-    VIR_FORCE_CLOSE(fd);
-    return -1;
+
+    if (ret < 0)
+        VIR_FORCE_CLOSE(fd);
+
+    return ret;
 }
 #else
 int virNetSocketNewConnectUNIX(const char *path ATTRIBUTE_UNUSED,
