@@ -3270,15 +3270,22 @@ virNetworkBridgeInUseHelper(const void *payload,
                             const void *name ATTRIBUTE_UNUSED,
                             const void *opaque)
 {
-    int ret = 0;
+    int ret;
     virNetworkObjPtr net = (virNetworkObjPtr) payload;
     const struct virNetworkBridgeInUseHelperData *data = opaque;
 
     virObjectLock(net);
-    if (net->def->bridge &&
-        STREQ(net->def->bridge, data->bridge) &&
-        !(data->skipname && STREQ(net->def->name, data->skipname)))
+    if (data->skipname &&
+        ((net->def && STREQ(net->def->name, data->skipname)) ||
+         (net->newDef && STREQ(net->newDef->name, data->skipname))))
+        ret = 0;
+    else if ((net->def && net->def->bridge &&
+              STREQ(net->def->bridge, data->bridge)) ||
+             (net->newDef && net->newDef->bridge &&
+              STREQ(net->newDef->bridge, data->bridge)))
         ret = 1;
+    else
+        ret = 0;
     virObjectUnlock(net);
     return ret;
 }
