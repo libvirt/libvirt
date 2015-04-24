@@ -19,7 +19,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *ldcmdline,
                                      const char *dmcmdline)
 {
-    int len;
     char *actualargv = NULL, *actualld = NULL, *actualdm = NULL;
     virDomainDefPtr vmdef = NULL;
     virDomainObj vm;
@@ -57,9 +56,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
 
     if (virtTestCompareToFile(actualld, ldcmdline) < 0)
-        goto out;
-
-    if (virtTestCompareToFile(formatted, xml) < 0)
         goto out;
 
     if (virFileExists(dmcmdline) || actualdm) {
