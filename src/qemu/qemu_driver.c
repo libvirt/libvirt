@@ -19799,27 +19799,11 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
         break;
 
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
-        if (priv->agentError) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("QEMU guest agent is not "
-                             "available due to an error"));
-            goto cleanup;
-        }
-
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             goto cleanup;
 
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
+        if (qemuDomainAgentAvailable(vm, true) < 0)
             goto endjob;
-        }
-
-        if (!priv->agent) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("QEMU guest agent is not configured"));
-            goto endjob;
-        }
 
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentGetInterfaces(priv->agent, ifaces);
