@@ -348,12 +348,10 @@ lxcCreateNetDef(const char *type,
     if (VIR_ALLOC(net) < 0)
         goto error;
 
-    if (flag) {
-        if (STREQ(flag, "up"))
-            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
-        else
-            net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
-    }
+    if (STREQ_NULLABLE(flag, "up"))
+        net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
+    else
+        net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
 
     if (VIR_STRDUP(net->ifname_guest, name) < 0)
         goto error;

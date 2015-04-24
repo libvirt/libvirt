@@ -541,7 +541,8 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             VIR_FREE(ipStr);
         }
 
-        if (netDef->linkstate != VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
+        if (netDef->nips ||
+            netDef->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
             VIR_DEBUG("Enabling %s", newname);
             rc = virNetDevSetOnline(newname, true);
             if (rc < 0)
