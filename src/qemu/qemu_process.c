@@ -202,7 +202,7 @@ static qemuAgentCallbacks agentCallbacks = {
 };
 
 
-static int
+int
 qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;

@@ -4468,6 +4468,8 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
     virDomainChrDeviceState newstate;
     virObjectEventPtr event = NULL;
     virDomainDeviceDef dev;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rc;
 
     if (connected)
         newstate = VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED;
@@ -4494,10 +4496,35 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
         dev.data.chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
         goto endjob;
 
-    if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0") &&
-        (event = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
-                                                        VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL)))
-        qemuDomainEventQueue(driver, event);
+    if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
+        switch (newstate) {
+        case VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED:
+            if (!priv->agent) {
+                if ((rc = qemuConnectAgent(driver, vm)) == -2)
+                    goto endjob;
+
+                if (rc < 0)
+                    priv->agentError = true;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED:
+            if (priv->agent) {
+                qemuAgentClose(priv->agent);
+                priv->agent = NULL;
+                priv->agentError = false;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT:
+        case VIR_DOMAIN_CHR_DEVICE_STATE_LAST:
+            break;
+        };
+
+        if ((event = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
+                                                            VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL)))
+            qemuDomainEventQueue(driver, event);
+    }
 
     dev.data.chr->state = newstate;
 

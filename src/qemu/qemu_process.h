@@ -113,4 +113,6 @@ int qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
                                                      const char *alias);
 
+int qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm);
+
 #endif /* __QEMU_PROCESS_H__ */
