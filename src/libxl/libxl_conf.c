@@ -1243,6 +1243,7 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
             libxl_defbool_set(&x_vfb->vnc.enable, 0);
+            libxl_defbool_set(&x_vfb->sdl.opengl, 0);
             if (VIR_STRDUP(x_vfb->sdl.display, l_vfb->data.sdl.display) < 0)
                 return -1;
             if (VIR_STRDUP(x_vfb->sdl.xauthority, l_vfb->data.sdl.xauth) < 0)
