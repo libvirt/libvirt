@@ -581,7 +581,7 @@ virStoragePoolFCRefreshThread(void *opaque)
     const char *name = cbdata->name;
     virStoragePoolObjPtr pool = cbdata->pool;
     unsigned int host;
-    int found;
+    int found = 0;
     int tries = 2;
 
     do {
