@@ -1001,14 +1001,6 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
                                          parse_flags)) == NULL)
         goto cleanup;
 
-    vm = virDomainObjListFindByName(driver->domains, vmdef->name);
-    if (vm) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Already an OPENVZ VM active with the id '%s'"),
-                       vmdef->name);
-        virDomainObjEndAPI(&vm);
-        goto cleanup;
-    }
     if (!(vm = virDomainObjListAdd(driver->domains, vmdef,
                                    driver->xmlopt,
                                    0, NULL)))
@@ -1098,14 +1090,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
                                          parse_flags)) == NULL)
         goto cleanup;
 
-    vm = virDomainObjListFindByName(driver->domains, vmdef->name);
-    if (vm) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Already an OPENVZ VM defined with the id '%s'"),
-                       vmdef->name);
-        virDomainObjEndAPI(&vm);
-        goto cleanup;
-    }
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    vmdef,
                                    driver->xmlopt,
