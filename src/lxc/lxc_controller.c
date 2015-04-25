@@ -747,7 +747,7 @@ static int virLXCControllerSetupResourceLimits(virLXCControllerPtr ctrl)
         virCgroupControllerAvailable(VIR_CGROUP_CONTROLLER_CPUSET)) {
         /* Use virNuma* API iff necessary. Once set and child is exec()-ed,
          * there's no way for us to change it. Rely on cgroups (if available
-         * and enabled in the config) rather then virNuma*. */
+         * and enabled in the config) rather than virNuma*. */
         VIR_DEBUG("Relying on CGroups for memory binding");
     } else {
 
