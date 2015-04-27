@@ -199,10 +199,10 @@ todo:
 hvsupport.html:: $(srcdir)/hvsupport.html.in
 
 $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
-		$(srcdir)/../src/libvirt_public.syms \
-	$(srcdir)/../src/libvirt_qemu.syms $(srcdir)/../src/libvirt_lxc.syms \
-	$(srcdir)/../src/driver.h
-	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(srcdir)/../src > $@ \
+		$(top_srcdir)/src/libvirt_public.syms \
+	$(top_srcdir)/src/libvirt_qemu.syms $(top_srcdir)/src/libvirt_lxc.syms \
+	$(top_srcdir)/src/driver.h
+	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(top_srcdir)/src > $@ \
 		|| { rm $@ && exit 1; }
 
 .PHONY: todo
@@ -290,27 +290,27 @@ EXTRA_DIST += $(APIBUILD_STAMP)
 $(python_generated_files): $(APIBUILD_STAMP)
 
 $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
-		$(srcdir)/../include/libvirt/libvirt.h.in \
-		$(srcdir)/../include/libvirt/libvirt-domain-snapshot.h \
-		$(srcdir)/../include/libvirt/libvirt-domain.h \
-		$(srcdir)/../include/libvirt/libvirt-event.h \
-		$(srcdir)/../include/libvirt/libvirt-host.h \
-		$(srcdir)/../include/libvirt/libvirt-interface.h \
-		$(srcdir)/../include/libvirt/libvirt-network.h \
-		$(srcdir)/../include/libvirt/libvirt-nodedev.h \
-		$(srcdir)/../include/libvirt/libvirt-nwfilter.h \
-		$(srcdir)/../include/libvirt/libvirt-secret.h \
-		$(srcdir)/../include/libvirt/libvirt-storage.h \
-		$(srcdir)/../include/libvirt/libvirt-stream.h \
-		$(srcdir)/../include/libvirt/libvirt-lxc.h \
-		$(srcdir)/../include/libvirt/libvirt-qemu.h \
-		$(srcdir)/../include/libvirt/virterror.h \
-		$(srcdir)/../src/libvirt.c \
-		$(srcdir)/../src/libvirt-lxc.c \
-		$(srcdir)/../src/libvirt-qemu.c \
-		$(srcdir)/../src/util/virerror.c \
-		$(srcdir)/../src/util/virevent.c \
-		$(srcdir)/../src/util/virtypedparam.c
+		$(top_srcdir)/include/libvirt/libvirt.h.in \
+		$(top_srcdir)/include/libvirt/libvirt-domain-snapshot.h \
+		$(top_srcdir)/include/libvirt/libvirt-domain.h \
+		$(top_srcdir)/include/libvirt/libvirt-event.h \
+		$(top_srcdir)/include/libvirt/libvirt-host.h \
+		$(top_srcdir)/include/libvirt/libvirt-interface.h \
+		$(top_srcdir)/include/libvirt/libvirt-network.h \
+		$(top_srcdir)/include/libvirt/libvirt-nodedev.h \
+		$(top_srcdir)/include/libvirt/libvirt-nwfilter.h \
+		$(top_srcdir)/include/libvirt/libvirt-secret.h \
+		$(top_srcdir)/include/libvirt/libvirt-storage.h \
+		$(top_srcdir)/include/libvirt/libvirt-stream.h \
+		$(top_srcdir)/include/libvirt/libvirt-lxc.h \
+		$(top_srcdir)/include/libvirt/libvirt-qemu.h \
+		$(top_srcdir)/include/libvirt/virterror.h \
+		$(top_srcdir)/src/libvirt.c \
+		$(top_srcdir)/src/libvirt-lxc.c \
+		$(top_srcdir)/src/libvirt-qemu.c \
+		$(top_srcdir)/src/util/virerror.c \
+		$(top_srcdir)/src/util/virevent.c \
+		$(top_srcdir)/src/util/virtypedparam.c
 	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(APIBUILD)
 	touch $@
 

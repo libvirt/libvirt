@@ -5,7 +5,7 @@
 check_schema () {
 
 DIRS=$1
-SCHEMA="$abs_srcdir/../docs/schemas/$2"
+SCHEMA="$abs_top_srcdir/docs/schemas/$2"
 
 test_intro $this_test
 
