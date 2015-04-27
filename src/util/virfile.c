@@ -2311,7 +2311,7 @@ virDirCreateNoFork(const char *path,
                              path, (unsigned int) uid, (unsigned int) gid);
         goto error;
     }
-    if (chmod(path, mode) < 0) {
+    if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         ret = -errno;
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
@@ -2424,7 +2424,7 @@ virDirCreate(const char *path,
                              path, (unsigned int) gid);
         goto childerror;
     }
-    if (chmod(path, mode) < 0) {
+    if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              path, mode);

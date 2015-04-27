@@ -766,9 +766,11 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags)
 {
-    int err, ret = -1;
+    int ret = -1;
     char *parent = NULL;
     char *p = NULL;
+    mode_t mode;
+    bool needs_create_as_uid, dir_create_flags;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
@@ -797,20 +799,25 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
+    dir_create_flags = VIR_DIR_CREATE_ALLOW_EXIST;
+    needs_create_as_uid = (pool->def->type == VIR_STORAGE_POOL_NETFS);
+    mode = pool->def->target.perms.mode;
+
+    if (mode == (mode_t) -1 &&
+        (needs_create_as_uid || !virFileExists(pool->def->target.path)))
+        mode = VIR_STORAGE_DEFAULT_POOL_PERM_MODE;
+    if (needs_create_as_uid)
+        flags |= VIR_DIR_CREATE_AS_UID;
+
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
-    if ((err = virDirCreate(pool->def->target.path,
-                            (pool->def->target.perms.mode == (mode_t) -1 ?
-                             VIR_STORAGE_DEFAULT_POOL_PERM_MODE :
-                             pool->def->target.perms.mode),
-                            pool->def->target.perms.uid,
-                            pool->def->target.perms.gid,
-                            VIR_DIR_CREATE_ALLOW_EXIST |
-                            (pool->def->type == VIR_STORAGE_POOL_NETFS
-                            ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
+    if (virDirCreate(pool->def->target.path,
+                     mode,
+                     pool->def->target.perms.uid,
+                     pool->def->target.perms.gid,
+                     dir_create_flags) < 0)
         goto error;
-    }
 
     if (flags != 0) {
         ret = virStorageBackendMakeFileSystem(pool, flags);
