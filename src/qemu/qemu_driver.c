@@ -17122,11 +17122,17 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
+    /* clear the _SHALLOW flag if there is only one layer */
+    if (!disk->src->backingStore)
+        flags &= ~VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+
+    /* unless the user provides a pre-created file, shallow copy into a raw
+     * file is not possible */
     if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) &&
-        mirror->format == VIR_STORAGE_FILE_RAW &&
-        disk->src->backingStore->path) {
+        !(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT) &&
+        mirror->format == VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk '%s' has backing file, so raw shallow copy "
+                       _("shallow copy of disk '%s' into a raw file "
                          "is not possible"),
                        disk->dst);
         goto endjob;
