@@ -1815,6 +1815,8 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
         if (virStrToLong_ui(buf, NULL, 10, &read_unique_id) < 0)
             goto cleanup;
 
+        VIR_FREE(buf);
+
         if (read_unique_id != unique_id) {
             VIR_FREE(unique_path);
             continue;
@@ -1829,6 +1831,7 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
     VIR_FREE(unique_path);
     VIR_FREE(host_link);
     VIR_FREE(host_path);
+    VIR_FREE(buf);
     return ret;
 }
 
