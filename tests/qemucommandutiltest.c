@@ -66,6 +66,7 @@ testQemuCommandBuildObjectFromJSON(const void *opaque)
  cleanup:
     virJSONValueFree(val);
     VIR_FREE(result);
+    VIR_FREE(expect);
     return ret;
 }
 

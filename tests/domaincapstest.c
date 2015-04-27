@@ -242,6 +242,7 @@ mymain(void)
             ret = -1;                                                                   \
         } else if (virtTestRun(Filename, test_virDomainCapsFormat, &data) < 0)          \
             ret = -1;                                                                   \
+        virObjectUnref(qemuCaps);                                                             \
     } while (0)
 
     DO_TEST_QEMU("qemu_1.6.50-1", "caps_1.6.50-1", "/usr/bin/qemu-system-x86_64",

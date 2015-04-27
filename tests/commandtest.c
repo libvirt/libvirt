@@ -1081,6 +1081,7 @@ static int test24(const void *unused ATTRIBUTE_UNUSED)
     if (pidfile)
         unlink(pidfile);
     VIR_FREE(pidfile);
+    VIR_FREE(prefix);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(newfd1);
     /* coverity[double_close] */
