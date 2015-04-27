@@ -1882,7 +1882,7 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
                 VIR_FREE(def->source.caps.u.net.ips[i]);
             VIR_FREE(def->source.caps.u.net.ips);
             for (i = 0; i < def->source.caps.u.net.nroutes; i++)
-                VIR_FREE(def->source.caps.u.net.routes[i]);
+                virNetworkRouteDefFree(def->source.caps.u.net.routes[i]);
             VIR_FREE(def->source.caps.u.net.routes);
             break;
         }
