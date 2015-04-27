@@ -931,6 +931,7 @@ virnetserverclientmock_la_SOURCES = \
 	virnetserverclientmock.c
 virnetserverclientmock_la_CFLAGS = $(AM_CFLAGS)
 virnetserverclientmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virnetserverclientmock_la_LIBADD = $(GNULIB_LIBS)
 
 if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
