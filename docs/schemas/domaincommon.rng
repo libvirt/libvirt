@@ -3965,7 +3965,7 @@
     </element>
   </define>
   <!--
-      A set of optional features: PAE, APIC, ACPI,
+      A set of optional features: PAE, APIC, ACPI, GIC,
       HyperV Enlightenment, KVM features, paravirtual spinlocks and HAP support
     -->
   <define name="features">
@@ -4031,6 +4031,15 @@
               <optional>
                 <attribute name="state">
                   <ref name="virOnOff"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <element name="gic">
+              <optional>
+                <attribute name="version">
+                  <ref name="positiveInteger"/>
                 </attribute>
               </optional>
             </element>

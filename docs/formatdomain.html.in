@@ -1439,6 +1439,7 @@
       &lt;hidden state='on'/&gt;
     &lt;/kvm&gt;
     &lt;pvspinlock/&gt;
+    &lt;gic version='2'/&gt;
 
   &lt;/features&gt;
   ...</pre>
@@ -1544,6 +1545,15 @@
         <code>off</code>, default <code>on</code>) enable or disable
         the emulation of VMWare IO port, for vmmouse etc.
         <span class="since">Since 1.2.16</span>
+      </dd>
+      <dt><code>gic</code></dt>
+      <dd>Enable for architectures using a General Interrupt
+          Controller instead of APIC in order to handle interrupts.
+          For example, the 'aarch64' architecture uses
+          <code>gic</code> instead of <code>apic</code>. The optional
+          attribute <code>version</code> specifies the GIC version;
+          however, it may not be supported by all hypervisors. <span
+          class="since">Since 1.2.16</span>
       </dd>
     </dl>
 

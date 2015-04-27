@@ -144,7 +144,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "pvspinlock",
               "capabilities",
               "pmu",
-              "vmport")
+              "vmport",
+              "gic")
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
@@ -14511,6 +14512,22 @@ virDomainDefParseXML(xmlDocPtr xml,
             ctxt->node = node;
             break;
 
+        case VIR_DOMAIN_FEATURE_GIC:
+            node = ctxt->node;
+            ctxt->node = nodes[i];
+            if ((tmp = virXPathString("string(./@version)", ctxt))) {
+                if (virStrToLong_uip(tmp, NULL, 10, &def->gic_version) < 0 ||
+                    def->gic_version == 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("malformed gic version: %s"), tmp);
+                    goto error;
+                }
+                VIR_FREE(tmp);
+            }
+            def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            ctxt->node = node;
+            break;
+
         /* coverity[dead_error_begin] */
         case VIR_DOMAIN_FEATURE_LAST:
             break;
@@ -16590,6 +16607,14 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                          "source: '%s', destination: '%s'"),
                        virTristateSwitchTypeToString(src->apic_eoi),
                        virTristateSwitchTypeToString(dst->apic_eoi));
+        return false;
+    }
+
+    /* GIC version */
+    if (src->gic_version != dst->gic_version) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Source GIC version '%u' does not match destination '%u'"),
+                       src->gic_version, dst->gic_version);
         return false;
     }
 
@@ -21230,6 +21255,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 }
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</capabilities>\n");
+                break;
+
+            case VIR_DOMAIN_FEATURE_GIC:
+                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
+                    virBufferAddLit(buf, "<gic");
+                    if (def->gic_version)
+                        virBufferAsprintf(buf, " version='%u'",
+                                          def->gic_version);
+                    virBufferAddLit(buf, "/>\n");
+                }
                 break;
 
             /* coverity[dead_error_begin] */

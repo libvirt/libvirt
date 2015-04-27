@@ -1649,6 +1649,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_CAPABILITIES,
     VIR_DOMAIN_FEATURE_PMU,
     VIR_DOMAIN_FEATURE_VMPORT,
+    VIR_DOMAIN_FEATURE_GIC,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -2179,6 +2180,7 @@ struct _virDomainDef {
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     unsigned int hyperv_spinlocks;
+    unsigned int gic_version;
 
     /* These options are of type virTristateSwitch: ON = keep, OFF = drop */
     int caps_features[VIR_DOMAIN_CAPS_FEATURE_LAST];
