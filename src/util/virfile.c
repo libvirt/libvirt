@@ -2289,12 +2289,13 @@ virDirCreateNoFork(const char *path,
     int ret = 0;
     struct stat st;
 
-    if ((mkdir(path, mode) < 0)
-        && !((errno == EEXIST) && (flags & VIR_DIR_CREATE_ALLOW_EXIST))) {
-        ret = -errno;
-        virReportSystemError(errno, _("failed to create directory '%s'"),
-                             path);
-        goto error;
+    if (!((flags & VIR_DIR_CREATE_ALLOW_EXIST) && !virFileExists(path))) {
+        if (mkdir(path, mode) < 0) {
+            ret = -errno;
+            virReportSystemError(errno, _("failed to create directory '%s'"),
+                                 path);
+            goto error;
+        }
     }
 
     if (stat(path, &st) == -1) {
