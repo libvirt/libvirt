@@ -811,12 +811,6 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
     }
 
-    /* Reflect the actual uid and gid to the config. */
-    if (pool->def->target.perms.uid == (uid_t) -1)
-        pool->def->target.perms.uid = geteuid();
-    if (pool->def->target.perms.gid == (gid_t) -1)
-        pool->def->target.perms.gid = getegid();
-
     if (flags != 0) {
         ret = virStorageBackendMakeFileSystem(pool, flags);
     } else {
@@ -840,18 +834,21 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     DIR *dir;
     struct dirent *ent;
     struct statvfs sb;
+    struct stat statbuf;
     virStorageVolDefPtr vol = NULL;
+    virStorageSourcePtr target = NULL;
     int direrr;
+    int fd = -1, ret = -1;
 
     if (!(dir = opendir(pool->def->target.path))) {
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
                              pool->def->target.path);
-        goto error;
+        goto cleanup;
     }
 
     while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
-        int ret;
+        int err;
 
         if (virStringHasControlChars(ent->d_name)) {
             VIR_WARN("Ignoring file with control characters under '%s'",
@@ -860,37 +857,37 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
 
         if (VIR_ALLOC(vol) < 0)
-            goto error;
+            goto cleanup;
 
         if (VIR_STRDUP(vol->name, ent->d_name) < 0)
-            goto error;
+            goto cleanup;
 
         vol->type = VIR_STORAGE_VOL_FILE;
         vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
                         vol->name) == -1)
-            goto error;
+            goto cleanup;
 
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-            goto error;
+            goto cleanup;
 
-        if ((ret = virStorageBackendProbeTarget(&vol->target,
+        if ((err = virStorageBackendProbeTarget(&vol->target,
                                                 &vol->target.encryption)) < 0) {
-            if (ret == -2) {
+            if (err == -2) {
                 /* Silently ignore non-regular files,
                  * eg '.' '..', 'lost+found', dangling symbolic link */
                 virStorageVolDefFree(vol);
                 vol = NULL;
                 continue;
-            } else if (ret == -3) {
+            } else if (err == -3) {
                 /* The backing file is currently unavailable, its format is not
                  * explicitly specified, the probe to auto detect the format
                  * failed: continue with faked RAW format, since AUTO will
                  * break virStorageVolTargetDefFormat() generating the line
                  * <format type='...'/>. */
             } else {
-                goto error;
+                goto cleanup;
             }
         }
 
@@ -908,32 +905,65 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
 
         if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
-            goto error;
+            goto cleanup;
     }
     if (direrr < 0)
-        goto error;
+        goto cleanup;
     closedir(dir);
+    dir = NULL;
+    vol = NULL;
 
+    if (VIR_ALLOC(target))
+        goto cleanup;
+
+    if ((fd = open(pool->def->target.path, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot open path '%s'"),
+                             pool->def->target.path);
+        goto cleanup;
+    }
+
+    if (fstat(fd, &statbuf) < 0) {
+        virReportSystemError(errno,
+                             _("cannot stat path '%s'"),
+                             pool->def->target.path);
+        goto cleanup;
+    }
+
+    if (virStorageBackendUpdateVolTargetInfoFD(target, fd, &statbuf) < 0)
+        goto cleanup;
+
+    /* VolTargetInfoFD doesn't update capacity correctly for the pool case */
     if (statvfs(pool->def->target.path, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot statvfs path '%s'"),
                              pool->def->target.path);
-        return -1;
+        goto cleanup;
     }
+
     pool->def->capacity = ((unsigned long long)sb.f_frsize *
                            (unsigned long long)sb.f_blocks);
     pool->def->available = ((unsigned long long)sb.f_bfree *
                             (unsigned long long)sb.f_frsize);
     pool->def->allocation = pool->def->capacity - pool->def->available;
 
-    return 0;
+    pool->def->target.perms.mode = target->perms->mode;
+    pool->def->target.perms.uid = target->perms->uid;
+    pool->def->target.perms.gid = target->perms->gid;
+    VIR_FREE(pool->def->target.perms.label);
+    if (VIR_STRDUP(pool->def->target.perms.label, target->perms->label) < 0)
+        goto cleanup;
 
- error:
+    ret = 0;
+ cleanup:
     if (dir)
         closedir(dir);
+    VIR_FORCE_CLOSE(fd);
     virStorageVolDefFree(vol);
-    virStoragePoolObjClearVols(pool);
-    return -1;
+    virStorageSourceFree(target);
+    if (ret < 0)
+        virStoragePoolObjClearVols(pool);
+    return ret;
 }
 
 
