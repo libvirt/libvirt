@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-s390x -S \
+-machine s390-ccw-virtio,accel=tcg,aes-key-wrap=on \
+-m 214 -smp 1 -nographic -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0

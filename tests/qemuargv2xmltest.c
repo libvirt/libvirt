@@ -292,6 +292,12 @@ mymain(void)
 
     DO_TEST_FULL("qemu-ns-no-env", FLAG_EXPECT_WARNING);
 
+    DO_TEST("machine-aeskeywrap-on-argv");
+    DO_TEST("machine-aeskeywrap-off-argv");
+    DO_TEST("machine-deakeywrap-on-argv");
+    DO_TEST("machine-deakeywrap-off-argv");
+    DO_TEST("machine-keywrap-none-argv");
+
     virObjectUnref(driver.config);
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
