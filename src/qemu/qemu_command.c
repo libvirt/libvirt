@@ -7202,6 +7202,19 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         have_cpu = true;
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
+        if (def->gic_version && def->gic_version != 2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("gic version '%u' is not supported"),
+                           def->gic_version);
+            goto cleanup;
+        }
+
+        /* There's no command line argument currently to turn on/off GIC. It's
+         * done automatically by qemu-system-aarch64. But if this changes, lets
+         * put the code here. */
+    }
+
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 

@@ -1541,6 +1541,8 @@ mymain(void)
     DO_TEST("aarch64-cpu-model-host", QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_CPU_HOST, QEMU_CAPS_KVM);
+    DO_TEST("aarch64-gic", QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE,
+            QEMU_CAPS_KVM);
 
     DO_TEST("kvm-pit-device", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-delay", QEMU_CAPS_NO_KVM_PIT);
