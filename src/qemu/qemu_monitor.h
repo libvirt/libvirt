@@ -877,7 +877,7 @@ typedef struct _qemuMonitorIOThreadInfo qemuMonitorIOThreadInfo;
 typedef qemuMonitorIOThreadInfo *qemuMonitorIOThreadInfoPtr;
 
 struct _qemuMonitorIOThreadInfo {
-    char *name;
+    unsigned int iothread_id;
     int thread_id;
 };
 int qemuMonitorGetIOThreads(qemuMonitorPtr mon,

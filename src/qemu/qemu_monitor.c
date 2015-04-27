@@ -3818,7 +3818,6 @@ qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread)
 {
     if (!iothread)
         return;
-    VIR_FREE(iothread->name);
     VIR_FREE(iothread);
 }
 

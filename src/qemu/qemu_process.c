@@ -2248,16 +2248,13 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < niothreads; i++) {
-        unsigned int iothread_id;
         virDomainIOThreadIDDefPtr iothrid;
 
-        if (qemuDomainParseIOThreadAlias(iothreads[i]->name,
-                                         &iothread_id) < 0)
-            goto cleanup;
-
-        if (!(iothrid = virDomainIOThreadIDFind(vm->def, iothread_id))) {
+        if (!(iothrid = virDomainIOThreadIDFind(vm->def,
+                                                iothreads[i]->iothread_id))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("iothread %d not found"), iothread_id);
+                           _("iothread %d not found"),
+                           iothreads[i]->iothread_id);
             goto cleanup;
         }
         iothrid->thread_id = iothreads[i]->thread_id;

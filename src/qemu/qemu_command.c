@@ -677,23 +677,6 @@ qemuOpenVhostNet(virDomainDefPtr def,
     return -1;
 }
 
-int
-qemuDomainParseIOThreadAlias(char *alias,
-                             unsigned int *iothread_id)
-{
-    unsigned int idval;
-
-    if (virStrToLong_ui(alias + strlen("iothread"),
-                        NULL, 10, &idval) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to find iothread id for '%s'"),
-                       alias);
-        return -1;
-    }
-
-    *iothread_id = idval;
-    return 0;
-}
 
 int
 qemuNetworkPrepareDevices(virDomainDefPtr def)

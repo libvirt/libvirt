@@ -6481,19 +6481,27 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
         const char *tmp;
         qemuMonitorIOThreadInfoPtr info;
 
-        if (VIR_ALLOC(info) < 0)
-            goto cleanup;
-
-        infolist[i] = info;
-
         if (!(tmp = virJSONValueObjectGetString(child, "id"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-iothreads reply data was missing 'id'"));
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info->name, tmp) < 0)
+        if (!STRPREFIX(tmp, "iothread"))
+            continue;
+
+        if (VIR_ALLOC(info) < 0)
             goto cleanup;
+
+        infolist[i] = info;
+
+        if (virStrToLong_ui(tmp + strlen("iothread"),
+                            NULL, 10, &info->iothread_id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to find iothread id for '%s'"),
+                           tmp);
+            goto cleanup;
+        }
 
         if (virJSONValueObjectGetNumberInt(child, "thread-id",
                                            &info->thread_id) < 0) {

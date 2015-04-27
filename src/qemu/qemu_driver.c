@@ -5918,16 +5918,11 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
         goto endjob;
 
     for (i = 0; i < niothreads; i++) {
-        unsigned int iothread_id;
         virBitmapPtr map = NULL;
-
-        if (qemuDomainParseIOThreadAlias(iothreads[i]->name,
-                                         &iothread_id) < 0)
-            goto endjob;
 
         if (VIR_ALLOC(info_ret[i]) < 0)
             goto endjob;
-        info_ret[i]->iothread_id = iothread_id;
+        info_ret[i]->iothread_id = iothreads[i]->iothread_id;
 
         if (virProcessGetAffinity(iothreads[i]->thread_id, &map, hostcpus) < 0)
             goto endjob;
@@ -6292,7 +6287,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
      * in the QEMU IOThread list, so we can add it to our iothreadids list
      */
     for (idx = 0; idx < new_niothreads; idx++) {
-        if (STREQ(new_iothreads[idx]->name, alias))
+        if (new_iothreads[idx]->iothread_id == iothread_id)
             break;
     }
 

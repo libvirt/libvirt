@@ -2269,12 +2269,12 @@ testQemuMonitorJSONGetIOThreads(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname, wantthread_id)                               \
+#define CHECK(i, wantiothread_id, wantthread_id)                        \
     do {                                                                \
-        if (STRNEQ(info[i]->name, (wantname))) {                        \
+        if (info[i]->iothread_id != (wantiothread_id)) {                \
             virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name %s is not %s",                         \
-                           info[i]->name, (wantname));                  \
+                           "iothread_id %u is not %u",                  \
+                           info[i]->iothread_id, (wantiothread_id));    \
             goto cleanup;                                               \
         }                                                               \
         if (info[i]->thread_id != (wantthread_id)) {                    \
@@ -2285,8 +2285,8 @@ testQemuMonitorJSONGetIOThreads(const void *data)
         }                                                               \
     } while (0)
 
-    CHECK(0, "iothread1", 30992);
-    CHECK(1, "iothread2", 30993);
+    CHECK(0, 1, 30992);
+    CHECK(1, 2, 30993);
 
 #undef CHECK
 
