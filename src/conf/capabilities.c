@@ -701,13 +701,14 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
             !virBufferCurrentContent(&buf)[0])
             virBufferAsprintf(&buf, "%s", _("any configuration"));
         if (virBufferCheckError(&buf) < 0) {
-            virBufferContentAndReset(&buf);
+            virBufferFreeAndReset(&buf);
             goto error;
         }
 
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find capabilities for %s"),
-                       virBufferContentAndReset(&buf));
+                       virBufferCurrentContent(&buf));
+        virBufferFreeAndReset(&buf);
         goto error;
     }
 
