@@ -180,6 +180,8 @@ storageDriverAutostart(void)
                 virStoragePoolSaveState(stateFile, pool->def) < 0 ||
                 backend->refreshPool(conn, pool) < 0) {
                 virErrorPtr err = virGetLastError();
+                if (stateFile)
+                    unlink(stateFile);
                 if (backend->stopPool)
                     backend->stopPool(conn, pool);
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
@@ -690,6 +692,8 @@ storagePoolCreateXML(virConnectPtr conn,
 
     if (!stateFile || virStoragePoolSaveState(stateFile, pool->def) < 0 ||
         backend->refreshPool(conn, pool) < 0) {
+        if (stateFile)
+            unlink(stateFile);
         if (backend->stopPool)
             backend->stopPool(conn, pool);
         virStoragePoolObjRemove(&driver->pools, pool);
@@ -856,6 +860,8 @@ storagePoolCreate(virStoragePoolPtr obj,
 
     if (!stateFile || virStoragePoolSaveState(stateFile, pool->def) < 0 ||
         backend->refreshPool(obj->conn, pool) < 0) {
+        if (stateFile)
+            unlink(stateFile);
         if (backend->stopPool)
             backend->stopPool(obj->conn, pool);
         goto cleanup;
