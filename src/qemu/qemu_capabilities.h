@@ -225,6 +225,8 @@ typedef enum {
     QEMU_CAPS_QXL_VGA_VGAMEM     = 183, /* -device qxl-vga.vgamem_mb */
     QEMU_CAPS_DEVICE_PC_DIMM     = 184, /* pc-dimm device */
     QEMU_CAPS_MACHINE_VMPORT_OPT = 185, /* -machine xxx,vmport=on/off/auto */
+    QEMU_CAPS_AES_KEY_WRAP       = 186, /* -machine aes_key_wrap */
+    QEMU_CAPS_DEA_KEY_WRAP       = 187, /* -machine dea_key_wrap */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

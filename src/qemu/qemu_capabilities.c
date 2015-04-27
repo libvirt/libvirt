@@ -281,6 +281,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "pc-dimm",
 
               "machine-vmport-opt", /* 185 */
+              "aes-key-wrap",
+              "dea-key-wrap",
     );
 
 
@@ -2523,6 +2525,8 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "msg", "timestamp", QEMU_CAPS_MSG_TIMESTAMP },
     { "numa", NULL, QEMU_CAPS_NUMA },
     { "drive", "throttling.bps-total-max", QEMU_CAPS_DRIVE_IOTUNE_MAX},
+    { "machine", "aes-key-wrap", QEMU_CAPS_AES_KEY_WRAP },
+    { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
 };
 
 static int

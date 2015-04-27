@@ -7318,6 +7318,39 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
     return 0;
 }
 
+static bool
+qemuAppendKeyWrapMachineParm(virBuffer *buf, virQEMUCapsPtr qemuCaps,
+                             int flag, const char *pname, int pstate)
+{
+    if (pstate != VIR_TRISTATE_SWITCH_ABSENT) {
+        if (!virQEMUCapsGet(qemuCaps, flag)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s is not available with this QEMU binary"), pname);
+            return false;
+        }
+
+        virBufferAsprintf(buf, ",%s=%s", pname,
+                          virTristateSwitchTypeToString(pstate));
+    }
+
+    return true;
+}
+
+static bool
+qemuAppendKeyWrapMachineParms(virBuffer *buf, virQEMUCapsPtr qemuCaps,
+                              const virDomainKeyWrapDef *keywrap)
+{
+    if (!qemuAppendKeyWrapMachineParm(buf, qemuCaps, QEMU_CAPS_AES_KEY_WRAP,
+                                      "aes-key-wrap", keywrap->aes))
+        return false;
+
+    if (!qemuAppendKeyWrapMachineParm(buf, qemuCaps, QEMU_CAPS_DEA_KEY_WRAP,
+                                      "dea-key-wrap", keywrap->dea))
+        return false;
+
+    return true;
+}
+
 static int
 qemuBuildMachineArgStr(virCommandPtr cmd,
                        const virDomainDef *def,
@@ -7352,6 +7385,13 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
         }
 
         obsoleteAccel = true;
+
+        if (def->keywrap) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("key wrap support is not available "
+                             "with this QEMU binary"));
+            return -1;
+        }
     } else {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
@@ -7408,6 +7448,12 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                 virBufferFreeAndReset(&buf);
                 return -1;
             }
+        }
+
+        if (def->keywrap &&
+            !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap)) {
+            virBufferFreeAndReset(&buf);
+            return -1;
         }
 
         virCommandAddArgBuffer(cmd, &buf);
@@ -12837,6 +12883,32 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 } else if (STRPREFIX(param, "accel=kvm")) {
                     def->virtType = VIR_DOMAIN_VIRT_KVM;
                     def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+                } else if (STRPREFIX(param, "aes-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("aes-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("aes-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->aes = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->aes < 0)
+                        def->keywrap->aes = VIR_TRISTATE_SWITCH_ABSENT;
+                } else if (STRPREFIX(param, "dea-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("dea-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("dea-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->dea = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->dea < 0)
+                        def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
                 }
             }
             virStringFreeList(list);
