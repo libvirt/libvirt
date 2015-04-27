@@ -1445,6 +1445,10 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
             VIR_WARN("ignoring missing fifo '%s'", path);
             return -2;
         }
+        if ((errno == EACCES || errno == EPERM) && noerror) {
+            VIR_WARN("ignoring permission error for '%s'", path);
+            return -2;
+        }
 
         virReportSystemError(errno, _("cannot open volume '%s'"), path);
         return -1;
