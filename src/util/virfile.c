@@ -2303,7 +2303,8 @@ virDirCreateNoFork(const char *path,
         virReportSystemError(errno, _("stat of '%s' failed"), path);
         goto error;
     }
-    if (((st.st_uid != uid) || (st.st_gid != gid))
+    if (((uid != (uid_t) -1 && st.st_uid != uid) ||
+         (gid != (gid_t) -1 && st.st_gid != gid))
         && (chown(path, uid, gid) < 0)) {
         ret = -errno;
         virReportSystemError(errno, _("cannot chown '%s' to (%u, %u)"),
@@ -2335,18 +2336,31 @@ virDirCreate(const char *path,
     gid_t *groups;
     int ngroups;
 
-    /* allow using -1 to mean "current value" */
+    /* Everything after this check is crazyness to allow setting uid/gid
+     * on directories that are on root-squash NFS shares. We only want
+     * to go that route if the follow conditions are true:
+     *
+     * 1) VIR_DIR_CREATE_AS_UID was passed, currently only used when
+     *    directory is being created for a NETFS pool
+     * 2) We are running as root, since that's when the root-squash
+     *    workaround is required.
+     * 3) An explicit uid/gid was requested
+     * 4) The directory doesn't already exist and the ALLOW_EXIST flag
+     *    wasn't passed.
+     *
+     * If any of those conditions are _not_ met, ignore the fork crazyness
+     */
+    if ((!(flags & VIR_DIR_CREATE_AS_UID))
+        || (geteuid() != 0)
+        || ((uid == (uid_t) -1) && (gid == (gid_t) -1))
+        || ((flags & VIR_DIR_CREATE_ALLOW_EXIST) && virFileExists(path))) {
+        return virDirCreateNoFork(path, mode, uid, gid, flags);
+    }
+
     if (uid == (uid_t) -1)
         uid = geteuid();
     if (gid == (gid_t) -1)
         gid = getegid();
-
-    if ((!(flags & VIR_DIR_CREATE_AS_UID))
-        || (geteuid() != 0)
-        || ((uid == 0) && (gid == 0))
-        || ((flags & VIR_DIR_CREATE_ALLOW_EXIST) && (stat(path, &st) >= 0))) {
-        return virDirCreateNoFork(path, mode, uid, gid, flags);
-    }
 
     ngroups = virGetGroupList(uid, gid, &groups);
     if (ngroups < 0)
