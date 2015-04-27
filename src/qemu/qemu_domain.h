@@ -107,7 +107,7 @@ struct _qemuDomainJobInfo {
     /* Computed values */
     unsigned long long timeElapsed;
     unsigned long long timeRemaining;
-    long long timeDelta; /* delta = sent - received, i.e., the difference
+    long long timeDelta; /* delta = received - sent, i.e., the difference
                             between the source and the destination time plus
                             the time between the end of Perform phase on the
                             source and the beginning of Finish phase on the
