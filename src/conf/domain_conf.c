@@ -5124,7 +5124,7 @@ static virDomainNetIpDefPtr
 virDomainNetIpParseXML(xmlNodePtr node)
 {
     /* Parse the prefix in every case */
-    virDomainNetIpDefPtr ip = NULL;
+    virDomainNetIpDefPtr ip = NULL, ret = NULL;
     char *prefixStr = NULL;
     unsigned int prefixValue = 0;
     char *familyStr = NULL;
@@ -5140,7 +5140,7 @@ virDomainNetIpParseXML(xmlNodePtr node)
     if (!(address = virXMLPropString(node, "address"))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Missing network address"));
-        goto error;
+        goto cleanup;
     }
 
     familyStr = virXMLPropString(node, "family");
@@ -5152,24 +5152,25 @@ virDomainNetIpParseXML(xmlNodePtr node)
         family = virSocketAddrNumericFamily(address);
 
     if (VIR_ALLOC(ip) < 0)
-        goto error;
+        goto cleanup;
 
     if (virSocketAddrParse(&ip->address, address, family) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Failed to parse IP address: '%s'"),
                        address);
-        goto error;
+        goto cleanup;
     }
     ip->prefix = prefixValue;
 
-    return ip;
+    ret = ip;
+    ip = NULL;
 
- error:
+ cleanup:
     VIR_FREE(prefixStr);
     VIR_FREE(familyStr);
     VIR_FREE(address);
     VIR_FREE(ip);
-    return NULL;
+    return ret;
 }
 
 static int
