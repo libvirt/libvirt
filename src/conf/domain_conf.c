@@ -13253,6 +13253,7 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
 
  error:
     virDomainIOThreadIDDefFree(iothrid);
+    iothrid = NULL;
     goto cleanup;
 }
 
@@ -13372,6 +13373,7 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Cannot find 'iothread' : %u"),
                        iothreadid);
+        goto cleanup;
     }
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
