@@ -553,7 +553,8 @@ qemuxml2argvmock_la_SOURCES = \
 	qemuxml2argvmock.c
 qemuxml2argvmock_la_CFLAGS = $(AM_CFLAGS)
 qemuxml2argvmock_la_LDFLAGS = -module -avoid-version \
-	-rpath /evil/libtool/hack/to/force/shared/lib/creation
+	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
@@ -614,7 +615,8 @@ qemucaps2xmlmock_la_SOURCES = \
 	qemucaps2xmlmock.c
 qemucaps2xmlmock_la_CFLAGS = $(AM_CFLAGS)
 qemucaps2xmlmock_la_LDFLAGS = -module -avoid-version \
-		-rpath /evil/libtool/hack/to/force/shared/lib/creation
+		-rpath /evil/libtool/hack/to/force/shared/lib/creation \
+		$(MINGW_EXTRA_LDFLAGS)
 
 qemuagenttest_SOURCES = \
 	qemuagenttest.c \
@@ -722,7 +724,8 @@ bhyvexml2argvmock_la_SOURCES = \
 	bhyvexml2argvmock.c
 bhyvexml2argvmock_la_CFLAGS = $(AM_CFLAGS)
 bhyvexml2argvmock_la_LDFLAGS = -module -avoid-version \
-			-rpath /evil/libtool/hack/to/force/shared/lib/creation
+			-rpath /evil/libtool/hack/to/force/shared/lib/creation \
+			$(MINGW_EXTRA_LDFLAGS)
 
 bhyve_LDADDS = ../src/libvirt_driver_bhyve_impl.la
 if WITH_STORAGE
@@ -930,7 +933,8 @@ virnetserverclientmock_la_SOURCES = \
 	virnetserverclientmock.c
 virnetserverclientmock_la_CFLAGS = $(AM_CFLAGS)
 virnetserverclientmock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
@@ -1009,7 +1013,8 @@ libvirportallocatormock_la_SOURCES = \
 	virportallocatortest.c
 libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
 libvirportallocatormock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 vircgrouptest_SOURCES = \
 	vircgrouptest.c testutils.h testutils.c
@@ -1019,7 +1024,8 @@ vircgroupmock_la_SOURCES = \
 	vircgroupmock.c
 vircgroupmock_la_CFLAGS = $(AM_CFLAGS)
 vircgroupmock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 vircryptotest_SOURCES = \
 	vircryptotest.c testutils.h testutils.c
@@ -1039,7 +1045,8 @@ virpcimock_la_CFLAGS = $(AM_CFLAGS)
 virpcimock_la_LIBADD = $(GNULIB_LIBS) \
 					   ../src/libvirt.la
 virpcimock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 virnetdevtest_SOURCES = \
 	virnetdevtest.c testutils.h testutils.c
@@ -1052,7 +1059,8 @@ virnetdevmock_la_CFLAGS = $(AM_CFLAGS) $(LIBNL_CFLAGS)
 virnetdevmock_la_LIBADD = $(GNULIB_LIBS) \
 					   ../src/libvirt.la
 virnetdevmock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 if WITH_LINUX
 virusbtest_SOURCES = \
@@ -1066,13 +1074,15 @@ virnetdevbandwidthtest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 virusbmock_la_SOURCES = virusbmock.c
 virusbmock_la_CFLAGS = $(AM_CFLAGS)
 virusbmock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 virnetdevbandwidthmock_la_SOURCES = \
 	virnetdevbandwidthmock.c
 virnetdevbandwidthmock_la_CFLAGS = $(AM_CFLAGS)
 virnetdevbandwidthmock_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 else ! WITH_LINUX
 	EXTRA_DIST += virusbtest.c virusbmock.c \
@@ -1089,7 +1099,8 @@ virmockdbus_la_SOURCES = \
 	virmockdbus.c
 virmockdbus_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virmockdbus_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 virpolkittest_SOURCES = \
 	virpolkittest.c testutils.h testutils.c
@@ -1136,7 +1147,8 @@ endif ! WITH_TESTS
 libsecurityselinuxhelper_la_SOURCES = \
 	securityselinuxhelper.c
 libsecurityselinuxhelper_la_LDFLAGS = -module -avoid-version \
-        -rpath /evil/libtool/hack/to/force/shared/lib/creation
+        -rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 securityselinuxtest_SOURCES = \
 	securityselinuxtest.c testutils.h testutils.c
@@ -1209,7 +1221,8 @@ endif WITH_LIBVIRTD
 libshunload_la_SOURCES = shunloadhelper.c
 libshunload_la_LIBADD = ../src/libvirt.la
 libshunload_la_LDFLAGS = -module -avoid-version \
-	-rpath /evil/libtool/hack/to/force/shared/lib/creation
+	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
 
 shunloadtest_SOURCES = \
 	shunloadtest.c
