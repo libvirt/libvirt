@@ -79,6 +79,12 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
 {
     bool active;
     virStorageBackendPtr backend;
+    int ret = -1;
+    char *stateFile;
+
+    if (!(stateFile = virFileBuildPath(driver->stateDir,
+                                       pool->def->name, ".xml")))
+        goto error;
 
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
         VIR_ERROR(_("Missing backend %d"), pool->def->type);
@@ -116,7 +122,14 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
     }
 
     pool->active = active;
+    ret = 0;
  error:
+    if (ret < 0) {
+        if (stateFile)
+            unlink(stateFile);
+    }
+    VIR_FREE(stateFile);
+
     return;
 }
 
