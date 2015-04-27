@@ -19829,7 +19829,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             goto cleanup;
 
-        if (qemuDomainAgentAvailable(vm, true) < 0)
+        if (!qemuDomainAgentAvailable(vm, true))
             goto endjob;
 
         qemuDomainObjEnterAgent(vm);
