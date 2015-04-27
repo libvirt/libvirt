@@ -1,7 +1,7 @@
 /*
  * testutils.c: basic test utils
  *
- * Copyright (C) 2005-2014 Red Hat, Inc.
+ * Copyright (C) 2005-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -641,7 +641,7 @@ virtTestCompareToFile(const char *strcontent,
                 goto failure;
             goto out;
         }
-        virtTestDifference(stderr, strcontent, filecontent);
+        virtTestDifference(stderr, filecontent, strcontent);
         goto failure;
     }
 
