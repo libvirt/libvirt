@@ -1,5 +1,5 @@
 # Customize Makefile.maint.                           -*- makefile -*-
-# Copyright (C) 2008-2014 Red Hat, Inc.
+# Copyright (C) 2008-2015 Red Hat, Inc.
 # Copyright (C) 2003-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -1184,7 +1184,7 @@ exclude_file_name_regexp--sc_prohibit_getenv = \
   ^tests/.*\.[ch]$$
 
 exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
-  ^src/util/virlog\.h$$
+  ^(src/util/virlog\.h|src/network/bridge_driver\.h)$$
 
 exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
