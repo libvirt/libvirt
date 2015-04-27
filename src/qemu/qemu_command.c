@@ -9266,6 +9266,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
     VIR_FREE(boot_opts_str);
+    VIR_FREE(boot_order_str);
 
     if (def->os.kernel)
         virCommandAddArgList(cmd, "-kernel", def->os.kernel, NULL);
@@ -10746,6 +10747,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
  error:
     VIR_FREE(boot_order_str);
+    VIR_FREE(boot_opts_str);
     virBufferFreeAndReset(&boot_buf);
     virObjectUnref(cfg);
     /* free up any resources in the network driver
