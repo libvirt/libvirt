@@ -9,7 +9,6 @@
     <path>gluster://example.com/vol/dir</path>
     <format type='dir'/>
     <permissions>
-      <mode>0600</mode>
     </permissions>
   </target>
 </volume>

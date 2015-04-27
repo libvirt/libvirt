@@ -98,9 +98,11 @@
     <optional>
       <element name='permissions'>
         <interleave>
-          <element name='mode'>
-            <ref name='octalMode'/>
-          </element>
+          <optional>
+            <element name='mode'>
+              <ref name='octalMode'/>
+            </element>
+          </optional>
           <optional>
             <element name='owner'>
               <choice>

@@ -318,6 +318,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     struct stat st;
     gid_t gid;
     uid_t uid;
+    mode_t mode;
     bool reflink_copy = false;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
@@ -367,10 +368,13 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
                              (unsigned int) gid);
         goto cleanup;
     }
-    if (fchmod(fd, vol->target.perms->mode) < 0) {
+
+    mode = (vol->target.perms->mode == (mode_t) -1 ?
+            VIR_STORAGE_DEFAULT_VOL_PERM_MODE : vol->target.perms->mode);
+    if (fchmod(fd, mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
-                             vol->target.path, vol->target.perms->mode);
+                             vol->target.path, mode);
         goto cleanup;
     }
     if (VIR_CLOSE(fd) < 0) {
@@ -509,7 +513,9 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if ((fd = virFileOpenAs(vol->target.path,
                             O_RDWR | O_CREAT | O_EXCL,
-                            vol->target.perms->mode,
+                            (vol->target.perms->mode ?
+                             VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
+                             vol->target.perms->mode),
                             vol->target.perms->uid,
                             vol->target.perms->gid,
                             operation_flags)) < 0) {
@@ -664,6 +670,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     struct stat st;
     gid_t gid;
     uid_t uid;
+    mode_t mode;
     bool filecreated = false;
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
@@ -709,10 +716,13 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                              (unsigned int) gid);
         return -1;
     }
-    if (chmod(vol->target.path, vol->target.perms->mode) < 0) {
+
+    mode = (vol->target.perms->mode == (mode_t) -1 ?
+            VIR_STORAGE_DEFAULT_VOL_PERM_MODE : vol->target.perms->mode);
+    if (chmod(vol->target.path, mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
-                             vol->target.path, vol->target.perms->mode);
+                             vol->target.path, mode);
         return -1;
     }
     return 0;

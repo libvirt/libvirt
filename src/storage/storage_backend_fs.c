@@ -801,7 +801,9 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
      * requested in the config. If the dir already exists, just set
      * the perms. */
     if ((err = virDirCreate(pool->def->target.path,
-                            pool->def->target.perms.mode,
+                            (pool->def->target.perms.mode == (mode_t) -1 ?
+                             VIR_STORAGE_DEFAULT_POOL_PERM_MODE :
+                             pool->def->target.perms.mode),
                             pool->def->target.perms.uid,
                             pool->def->target.perms.gid,
                             VIR_DIR_CREATE_ALLOW_EXIST |
@@ -1071,7 +1073,10 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
 
-    if ((err = virDirCreate(vol->target.path, vol->target.perms->mode,
+    if ((err = virDirCreate(vol->target.path,
+                            (vol->target.perms->mode == (mode_t) -1 ?
+                             VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
+                             vol->target.perms->mode),
                             vol->target.perms->uid,
                             vol->target.perms->gid,
                             (pool->def->type == VIR_STORAGE_POOL_NETFS

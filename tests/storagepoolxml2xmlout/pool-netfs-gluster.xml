@@ -12,7 +12,6 @@
   <target>
     <path>/mnt/gluster</path>
     <permissions>
-      <mode>0755</mode>
     </permissions>
   </target>
 </pool>

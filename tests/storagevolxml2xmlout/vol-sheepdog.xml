@@ -8,7 +8,6 @@
     <path>sheepdog:test2</path>
     <format type='unknown'/>
     <permissions>
-      <mode>0600</mode>
     </permissions>
   </target>
 </volume>

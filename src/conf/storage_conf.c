@@ -50,9 +50,6 @@
 
 VIR_LOG_INIT("conf.storage_conf");
 
-#define DEFAULT_POOL_PERM_MODE 0755
-#define DEFAULT_VOL_PERM_MODE  0600
-
 VIR_ENUM_IMPL(virStorageVol,
               VIR_STORAGE_VOL_LAST,
               "file", "block", "dir", "network", "netdir")
@@ -718,8 +715,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
 static int
 virStorageDefParsePerms(xmlXPathContextPtr ctxt,
                         virStoragePermsPtr perms,
-                        const char *permxpath,
-                        int defaultmode)
+                        const char *permxpath)
 {
     char *mode;
     long long val;
@@ -730,7 +726,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     node = virXPathNode(permxpath, ctxt);
     if (node == NULL) {
         /* Set default values if there is not <permissions> element */
-        perms->mode = defaultmode;
+        perms->mode = (mode_t) -1;
         perms->uid = (uid_t) -1;
         perms->gid = (gid_t) -1;
         perms->label = NULL;
@@ -740,10 +736,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     relnode = ctxt->node;
     ctxt->node = node;
 
-    mode = virXPathString("string(./mode)", ctxt);
-    if (!mode) {
-        perms->mode = defaultmode;
-    } else {
+    if ((mode = virXPathString("string(./mode)", ctxt))) {
         int tmp;
 
         if (virStrToLong_i(mode, NULL, 8, &tmp) < 0 || (tmp & ~0777)) {
@@ -754,6 +747,8 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
         }
         perms->mode = tmp;
         VIR_FREE(mode);
+    } else {
+        perms->mode = (mode_t) -1;
     }
 
     if (virXPathNode("./owner", ctxt) == NULL) {
@@ -949,8 +944,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
 
         if (virStorageDefParsePerms(ctxt, &ret->target.perms,
-                                    "./target/permissions",
-                                    DEFAULT_POOL_PERM_MODE) < 0)
+                                    "./target/permissions") < 0)
             goto error;
     }
 
@@ -1187,8 +1181,9 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
 
         virBufferAddLit(buf, "<permissions>\n");
         virBufferAdjustIndent(buf, 2);
-        virBufferAsprintf(buf, "<mode>0%o</mode>\n",
-                          def->target.perms.mode);
+        if (def->target.perms.mode != (mode_t) -1)
+            virBufferAsprintf(buf, "<mode>0%o</mode>\n",
+                              def->target.perms.mode);
         if (def->target.perms.uid != (uid_t) -1)
             virBufferAsprintf(buf, "<owner>%d</owner>\n",
                               (int) def->target.perms.uid);
@@ -1319,8 +1314,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         if (VIR_ALLOC(ret->target.backingStore->perms) < 0)
             goto error;
         if (virStorageDefParsePerms(ctxt, ret->target.backingStore->perms,
-                                    "./backingStore/permissions",
-                                    DEFAULT_VOL_PERM_MODE) < 0)
+                                    "./backingStore/permissions") < 0)
             goto error;
     }
 
@@ -1365,8 +1359,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (VIR_ALLOC(ret->target.perms) < 0)
         goto error;
     if (virStorageDefParsePerms(ctxt, ret->target.perms,
-                                "./target/permissions",
-                                DEFAULT_VOL_PERM_MODE) < 0)
+                                "./target/permissions") < 0)
         goto error;
 
     node = virXPathNode("./target/encryption", ctxt);
@@ -1524,8 +1517,9 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         virBufferAddLit(buf, "<permissions>\n");
         virBufferAdjustIndent(buf, 2);
 
-        virBufferAsprintf(buf, "<mode>0%o</mode>\n",
-                          def->perms->mode);
+        if (def->perms->mode != (mode_t) -1)
+            virBufferAsprintf(buf, "<mode>0%o</mode>\n",
+                              def->perms->mode);
         if (def->perms->uid != (uid_t) -1)
             virBufferAsprintf(buf, "<owner>%d</owner>\n",
                               (int) def->perms->uid);
