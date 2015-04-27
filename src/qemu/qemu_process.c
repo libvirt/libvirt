@@ -2233,17 +2233,17 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
     if (niothreads < 0)
         goto cleanup;
 
-    /* Nothing to do */
-    if (niothreads == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
     if (niothreads != vm->def->iothreads) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("got wrong number of IOThread pids from QEMU monitor. "
                          "got %d, wanted %d"),
                        niothreads, vm->def->iothreads);
+        goto cleanup;
+    }
+
+    /* Nothing to do */
+    if (niothreads == 0) {
+        ret = 0;
         goto cleanup;
     }
 
