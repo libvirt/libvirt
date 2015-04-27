@@ -237,7 +237,7 @@ storageStateInitialize(bool privileged,
         if ((virAsprintf(&driver->configDir,
                         "%s/storage", configdir) < 0) ||
             (virAsprintf(&driver->autostartDir,
-                        "%s/storage", configdir) < 0) ||
+                        "%s/storage/autostart", configdir) < 0) ||
             (virAsprintf(&driver->stateDir,
                          "%s/storage/run", rundir) < 0))
             goto error;
