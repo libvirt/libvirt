@@ -67,6 +67,9 @@
         <optional>
           <ref name='qemucmdline'/>
         </optional>
+        <optional>
+          <ref name='keywrap'/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -379,6 +382,24 @@
           </element>
         </zeroOrMore>
       </interleave>
+    </element>
+  </define>
+
+  <define name="keywrap">
+    <element name="keywrap">
+      <oneOrMore>
+        <element name="cipher">
+          <attribute name="name">
+            <choice>
+              <value>aes</value>
+              <value>dea</value>
+            </choice>
+          </attribute>
+          <attribute name="state">
+            <ref name='virOnOff'/>
+          </attribute>
+        </element>
+      </oneOrMore>
     </element>
   </define>
 

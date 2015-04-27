@@ -2119,6 +2119,13 @@ struct _virDomainPowerManagement {
     int s4;
 };
 
+typedef struct _virDomainKeyWrapDef virDomainKeyWrapDef;
+typedef virDomainKeyWrapDef *virDomainKeyWrapDefPtr;
+struct _virDomainKeyWrapDef {
+    int aes; /* enum virTristateSwitch */
+    int dea; /* enum virTristateSwitch */
+};
+
 /*
  * Guest VM main configuration
  *
@@ -2255,6 +2262,8 @@ struct _virDomainDef {
     void *namespaceData;
     virDomainXMLNamespace ns;
 
+    virDomainKeyWrapDefPtr keywrap;
+
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
 };
@@ -2262,6 +2271,13 @@ struct _virDomainDef {
 unsigned long long virDomainDefGetMemoryInitial(virDomainDefPtr def);
 void virDomainDefSetMemoryInitial(virDomainDefPtr def, unsigned long long size);
 unsigned long long virDomainDefGetMemoryActual(virDomainDefPtr def);
+
+typedef enum {
+    VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_AES,
+    VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_DEA,
+
+    VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST
+} virDomainKeyWrapCipherName;
 
 typedef enum {
     VIR_DOMAIN_TAINT_CUSTOM_ARGV,      /* Custom ARGV passthrough from XML */
@@ -2954,6 +2970,7 @@ VIR_ENUM_DECL(virDomainChrTcpProtocol)
 VIR_ENUM_DECL(virDomainChrSpicevmc)
 VIR_ENUM_DECL(virDomainSoundCodec)
 VIR_ENUM_DECL(virDomainSoundModel)
+VIR_ENUM_DECL(virDomainKeyWrapCipherName)
 VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSmbiosMode)
 VIR_ENUM_DECL(virDomainWatchdogModel)

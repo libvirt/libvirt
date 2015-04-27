@@ -6227,6 +6227,45 @@ qemu-kvm -net nic,model=? /dev/null
       being on a file system that lacks security labeling.
     </p>
 
+    <h3><a name="keywrap">Key Wrap</a></h3>
+
+       <p>The content of the optional <code>keywrap</code> element specifies
+        whether the guest will be allowed to perform the S390 cryptographic key
+        management operations. A clear key can be protected by encrypting it
+        under a unique wrapping key that is generated for each guest VM running
+        on the host. Two variations of wrapping keys are generated: one version
+        for encrypting protected keys using the DEA/TDEA algorithm, and another
+        version for keys encrypted using the AES algorithm. If a
+        <code>keywrap</code> element is not included, the guest will be granted
+        access to both AES and DEA/TDEA key wrapping by default.</p>
+
+        <pre>
+&lt;domain&gt;
+  ...
+  &lt;keywrap&gt;
+    &lt;cipher name='aes' state='off'/&gt;
+  &lt;/keywrap&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+    <p>
+      At least one <code>cipher</code> element must be nested within the
+      <code>keywrap</code> element.
+    </p>
+    <dl>
+      <dt><code>cipher</code></dt>
+      <dd>The <code>name</code> attribute identifies the algorithm
+        for encrypting a protected key. The values supported for this attribute
+        are <code>aes</code> for encryption under the AES wrapping key, or
+        <code>dea</code> for encryption under the DEA/TDEA wrapping key. The
+        <code>state</code> attribute indicates whether the cryptographic key
+        management operations should be turned on for the specified encryption
+        algorithm. The value can be set to <code>on</code> or <code>off</code>.
+      </dd>
+    </dl>
+
+    <p>Note: DEA/TDEA is synonymous with DES/TDES.</p>
+
     <h2><a name="examples">Example configs</a></h2>
 
     <p>

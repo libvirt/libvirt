@@ -477,6 +477,11 @@ VIR_ENUM_IMPL(virDomainSoundModel, VIR_DOMAIN_SOUND_MODEL_LAST,
               "ich9",
               "usb")
 
+VIR_ENUM_IMPL(virDomainKeyWrapCipherName,
+              VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST,
+              "aes",
+              "dea")
+
 VIR_ENUM_IMPL(virDomainMemballoonModel, VIR_DOMAIN_MEMBALLOON_MODEL_LAST,
               "virtio",
               "xen",
@@ -832,6 +837,131 @@ virDomainXMLOptionClassDispose(void *obj)
 
     if (xmlopt->config.privFree)
         (xmlopt->config.privFree)(xmlopt->config.priv);
+}
+
+/**
+ * virDomainKeyWrapCipherDefParseXML:
+ *
+ * @def  Domain definition
+ * @node An XML cipher node
+ * @ctxt The XML context
+ *
+ * Parse the attributes from the cipher node and store the state
+ * attribute in @def.
+ *
+ * A cipher node has the form of
+ *
+ *   <cipher name='aes|dea' state='on|off'/>
+ *
+ * Returns: 0 if the parse succeeded
+ *         -1 otherwise
+ */
+static int
+virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
+                                  xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt)
+{
+
+    char *name = NULL;
+    char *state = NULL;
+    int state_type;
+    int name_type;
+    int ret = -1;
+    xmlNodePtr oldnode = ctxt->node;
+
+    ctxt->node = node;
+    if (!(name = virXPathString("string(./@name)", ctxt))) {
+        virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                       _("missing name for cipher"));
+        goto cleanup;
+    }
+
+    if ((name_type = virDomainKeyWrapCipherNameTypeFromString(name)) < 0) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s is not a supported cipher name"), name);
+        goto cleanup;
+    }
+
+    if (!(state = virXPathString("string(./@state)", ctxt))) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("missing state for cipher named %s"), name);
+        goto cleanup;
+    }
+
+    if ((state_type = virTristateSwitchTypeFromString(state)) < 0) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s is not a supported cipher state"), state);
+        goto cleanup;
+    }
+
+    switch ((virDomainKeyWrapCipherName) name_type) {
+    case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_AES:
+        if (keywrap->aes != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("A domain definition can have no more than "
+                             "one cipher node with name %s"),
+                           virDomainKeyWrapCipherNameTypeToString(name_type));
+
+            goto cleanup;
+        }
+        keywrap->aes = state_type;
+        break;
+
+    case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_DEA:
+        if (keywrap->dea != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("A domain definition can have no more than "
+                             "one cipher node with name %s"),
+                           virDomainKeyWrapCipherNameTypeToString(name_type));
+
+            goto cleanup;
+        }
+        keywrap->dea = state_type;
+        break;
+
+    case VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_LAST:
+        break;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(state);
+    ctxt->node = oldnode;
+    return ret;
+}
+
+static int
+virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int ret = -1;
+    xmlNodePtr *nodes = NULL;
+    int n;
+
+    if (!(n = virXPathNodeSet("./keywrap/cipher", ctxt, &nodes)))
+        return 0;
+
+    if (VIR_ALLOC(def->keywrap) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (virDomainKeyWrapCipherDefParseXML(def->keywrap, nodes[i], ctxt) < 0)
+            goto cleanup;
+    }
+
+    if (!def->keywrap->aes &&
+        !def->keywrap->dea)
+        VIR_FREE(def->keywrap);
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(def->keywrap);
+    VIR_FREE(nodes);
+    return ret;
 }
 
 
@@ -2360,6 +2490,8 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; i < def->nshmems; i++)
         virDomainShmemDefFree(def->shmems[i]);
     VIR_FREE(def->shmems);
+
+    VIR_FREE(def->keywrap);
 
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
@@ -15569,6 +15701,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(tmp);
     }
 
+    if (virDomainKeyWrapDefParseXML(def, ctxt) < 0)
+        goto error;
+
     /* Extract custom metadata */
     if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL)
         def->metadata = xmlCopyNode(node, 1);
@@ -20622,6 +20757,24 @@ virDomainLoaderDefFormat(virBufferPtr buf,
     }
 }
 
+static void
+virDomainKeyWrapDefFormat(virBufferPtr buf, virDomainKeyWrapDefPtr keywrap)
+{
+    virBufferAddLit(buf, "<keywrap>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    if (keywrap->aes)
+        virBufferAsprintf(buf, "<cipher name='aes' state='%s'/>\n",
+                          virTristateSwitchTypeToString(keywrap->aes));
+
+    if (keywrap->dea)
+        virBufferAsprintf(buf, "<cipher name='dea' state='%s'/>\n",
+                          virTristateSwitchTypeToString(keywrap->dea));
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</keywrap>\n");
+}
+
 static bool
 virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
 {
@@ -21523,6 +21676,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if ((def->ns.format)(buf, def->namespaceData) < 0)
             goto error;
     }
+
+    if (def->keywrap)
+        virDomainKeyWrapDefFormat(buf, def->keywrap);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domain>\n");
