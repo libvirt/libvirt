@@ -438,4 +438,7 @@ void qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem);
 
 virDomainChrSourceDefPtr qemuFindAgentConfig(virDomainDefPtr def);
 
+bool qemuDomainMachineIsQ35(const virDomainDef *def);
+bool qemuDomainMachineIsI440FX(const virDomainDef *def);
+
 #endif /* __QEMU_DOMAIN_H__ */

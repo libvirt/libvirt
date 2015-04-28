@@ -3078,3 +3078,22 @@ qemuFindAgentConfig(virDomainDefPtr def)
 
     return config;
 }
+
+
+bool
+qemuDomainMachineIsQ35(const virDomainDef *def)
+{
+    return (STRPREFIX(def->os.machine, "pc-q35") ||
+            STREQ(def->os.machine, "q35"));
+}
+
+
+bool
+qemuDomainMachineIsI440FX(const virDomainDef *def)
+{
+    return (STREQ(def->os.machine, "pc") ||
+            STRPREFIX(def->os.machine, "pc-0.") ||
+            STRPREFIX(def->os.machine, "pc-1.") ||
+            STRPREFIX(def->os.machine, "pc-i440") ||
+            STRPREFIX(def->os.machine, "rhel"));
+}

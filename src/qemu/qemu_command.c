@@ -1955,25 +1955,6 @@ qemuValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
 }
 
 
-static bool
-qemuDomainMachineIsQ35(virDomainDefPtr def)
-{
-    return (STRPREFIX(def->os.machine, "pc-q35") ||
-            STREQ(def->os.machine, "q35"));
-}
-
-
-static bool
-qemuDomainMachineIsI440FX(virDomainDefPtr def)
-{
-    return (STREQ(def->os.machine, "pc") ||
-            STRPREFIX(def->os.machine, "pc-0.") ||
-            STRPREFIX(def->os.machine, "pc-1.") ||
-            STRPREFIX(def->os.machine, "pc-i440") ||
-            STRPREFIX(def->os.machine, "rhel"));
-}
-
-
 static int
 qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
