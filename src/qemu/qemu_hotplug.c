@@ -1736,7 +1736,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
 
-    if (!(devstr = qemuBuildMemoryDeviceStr(mem, priv->qemuCaps)))
+    if (!(devstr = qemuBuildMemoryDeviceStr(mem, vm->def, priv->qemuCaps)))
         goto cleanup;
 
     qemuDomainMemoryDeviceAlignSize(mem);

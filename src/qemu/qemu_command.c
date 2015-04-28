@@ -4946,6 +4946,7 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
 
 char *
 qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
+                         virDomainDefPtr def,
                          virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -4969,6 +4970,14 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only 'dimm' addresses are supported for the "
                              "pc-dimm device"));
+            return NULL;
+        }
+
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
+            mem->info.addr.dimm.slot >= def->mem.memory_slots) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory device slot '%u' exceeds slots count '%u'"),
+                           mem->info.addr.dimm.slot, def->mem.memory_slots);
             return NULL;
         }
 
@@ -8821,7 +8830,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                                           qemuCaps, cfg)))
                 goto error;
 
-            if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], qemuCaps))) {
+            if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], def, qemuCaps))) {
                 VIR_FREE(backStr);
                 goto error;
             }

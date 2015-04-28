@@ -175,6 +175,7 @@ int qemuBuildMemoryBackendStr(unsigned long long size,
                               bool force);
 
 char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
+                               virDomainDefPtr def,
                                virQEMUCapsPtr qemuCaps);
 
 /* Legacy, pre device support */
