@@ -28,7 +28,7 @@
 #include "virerror.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
-
+#include "qemu/qemu_monitor.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -1782,7 +1782,7 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
     if (!test)
         return -1;
 
-    if (!(info = virHashCreate(32, (virHashDataFree) free)) ||
+    if (!(info = virHashCreate(32, qemuMonitorChardevInfoFree)) ||
         !(expectedInfo = virHashCreate(32, NULL)))
         goto cleanup;
 
