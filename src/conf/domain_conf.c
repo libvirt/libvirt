@@ -13342,7 +13342,7 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 {
     int ret = -1;
     virDomainIOThreadIDDefPtr iothrid;
-    virBitmapPtr cpumask;
+    virBitmapPtr cpumask = NULL;
     xmlNodePtr oldnode = ctxt->node;
     unsigned int iothreadid;
     char *tmp = NULL;
