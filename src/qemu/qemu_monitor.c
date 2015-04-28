@@ -3813,15 +3813,6 @@ qemuMonitorGetIOThreads(qemuMonitorPtr mon,
 }
 
 
-void
-qemuMonitorIOThreadInfoFree(qemuMonitorIOThreadInfoPtr iothread)
-{
-    if (!iothread)
-        return;
-    VIR_FREE(iothread);
-}
-
-
 /**
  * qemuMonitorGetMemoryDeviceInfo:
  * @mon: pointer to the monitor

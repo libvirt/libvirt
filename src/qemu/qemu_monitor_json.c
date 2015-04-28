@@ -6518,7 +6518,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
  cleanup:
     if (ret < 0 && infolist) {
         for (i = 0; i < n; i++)
-            qemuMonitorIOThreadInfoFree(infolist[i]);
+            VIR_FREE(infolist[i]);
         VIR_FREE(infolist);
     }
     virJSONValueFree(cmd);

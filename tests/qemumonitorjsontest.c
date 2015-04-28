@@ -2295,7 +2295,7 @@ testQemuMonitorJSONGetIOThreads(const void *data)
  cleanup:
     qemuMonitorTestFree(test);
     for (i = 0; i < ninfo; i++)
-        qemuMonitorIOThreadInfoFree(info[i]);
+        VIR_FREE(info[i]);
     VIR_FREE(info);
 
     return ret;

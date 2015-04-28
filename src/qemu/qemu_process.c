@@ -2265,7 +2265,7 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
  cleanup:
     if (iothreads) {
         for (i = 0; i < niothreads; i++)
-            qemuMonitorIOThreadInfoFree(iothreads[i]);
+            VIR_FREE(iothreads[i]);
         VIR_FREE(iothreads);
     }
     return ret;

@@ -5950,7 +5950,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
     }
     if (iothreads) {
         for (i = 0; i < niothreads; i++)
-            qemuMonitorIOThreadInfoFree(iothreads[i]);
+            VIR_FREE(iothreads[i]);
         VIR_FREE(iothreads);
     }
 
@@ -6330,7 +6330,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
  cleanup:
     if (new_iothreads) {
         for (idx = 0; idx < new_niothreads; idx++)
-            qemuMonitorIOThreadInfoFree(new_iothreads[idx]);
+            VIR_FREE(new_iothreads[idx]);
         VIR_FREE(new_iothreads);
     }
     VIR_FREE(mem_mask);
@@ -6416,7 +6416,7 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
  cleanup:
     if (new_iothreads) {
         for (idx = 0; idx < new_niothreads; idx++)
-            qemuMonitorIOThreadInfoFree(new_iothreads[idx]);
+            VIR_FREE(new_iothreads[idx]);
         VIR_FREE(new_iothreads);
     }
     virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
