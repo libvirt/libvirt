@@ -2812,7 +2812,7 @@ qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
 }
 
 
-static void
+void
 qemuMonitorChardevInfoFree(void *data,
                            const void *name ATTRIBUTE_UNUSED)
 {

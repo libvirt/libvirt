@@ -649,6 +649,7 @@ struct _qemuMonitorChardevInfo {
     char *ptyPath;
     virDomainChrDeviceState state;
 };
+void qemuMonitorChardevInfoFree(void *data, const void *name);
 int qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
                               virHashTablePtr *retinfo);
 
