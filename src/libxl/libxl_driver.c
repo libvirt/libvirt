@@ -410,7 +410,7 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->config);
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
-    virObjectUnref(libxl_driver->reservedVNCPorts);
+    virObjectUnref(libxl_driver->reservedGraphicsPorts);
     virObjectUnref(libxl_driver->migrationPorts);
     virLockManagerPluginUnref(libxl_driver->lockManager);
 
@@ -523,7 +523,7 @@ libxlStateInitialize(bool privileged,
     }
 
     /* Allocate bitmap for vnc port reservation */
-    if (!(libxl_driver->reservedVNCPorts =
+    if (!(libxl_driver->reservedGraphicsPorts =
           virPortAllocatorNew(_("VNC"),
                               LIBXL_VNC_PORT_MIN,
                               LIBXL_VNC_PORT_MAX,
