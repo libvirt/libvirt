@@ -2268,6 +2268,9 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Tue Apr 28 2015 Cole Robinson <crobinso@redhat.com> - 1.2.9.3-1
+- Maintenance release 1.2.9.3
+
 * Sat Feb 07 2015 Cole Robinson <crobinso@redhat.com> - 1.2.9.2-1
 - Maintenance release 1.2.9.2
 
