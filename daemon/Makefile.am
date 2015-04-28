@@ -53,6 +53,7 @@ EXTRA_DIST =						\
 	libvirtd.init.in				\
 	libvirtd.upstart				\
 	libvirtd.policy.in				\
+	libvirt.rules					\
 	libvirtd.sasl					\
 	libvirtd.service.in				\
 	libvirtd.socket.in				\
@@ -233,6 +234,8 @@ policyauth = auth_admin_keep_session
 else ! WITH_POLKIT0
 policydir = $(datadir)/polkit-1/actions
 policyauth = auth_admin_keep
+rulesdir = $(datadir)/polkit-1/rules.d
+rulesfile = libvirt.rules
 endif ! WITH_POLKIT0
 endif WITH_POLKIT
 
@@ -263,9 +266,19 @@ if WITH_POLKIT
 install-data-polkit::
 	$(MKDIR_P) $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+if ! WITH_POLKIT0
+	$(MKDIR_P) $(DESTDIR)$(rulesdir)
+	$(INSTALL_DATA) $(srcdir)/$(rulesfile) $(DESTDIR)$(rulesdir)/50-libvirt.rules
+endif ! WITH_POLKIT0
+
 uninstall-data-polkit::
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 	rmdir $(DESTDIR)$(policydir) || :
+if ! WITH_POLKIT0
+	rm -f $(DESTDIR)$(rulesdir)/50-libvirt.rules
+	rmdir $(DESTDIR)$(rulesdir) || :
+endif ! WITH_POLKIT0
+
 else ! WITH_POLKIT
 install-data-polkit::
 uninstall-data-polkit::

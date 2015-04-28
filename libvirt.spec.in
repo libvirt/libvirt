@@ -1645,9 +1645,9 @@ then
 fi
 
 %if %{with_libvirtd}
+%pre daemon
     %if ! %{with_driver_modules}
         %if %{with_qemu}
-%pre daemon
             %if 0%{?fedora} || 0%{?rhel} >= 6
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
@@ -1661,10 +1661,20 @@ if ! getent passwd qemu >/dev/null; then
     useradd -r -g qemu -G kvm -d / -s /sbin/nologin -c "qemu user" qemu
   fi
 fi
-exit 0
             %endif
         %endif
     %endif
+
+    %if %{with_polkit}
+        %if 0%{?fedora} || 0%{?rhel} >= 6
+# 'libvirt' group is just to allow password-less polkit access to
+# libvirtd. The uid number is irrelevant, so we use dynamic allocation
+# described at the above link.
+getent group libvirt >/dev/null || groupadd -r libvirt
+        %endif
+    %endif
+
+exit 0
 
 %post daemon
 
@@ -1939,6 +1949,7 @@ exit 0
         %if 0%{?fedora} || 0%{?rhel} >= 6
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
+%{_datadir}/polkit-1/rules.d/50-libvirt.rules
         %else
 %{_datadir}/PolicyKit/policy/org.libvirt.unix.policy
         %endif
