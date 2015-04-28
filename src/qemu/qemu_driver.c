@@ -14943,12 +14943,9 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
                   VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, NULL);
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) &&
-        !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("quiesce requires disk-only"));
-        return NULL;
-    }
+    VIR_REQUIRE_FLAG_RET(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE,
+                         VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY,
+                         NULL);
 
     if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))

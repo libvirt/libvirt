@@ -221,12 +221,9 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
     virCheckNonNullArgGoto(xmlDesc, error);
     virCheckReadOnlyGoto(conn->flags, error);
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT) &&
-        !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)) {
-        virReportInvalidArg(flags, "%s",
-                            _("use of 'current' flag in requires 'redefine' flag"));
-        goto error;
-    }
+    VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT,
+                          VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
+                          error);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
                              VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA,
