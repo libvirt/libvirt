@@ -2775,7 +2775,13 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
 
     int ret = -1, id = 0;
     char *newname = NULL;
-    const char *templ = def->bridge ? def->bridge : "virbr%d";
+    const char *templ = "virbr%d";
+    const char *p;
+
+    if (def->bridge &&
+        (p = strchr(def->bridge, '%')) == strrchr(def->bridge, '%') &&
+        p[1] == 'd')
+        templ = def->bridge;
 
     do {
         if (virAsprintf(&newname, templ, id) < 0)
