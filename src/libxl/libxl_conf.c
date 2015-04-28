@@ -1283,6 +1283,8 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
                 if (VIR_STRDUP(x_vfb->vnc.listen, listenAddr) < 0)
                     return -1;
             }
+            if (VIR_STRDUP(x_vfb->vnc.passwd, l_vfb->data.vnc.auth.passwd) < 0)
+                return -1;
             if (VIR_STRDUP(x_vfb->keymap, l_vfb->data.vnc.keymap) < 0)
                 return -1;
             break;
