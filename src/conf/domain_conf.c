@@ -21661,6 +21661,17 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
             return -1;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_MEMORY) {
+        unsigned long long sz = dev->data.memory->size;
+
+        if ((virDomainDefGetMemoryActual(def) + sz) > def->mem.max_memory) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Attaching memory device with size '%llu' would "
+                             "exceed domain's maxMemory config"), sz);
+            return -1;
+        }
+    }
+
     return 0;
 }
 
