@@ -8822,6 +8822,14 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         /* memory hotplug requires NUMA to be enabled - we already checked
          * that memory devices are present only when NUMA is */
+
+        if (def->nmems > def->mem.memory_slots) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("memory device count '%zu' exceeds slots count '%u'"),
+                           def->nmems, def->mem.memory_slots);
+            goto error;
+        }
+
         for (i = 0; i < def->nmems; i++) {
             char *backStr;
             char *dimmStr;

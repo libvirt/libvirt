@@ -1730,6 +1730,12 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     int id;
     int ret = -1;
 
+    if (vm->def->nmems == vm->def->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("no free memory device slot available"));
+        goto cleanup;
+    }
+
     if (virAsprintf(&mem->info.alias, "dimm%zu", vm->def->nmems) < 0)
         goto cleanup;
 

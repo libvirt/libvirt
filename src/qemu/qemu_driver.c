@@ -8489,6 +8489,12 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
+        if (vmdef->nmems == vmdef->mem.memory_slots) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("no free memory device slot available"));
+            return -1;
+        }
+
         if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
             return -1;
         dev->data.memory = NULL;
