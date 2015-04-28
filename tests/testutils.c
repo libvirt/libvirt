@@ -458,7 +458,7 @@ virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
 
 
 /**
- * @param stream: output stream write to differences to
+ * @param stream: output stream to write differences to
  * @param expect: expected output text
  * @param expectName: name designator of the expected text
  * @param actual: actual output text
@@ -532,7 +532,7 @@ int virtTestDifferenceFull(FILE *stream,
 }
 
 /**
- * @param stream: output stream write to differences to
+ * @param stream: output stream to write differences to
  * @param expect: expected output text
  * @param actual: actual output text
  *
@@ -548,7 +548,7 @@ int virtTestDifference(FILE *stream,
 
 
 /**
- * @param stream: output stream write to differences to
+ * @param stream: output stream to write differences to
  * @param expect: expected output text
  * @param actual: actual output text
  *
