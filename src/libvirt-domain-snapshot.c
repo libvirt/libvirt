@@ -227,18 +227,13 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
                             _("use of 'current' flag in requires 'redefine' flag"));
         goto error;
     }
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
-        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        virReportInvalidArg(flags, "%s",
-                            _("'redefine' and 'no metadata' flags in are mutually exclusive"));
-        goto error;
-    }
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) &&
-        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
-        virReportInvalidArg(flags, "%s",
-                            _("'redefine' and 'halt' flags are mutually exclusive"));
-        goto error;
-    }
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
+                             VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA,
+                             error);
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
+                             VIR_DOMAIN_SNAPSHOT_CREATE_HALT,
+                             error);
 
     if (conn->driver->domainSnapshotCreateXML) {
         virDomainSnapshotPtr ret;
@@ -1077,12 +1072,9 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     virCheckReadOnlyGoto(conn->flags, error);
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
-        (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
-        virReportInvalidArg(flags, "%s",
-                            _("running and paused flags are mutually exclusive"));
-        goto error;
-    }
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING,
+                             VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED,
+                             error);
 
     if (conn->driver->domainRevertToSnapshot) {
         int ret = conn->driver->domainRevertToSnapshot(snapshot, flags);
@@ -1137,12 +1129,9 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     virCheckReadOnlyGoto(conn->flags, error);
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN) &&
-        (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
-        virReportInvalidArg(flags, "%s",
-                            _("children and children_only flags are mutually exclusive"));
-        goto error;
-    }
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN,
+                             VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY,
+                             error);
 
     if (conn->driver->domainSnapshotDelete) {
         int ret = conn->driver->domainSnapshotDelete(snapshot, flags);
