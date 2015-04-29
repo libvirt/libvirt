@@ -23031,97 +23031,131 @@ virDomainObjMatchFilter(virDomainObjPtr vm,
 
 
 struct virDomainListData {
-    virConnectPtr conn;
-    virDomainPtr *domains;
-    virDomainObjListACLFilter filter;
-    unsigned int flags;
-    int ndomains;
-    bool error;
+    virDomainObjPtr *vms;
+    size_t nvms;
 };
 
+
 static void
-virDomainListPopulate(void *payload,
-                      const void *name ATTRIBUTE_UNUSED,
-                      void *opaque)
+virDomainObjListCollectIterator(void *payload,
+                                const void *name ATTRIBUTE_UNUSED,
+                                void *opaque)
 {
     struct virDomainListData *data = opaque;
-    virDomainObjPtr vm = payload;
-    virDomainPtr dom;
 
-    if (data->error)
-        return;
+    data->vms[data->nvms++] = virObjectRef(payload);
+}
 
-    virObjectLock(vm);
-    /* check if the domain matches the filter */
 
-    /* filter by the callback function (access control checks) */
-    if (data->filter != NULL &&
-        !data->filter(data->conn, vm->def))
-        goto cleanup;
+static void
+virDomainObjListFilter(virDomainObjPtr **list,
+                       size_t *nvms,
+                       virConnectPtr conn,
+                       virDomainObjListACLFilter filter,
+                       unsigned int flags)
+{
+    size_t i = 0;
 
-    if (!virDomainObjMatchFilter(vm, data->flags))
-        goto cleanup;
+    while (i < *nvms) {
+        virDomainObjPtr vm = (*list)[i];
 
-    /* just count the machines */
-    if (!data->domains) {
-        data->ndomains++;
-        goto cleanup;
+        virObjectLock(vm);
+
+        /* do not list the object if:
+         * 1) it's being removed.
+         * 2) connection does not have ACL to see it
+         * 3) it doesn't match the filter
+         */
+        if (vm->removing ||
+            (filter && !filter(conn, vm->def)) ||
+            !virDomainObjMatchFilter(vm, flags)) {
+            virObjectUnlock(vm);
+            virObjectUnref(vm);
+            VIR_DELETE_ELEMENT(*list, i, *nvms);
+            continue;
+        }
+
+        virObjectUnlock(vm);
+        i++;
     }
-
-    if (!(dom = virGetDomain(data->conn, vm->def->name, vm->def->uuid))) {
-        data->error = true;
-        goto cleanup;
-    }
-
-    dom->id = vm->def->id;
-
-    data->domains[data->ndomains++] = dom;
-
- cleanup:
-    virObjectUnlock(vm);
-    return;
 }
 
 
 int
-virDomainObjListExport(virDomainObjListPtr doms,
+virDomainObjListCollect(virDomainObjListPtr domlist,
+                        virConnectPtr conn,
+                        virDomainObjPtr **vms,
+                        size_t *nvms,
+                        virDomainObjListACLFilter filter,
+                        unsigned int flags)
+{
+    struct virDomainListData data = { NULL, 0 };
+
+    virObjectLock(domlist);
+    if (VIR_ALLOC_N(data.vms, virHashSize(domlist->objs)) < 0) {
+        virObjectUnlock(domlist);
+        return -1;
+    }
+
+    virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
+    virObjectUnlock(domlist);
+
+    virDomainObjListFilter(&data.vms, &data.nvms, conn, filter, flags);
+
+    *nvms = data.nvms;
+    *vms = data.vms;
+
+    return 0;
+}
+
+
+int
+virDomainObjListExport(virDomainObjListPtr domlist,
                        virConnectPtr conn,
                        virDomainPtr **domains,
                        virDomainObjListACLFilter filter,
                        unsigned int flags)
 {
+    virDomainObjPtr *vms = NULL;
+    virDomainPtr *doms = NULL;
+    size_t nvms = 0;
+    size_t i;
     int ret = -1;
 
-    struct virDomainListData data = {
-        conn, NULL,
-        filter,
-        flags, 0, false
-    };
+    if (virDomainObjListCollect(domlist, conn, &vms, &nvms, filter, flags) < 0)
+        return -1;
 
-    virObjectLock(doms);
-    if (domains &&
-        VIR_ALLOC_N(data.domains, virHashSize(doms->objs) + 1) < 0)
-        goto cleanup;
+    if (domains) {
+        if (VIR_ALLOC_N(doms, nvms + 1) < 0)
+            goto cleanup;
 
-    virHashForEach(doms->objs, virDomainListPopulate, &data);
+        for (i = 0; i < nvms; i++) {
+            virDomainObjPtr vm = vms[i];
 
-    if (data.error)
-        goto cleanup;
+            virObjectLock(vm);
 
-    if (data.domains) {
-        /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(data.domains, data.ndomains + 1));
-        *domains = data.domains;
-        data.domains = NULL;
+            if (!(doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid))) {
+                virObjectUnlock(vm);
+                goto cleanup;
+            }
+
+            doms[i]->id = vm->def->id;
+
+            virObjectUnlock(vm);
+        }
+
+        *domains = doms;
+        doms = NULL;
     }
 
-    ret = data.ndomains;
+    ret = nvms;
 
  cleanup:
-    virObjectListFree(data.domains);
-    virObjectUnlock(doms);
+    virObjectListFree(doms);
+    virObjectListFreeCount(vms, nvms);
     return ret;
 }
+
 
 virSecurityLabelDefPtr
 virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)

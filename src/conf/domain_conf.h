@@ -3051,6 +3051,12 @@ VIR_ENUM_DECL(virDomainStartupPolicy)
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)
 
+int virDomainObjListCollect(virDomainObjListPtr doms,
+                            virConnectPtr conn,
+                            virDomainObjPtr **vms,
+                            size_t *nvms,
+                            virDomainObjListACLFilter filter,
+                            unsigned int flags);
 int virDomainObjListExport(virDomainObjListPtr doms,
                            virConnectPtr conn,
                            virDomainPtr **domains,
