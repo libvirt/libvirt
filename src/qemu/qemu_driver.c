@@ -19807,26 +19807,25 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
                              unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    virDomainPtr *domlist = NULL;
-    virDomainObjPtr dom = NULL;
+    virDomainObjPtr *vms = NULL;
+    virDomainObjPtr vm;
+    size_t nvms;
     virDomainStatsRecordPtr *tmpstats = NULL;
     bool enforce = !!(flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS);
-    int ntempdoms;
     int nstats = 0;
     size_t i;
     int ret = -1;
     unsigned int privflags = 0;
     unsigned int domflags = 0;
+    unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
 
-    if (ndoms)
-        virCheckFlags(VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
-                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
-    else
-        virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
-                      VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
-                      VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
-                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
-                      VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
 
     if (virConnectGetAllDomainStatsEnsureACL(conn) < 0)
         return -1;
@@ -19834,58 +19833,53 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     if (qemuDomainGetStatsCheckSupport(&stats, enforce) < 0)
         return -1;
 
-    if (!ndoms) {
-        unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
-                                       VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
-                                       VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
-
-        if ((ntempdoms = virDomainObjListExport(driver->domains,
-                                                conn,
-                                                &domlist,
-                                                virConnectGetAllDomainStatsCheckACL,
-                                                lflags)) < 0)
-            goto cleanup;
-
-        ndoms = ntempdoms;
-        doms = domlist;
+    if (ndoms) {
+        if (virDomainObjListConvert(driver->domains, conn, doms, ndoms, &vms,
+                                    &nvms, virConnectGetAllDomainStatsCheckACL,
+                                    lflags, true) < 0)
+            return -1;
+    } else {
+        if (virDomainObjListCollect(driver->domains, conn, &vms, &nvms,
+                                    virConnectGetAllDomainStatsCheckACL,
+                                    lflags) < 0)
+            return -1;
     }
 
-    if (VIR_ALLOC_N(tmpstats, ndoms + 1) < 0)
-        goto cleanup;
+    if (VIR_ALLOC_N(tmpstats, nvms + 1) < 0)
+        return -1;
 
     if (qemuDomainGetStatsNeedMonitor(stats))
         privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
 
-    for (i = 0; i < ndoms; i++) {
+    for (i = 0; i < nvms; i++) {
         virDomainStatsRecordPtr tmp = NULL;
         domflags = 0;
+        vm = vms[i];
 
-        if (!(dom = qemuDomObjFromDomain(doms[i])))
-            continue;
-
-        if (doms != domlist &&
-            !virConnectGetAllDomainStatsCheckACL(conn, dom->def)) {
-            virDomainObjEndAPI(&dom);
-            continue;
-        }
+        virObjectLock(vm);
 
         if (HAVE_JOB(privflags) &&
-            qemuDomainObjBeginJob(driver, dom, QEMU_JOB_QUERY) == 0)
+            qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) == 0)
             domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
         /* else: without a job it's still possible to gather some data */
 
         if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
             domflags |= QEMU_DOMAIN_STATS_BACKING;
-        if (qemuDomainGetStats(conn, dom, stats, &tmp, domflags) < 0)
-            goto endjob;
+        if (qemuDomainGetStats(conn, vm, stats, &tmp, domflags) < 0) {
+            if (HAVE_JOB(domflags) && vm)
+                qemuDomainObjEndJob(driver, vm);
+
+            virObjectUnlock(vm);
+            goto cleanup;
+        }
 
         if (tmp)
             tmpstats[nstats++] = tmp;
 
         if (HAVE_JOB(domflags))
-            qemuDomainObjEndJob(driver, dom);
+            qemuDomainObjEndJob(driver, vm);
 
-        virDomainObjEndAPI(&dom);
+        virObjectUnlock(vm);
     }
 
     *retStats = tmpstats;
@@ -19893,15 +19887,9 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
 
     ret = nstats;
 
- endjob:
-    if (HAVE_JOB(domflags) && dom)
-        qemuDomainObjEndJob(driver, dom);
-
  cleanup:
-    virDomainObjEndAPI(&dom);
-
     virDomainStatsRecordListFree(tmpstats);
-    virObjectListFree(domlist);
+    virObjectListFreeCount(vms, nvms);
 
     return ret;
 }
