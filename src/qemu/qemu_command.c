@@ -2110,11 +2110,7 @@ qemuValidateDevicePCISlotsChipsets(virDomainDefPtr def,
                                    virQEMUCapsPtr qemuCaps,
                                    virDomainPCIAddressSetPtr addrs)
 {
-    if ((STRPREFIX(def->os.machine, "pc-0.") ||
-        STRPREFIX(def->os.machine, "pc-1.") ||
-        STRPREFIX(def->os.machine, "pc-i440") ||
-        STREQ(def->os.machine, "pc") ||
-        STRPREFIX(def->os.machine, "rhel")) &&
+    if (qemuDomainMachineIsI440FX(def) &&
         qemuValidateDevicePCISlotsPIIX3(def, qemuCaps, addrs) < 0) {
         return -1;
     }
