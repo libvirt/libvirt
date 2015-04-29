@@ -22965,6 +22965,71 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     return ret;
 }
 
+
+#define MATCH(FLAG) (filter & (FLAG))
+static bool
+virDomainObjMatchFilter(virDomainObjPtr vm,
+                        unsigned int filter)
+{
+    /* filter by active state */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) &&
+        !((MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
+           virDomainObjIsActive(vm)) ||
+          (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE) &&
+           !virDomainObjIsActive(vm))))
+        return false;
+
+    /* filter by persistence */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT) &&
+        !((MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT) &&
+           vm->persistent) ||
+          (MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) &&
+           !vm->persistent)))
+        return false;
+
+    /* filter by domain state */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
+        int st = virDomainObjGetState(vm, NULL);
+        if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
+               st == VIR_DOMAIN_RUNNING) ||
+              (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
+               st == VIR_DOMAIN_PAUSED) ||
+              (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
+               st == VIR_DOMAIN_SHUTOFF) ||
+              (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
+               (st != VIR_DOMAIN_RUNNING &&
+                st != VIR_DOMAIN_PAUSED &&
+                st != VIR_DOMAIN_SHUTOFF))))
+            return false;
+    }
+
+    /* filter by existence of managed save state */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE) &&
+        !((MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) &&
+           vm->hasManagedSave) ||
+          (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE) &&
+           !vm->hasManagedSave)))
+        return false;
+
+    /* filter by autostart option */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART) &&
+        !((MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) && vm->autostart) ||
+          (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) && !vm->autostart)))
+        return false;
+
+    /* filter by snapshot existence */
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
+        int nsnap = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
+        if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
+              (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap <= 0)))
+            return false;
+    }
+
+    return true;
+}
+#undef MATCH
+
+
 struct virDomainListData {
     virConnectPtr conn;
     virDomainPtr *domains;
@@ -22974,7 +23039,6 @@ struct virDomainListData {
     bool error;
 };
 
-#define MATCH(FLAG) (data->flags & (FLAG))
 static void
 virDomainListPopulate(void *payload,
                       const void *name ATTRIBUTE_UNUSED,
@@ -22995,59 +23059,8 @@ virDomainListPopulate(void *payload,
         !data->filter(data->conn, vm->def))
         goto cleanup;
 
-    /* filter by active state */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE) &&
-        !((MATCH(VIR_CONNECT_LIST_DOMAINS_ACTIVE) &&
-           virDomainObjIsActive(vm)) ||
-          (MATCH(VIR_CONNECT_LIST_DOMAINS_INACTIVE) &&
-           !virDomainObjIsActive(vm))))
+    if (!virDomainObjMatchFilter(vm, data->flags))
         goto cleanup;
-
-    /* filter by persistence */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT) &&
-        !((MATCH(VIR_CONNECT_LIST_DOMAINS_PERSISTENT) &&
-           vm->persistent) ||
-          (MATCH(VIR_CONNECT_LIST_DOMAINS_TRANSIENT) &&
-           !vm->persistent)))
-        goto cleanup;
-
-    /* filter by domain state */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE)) {
-        int st = virDomainObjGetState(vm, NULL);
-        if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_RUNNING) &&
-               st == VIR_DOMAIN_RUNNING) ||
-              (MATCH(VIR_CONNECT_LIST_DOMAINS_PAUSED) &&
-               st == VIR_DOMAIN_PAUSED) ||
-              (MATCH(VIR_CONNECT_LIST_DOMAINS_SHUTOFF) &&
-               st == VIR_DOMAIN_SHUTOFF) ||
-              (MATCH(VIR_CONNECT_LIST_DOMAINS_OTHER) &&
-               (st != VIR_DOMAIN_RUNNING &&
-                st != VIR_DOMAIN_PAUSED &&
-                st != VIR_DOMAIN_SHUTOFF))))
-            goto cleanup;
-    }
-
-    /* filter by existence of managed save state */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE) &&
-        !((MATCH(VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE) &&
-           vm->hasManagedSave) ||
-          (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE) &&
-           !vm->hasManagedSave)))
-            goto cleanup;
-
-    /* filter by autostart option */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART) &&
-        !((MATCH(VIR_CONNECT_LIST_DOMAINS_AUTOSTART) && vm->autostart) ||
-          (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART) && !vm->autostart)))
-        goto cleanup;
-
-    /* filter by snapshot existence */
-    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
-        int nsnap = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
-        if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) && nsnap > 0) ||
-              (MATCH(VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT) && nsnap <= 0)))
-            goto cleanup;
-    }
 
     /* just count the machines */
     if (!data->domains) {
@@ -23068,7 +23081,6 @@ virDomainListPopulate(void *payload,
     virObjectUnlock(vm);
     return;
 }
-#undef MATCH
 
 
 int
