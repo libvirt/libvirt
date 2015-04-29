@@ -449,7 +449,12 @@ virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
     char *portal;
+    char *session;
     int ret = -1;
+
+    if ((session = virStorageBackendISCSISession(pool, true)) == NULL)
+        return 0;
+    VIR_FREE(session);
 
     if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
         return -1;
