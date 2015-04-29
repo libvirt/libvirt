@@ -324,6 +324,10 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                     dev->data.video->vram = 4 * 1024;
             }
             break;
+        case VIR_DOMAIN_VIDEO_TYPE_QXL:
+            if (dev->data.video->vram == 0)
+                dev->data.video->vram = 128 * 1024;
+            break;
         }
     }
 

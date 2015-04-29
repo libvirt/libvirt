@@ -1741,6 +1741,17 @@ libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
             }
             break;
 
+#ifdef LIBXL_HAVE_QXL
+        case VIR_DOMAIN_VIDEO_TYPE_QXL:
+            b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_QXL;
+            if (def->videos[0]->vram < 128 * 1024) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("videoram must be at least 128MB for QXL"));
+                return -1;
+            }
+            break;
+#endif
+
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("video type %s is not supported by libxl"),
