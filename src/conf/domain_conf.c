@@ -22081,7 +22081,7 @@ virDomainGetFilesystemForTarget(virDomainDefPtr def,
 
 
 struct virDomainObjListData {
-    virDomainObjListFilter filter;
+    virDomainObjListACLFilter filter;
     virConnectPtr conn;
     bool active;
     int count;
@@ -22112,7 +22112,7 @@ virDomainObjListCount(void *payload,
 int
 virDomainObjListNumOfDomains(virDomainObjListPtr doms,
                              bool active,
-                             virDomainObjListFilter filter,
+                             virDomainObjListACLFilter filter,
                              virConnectPtr conn)
 {
     struct virDomainObjListData data = { filter, conn, active, 0 };
@@ -22123,7 +22123,7 @@ virDomainObjListNumOfDomains(virDomainObjListPtr doms,
 }
 
 struct virDomainIDData {
-    virDomainObjListFilter filter;
+    virDomainObjListACLFilter filter;
     virConnectPtr conn;
     int numids;
     int maxids;
@@ -22151,7 +22151,7 @@ int
 virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
                              int *ids,
                              int maxids,
-                             virDomainObjListFilter filter,
+                             virDomainObjListACLFilter filter,
                              virConnectPtr conn)
 {
     struct virDomainIDData data = { filter, conn,
@@ -22163,7 +22163,7 @@ virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
 }
 
 struct virDomainNameData {
-    virDomainObjListFilter filter;
+    virDomainObjListACLFilter filter;
     virConnectPtr conn;
     int oom;
     int numnames;
@@ -22201,7 +22201,7 @@ int
 virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                  char **const names,
                                  int maxnames,
-                                 virDomainObjListFilter filter,
+                                 virDomainObjListACLFilter filter,
                                  virConnectPtr conn)
 {
     struct virDomainNameData data = { filter, conn,
@@ -23033,7 +23033,7 @@ virDomainObjMatchFilter(virDomainObjPtr vm,
 struct virDomainListData {
     virConnectPtr conn;
     virDomainPtr *domains;
-    virDomainObjListFilter filter;
+    virDomainObjListACLFilter filter;
     unsigned int flags;
     int ndomains;
     bool error;
@@ -23087,7 +23087,7 @@ int
 virDomainObjListExport(virDomainObjListPtr doms,
                        virConnectPtr conn,
                        virDomainPtr **domains,
-                       virDomainObjListFilter filter,
+                       virDomainObjListACLFilter filter,
                        unsigned int flags)
 {
     int ret = -1;

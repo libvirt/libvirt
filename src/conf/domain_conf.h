@@ -2321,8 +2321,8 @@ struct _virDomainObj {
 typedef struct _virDomainObjList virDomainObjList;
 typedef virDomainObjList *virDomainObjListPtr;
 
-typedef bool (*virDomainObjListFilter)(virConnectPtr conn,
-                                       virDomainDefPtr def);
+typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
+                                          virDomainDefPtr def);
 
 
 /* This structure holds various callbacks and data needed
@@ -2843,18 +2843,18 @@ unsigned int virDomainVideoDefaultRAM(const virDomainDef *def,
 
 int virDomainObjListNumOfDomains(virDomainObjListPtr doms,
                                  bool active,
-                                 virDomainObjListFilter filter,
+                                 virDomainObjListACLFilter filter,
                                  virConnectPtr conn);
 
 int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
                                  int *ids,
                                  int maxids,
-                                 virDomainObjListFilter filter,
+                                 virDomainObjListACLFilter filter,
                                  virConnectPtr conn);
 int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
                                      char **const names,
                                      int maxnames,
-                                     virDomainObjListFilter filter,
+                                     virDomainObjListACLFilter filter,
                                      virConnectPtr conn);
 
 typedef int (*virDomainObjListIterator)(virDomainObjPtr dom,
@@ -3054,7 +3054,7 @@ VIR_ENUM_DECL(virDomainStartupPolicy)
 int virDomainObjListExport(virDomainObjListPtr doms,
                            virConnectPtr conn,
                            virDomainPtr **domains,
-                           virDomainObjListFilter filter,
+                           virDomainObjListACLFilter filter,
                            unsigned int flags);
 
 int
