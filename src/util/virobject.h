@@ -99,5 +99,7 @@ void virObjectLock(void *lockableobj)
 void virObjectUnlock(void *lockableobj)
     ATTRIBUTE_NONNULL(1);
 
+void virObjectListFree(void *list);
+void virObjectListFreeCount(void *list, size_t count);
 
 #endif /* __VIR_OBJECT_H */

@@ -6382,7 +6382,7 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         virNetMessageSaveError(rerr);
 
     virDomainStatsRecordListFree(retStats);
-    virDomainListFree(doms);
+    virObjectListFree(doms);
 
     return rv;
 }

@@ -405,3 +405,44 @@ void virObjectFreeHashData(void *opaque, const void *name ATTRIBUTE_UNUSED)
 {
     virObjectUnref(opaque);
 }
+
+
+/**
+ * virObjectListFree:
+ * @list: A pointer to a NULL-terminated list of object pointers to free
+ *
+ * Unrefs all members of @list and frees the list itself.
+ */
+void virObjectListFree(void *list)
+{
+    void **next;
+
+    if (!list)
+        return;
+
+    for (next = (void **) list; *next; next++)
+        virObjectUnref(*next);
+
+    VIR_FREE(list);
+}
+
+
+/**
+ * virObjectListFreeCount:
+ * @list: A pointer to a list of object pointers to freea
+ * @count: Number of elements in the list.
+ *
+ * Unrefs all members of @list and frees the list itself.
+ */
+void virObjectListFreeCount(void *list, size_t count)
+{
+    size_t i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < count; i++)
+        virObjectUnref(((void **)list)[i]);
+
+    VIR_FREE(list);
+}

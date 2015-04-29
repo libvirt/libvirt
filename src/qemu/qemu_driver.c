@@ -19901,7 +19901,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     virDomainObjEndAPI(&dom);
 
     virDomainStatsRecordListFree(tmpstats);
-    virDomainListFree(domlist);
+    virObjectListFree(domlist);
 
     return ret;
 }

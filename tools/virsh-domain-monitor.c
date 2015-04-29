@@ -2193,7 +2193,7 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     virDomainStatsRecordListFree(records);
-    virDomainListFree(domlist);
+    virObjectListFree(domlist);
 
     return ret;
 }

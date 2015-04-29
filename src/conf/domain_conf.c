@@ -23071,28 +23071,6 @@ virDomainListPopulate(void *payload,
 #undef MATCH
 
 
-/**
- * virDomainListFree:
- * @list: list of domains to free
- *
- * Frees a NULL-terminated list of domains without messing with currently
- * set libvirt errors.
- */
-void
-virDomainListFree(virDomainPtr *list)
-{
-    virDomainPtr *next;
-
-    if (!list)
-        return;
-
-    for (next = list; *next; next++)
-        virObjectUnref(*next);
-
-    VIR_FREE(list);
-}
-
-
 int
 virDomainObjListExport(virDomainObjListPtr doms,
                        virConnectPtr conn,
@@ -23128,7 +23106,7 @@ virDomainObjListExport(virDomainObjListPtr doms,
     ret = data.ndomains;
 
  cleanup:
-    virDomainListFree(data.domains);
+    virObjectListFree(data.domains);
     virObjectUnlock(doms);
     return ret;
 }
