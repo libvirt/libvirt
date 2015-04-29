@@ -12506,6 +12506,40 @@ virDomainControllerFind(virDomainDefPtr def,
     return -1;
 }
 
+
+const char *
+virDomainControllerAliasFind(virDomainDefPtr def,
+                             int type, int idx)
+{
+    int contIndex;
+    const char *contTypeStr = virDomainControllerTypeToString(type);
+
+    if (!contTypeStr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown controller type %d"),
+                       type);
+        return NULL;
+    }
+
+    contIndex = virDomainControllerFind(def, type, idx);
+    if (contIndex < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not find %s controller with index %d "
+                         "required for device"),
+                       contTypeStr, idx);
+        return NULL;
+    }
+    if (!def->controllers[contIndex]->info.alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Device alias was not set for %s controller "
+                         "with index %d "),
+                       contTypeStr, idx);
+        return NULL;
+    }
+    return def->controllers[contIndex]->info.alias;
+}
+
+
 int
 virDomainControllerFindByType(virDomainDefPtr def,
                               int type)

@@ -2745,6 +2745,9 @@ int virDomainControllerFindByType(virDomainDefPtr def, int type);
 int virDomainControllerFindByPCIAddress(virDomainDefPtr def,
                                         virDevicePCIAddressPtr addr);
 virDomainControllerDefPtr virDomainControllerRemove(virDomainDefPtr def, size_t i);
+const char *virDomainControllerAliasFind(virDomainDefPtr def,
+                                         int type, int idx)
+    ATTRIBUTE_NONNULL(1);
 
 int virDomainLeaseIndex(virDomainDefPtr def,
                         virDomainLeaseDefPtr lease);
