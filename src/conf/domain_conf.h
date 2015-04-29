@@ -3062,6 +3062,15 @@ int virDomainObjListExport(virDomainObjListPtr doms,
                            virDomainPtr **domains,
                            virDomainObjListACLFilter filter,
                            unsigned int flags);
+int virDomainObjListConvert(virDomainObjListPtr domlist,
+                            virConnectPtr conn,
+                            virDomainPtr *doms,
+                            size_t ndoms,
+                            virDomainObjPtr **vms,
+                            size_t *nvms,
+                            virDomainObjListACLFilter filter,
+                            unsigned int flags,
+                            bool skip_missing);
 
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,

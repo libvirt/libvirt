@@ -23110,6 +23110,64 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
 
 
 int
+virDomainObjListConvert(virDomainObjListPtr domlist,
+                        virConnectPtr conn,
+                        virDomainPtr *doms,
+                        size_t ndoms,
+                        virDomainObjPtr **vms,
+                        size_t *nvms,
+                        virDomainObjListACLFilter filter,
+                        unsigned int flags,
+                        bool skip_missing)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainObjPtr vm;
+    size_t i;
+
+    *nvms = 0;
+    *vms = NULL;
+
+    virObjectLock(domlist);
+    for (i = 0; i < ndoms; i++) {
+        virDomainPtr dom = doms[i];
+
+        virUUIDFormat(dom->uuid, uuidstr);
+
+        if (!(vm = virHashLookup(domlist->objs, uuidstr))) {
+            if (skip_missing)
+                continue;
+
+            virObjectUnlock(domlist);
+            virReportError(VIR_ERR_NO_DOMAIN,
+                           _("no domain with matching uuid '%s' (%s)"),
+                           uuidstr, dom->name);
+            goto error;
+        }
+
+        virObjectRef(vm);
+
+        if (VIR_APPEND_ELEMENT(*vms, *nvms, vm) < 0) {
+            virObjectUnlock(domlist);
+            virObjectUnref(vm);
+            goto error;
+        }
+    }
+    virObjectUnlock(domlist);
+
+    virDomainObjListFilter(vms, nvms, conn, filter, flags);
+
+    return 0;
+
+ error:
+    virObjectListFreeCount(*vms, *nvms);
+    *vms = NULL;
+    *nvms = 0;
+
+    return -1;
+}
+
+
+int
 virDomainObjListExport(virDomainObjListPtr domlist,
                        virConnectPtr conn,
                        virDomainPtr **domains,

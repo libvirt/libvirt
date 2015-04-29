@@ -386,6 +386,7 @@ virDomainObjGetPersistentDef;
 virDomainObjGetState;
 virDomainObjListAdd;
 virDomainObjListCollect;
+virDomainObjListConvert;
 virDomainObjListExport;
 virDomainObjListFindByID;
 virDomainObjListFindByName;
