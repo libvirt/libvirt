@@ -9894,18 +9894,7 @@ doMigrate(void *opaque)
     if (vshCommandOptBool(cmd, "abort-on-error"))
         flags |= VIR_MIGRATE_ABORT_ON_ERROR;
 
-    if ((flags & VIR_MIGRATE_PEER2PEER) ||
-        vshCommandOptBool(cmd, "direct")) {
-
-        /* migrateuri doesn't make sense for tunnelled migration */
-        if (flags & VIR_MIGRATE_TUNNELLED &&
-            virTypedParamsGetString(params, nparams,
-                                    VIR_MIGRATE_PARAM_URI, NULL) == 1) {
-            vshError(ctl, "%s", _("migrate: Unexpected migrateuri for "
-                                  "peer2peer/direct migration"));
-            goto out;
-        }
-
+    if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
             ret = '0';
     } else {
