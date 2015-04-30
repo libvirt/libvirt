@@ -4599,11 +4599,25 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         }
         break;
 
-    /* We always get an IDE controller, whether we want it or not. */
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+        /* Since we currently only support the integrated IDE controller
+         * on 440fx, if we ever get to here, it's because some other
+         * machinetype had an IDE controller specified, or a 440fx had
+         * multiple ide controllers.
+         */
+        if (qemuDomainMachineIsI440FX(domainDef))
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only a single IDE controller is unsupported "
+                             "for this machine type"));
+        else
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("IDE controllers are unsupported for "
+                             "this QEMU binary or machine type"));
+        goto error;
+
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown controller type: %s"),
+                       _("Unsupported controller type: %s"),
                        virDomainControllerTypeToString(def->type));
         goto error;
     }
@@ -8629,20 +8643,21 @@ qemuBuildCommandLine(virConnectPtr conn,
          * List of controller types that we add commandline args for,
          * *in the order we want to add them*.
          *
-         * We don't add an explicit IDE or FD controller because the
+         * We don't add an explicit FD controller because the
          * provided PIIX4 device already includes one. It isn't possible to
          * remove the PIIX4.
          *
          * We don't add PCI/PCIe root controller either, because it's
          * implicit, but we do add PCI bridges and other PCI
          * controllers, so we leave that in to check each
-         * one. Likewise, we don't do anything for the primary SATA
-         * controller on q35, but we do add those beyond this one
-         * exception.
+         * one. Likewise, we don't do anything for the primary IDE
+         * controller on an i440fx machine or primary SATA on q35, but
+         * we do add those beyond these two exceptions.
          */
         VIR_DOMAIN_CONTROLLER_TYPE_PCI,
         VIR_DOMAIN_CONTROLLER_TYPE_USB,
         VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+        VIR_DOMAIN_CONTROLLER_TYPE_IDE,
         VIR_DOMAIN_CONTROLLER_TYPE_SATA,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
         VIR_DOMAIN_CONTROLLER_TYPE_CCID,
@@ -9437,6 +9452,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 /* first SATA controller on Q35 machines is implicit */
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
                     cont->idx == 0 && qemuDomainMachineIsQ35(def))
+                        continue;
+
+                /* first IDE controller on i440fx machines is implicit */
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
+                    cont->idx == 0 && qemuDomainMachineIsI440FX(def))
                         continue;
 
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&

@@ -7,4 +7,4 @@ if=none,media=cdrom,id=drive-ide0-1-0 -device \
 ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 -drive \
 file=/tmp/idedisk.img,if=none,id=drive-ide0-0-2 -device \
 ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 -device \
-virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
+virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
