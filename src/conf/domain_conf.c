@@ -12988,6 +12988,11 @@ virDomainMemoryRemove(virDomainDefPtr def,
 {
     virDomainMemoryDefPtr ret = def->mems[idx];
     VIR_DELETE_ELEMENT(def->mems, idx, def->nmems);
+
+    /* fix up balloon size */
+    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))
+        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+
     return ret;
 }
 
