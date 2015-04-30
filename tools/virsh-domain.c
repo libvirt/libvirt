@@ -1664,60 +1664,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
     goto cleanup;
 }
 
-typedef enum {
-    VSH_CMD_BLOCK_JOB_COMMIT,
-} vshCmdBlockJobMode;
-
-static bool
-blockJobImpl(vshControl *ctl, const vshCmd *cmd,
-             vshCmdBlockJobMode mode, virDomainPtr *pdom)
-{
-    virDomainPtr dom = NULL;
-    const char *path;
-    unsigned long bandwidth = 0;
-    bool ret = false;
-    const char *base = NULL;
-    const char *top = NULL;
-    unsigned int flags = 0;
-
-    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
-        goto cleanup;
-
-    if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
-        goto cleanup;
-
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
-        goto cleanup;
-
-    switch (mode) {
-    case VSH_CMD_BLOCK_JOB_COMMIT:
-        if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0 ||
-            vshCommandOptStringReq(ctl, cmd, "top", &top) < 0)
-            goto cleanup;
-        if (vshCommandOptBool(cmd, "shallow"))
-            flags |= VIR_DOMAIN_BLOCK_COMMIT_SHALLOW;
-        if (vshCommandOptBool(cmd, "delete"))
-            flags |= VIR_DOMAIN_BLOCK_COMMIT_DELETE;
-        if (vshCommandOptBool(cmd, "active") ||
-            vshCommandOptBool(cmd, "pivot") ||
-            vshCommandOptBool(cmd, "keep-overlay"))
-            flags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
-        if (vshCommandOptBool(cmd, "keep-relative"))
-            flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
-        if (virDomainBlockCommit(dom, path, base, top, bandwidth, flags) < 0)
-            goto cleanup;
-        break;
-    }
-
-    ret = true;
-
- cleanup:
-    if (pdom && ret)
-        *pdom = dom;
-    else if (dom)
-        virDomainFree(dom);
-    return ret;
-}
 
 static void
 vshPrintJobProgress(const char *label, unsigned long long remaining,
@@ -1864,10 +1810,38 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     struct timeval start;
     struct timeval curr;
     const char *path = NULL;
+    const char *base = NULL;
+    const char *top = NULL;
     bool quit = false;
     int abort_flags = 0;
     int status = -1;
     int cb_id = -1;
+    unsigned int flags = 0;
+    unsigned long bandwidth = 0;
+
+    if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "top", &top) < 0)
+        return false;
+
+    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "shallow"))
+        flags |= VIR_DOMAIN_BLOCK_COMMIT_SHALLOW;
+
+    if (vshCommandOptBool(cmd, "delete"))
+        flags |= VIR_DOMAIN_BLOCK_COMMIT_DELETE;
+
+    if (active)
+        flags |= VIR_DOMAIN_BLOCK_COMMIT_ACTIVE;
+
+   if (vshCommandOptBool(cmd, "keep-relative"))
+        flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
 
     blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
     if (blocking) {
@@ -1876,8 +1850,6 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
             return false;
         }
         if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
             return false;
         if (vshCommandOptBool(cmd, "async"))
             abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
@@ -1897,6 +1869,9 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
     virConnectDomainEventGenericCallback cb =
         VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
 
@@ -1908,7 +1883,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
                                                   NULL)) < 0)
         vshResetLibvirtError();
 
-    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_COMMIT, &dom))
+    if (virDomainBlockCommit(dom, path, base, top, bandwidth, flags) < 0)
         goto cleanup;
 
     if (!blocking) {
@@ -1990,8 +1965,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
     if (blocking)
         sigaction(SIGINT, &old_sig_action, NULL);
     if (cb_id >= 0)
