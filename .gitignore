@@ -124,6 +124,8 @@
 /src/libvirt_*helper
 /src/libvirt_*probes.h
 /src/libvirt_lxc
+/src/locking/libxl-lockd.conf
+/src/locking/libxl-sanlock.conf
 /src/locking/lock_daemon_dispatch_stubs.h
 /src/locking/lock_protocol.[ch]
 /src/locking/qemu-lockd.conf
