@@ -4127,8 +4127,8 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                     goto error;
                 }
 
-                if ((disk->info.addr.drive.bus != disk->info.addr.drive.unit) &&
-                    (disk->info.addr.drive.bus != 0)) {
+                if (disk->info.addr.drive.bus != 0 &&
+                    disk->info.addr.drive.unit != 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("This QEMU only supports both bus and "
                                      "unit equal to 0"));
