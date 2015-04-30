@@ -1665,7 +1665,6 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 }
 
 typedef enum {
-    VSH_CMD_BLOCK_JOB_PULL,
     VSH_CMD_BLOCK_JOB_COMMIT,
 } vshCmdBlockJobMode;
 
@@ -1691,21 +1690,6 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
 
     switch (mode) {
-    case VSH_CMD_BLOCK_JOB_PULL:
-        if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
-            goto cleanup;
-        if (vshCommandOptBool(cmd, "keep-relative"))
-            flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
-
-        if (base || flags) {
-            if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
-                goto cleanup;
-        } else {
-            if (virDomainBlockPull(dom, path, bandwidth, 0) < 0)
-                goto cleanup;
-        }
-
-        break;
     case VSH_CMD_BLOCK_JOB_COMMIT:
         if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0 ||
             vshCommandOptStringReq(ctl, cmd, "top", &top) < 0)
@@ -2679,15 +2663,28 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     struct timeval start;
     struct timeval curr;
     const char *path = NULL;
+    const char *base = NULL;
+    unsigned long bandwidth = 0;
     bool quit = false;
     int abort_flags = 0;
     int status = -1;
     int cb_id = -1;
+    unsigned int flags = 0;
+
+    if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
+        return false;
+
+    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "keep-relative"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
 
     if (blocking) {
         if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
             return false;
         if (vshCommandOptBool(cmd, "async"))
             abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
@@ -2708,6 +2705,9 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
     virConnectDomainEventGenericCallback cb =
         VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
 
@@ -2719,8 +2719,13 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
                                                   NULL)) < 0)
         vshResetLibvirtError();
 
-    if (!blockJobImpl(ctl, cmd, VSH_CMD_BLOCK_JOB_PULL, &dom))
-        goto cleanup;
+    if (base || flags) {
+        if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
+            goto cleanup;
+    } else {
+        if (virDomainBlockPull(dom, path, bandwidth, 0) < 0)
+            goto cleanup;
+    }
 
     if (!blocking) {
         vshPrint(ctl, "%s", _("Block Pull started"));
@@ -2778,8 +2783,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virDomainFree(dom);
     if (blocking)
         sigaction(SIGINT, &old_sig_action, NULL);
     if (cb_id >= 0)
