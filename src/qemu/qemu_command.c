@@ -4070,25 +4070,25 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if ((qemuSetSCSIControllerModel(def, qemuCaps, &controllerModel)) < 0)
             goto error;
 
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            virBufferAddLit(&opt, "scsi-block");
+        } else {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
+                if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+                    virBufferAddLit(&opt, "scsi-cd");
+                else
+                    virBufferAddLit(&opt, "scsi-hd");
+            } else {
+                virBufferAddLit(&opt, "scsi-disk");
+            }
+        }
+
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
             if (disk->info.addr.drive.target != 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("target must be 0 for controller "
                                  "model 'lsilogic'"));
                 goto error;
-            }
-
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                virBufferAddLit(&opt, "scsi-block");
-            } else {
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
-                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                        virBufferAddLit(&opt, "scsi-cd");
-                    else
-                        virBufferAddLit(&opt, "scsi-hd");
-                } else {
-                    virBufferAddLit(&opt, "scsi-disk");
-                }
             }
 
             virBufferAsprintf(&opt, ",bus=scsi%d.%d,scsi-id=%d",
@@ -4111,19 +4111,6 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                                      "unit equal to 0"));
                     goto error;
                 }
-            }
-
-            if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD)) {
-                    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                        virBufferAddLit(&opt, "scsi-cd");
-                    else
-                        virBufferAddLit(&opt, "scsi-hd");
-                } else {
-                    virBufferAddLit(&opt, "scsi-disk");
-                }
-            } else {
-                virBufferAddLit(&opt, "scsi-block");
             }
 
             virBufferAsprintf(&opt, ",bus=scsi%d.0,channel=%d,scsi-id=%d,lun=%d",
