@@ -8373,6 +8373,9 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         }
 
+        if (vmdef->mem.cur_balloon == virDomainDefGetMemoryActual(vmdef))
+            vmdef->mem.cur_balloon += dev->data.memory->size;
+
         if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
             return -1;
         dev->data.memory = NULL;

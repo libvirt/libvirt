@@ -1726,6 +1726,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     const char *backendType;
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
+    bool fix_balloon = false;
     int id;
     int ret = -1;
 
@@ -1740,6 +1741,9 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 
     if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
+
+    if (vm->def->mem.cur_balloon == virDomainDefGetMemoryActual(vm->def))
+        fix_balloon = true;
 
     if (!(devstr = qemuBuildMemoryDeviceStr(mem, vm->def, priv->qemuCaps)))
         goto cleanup;
@@ -1778,6 +1782,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
     if (event)
         qemuDomainEventQueue(driver, event);
+
+    /* fix the balloon size if it was set to maximum */
+    if (fix_balloon)
+        vm->def->mem.cur_balloon += mem->size;
 
     /* mem is consumed by vm->def */
     mem = NULL;
@@ -2895,6 +2903,8 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
     rc = qemuMonitorDelObject(priv->mon, backendAlias);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto error;
+
+    vm->def->mem.cur_balloon -= mem->size;
 
     if ((idx = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
         virDomainMemoryRemove(vm->def, idx);
