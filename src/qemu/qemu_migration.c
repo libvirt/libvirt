@@ -4814,6 +4814,20 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
               flags, NULLSTR(dname), resource);
 
+    if (flags & VIR_MIGRATE_TUNNELLED && uri) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("migration URI is not supported by tunnelled "
+                         "migration"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_MIGRATE_TUNNELLED && listenAddress) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("listen address is not supported by tunnelled "
+                         "migration"));
+        goto cleanup;
+    }
+
     /* the order of operations is important here; we make sure the
      * destination side is completely setup before we touch the source
      */
@@ -4857,7 +4871,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
 
     /* Only xmlin, dname, uri, and bandwidth parameters can be used with
      * old-style APIs. */
-    if (!useParams && graphicsuri) {
+    if (!useParams && (graphicsuri || listenAddress)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Migration APIs with extensible parameters are not "
                          "supported but extended parameters were passed"));
