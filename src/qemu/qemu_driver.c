@@ -16555,25 +16555,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
-        goto cleanup;
-
-    if (!modern) {
-        if (base) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("partial block pull not supported with this "
-                             "QEMU binary"));
-            goto cleanup;
-        }
-
-        if (bandwidth) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("setting bandwidth at start of block pull not "
-                             "supported with this QEMU binary"));
-            goto cleanup;
-        }
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -16581,6 +16562,25 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
         goto endjob;
+    }
+
+    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+        goto endjob;
+
+    if (!modern) {
+        if (base) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("partial block pull not supported with this "
+                             "QEMU binary"));
+            goto endjob;
+        }
+
+        if (bandwidth) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting bandwidth at start of block pull not "
+                             "supported with this QEMU binary"));
+            goto endjob;
+        }
     }
 
     if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
@@ -16682,9 +16682,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (virDomainBlockJobAbortEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -16693,6 +16690,9 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
                        _("domain is not running"));
         goto endjob;
     }
+
+    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+        goto endjob;
 
     if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
         goto endjob;
@@ -16896,9 +16896,6 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     if (virDomainBlockJobSetSpeedEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -16907,6 +16904,9 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
                        _("domain is not running"));
         goto endjob;
     }
+
+    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+        goto endjob;
 
     if (!(device = qemuDiskPathToAlias(vm, path, NULL)))
         goto endjob;
