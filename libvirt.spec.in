@@ -1601,6 +1601,7 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
 %endif
 %if ! %{with_libxl}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
+rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.libxl
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %endif
@@ -2018,6 +2019,7 @@ exit 0
         %endif
         %if %{with_libxl}
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_localstatedir}/run/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
@@ -2140,6 +2142,7 @@ exit 0
 %files daemon-driver-libxl
 %defattr(-, root, root)
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-sanlock.conf
 %{_datadir}/augeas/lenses/libvirtd_libxl.aug

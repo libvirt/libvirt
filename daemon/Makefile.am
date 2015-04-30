@@ -63,6 +63,7 @@ EXTRA_DIST =						\
 	libvirtd.logrotate.in                           \
 	libvirtd.qemu.logrotate.in                      \
 	libvirtd.lxc.logrotate.in                       \
+	libvirtd.libxl.logrotate.in                     \
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug.in                             \
 	THREADS.txt					\
@@ -288,7 +289,8 @@ remote.c: $(DAEMON_GENERATED)
 remote.h: $(DAEMON_GENERATED)
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
-		  libvirtd.uml.logrotate libvirtd.logrotate
+		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \
+		  libvirtd.logrotate
 
 BUILT_SOURCES += $(LOGROTATE_CONFS)
 
@@ -305,6 +307,12 @@ libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
 	mv $@-t $@
 
 libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
+	$(AM_V_GEN)sed						\
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
+	    < $< > $@-t &&					\
+	    mv $@-t $@
+
+libvirtd.libxl.logrotate: libvirtd.libxl.logrotate.in
 	$(AM_V_GEN)sed						\
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    < $< > $@-t &&					\
@@ -327,6 +335,8 @@ install-logrotate: $(LOGROTATE_CONFS)
 		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu
 	$(INSTALL_DATA) libvirtd.lxc.logrotate \
 		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc
+	$(INSTALL_DATA) libvirtd.libxl.logrotate \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.libxl
 	$(INSTALL_DATA) libvirtd.uml.logrotate \
 		$(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 
@@ -334,6 +344,7 @@ uninstall-logrotate:
 	rm -f $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd \
 	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.qemu \
 	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.lxc \
+	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.libxl \
 	      $(DESTDIR)$(sysconfdir)/logrotate.d/libvirtd.uml
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/qemu || :
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/lxc || :
