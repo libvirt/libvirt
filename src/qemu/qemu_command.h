@@ -36,7 +36,6 @@
 # define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
 # define QEMU_DRIVE_HOST_PREFIX "drive-"
-# define QEMU_VIRTIO_SERIAL_PREFIX "virtio-serial"
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
 /* These are only defaults, they can be changed now in qemu.conf and
