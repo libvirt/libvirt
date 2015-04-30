@@ -2107,6 +2107,12 @@ x86UpdateHostModel(virCPUDefPtr guest,
     if (virCPUDefCopyModel(guest, host, true) < 0)
         goto cleanup;
 
+    if (oldguest->vendor_id) {
+        VIR_FREE(guest->vendor_id);
+        if (VIR_STRDUP(guest->vendor_id, oldguest->vendor_id) < 0)
+            goto cleanup;
+    }
+
     /* Remove non-migratable features by default
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */

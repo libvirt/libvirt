@@ -1245,6 +1245,7 @@ mymain(void)
                     QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_SMP_TOPOLOGY);
     DO_TEST("cpu-host-model", NONE);
+    DO_TEST("cpu-host-model-vendor", NONE);
     skipLegacyCPUs = true;
     DO_TEST("cpu-host-model-fallback", NONE);
     DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
