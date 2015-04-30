@@ -4057,6 +4057,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                           disk->info.addr.drive.bus,
                           disk->info.addr.drive.unit);
         break;
+
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_BLOCK)) {
@@ -4155,6 +4156,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                               disk->info.addr.drive.unit);
         }
         break;
+
     case VIR_DOMAIN_DISK_BUS_SATA:
         if (disk->info.addr.drive.bus != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4194,6 +4196,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
                               disk->info.addr.drive.unit);
         }
         break;
+
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
             virBufferAddLit(&opt, "virtio-blk-ccw");
@@ -4227,7 +4230,14 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
             goto error;
         break;
+
     case VIR_DOMAIN_DISK_BUS_USB:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for usb disk"));
+            goto error;
+        }
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This QEMU doesn't support '-device "
@@ -4240,11 +4250,13 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
             goto error;
         break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported disk bus '%s' with device setup"), bus);
         goto error;
     }
+
     virBufferAsprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))

@@ -812,6 +812,9 @@ mymain(void)
     DO_TEST("disk-usb-device-removable",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_USB_STORAGE_REMOVABLE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_FAILURE("disk-usb-pci",
+                    QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE,
+                    QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-scsi-device",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_LSI);
