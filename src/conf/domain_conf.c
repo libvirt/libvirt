@@ -3366,27 +3366,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
-    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def)) {
-        /* Older libvirt could get into this situation due to
-         * rounding; if the discrepancy is less than 4MiB, we silently
-         * round down, otherwise we flag the issue.  */
-        if (VIR_DIV_UP(def->mem.cur_balloon, 4096) >
-            VIR_DIV_UP(virDomainDefGetMemoryActual(def), 4096)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("current memory '%lluk' exceeds "
-                             "maximum '%lluk'"),
-                           def->mem.cur_balloon,
-                           virDomainDefGetMemoryActual(def));
-            return -1;
-        } else {
-            VIR_DEBUG("Truncating current %lluk to maximum %lluk",
-                      def->mem.cur_balloon,
-                      virDomainDefGetMemoryActual(def));
-            def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
-        }
-    } else if (def->mem.cur_balloon == 0) {
+    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def) ||
+        def->mem.cur_balloon == 0)
         def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
-    }
 
     if ((def->mem.max_memory || def->mem.memory_slots) &&
         !(def->mem.max_memory && def->mem.memory_slots)) {
