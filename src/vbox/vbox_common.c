@@ -4463,6 +4463,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
     int realReadOnlyDisksPathSize = 0;
     virVBoxSnapshotConfSnapshotPtr newSnapshotPtr = NULL;
     unsigned char snapshotUuid[VIR_UUID_BUFLEN];
+    char **searchResultTab = NULL;
+    ssize_t resultSize = 0;
     int it = 0;
     int jt = 0;
     PRUint32 aMediaSize = 0;
@@ -4862,8 +4864,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
     for (it = 0; it < def->dom->ndisks; it++) {
         char *location = NULL;
         const char *uuidReplacing = NULL;
-        char **searchResultTab = NULL;
-        ssize_t resultSize = 0;
         char *tmp = NULL;
 
         location = def->dom->disks[it]->src->path;
@@ -4885,6 +4885,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
                                searchResultTab[it],
                                uuidReplacing);
         virStringFreeList(searchResultTab);
+        searchResultTab = NULL;
         VIR_FREE(newSnapshotPtr->storageController);
         if (!tmp)
             goto cleanup;
@@ -5029,8 +5030,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
             if (needToChangeStorageController) {
                 /*We need to append this disk in the storage controller*/
-                char **searchResultTab = NULL;
-                ssize_t resultSize = 0;
                 char *tmp = NULL;
                 resultSize = virStringSearch(snapshotMachineDesc->storageController,
                                              VBOX_UUID_REGEX,
@@ -5045,7 +5044,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
                 tmp = virStringReplace(snapshotMachineDesc->storageController,
                                        searchResultTab[it],
                                        disk->uuid);
-                virStringFreeList(searchResultTab);
                 VIR_FREE(snapshotMachineDesc->storageController);
                 if (!tmp)
                     goto cleanup;
@@ -5077,8 +5075,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
             virVBoxSnapshotConfHardDiskPtr disk = NULL;
             char *uuid = NULL;
             char *format = NULL;
-            char **searchResultTab = NULL;
-            ssize_t resultSize = 0;
             char *tmp = NULL;
             vboxIIDUnion iid, parentiid;
 
@@ -5189,7 +5185,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
             tmp = virStringReplace(snapshotMachineDesc->storageController,
                                    searchResultTab[it],
                                    disk->uuid);
-            virStringFreeList(searchResultTab);
             VIR_FREE(snapshotMachineDesc->storageController);
             if (!tmp)
                 goto cleanup;
@@ -5299,6 +5294,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     VBOX_UTF8_FREE(machineName);
     virStringFreeList(realReadOnlyDisksPath);
     virStringFreeList(realReadWriteDisksPath);
+    virStringFreeList(searchResultTab);
     VIR_FREE(newSnapshotPtr);
     VIR_FREE(machineLocationPath);
     VIR_FREE(nameTmpUse);
@@ -6730,6 +6726,8 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     char *settingsFilepath = NULL;
     virVBoxSnapshotConfMachinePtr snapshotMachineDesc = NULL;
     int isCurrent = -1;
+    char **searchResultTab = NULL;
+    ssize_t resultSize = 0;
     int it = 0;
     PRUnichar *machineNameUtf16 = NULL;
     char *machineName = NULL;
@@ -6822,8 +6820,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 virVBoxSnapshotConfHardDiskPtr disk = NULL;
                 char *uuid = NULL;
                 char *format = NULL;
-                char **searchResultTab = NULL;
-                ssize_t resultSize = 0;
                 char *tmp = NULL;
                 vboxIIDUnion iid, parentiid;
                 resultCodeUnion resultCode;
@@ -6950,7 +6946,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 tmp = virStringReplace(snapshotMachineDesc->storageController,
                                        searchResultTab[it],
                                        disk->uuid);
-                virStringFreeList(searchResultTab);
                 VIR_FREE(snapshotMachineDesc->storageController);
                 if (!tmp)
                     goto cleanup;
@@ -6970,8 +6965,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
         } else {
             for (it = 0; it < def->dom->ndisks; it++) {
                 const char *uuidRO = NULL;
-                char **searchResultTab = NULL;
-                ssize_t resultSize = 0;
                 char *tmp = NULL;
                 uuidRO = virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,
                                                       def->dom->disks[it]->src->path);
@@ -6996,7 +6989,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 tmp = virStringReplace(snapshotMachineDesc->storageController,
                                        searchResultTab[it],
                                        uuidRO);
-                virStringFreeList(searchResultTab);
                 VIR_FREE(snapshotMachineDesc->storageController);
                 if (!tmp)
                     goto cleanup;
@@ -7147,6 +7139,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     VBOX_RELEASE(machine);
     VBOX_UTF16_FREE(settingsFilePathUtf16);
     VBOX_UTF8_FREE(settingsFilepath);
+    virStringFreeList(searchResultTab);
     VIR_FREE(snapshotMachineDesc);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF8_FREE(machineName);
