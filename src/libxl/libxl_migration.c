@@ -445,6 +445,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         virNetSocketClose(socks[i]);
         virObjectUnref(socks[i]);
     }
+    VIR_FREE(socks);
     /* Remove virDomainObj from domain list */
     if (vm) {
         virDomainObjListRemove(driver->domains, vm);
