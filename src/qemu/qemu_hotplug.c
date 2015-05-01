@@ -1147,7 +1147,6 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                                  virDomainNetGetActualDirectMode(net),
                                  virDomainNetGetActualVirtPortProfile(net),
                                  cfg->stateDir));
-                VIR_FREE(net->ifname);
             }
 
             vport = virDomainNetGetActualVirtPortProfile(net);
@@ -3107,7 +3106,6 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                          virDomainNetGetActualDirectMode(net),
                          virDomainNetGetActualVirtPortProfile(net),
                          cfg->stateDir));
-        VIR_FREE(net->ifname);
     }
 
     vport = virDomainNetGetActualVirtPortProfile(net);
