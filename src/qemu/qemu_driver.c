@@ -6365,7 +6365,7 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                                _("cannot find IOThread '%u' in persistent "
                                  "iothreadids"),
                                iothread_id);
-                goto cleanup;
+                goto endjob;
             }
 
             virDomainIOThreadIDDel(persistentDef, iothread_id);
