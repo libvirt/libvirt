@@ -1392,6 +1392,14 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                                        flags) < 0)
         goto error;
 
+    if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
+        mig->persistent &&
+        STRNEQ(dom->def->name, mig->persistent->name)) {
+        VIR_FREE(mig->persistent->name);
+        if (VIR_STRDUP(mig->persistent->name, dom->def->name) < 0)
+            goto error;
+    }
+
     if (mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) {
         if (!mig->lockDriver) {
             if (virLockManagerPluginUsesState(driver->lockManager)) {
