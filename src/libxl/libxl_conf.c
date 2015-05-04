@@ -678,6 +678,19 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                 libxl_defbool_set(&b_info->u.hvm.hpet, 1);
             }
         }
+
+        if (def->nsounds > 0) {
+            /*
+             * Use first sound device.  man xl.cfg(5) describes soundhw as
+             * a single device.  From the man page: soundhw=DEVICE
+             */
+            virDomainSoundDefPtr snd = def->sounds[0];
+
+            if (VIR_STRDUP(b_info->u.hvm.soundhw,
+                           virDomainSoundModelTypeToString(snd->model)) < 0)
+                return -1;
+        }
+
         for (i = 0; i < def->os.nBootDevs; i++) {
             switch (def->os.bootDevs[i]) {
                 case VIR_DOMAIN_BOOT_FLOPPY:
