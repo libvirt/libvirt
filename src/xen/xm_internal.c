@@ -279,6 +279,9 @@ xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename)
             virDomainDefFree(entry->def);
             VIR_FREE(entry->filename);
             VIR_FREE(entry);
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("xenXMConfigCacheRefresh: virHashAddEntry name"));
+            return -1;
         }
     }
     VIR_DEBUG("Added config %s %s", entry->def->name, filename);
