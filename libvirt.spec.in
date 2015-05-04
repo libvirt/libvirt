@@ -2305,6 +2305,13 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Mon May  4 2015 Daniel Veillard <veillard@redhat.com> - 1.2.15-1
+- Implement virDomainAddIOThread and virDomainDelIOThread
+- libxl: Introduce configuration file for libxl driver
+- Add VIR_DOMAIN_EVENT_ID_DEVICE_ADDED event
+- various improvements to parallels driver
+- a lot of improvement and bug fixes
+
 * Thu Apr  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.14-1
 - qemu: Implement memory device hotplug
 - Implement public API for virDomainPinIOThread
