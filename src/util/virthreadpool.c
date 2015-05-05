@@ -201,7 +201,7 @@ virThreadPoolNewFull(size_t minWorkers,
         data->cond = &pool->cond;
 
         if (virThreadCreateFull(&pool->workers[i],
-                                true,
+                                false,
                                 virThreadPoolWorker,
                                 pool->jobFuncName,
                                 true,
@@ -225,7 +225,7 @@ virThreadPoolNewFull(size_t minWorkers,
             data->priority = true;
 
             if (virThreadCreateFull(&pool->prioWorkers[i],
-                                    true,
+                                    false,
                                     virThreadPoolWorker,
                                     pool->jobFuncName,
                                     true,
@@ -249,16 +249,11 @@ void virThreadPoolFree(virThreadPoolPtr pool)
 {
     virThreadPoolJobPtr job;
     bool priority = false;
-    size_t i;
-    size_t nWorkers;
-    size_t nPrioWorkers;
 
     if (!pool)
         return;
 
     virMutexLock(&pool->mutex);
-    nWorkers = pool->nWorkers;
-    nPrioWorkers = pool->nPrioWorkers;
     pool->quit = true;
     if (pool->nWorkers > 0)
         virCondBroadcast(&pool->cond);
@@ -274,12 +269,6 @@ void virThreadPoolFree(virThreadPoolPtr pool)
         pool->jobList.head = pool->jobList.head->next;
         VIR_FREE(job);
     }
-
-    for (i = 0; i < nWorkers; i++)
-        virThreadJoin(&pool->workers[i]);
-
-    for (i = 0; i < nPrioWorkers; i++)
-        virThreadJoin(&pool->prioWorkers[i]);
 
     VIR_FREE(pool->workers);
     virMutexUnlock(&pool->mutex);
@@ -338,7 +327,7 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
         data->cond = &pool->cond;
 
         if (virThreadCreateFull(&pool->workers[pool->nWorkers - 1],
-                                true,
+                                false,
                                 virThreadPoolWorker,
                                 pool->jobFuncName,
                                 true,
