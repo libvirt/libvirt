@@ -544,17 +544,17 @@ virCPUDefFormatBuf(virBufferPtr buf,
             }
             virBufferAsprintf(buf, " fallback='%s'", fallback);
             if (def->vendor_id)
-                virBufferAsprintf(buf, " vendor_id='%s'", def->vendor_id);
+                virBufferEscapeString(buf, " vendor_id='%s'", def->vendor_id);
         }
         if (formatModel && def->model) {
-            virBufferAsprintf(buf, ">%s</model>\n", def->model);
+            virBufferEscapeString(buf, ">%s</model>\n", def->model);
         } else {
             virBufferAddLit(buf, "/>\n");
         }
     }
 
     if (formatModel && def->vendor)
-        virBufferAsprintf(buf, "<vendor>%s</vendor>\n", def->vendor);
+        virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
 
     if (def->sockets && def->cores && def->threads) {
         virBufferAddLit(buf, "<topology");

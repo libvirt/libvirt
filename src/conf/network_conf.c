@@ -2422,21 +2422,20 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     }
 
     for (i = 0; i < def->ntxts; i++) {
-        virBufferAsprintf(buf, "<txt name='%s' value='%s'/>\n",
-                              def->txts[i].name,
-                              def->txts[i].value);
+        virBufferEscapeString(buf, "<txt name='%s' ", def->txts[i].name);
+        virBufferEscapeString(buf, "value='%s'/>\n", def->txts[i].value);
     }
 
     for (i = 0; i < def->nsrvs; i++) {
         if (def->srvs[i].service && def->srvs[i].protocol) {
-            virBufferAsprintf(buf, "<srv service='%s' protocol='%s'",
-                                  def->srvs[i].service,
-                                  def->srvs[i].protocol);
+            virBufferEscapeString(buf, "<srv service='%s' ",
+                                  def->srvs[i].service);
+            virBufferEscapeString(buf, "protocol='%s'", def->srvs[i].protocol);
 
             if (def->srvs[i].domain)
-                virBufferAsprintf(buf, " domain='%s'", def->srvs[i].domain);
+                virBufferEscapeString(buf, " domain='%s'", def->srvs[i].domain);
             if (def->srvs[i].target)
-                virBufferAsprintf(buf, " target='%s'", def->srvs[i].target);
+                virBufferEscapeString(buf, " target='%s'", def->srvs[i].target);
             if (def->srvs[i].port)
                 virBufferAsprintf(buf, " port='%d'", def->srvs[i].port);
             if (def->srvs[i].priority)
@@ -2455,8 +2454,8 @@ virNetworkDNSDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, "<host ip='%s'>\n", ip);
             virBufferAdjustIndent(buf, 2);
             for (j = 0; j < def->hosts[i].nnames; j++)
-                virBufferAsprintf(buf, "<hostname>%s</hostname>\n",
-                                  def->hosts[i].names[j]);
+                virBufferEscapeString(buf, "<hostname>%s</hostname>\n",
+                                      def->hosts[i].names[j]);
 
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</host>\n");

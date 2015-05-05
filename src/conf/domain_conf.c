@@ -3724,7 +3724,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " bar='%s'", rombar);
         }
         if (info->romfile)
-            virBufferAsprintf(buf, " file='%s'", info->romfile);
+            virBufferEscapeString(buf, " file='%s'", info->romfile);
         virBufferAddLit(buf, "/>\n");
     }
 
@@ -17716,7 +17716,7 @@ virSecurityDeviceLabelDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<seclabel");
 
     if (def->model)
-        virBufferAsprintf(buf, " model='%s'", def->model);
+        virBufferEscapeString(buf, " model='%s'", def->model);
 
     if (def->labelskip)
         virBufferAddLit(buf, " labelskip='yes'");
@@ -19250,50 +19250,46 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-        virBufferAsprintf(buf, "<source master='%s' slave='%s'/>\n",
-                          def->data.nmdm.master,
-                          def->data.nmdm.slave);
+        virBufferEscapeString(buf, "<source master='%s' ",
+                              def->data.nmdm.master);
+        virBufferEscapeString(buf, "slave='%s'/>\n", def->data.nmdm.slave);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         if (def->data.udp.bindService &&
             def->data.udp.bindHost) {
-            virBufferAsprintf(buf,
-                              "<source mode='bind' host='%s' "
-                              "service='%s'/>\n",
-                              def->data.udp.bindHost,
-                              def->data.udp.bindService);
+            virBufferEscapeString(buf, "<source mode='bind' host='%s' ",
+                                  def->data.udp.bindHost);
+            virBufferEscapeString(buf, "service='%s'/>\n",
+                                  def->data.udp.bindService);
         } else if (def->data.udp.bindHost) {
-            virBufferAsprintf(buf, "<source mode='bind' host='%s'/>\n",
-                              def->data.udp.bindHost);
+            virBufferEscapeString(buf, "<source mode='bind' host='%s'/>\n",
+                                  def->data.udp.bindHost);
         } else if (def->data.udp.bindService) {
-            virBufferAsprintf(buf, "<source mode='bind' service='%s'/>\n",
-                              def->data.udp.bindService);
+            virBufferEscapeString(buf, "<source mode='bind' service='%s'/>\n",
+                                  def->data.udp.bindService);
         }
 
         if (def->data.udp.connectService &&
             def->data.udp.connectHost) {
-            virBufferAsprintf(buf,
-                              "<source mode='connect' host='%s' "
-                              "service='%s'/>\n",
-                              def->data.udp.connectHost,
-                              def->data.udp.connectService);
+            virBufferEscapeString(buf, "<source mode='connect' host='%s' ",
+                                  def->data.udp.connectHost);
+            virBufferEscapeString(buf, "service='%s'/>\n",
+                                  def->data.udp.connectService);
         } else if (def->data.udp.connectHost) {
-            virBufferAsprintf(buf, "<source mode='connect' host='%s'/>\n",
-                              def->data.udp.connectHost);
+            virBufferEscapeString(buf, "<source mode='connect' host='%s'/>\n",
+                                  def->data.udp.connectHost);
         } else if (def->data.udp.connectService) {
-            virBufferAsprintf(buf,
-                              "<source mode='connect' service='%s'/>\n",
-                              def->data.udp.connectService);
+            virBufferEscapeString(buf, "<source mode='connect' service='%s'/>\n",
+                                  def->data.udp.connectService);
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        virBufferAsprintf(buf,
-                          "<source mode='%s' host='%s' service='%s'/>\n",
-                          def->data.tcp.listen ? "bind" : "connect",
-                          def->data.tcp.host,
-                          def->data.tcp.service);
+        virBufferAsprintf(buf, "<source mode='%s' ",
+                          def->data.tcp.listen ? "bind" : "connect");
+        virBufferEscapeString(buf, "host='%s' ", def->data.tcp.host);
+        virBufferEscapeString(buf, "service='%s'/>\n", def->data.tcp.service);
         virBufferAsprintf(buf, "<protocol type='%s'/>\n",
                           virDomainChrTcpProtocolTypeToString(
                               def->data.tcp.protocol));
@@ -19307,8 +19303,8 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        virBufferAsprintf(buf, "<source channel='%s'/>\n",
-                          def->data.spiceport.channel);
+        virBufferEscapeString(buf, "<source channel='%s'/>\n",
+                              def->data.spiceport.channel);
         break;
 
     }

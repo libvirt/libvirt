@@ -272,7 +272,7 @@ virDomainCapsFormatInternal(virBufferPtr buf,
     virBufferAddLit(buf, "<domainCapabilities>\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<path>%s</path>\n", caps->path);
+    virBufferEscapeString(buf, "<path>%s</path>\n", caps->path);
     virBufferAsprintf(buf, "<domain>%s</domain>\n", virttype_str);
     virBufferAsprintf(buf, "<machine>%s</machine>\n", caps->machine);
     virBufferAsprintf(buf, "<arch>%s</arch>\n", arch_str);

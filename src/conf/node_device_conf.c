@@ -514,8 +514,8 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                 virBufferEscapeString(&buf, "<vendor>%s</vendor>\n",
                                       data->storage.vendor);
             if (data->storage.serial)
-                virBufferAsprintf(&buf, "<serial>%s</serial>\n",
-                                  data->storage.serial);
+                virBufferEscapeString(&buf, "<serial>%s</serial>\n",
+                                      data->storage.serial);
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {
                 int avl = data->storage.flags &
                     VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
