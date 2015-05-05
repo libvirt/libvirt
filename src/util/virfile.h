@@ -223,8 +223,7 @@ int virFileOpenAs(const char *path, int openflags, mode_t mode,
 enum {
     VIR_DIR_CREATE_NONE        = 0,
     VIR_DIR_CREATE_AS_UID      = (1 << 0),
-    VIR_DIR_CREATE_FORCE_PERMS = (1 << 1),
-    VIR_DIR_CREATE_ALLOW_EXIST = (1 << 2),
+    VIR_DIR_CREATE_ALLOW_EXIST = (1 << 1),
 };
 int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;

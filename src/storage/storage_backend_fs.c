@@ -804,7 +804,6 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
                             pool->def->target.perms.mode,
                             pool->def->target.perms.uid,
                             pool->def->target.perms.gid,
-                            VIR_DIR_CREATE_FORCE_PERMS |
                             VIR_DIR_CREATE_ALLOW_EXIST |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                             ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
@@ -1075,7 +1074,6 @@ static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
     if ((err = virDirCreate(vol->target.path, vol->target.perms->mode,
                             vol->target.perms->uid,
                             vol->target.perms->gid,
-                            VIR_DIR_CREATE_FORCE_PERMS |
                             (pool->def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
         return -1;
