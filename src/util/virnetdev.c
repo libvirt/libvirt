@@ -2258,6 +2258,28 @@ virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
     char macstr[VIR_MAC_STRING_BUFLEN];
     char *fileData = NULL;
     int ifindex = -1;
+    bool pfIsOnline;
+
+    /* Assure that PF is online prior to twiddling with the VF.  It
+     * *should* be, but if the PF isn't online the changes made to the
+     * VF via the PF won't take effect, yet there will be no error
+     * reported. In the case that it isn't online, fail and report the
+     * error, since setting an unconfigured interface online
+     * automatically turns on IPv6 autoconfig, which may not be what
+     * the admin expects, so we want them to explicitly enable the PF
+     * in the host system network config.
+     */
+    if (virNetDevGetOnline(pflinkdev, &pfIsOnline) < 0)
+       goto cleanup;
+    if (!pfIsOnline) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to configure VF %d of PF '%s' "
+                         "because the PF is not online. Please "
+                         "change host network config to put the "
+                         "PF online."),
+                       vf, pflinkdev);
+        goto cleanup;
+    }
 
     if (virNetDevGetVfConfig(pflinkdev, vf, &oldmac, &oldvlanid) < 0)
         goto cleanup;
