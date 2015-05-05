@@ -245,5 +245,6 @@ long virGetSystemPageSizeKB(void);
 
 unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
+unsigned long long virMemoryMaxValue(bool ulong);
 
 #endif /* __VIR_UTIL_H__ */

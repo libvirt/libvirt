@@ -7098,12 +7098,7 @@ virDomainParseMemory(const char *xpath,
     int ret = -1;
     unsigned long long bytes, max;
 
-    /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
-     * machines, our bound is off_t (2^63).  */
-    if (capped && sizeof(unsigned long) < sizeof(long long))
-        max = 1024ull * ULONG_MAX;
-    else
-        max = LLONG_MAX;
+    max = virMemoryMaxValue(capped);
 
     ret = virDomainParseScaledValue(xpath, units_xpath, ctxt,
                                     &bytes, 1024, max, required);

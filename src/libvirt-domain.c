@@ -1850,6 +1850,12 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
 
+    if (virMemoryMaxValue(true) / 1024 <= memory) {
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+                       memory);
+        goto error;
+    }
+
     if (conn->driver->domainSetMaxMemory) {
         int ret;
         ret = conn->driver->domainSetMaxMemory(domain, memory);
@@ -1895,6 +1901,12 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
+
+    if (virMemoryMaxValue(true) / 1024 <= memory) {
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+                       memory);
+        goto error;
+    }
 
     if (conn->driver->domainSetMemory) {
         int ret;
@@ -1952,6 +1964,12 @@ virDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
 
     virCheckReadOnlyGoto(conn->flags, error);
     virCheckNonZeroArgGoto(memory, error);
+
+    if (virMemoryMaxValue(true) / 1024 <= memory) {
+        virReportError(VIR_ERR_OVERFLOW, _("input too large: %lu"),
+                       memory);
+        goto error;
+    }
 
     if (conn->driver->domainSetMemoryFlags) {
         int ret;

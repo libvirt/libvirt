@@ -2598,3 +2598,23 @@ virMemoryLimitIsSet(unsigned long long value)
 {
     return value < VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
 }
+
+
+/**
+ * virMemoryMaxValue
+ *
+ * @ulong: whether the value must fit into unsigned long
+ *   (long long is assumed otherwise)
+ *
+ * Returns the maximum possible memory value in bytes.
+ */
+unsigned long long
+virMemoryMaxValue(bool ulong)
+{
+    /* On 32-bit machines, our bound is 0xffffffff * KiB. On 64-bit
+     * machines, our bound is off_t (2^63).  */
+    if (ulong && sizeof(unsigned long) < sizeof(long long))
+        return 1024ull * ULONG_MAX;
+    else
+        return LLONG_MAX;
+}

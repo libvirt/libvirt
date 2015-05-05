@@ -2334,6 +2334,7 @@ virIsSUID;
 virManageVport;
 virMemoryLimitIsSet;
 virMemoryLimitTruncate;
+virMemoryMaxValue;
 virParseNumber;
 virParseOwnershipIds;
 virParseVersionString;
