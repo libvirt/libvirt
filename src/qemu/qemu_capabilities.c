@@ -1702,6 +1702,8 @@ virQEMUCapsFreeStringList(size_t len,
                           char **values)
 {
     size_t i;
+    if (!values)
+        return;
     for (i = 0; i < len; i++)
         VIR_FREE(values[i]);
     VIR_FREE(values);
@@ -1794,7 +1796,7 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
     ret = nproplist;
 
  cleanup:
-    if (ret < 0 && proplist)
+    if (ret < 0)
         virQEMUCapsFreeStringList(nproplist, proplist);
     return ret;
 }
