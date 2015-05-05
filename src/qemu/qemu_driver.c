@@ -19633,8 +19633,9 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         qemuDomainObjEnterMonitor(driver, dom);
         rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats,
                                              visitBacking);
-        ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
-                                                         visitBacking));
+        if (rc >= 0)
+            ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
+                                                             visitBacking));
         if (qemuDomainObjExitMonitor(driver, dom) < 0)
             goto cleanup;
 
