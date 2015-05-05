@@ -9,8 +9,6 @@
     <format type='unknown'/>
     <permissions>
       <mode>0600</mode>
-      <owner>-1</owner>
-      <group>-1</group>
     </permissions>
   </target>
 </volume>

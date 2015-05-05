@@ -101,18 +101,22 @@
           <element name='mode'>
             <ref name='octalMode'/>
           </element>
-          <element name='owner'>
-            <choice>
-              <ref name='unsignedInt'/>
-              <value>-1</value>
-            </choice>
-          </element>
-          <element name='group'>
-            <choice>
-              <ref name='unsignedInt'/>
-              <value>-1</value>
-            </choice>
-          </element>
+          <optional>
+            <element name='owner'>
+              <choice>
+                <ref name='unsignedInt'/>
+                <value>-1</value>
+              </choice>
+            </element>
+          </optional>
+          <optional>
+            <element name='group'>
+              <choice>
+                <ref name='unsignedInt'/>
+                <value>-1</value>
+              </choice>
+            </element>
+          </optional>
           <optional>
             <element name='label'>
               <text/>

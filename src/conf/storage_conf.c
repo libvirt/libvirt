@@ -759,6 +759,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     if (virXPathNode("./owner", ctxt) == NULL) {
         perms->uid = (uid_t) -1;
     } else {
+        /* We previously could output -1, so continue to parse it */
         if (virXPathLongLong("number(./owner)", ctxt, &val) < 0 ||
             ((uid_t)val != val &&
              val != -1)) {
@@ -773,6 +774,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     if (virXPathNode("./group", ctxt) == NULL) {
         perms->gid = (gid_t) -1;
     } else {
+        /* We previously could output -1, so continue to parse it */
         if (virXPathLongLong("number(./group)", ctxt, &val) < 0 ||
             ((gid_t) val != val &&
              val != -1)) {
@@ -1187,10 +1189,12 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
         virBufferAdjustIndent(buf, 2);
         virBufferAsprintf(buf, "<mode>0%o</mode>\n",
                           def->target.perms.mode);
-        virBufferAsprintf(buf, "<owner>%d</owner>\n",
-                          (int) def->target.perms.uid);
-        virBufferAsprintf(buf, "<group>%d</group>\n",
-                          (int) def->target.perms.gid);
+        if (def->target.perms.uid != (uid_t) -1)
+            virBufferAsprintf(buf, "<owner>%d</owner>\n",
+                              (int) def->target.perms.uid);
+        if (def->target.perms.gid != (gid_t) -1)
+            virBufferAsprintf(buf, "<group>%d</group>\n",
+                              (int) def->target.perms.gid);
         virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->target.perms.label);
 
@@ -1522,11 +1526,12 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
 
         virBufferAsprintf(buf, "<mode>0%o</mode>\n",
                           def->perms->mode);
-        virBufferAsprintf(buf, "<owner>%d</owner>\n",
-                          (int) def->perms->uid);
-        virBufferAsprintf(buf, "<group>%d</group>\n",
-                          (int) def->perms->gid);
-
+        if (def->perms->uid != (uid_t) -1)
+            virBufferAsprintf(buf, "<owner>%d</owner>\n",
+                              (int) def->perms->uid);
+        if (def->perms->gid != (gid_t) -1)
+            virBufferAsprintf(buf, "<group>%d</group>\n",
+                              (int) def->perms->gid);
 
         virBufferEscapeString(buf, "<label>%s</label>\n",
                               def->perms->label);
