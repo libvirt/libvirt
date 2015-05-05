@@ -692,6 +692,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
     def->nmem_nodes = n;
 
     for (i = 0; i < n; i++) {
+        size_t j;
         int rc;
         unsigned int cur_cell = i;
 
@@ -737,6 +738,15 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
             goto cleanup;
         }
         VIR_FREE(tmp);
+
+        for (j = 0; j < i; j++) {
+            if (virBitmapOverlaps(def->mem_nodes[j].cpumask,
+                                  def->mem_nodes[i].cpumask)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("NUMA cells %zu and %zu have overlapping vCPU ids"), i, j);
+                goto cleanup;
+            }
+        }
 
         ctxt->node = nodes[i];
         if (virDomainParseMemory("./@memory", "./@unit", ctxt,
