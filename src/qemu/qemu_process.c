@@ -3749,6 +3749,12 @@ qemuProcessReconnect(void *opaque)
         if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj)) < 0)
             goto error;
 
+    /* if domain requests security driver we haven't loaded, report error, but
+     * do not kill the domain
+     */
+    ignore_value(virSecurityManagerCheckAllLabel(driver->securityManager,
+                                                 obj->def));
+
     if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
