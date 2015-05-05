@@ -6464,7 +6464,9 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
-        break;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown rng-random backend"));
+        goto cleanup;
     }
 
     ret = 0;
