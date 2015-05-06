@@ -50,12 +50,31 @@ static int update_caps(virNodeDeviceObjPtr dev)
     virNodeDevCapsDefPtr cap = dev->def->caps;
 
     while (cap) {
-        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST)
+        switch (cap->data.type) {
+        case VIR_NODE_DEV_CAP_SCSI_HOST:
             detect_scsi_host_caps(&dev->def->caps->data);
-        if (cap->data.type == VIR_NODE_DEV_CAP_NET &&
-            virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
-            return -1;
+            break;
+        case VIR_NODE_DEV_CAP_NET:
+            if (virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
+                return -1;
+            break;
 
+        /* all types that (supposedly) don't require any updates
+         * relative to what's in the cache.
+         */
+        case VIR_NODE_DEV_CAP_SYSTEM:
+        case VIR_NODE_DEV_CAP_PCI_DEV:
+        case VIR_NODE_DEV_CAP_USB_DEV:
+        case VIR_NODE_DEV_CAP_USB_INTERFACE:
+        case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        case VIR_NODE_DEV_CAP_SCSI:
+        case VIR_NODE_DEV_CAP_STORAGE:
+        case VIR_NODE_DEV_CAP_FC_HOST:
+        case VIR_NODE_DEV_CAP_VPORTS:
+        case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        case VIR_NODE_DEV_CAP_LAST:
+            break;
+        }
         cap = cap->next;
     }
 
