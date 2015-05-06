@@ -283,6 +283,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "machine-vmport-opt", /* 185 */
               "aes-key-wrap",
               "dea-key-wrap",
+              "pci-serial",
     );
 
 
@@ -1539,6 +1540,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "iothread", QEMU_CAPS_OBJECT_IOTHREAD},
     { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
     { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
+    { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

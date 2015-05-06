@@ -2312,6 +2312,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  *  - VirtIO balloon
  *  - Host device passthrough
  *  - Watchdog (not IB700)
+ *  - pci serial devices
  *
  * Prior to this function being invoked, qemuCollectPCIAddress() will have
  * added all existing PCI addresses from the 'def' to 'addrs'. Thus this
@@ -2584,7 +2585,16 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         /* Nada - none are PCI based (yet) */
     }
     for (i = 0; i < def->nserials; i++) {
-        /* Nada - none are PCI based (yet) */
+        virDomainChrDefPtr chr = def->serials[i];
+
+        if (chr->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI)
+            continue;
+
+        if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        if (virDomainPCIAddressReserveNextSlot(addrs, &chr->info, flags) < 0)
+            goto error;
     }
     for (i = 0; i < def->nchannels; i++) {
         /* Nada - none are PCI based (yet) */
@@ -10931,6 +10941,24 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                                _("no addresses are supported for isa-serial"));
                 goto error;
             }
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_SERIAL)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pci-serial is not supported with this QEMU binary"));
+                goto error;
+            }
+
+            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pci-serial requires address of pci type"));
+                goto error;
+            }
+
+            if (qemuBuildDeviceAddressStr(&cmd, def, &serial->info, qemuCaps) < 0)
+                goto error;
             break;
         }
     }
