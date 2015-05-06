@@ -5107,12 +5107,16 @@ qemu-kvm -net nic,model=? /dev/null
       specifies the port number. Ports are numbered starting from 0. There are
       usually 0, 1 or 2 serial ports. There is also an optional
       <code>type</code> attribute <span class="since">since 1.0.2</span>
-      which has two choices for its value, one is <code>isa-serial</code>,
-      the other is <code>usb-serial</code>. If <code>type</code> is missing,
-      <code>isa-serial</code> will be used by default. For <code>usb-serial</code>
-      an optional sub-element <code>&lt;address&gt;</code> with
-      <code>type='usb'</code> can tie the device to a particular controller,
-      <a href="#elementsAddress">documented above</a>.
+      which has three choices for its value, one is <code>isa-serial</code>,
+      then <code>usb-serial</code> and last one is <code>pci-serial</code>.
+      If <code>type</code> is missing, <code>isa-serial</code> will be used by
+      default. For <code>usb-serial</code> an optional sub-element
+      <code>&lt;address/&gt;</code> with <code>type='usb'</code> can tie the
+      device to a particular controller, <a href="#elementsAddress">documented above</a>.
+      Similarly, <code>pci-serial</code> can be used to attach the device to
+      the pci bus (<span class="since">since 1.2.16</span>). Again, it has
+      optional sub-element <code>&lt;address/&gt;</code> with
+      <code>type='pci'</code> to select desired location on the PCI bus.
     </p>
 
     <h6><a name="elementCharConsole">Console</a></h6>

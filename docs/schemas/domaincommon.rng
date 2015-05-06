@@ -3076,6 +3076,7 @@
       <choice>
         <value>isa-serial</value>
         <value>usb-serial</value>
+        <value>pci-serial</value>
       </choice>
     </attribute>
   </define>

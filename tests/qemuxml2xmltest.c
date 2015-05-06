@@ -481,6 +481,7 @@ mymain(void)
     DO_TEST("hostdev-pci-address");
     DO_TEST("hostdev-vfio");
     DO_TEST("pci-rom");
+    DO_TEST("pci-serial-dev-chardev");
 
     DO_TEST("encrypted-disk");
     DO_TEST_DIFFERENT("memtune");
