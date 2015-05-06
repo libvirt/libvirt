@@ -1,0 +1,11 @@
+<domain type='kvm'>
+  <name>kvm</name>
+  <uuid>d091ea82-29e6-2e34-3005-f02617b36e87</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type>hvm</type>
+    <boot dev='hd'/>
+  </os>
+</domain>

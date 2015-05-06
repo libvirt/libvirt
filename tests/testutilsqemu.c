@@ -354,6 +354,18 @@ virCapsPtr testQemuCapsInit(void)
                                       NULL) == NULL)
         goto cleanup;
 
+    if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
+        goto cleanup;
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      VIR_DOMAIN_VIRT_KVM,
+                                      "/usr/bin/qemu-kvm",
+                                      NULL,
+                                      nmachines,
+                                      machines) == NULL)
+        goto cleanup;
+    machines = NULL;
+
     if ((machines = testQemuAllocNewerMachines(&nmachines)) == NULL)
         goto cleanup;
 

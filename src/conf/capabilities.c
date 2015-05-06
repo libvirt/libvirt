@@ -607,25 +607,13 @@ virCapsDomainDataCompare(virCapsGuestPtr guest,
     return true;
 }
 
-/**
- * virCapabilitiesDomainDataLookup:
- * @caps: capabilities to query
- * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
- * @arch: Architecture to search for
- * @domaintype: domain type to search for, of enum VIR_DOMAIN_VIRT
- * @emulator: Emulator path to search for
- * @machinetype: Machine type to search for
- *
- * Search capabilities for the passed values, and if found return
- * virCapabilitiesDomainDataLookup filled in with the default values
- */
-virCapsDomainDataPtr
-virCapabilitiesDomainDataLookup(virCapsPtr caps,
-                                int ostype,
-                                virArch arch,
-                                int domaintype,
-                                const char *emulator,
-                                const char *machinetype)
+static virCapsDomainDataPtr
+virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
+                                        int ostype,
+                                        virArch arch,
+                                        int domaintype,
+                                        const char *emulator,
+                                        const char *machinetype)
 {
     virCapsGuestPtr foundguest = NULL;
     virCapsGuestDomainPtr founddomain = NULL;
@@ -728,6 +716,43 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
 
  error:
     return ret;
+}
+
+/**
+ * virCapabilitiesDomainDataLookup:
+ * @caps: capabilities to query
+ * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
+ * @arch: Architecture to search for
+ * @domaintype: domain type to search for, of enum VIR_DOMAIN_VIRT
+ * @emulator: Emulator path to search for
+ * @machinetype: Machine type to search for
+ *
+ * Search capabilities for the passed values, and if found return
+ * virCapabilitiesDomainDataLookup filled in with the default values
+ */
+virCapsDomainDataPtr
+virCapabilitiesDomainDataLookup(virCapsPtr caps,
+                                int ostype,
+                                virArch arch,
+                                int domaintype,
+                                const char *emulator,
+                                const char *machinetype)
+{
+    virCapsDomainDataPtr ret;
+
+    if (arch == VIR_ARCH_NONE) {
+        /* Prefer host arch if its available */
+        ret = virCapabilitiesDomainDataLookupInternal(caps, ostype,
+                                                      caps->host.arch,
+                                                      domaintype,
+                                                      emulator, machinetype);
+        if (ret)
+            return ret;
+    }
+
+    return virCapabilitiesDomainDataLookupInternal(caps, ostype,
+                                                   arch, domaintype,
+                                                   emulator, machinetype);
 }
 
 static int

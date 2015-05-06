@@ -599,6 +599,8 @@ mymain(void)
     DO_TEST_FAILURE("machine-xen-vmport-opt", QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST("kvm", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST("default-kvm-host-arch", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST("default-qemu-host-arch", QEMU_CAPS_MACHINE_OPT);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);

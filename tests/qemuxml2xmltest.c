@@ -346,6 +346,8 @@ mymain(void)
     DO_TEST("minimal");
     DO_TEST("machine-core-on");
     DO_TEST("machine-core-off");
+    DO_TEST_DIFFERENT("default-kvm-host-arch");
+    DO_TEST_DIFFERENT("default-qemu-host-arch");
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
