@@ -44,8 +44,6 @@ extern virNodeDeviceDriverStatePtr driver;
 
 int nodedevRegister(void);
 
-int detect_scsi_host_caps(virNodeDevCapDataPtr d);
-
 int nodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags);
 int nodeListDevices(virConnectPtr conn, const char *cap, char **const names,
                     int maxnames, unsigned int flags);

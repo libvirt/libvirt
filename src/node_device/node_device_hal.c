@@ -1,7 +1,7 @@
 /*
  * node_device_hal.c: node device enumeration - HAL-based implementation
  *
- * Copyright (C) 2011-2014 Red Hat, Inc.
+ * Copyright (C) 2011-2015 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -29,7 +29,9 @@
 #include <libhal.h>
 
 #include "node_device_conf.h"
+#include "node_device_driver.h"
 #include "node_device_hal.h"
+#include "node_device_linux_sysfs.h"
 #include "virerror.h"
 #include "driver.h"
 #include "datatypes.h"
@@ -37,7 +39,6 @@
 #include "viruuid.h"
 #include "virpci.h"
 #include "virlog.h"
-#include "node_device_driver.h"
 #include "virdbus.h"
 #include "virstring.h"
 
@@ -248,7 +249,7 @@ gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
 
     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
 
-    retval = detect_scsi_host_caps(d);
+    retval = nodeDeviceSysfsGetSCSIHostCaps(d);
 
     if (retval == -1)
         goto out;

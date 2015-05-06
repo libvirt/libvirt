@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2014 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -966,7 +966,8 @@ ACCESS_DRIVER_POLKIT_POLICY = \
 NODE_DEVICE_DRIVER_SOURCES =					\
 		node_device/node_device_driver.c		\
 		node_device/node_device_driver.h		\
-		node_device/node_device_linux_sysfs.c
+		node_device/node_device_linux_sysfs.c           \
+		node_device/node_device_linux_sysfs.h
 
 NODE_DEVICE_DRIVER_HAL_SOURCES =				\
 		node_device/node_device_hal.c			\

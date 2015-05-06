@@ -35,8 +35,9 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "node_device_conf.h"
-#include "node_device_hal.h"
 #include "node_device_driver.h"
+#include "node_device_hal.h"
+#include "node_device_linux_sysfs.h"
 #include "virutil.h"
 #include "viraccessapicheck.h"
 #include "virnetdev.h"
@@ -52,7 +53,7 @@ static int update_caps(virNodeDeviceObjPtr dev)
     while (cap) {
         switch (cap->data.type) {
         case VIR_NODE_DEV_CAP_SCSI_HOST:
-            detect_scsi_host_caps(&dev->def->caps->data);
+            nodeDeviceSysfsGetSCSIHostCaps(&dev->def->caps->data);
             break;
         case VIR_NODE_DEV_CAP_NET:
             if (virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
@@ -282,7 +283,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
         while (cap) {
             if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-                detect_scsi_host_caps(&cap->data);
+                nodeDeviceSysfsGetSCSIHostCaps(&cap->data);
                 if (cap->data.scsi_host.flags &
                     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
                     if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&

@@ -1,7 +1,7 @@
 /*
  * node_device_udev.c: node device enumeration - libudev implementation
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,10 +27,11 @@
 #include <c-ctype.h>
 
 #include "dirname.h"
-#include "node_device_udev.h"
-#include "virerror.h"
 #include "node_device_conf.h"
 #include "node_device_driver.h"
+#include "node_device_linux_sysfs.h"
+#include "node_device_udev.h"
+#include "virerror.h"
 #include "driver.h"
 #include "datatypes.h"
 #include "virlog.h"
@@ -749,7 +750,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
         goto out;
     }
 
-    detect_scsi_host_caps(&def->caps->data);
+    nodeDeviceSysfsGetSCSIHostCaps(&def->caps->data);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         goto out;
