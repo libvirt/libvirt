@@ -1990,17 +1990,17 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
     agentForced = agentRequested && !acpiRequested;
     if (!qemuDomainAgentAvailable(vm, agentForced)) {
         if (agentForced)
             goto endjob;
         useAgent = false;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
     }
 
     qemuDomainSetFakeReboot(driver, vm, isReboot);
