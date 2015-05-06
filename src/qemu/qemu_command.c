@@ -5129,9 +5129,17 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         }
     }
     if (usingVirtio && vhostfdSize > 1) {
-        /* As advised at http://www.linux-kvm.org/page/Multiqueue
-         * we should add vectors=2*N+2 where N is the vhostfdSize */
-        virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
+        if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            /* ccw provides a one to one relation of fds to queues and
+             * does not support the vectors option
+             */
+            virBufferAddLit(&buf, ",mq=on");
+        } else {
+            /* As advised at http://www.linux-kvm.org/page/Multiqueue
+             * we should add vectors=2*N+2 where N is the vhostfdSize
+             */
+            virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
+        }
     }
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
