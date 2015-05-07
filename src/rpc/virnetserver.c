@@ -499,7 +499,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    n =  virJSONValueArraySize(services);
+    n = virJSONValueArraySize(services);
     if (n < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed services data in JSON document"));
@@ -532,7 +532,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    n =  virJSONValueArraySize(clients);
+    n = virJSONValueArraySize(clients);
     if (n < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed clients data in JSON document"));
