@@ -4480,6 +4480,14 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
     VIR_DEBUG("Changing serial port state %s in domain %p %s",
               devAlias, vm, vm->def->name);
 
+    if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED &&
+        virDomainObjIsActive(vm) && priv->agent) {
+        /* Close agent monitor early, so that other threads
+         * waiting for the agent to reply can finish and our
+         * job we acquire below can succeed. */
+       qemuAgentNotifyClose(priv->agent);
+    }
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 

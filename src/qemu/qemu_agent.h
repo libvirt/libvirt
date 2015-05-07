@@ -49,6 +49,8 @@ qemuAgentPtr qemuAgentOpen(virDomainObjPtr vm,
 
 void qemuAgentClose(qemuAgentPtr mon);
 
+void qemuAgentNotifyClose(qemuAgentPtr mon);
+
 typedef enum {
     QEMU_AGENT_EVENT_NONE = 0,
     QEMU_AGENT_EVENT_SHUTDOWN,
