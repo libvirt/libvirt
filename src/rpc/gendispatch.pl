@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #
-# Copyright (C) 2010-2014 Red Hat, Inc.
+# Copyright (C) 2010-2015 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -429,7 +429,8 @@ elsif ($mode eq "server") {
         print "{\n";
         print "  int rv;\n";
         print "  virThreadJobSet(\"$name\");\n";
-        print "  VIR_DEBUG(\"server=%p client=%p msg=%p rerr=%p args=%p ret=%p\", server, client, msg, rerr, args, ret);\n";
+        print "  VIR_DEBUG(\"server=%p client=%p msg=%p rerr=%p args=%p ret=%p\",\n";
+        print "            server, client, msg, rerr, args, ret);\n";
         print "  rv = $name(server, client, msg, rerr";
         if ($argtype ne "void") {
             print ", args";
