@@ -8334,6 +8334,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         dev->data.chr = NULL;
         if (virDomainDefAddImplicitControllers(vmdef) < 0)
             return -1;
+        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
