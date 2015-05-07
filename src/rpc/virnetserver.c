@@ -484,7 +484,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    if (!(srv = virNetServerNew(min_workers, max_clients,
+    if (!(srv = virNetServerNew(min_workers, max_workers,
                                 priority_workers, max_clients,
                                 max_anonymous_clients,
                                 keepaliveInterval, keepaliveCount,
