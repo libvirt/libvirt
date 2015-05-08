@@ -13091,7 +13091,7 @@ qemuNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
 
     cap = def->caps;
     while (cap) {
-        if (cap->type == VIR_NODE_DEV_CAP_PCI_DEV) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
             *domain   = cap->data.pci_dev.domain;
             *bus      = cap->data.pci_dev.bus;
             *slot     = cap->data.pci_dev.slot;

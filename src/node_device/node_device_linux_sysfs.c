@@ -2,7 +2,7 @@
  * node_device_linux_sysfs.c: Linux specific code to gather device data
  * not available through HAL.
  *
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,7 +41,7 @@
 VIR_LOG_INIT("node_device.node_device_linux_sysfs");
 
 int
-detect_scsi_host_caps(union _virNodeDevCapData *d)
+detect_scsi_host_caps(virNodeDevCapDataPtr d)
 {
     char *max_vports = NULL;
     char *vports = NULL;
@@ -139,7 +139,7 @@ detect_scsi_host_caps(union _virNodeDevCapData *d)
 #else
 
 int
-detect_scsi_host_caps(union _virNodeDevCapData *d ATTRIBUTE_UNUSED)
+detect_scsi_host_caps(virNodeDevCapDataPtr d ATTRIBUTE_UNUSED)
 {
     return -1;
 }

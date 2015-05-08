@@ -1,7 +1,7 @@
 /*
  * node_device_driver.c: node device enumeration
  *
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2015 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -50,9 +50,9 @@ static int update_caps(virNodeDeviceObjPtr dev)
     virNodeDevCapsDefPtr cap = dev->def->caps;
 
     while (cap) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST)
+        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST)
             detect_scsi_host_caps(&dev->def->caps->data);
-        if (cap->type == VIR_NODE_DEV_CAP_NET &&
+        if (cap->data.type == VIR_NODE_DEV_CAP_NET &&
             virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
             return -1;
 
@@ -262,7 +262,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
         cap = obj->def->caps;
 
         while (cap) {
-            if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
                 detect_scsi_host_caps(&cap->data);
                 if (cap->data.scsi_host.flags &
                     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
@@ -386,7 +386,7 @@ nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     for (caps = obj->def->caps; caps; caps = caps->next) {
         ++ncaps;
 
-        if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
             if (caps->data.scsi_host.flags &
                 VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)
                 ncaps++;
@@ -429,10 +429,10 @@ nodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
         goto cleanup;
 
     for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
-        if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->type)) < 0)
+        if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->data.type)) < 0)
             goto cleanup;
 
-        if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
             if (ncaps < maxnames &&
                 caps->data.scsi_host.flags &
                 VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {

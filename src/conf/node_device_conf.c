@@ -1,7 +1,7 @@
 /*
  * node_device_conf.c: config handling for node devices
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -76,9 +76,9 @@ int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
     while (caps) {
-        if (STREQ(cap, virNodeDevCapTypeToString(caps->type)))
+        if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type)))
             return 1;
-        else if (caps->type == VIR_NODE_DEV_CAP_SCSI_HOST)
+        else if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST)
             if ((STREQ(cap, "fc_host") &&
                 (caps->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
@@ -285,12 +285,12 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
 
     for (caps = def->caps; caps; caps = caps->next) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-        union _virNodeDevCapData *data = &caps->data;
+        virNodeDevCapDataPtr data = &caps->data;
 
         virBufferAsprintf(&buf, "<capability type='%s'>\n",
-                          virNodeDevCapTypeToString(caps->type));
+                          virNodeDevCapTypeToString(caps->data.type));
         virBufferAdjustIndent(&buf, 2);
-        switch (caps->type) {
+        switch (caps->data.type) {
         case VIR_NODE_DEV_CAP_SYSTEM:
             if (data->system.product_name)
                 virBufferEscapeString(&buf, "<product>%s</product>\n",
@@ -661,7 +661,7 @@ static int
 virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
                              virNodeDeviceDefPtr def,
                              xmlNodePtr node,
-                             union _virNodeDevCapData *data)
+                             virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode, *nodes = NULL;
     size_t i;
@@ -755,7 +755,7 @@ static int
 virNodeDevCapSCSIParseXML(xmlXPathContextPtr ctxt,
                           virNodeDeviceDefPtr def,
                           xmlNodePtr node,
-                          union _virNodeDevCapData *data)
+                          virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
     int ret = -1;
@@ -800,7 +800,7 @@ static int
 virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
                                 virNodeDeviceDefPtr def,
                                 xmlNodePtr node,
-                                union _virNodeDevCapData *data)
+                                virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
     int ret = -1;
@@ -828,7 +828,7 @@ static int
 virNodeDevCapSCSIHostParseXML(xmlXPathContextPtr ctxt,
                               virNodeDeviceDefPtr def,
                               xmlNodePtr node,
-                              union _virNodeDevCapData *data,
+                              virNodeDevCapDataPtr data,
                               int create,
                               const char *virt_type)
 {
@@ -932,7 +932,7 @@ static int
 virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
                          virNodeDeviceDefPtr def,
                          xmlNodePtr node,
-                         union _virNodeDevCapData *data)
+                         virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode, lnk;
     size_t i = -1;
@@ -1010,7 +1010,7 @@ static int
 virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
                                   virNodeDeviceDefPtr def,
                                   xmlNodePtr node,
-                                  union _virNodeDevCapData *data)
+                                  virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
     int ret = -1;
@@ -1077,7 +1077,7 @@ static int
 virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
-                            union _virNodeDevCapData *data)
+                            virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
     int ret = -1;
@@ -1121,7 +1121,7 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
 static int
 virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
                                       xmlNodePtr iommuGroupNode,
-                                      union _virNodeDevCapData *data)
+                                      virNodeDevCapDataPtr data)
 {
     xmlNodePtr origNode = ctxt->node;
     xmlNodePtr *addrNodes = NULL;
@@ -1259,7 +1259,7 @@ static int
 virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
-                            union _virNodeDevCapData *data)
+                            virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode, iommuGroupNode, pciExpress;
     int ret = -1;
@@ -1344,7 +1344,7 @@ static int
 virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
-                            union _virNodeDevCapData *data)
+                            virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
     int ret = -1;
@@ -1411,10 +1411,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         VIR_FREE(tmp);
         goto error;
     }
-    caps->type = val;
+    caps->data.type = val;
     VIR_FREE(tmp);
 
-    switch (caps->type) {
+    switch (caps->data.type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
         ret = virNodeDevCapSystemParseXML(ctxt, def, node, &caps->data);
         break;
@@ -1451,7 +1451,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NODE_DEV_CAP_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown capability type '%d' for '%s'"),
-                       caps->type, def->name);
+                       caps->data.type, def->name);
         ret = -1;
         break;
     }
@@ -1607,7 +1607,7 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
 
     cap = def->caps;
     while (cap != NULL) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
             cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
             if (VIR_STRDUP(*wwnn, cap->data.scsi_host.wwnn) < 0 ||
                 VIR_STRDUP(*wwpn, cap->data.scsi_host.wwpn) < 0) {
@@ -1656,7 +1656,7 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 
     cap = parent->def->caps;
     while (cap != NULL) {
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
             (cap->data.scsi_host.flags &
              VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)) {
                 *parent_host = cap->data.scsi_host.host;
@@ -1683,9 +1683,9 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {
     size_t i = 0;
-    union _virNodeDevCapData *data = &caps->data;
+    virNodeDevCapDataPtr data = &caps->data;
 
-    switch (caps->type) {
+    switch (caps->data.type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
         VIR_FREE(data->system.product_name);
         VIR_FREE(data->system.hardware.vendor_name);
@@ -1771,10 +1771,10 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
     virNodeDevCapsDefPtr cap = NULL;
 
     for (cap = devobj->def->caps; cap; cap = cap->next) {
-        if (type == cap->type)
+        if (type == cap->data.type)
             return true;
 
-        if (cap->type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
             if (type == VIR_NODE_DEV_CAP_FC_HOST &&
                 (cap->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST))

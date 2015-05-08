@@ -411,7 +411,7 @@ static int udevProcessPCI(struct udev_device *device,
                           virNodeDeviceDefPtr def)
 {
     const char *syspath = NULL;
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     virPCIDeviceAddress addr;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
@@ -567,7 +567,7 @@ static int udevProcessPCI(struct udev_device *device,
 static int udevProcessUSBDevice(struct udev_device *device,
                                 virNodeDeviceDefPtr def)
 {
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     int ret = -1;
     int err;
 
@@ -639,7 +639,7 @@ static int udevProcessUSBInterface(struct udev_device *device,
                                    virNodeDeviceDefPtr def)
 {
     int ret = -1;
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
 
     if (udevGetUintSysfsAttr(device,
                              "bInterfaceNumber",
@@ -684,7 +684,7 @@ static int udevProcessNetworkInterface(struct udev_device *device,
 {
     int ret = -1;
     const char *devtype = udev_device_get_devtype(device);
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
 
     if (devtype && STREQ(devtype, "wlan")) {
         data->net.subtype = VIR_NODE_DEV_CAP_NET_80211;
@@ -731,7 +731,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
                                virNodeDeviceDefPtr def)
 {
     int ret = -1;
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     char *filename = NULL;
 
     filename = last_component(def->sysfs_path);
@@ -766,7 +766,7 @@ static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
 {
     int ret = -1;
     const char *sysname = NULL;
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
 
     sysname = udev_device_get_sysname(device);
 
@@ -846,7 +846,7 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 {
     int ret = -1;
     unsigned int tmp = 0;
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     char *filename = NULL, *p = NULL;
 
     filename = last_component(def->sysfs_path);
@@ -905,7 +905,7 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 static int udevProcessDisk(struct udev_device *device,
                            virNodeDeviceDefPtr def)
 {
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     int ret = 0;
 
     if (udevGetUint64SysfsAttr(device,
@@ -933,7 +933,7 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
                                       virNodeDeviceDefPtr def,
                                       int has_media)
 {
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     int tmp_int = 0, ret = 0;
 
     if ((udevGetIntSysfsAttr(device, "removable", &tmp_int, 0) == PROPERTY_FOUND) &&
@@ -1025,7 +1025,7 @@ static int udevProcessFloppy(struct udev_device *device,
 static int udevProcessSD(struct udev_device *device,
                          virNodeDeviceDefPtr def)
 {
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     int ret = 0;
 
     if (udevGetUint64SysfsAttr(device,
@@ -1098,7 +1098,7 @@ static void udevStripSpaces(char *s)
 static int udevProcessStorage(struct udev_device *device,
                               virNodeDeviceDefPtr def)
 {
-    union _virNodeDevCapData *data = &def->caps->data;
+    virNodeDevCapDataPtr data = &def->caps->data;
     int ret = -1;
     const char* devnode;
 
@@ -1281,7 +1281,7 @@ static int udevGetDeviceDetails(struct udev_device *device,
 {
     int ret = 0;
 
-    switch (def->caps->type) {
+    switch (def->caps->data.type) {
     case VIR_NODE_DEV_CAP_SYSTEM:
         /* There's no libudev equivalent of system, so ignore it. */
         break;
@@ -1313,7 +1313,7 @@ static int udevGetDeviceDetails(struct udev_device *device,
         ret = udevProcessSCSIGeneric(device, def);
         break;
     default:
-        VIR_ERROR(_("Unknown device type %d"), def->caps->type);
+        VIR_ERROR(_("Unknown device type %d"), def->caps->data.type);
         ret = -1;
         break;
     }
@@ -1414,7 +1414,7 @@ static int udevAddOneDevice(struct udev_device *device)
     if (VIR_ALLOC(def->caps) != 0)
         goto out;
 
-    if (udevGetDeviceType(device, &def->caps->type) != 0)
+    if (udevGetDeviceType(device, &def->caps->data.type) != 0)
         goto out;
 
     if (udevGetDeviceDetails(device, def) != 0)
@@ -1588,7 +1588,7 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 /* DMI is intel-compatible specific */
 #if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
 static void
-udevGetDMIData(union _virNodeDevCapData *data)
+udevGetDMIData(virNodeDevCapDataPtr data)
 {
     struct udev *udev = NULL;
     struct udev_device *device = NULL;

@@ -1,7 +1,7 @@
 /*
  * xen_driver.c: Unified Xen driver.
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2488,7 +2488,7 @@ xenUnifiedNodeDeviceGetPCIInfo(virNodeDevicePtr dev,
 
     cap = def->caps;
     while (cap) {
-        if (cap->type == VIR_NODE_DEV_CAP_PCI_DEV) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
             *domain   = cap->data.pci_dev.domain;
             *bus      = cap->data.pci_dev.bus;
             *slot     = cap->data.pci_dev.slot;

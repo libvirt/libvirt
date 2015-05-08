@@ -1,7 +1,7 @@
 /*
  * node_device_conf.h: config handling for node devices
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  * Copyright (C) 2008 Virtual Iron Software, Inc.
  * Copyright (C) 2008 David F. Lively
  *
@@ -82,11 +82,9 @@ typedef enum {
     VIR_NODE_DEV_CAP_FLAG_PCIE                      = (1 << 2),
 } virNodeDevPCICapFlags;
 
-typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
-typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
-struct _virNodeDevCapsDef {
+typedef struct _virNodeDevCapData {
     virNodeDevCapType type;
-    union _virNodeDevCapData {
+    union {
         struct {
             char *product_name;
             struct {
@@ -181,7 +179,13 @@ struct _virNodeDevCapsDef {
         struct {
             char *path;
         } sg; /* SCSI generic device */
-    } data;
+    };
+} virNodeDevCapData, *virNodeDevCapDataPtr;
+
+typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
+typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;
+struct _virNodeDevCapsDef {
+    virNodeDevCapData data;
     virNodeDevCapsDefPtr next;          /* next capability */
 };
 
