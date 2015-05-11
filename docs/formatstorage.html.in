@@ -78,7 +78,7 @@
         ...
         &lt;source&gt;
           &lt;host name="iscsi.example.com"/&gt;
-          &lt;device path="demo-target"/&gt;
+          &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
           &lt;auth type='chap' username='myname'&gt;
             &lt;secret usage='mycluster_myname'/&gt;
           &lt;/auth&gt;
@@ -118,8 +118,10 @@
         (pool types <code>fs</code>, <code>logical</code>, <code>disk</code>,
         <code>iscsi</code>, <code>zfs</code>).
         May be repeated multiple times depending on backend driver. Contains
-        a single attribute <code>path</code> which is the fully qualified
-        path to the block device node. <span class="since">Since 0.4.1</span></dd>
+        a single attribute <code>path</code> which is either the fully
+        qualified path to the block device node or for <code>iscsi</code>
+        the iSCSI Qualified Name (IQN).
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
         type <code>dir</code>), or optionally to select a subdirectory
@@ -292,7 +294,15 @@
         or <code>device</code> element. Contains an attribute <code>name</code>
         which is the hostname or IP address of the server. May optionally
         contain a <code>port</code> attribute for the protocol specific
-        port number. <span class="since">Since 0.4.1</span></dd>
+        port number. Duplicate storage pool definition checks may perform
+        a cursory check that the same host name by string comparison in the
+        new pool does not match an existing pool's source host name when
+        combined with the <code>directory</code> or <code>device</code>
+        element. Name resolution of the provided hostname or IP address
+        is left to the storage driver backend interactions with the remote
+        server. See the <a href="storage.html">storage driver page</a> for
+        any restrictions for specific storage backends.
+        <span class="since">Since 0.4.1</span></dd>
       <dt><code>auth</code></dt>
       <dd>If present, the <code>auth</code> element provides the
         authentication credentials needed to access the source by the

@@ -2427,9 +2427,7 @@ virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
     virStoragePoolSourcePtr poolsrc = &matchpool->def->source;
     virStoragePoolSourcePtr defsrc = &def->source;
 
-    if (!virStoragePoolSourceMatchSingleHost(poolsrc, defsrc))
-        return false;
-
+    /* NB: Do not check the source host name */
     if (STRNEQ_NULLABLE(poolsrc->initiator.iqn, defsrc->initiator.iqn))
         return false;
 
