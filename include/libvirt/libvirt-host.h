@@ -354,7 +354,8 @@ struct _virNodeInfo {
     char model[32];       /* string indicating the CPU model */
     unsigned long memory; /* memory size in kilobytes */
     unsigned int cpus;    /* the number of active CPUs */
-    unsigned int mhz;     /* expected CPU frequency */
+    unsigned int mhz;     /* expected CPU frequency, 0 if not known or
+                             on unusual architectures */
     unsigned int nodes;   /* the number of NUMA cell, 1 for unusual NUMA
                              topologies or uniform memory access; check
                              capabilities XML for the actual NUMA topology */
