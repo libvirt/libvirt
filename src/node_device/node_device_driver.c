@@ -59,12 +59,16 @@ static int update_caps(virNodeDeviceObjPtr dev)
             if (virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
                 return -1;
             break;
+        case VIR_NODE_DEV_CAP_PCI_DEV:
+           if (nodeDeviceSysfsGetPCIRelatedDevCaps(dev->def->sysfs_path,
+                                                   &dev->def->caps->data) < 0)
+              return -1;
+           break;
 
         /* all types that (supposedly) don't require any updates
          * relative to what's in the cache.
          */
         case VIR_NODE_DEV_CAP_SYSTEM:
-        case VIR_NODE_DEV_CAP_PCI_DEV:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
