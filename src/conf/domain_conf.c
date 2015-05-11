@@ -10829,12 +10829,16 @@ virDomainShmemDefParseXML(xmlNodePtr node,
         }
         VIR_FREE(tmp);
 
-        if ((tmp = virXMLPropString(msi, "ioeventfd")) &&
-            (def->msi.ioeventfd = virTristateSwitchTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid msi ioeventfd setting for shmem: '%s'"),
-                           tmp);
-            goto cleanup;
+        if ((tmp = virXMLPropString(msi, "ioeventfd"))) {
+            int val;
+
+            if ((val = virTristateSwitchTypeFromString(tmp)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid msi ioeventfd setting for shmem: '%s'"),
+                               tmp);
+                goto cleanup;
+            }
+            def->msi.ioeventfd = val;
         }
         VIR_FREE(tmp);
     }
