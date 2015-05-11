@@ -137,6 +137,96 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
     return ret;
 }
 
+
+static int
+nodeDeviceSysfsGetPCISRIOVCaps(const char *sysfsPath,
+                               virNodeDevCapDataPtr data)
+{
+    size_t i;
+    int ret;
+
+    /* this could be a refresh, so clear out the old data */
+    for (i = 0; i < data->pci_dev.num_virtual_functions; i++)
+       VIR_FREE(data->pci_dev.virtual_functions[i]);
+    VIR_FREE(data->pci_dev.virtual_functions);
+    data->pci_dev.num_virtual_functions = 0;
+    data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+    data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+
+    if (!virPCIGetPhysicalFunction(sysfsPath, &data->pci_dev.physical_function))
+        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+
+    ret = virPCIGetVirtualFunctions(sysfsPath, &data->pci_dev.virtual_functions,
+                                    &data->pci_dev.num_virtual_functions);
+    if (ret < 0)
+        return ret;
+
+    if (data->pci_dev.num_virtual_functions > 0)
+        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+
+    return ret;
+}
+
+
+static int
+nodeDeviceSysfsGetPCIIOMMUGroupCaps(virNodeDevCapDataPtr data)
+{
+    size_t i;
+    int tmpGroup, ret = -1;
+    virPCIDeviceAddress addr;
+
+    /* this could be a refresh, so clear out the old data */
+    for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++)
+       VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
+    VIR_FREE(data->pci_dev.iommuGroupDevices);
+    data->pci_dev.nIommuGroupDevices = 0;
+    data->pci_dev.iommuGroupNumber = 0;
+
+    addr.domain = data->pci_dev.domain;
+    addr.bus = data->pci_dev.bus;
+    addr.slot = data->pci_dev.slot;
+    addr.function = data->pci_dev.function;
+    tmpGroup = virPCIDeviceAddressGetIOMMUGroupNum(&addr);
+    if (tmpGroup == -1) {
+        /* error was already reported */
+        goto cleanup;
+    }
+    if (tmpGroup == -2) {
+        /* -2 return means there is no iommu_group data */
+        ret = 0;
+        goto cleanup;
+    }
+    if (tmpGroup >= 0) {
+        if (virPCIDeviceAddressGetIOMMUGroupAddresses(&addr, &data->pci_dev.iommuGroupDevices,
+                                                      &data->pci_dev.nIommuGroupDevices) < 0)
+            goto cleanup;
+        data->pci_dev.iommuGroupNumber = tmpGroup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+/* nodeDeviceSysfsGetPCIRelatedCaps() get info that is stored in sysfs
+ * about devices related to this device, i.e. things that can change
+ * without this device itself changing. These must be refreshed
+ * anytime full XML of the device is requested, because they can
+ * change with no corresponding notification from the kernel/udev.
+ */
+int
+nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
+                                    virNodeDevCapDataPtr data)
+{
+    if (nodeDeviceSysfsGetPCISRIOVCaps(sysfsPath, data) < 0)
+        return -1;
+    if (nodeDeviceSysfsGetPCIIOMMUGroupCaps(data) < 0)
+        return -1;
+    return 0;
+}
+
+
 #else
 
 int
