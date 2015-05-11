@@ -1862,6 +1862,8 @@ static int
 qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
                                virDomainObjPtr vm)
 {
+    virErrorPtr err = NULL;
+    int ret = 0;
     size_t i;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -1871,13 +1873,20 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
         if (!diskPriv->migrating || !diskPriv->blockJobSync)
             continue;
 
-        if (qemuMigrationCancelOneDriveMirror(driver, vm, disk) < 0)
-            return -1;
+        if (qemuMigrationCancelOneDriveMirror(driver, vm, disk) < 0) {
+            ret = -1;
+            if (!err)
+                err = virSaveLastError();
+        }
 
         diskPriv->migrating = false;
     }
 
-    return 0;
+    if (err) {
+        virSetError(err);
+        virFreeError(err);
+    }
+    return ret;
 }
 
 
