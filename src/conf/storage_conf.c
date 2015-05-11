@@ -2412,7 +2412,8 @@ virStoragePoolSourceMatchSingleHost(virStoragePoolSourcePtr poolsrc,
     if (poolsrc->nhost != 1 && defsrc->nhost != 1)
         return false;
 
-    if (poolsrc->hosts[0].port != defsrc->hosts[0].port)
+    if (defsrc->hosts[0].port &&
+        poolsrc->hosts[0].port != defsrc->hosts[0].port)
         return false;
 
     return STREQ(poolsrc->hosts[0].name, defsrc->hosts[0].name);
