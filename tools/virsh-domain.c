@@ -6348,7 +6348,7 @@ vshPrintPinInfo(unsigned char *cpumap, size_t cpumaplen)
 }
 
 static unsigned char *
-vshParseCPUList(int *cpumaplen, const char *cpulist, int maxcpu)
+vshParseCPUList(vshControl *ctl, int *cpumaplen, const char *cpulist, int maxcpu)
 {
     unsigned char *cpumap = NULL;
     virBitmapPtr map = NULL;
@@ -6358,8 +6358,17 @@ vshParseCPUList(int *cpumaplen, const char *cpulist, int maxcpu)
             return NULL;
         virBitmapSetAll(map);
     } else {
-        if (virBitmapParse(cpulist, '\0', &map, maxcpu) < 0)
-            return NULL;
+        if ((virBitmapParse(cpulist, '\0', &map, 1024) < 0) ||
+            virBitmapIsAllClear(map)) {
+            vshError(ctl, _("Invalid cpulist '%s'"), cpulist);
+            goto cleanup;
+        }
+        int lastcpu = virBitmapLastSetBit(map);
+        if (lastcpu >= maxcpu) {
+            vshError(ctl, _("CPU %d in cpulist '%s' exceed the maxcpu %d"),
+                     lastcpu, cpulist, maxcpu);
+            goto cleanup;
+        }
     }
 
     if (virBitmapToData(map, &cpumap, cpumaplen) < 0)
@@ -6458,7 +6467,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         }
     } else {
         /* Pin mode: pinning specified vcpu to specified physical cpus*/
-        if (!(cpumap = vshParseCPUList(&cpumaplen, cpulist, maxcpu)))
+        if (!(cpumap = vshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
             goto cleanup;
 
         if (flags == -1) {
@@ -6577,7 +6586,7 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Pin mode: pinning emulator threads to specified physical cpus*/
-    if (!(cpumap = vshParseCPUList(&cpumaplen, cpulist, maxcpu)))
+    if (!(cpumap = vshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
         goto cleanup;
 
     if (flags == -1)
@@ -6862,7 +6871,7 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
     if ((maxcpu = vshNodeGetCPUCount(ctl->conn)) < 0)
         goto cleanup;
 
-    if (!(cpumap = vshParseCPUList(&cpumaplen, cpulist, maxcpu)))
+    if (!(cpumap = vshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
         goto cleanup;
 
     if (virDomainPinIOThread(dom, iothread_id,
