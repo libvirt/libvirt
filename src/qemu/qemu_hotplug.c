@@ -1556,11 +1556,18 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO)
         allowZero = true;
 
-    if (virDomainVirtioSerialAddrAutoAssign(NULL,
-                                            priv->vioserialaddrs,
-                                            &chr->info,
-                                            allowZero) < 0)
-        goto cleanup;
+    if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
+        if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &chr->info) < 0)
+            goto cleanup;
+    } else if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+        /* XXX */
+    } else {
+        if (virDomainVirtioSerialAddrAutoAssign(NULL,
+                                                priv->vioserialaddrs,
+                                                &chr->info,
+                                                allowZero) < 0)
+            goto cleanup;
+    }
     need_release = true;
 
     if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
@@ -1594,8 +1601,15 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
  cleanup:
     if (ret < 0 && virDomainObjIsActive(vm))
         qemuDomainChrInsertPreAllocCleanup(vm->def, chr);
-    if (ret < 0 && need_release)
-        virDomainVirtioSerialAddrRelease(priv->vioserialaddrs, &chr->info);
+    if (ret < 0 && need_release) {
+        if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
+            qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
+        } else if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+            /* XXX */
+        } else {
+            virDomainVirtioSerialAddrRelease(priv->vioserialaddrs, &chr->info);
+        }
+    }
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
