@@ -413,11 +413,10 @@ static int udevProcessPCI(struct udev_device *device,
 {
     const char *syspath = NULL;
     virNodeDevCapDataPtr data = &def->caps->data;
-    virPCIDeviceAddress addr;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
     udevPrivate *priv = driver->privateData;
-    int tmpGroup, ret = -1;
+    int ret = -1;
     char *p;
     int rc;
 
@@ -496,34 +495,8 @@ static int udevProcessPCI(struct udev_device *device,
         data->pci_dev.numa_node = -1;
     }
 
-    if (!virPCIGetPhysicalFunction(syspath, &data->pci_dev.physical_function))
-        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
-
-    rc = virPCIGetVirtualFunctions(syspath,
-                                   &data->pci_dev.virtual_functions,
-                                   &data->pci_dev.num_virtual_functions);
-    /* Out of memory */
-    if (rc < 0)
+    if (nodeDeviceSysfsGetPCIRelatedDevCaps(syspath, data) < 0)
         goto out;
-    else if (!rc && (data->pci_dev.num_virtual_functions > 0))
-        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
-
-    /* iommu group */
-    addr.domain = data->pci_dev.domain;
-    addr.bus = data->pci_dev.bus;
-    addr.slot = data->pci_dev.slot;
-    addr.function = data->pci_dev.function;
-    tmpGroup = virPCIDeviceAddressGetIOMMUGroupNum(&addr);
-    if (tmpGroup == -1) {
-        /* error was already reported */
-        goto out;
-        /* -2 return means there is no iommu_group data */
-    } else if (tmpGroup >= 0) {
-        if (virPCIDeviceAddressGetIOMMUGroupAddresses(&addr, &data->pci_dev.iommuGroupDevices,
-                                                      &data->pci_dev.nIommuGroupDevices) < 0)
-            goto out;
-        data->pci_dev.iommuGroupNumber = tmpGroup;
-    }
 
     if (!(pciDev = virPCIDeviceNew(data->pci_dev.domain,
                                    data->pci_dev.bus,
