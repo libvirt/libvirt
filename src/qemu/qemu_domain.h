@@ -218,6 +218,8 @@ struct _qemuDomainDiskPrivate {
     int blockJobType;   /* type of the block job from the event */
     int blockJobStatus; /* status of the finished block job */
     bool blockJobSync; /* the block job needs synchronized termination */
+
+    bool migrating; /* the disk is being migrated */
 };
 
 typedef enum {

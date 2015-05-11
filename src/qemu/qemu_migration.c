@@ -1745,13 +1745,7 @@ qemuMigrationCheckDriveMirror(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        /* skip shared, RO and source-less disks */
-        if (disk->src->shared || disk->src->readonly ||
-            !virDomainDiskGetSource(disk))
-            continue;
-
-        /* skip disks that didn't start mirroring */
-        if (!diskPriv->blockJobSync)
+        if (!diskPriv->migrating || !diskPriv->blockJobSync)
             continue;
 
         /* process any pending event */
@@ -1874,17 +1868,13 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        /* skip shared, RO and source-less disks */
-        if (disk->src->shared || disk->src->readonly ||
-            !virDomainDiskGetSource(disk))
-            continue;
-
-        /* skip disks that didn't start mirroring */
-        if (!diskPriv->blockJobSync)
+        if (!diskPriv->migrating || !diskPriv->blockJobSync)
             continue;
 
         if (qemuMigrationCancelOneDriveMirror(driver, vm, disk) < 0)
             return -1;
+
+        diskPriv->migrating = false;
     }
 
     return 0;
@@ -1945,6 +1935,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         int mon_ret;
 
         /* skip shared, RO and source-less disks */
@@ -1975,16 +1966,16 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             qemuBlockJobSyncEnd(driver, vm, disk, NULL);
             goto cleanup;
         }
+        diskPriv->migrating = true;
     }
 
     /* Wait for each disk to become ready in turn, but check the status
      * for *all* mirrors to determine if any have aborted. */
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-        /* skip shared, RO and source-less disks */
-        if (disk->src->shared || disk->src->readonly ||
-            !virDomainDiskGetSource(disk))
+        if (!diskPriv->migrating)
             continue;
 
         while (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
