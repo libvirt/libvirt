@@ -38,6 +38,37 @@
 
 VIR_LOG_INIT("qemu.qemu_blockjob");
 
+
+/**
+ * qemuBlockJobUpdate:
+ * @driver: qemu driver
+ * @vm: domain
+ * @disk: domain disk
+ *
+ * Update disk's mirror state in response to a block job event stored in
+ * blockJobStatus by qemuProcessHandleBlockJob event handler.
+ *
+ * Returns the block job event processed or -1 if there was no pending event.
+ */
+int
+qemuBlockJobUpdate(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   virDomainDiskDefPtr disk)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    int status = diskPriv->blockJobStatus;
+
+    if (status != -1) {
+        qemuBlockJobEventProcess(driver, vm, disk,
+                                 diskPriv->blockJobType,
+                                 diskPriv->blockJobStatus);
+        diskPriv->blockJobStatus = -1;
+    }
+
+    return status;
+}
+
+
 /**
  * qemuBlockJobEventProcess:
  * @driver: qemu driver
@@ -49,8 +80,6 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
  * Update disk's mirror state in response to a block job event
  * from QEMU. For mirror state's that must survive libvirt
  * restart, also update the domain's status XML.
- *
- * Returns 0 on success, -1 otherwise.
  */
 void
 qemuBlockJobEventProcess(virQEMUDriverPtr driver,
@@ -66,6 +95,12 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     virDomainDiskDefPtr persistDisk = NULL;
     bool save = false;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, status=%d",
+              disk->dst,
+              NULLSTR(virDomainDiskMirrorStateTypeToString(disk->mirrorState)),
+              type,
+              status);
 
     /* Have to generate two variants of the event for old vs. new
      * client callbacks */
@@ -218,9 +253,7 @@ qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
     if (diskPriv->blockJobSync && diskPriv->blockJobStatus != -1) {
         if (ret_status)
             *ret_status = diskPriv->blockJobStatus;
-        qemuBlockJobEventProcess(driver, vm, disk,
-                                 diskPriv->blockJobType,
-                                 diskPriv->blockJobStatus);
+        qemuBlockJobUpdate(driver, vm, disk);
         diskPriv->blockJobStatus = -1;
     }
     diskPriv->blockJobSync = false;
@@ -300,9 +333,7 @@ qemuBlockJobSyncWaitWithTimeout(virQEMUDriverPtr driver,
 
     if (ret_status)
         *ret_status = diskPriv->blockJobStatus;
-    qemuBlockJobEventProcess(driver, vm, disk,
-                             diskPriv->blockJobType,
-                             diskPriv->blockJobStatus);
+    qemuBlockJobUpdate(driver, vm, disk);
     diskPriv->blockJobStatus = -1;
 
     return 0;

@@ -265,6 +265,8 @@ virDomainDiskInsert;
 virDomainDiskInsertPreAlloced;
 virDomainDiskIoTypeFromString;
 virDomainDiskIoTypeToString;
+virDomainDiskMirrorStateTypeFromString;
+virDomainDiskMirrorStateTypeToString;
 virDomainDiskPathByName;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
