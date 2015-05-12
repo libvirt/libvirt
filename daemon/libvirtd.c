@@ -320,6 +320,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
     case VIR_ERR_NO_SECRET:
     case VIR_ERR_NO_DOMAIN_SNAPSHOT:
     case VIR_ERR_OPERATION_INVALID:
+    case VIR_ERR_NO_DOMAIN_METADATA:
         return VIR_LOG_DEBUG;
     }
 
