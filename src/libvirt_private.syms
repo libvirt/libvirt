@@ -2187,6 +2187,7 @@ virSysinfoDefFree;
 virSysinfoFormat;
 virSysinfoRead;
 virSysinfoSetup;
+virSysinfoSystemDefFree;
 
 
 # util/virsystemd.h

@@ -6733,40 +6733,41 @@ static char *qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
     return NULL;
 }
 
-static char *qemuBuildSmbiosSystemStr(virSysinfoDefPtr def, bool skip_uuid)
+static char *qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
+                                      bool skip_uuid)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if ((def->system_manufacturer == NULL) && (def->system_sku == NULL) &&
-        (def->system_product == NULL) && (def->system_version == NULL) &&
-        (def->system_serial == NULL) && (def->system_family == NULL) &&
-        (def->system_uuid == NULL || skip_uuid))
+    if (!def ||
+        (!def->manufacturer && !def->product && !def->version &&
+         !def->serial && (!def->uuid || skip_uuid) &&
+         def->sku && !def->family))
         return NULL;
 
     virBufferAddLit(&buf, "type=1");
 
     /* 1:Manufacturer */
-    if (def->system_manufacturer)
+    if (def->manufacturer)
         virBufferAsprintf(&buf, ",manufacturer=%s",
-                          def->system_manufacturer);
+                          def->manufacturer);
      /* 1:Product Name */
-    if (def->system_product)
-        virBufferAsprintf(&buf, ",product=%s", def->system_product);
+    if (def->product)
+        virBufferAsprintf(&buf, ",product=%s", def->product);
     /* 1:Version */
-    if (def->system_version)
-        virBufferAsprintf(&buf, ",version=%s", def->system_version);
+    if (def->version)
+        virBufferAsprintf(&buf, ",version=%s", def->version);
     /* 1:Serial Number */
-    if (def->system_serial)
-        virBufferAsprintf(&buf, ",serial=%s", def->system_serial);
+    if (def->serial)
+        virBufferAsprintf(&buf, ",serial=%s", def->serial);
     /* 1:UUID */
-    if (def->system_uuid && !skip_uuid)
-        virBufferAsprintf(&buf, ",uuid=%s", def->system_uuid);
+    if (def->uuid && !skip_uuid)
+        virBufferAsprintf(&buf, ",uuid=%s", def->uuid);
     /* 1:SKU Number */
-    if (def->system_sku)
-        virBufferAsprintf(&buf, ",sku=%s", def->system_sku);
+    if (def->sku)
+        virBufferAsprintf(&buf, ",sku=%s", def->sku);
     /* 1:Family */
-    if (def->system_family)
-        virBufferAsprintf(&buf, ",family=%s", def->system_family);
+    if (def->family)
+        virBufferAsprintf(&buf, ",family=%s", def->family);
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -9051,7 +9052,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);
             }
-            smbioscmd = qemuBuildSmbiosSystemStr(source, skip_uuid);
+            smbioscmd = qemuBuildSmbiosSystemStr(source->system, skip_uuid);
             if (smbioscmd != NULL) {
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);

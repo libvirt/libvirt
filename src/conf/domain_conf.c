@@ -11152,6 +11152,81 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
     return ret;
 }
 
+static int
+virSysinfoSystemParseXML(xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
+                         virSysinfoSystemDefPtr *system,
+                         unsigned char *domUUID,
+                         bool uuid_generated)
+{
+    int ret = -1;
+    virSysinfoSystemDefPtr def;
+    char *tmpUUID = NULL;
+
+    if (!xmlStrEqual(node->name, BAD_CAST "system")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("XML does not contain expected 'system' element"));
+        return ret;
+    }
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    def->manufacturer =
+        virXPathString("string(entry[@name='manufacturer'])", ctxt);
+    def->product =
+        virXPathString("string(entry[@name='product'])", ctxt);
+    def->version =
+        virXPathString("string(entry[@name='version'])", ctxt);
+    def->serial =
+        virXPathString("string(entry[@name='serial'])", ctxt);
+    tmpUUID = virXPathString("string(entry[@name='uuid'])", ctxt);
+    if (tmpUUID) {
+        unsigned char uuidbuf[VIR_UUID_BUFLEN];
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        if (virUUIDParse(tmpUUID, uuidbuf) < 0) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           "%s", _("malformed <sysinfo> uuid element"));
+            goto cleanup;
+        }
+        if (uuid_generated) {
+            memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
+        } else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("UUID mismatch between <uuid> and "
+                             "<sysinfo>"));
+            goto cleanup;
+        }
+        /* Although we've validated the UUID as good, virUUIDParse() is
+         * lax with respect to allowing extraneous "-" and " ", but the
+         * underlying hypervisor may be less forgiving. Use virUUIDFormat()
+         * to validate format in xml is right. If not, then format it
+         * properly so that it's used correctly later.
+         */
+        virUUIDFormat(uuidbuf, uuidstr);
+        if (VIR_STRDUP(def->uuid, uuidstr) < 0)
+            goto cleanup;
+    }
+    def->sku =
+        virXPathString("string(entry[@name='sku'])", ctxt);
+    def->family =
+        virXPathString("string(entry[@name='family'])", ctxt);
+
+    if (!def->manufacturer && !def->product && !def->version &&
+        !def->serial && !def->uuid && !def->sku && !def->family) {
+        virSysinfoSystemDefFree(def);
+        def = NULL;
+    }
+
+    *system = def;
+    def = NULL;
+    ret = 0;
+ cleanup:
+    virSysinfoSystemDefFree(def);
+    VIR_FREE(tmpUUID);
+    return ret;
+}
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -11161,7 +11236,6 @@ virSysinfoParseXML(xmlNodePtr node,
     virSysinfoDefPtr def;
     xmlNodePtr oldnode, tmpnode;
     char *type;
-    char *tmpUUID = NULL;
 
     if (!xmlStrEqual(node->name, BAD_CAST "sysinfo")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -11196,49 +11270,19 @@ virSysinfoParseXML(xmlNodePtr node,
     }
 
     /* Extract system related metadata */
-    def->system_manufacturer =
-        virXPathString("string(system/entry[@name='manufacturer'])", ctxt);
-    def->system_product =
-        virXPathString("string(system/entry[@name='product'])", ctxt);
-    def->system_version =
-        virXPathString("string(system/entry[@name='version'])", ctxt);
-    def->system_serial =
-        virXPathString("string(system/entry[@name='serial'])", ctxt);
-    tmpUUID = virXPathString("string(system/entry[@name='uuid'])", ctxt);
-    if (tmpUUID) {
-        unsigned char uuidbuf[VIR_UUID_BUFLEN];
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        if (virUUIDParse(tmpUUID, uuidbuf) < 0) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           "%s", _("malformed <sysinfo> uuid element"));
+    if ((tmpnode = virXPathNode("./system[1]", ctxt)) != NULL) {
+        oldnode = ctxt->node;
+        ctxt->node = tmpnode;
+        if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system,
+                                     domUUID, uuid_generated) < 0) {
+            ctxt->node = oldnode;
             goto error;
         }
-        if (uuid_generated) {
-            memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
-        } else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("UUID mismatch between <uuid> and "
-                             "<sysinfo>"));
-            goto error;
-        }
-        /* Although we've validated the UUID as good, virUUIDParse() is
-         * lax with respect to allowing extraneous "-" and " ", but the
-         * underlying hypervisor may be less forgiving. Use virUUIDFormat()
-         * to validate format in xml is right. If not, then format it
-         * properly so that it's used correctly later.
-         */
-        virUUIDFormat(uuidbuf, uuidstr);
-        if (VIR_STRDUP(def->system_uuid, uuidstr) < 0)
-            goto error;
+        ctxt->node = oldnode;
     }
-    def->system_sku =
-        virXPathString("string(system/entry[@name='sku'])", ctxt);
-    def->system_family =
-        virXPathString("string(system/entry[@name='family'])", ctxt);
 
  cleanup:
     VIR_FREE(type);
-    VIR_FREE(tmpUUID);
     return def;
 
  error:

@@ -74,20 +74,25 @@ struct _virSysinfoBIOSDef {
     char *release;
 };
 
+typedef struct _virSysinfoSystemDef virSysinfoSystemDef;
+typedef virSysinfoSystemDef *virSysinfoSystemDefPtr;
+struct _virSysinfoSystemDef {
+    char *manufacturer;
+    char *product;
+    char *version;
+    char *serial;
+    char *uuid;
+    char *sku;
+    char *family;
+};
+
 typedef struct _virSysinfoDef virSysinfoDef;
 typedef virSysinfoDef *virSysinfoDefPtr;
 struct _virSysinfoDef {
     int type;
 
     virSysinfoBIOSDefPtr bios;
-
-    char *system_manufacturer;
-    char *system_product;
-    char *system_version;
-    char *system_serial;
-    char *system_uuid;
-    char *system_sku;
-    char *system_family;
+    virSysinfoSystemDefPtr system;
 
     size_t nprocessor;
     virSysinfoProcessorDefPtr processor;
@@ -99,6 +104,7 @@ struct _virSysinfoDef {
 virSysinfoDefPtr virSysinfoRead(void);
 
 void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def);
+void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def);
 void virSysinfoDefFree(virSysinfoDefPtr def);
 
 int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
