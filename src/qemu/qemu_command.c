@@ -1031,21 +1031,52 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redir
 
 
 int
-qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller)
+qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
+                                virQEMUCapsPtr qemuCaps,
+                                virDomainControllerDefPtr controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
 
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        /* only pcie-root uses a different naming convention
-         * ("pcie.0"), because it is hardcoded that way in qemu. All
-         * other buses use the consistent "pci.%u".
-         */
-        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
+        if (!virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef)) {
+            /* qemus that don't support multiple PCI buses have
+             * hardcoded the name of their single PCI controller as
+             * "pci".
+             */
+            return VIR_STRDUP(controller->info.alias, "pci");
+        } else if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+            /* The pcie-root controller on Q35 machinetypes uses a
+             * different naming convention ("pcie.0"), because it is
+             * hardcoded that way in qemu.
+             */
             return virAsprintf(&controller->info.alias, "pcie.%d", controller->idx);
-        else
-            return virAsprintf(&controller->info.alias, "pci.%d", controller->idx);
+        }
+        /* All other PCI controllers use the consistent "pci.%u"
+         * (including the hardcoded pci-root controller on
+         * multibus-capable qemus).
+         */
+        return virAsprintf(&controller->info.alias, "pci.%d", controller->idx);
+    } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE) {
+        /* for any machine based on I440FX, the first (and currently
+         * only) IDE controller is an integrated controller hardcoded
+         * with id "ide"
+         */
+        if (qemuDomainMachineIsI440FX(domainDef) && controller->idx == 0)
+            return VIR_STRDUP(controller->info.alias, "ide");
+    } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
+        /* for any Q35 machine, the first SATA controller is the
+         * integrated one, and it too is hardcoded with id "ide"
+         */
+        if (qemuDomainMachineIsQ35(domainDef) && controller->idx == 0)
+            return VIR_STRDUP(controller->info.alias, "ide");
+    } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+        /* first USB device is "usb", others are normal "usb%d" */
+        if (controller->idx == 0)
+            return VIR_STRDUP(controller->info.alias, "usb");
     }
-
+    /* all other controllers use the default ${type}${index} naming
+     * scheme for alias/id.
+     */
     return virAsprintf(&controller->info.alias, "%s%d", prefix, controller->idx);
 }
 
@@ -1174,7 +1205,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->ncontrollers; i++) {
-        if (qemuAssignDeviceControllerAlias(def->controllers[i]) < 0)
+        if (qemuAssignDeviceControllerAlias(def, qemuCaps, def->controllers[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->ninputs; i++) {

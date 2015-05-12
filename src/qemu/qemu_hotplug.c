@@ -465,7 +465,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                 goto cleanup;
         }
         releaseaddr = true;
-        if (qemuAssignDeviceControllerAlias(controller) < 0)
+        if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
             goto cleanup;
 
         if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
@@ -3639,7 +3639,7 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         !detach->info.alias) {
-        if (qemuAssignDeviceControllerAlias(detach) < 0)
+        if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, detach) < 0)
             goto cleanup;
     }
 

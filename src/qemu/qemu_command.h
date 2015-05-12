@@ -287,7 +287,10 @@ int qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
                               virDomainDiskDefPtr def,
                               virQEMUCapsPtr qemuCaps);
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx);
-int qemuAssignDeviceControllerAlias(virDomainControllerDefPtr controller);
+int
+qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
+                                virQEMUCapsPtr qemuCaps,
+                                virDomainControllerDefPtr controller);
 int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx);
 int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
