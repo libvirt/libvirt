@@ -8202,6 +8202,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
+        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
         ret = qemuDomainChangeDiskMediaLive(conn, vm, dev, driver, force);
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:

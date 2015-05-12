@@ -2079,6 +2079,12 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
                            logFD);
 
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
+        disk->src->path)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,
+                           logFD);
+
     virObjectUnref(cfg);
 }
 

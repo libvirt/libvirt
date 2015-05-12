@@ -101,7 +101,8 @@ VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "disk-probing",
               "external-launch",
               "host-cpu",
-              "hook-script");
+              "hook-script",
+              "cdrom-passthrough");
 
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "qemu",
