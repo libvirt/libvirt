@@ -8359,11 +8359,10 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
 
         if (virDomainRNGInsert(vmdef, dev->data.rng, false) < 0)
             return -1;
+        dev->data.rng = NULL;
 
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
-
-        dev->data.rng = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
