@@ -6701,28 +6701,27 @@ static char *qemuBuildTPMDevStr(const virDomainDef *def,
 }
 
 
-static char *qemuBuildSmbiosBiosStr(virSysinfoDefPtr def)
+static char *qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if ((def->bios_vendor == NULL) && (def->bios_version == NULL) &&
-        (def->bios_date == NULL) && (def->bios_release == NULL))
+    if (!def)
         return NULL;
 
     virBufferAddLit(&buf, "type=0");
 
     /* 0:Vendor */
-    if (def->bios_vendor)
-        virBufferAsprintf(&buf, ",vendor=%s", def->bios_vendor);
+    if (def->vendor)
+        virBufferAsprintf(&buf, ",vendor=%s", def->vendor);
     /* 0:BIOS Version */
-    if (def->bios_version)
-        virBufferAsprintf(&buf, ",version=%s", def->bios_version);
+    if (def->version)
+        virBufferAsprintf(&buf, ",version=%s", def->version);
     /* 0:BIOS Release Date */
-    if (def->bios_date)
-        virBufferAsprintf(&buf, ",date=%s", def->bios_date);
+    if (def->date)
+        virBufferAsprintf(&buf, ",date=%s", def->date);
     /* 0:System BIOS Major Release and 0:System BIOS Minor Release */
-    if (def->bios_release)
-        virBufferAsprintf(&buf, ",release=%s", def->bios_release);
+    if (def->release)
+        virBufferAsprintf(&buf, ",release=%s", def->release);
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -9047,7 +9046,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (source != NULL) {
             char *smbioscmd;
 
-            smbioscmd = qemuBuildSmbiosBiosStr(source);
+            smbioscmd = qemuBuildSmbiosBiosStr(source->bios);
             if (smbioscmd != NULL) {
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);

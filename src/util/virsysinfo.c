@@ -64,6 +64,18 @@ void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
     sysinfoCpuinfo = cpuinfo;
 }
 
+void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def)
+{
+    if (def == NULL)
+        return;
+
+    VIR_FREE(def->vendor);
+    VIR_FREE(def->version);
+    VIR_FREE(def->date);
+    VIR_FREE(def->release);
+    VIR_FREE(def);
+}
+
 /**
  * virSysinfoDefFree:
  * @def: a sysinfo structure
@@ -78,10 +90,7 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     if (def == NULL)
         return;
 
-    VIR_FREE(def->bios_vendor);
-    VIR_FREE(def->bios_version);
-    VIR_FREE(def->bios_date);
-    VIR_FREE(def->bios_release);
+    virSysinfoBIOSDefFree(def->bios);
 
     VIR_FREE(def->system_manufacturer);
     VIR_FREE(def->system_product);
@@ -522,40 +531,56 @@ virSysinfoRead(void)
 #else /* !WIN32 && x86 */
 
 static int
-virSysinfoParseBIOS(const char *base, virSysinfoDefPtr ret)
+virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
 {
+    int ret = -1;
     const char *cur, *eol = NULL;
+    virSysinfoBIOSDefPtr def;
 
     if ((cur = strstr(base, "BIOS Information")) == NULL)
         return 0;
+
+    if (VIR_ALLOC(def) < 0)
+        return ret;
 
     base = cur;
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
-        if (eol && VIR_STRNDUP(ret->bios_vendor, cur, eol - cur) < 0)
-            return -1;
+        if (eol && VIR_STRNDUP(def->vendor, cur, eol - cur) < 0)
+            goto cleanup;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
-        if (eol && VIR_STRNDUP(ret->bios_version, cur, eol - cur) < 0)
-            return -1;
+        if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
+            goto cleanup;
     }
     if ((cur = strstr(base, "Release Date: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
-        if (eol && VIR_STRNDUP(ret->bios_date, cur, eol - cur) < 0)
-            return -1;
+        if (eol && VIR_STRNDUP(def->date, cur, eol - cur) < 0)
+            goto cleanup;
     }
     if ((cur = strstr(base, "BIOS Revision: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
-        if (eol && VIR_STRNDUP(ret->bios_release, cur, eol - cur) < 0)
-            return -1;
+        if (eol && VIR_STRNDUP(def->release, cur, eol - cur) < 0)
+            goto cleanup;
     }
 
-    return 0;
+    if (!def->vendor && !def->version &&
+        !def->date && !def->release) {
+        virSysinfoBIOSDefFree(def);
+        def = NULL;
+    }
+
+    *bios = def;
+    def = NULL;
+    ret = 0;
+ cleanup:
+    virSysinfoBIOSDefFree(def);
+    return ret;
 }
 
 static int
@@ -846,7 +871,7 @@ virSysinfoRead(void)
 
     ret->type = VIR_SYSINFO_SMBIOS;
 
-    if (virSysinfoParseBIOS(outbuf, ret) < 0)
+    if (virSysinfoParseBIOS(outbuf, &ret->bios) < 0)
         goto error;
 
     if (virSysinfoParseSystem(outbuf, ret) < 0)
@@ -876,22 +901,21 @@ virSysinfoRead(void)
 #endif /* !WIN32 && x86 */
 
 static void
-virSysinfoBIOSFormat(virBufferPtr buf, virSysinfoDefPtr def)
+virSysinfoBIOSFormat(virBufferPtr buf, virSysinfoBIOSDefPtr def)
 {
-    if (!def->bios_vendor && !def->bios_version &&
-        !def->bios_date && !def->bios_release)
+    if (!def)
         return;
 
     virBufferAddLit(buf, "<bios>\n");
     virBufferAdjustIndent(buf, 2);
     virBufferEscapeString(buf, "<entry name='vendor'>%s</entry>\n",
-                          def->bios_vendor);
+                          def->vendor);
     virBufferEscapeString(buf, "<entry name='version'>%s</entry>\n",
-                          def->bios_version);
+                          def->version);
     virBufferEscapeString(buf, "<entry name='date'>%s</entry>\n",
-                          def->bios_date);
+                          def->date);
     virBufferEscapeString(buf, "<entry name='release'>%s</entry>\n",
-                          def->bios_release);
+                          def->release);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</bios>\n");
 }
@@ -1055,7 +1079,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 
     virBufferAdjustIndent(&childrenBuf, indent + 2);
 
-    virSysinfoBIOSFormat(&childrenBuf, def);
+    virSysinfoBIOSFormat(&childrenBuf, def->bios);
     virSysinfoSystemFormat(&childrenBuf, def);
     virSysinfoProcessorFormat(&childrenBuf, def);
     virSysinfoMemoryFormat(&childrenBuf, def);
@@ -1076,6 +1100,41 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
  cleanup:
     virBufferFreeAndReset(&childrenBuf);
     return ret;
+}
+
+#define CHECK_FIELD(name, desc)                                         \
+    do {                                                                \
+        if (STRNEQ_NULLABLE(src->name, dst->name)) {                    \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,                  \
+                           _("Target sysinfo %s %s does not match source %s"), \
+                           desc, NULLSTR(dst->name), NULLSTR(src->name)); \
+            goto cleanup;                                               \
+        }                                                               \
+    } while (0)
+
+static bool
+virSysinfoBIOSIsEqual(virSysinfoBIOSDefPtr src,
+                      virSysinfoBIOSDefPtr dst)
+{
+    bool identical = false;
+
+    if (!src && !dst)
+        return true;
+
+    if ((src && !dst) || (!src && dst)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target sysinfo does not match source"));
+        goto cleanup;
+    }
+
+    CHECK_FIELD(vendor, "BIOS vendor");
+    CHECK_FIELD(version, "BIOS version");
+    CHECK_FIELD(date, "BIOS date");
+    CHECK_FIELD(release, "BIOS release");
+
+    identical = true;
+ cleanup:
+    return identical;
 }
 
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
@@ -1100,19 +1159,8 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
         goto cleanup;
     }
 
-#define CHECK_FIELD(name, desc)                                         \
-    do {                                                                \
-        if (STRNEQ_NULLABLE(src->name, dst->name)) {                    \
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,                  \
-                           _("Target sysinfo %s %s does not match source %s"), \
-                           desc, NULLSTR(src->name), NULLSTR(dst->name)); \
-        }                                                               \
-    } while (0)
-
-    CHECK_FIELD(bios_vendor, "BIOS vendor");
-    CHECK_FIELD(bios_version, "BIOS version");
-    CHECK_FIELD(bios_date, "BIOS date");
-    CHECK_FIELD(bios_release, "BIOS release");
+    if (!virSysinfoBIOSIsEqual(src->bios, dst->bios))
+        goto cleanup;
 
     CHECK_FIELD(system_manufacturer, "system vendor");
     CHECK_FIELD(system_product, "system product");

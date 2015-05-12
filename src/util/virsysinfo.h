@@ -65,15 +65,21 @@ struct _virSysinfoMemoryDef {
     char *memory_part_number;
 };
 
+typedef struct _virSysinfoBIOSDef virSysinfoBIOSDef;
+typedef virSysinfoBIOSDef *virSysinfoBIOSDefPtr;
+struct _virSysinfoBIOSDef {
+    char *vendor;
+    char *version;
+    char *date;
+    char *release;
+};
+
 typedef struct _virSysinfoDef virSysinfoDef;
 typedef virSysinfoDef *virSysinfoDefPtr;
 struct _virSysinfoDef {
     int type;
 
-    char *bios_vendor;
-    char *bios_version;
-    char *bios_date;
-    char *bios_release;
+    virSysinfoBIOSDefPtr bios;
 
     char *system_manufacturer;
     char *system_product;
@@ -92,6 +98,7 @@ struct _virSysinfoDef {
 
 virSysinfoDefPtr virSysinfoRead(void);
 
+void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def);
 void virSysinfoDefFree(virSysinfoDefPtr def);
 
 int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
