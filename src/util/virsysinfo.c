@@ -315,8 +315,7 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
                         cur, eol - cur) < 0)
             goto error;
 
-        if (processor_type &&
-            VIR_STRDUP(processor->processor_type, processor_type) < 0)
+        if (VIR_STRDUP(processor->processor_type, processor_type) < 0)
             goto error;
 
         base = cur;
