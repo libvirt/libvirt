@@ -903,7 +903,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
             virBufferAdjustIndent(&buf, 2);
             for (i = 0; i < caps->host.nmigrateTrans; i++) {
                 virBufferAsprintf(&buf, "<uri_transport>%s</uri_transport>\n",
-                                      caps->host.migrateTrans[i]);
+                                  caps->host.migrateTrans[i]);
             }
             virBufferAdjustIndent(&buf, -2);
             virBufferAddLit(&buf, "</uri_transports>\n");
@@ -951,9 +951,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         if (caps->guests[i]->arch.defaultInfo.emulator)
             virBufferAsprintf(&buf, "<emulator>%s</emulator>\n",
                               caps->guests[i]->arch.defaultInfo.emulator);
-            if (caps->guests[i]->arch.defaultInfo.loader)
-                virBufferAsprintf(&buf, "<loader>%s</loader>\n",
-                                  caps->guests[i]->arch.defaultInfo.loader);
+        if (caps->guests[i]->arch.defaultInfo.loader)
+            virBufferAsprintf(&buf, "<loader>%s</loader>\n",
+                              caps->guests[i]->arch.defaultInfo.loader);
 
         for (j = 0; j < caps->guests[i]->arch.defaultInfo.nmachines; j++) {
             virCapsGuestMachinePtr machine = caps->guests[i]->arch.defaultInfo.machines[j];
