@@ -6786,6 +6786,45 @@ static char *qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
     return NULL;
 }
 
+static char *qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!def)
+        return NULL;
+
+    virBufferAddLit(&buf, "type=2");
+
+    /* 2:Manufacturer */
+    if (def->manufacturer)
+        virBufferAsprintf(&buf, ",manufacturer=%s",
+                          def->manufacturer);
+    /* 2:Product Name */
+    if (def->product)
+        virBufferAsprintf(&buf, ",product=%s", def->product);
+    /* 2:Version */
+    if (def->version)
+        virBufferAsprintf(&buf, ",version=%s", def->version);
+    /* 2:Serial Number */
+    if (def->serial)
+        virBufferAsprintf(&buf, ",serial=%s", def->serial);
+    /* 2:Asset Tag */
+    if (def->asset)
+        virBufferAsprintf(&buf, ",asset=%s", def->asset);
+    /* 2:Location */
+    if (def->location)
+        virBufferAsprintf(&buf, ",location=%s", def->location);
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
 static char *
 qemuBuildClockArgStr(virDomainClockDefPtr def)
 {
@@ -9061,6 +9100,21 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             smbioscmd = qemuBuildSmbiosSystemStr(source->system, skip_uuid);
             if (smbioscmd != NULL) {
+                virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+                VIR_FREE(smbioscmd);
+            }
+
+            if (source->nbaseBoard > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("qemu does not support more than "
+                                 "one entry to Type 2 in SMBIOS table"));
+                goto error;
+            }
+
+            for (i = 0; i < source->nbaseBoard; i++) {
+                if (!(smbioscmd = qemuBuildSmbiosBaseBoardStr(source->baseBoard + i)))
+                    goto error;
+
                 virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
                 VIR_FREE(smbioscmd);
             }

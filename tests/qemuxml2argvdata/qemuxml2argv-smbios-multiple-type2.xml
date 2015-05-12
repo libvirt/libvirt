@@ -26,6 +26,13 @@
       <entry name='asset'>CZC1065993</entry>
       <entry name='location'>Upside down</entry>
     </baseBoard>
+    <baseBoard>
+      <entry name='manufacturer'>Lenovo</entry>
+      <entry name='product'>20BE0061MC</entry>
+      <entry name='version'>0B98401 Pro</entry>
+      <entry name='serial'>W1KS427111E</entry>
+      <entry name='location'>Not Available</entry>
+    </baseBoard>
   </sysinfo>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

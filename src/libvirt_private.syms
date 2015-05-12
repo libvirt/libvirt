@@ -2183,6 +2183,7 @@ virVasprintfInternal;
 
 
 # util/virsysinfo.h
+virSysinfoBaseBoardDefClear;
 virSysinfoBIOSDefFree;
 virSysinfoDefFree;
 virSysinfoFormat;

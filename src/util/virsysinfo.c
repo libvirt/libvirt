@@ -91,6 +91,18 @@ void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def)
     VIR_FREE(def);
 }
 
+void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def)
+{
+    if (def == NULL)
+        return;
+
+    VIR_FREE(def->manufacturer);
+    VIR_FREE(def->product);
+    VIR_FREE(def->version);
+    VIR_FREE(def->serial);
+    VIR_FREE(def->asset);
+    VIR_FREE(def->location);
+}
 
 /**
  * virSysinfoDefFree:
@@ -108,6 +120,10 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
 
     virSysinfoBIOSDefFree(def->bios);
     virSysinfoSystemDefFree(def->system);
+
+    for (i = 0; i < def->nbaseBoard; i++)
+        virSysinfoBaseBoardDefClear(def->baseBoard + i);
+    VIR_FREE(def->baseBoard);
 
     for (i = 0; i < def->nprocessor; i++) {
         VIR_FREE(def->processor[i].processor_socket_destination);
@@ -717,6 +733,84 @@ virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
 }
 
 static int
+virSysinfoParseBaseBoard(const char *base,
+                         virSysinfoBaseBoardDefPtr *baseBoard,
+                         size_t *nbaseBoard)
+{
+    int ret = -1;
+    const char *cur, *eol = NULL;
+    virSysinfoBaseBoardDefPtr boards = NULL;
+    size_t nboards = 0;
+    char *board_type = NULL;
+
+    while (base && (cur = strstr(base, "Base Board Information"))) {
+        virSysinfoBaseBoardDefPtr def;
+
+        if (VIR_EXPAND_N(boards, nboards, 1) < 0)
+            goto cleanup;
+
+        def = &boards[nboards - 1];
+
+        base = cur + 22;
+        if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
+            cur += 14;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->manufacturer, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+        if ((cur = strstr(base, "Product Name: ")) != NULL) {
+            cur += 14;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->product, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+        if ((cur = strstr(base, "Version: ")) != NULL) {
+            cur += 9;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+        if ((cur = strstr(base, "Serial Number: ")) != NULL) {
+            cur += 15;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->serial, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+        if ((cur = strstr(base, "Asset Tag: ")) != NULL) {
+            cur += 11;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->asset, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+        if ((cur = strstr(base, "Location In Chassis: ")) != NULL) {
+            cur += 21;
+            eol = strchr(cur, '\n');
+            if (eol && VIR_STRNDUP(def->location, cur, eol - cur) < 0)
+                goto cleanup;
+        }
+
+        if (!def->manufacturer && !def->product && !def->version &&
+            !def->serial && !def->asset && !def->location)
+            nboards--;
+    }
+
+    /* This is safe, as we can be only shrinking the memory */
+    ignore_value(VIR_REALLOC_N(boards, nboards));
+
+    *baseBoard = boards;
+    *nbaseBoard = nboards;
+    boards = NULL;
+    nboards = 0;
+    ret = 0;
+ cleanup:
+    while (nboards--)
+        virSysinfoBaseBoardDefClear(&boards[nboards]);
+    VIR_FREE(boards);
+    VIR_FREE(board_type);
+    return ret;
+}
+
+static int
 virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
 {
     const char *cur, *tmp_base;
@@ -938,7 +1032,7 @@ virSysinfoRead(void)
         return NULL;
     }
 
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,4,17", NULL);
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,2,4,17", NULL);
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
@@ -953,6 +1047,9 @@ virSysinfoRead(void)
         goto error;
 
     if (virSysinfoParseSystem(outbuf, &ret->system) < 0)
+        goto error;
+
+    if (virSysinfoParseBaseBoard(outbuf, &ret->baseBoard, &ret->nbaseBoard) < 0)
         goto error;
 
     ret->nprocessor = 0;
@@ -1022,6 +1119,36 @@ virSysinfoSystemFormat(virBufferPtr buf, virSysinfoSystemDefPtr def)
                           def->family);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</system>\n");
+}
+
+static void
+virSysinfoBaseBoardFormat(virBufferPtr buf,
+                          virSysinfoBaseBoardDefPtr baseBoard,
+                          size_t nbaseBoard)
+{
+    virSysinfoBaseBoardDefPtr def;
+    size_t i;
+
+    for (i = 0; i < nbaseBoard; i++) {
+        def = baseBoard + i;
+
+        virBufferAddLit(buf, "<baseBoard>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<entry name='manufacturer'>%s</entry>\n",
+                              def->manufacturer);
+        virBufferEscapeString(buf, "<entry name='product'>%s</entry>\n",
+                              def->product);
+        virBufferEscapeString(buf, "<entry name='version'>%s</entry>\n",
+                              def->version);
+        virBufferEscapeString(buf, "<entry name='serial'>%s</entry>\n",
+                              def->serial);
+        virBufferEscapeString(buf, "<entry name='asset'>%s</entry>\n",
+                              def->asset);
+        virBufferEscapeString(buf, "<entry name='location'>%s</entry>\n",
+                              def->location);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</baseBoard>\n");
+    }
 }
 
 static void
@@ -1157,6 +1284,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 
     virSysinfoBIOSFormat(&childrenBuf, def->bios);
     virSysinfoSystemFormat(&childrenBuf, def->system);
+    virSysinfoBaseBoardFormat(&childrenBuf, def->baseBoard, def->nbaseBoard);
     virSysinfoProcessorFormat(&childrenBuf, def);
     virSysinfoMemoryFormat(&childrenBuf, def);
 
@@ -1241,12 +1369,40 @@ virSysinfoSystemIsEqual(virSysinfoSystemDefPtr src,
     return identical;
 }
 
+static bool
+virSysinfoBaseBoardIsEqual(virSysinfoBaseBoardDefPtr src,
+                           virSysinfoBaseBoardDefPtr dst)
+{
+    bool identical = false;
+
+    if (!src && !dst)
+        return true;
+
+    if ((src && !dst) || (!src && dst)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target base board does not match source"));
+        goto cleanup;
+    }
+
+    CHECK_FIELD(manufacturer, "base board vendor");
+    CHECK_FIELD(product, "base board product");
+    CHECK_FIELD(version, "base board version");
+    CHECK_FIELD(serial, "base board serial");
+    CHECK_FIELD(asset, "base board asset");
+    CHECK_FIELD(location, "base board location");
+
+    identical = true;
+ cleanup:
+    return identical;
+}
+
 #undef CHECK_FIELD
 
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        virSysinfoDefPtr dst)
 {
     bool identical = false;
+    size_t i;
 
     if (!src && !dst)
         return true;
@@ -1270,6 +1426,18 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
 
     if (!virSysinfoSystemIsEqual(src->system, dst->system))
         goto cleanup;
+
+    if (src->nbaseBoard != dst->nbaseBoard) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target sysinfo base board count '%zu' does not match source '%zu'"),
+                       dst->nbaseBoard, src->nbaseBoard);
+        goto cleanup;
+    }
+
+    for (i = 0; i < src->nbaseBoard; i++)
+        if (!virSysinfoBaseBoardIsEqual(src->baseBoard + i,
+                                        dst->baseBoard + i))
+            goto cleanup;
 
     identical = true;
 

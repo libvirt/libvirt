@@ -4249,6 +4249,18 @@
             </oneOrMore>
           </element>
         </optional>
+        <zeroOrMore>
+          <element name="baseBoard">
+            <oneOrMore>
+              <element name="entry">
+                <attribute name="name">
+                  <ref name="sysinfo-baseBoard-name"/>
+                </attribute>
+                <ref name="sysinfo-value"/>
+              </element>
+            </oneOrMore>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>
@@ -4271,6 +4283,17 @@
       <value>uuid</value>
       <value>sku</value>
       <value>family</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-baseBoard-name">
+    <choice>
+      <value>manufacturer</value>
+      <value>product</value>
+      <value>version</value>
+      <value>serial</value>
+      <value>asset</value>
+      <value>location</value>
     </choice>
   </define>
 

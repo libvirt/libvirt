@@ -11241,6 +11241,61 @@ virSysinfoSystemParseXML(xmlNodePtr node,
     return ret;
 }
 
+static int
+virSysinfoBaseBoardParseXML(xmlXPathContextPtr ctxt,
+                            virSysinfoBaseBoardDefPtr *baseBoard,
+                            size_t *nbaseBoard)
+{
+    int ret = -1;
+    virSysinfoBaseBoardDefPtr boards = NULL;
+    size_t i, nboards = 0;
+    xmlNodePtr *nodes = NULL, oldnode = ctxt->node;
+    int n;
+
+    if ((n = virXPathNodeSet("./baseBoard", ctxt, &nodes)) < 0)
+        return ret;
+
+    if (n && VIR_ALLOC_N(boards, n) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        virSysinfoBaseBoardDefPtr def = boards + nboards;
+
+        ctxt->node = nodes[i];
+
+        def->manufacturer =
+            virXPathString("string(entry[@name='manufacturer'])", ctxt);
+        def->product =
+            virXPathString("string(entry[@name='product'])", ctxt);
+        def->version =
+            virXPathString("string(entry[@name='version'])", ctxt);
+        def->serial =
+            virXPathString("string(entry[@name='serial'])", ctxt);
+        def->asset =
+            virXPathString("string(entry[@name='asset'])", ctxt);
+        def->location =
+            virXPathString("string(entry[@name='location'])", ctxt);
+
+        if (!def->manufacturer && !def->product && !def->version &&
+            !def->serial && !def->asset && !def->location) {
+            /* nada */
+        } else {
+            nboards++;
+        }
+    }
+
+    *baseBoard = boards;
+    *nbaseBoard = nboards;
+    boards = NULL;
+    nboards = 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(boards);
+    VIR_FREE(nodes);
+    ctxt->node = oldnode;
+    return ret;
+}
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -11294,6 +11349,10 @@ virSysinfoParseXML(xmlNodePtr node,
         }
         ctxt->node = oldnode;
     }
+
+    /* Extract system base board metadata */
+    if (virSysinfoBaseBoardParseXML(ctxt, &def->baseBoard, &def->nbaseBoard) < 0)
+        goto error;
 
  cleanup:
     VIR_FREE(type);

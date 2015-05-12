@@ -375,6 +375,12 @@
       &lt;entry name='product'&gt;Virt-Manager&lt;/entry&gt;
       &lt;entry name='version'&gt;0.9.4&lt;/entry&gt;
     &lt;/system&gt;
+    &lt;baseBoard&gt;
+      &lt;entry name='manufacturer'&gt;LENOVO&lt;/entry&gt;
+      &lt;entry name='product'&gt;20BE0061MC&lt;/entry&gt;
+      &lt;entry name='version'&gt;0B98401 Pro&lt;/entry&gt;
+      &lt;entry name='serial'&gt;W1KS427111E&lt;/entry&gt;
+    &lt;/baseBoard&gt;
   &lt;/sysinfo&gt;
   ...</pre>
 
@@ -435,11 +441,32 @@
                 <dt><code>family</code></dt>
                 <dd>Identify the family a particular computer belongs to.</dd>
             </dl>
-            NB: Incorrectly supplied entries in either the <code>bios</code>
-            or <code>system</code> blocks will be ignored without error.
-            Other than <code>uuid</code> validation and <code>date</code>
-            format checking, all values are passed as strings to the
-            hypervisor driver.
+          </dd>
+          <dt><code>baseBoard</code></dt>
+          <dd>
+            This is block 2 of SMBIOS. This element can be repeated multiple
+            times to describe all the base boards; however, not all
+            hypervisors necessarily support the repetition. The element can
+            have the following children:
+            <dl>
+                <dt><code>manufacturer</code></dt>
+                <dd>Manufacturer of BIOS</dd>
+                <dt><code>product</code></dt>
+                <dd>Product Name</dd>
+                <dt><code>version</code></dt>
+                <dd>Version of the product</dd>
+                <dt><code>serial</code></dt>
+                <dd>Serial number</dd>
+                <dt><code>asset</code></dt>
+                <dd>Asset tag</dd>
+                <dt><code>location</code></dt>
+                <dd>Location in chassis</dd>
+            </dl>
+            NB: Incorrectly supplied entries for the
+            <code>bios</code>, <code>system</code> or <code>baseBoard</code>
+            blocks will be ignored without error.  Other than <code>uuid</code>
+            validation and <code>date</code> format checking, all values are
+            passed as strings to the hypervisor driver.
           </dd>
         </dl>
       </dd>

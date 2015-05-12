@@ -614,6 +614,7 @@ mymain(void)
     DO_TEST_DIFFERENT("tap-vhost-incorrect");
     DO_TEST("shmem");
     DO_TEST("smbios");
+    DO_TEST("smbios-multiple-type2");
     DO_TEST("aarch64-aavmf-virtio-mmio");
 
     DO_TEST("memory-hotplug");
