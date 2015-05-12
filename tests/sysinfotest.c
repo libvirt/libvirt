@@ -166,11 +166,23 @@ VIRT_TEST_MAIN(test_x86)
 static int
 test_arm(void)
 {
-    return sysinfotest_run("arm sysinfo",
-                           NULL,
-                           NULL,
-                           "/sysinfodata/armcpuinfo.data",
-                           "/sysinfodata/armsysinfo.expect");
+    int ret = EXIT_SUCCESS;
+
+    if (sysinfotest_run("arm sysinfo",
+                        NULL,
+                        NULL,
+                        "/sysinfodata/armcpuinfo.data",
+                        "/sysinfodata/armsysinfo.expect") != EXIT_SUCCESS)
+        ret = EXIT_FAILURE;
+
+    if (sysinfotest_run("Raspberry Pi 2 sysinfo",
+                        NULL,
+                        NULL,
+                        "/sysinfodata/arm-rpi2cpuinfo.data",
+                        "/sysinfodata/arm-rpi2sysinfo.expect") != EXIT_SUCCESS)
+        ret = EXIT_FAILURE;
+
+    return ret;
 }
 
 VIRT_TEST_MAIN(test_arm)

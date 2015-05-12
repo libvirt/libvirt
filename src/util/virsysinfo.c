@@ -289,16 +289,15 @@ virSysinfoParseProcessor(const char *base, virSysinfoDefPtr ret)
     virSysinfoProcessorDefPtr processor;
     char *processor_type = NULL;
 
-    if (!(tmp_base = strstr(base, "Processor")))
+    if (!(tmp_base = strstr(base, "model name")) &&
+        !(tmp_base = strstr(base, "Processor")))
         return 0;
 
-    base = tmp_base;
-    eol = strchr(base, '\n');
-    cur = strchr(base, ':') + 1;
+    eol = strchr(tmp_base, '\n');
+    cur = strchr(tmp_base, ':') + 1;
     virSkipSpaces(&cur);
     if (eol && VIR_STRNDUP(processor_type, cur, eol - cur) < 0)
         goto error;
-    base = cur;
 
     while ((tmp_base = strstr(base, "processor")) != NULL) {
         base = tmp_base;
