@@ -7591,50 +7591,60 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 
         virBufferAsprintf(&opt, "unix:%s", graphics->data.vnc.socket);
 
-    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-        switch (virDomainGraphicsListenGetType(graphics, 0)) {
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-            if (!listenNetwork)
-                break;
-            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-            if (ret <= -2) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("network-based listen not possible, "
-                                       "network driver not present"));
-                goto error;
-            }
-            if (ret < 0)
-                goto error;
-
-            listenAddr = netAddr;
-            /* store the address we found in the <graphics> element so it will
-             * show up in status. */
-            if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                  listenAddr, -1, false) < 0)
-               goto error;
-            break;
+    } else {
+        if (!graphics->data.vnc.autoport &&
+            (graphics->data.vnc.port < 5900 ||
+             graphics->data.vnc.port > 65535)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc port must be in range [5900,65535]"));
+            goto error;
         }
 
-        if (!listenAddr)
-            listenAddr = cfg->vncListen;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
+            switch (virDomainGraphicsListenGetType(graphics, 0)) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+                listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+                break;
 
-        escapeAddr = strchr(listenAddr, ':') != NULL;
-        if (escapeAddr)
-            virBufferAsprintf(&opt, "[%s]", listenAddr);
-        else
-            virBufferAdd(&opt, listenAddr, -1);
-        virBufferAsprintf(&opt, ":%d",
-                          graphics->data.vnc.port - 5900);
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
+                if (!listenNetwork)
+                    break;
+                ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+                if (ret <= -2) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   "%s", _("network-based listen not possible, "
+                                           "network driver not present"));
+                    goto error;
+                }
+                if (ret < 0)
+                    goto error;
 
-        VIR_FREE(netAddr);
-    } else {
-        virBufferAsprintf(&opt, "%d",
-                          graphics->data.vnc.port - 5900);
+                listenAddr = netAddr;
+                /* store the address we found in the <graphics> element so it
+                 * will show up in status. */
+                if (virDomainGraphicsListenSetAddress(graphics, 0,
+                                                      listenAddr, -1, false) < 0)
+                    goto error;
+                break;
+            }
+
+            if (!listenAddr)
+                listenAddr = cfg->vncListen;
+
+            escapeAddr = strchr(listenAddr, ':') != NULL;
+            if (escapeAddr)
+                virBufferAsprintf(&opt, "[%s]", listenAddr);
+            else
+                virBufferAdd(&opt, listenAddr, -1);
+            virBufferAsprintf(&opt, ":%d",
+                              graphics->data.vnc.port - 5900);
+
+            VIR_FREE(netAddr);
+        } else {
+            virBufferAsprintf(&opt, "%d",
+                              graphics->data.vnc.port - 5900);
+        }
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
