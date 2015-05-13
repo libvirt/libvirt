@@ -24,7 +24,7 @@
 
 #include "parallels_utils.h"
 
-int prlsdkInit(parallelsConnPtr privconn);
+int prlsdkInit(void);
 void prlsdkDeinit(void);
 int prlsdkConnect(parallelsConnPtr privconn);
 void prlsdkDisconnect(parallelsConnPtr privconn);
@@ -35,14 +35,14 @@ prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid);
 int prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
 int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn);
 void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn);
-PRL_RESULT prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkSuspend(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkKill(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkPause(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkResume(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom);
 
-typedef PRL_RESULT (*prlsdkChangeStateFunc)(parallelsConnPtr privconn, PRL_HANDLE sdkdom);
+typedef PRL_RESULT (*prlsdkChangeStateFunc)(PRL_HANDLE sdkdom);
 int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate);
@@ -59,11 +59,8 @@ int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
 int
 prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
 int
-prlsdkDomainManagedSaveRemove(parallelsConnPtr privconn, virDomainObjPtr dom);
+prlsdkDomainManagedSaveRemove(virDomainObjPtr dom);
 int
-prlsdkAttachVolume(virConnectPtr conn,
-                   virDomainObjPtr dom,
-                   virDomainDiskDefPtr disk);
-int prlsdkDetachVolume(virConnectPtr conn,
-                   virDomainObjPtr dom,
-                   virDomainDiskDefPtr disk);
+prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
+int
+prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);

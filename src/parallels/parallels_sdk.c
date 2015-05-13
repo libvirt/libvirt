@@ -35,8 +35,6 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define JOB_INFINIT_WAIT_TIMEOUT UINT_MAX
 
-PRL_UINT32 defaultJobTimeout = JOB_INFINIT_WAIT_TIMEOUT;
-
 VIR_LOG_INIT("parallels.sdk");
 
 /*
@@ -179,9 +177,9 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
     return ret;
 }
 
-#define getJobResult(job, timeout, result)                  \
-    getJobResultHelper(job, timeout, result, __FILE__,      \
-                         __FUNCTION__, __LINE__)
+#define getJobResult(job, result)                       \
+    getJobResultHelper(job, JOB_INFINIT_WAIT_TIMEOUT,   \
+            result, __FILE__, __FUNCTION__, __LINE__)
 
 static PRL_RESULT
 waitJobHelper(PRL_HANDLE job, unsigned int timeout,
@@ -197,12 +195,13 @@ waitJobHelper(PRL_HANDLE job, unsigned int timeout,
     return ret;
 }
 
-#define waitJob(job, timeout)                  \
-    waitJobHelper(job, timeout, __FILE__,      \
+#define waitJob(job)                                        \
+    waitJobHelper(job, JOB_INFINIT_WAIT_TIMEOUT, __FILE__,  \
                          __FUNCTION__, __LINE__)
 
+
 int
-prlsdkInit(parallelsConnPtr privconn)
+prlsdkInit(void)
 {
     PRL_RESULT ret;
 
@@ -211,8 +210,6 @@ prlsdkInit(parallelsConnPtr privconn)
         logPrlError(ret);
         return -1;
     }
-
-    privconn->jobTimeout = JOB_INFINIT_WAIT_TIMEOUT;
 
     return 0;
 };
@@ -238,7 +235,7 @@ prlsdkConnect(parallelsConnPtr privconn)
     job = PrlSrv_LoginLocalEx(privconn->server, NULL, 0,
                               PSL_HIGH_SECURITY, PACF_NON_INTERACTIVE_MODE);
 
-    if (waitJob(job, privconn->jobTimeout)) {
+    if (waitJob(job)) {
         PrlHandle_Free(privconn->server);
         return -1;
     }
@@ -252,7 +249,7 @@ prlsdkDisconnect(parallelsConnPtr privconn)
     PRL_HANDLE job;
 
     job = PrlSrv_Logoff(privconn->server);
-    waitJob(job, privconn->jobTimeout);
+    waitJob(job);
 
     PrlHandle_Free(privconn->server);
 }
@@ -269,7 +266,7 @@ prlsdkSdkDomainLookup(parallelsConnPtr privconn,
     int ret = -1;
 
     job = PrlSrv_GetVmConfig(privconn->server, id, flags);
-    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
+    if (PRL_FAILED(getJobResult(job, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, sdkdom);
@@ -374,9 +371,7 @@ prlsdkGetDomainIds(PRL_HANDLE sdkdom,
 }
 
 static int
-prlsdkGetDomainState(parallelsConnPtr privconn,
-                     PRL_HANDLE sdkdom,
-                     VIRTUAL_MACHINE_STATE_PTR vmState)
+prlsdkGetDomainState(PRL_HANDLE sdkdom, VIRTUAL_MACHINE_STATE_PTR vmState)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE result = PRL_INVALID_HANDLE;
@@ -386,7 +381,7 @@ prlsdkGetDomainState(parallelsConnPtr privconn,
 
     job = PrlVm_GetState(sdkdom);
 
-    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
+    if (PRL_FAILED(getJobResult(job, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &vmInfo);
@@ -1354,7 +1349,7 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     dom->privateDataFreeFunc = prlsdkDomObjFreePrivate;
     dom->persistent = 1;
 
-    if (prlsdkGetDomainState(privconn, sdkdom, &domainState) < 0)
+    if (prlsdkGetDomainState(sdkdom, &domainState) < 0)
         goto error;
 
     if (prlsdkConvertDomainState(domainState, envId, dom) < 0)
@@ -1404,7 +1399,7 @@ prlsdkLoadDomains(parallelsConnPtr privconn)
 
     job = PrlSrv_GetVmListEx(privconn->server, PVTF_VM | PVTF_CT);
 
-    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
+    if (PRL_FAILED(getJobResult(job, &result)))
         return -1;
 
     pret = PrlResult_GetParamsCount(result, &paramsCount);
@@ -1464,7 +1459,7 @@ prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
     parallelsDomObjPtr pdom = dom->privateData;
 
     job = PrlVm_RefreshConfig(pdom->sdkdom);
-    if (waitJob(job, privconn->jobTimeout))
+    if (waitJob(job))
         return -1;
 
     retdom = prlsdkLoadDomain(privconn, pdom->sdkdom, dom);
@@ -1748,56 +1743,54 @@ void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn)
         logPrlError(ret);
 }
 
-PRL_RESULT prlsdkStart(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_StartEx(sdkdom, PSM_VM_START, 0);
-    return PRL_FAILED(waitJob(job, privconn->jobTimeout)) ? -1 : 0;
+    return waitJob(job);
 }
 
-static PRL_RESULT prlsdkStopEx(parallelsConnPtr privconn,
-                        PRL_HANDLE sdkdom,
-                        PRL_UINT32 mode)
+static PRL_RESULT prlsdkStopEx(PRL_HANDLE sdkdom, PRL_UINT32 mode)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_StopEx(sdkdom, mode, 0);
-    return waitJob(job, privconn->jobTimeout);
+    return waitJob(job);
 }
 
-PRL_RESULT prlsdkKill(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkKill(PRL_HANDLE sdkdom)
 {
-    return prlsdkStopEx(privconn, sdkdom, PSM_KILL);
+    return prlsdkStopEx(sdkdom, PSM_KILL);
 }
 
-PRL_RESULT prlsdkStop(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom)
 {
-    return prlsdkStopEx(privconn, sdkdom, PSM_SHUTDOWN);
+    return prlsdkStopEx(sdkdom, PSM_SHUTDOWN);
 }
 
-PRL_RESULT prlsdkPause(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkPause(PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Pause(sdkdom, false);
-    return waitJob(job, privconn->jobTimeout);
+    return waitJob(job);
 }
 
-PRL_RESULT prlsdkResume(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkResume(PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Resume(sdkdom);
-    return waitJob(job, privconn->jobTimeout);
+    return waitJob(job);
 }
 
-PRL_RESULT prlsdkSuspend(parallelsConnPtr privconn, PRL_HANDLE sdkdom)
+PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_Suspend(sdkdom);
-    return waitJob(job, privconn->jobTimeout);
+    return waitJob(job);
 }
 
 int
@@ -1810,7 +1803,7 @@ prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
     virErrorNumber virerr;
 
     pdom = dom->privateData;
-    pret = chstate(privconn, pdom->sdkdom);
+    pret = chstate(pdom->sdkdom);
     if (PRL_FAILED(pret)) {
         virResetLastError();
 
@@ -2805,7 +2798,7 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
         prlsdkCheckRetGoto(pret, cleanup);
 
         job = PrlSrv_AddVirtualNetwork(privconn->server, vnet, 0);
-        if (PRL_FAILED(pret = waitJob(job, privconn->jobTimeout)))
+        if (PRL_FAILED(pret = waitJob(job)))
             goto cleanup;
 
         pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
@@ -2844,7 +2837,7 @@ static void prlsdkDelNet(parallelsConnPtr privconn, virDomainNetDefPtr net)
     prlsdkCheckRetGoto(pret, cleanup);
 
     PrlSrv_DeleteVirtualNetwork(privconn->server, vnet, 0);
-    if (PRL_FAILED(pret = waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(pret = waitJob(job)))
         goto cleanup;
 
  cleanup:
@@ -3041,23 +3034,20 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootD
 }
 
 int
-prlsdkAttachVolume(virConnectPtr conn,
-                   virDomainObjPtr dom,
-                   virDomainDiskDefPtr disk)
+prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 {
     int ret = -1;
-    parallelsConnPtr privconn = conn->privateData;
     parallelsDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
     ret = prlsdkAddDisk(privdom->sdkdom, disk, false);
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job, privconn->jobTimeout))) {
+        if (PRL_FAILED(waitJob(job))) {
             ret = -1;
             goto cleanup;
         }
@@ -3113,12 +3103,10 @@ prlsdkGetDiskIndex(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
     return idx;
 }
 
-int prlsdkDetachVolume(virConnectPtr conn,
-                   virDomainObjPtr dom,
-                   virDomainDiskDefPtr disk)
+int
+prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 {
     int ret = -1, idx;
-    parallelsConnPtr privconn = conn->privateData;
     parallelsDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
@@ -3127,13 +3115,13 @@ int prlsdkDetachVolume(virConnectPtr conn,
         goto cleanup;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
     ret = prlsdkDelDisk(privdom->sdkdom, idx);
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job, privconn->jobTimeout))) {
+        if (PRL_FAILED(waitJob(job))) {
             ret = -1;
             goto cleanup;
         }
@@ -3314,14 +3302,14 @@ prlsdkApplyConfig(virConnectPtr conn,
         return -1;
 
     job = PrlVm_BeginEdit(sdkdom);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         return -1;
 
     ret = prlsdkDoApplyConfig(conn, sdkdom, new, dom->def);
 
     if (ret == 0) {
         job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+        if (PRL_FAILED(waitJob(job)))
             ret = -1;
     }
 
@@ -3345,7 +3333,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
     prlsdkCheckRetGoto(pret, cleanup);
 
     job = PrlSrv_GetSrvConfig(privconn->server);
-    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
+    if (PRL_FAILED(getJobResult(job, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &srvconf);
@@ -3362,7 +3350,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
         goto cleanup;
 
     job = PrlVm_Reg(sdkdom, "", 1);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         ret = -1;
 
  cleanup:
@@ -3407,7 +3395,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     confParam.nOsVersion = 0;
 
     job = PrlSrv_GetDefaultVmConfig(privconn->server, &confParam, 0);
-    if (PRL_FAILED(getJobResult(job, privconn->jobTimeout, &result)))
+    if (PRL_FAILED(getJobResult(job, &result)))
         goto cleanup;
 
     pret = PrlResult_GetParamByIndex(result, 0, &sdkdom);
@@ -3425,7 +3413,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 
     job = PrlVm_RegEx(sdkdom, "",
                       PACF_NON_INTERACTIVE_MODE | PRNVM_PRESERVE_DISK);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         ret = -1;
 
  cleanup:
@@ -3444,7 +3432,7 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
        prlsdkDelNet(privconn, dom->def->nets[i]);
 
     job = PrlVm_Unreg(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         return -1;
 
     if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_UNDEFINED,
@@ -3456,13 +3444,13 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
 }
 
 int
-prlsdkDomainManagedSaveRemove(parallelsConnPtr privconn, virDomainObjPtr dom)
+prlsdkDomainManagedSaveRemove(virDomainObjPtr dom)
 {
     parallelsDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
 
     job = PrlVm_DropSuspendedState(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job, privconn->jobTimeout)))
+    if (PRL_FAILED(waitJob(job)))
         return -1;
 
     return 0;

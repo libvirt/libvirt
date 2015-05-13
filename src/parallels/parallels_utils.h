@@ -62,7 +62,6 @@ struct _parallelsConn {
     virDomainObjListPtr domains;
 
     PRL_HANDLE server;
-    PRL_UINT32 jobTimeout;
     virStoragePoolObjList pools;
     virNetworkObjListPtr networks;
     virCapsPtr caps;

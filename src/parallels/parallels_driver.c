@@ -214,7 +214,7 @@ parallelsOpenDefault(virConnectPtr conn)
         goto err_free;
     }
 
-    if (prlsdkInit(privconn)) {
+    if (prlsdkInit()) {
         VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
         goto err_free;
     }
@@ -1007,7 +1007,6 @@ parallelsDomainManagedSave(virDomainPtr domain, unsigned int flags)
 static int
 parallelsDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 {
-    parallelsConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom = NULL;
     int state, reason;
     int ret = -1;
@@ -1022,7 +1021,7 @@ parallelsDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
     if (!(state == VIR_DOMAIN_SHUTOFF && reason == VIR_DOMAIN_SHUTOFF_SAVED))
         goto cleanup;
 
-    ret = prlsdkDomainManagedSaveRemove(privconn, dom);
+    ret = prlsdkDomainManagedSaveRemove(dom);
 
  cleanup:
     virObjectUnlock(dom);
@@ -1071,7 +1070,7 @@ static int parallelsDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkAttachVolume(dom->conn, privdom, dev->data.disk);
+        ret = prlsdkAttachVolume(privdom, dev->data.disk);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk attach failed"));
@@ -1140,7 +1139,7 @@ static int parallelsDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkDetachVolume(dom->conn, privdom, dev->data.disk);
+        ret = prlsdkDetachVolume(privdom, dev->data.disk);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk detach failed"));
