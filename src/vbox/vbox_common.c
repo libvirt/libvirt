@@ -3126,7 +3126,7 @@ vboxDumpIDEHDDsNew(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     /* Allocate mem, if fails return error */
     if (VIR_ALLOC_N(def->disks, def->ndisks) >= 0) {
         for (i = 0; i < def->ndisks; i++) {
-            virDomainDiskDefPtr disk = virDomainDiskDefNew();
+            virDomainDiskDefPtr disk = virDomainDiskDefNew(NULL);
             if (!disk) {
                 error = true;
                 break;
@@ -5850,7 +5850,7 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
     /* Allocate mem, if fails return error */
     if (VIR_ALLOC_N(def->dom->disks, def->dom->ndisks) >= 0) {
         for (i = 0; i < def->dom->ndisks; i++) {
-            virDomainDiskDefPtr diskDef = virDomainDiskDefNew();
+            virDomainDiskDefPtr diskDef = virDomainDiskDefNew(NULL);
             if (!diskDef)
                 goto cleanup;
             def->dom->disks[i] = diskDef;

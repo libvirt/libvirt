@@ -1275,7 +1275,7 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 
 
 virDomainDiskDefPtr
-virDomainDiskDefNew(void)
+virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainDiskDefPtr ret;
 
@@ -1283,6 +1283,11 @@ virDomainDiskDefNew(void)
         return NULL;
 
     if (VIR_ALLOC(ret->src) < 0)
+        goto error;
+
+    if (xmlopt &&
+        xmlopt->privateData.diskNew &&
+        !(ret->privateData = xmlopt->privateData.diskNew()))
         goto error;
 
     if (virCondInit(&ret->blockJobSyncCond) < 0) {
@@ -1293,9 +1298,7 @@ virDomainDiskDefNew(void)
     return ret;
 
  error:
-    virStorageSourceFree(ret->src);
-    VIR_FREE(ret);
-
+    virDomainDiskDefFree(ret);
     return NULL;
 }
 
@@ -1315,6 +1318,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->product);
     VIR_FREE(def->domain_name);
     virDomainDeviceInfoClear(&def->info);
+    virObjectUnref(def->privateData);
     virCondDestroy(&def->blockJobSyncCond);
 
     VIR_FREE(def);
@@ -6121,7 +6125,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     int auth_secret_usage = -1;
     int ret = 0;
 
-    if (!(def = virDomainDiskDefNew()))
+    if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
 
     def->geometry.cylinders = 0;

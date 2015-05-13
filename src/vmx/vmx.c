@@ -1980,7 +1980,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         return -1;
     }
 
-    if (!(*def = virDomainDiskDefNew()))
+    if (!(*def = virDomainDiskDefNew(xmlopt)))
         return -1;
 
     (*def)->device = device;

@@ -372,7 +372,7 @@ xenParseSxprDisks(virDomainDefPtr def,
                 bootable = sexpr_node(node, "device/tap/bootable");
             }
 
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 goto error;
 
             if (dst == NULL) {
@@ -1316,7 +1316,7 @@ xenParseSxpr(const struct sexpr *root,
         tmp = sexpr_node(root, "domain/image/hvm/cdrom");
         if ((tmp != NULL) && (tmp[0] != 0)) {
             virDomainDiskDefPtr disk;
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 goto error;
             if (virDomainDiskSetSource(disk, tmp) < 0) {
                 virDomainDiskDefFree(disk);
@@ -1351,7 +1351,7 @@ xenParseSxpr(const struct sexpr *root,
             tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
             if ((tmp != NULL) && (tmp[0] != 0)) {
                 virDomainDiskDefPtr disk;
-                if (!(disk = virDomainDiskDefNew()))
+                if (!(disk = virDomainDiskDefNew(NULL)))
                     goto error;
                 if (virDomainDiskSetSource(disk, tmp) < 0) {
                     virDomainDiskDefFree(disk);

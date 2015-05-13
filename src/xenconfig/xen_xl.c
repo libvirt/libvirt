@@ -286,7 +286,7 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
             if (xlu_disk_parse(xluconf, 1, &disk_spec, libxldisk))
                 goto fail;
 
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 goto fail;
 
             if (VIR_STRDUP(disk->dst, libxldisk->vdev) < 0)

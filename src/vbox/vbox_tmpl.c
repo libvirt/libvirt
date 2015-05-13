@@ -2187,7 +2187,7 @@ _dumpIDEHDDsOld(virDomainDefPtr def,
     if ((def->ndisks > 0) && (VIR_ALLOC_N(def->disks, def->ndisks) >= 0)) {
         size_t i;
         for (i = 0; i < def->ndisks; i++) {
-            if ((def->disks[i] = virDomainDiskDefNew())) {
+            if ((def->disks[i] = virDomainDiskDefNew(NULL))) {
                 def->disks[i]->device = VIR_DOMAIN_DISK_DEVICE_DISK;
                 def->disks[i]->bus = VIR_DOMAIN_DISK_BUS_IDE;
                 virDomainDiskSetType(def->disks[i],
@@ -2295,7 +2295,7 @@ _dumpDVD(virDomainDefPtr def,
 
     def->ndisks++;
     if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
-        if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew())) {
+        if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew(NULL))) {
             def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
             def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_IDE;
             virDomainDiskSetType(def->disks[def->ndisks - 1],
@@ -2437,7 +2437,7 @@ _dumpFloppy(virDomainDefPtr def,
 
     def->ndisks++;
     if (VIR_REALLOC_N(def->disks, def->ndisks) >= 0) {
-        if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew())) {
+        if ((def->disks[def->ndisks - 1] = virDomainDiskDefNew(NULL))) {
             def->disks[def->ndisks - 1]->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
             def->disks[def->ndisks - 1]->bus = VIR_DOMAIN_DISK_BUS_FDC;
             virDomainDiskSetType(def->disks[def->ndisks - 1],

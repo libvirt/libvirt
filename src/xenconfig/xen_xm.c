@@ -123,7 +123,7 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
                 goto skipdisk;
 
             head = list->str;
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 return -1;
 
             /*
@@ -275,7 +275,7 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
         if (xenConfigGetString(conf, "cdrom", &str, NULL) < 0)
             goto cleanup;
         if (str) {
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 goto cleanup;
 
             virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);

@@ -683,6 +683,8 @@ typedef enum {
 struct _virDomainDiskDef {
     virStorageSourcePtr src; /* non-NULL.  XXX Allow NULL for empty cdrom? */
 
+    virObjectPtr privateData;
+
     int device; /* enum virDomainDiskDevice */
     int bus; /* enum virDomainDiskBus */
     char *dst;
@@ -2332,6 +2334,7 @@ typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
 typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
 typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
+typedef virObjectPtr (*virDomainXMLPrivateDataNewFunc)(void);
 typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr, void *);
 typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr, void *);
 
@@ -2368,6 +2371,7 @@ typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataAllocFunc  alloc;
     virDomainXMLPrivateDataFreeFunc   free;
+    virDomainXMLPrivateDataNewFunc    diskNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
 };
@@ -2420,7 +2424,7 @@ void virDomainPanicDefFree(virDomainPanicDefPtr panic);
 void virDomainResourceDefFree(virDomainResourceDefPtr resource);
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
 void virDomainInputDefFree(virDomainInputDefPtr def);
-virDomainDiskDefPtr virDomainDiskDefNew(void);
+virDomainDiskDefPtr virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
 void virDomainLeaseDefFree(virDomainLeaseDefPtr def);
 int virDomainDiskGetType(virDomainDiskDefPtr def);

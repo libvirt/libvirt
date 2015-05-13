@@ -621,7 +621,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
             PrlHandle_Free(hdd);
             hdd = PRL_INVALID_HANDLE;
         } else {
-            if (!(disk = virDomainDiskDefNew()))
+            if (!(disk = virDomainDiskDefNew(NULL)))
                 goto error;
 
             if (prlsdkGetDiskInfo(hdd, disk, false) < 0)
@@ -661,7 +661,7 @@ prlsdkAddDomainOpticalDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         pret = PrlVmCfg_GetOpticalDisk(sdkdom, i, &cdrom);
         prlsdkCheckRetGoto(pret, error);
 
-        if (!(disk = virDomainDiskDefNew()))
+        if (!(disk = virDomainDiskDefNew(NULL)))
             goto error;
 
         if (prlsdkGetDiskInfo(cdrom, disk, true) < 0)
