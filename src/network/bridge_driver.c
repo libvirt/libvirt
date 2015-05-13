@@ -2780,7 +2780,7 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
 
     if (def->bridge &&
         (p = strchr(def->bridge, '%')) == strrchr(def->bridge, '%') &&
-        p[1] == 'd')
+        p && p[1] == 'd')
         templ = def->bridge;
 
     do {
