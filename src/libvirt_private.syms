@@ -308,7 +308,6 @@ virDomainGraphicsTypeFromString;
 virDomainGraphicsTypeToString;
 virDomainGraphicsVNCSharePolicyTypeFromString;
 virDomainGraphicsVNCSharePolicyTypeToString;
-virDomainHasBlockjob;
 virDomainHasNet;
 virDomainHostdevCapsTypeToString;
 virDomainHostdevDefAlloc;

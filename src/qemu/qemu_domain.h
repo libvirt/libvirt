@@ -432,6 +432,8 @@ int qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 int qemuDomainSupportsBlockJobs(virDomainObjPtr vm, bool *modern)
     ATTRIBUTE_NONNULL(1);
 bool qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk);
+bool qemuDomainHasBlockjob(virDomainObjPtr vm, bool copy_only)
+    ATTRIBUTE_NONNULL(1);
 
 int qemuDomainAlignMemorySizes(virDomainDefPtr def);
 void qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem);

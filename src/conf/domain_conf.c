@@ -12317,33 +12317,6 @@ virDomainDiskRemoveByName(virDomainDefPtr def, const char *name)
     return virDomainDiskRemove(def, idx);
 }
 
-/**
- * virDomainHasBlockjob:
- * @vm: domain object
- * @copy_only: Reject only block copy job
- *
- * Return true if @vm has at least one disk involved in a current block
- * copy/commit/pull job. If @copy_only is true this returns true only if the
- * disk is involved in a block copy.
- * */
-bool
-virDomainHasBlockjob(virDomainObjPtr vm,
-                     bool copy_only)
-{
-    size_t i;
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (!copy_only &&
-            vm->def->disks[i]->blockjob)
-            return true;
-
-        if (vm->def->disks[i]->mirror &&
-            vm->def->disks[i]->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
-            return true;
-    }
-
-    return false;
-}
-
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
 {
     /* hostdev net devices must also exist in the hostdevs array */

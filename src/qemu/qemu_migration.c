@@ -2067,7 +2067,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
         }
 
-        if (virDomainHasBlockjob(vm, false)) {
+        if (qemuDomainHasBlockjob(vm, false)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("domain has an active block job"));
             return false;
