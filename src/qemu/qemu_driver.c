@@ -14317,9 +14317,10 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
         virDomainDiskDefPtr dom_disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr dom_diskPriv = QEMU_DOMAIN_DISK_PRIVATE(dom_disk);
 
         if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
-            dom_disk->blockjob) {
+            dom_diskPriv->blockjob) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' has an active block job"),
                            disk->name);
@@ -16639,7 +16640,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (ret < 0)
         goto endjob;
 
-    disk->blockjob = true;
+    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
@@ -16767,7 +16768,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     }
 
  endjob:
-    if (disk && disk->blockJobSync)
+    if (disk && QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync)
         qemuBlockJobSyncEnd(driver, vm, disk, NULL);
     qemuDomainObjEndJob(driver, vm);
 
@@ -17100,7 +17101,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     disk->mirror = mirror;
     mirror = NULL;
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-    disk->blockjob = true;
+    QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -17493,7 +17494,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (ret == 0)
-        disk->blockjob = true;
+        QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
 
     if (mirror) {
         if (ret == 0) {

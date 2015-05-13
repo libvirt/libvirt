@@ -1001,6 +1001,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     virDomainDiskDefPtr disk;
+    qemuDomainDiskPrivatePtr diskPriv;
     char *data = NULL;
 
     virObjectLock(vm);
@@ -1010,12 +1011,13 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (!(disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
         goto error;
+    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-    if (disk->blockJobSync) {
-        disk->blockJobType = type;
-        disk->blockJobStatus = status;
+    if (diskPriv->blockJobSync) {
+        diskPriv->blockJobType = type;
+        diskPriv->blockJobStatus = status;
         /* We have an SYNC API waiting for this event, dispatch it back */
-        virCondSignal(&disk->blockJobSyncCond);
+        virCondSignal(&diskPriv->blockJobSyncCond);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
         if (VIR_ALLOC(processEvent) < 0)
@@ -5063,9 +5065,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* Wake up anything waiting on synchronous block jobs */
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        if (disk->blockJobSync && disk->blockJobStatus == -1)
-            virCondSignal(&disk->blockJobSyncCond);
+        qemuDomainDiskPrivatePtr diskPriv =
+            QEMU_DOMAIN_DISK_PRIVATE(vm->def->disks[i]);
+        if (diskPriv->blockJobSync && diskPriv->blockJobStatus == -1)
+            virCondSignal(&diskPriv->blockJobSyncCond);
     }
 
     if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {

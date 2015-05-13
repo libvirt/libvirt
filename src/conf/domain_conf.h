@@ -691,19 +691,9 @@ struct _virDomainDiskDef {
     int tray_status; /* enum virDomainDiskTray */
     int removable; /* enum virTristateSwitch */
 
-    /* ideally we want a smarter way to interlock block jobs on single qemu disk
-     * in the future, but for now we just disallow any concurrent job on a
-     * single disk */
-    bool blockjob;
     virStorageSourcePtr mirror;
     int mirrorState; /* enum virDomainDiskMirrorState */
     int mirrorJob; /* virDomainBlockJobType */
-
-    /* for some synchronous block jobs, we need to notify the owner */
-    virCond blockJobSyncCond;
-    int blockJobType;   /* type of the block job from the event */
-    int blockJobStatus; /* status of the finished block job */
-    bool blockJobSync; /* the block job needs synchronized termination */
 
     struct {
         unsigned int cylinders;

@@ -34,6 +34,7 @@
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
 # include "virchrdev.h"
+# include "virobject.h"
 
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
     (VIR_DOMAIN_XML_SECURE |                \
@@ -197,6 +198,26 @@ struct _qemuDomainObjPrivate {
     /* Bitmaps below hold data from the auto NUMA feature */
     virBitmapPtr autoNodeset;
     virBitmapPtr autoCpuset;
+};
+
+# define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
+    ((qemuDomainDiskPrivatePtr) (disk)->privateData)
+
+typedef struct _qemuDomainDiskPrivate qemuDomainDiskPrivate;
+typedef qemuDomainDiskPrivate *qemuDomainDiskPrivatePtr;
+struct _qemuDomainDiskPrivate {
+    virObject parent;
+
+    /* ideally we want a smarter way to interlock block jobs on single qemu disk
+     * in the future, but for now we just disallow any concurrent job on a
+     * single disk */
+    bool blockjob;
+
+    /* for some synchronous block jobs, we need to notify the owner */
+    virCond blockJobSyncCond;
+    int blockJobType;   /* type of the block job from the event */
+    int blockJobStatus; /* status of the finished block job */
+    bool blockJobSync; /* the block job needs synchronized termination */
 };
 
 typedef enum {

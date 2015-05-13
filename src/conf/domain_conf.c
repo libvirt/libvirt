@@ -1290,11 +1290,6 @@ virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
         !(ret->privateData = xmlopt->privateData.diskNew()))
         goto error;
 
-    if (virCondInit(&ret->blockJobSyncCond) < 0) {
-        virReportSystemError(errno, "%s", _("Failed to initialize condition"));
-        goto error;
-    }
-
     return ret;
 
  error:
@@ -1319,7 +1314,6 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->domain_name);
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
-    virCondDestroy(&def->blockJobSyncCond);
 
     VIR_FREE(def);
 }

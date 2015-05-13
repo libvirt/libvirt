@@ -412,6 +412,53 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 }
 
 
+static virClassPtr qemuDomainDiskPrivateClass;
+static void qemuDomainDiskPrivateDispose(void *obj);
+
+static int
+qemuDomainDiskPrivateOnceInit(void)
+{
+    qemuDomainDiskPrivateClass = virClassNew(virClassForObject(),
+                                             "qemuDomainDiskPrivate",
+                                             sizeof(qemuDomainDiskPrivate),
+                                             qemuDomainDiskPrivateDispose);
+    if (!qemuDomainDiskPrivateClass)
+        return -1;
+    else
+        return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainDiskPrivate)
+
+static virObjectPtr
+qemuDomainDiskPrivateNew(void)
+{
+    qemuDomainDiskPrivatePtr priv;
+
+    if (qemuDomainDiskPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainDiskPrivateClass)))
+        return NULL;
+
+    if (virCondInit(&priv->blockJobSyncCond) < 0) {
+        virReportSystemError(errno, "%s", _("Failed to initialize condition"));
+        virObjectUnref(priv);
+        return NULL;
+    }
+
+    return (virObjectPtr) priv;
+}
+
+static void
+qemuDomainDiskPrivateDispose(void *obj)
+{
+    qemuDomainDiskPrivatePtr priv = obj;
+
+    virCondDestroy(&priv->blockJobSyncCond);
+}
+
+
 static void *
 qemuDomainObjPrivateAlloc(void)
 {
@@ -741,6 +788,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .alloc = qemuDomainObjPrivateAlloc,
     .free = qemuDomainObjPrivateFree,
+    .diskNew = qemuDomainDiskPrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
 };
@@ -2809,6 +2857,8 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 bool
 qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
 {
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
     if (disk->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
                        _("disk '%s' already in active block job"),
@@ -2817,7 +2867,7 @@ qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
         return true;
     }
 
-    if (disk->blockjob) {
+    if (diskPriv->blockjob) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk '%s' already in active block job"),
                        disk->dst);
@@ -2843,12 +2893,13 @@ qemuDomainHasBlockjob(virDomainObjPtr vm,
 {
     size_t i;
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (!copy_only &&
-            vm->def->disks[i]->blockjob)
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (!copy_only && diskPriv->blockjob)
             return true;
 
-        if (vm->def->disks[i]->mirror &&
-            vm->def->disks[i]->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
+        if (disk->mirror && disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
             return true;
     }
 

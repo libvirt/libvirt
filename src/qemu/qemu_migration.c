@@ -1743,6 +1743,7 @@ qemuMigrationCheckDriveMirror(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         /* skip shared, RO and source-less disks */
         if (disk->src->shared || disk->src->readonly ||
@@ -1750,7 +1751,7 @@ qemuMigrationCheckDriveMirror(virQEMUDriverPtr driver,
             continue;
 
         /* skip disks that didn't start mirroring */
-        if (!disk->blockJobSync)
+        if (!diskPriv->blockJobSync)
             continue;
 
         /* process any pending event */
@@ -1871,6 +1872,7 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         /* skip shared, RO and source-less disks */
         if (disk->src->shared || disk->src->readonly ||
@@ -1878,7 +1880,7 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
             continue;
 
         /* skip disks that didn't start mirroring */
-        if (!disk->blockJobSync)
+        if (!diskPriv->blockJobSync)
             continue;
 
         if (qemuMigrationCancelOneDriveMirror(driver, vm, disk) < 0)
