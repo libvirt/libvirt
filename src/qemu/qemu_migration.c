@@ -2913,7 +2913,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     int ret = -1;
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
-    unsigned long long now;
     qemuMigrationCookiePtr mig = NULL;
     bool tunnel = !!st;
     char *xmlout = NULL;
@@ -2922,9 +2921,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     char *migrateFrom = NULL;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool taint_hook = false;
-
-    if (virTimeMillisNow(&now) < 0)
-        return -1;
 
     virNWFilterReadLockFilterUpdates();
 
