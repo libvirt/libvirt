@@ -2468,6 +2468,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     const char *job;
     int pauseReason;
+    int ret = -1;
 
     switch (priv->job.asyncJob) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
@@ -2485,12 +2486,12 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
     jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
-    while (1) {
+    while (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
         if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) == -1)
-            break;
+            goto error;
 
         /* cancel migration if disk I/O error is emitted while migrating */
         if (abort_on_error &&
@@ -2498,40 +2499,37 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("%s: %s"), job, _("failed due to I/O error"));
-            break;
+            goto error;
         }
 
         if (dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Lost connection to destination host"));
-            break;
+            goto error;
         }
 
-        if (jobInfo->type != VIR_DOMAIN_JOB_UNBOUNDED)
-            break;
-
-        virObjectUnlock(vm);
-
-        nanosleep(&ts, NULL);
-
-        virObjectLock(vm);
+        if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
+            virObjectUnlock(vm);
+            nanosleep(&ts, NULL);
+            virObjectLock(vm);
+        }
     }
 
-    if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
-        qemuDomainJobInfoUpdateDowntime(jobInfo);
-        VIR_FREE(priv->job.completed);
-        if (VIR_ALLOC(priv->job.completed) == 0)
-            *priv->job.completed = *jobInfo;
-        return 0;
-    } else if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
-        /* The migration was aborted by us rather than QEMU itself so let's
-         * update the job type and notify the caller to send migrate_cancel.
-         */
+    qemuDomainJobInfoUpdateDowntime(jobInfo);
+    VIR_FREE(priv->job.completed);
+    if (VIR_ALLOC(priv->job.completed) == 0)
+        *priv->job.completed = *jobInfo;
+    return 0;
+
+ error:
+    /* Check if the migration was aborted by us rather than QEMU itself. */
+    if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED ||
+        jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
+        if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED)
+            ret = -2;
         jobInfo->type = VIR_DOMAIN_JOB_FAILED;
-        return -2;
-    } else {
-        return -1;
     }
+    return ret;
 }
 
 
