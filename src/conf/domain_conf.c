@@ -23274,6 +23274,7 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
     struct virDomainListData data = { NULL, 0 };
 
     virObjectLock(domlist);
+    sa_assert(domlist->objs);
     if (VIR_ALLOC_N(data.vms, virHashSize(domlist->objs)) < 0) {
         virObjectUnlock(domlist);
         return -1;
@@ -23336,6 +23337,7 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
     }
     virObjectUnlock(domlist);
 
+    sa_assert(*vms);
     virDomainObjListFilter(vms, nvms, conn, filter, flags);
 
     return 0;
