@@ -413,8 +413,8 @@ virStorageBackendDiskFindLabel(const char* device)
     /* if parted succeeds we have a valid partition table */
     ret = virCommandRun(cmd, NULL);
     if (ret < 0) {
-        if (strstr(output, "unrecognised disk label") ||
-            strstr(error, "unrecognised disk label")) {
+        if ((output && strstr(output, "unrecognised disk label")) ||
+            (error && strstr(error, "unrecognised disk label"))) {
             ret = 1;
         }
     }
