@@ -4548,6 +4548,12 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("SATA is not supported with this "
+                             "QEMU binary"));
+            goto error;
+        }
         virBufferAsprintf(&buf, "ahci,id=%s", def->info.alias);
         break;
 
@@ -8619,12 +8625,21 @@ qemuBuildCommandLine(virConnectPtr conn,
     bool usblegacy = false;
     bool mlock = false;
     int contOrder[] = {
-        /* We don't add an explicit IDE or FD controller because the
+        /*
+         * List of controller types that we add commandline args for,
+         * *in the order we want to add them*.
+         *
+         * We don't add an explicit IDE or FD controller because the
          * provided PIIX4 device already includes one. It isn't possible to
          * remove the PIIX4.
          *
-         * We don't add PCI root controller either, because it's implicit,
-         * but we do add PCI bridges. */
+         * We don't add PCI/PCIe root controller either, because it's
+         * implicit, but we do add PCI bridges and other PCI
+         * controllers, so we leave that in to check each
+         * one. Likewise, we don't do anything for the primary SATA
+         * controller on q35, but we do add those beyond this one
+         * exception.
+         */
         VIR_DOMAIN_CONTROLLER_TYPE_PCI,
         VIR_DOMAIN_CONTROLLER_TYPE_USB,
         VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
@@ -9401,51 +9416,35 @@ qemuBuildCommandLine(virConnectPtr conn,
         for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
             for (i = 0; i < def->ncontrollers; i++) {
                 virDomainControllerDefPtr cont = def->controllers[i];
+                char *devstr;
 
                 if (cont->type != contOrder[j])
                     continue;
 
-                /* Also, skip USB controllers with type none.*/
+                /* skip USB controllers with type none.*/
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
                     usbcontroller = -1; /* mark we don't want a controller */
                     continue;
                 }
 
-                /* Skip pci-root/pcie-root */
+                /* skip pci-root/pcie-root */
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
                     (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
-                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
+                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT))
                     continue;
-                }
 
-                /* Only recent QEMU implements a SATA (AHCI) controller */
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
-                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("SATA is not supported with this "
-                                         "QEMU binary"));
-                        goto error;
-                    } else if (cont->idx == 0 && qemuDomainMachineIsQ35(def)) {
-                        /* first SATA controller on Q35 machines is implicit */
+                /* first SATA controller on Q35 machines is implicit */
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
+                    cont->idx == 0 && qemuDomainMachineIsQ35(def))
                         continue;
-                    } else {
-                        char *devstr;
 
-                        virCommandAddArg(cmd, "-device");
-                        if (!(devstr = qemuBuildControllerDevStr(def, cont,
-                                                                 qemuCaps, NULL)))
-                            goto error;
-
-                        virCommandAddArg(cmd, devstr);
-                        VIR_FREE(devstr);
-                    }
-                } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                           cont->model == -1 &&
-                           !qemuDomainMachineIsQ35(def) &&
-                           (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
-                            (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) &&
-                             ARCH_IS_PPC64(def->os.arch)))) {
+                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                    cont->model == -1 &&
+                    !qemuDomainMachineIsQ35(def) &&
+                    (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
+                     (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) &&
+                      ARCH_IS_PPC64(def->os.arch)))) {
                     if (usblegacy) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("Multiple legacy USB controllers are "
@@ -9453,17 +9452,15 @@ qemuBuildCommandLine(virConnectPtr conn,
                         goto error;
                     }
                     usblegacy = true;
-                } else {
-                    virCommandAddArg(cmd, "-device");
-
-                    char *devstr;
-                    if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
-                                                             &usbcontroller)))
-                        goto error;
-
-                    virCommandAddArg(cmd, devstr);
-                    VIR_FREE(devstr);
+                    continue;
                 }
+
+                virCommandAddArg(cmd, "-device");
+                if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
+                                                         &usbcontroller)))
+                    goto error;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
             }
         }
     }
