@@ -16355,10 +16355,8 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto endjob;
     }
 
-    if (modern && !async) {
-        /* prepare state for event delivery */
+    if (modern && !async)
         qemuBlockJobSyncBegin(disk);
-    }
 
     if (pivot) {
         if ((ret = qemuDomainBlockPivot(driver, vm, device, disk)) < 0)
@@ -16406,21 +16404,21 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
                                      VIR_DOMAIN_BLOCK_JOB_TYPE_PULL,
                                      VIR_DOMAIN_BLOCK_JOB_CANCELED);
         } else {
-            virConnectDomainEventBlockJobStatus status = -1;
-            if (qemuBlockJobSyncWait(driver, vm, disk, &status) < 0) {
-                ret = -1;
-            } else if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("failed to terminate block job on disk '%s'"),
-                               disk->dst);
-                ret = -1;
+            qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+            qemuBlockJobUpdate(driver, vm, disk);
+            while (diskPriv->blockjob) {
+                if (virDomainObjWait(vm) < 0) {
+                    ret = -1;
+                    goto endjob;
+                }
+                qemuBlockJobUpdate(driver, vm, disk);
             }
         }
     }
 
  endjob:
-    if (disk && QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync)
-        qemuBlockJobSyncEnd(driver, vm, disk, NULL);
+    if (disk)
+        qemuBlockJobSyncEnd(driver, vm, disk);
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:

@@ -413,7 +413,6 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 
 
 static virClassPtr qemuDomainDiskPrivateClass;
-static void qemuDomainDiskPrivateDispose(void *obj);
 
 static int
 qemuDomainDiskPrivateOnceInit(void)
@@ -421,7 +420,7 @@ qemuDomainDiskPrivateOnceInit(void)
     qemuDomainDiskPrivateClass = virClassNew(virClassForObject(),
                                              "qemuDomainDiskPrivate",
                                              sizeof(qemuDomainDiskPrivate),
-                                             qemuDomainDiskPrivateDispose);
+                                             NULL);
     if (!qemuDomainDiskPrivateClass)
         return -1;
     else
@@ -441,21 +440,7 @@ qemuDomainDiskPrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainDiskPrivateClass)))
         return NULL;
 
-    if (virCondInit(&priv->blockJobSyncCond) < 0) {
-        virReportSystemError(errno, "%s", _("Failed to initialize condition"));
-        virObjectUnref(priv);
-        return NULL;
-    }
-
     return (virObjectPtr) priv;
-}
-
-static void
-qemuDomainDiskPrivateDispose(void *obj)
-{
-    qemuDomainDiskPrivatePtr priv = obj;
-
-    virCondDestroy(&priv->blockJobSyncCond);
 }
 
 

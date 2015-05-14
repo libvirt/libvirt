@@ -1001,10 +1001,10 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     if (diskPriv->blockJobSync) {
+        /* We have a SYNC API waiting for this event, dispatch it back */
         diskPriv->blockJobType = type;
         diskPriv->blockJobStatus = status;
-        /* We have an SYNC API waiting for this event, dispatch it back */
-        virCondSignal(&diskPriv->blockJobSyncCond);
+        virDomainObjSignal(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
         if (VIR_ALLOC(processEvent) < 0)
@@ -5055,13 +5055,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
-    /* Wake up anything waiting on synchronous block jobs */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        qemuDomainDiskPrivatePtr diskPriv =
-            QEMU_DOMAIN_DISK_PRIVATE(vm->def->disks[i]);
-        if (diskPriv->blockJobSync && diskPriv->blockJobStatus == -1)
-            virCondSignal(&diskPriv->blockJobSyncCond);
-    }
+    /* Wake up anything waiting on domain condition */
+    virDomainObjBroadcast(vm);
 
     if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
         /* To not break the normal domain shutdown process, skip the
