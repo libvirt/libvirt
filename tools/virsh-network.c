@@ -937,7 +937,9 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptInt(cmd, "parent-index", &parentIndex) < 0) {
-        vshError(ctl, "%s", _("malformed parent-index argument"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "parent-index");
         goto cleanup;
     }
 

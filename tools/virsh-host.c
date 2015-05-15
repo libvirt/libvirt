@@ -177,7 +177,9 @@ cmdFreecell(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
     if (cellno && vshCommandOptInt(cmd, "cellno", &cell) < 0) {
-        vshError(ctl, "%s", _("cell number has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "cellno");
         return false;
     }
 
@@ -310,7 +312,9 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
     if (vshCommandOptScaledInt(cmd, "pagesize", &bytes, 1024, UINT_MAX) < 0) {
-        vshError(ctl, "%s", _("page size has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "pagesize");
         goto cleanup;
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
@@ -388,7 +392,9 @@ cmdFreepages(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (vshCommandOptInt(cmd, "cellno", &cell) < 0) {
-            vshError(ctl, "%s", _("Invalid cellno argument"));
+            vshError(ctl,
+                     _("Numeric value for <%s> option is malformed or out of range"),
+                     "cellno");
             goto cleanup;
         }
 
@@ -485,12 +491,16 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(all, cellno);
 
     if (cellno && vshCommandOptInt(cmd, "cellno", &startCell) < 0) {
-        vshError(ctl, "%s", _("cell number has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "cellno");
         return false;
     }
 
     if (vshCommandOptScaledInt(cmd, "pagesize", &tmp, 1024, UINT_MAX) < 0) {
-        vshError(ctl, "%s", _("pagesize has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "cellno");
         return false;
     }
     pageSizes[0] = VIR_DIV_UP(tmp, 1024);
@@ -755,7 +765,9 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
     bool present[VSH_CPU_LAST] = { false };
 
     if (vshCommandOptInt(cmd, "cpu", &cpuNum) < 0) {
-        vshError(ctl, "%s", _("Invalid value of cpuNum"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "cpu");
         return false;
     }
 
@@ -864,7 +876,9 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
 
     if (vshCommandOptInt(cmd, "cell", &cellNum) < 0) {
-        vshError(ctl, "%s", _("Invalid value of cellNum"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "cell");
         return false;
     }
 
@@ -938,7 +952,9 @@ cmdNodeSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptLongLong(cmd, "duration", &duration) < 0) {
-        vshError(ctl, _("Invalid duration argument"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "duration");
         return false;
     }
 
@@ -1245,7 +1261,9 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     size_t i;
 
     if ((rc = vshCommandOptUInt(cmd, "shm-pages-to-scan", &value)) < 0) {
-        vshError(ctl, "%s", _("invalid shm-pages-to-scan number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "shm-pages-to-scan");
         goto cleanup;
     } else if (rc > 0) {
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
@@ -1255,7 +1273,9 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((rc = vshCommandOptUInt(cmd, "shm-sleep-millisecs", &value)) < 0) {
-        vshError(ctl, "%s", _("invalid shm-sleep-millisecs number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "shm-sleep-millisecs");
         goto cleanup;
     } else if (rc > 0) {
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams,
@@ -1265,7 +1285,9 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((rc = vshCommandOptUInt(cmd, "shm-merge-across-nodes", &value)) < 0) {
-        vshError(ctl, "%s", _("invalid shm-merge-across-nodes number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "shm-merge-across-nodes");
         goto cleanup;
     } else if (rc > 0) {
         if (virTypedParamsAddUInt(&params, &nparams, &maxparams,

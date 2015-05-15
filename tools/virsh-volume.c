@@ -694,12 +694,16 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
 
     if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
-        vshError(ctl, _("Unable to parse offset value"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "offset");
         return false;
     }
 
     if (vshCommandOptULongLongWrap(cmd, "length", &length) < 0) {
-        vshError(ctl, _("Unable to parse length value"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "length");
         return false;
     }
 
@@ -803,12 +807,16 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     bool created = false;
 
     if (vshCommandOptULongLong(cmd, "offset", &offset) < 0) {
-        vshError(ctl, _("Unable to parse offset value"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "offset");
         return false;
     }
 
     if (vshCommandOptULongLongWrap(cmd, "length", &length) < 0) {
-        vshError(ctl, _("Unable to parse length value"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "length");
         return false;
     }
 

@@ -1552,7 +1552,9 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
         return false;
 
     if ((rv = vshCommandOptInt(cmd, "weight", &weight)) < 0) {
-        vshError(ctl, "%s", _("Unable to parse integer parameter"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "weight");
         goto cleanup;
     } else if (rv > 0) {
         if (weight <= 0) {
@@ -1691,7 +1693,9 @@ blockJobImpl(vshControl *ctl, const vshCmd *cmd,
         goto cleanup;
 
     if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
-        vshError(ctl, "%s", _("bandwidth must be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "bandwidth");
         goto cleanup;
     }
 
@@ -2213,15 +2217,21 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
      * than trying to guess which value will work well across both
      * APIs with their different sizes and scales.  */
     if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
-        vshError(ctl, "%s", _("bandwidth must be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "bandwidth");
         goto cleanup;
     }
     if (vshCommandOptUInt(cmd, "granularity", &granularity) < 0) {
-        vshError(ctl, "%s", _("granularity must be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "granularity");
         goto cleanup;
     }
     if (vshCommandOptULongLong(cmd, "buf-size", &buf_size) < 0) {
-        vshError(ctl, "%s", _("buf-size must be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "buf-size");
         goto cleanup;
     }
 
@@ -2791,7 +2801,9 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptScaledInt(cmd, "size", &size, 1024, ULLONG_MAX) < 0) {
-        vshError(ctl, "%s", _("Unable to parse integer"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "size");
         return false;
     }
 
@@ -3395,7 +3407,9 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptULongLong(cmd, "duration", &duration) < 0) {
-        vshError(ctl, _("Invalid duration argument"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "duration");
         goto cleanup;
     }
 
@@ -5317,7 +5331,9 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptUInt(cmd, "screen", &screen) < 0) {
-        vshError(ctl, "%s", _("invalid screen ID"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "screen");
         return false;
     }
 
@@ -6414,7 +6430,9 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         VSH_EXCLUSIVE_OPTIONS_VAR(live, config);
 
     if ((got_vcpu = vshCommandOptUInt(cmd, "vcpu", &vcpu)) < 0) {
-        vshError(ctl, "%s", _("vcpupin: Invalid vCPU number."));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "vcpu");
         return false;
     }
 
@@ -6681,7 +6699,9 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptInt(cmd, "count", &count) < 0 || count <= 0) {
-        vshError(ctl, "%s", _("Invalid number of virtual CPUs"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "count");
         goto cleanup;
     }
 
@@ -6859,7 +6879,9 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptUInt(cmd, "iothread", &iothread_id) < 0) {
-        vshError(ctl, "%s", _("iothreadpin: Invalid IOThread number."));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "iothread");
         goto cleanup;
     }
 
@@ -6948,7 +6970,9 @@ cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptInt(cmd, "id", &iothread_id) < 0) {
-        vshError(ctl, "%s", _("Unable to parse integer parameter"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "id");
         goto cleanup;
     }
     if (iothread_id <= 0) {
@@ -7028,7 +7052,9 @@ cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptInt(cmd, "id", &iothread_id) < 0) {
-        vshError(ctl, "%s", _("Unable to parse integer parameter"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "id");
         goto cleanup;
     }
     if (iothread_id <= 0) {
@@ -7315,7 +7341,9 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     show_total = vshCommandOptBool(cmd, "total");
 
     if ((rv = vshCommandOptInt(cmd, "start", &cpu)) < 0) {
-        vshError(ctl, "%s", _("Unable to parse integer parameter for start"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "start");
         goto cleanup;
     } else if (rv > 0) {
         if (cpu < 0) {
@@ -7326,8 +7354,9 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((rv = vshCommandOptInt(cmd, "count", &show_count)) < 0) {
-        vshError(ctl, "%s",
-                 _("Unable to parse integer parameter for CPUs to show"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "count");
         goto cleanup;
     } else if (rv > 0) {
         if (show_count < 0) {
@@ -8115,7 +8144,9 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
         codeset_option = "linux";
 
     if (vshCommandOptUInt(cmd, "holdtime", &holdtime) < 0) {
-        vshError(ctl, _("invalid value of --holdtime"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "holdtime");
         goto cleanup;
     }
 
@@ -8342,7 +8373,9 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     else
         max = ULONG_MAX;
     if (vshCommandOptScaledInt(cmd, "size", &bytes, 1024, max) < 0) {
-        vshError(ctl, "%s", _("memory size has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "size");
         virDomainFree(dom);
         return false;
     }
@@ -8437,7 +8470,9 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     else
         max = ULONG_MAX;
     if (vshCommandOptScaledInt(cmd, "size", &bytes, 1024, max) < 0) {
-        vshError(ctl, "%s", _("memory size has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "size");
         virDomainFree(dom);
         return false;
     }
@@ -9071,7 +9106,9 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
     unsigned int pid_value; /* API uses unsigned int, not pid_t */
 
     if (vshCommandOptUInt(cmd, "pid", &pid_value) <= 0) {
-        vshError(ctl, "%s", _("missing pid value"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "pid");
         goto cleanup;
     }
 
@@ -9166,7 +9203,9 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 
     judge = vshCommandOptInt(cmd, "timeout", &timeout);
     if (judge < 0) {
-        vshError(ctl, "%s", _("timeout number has to be a number"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "timeout");
         goto cleanup;
     } else if (judge > 0) {
         judge = 1;
@@ -10048,8 +10087,13 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptLongLong(cmd, "downtime", &downtime) < 0 ||
-        downtime < 1) {
+    if (vshCommandOptLongLong(cmd, "downtime", &downtime) < 0) {
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "downtime");
+        goto done;
+    }
+    if (downtime < 1) {
         vshError(ctl, "%s", _("migrate: Invalid downtime"));
         goto done;
     }
@@ -10107,7 +10151,9 @@ cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
 
     rc = vshCommandOptULongLong(cmd, "size", &size);
     if (rc < 0) {
-        vshError(ctl, "%s", _("Unable to parse size parameter"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "size");
         goto cleanup;
     } else if (rc != 0) {
         if (virDomainMigrateSetCompressionCache(dom, size, 0) < 0)
@@ -10165,7 +10211,9 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptULWrap(cmd, "bandwidth", &bandwidth) < 0) {
-        vshError(ctl, "%s", _("migrate: Invalid bandwidth"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "bandwidth");
         goto done;
     }
 
@@ -12503,7 +12551,9 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
         return ret;
 
     if (vshCommandOptULongLong(cmd, "minimum", &minimum) < 0) {
-        vshError(ctl, _("Unable to parse integer parameter minimum"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "minimum");
         goto cleanup;
     }
 

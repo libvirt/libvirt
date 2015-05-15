@@ -844,7 +844,9 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     stp = !vshCommandOptBool(cmd, "no-stp");
 
     if (vshCommandOptUInt(cmd, "delay", &delay) < 0) {
-        vshError(ctl, "%s", _("Unable to parse delay parameter"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "delay");
         goto cleanup;
     }
 
