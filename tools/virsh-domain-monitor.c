@@ -287,7 +287,7 @@ static const vshCmdOptDef opts_dommemstat[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "period",
-     .type = VSH_OT_STRING,
+     .type = VSH_OT_INT,
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("period in seconds to set collection")
     },
