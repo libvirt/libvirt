@@ -2084,12 +2084,10 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     }
 
     while ((rv = qemuMigrationDriveMirrorReady(driver, vm)) != 1) {
-        unsigned long long now;
-
         if (rv < 0)
             goto cleanup;
 
-        if (priv->job.asyncAbort) {
+        if (priv->job.abortJob) {
             priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
             virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                            qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
@@ -2097,8 +2095,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (virTimeMillisNow(&now) < 0 ||
-            virDomainObjWaitUntil(vm, now + 500) < 0)
+        if (virDomainObjWait(vm) < 0)
             goto cleanup;
     }
 
@@ -4154,10 +4151,10 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (priv->job.asyncAbort) {
+    if (priv->job.abortJob) {
         /* explicitly do this *after* we entered the monitor,
          * as this is a critical section so we are guaranteed
-         * priv->job.asyncAbort will not change */
+         * priv->job.abortJob will not change */
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),

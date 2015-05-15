@@ -169,7 +169,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->phase = 0;
     job->mask = QEMU_JOB_DEFAULT_MASK;
     job->dump_memory_only = false;
-    job->asyncAbort = false;
+    job->abortJob = false;
     VIR_FREE(job->current);
 }
 
@@ -1652,7 +1652,8 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    priv->job.asyncAbort = true;
+    priv->job.abortJob = true;
+    virDomainObjBroadcast(obj);
 }
 
 /*

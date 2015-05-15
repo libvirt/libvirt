@@ -135,7 +135,7 @@ struct qemuDomainJobObj {
     bool dump_memory_only;              /* use dump-guest-memory to do dump */
     qemuDomainJobInfoPtr current;       /* async job progress data */
     qemuDomainJobInfoPtr completed;     /* statistics data of a recently completed job */
-    bool asyncAbort;                    /* abort of async job requested */
+    bool abortJob;                      /* abort of the job requested */
 };
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
