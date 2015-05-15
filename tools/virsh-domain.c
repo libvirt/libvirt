@@ -8262,7 +8262,6 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     bool ret = false;
-    const char *pidstr;
     const char *signame;
     long long pid_value;
     int signum;
@@ -8270,16 +8269,15 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptStringReq(ctl, cmd, "pid", &pidstr) < 0)
+    if (vshCommandOptLongLong(cmd, "pid", &pid_value) < 0) {
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "pid");
         goto cleanup;
+    }
 
     if (vshCommandOptStringReq(ctl, cmd, "signame", &signame) < 0)
         goto cleanup;
-
-    if (virStrToLong_ll(pidstr, NULL, 10, &pid_value) < 0) {
-        vshError(ctl, _("malformed PID value: %s"), pidstr);
-        goto cleanup;
-    }
 
     if ((signum = getSignalNumber(ctl, signame)) < 0) {
         vshError(ctl, _("malformed signal name: %s"), signame);
