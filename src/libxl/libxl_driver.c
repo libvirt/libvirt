@@ -5027,6 +5027,23 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
     return libxlDomainMigrationConfirm(driver, vm, flags, cancelled);
 }
 
+static int libxlNodeGetSecurityModel(virConnectPtr conn,
+                                     virSecurityModelPtr secmodel)
+{
+    memset(secmodel, 0, sizeof(*secmodel));
+
+    if (virNodeGetSecurityModelEnsureACL(conn) < 0)
+        return -1;
+
+    /*
+     * Currently the libxl driver does not support security model.
+     * Similar to the qemu driver, treat this as success and simply
+     * return no data in secmodel.  Avoids spamming the libvirt log
+     * with "this function is not supported by the connection driver:
+     * virNodeGetSecurityModel"
+     */
+    return 0;
+}
 
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
@@ -5122,6 +5139,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainMigratePerform3Params = libxlDomainMigratePerform3Params, /* 1.2.6 */
     .domainMigrateFinish3Params = libxlDomainMigrateFinish3Params, /* 1.2.6 */
     .domainMigrateConfirm3Params = libxlDomainMigrateConfirm3Params, /* 1.2.6 */
+    .nodeGetSecurityModel = libxlNodeGetSecurityModel, /* 1.2.16 */
 };
 
 static virConnectDriver libxlConnectDriver = {
