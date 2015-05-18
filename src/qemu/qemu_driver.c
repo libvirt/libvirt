@@ -10523,7 +10523,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     char *nodeset = NULL;
     int ret = -1;
     virCapsPtr caps = NULL;
-    qemuDomainObjPrivatePtr priv;
+    virDomainDefPtr def = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -10536,8 +10536,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
-
-    priv = vm->privateData;
 
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -10555,6 +10553,11 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        def = persistentDef;
+    else
+        def = vm->def;
+
     for (i = 0; i < QEMU_NB_NUMA_PARAM && i < *nparams; i++) {
         virMemoryParameterPtr param = &params[i];
 
@@ -10564,35 +10567,17 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                                         VIR_TYPED_PARAM_INT, 0) < 0)
                 goto cleanup;
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                param->value.i = virDomainNumatuneGetMode(persistentDef->numa, -1);
-            else
-                param->value.i = virDomainNumatuneGetMode(vm->def->numa, -1);
+            param->value.i = virDomainNumatuneGetMode(def->numa, -1);
             break;
 
         case 1: /* fill numa nodeset here */
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                nodeset = virDomainNumatuneFormatNodeset(persistentDef->numa,
-                                                         NULL, -1);
-                if (!nodeset)
-                    goto cleanup;
-            } else {
-                if (!virCgroupHasController(priv->cgroup,
-                                            VIR_CGROUP_CONTROLLER_CPUSET) ||
-                    virCgroupGetCpusetMems(priv->cgroup, &nodeset) < 0) {
-                    nodeset = virDomainNumatuneFormatNodeset(vm->def->numa,
-                                                             NULL, -1);
-                    if (!nodeset)
-                        goto cleanup;
-                }
-            }
-
-            if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
+            nodeset = virDomainNumatuneFormatNodeset(def->numa, NULL, -1);
+            if (!nodeset ||
+                virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
                 goto cleanup;
 
             nodeset = NULL;
-
             break;
 
         /* coverity[dead_error_begin] */
