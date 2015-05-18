@@ -12412,6 +12412,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     size_t i;
     bool nographics = false;
     bool fullscreen = false;
+    char **list = NULL;
     char *path;
     size_t nnics = 0;
     const char **nics = NULL;
@@ -12879,7 +12880,6 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 VIR_FREE(def->name);
         } else if (STREQ(arg, "-M") ||
                    STREQ(arg, "-machine")) {
-            char **list;
             char *param;
             size_t j = 0;
 
@@ -12894,10 +12894,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             if (STRPREFIX(param, "type="))
                 param += strlen("type=");
             if (!strchr(param, '=')) {
-                if (VIR_STRDUP(def->os.machine, param) < 0) {
-                    virStringFreeList(list);
+                if (VIR_STRDUP(def->os.machine, param) < 0)
                     goto error;
-                }
                 j++;
             }
 
@@ -12942,6 +12940,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 }
             }
             virStringFreeList(list);
+            list = NULL;
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
@@ -13415,6 +13414,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     virDomainDiskDefFree(disk);
     qemuDomainCmdlineDefFree(cmd);
     virDomainDefFree(def);
+    virStringFreeList(list);
     VIR_FREE(nics);
     if (monConfig) {
         virDomainChrSourceDefFree(*monConfig);
