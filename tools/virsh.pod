@@ -2015,6 +2015,16 @@ the value from the host, use the B<virsh memtune> command. In order to view
 the current memory in use and the maximum value allowed to set memory, use
 the B<virsh dominfo> command.
 
+=item B<set-user-password> I<domain> I<user> I<password> [I<--encrypted>]
+
+Set the password for the I<user> account in the guest domain.
+
+If I<--encrypted> is specified, the password is assumed to be already
+encrypted by the method required by the guest OS.
+
+For QEMU/KVM, this requires the guest agent to be configured
+and running.
+
 =item B<setmaxmem> I<domain> B<size> [[I<--config>] [I<--live>] |
 [I<--current>]]
 

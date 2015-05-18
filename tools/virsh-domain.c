@@ -5397,6 +5397,74 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "set-user-password" command
+ */
+static const vshCmdInfo info_set_user_password[] = {
+    {.name = "help",
+     .data = N_("set the user password inside the domain")
+    },
+    {.name = "desc",
+     .data = N_("changes the password of the specified user inside the domain")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_set_user_password[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "user",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("the username")
+    },
+    {.name = "password",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("the new password")
+    },
+    {.name = "encrypted",
+     .type = VSH_OT_BOOL,
+     .help = N_("the password is already encrypted")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *name;
+    const char *password = NULL;
+    const char *user = NULL;
+    unsigned int flags = 0;
+    bool ret = false;
+
+    if (vshCommandOptBool(cmd, "encrypted"))
+        flags = VIR_DOMAIN_PASSWORD_ENCRYPTED;
+
+    if (vshCommandOptStringReq(ctl, cmd, "user", &user) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "password", &password) < 0)
+        return false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (virDomainSetUserPassword(dom, user, password, flags) < 0)
+        goto cleanup;
+
+    vshPrint(ctl, _("Password set successfully for %s in %s"), user, name);
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+/*
  * "resume" command
  */
 static const vshCmdInfo info_resume[] = {
@@ -13205,6 +13273,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdScreenshot,
      .opts = opts_screenshot,
      .info = info_screenshot,
+     .flags = 0
+    },
+    {.name = "set-user-password",
+     .handler = cmdSetUserPassword,
+     .opts = opts_set_user_password,
+     .info = info_set_user_password,
      .flags = 0
     },
     {.name = "setmaxmem",
