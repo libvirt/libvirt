@@ -1201,6 +1201,12 @@ typedef int
                                   unsigned int source,
                                   unsigned int flags);
 
+typedef int
+(*virDrvDomainSetUserPassword)(virDomainPtr dom,
+                               const char *user,
+                               const char *password,
+                               unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1430,6 +1436,7 @@ struct _virHypervisorDriver {
     virDrvNodeAllocPages nodeAllocPages;
     virDrvDomainGetFSInfo domainGetFSInfo;
     virDrvDomainInterfaceAddresses domainInterfaceAddresses;
+    virDrvDomainSetUserPassword domainSetUserPassword;
 };
 
 

@@ -2678,6 +2678,12 @@ struct remote_domain_interface_addresses_ret {
                 remote_domain_interface * ifaces_val;
         } ifaces;
 };
+struct remote_domain_set_user_password_args {
+        remote_nonnull_domain      dom;
+        remote_string              user;
+        remote_string              password;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3035,4 +3041,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED = 354,
         REMOTE_PROC_DOMAIN_ADD_IOTHREAD = 355,
         REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356,
+        REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357,
 };

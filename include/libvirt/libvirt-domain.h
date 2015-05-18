@@ -3818,4 +3818,13 @@ int virDomainInterfaceAddresses(virDomainPtr dom,
 
 void virDomainInterfaceFree(virDomainInterfacePtr iface);
 
+typedef enum {
+    VIR_DOMAIN_PASSWORD_ENCRYPTED = 1 << 0, /* the password is already encrypted */
+} virDomainSetUserPasswordFlags;
+
+int virDomainSetUserPassword(virDomainPtr dom,
+                             const char *user,
+                             const char *password,
+                             unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

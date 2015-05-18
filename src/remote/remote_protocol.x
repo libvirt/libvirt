@@ -3223,6 +3223,13 @@ struct remote_domain_interface_addresses_ret {
     remote_domain_interface ifaces<REMOTE_DOMAIN_INTERFACE_MAX>;
 };
 
+struct remote_domain_set_user_password_args {
+    remote_nonnull_domain dom;
+    remote_string user;
+    remote_string password;
+    unsigned int flags;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -5683,5 +5690,11 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356
+    REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356,
+
+    /**
+     * @generate:both
+     * @acl: domain:set_password
+     */
+    REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357
 };

@@ -300,6 +300,12 @@ typedef enum {
      */
     VIR_ACCESS_PERM_DOMAIN_SET_TIME,
 
+    /**
+     * @desc: Set password of the domain's account
+     * @message: Setting the domain accounts' password requires authorization
+     */
+    VIR_ACCESS_PERM_DOMAIN_SET_PASSWORD,
+
     VIR_ACCESS_PERM_DOMAIN_LAST,
 } virAccessPermDomain;
 

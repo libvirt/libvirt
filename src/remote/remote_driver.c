@@ -8389,6 +8389,7 @@ static virHypervisorDriver hypervisor_driver = {
     .nodeAllocPages = remoteNodeAllocPages, /* 1.2.9 */
     .domainGetFSInfo = remoteDomainGetFSInfo, /* 1.2.11 */
     .domainInterfaceAddresses = remoteDomainInterfaceAddresses, /* 1.2.14 */
+    .domainSetUserPassword = remoteDomainSetUserPassword, /* 1.2.16 */
 };
 
 static virNetworkDriver network_driver = {

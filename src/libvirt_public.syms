@@ -710,4 +710,9 @@ LIBVIRT_1.2.15 {
         virDomainDelIOThread;
 } LIBVIRT_1.2.14;
 
+LIBVIRT_1.2.16 {
+    global:
+        virDomainSetUserPassword;
+} LIBVIRT_1.2.15;
+
 # .... define new API here using predicted next version number ....

@@ -11001,6 +11001,53 @@ virDomainSetTime(virDomainPtr dom,
 }
 
 
+/**
+ * virDomainSetUserPassword:
+ * @dom: a domain object
+ * @user: the username that will get a new password
+ * @password: the password to set
+ * @flags: bitwise-OR of virDomainSetUserPasswordFlags
+ *
+ * Sets the @user password to the value specified by @password.
+ * If @flags contain VIR_DOMAIN_PASSWORD_ENCRYPTED, the password
+ * is assumed to be encrypted by the method required by the guest OS.
+ *
+ * Please note that some hypervisors may require guest agent to
+ * be configured and running in order to be able to run this API.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virDomainSetUserPassword(virDomainPtr dom,
+                         const char *user,
+                         const char *password,
+                         unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(dom, "user=%s, password=%s, flags=%x",
+                     NULLSTR(user), NULLSTR(password), flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+    virCheckReadOnlyGoto(dom->conn->flags, error);
+    virCheckNonNullArgGoto(user, error);
+    virCheckNonNullArgGoto(password, error);
+
+    if (dom->conn->driver->domainSetUserPassword) {
+        int ret = dom->conn->driver->domainSetUserPassword(dom, user, password,
+                                                           flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
+
 
 /**
  * virConnectGetDomainCapabilities:
