@@ -114,4 +114,8 @@ int qemuAgentSetTime(qemuAgentPtr mon,
 int qemuAgentGetInterfaces(qemuAgentPtr mon,
                            virDomainInterfacePtr **ifaces);
 
+int qemuAgentSetUserPassword(qemuAgentPtr mon,
+                             const char *user,
+                             const char *password,
+                             bool crypted);
 #endif /* __QEMU_AGENT_H__ */
