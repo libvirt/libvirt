@@ -942,8 +942,8 @@ virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
     xmlNodePtr *nodes = NULL;
     int n;
 
-    if (!(n = virXPathNodeSet("./keywrap/cipher", ctxt, &nodes)))
-        return 0;
+    if ((n = virXPathNodeSet("./keywrap/cipher", ctxt, &nodes)) < 0)
+        return n;
 
     if (VIR_ALLOC(def->keywrap) < 0)
         goto cleanup;
