@@ -3354,8 +3354,6 @@ qemuProcessRecoverMigration(virQEMUDriverPtr driver,
                             virDomainState state,
                             int reason)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
     if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
         switch (phase) {
         case QEMU_MIGRATION_PHASE_NONE:
@@ -3409,11 +3407,7 @@ qemuProcessRecoverMigration(virQEMUDriverPtr driver,
         case QEMU_MIGRATION_PHASE_PERFORM3:
             /* migration is still in progress, let's cancel it and resume the
              * domain */
-            VIR_DEBUG("Canceling unfinished outgoing migration of domain %s",
-                      vm->def->name);
-            qemuDomainObjEnterMonitor(driver, vm);
-            ignore_value(qemuMonitorMigrateCancel(priv->mon));
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            if (qemuMigrationCancel(driver, vm) < 0)
                 return -1;
             /* resume the domain but only if it was paused as a result of
              * migration */

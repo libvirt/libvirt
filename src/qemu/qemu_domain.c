@@ -578,7 +578,27 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                               qemuDomainAsyncJobPhaseToString(
                                     priv->job.asyncJob, priv->job.phase));
         }
-        virBufferAddLit(buf, "/>\n");
+        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            virBufferAddLit(buf, "/>\n");
+        } else {
+            size_t i;
+            virDomainDiskDefPtr disk;
+            qemuDomainDiskPrivatePtr diskPriv;
+
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+
+            for (i = 0; i < vm->def->ndisks; i++) {
+                disk = vm->def->disks[i];
+                diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+                virBufferAsprintf(buf, "<disk dev='%s' migrating='%s'/>\n",
+                                  disk->dst,
+                                  diskPriv->migrating ? "yes" : "no");
+            }
+
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</job>\n");
+        }
     }
     priv->job.active = job;
 
@@ -735,6 +755,29 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             VIR_FREE(tmp);
         }
     }
+
+    if ((n = virXPathNodeSet("./job[1]/disk[@migrating='yes']",
+                             ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse list of disks marked for migration"));
+        goto error;
+    }
+    if (n > 0) {
+        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            VIR_WARN("Found disks marked for migration but we were not "
+                     "migrating");
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            char *dst = virXMLPropString(nodes[i], "dev");
+            virDomainDiskDefPtr disk;
+
+            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
+                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
+            VIR_FREE(dst);
+        }
+    }
+    VIR_FREE(nodes);
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 

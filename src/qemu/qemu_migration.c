@@ -2026,6 +2026,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     char *hoststr = NULL;
     unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     int rv;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("Starting drive mirrors for domain %s", vm->def->name);
 
@@ -2075,6 +2076,11 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             goto cleanup;
         }
         diskPriv->migrating = true;
+
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+            goto cleanup;
+        }
     }
 
     while ((rv = qemuMigrationDriveMirrorReady(driver, vm)) != 1) {
@@ -2102,6 +2108,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virObjectUnref(cfg);
     VIR_FREE(diskAlias);
     VIR_FREE(nbd_dest);
     VIR_FREE(hoststr);
@@ -5816,6 +5823,84 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     return ret;
 }
+
+
+int
+qemuMigrationCancel(virQEMUDriverPtr driver,
+                    virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr blockJobs = NULL;
+    bool storage = false;
+    size_t i;
+    int ret = -1;
+
+    VIR_DEBUG("Canceling unfinished outgoing migration of domain %s",
+              vm->def->name);
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        if (QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating) {
+            qemuBlockJobSyncBegin(disk);
+            storage = true;
+        }
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    ignore_value(qemuMonitorMigrateCancel(priv->mon));
+    if (storage)
+        blockJobs = qemuMonitorGetAllBlockJobInfo(priv->mon);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || (storage && !blockJobs))
+        goto endsyncjob;
+
+    if (!storage) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (!diskPriv->migrating)
+            continue;
+
+        if (virHashLookup(blockJobs, disk->info.alias)) {
+            VIR_DEBUG("Drive mirror on disk %s is still running", disk->dst);
+        } else {
+            VIR_DEBUG("Drive mirror on disk %s is gone", disk->dst);
+            qemuBlockJobSyncEnd(driver, vm, disk);
+            diskPriv->migrating = false;
+        }
+    }
+
+    if (qemuMigrationCancelDriveMirror(driver, vm, false,
+                                       QEMU_ASYNC_JOB_NONE) < 0)
+        goto endsyncjob;
+
+    ret = 0;
+
+ cleanup:
+    virHashFree(blockJobs);
+    return ret;
+
+ endsyncjob:
+    if (storage) {
+        for (i = 0; i < vm->def->ndisks; i++) {
+            virDomainDiskDefPtr disk = vm->def->disks[i];
+            qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+            if (diskPriv->migrating) {
+                qemuBlockJobSyncEnd(driver, vm, disk);
+                diskPriv->migrating = false;
+            }
+        }
+    }
+    goto cleanup;
+}
+
 
 int
 qemuMigrationJobStart(virQEMUDriverPtr driver,
