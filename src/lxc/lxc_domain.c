@@ -51,9 +51,11 @@ static void virLXCDomainObjPrivateFree(void *data)
 }
 
 
-static int virLXCDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+static int
+virLXCDomainObjPrivateXMLFormat(virBufferPtr buf,
+                                virDomainObjPtr vm)
 {
-    virLXCDomainObjPrivatePtr priv = data;
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
 
     virBufferAsprintf(buf, "<init pid='%llu'/>\n",
                       (unsigned long long)priv->initpid);
@@ -61,9 +63,11 @@ static int virLXCDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
     return 0;
 }
 
-static int virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+static int
+virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
+                               virDomainObjPtr vm)
 {
-    virLXCDomainObjPrivatePtr priv = data;
+    virLXCDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long thepid;
 
     if (virXPathULongLong("string(./init[1]/@pid)", ctxt, &thepid) < 0) {

@@ -511,9 +511,10 @@ qemuDomainObjPrivateFree(void *data)
 
 
 static int
-qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
+                              virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = data;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *monitorpath;
     qemuDomainJob job;
 
@@ -600,9 +601,10 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
 }
 
 static int
-qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
+                             virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = data;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *monitorpath;
     char *tmp;
     int n;

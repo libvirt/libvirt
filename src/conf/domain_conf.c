@@ -16185,7 +16185,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     if (xmlopt->privateData.parse &&
-        ((xmlopt->privateData.parse)(ctxt, obj->privateData)) < 0)
+        xmlopt->privateData.parse(ctxt, obj) < 0)
         goto error;
 
     return obj;
@@ -22074,7 +22074,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
     }
 
     if (xmlopt->privateData.format &&
-        ((xmlopt->privateData.format)(&buf, obj->privateData)) < 0)
+        xmlopt->privateData.format(&buf, obj) < 0)
         goto error;
 
     if (virDomainDefFormatInternal(obj->def, flags, &buf) < 0)

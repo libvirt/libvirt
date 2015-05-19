@@ -223,9 +223,10 @@ libxlDomainObjPrivateFree(void *data)
 }
 
 static int
-libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
+libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
+                              virDomainObjPtr vm)
 {
-    libxlDomainObjPrivatePtr priv = data;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
 
     priv->lockState = virXPathString("string(./lockstate)", ctxt);
 
@@ -233,9 +234,10 @@ libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt, void *data)
 }
 
 static int
-libxlDomainObjPrivateXMLFormat(virBufferPtr buf, void *data)
+libxlDomainObjPrivateXMLFormat(virBufferPtr buf,
+                               virDomainObjPtr vm)
 {
-    libxlDomainObjPrivatePtr priv = data;
+    libxlDomainObjPrivatePtr priv = vm->privateData;
 
     if (priv->lockState)
         virBufferAsprintf(buf, "<lockstate>%s</lockstate>\n", priv->lockState);

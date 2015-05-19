@@ -2357,8 +2357,10 @@ typedef virDomainXMLOption *virDomainXMLOptionPtr;
 typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
 typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
 typedef virObjectPtr (*virDomainXMLPrivateDataNewFunc)(void);
-typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr, void *);
-typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr, void *);
+typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr,
+                                                 virDomainObjPtr);
+typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr,
+                                                virDomainObjPtr);
 
 /* Called once after everything else has been parsed, for adjusting
  * overall domain defaults.  */
