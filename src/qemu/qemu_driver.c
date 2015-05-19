@@ -4737,6 +4737,7 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     int ncpupids;
     virCgroupPtr cgroup_vcpu = NULL;
     char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -4804,8 +4805,8 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
@@ -6113,6 +6114,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
     virCgroupPtr cgroup_iothread = NULL;
     char *mem_mask = NULL;
+    virDomainNumatuneMemMode mode;
     virDomainIOThreadIDDefPtr iothrid;
     virBitmapPtr cpumask;
 
@@ -6154,8 +6156,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     }
     vm->def->iothreads = exp_niothreads;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) == 0 &&
+        mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
@@ -10331,11 +10333,12 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     virCgroupPtr cgroup_temp = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *nodeset_str = NULL;
+    virDomainNumatuneMemMode mode;
     size_t i = 0;
     int ret = -1;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) !=
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) < 0 ||
+        mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
                          "requires strict numa mode"));
@@ -10392,6 +10395,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virBitmapPtr nodeset = NULL;
+    virDomainNumatuneMemMode config_mode;
     int mode = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -10467,7 +10471,8 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (mode != -1 &&
-            virDomainNumatuneGetMode(vm->def->numa, -1) != mode) {
+            virDomainNumatuneGetMode(vm->def->numa, -1, &config_mode) == 0 &&
+            config_mode != mode) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("can't change numatune mode for running domain"));
             goto endjob;
@@ -10568,7 +10573,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                                         VIR_TYPED_PARAM_INT, 0) < 0)
                 goto cleanup;
 
-            param->value.i = virDomainNumatuneGetMode(def->numa, -1);
+            virDomainNumatuneGetMode(def->numa, -1,
+                                     (virDomainNumatuneMemMode *) &param->value.i);
             break;
 
         case 1: /* fill numa nodeset here */

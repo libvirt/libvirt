@@ -4707,7 +4707,9 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         return -1;
 
     memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
-    mode = virDomainNumatuneGetMode(def->numa, guestNode);
+    if (virDomainNumatuneGetMode(def->numa, guestNode, &mode) < 0 &&
+        virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
+        mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
     if (pagesize == 0 || pagesize != system_page_size) {
         /* Find the huge page size we want to use */

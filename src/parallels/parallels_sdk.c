@@ -1845,6 +1845,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     size_t i;
     PRL_VM_TYPE vmType;
     PRL_RESULT pret;
+    virDomainNumatuneMemMode memMode;
 
     if (def->title) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1924,8 +1925,8 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
      * virDomainDefPtr always contain non zero NUMA configuration
      * So, just make sure this configuration does't differ from auto generated.
      */
-    if ((virDomainNumatuneGetMode(def->numa, -1) !=
-         VIR_DOMAIN_NUMATUNE_MEM_STRICT) ||
+    if ((virDomainNumatuneGetMode(def->numa, -1, &memMode) == 0 &&
+         memMode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) ||
          virDomainNumatuneHasPerNodeBinding(def->numa)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "

@@ -351,20 +351,40 @@ virDomainNumaFree(virDomainNumaPtr numa)
     VIR_FREE(numa);
 }
 
-virDomainNumatuneMemMode
-virDomainNumatuneGetMode(virDomainNumaPtr numatune,
-                         int cellid)
+/**
+ * virDomainNumatuneGetMode:
+ * @numatune: pointer to numatune definition
+ * @cellid: cell selector
+ * @mode: where to store the result
+ *
+ * Get the defined mode for domain's memory. It's safe to pass
+ * NULL to @mode if the return value is the only info needed.
+ *
+ * Returns: 0 on success (with @mode updated)
+ *         -1 if no mode was defined in XML
+ */
+int virDomainNumatuneGetMode(virDomainNumaPtr numatune,
+                             int cellid,
+                             virDomainNumatuneMemMode *mode)
 {
+    int ret = -1;
+    virDomainNumatuneMemMode tmp_mode;
+
     if (!numatune)
-        return 0;
+        return ret;
 
     if (virDomainNumatuneNodeSpecified(numatune, cellid))
-        return numatune->mem_nodes[cellid].mode;
+        tmp_mode = numatune->mem_nodes[cellid].mode;
+    else if (numatune->memory.specified)
+        tmp_mode = numatune->memory.mode;
+    else
+        goto cleanup;
 
-    if (numatune->memory.specified)
-        return numatune->memory.mode;
-
-    return 0;
+    if (mode)
+        *mode = tmp_mode;
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 virBitmapPtr

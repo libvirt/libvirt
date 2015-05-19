@@ -69,6 +69,7 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
 {
     int ret = -1;
     char *mask = NULL;
+    virDomainNumatuneMemMode mode;
 
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
         def->cpumask) {
@@ -81,8 +82,8 @@ static int virLXCCgroupSetupCpusetTune(virDomainDefPtr def,
         VIR_FREE(mask);
     }
 
-    if (virDomainNumatuneGetMode(def->numa, -1) !=
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+    if (virDomainNumatuneGetMode(def->numa, -1, &mode) < 0 ||
+        mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         ret = 0;
         goto cleanup;
     }

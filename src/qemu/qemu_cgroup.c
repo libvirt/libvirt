@@ -613,14 +613,15 @@ qemuSetupCpusetMems(virDomainObjPtr vm)
 {
     virCgroupPtr cgroup_temp = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainNumatuneMemMode mode;
     char *mem_mask = NULL;
     int ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) !=
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT)
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) < 0 ||
+        mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT)
         return 0;
 
     if (virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
@@ -979,6 +980,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
     char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
 
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -1009,8 +1011,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         return 0;
     }
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)
@@ -1153,6 +1155,7 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
     char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
 
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
@@ -1176,8 +1179,8 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     if (priv->cgroup == NULL)
         return 0;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1) ==
-        VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                             priv->autoNodeset,
                                             &mem_mask, -1) < 0)

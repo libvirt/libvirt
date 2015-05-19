@@ -72,8 +72,9 @@ int virDomainNumatuneFormatXML(virBufferPtr buf, virDomainNumaPtr numatune)
 /*
  * Getters
  */
-virDomainNumatuneMemMode virDomainNumatuneGetMode(virDomainNumaPtr numatune,
-                                                  int cellid);
+int virDomainNumatuneGetMode(virDomainNumaPtr numatune,
+                             int cellid,
+                             virDomainNumatuneMemMode *mode);
 
 virBitmapPtr virDomainNumatuneGetNodeset(virDomainNumaPtr numatune,
                                          virBitmapPtr auto_nodeset,
