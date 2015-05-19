@@ -7238,6 +7238,13 @@ virDomainParseMemory(const char *xpath,
 
     /* Yes, we really do use kibibytes for our internal sizing.  */
     *mem = VIR_DIV_UP(bytes, 1024);
+
+    if (*mem >= VIR_DIV_UP(max, 1024)) {
+        virReportError(VIR_ERR_OVERFLOW, "%s", _("size value too large"));
+        ret = -1;
+        goto cleanup;
+    }
+
     ret = 0;
  cleanup:
     return ret;
