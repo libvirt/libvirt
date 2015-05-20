@@ -2981,9 +2981,9 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
         goto cleanup;
     }
 
-    /* Discard if cache is older that QEMU binary */
+    /* Discard cache if QEMU binary or libvirtd changed */
     if (qemuctime != qemuCaps->ctime ||
-        selfctime < virGetSelfLastChanged()) {
+        selfctime != virGetSelfLastChanged()) {
         VIR_DEBUG("Outdated cached capabilities '%s' for '%s' "
                   "(%lld vs %lld, %lld vs %lld)",
                   capsfile, qemuCaps->binary,
