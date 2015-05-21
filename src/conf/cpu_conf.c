@@ -158,6 +158,7 @@ virCPUDefCopy(const virCPUDef *cpu)
 
         for (i = 0; i < cpu->ncells; i++) {
             copy->cells[i].mem = cpu->cells[i].mem;
+            copy->cells[i].memAccess = cpu->cells[i].memAccess;
 
             copy->cells[i].cpumask = virBitmapNewCopy(cpu->cells[i].cpumask);
 
