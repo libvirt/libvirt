@@ -29,6 +29,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#ifdef HAVE_IFADDRS_H
+# include <ifaddrs.h>
+#endif
 #include <netdb.h>
 
 #ifdef HAVE_NETINET_TCP_H
@@ -141,6 +144,69 @@ static int virNetSocketForkDaemon(const char *binary)
     return ret;
 }
 #endif
+
+int virNetSocketCheckProtocols(bool *hasIPv4,
+                               bool *hasIPv6)
+{
+#ifdef HAVE_IFADDRS_H
+    struct ifaddrs *ifaddr = NULL, *ifa;
+    struct addrinfo hints;
+    struct addrinfo *ai = NULL;
+    int ret = -1;
+    int gaierr;
+
+    memset(&hints, 0, sizeof(hints));
+
+    *hasIPv4 = *hasIPv6 = false;
+
+    if (getifaddrs(&ifaddr) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot get host interface addresses"));
+        goto cleanup;
+    }
+
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr)
+            continue;
+
+        if (ifa->ifa_addr->sa_family == AF_INET)
+            *hasIPv4 = true;
+        if (ifa->ifa_addr->sa_family == AF_INET6)
+            *hasIPv6 = true;
+    }
+
+    freeifaddrs(ifaddr);
+
+    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
+    hints.ai_family = AF_INET6;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if ((gaierr = getaddrinfo("::1", NULL, &hints, &ai)) != 0) {
+        if (gaierr == EAI_ADDRFAMILY ||
+            gaierr == EAI_FAMILY) {
+            *hasIPv6 = false;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot resolve ::1 address: %s"),
+                           gai_strerror(gaierr));
+            goto cleanup;
+        }
+    }
+
+    freeaddrinfo(ai);
+
+    VIR_DEBUG("Protocols: v4 %d v6 %d\n", *hasIPv4, *hasIPv6);
+
+    ret = 0;
+ cleanup:
+    return ret;
+#else
+    *hasIPv4 = *hasIPv6 = false;
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("Cannot check address family on this platform"));
+    return -1;
+#endif
+}
 
 
 static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,

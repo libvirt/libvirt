@@ -48,47 +48,15 @@ static int
 checkProtocols(bool *hasIPv4, bool *hasIPv6,
                int *freePort)
 {
-    struct ifaddrs *ifaddr = NULL, *ifa;
-    struct addrinfo hints;
-    struct addrinfo *ai = NULL;
     struct sockaddr_in in4;
     struct sockaddr_in6 in6;
     int s4 = -1, s6 = -1;
     size_t i;
     int ret = -1;
 
-    memset(&hints, 0, sizeof(hints));
-
-    *hasIPv4 = *hasIPv6 = false;
     *freePort = 0;
-
-    if (getifaddrs(&ifaddr) < 0) {
-        perror("getifaddrs");
-        goto cleanup;
-    }
-
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-        if (!ifa->ifa_addr)
-            continue;
-
-        if (ifa->ifa_addr->sa_family == AF_INET)
-            *hasIPv4 = true;
-        if (ifa->ifa_addr->sa_family == AF_INET6)
-            *hasIPv6 = true;
-    }
-
-    hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
-    hints.ai_family = AF_INET6;
-    hints.ai_socktype = SOCK_STREAM;
-
-    if (getaddrinfo("::1", "5672", &hints, &ai) != 0)
-        *hasIPv6 = false;
-
-    freeaddrinfo(ai);
-
-    VIR_DEBUG("Protocols: v4 %d v6 %d\n", *hasIPv4, *hasIPv6);
-
-    freeifaddrs(ifaddr);
+    if (virNetSocketCheckProtocols(hasIPv4, hasIPv6) < 0)
+        return -1;
 
     for (i = 0; i < 50; i++) {
         int only = 1;

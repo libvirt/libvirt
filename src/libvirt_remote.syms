@@ -172,6 +172,7 @@ virNetServerServiceToggle;
 # rpc/virnetsocket.h
 virNetSocketAccept;
 virNetSocketAddIOCallback;
+virNetSocketCheckProtocols;
 virNetSocketClose;
 virNetSocketDupFD;
 virNetSocketGetFD;

@@ -45,6 +45,9 @@ typedef void (*virNetSocketIOFunc)(virNetSocketPtr sock,
                                    void *opaque);
 
 
+int virNetSocketCheckProtocols(bool *hasIPv4,
+                               bool *hasIPv6);
+
 int virNetSocketNewListenTCP(const char *nodename,
                              const char *service,
                              int family,
