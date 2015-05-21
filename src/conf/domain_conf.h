@@ -1927,24 +1927,6 @@ struct _virDomainClockDef {
     virDomainTimerDefPtr *timers;
 };
 
-# define VIR_DOMAIN_CPUMASK_LEN 1024
-
-typedef struct _virDomainPinDef virDomainPinDef;
-typedef virDomainPinDef *virDomainPinDefPtr;
-struct _virDomainPinDef {
-    int id;
-    virBitmapPtr cpumask;
-};
-
-void virDomainPinDefFree(virDomainPinDefPtr def);
-void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
-
-virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
-                                        int npin);
-
-virDomainPinDefPtr virDomainPinFind(virDomainPinDefPtr *def,
-                                    int npin,
-                                    int id);
 
 typedef struct _virBlkioDevice virBlkioDevice;
 typedef virBlkioDevice *virBlkioDevicePtr;
@@ -2045,6 +2027,8 @@ struct _virDomainHugePage {
     unsigned long long size;    /* hugepage size in KiB */
 };
 
+# define VIR_DOMAIN_CPUMASK_LEN 1024
+
 typedef struct _virDomainIOThreadIDDef virDomainIOThreadIDDef;
 typedef virDomainIOThreadIDDef *virDomainIOThreadIDDefPtr;
 
@@ -2056,6 +2040,34 @@ struct _virDomainIOThreadIDDef {
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
+
+
+typedef struct _virDomainPinDef virDomainPinDef;
+typedef virDomainPinDef *virDomainPinDefPtr;
+struct _virDomainPinDef {
+    int id;
+    virBitmapPtr cpumask;
+};
+
+void virDomainPinDefFree(virDomainPinDefPtr def);
+void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
+
+virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
+                                        int npin);
+
+virDomainPinDefPtr virDomainPinFind(virDomainPinDefPtr *def,
+                                    int npin,
+                                    int id);
+
+int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
+                    size_t *npin,
+                    unsigned char *cpumap,
+                    int maplen,
+                    int id);
+
+void virDomainPinDel(virDomainPinDefPtr **pindef_list,
+                     size_t *npin,
+                     int vcpu);
 
 typedef struct _virDomainCputune virDomainCputune;
 typedef virDomainCputune *virDomainCputunePtr;
@@ -2663,16 +2675,6 @@ typedef enum {
 int virDomainDefCompatibleDevice(virDomainDefPtr def,
                                  virDomainDeviceDefPtr dev,
                                  virDomainDeviceAction action);
-
-int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
-                    size_t *npin,
-                    unsigned char *cpumap,
-                    int maplen,
-                    int id);
-
-void virDomainPinDel(virDomainPinDefPtr **pindef_list,
-                     size_t *npin,
-                     int vcpu);
 
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
