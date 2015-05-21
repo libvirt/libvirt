@@ -8,7 +8,5 @@
   <target>
     <path>gluster://example.com/vol/dir</path>
     <format type='dir'/>
-    <permissions>
-    </permissions>
   </target>
 </volume>

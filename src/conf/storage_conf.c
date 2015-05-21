@@ -1179,22 +1179,28 @@ virStoragePoolDefFormatBuf(virBufferPtr buf,
 
         virBufferEscapeString(buf, "<path>%s</path>\n", def->target.path);
 
-        virBufferAddLit(buf, "<permissions>\n");
-        virBufferAdjustIndent(buf, 2);
-        if (def->target.perms.mode != (mode_t) -1)
-            virBufferAsprintf(buf, "<mode>0%o</mode>\n",
-                              def->target.perms.mode);
-        if (def->target.perms.uid != (uid_t) -1)
-            virBufferAsprintf(buf, "<owner>%d</owner>\n",
-                              (int) def->target.perms.uid);
-        if (def->target.perms.gid != (gid_t) -1)
-            virBufferAsprintf(buf, "<group>%d</group>\n",
-                              (int) def->target.perms.gid);
-        virBufferEscapeString(buf, "<label>%s</label>\n",
-                              def->target.perms.label);
+        if (def->target.perms.mode != (mode_t) -1 ||
+            def->target.perms.uid != (uid_t) -1 ||
+            def->target.perms.gid != (gid_t) -1 ||
+            def->target.perms.label) {
+            virBufferAddLit(buf, "<permissions>\n");
+            virBufferAdjustIndent(buf, 2);
+            if (def->target.perms.mode != (mode_t) -1)
+                virBufferAsprintf(buf, "<mode>0%o</mode>\n",
+                                  def->target.perms.mode);
+            if (def->target.perms.uid != (uid_t) -1)
+                virBufferAsprintf(buf, "<owner>%d</owner>\n",
+                                  (int) def->target.perms.uid);
+            if (def->target.perms.gid != (gid_t) -1)
+                virBufferAsprintf(buf, "<group>%d</group>\n",
+                                  (int) def->target.perms.gid);
+            virBufferEscapeString(buf, "<label>%s</label>\n",
+                                  def->target.perms.label);
 
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</permissions>\n");
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</permissions>\n");
+        }
+
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</target>\n");
     }
@@ -1513,7 +1519,11 @@ virStorageVolTargetDefFormat(virStorageVolOptionsPtr options,
         virBufferAsprintf(buf, "<format type='%s'/>\n", format);
     }
 
-    if (def->perms) {
+    if (def->perms &&
+        (def->perms->mode != (mode_t) -1 ||
+         def->perms->uid != (uid_t) -1 ||
+         def->perms->gid != (gid_t) -1 ||
+         def->perms->label)) {
         virBufferAddLit(buf, "<permissions>\n");
         virBufferAdjustIndent(buf, 2);
 

@@ -11,7 +11,5 @@
   </source>
   <target>
     <path>/mnt/gluster</path>
-    <permissions>
-    </permissions>
   </target>
 </pool>

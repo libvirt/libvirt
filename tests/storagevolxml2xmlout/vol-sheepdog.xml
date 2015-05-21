@@ -7,7 +7,5 @@
   <target>
     <path>sheepdog:test2</path>
     <format type='unknown'/>
-    <permissions>
-    </permissions>
   </target>
 </volume>
