@@ -2685,8 +2685,16 @@ int virDomainDiskIndexByAddress(virDomainDefPtr def,
                                 virDevicePCIAddressPtr pci_controller,
                                 unsigned int bus, unsigned int target,
                                 unsigned int unit);
+virDomainDiskDefPtr virDomainDiskByAddress(virDomainDefPtr def,
+                                           virDevicePCIAddressPtr pci_controller,
+                                           unsigned int bus,
+                                           unsigned int target,
+                                           unsigned int unit);
 int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                              bool allow_ambiguous);
+virDomainDiskDefPtr virDomainDiskByName(virDomainDefPtr def,
+                                        const char *name,
+                                        bool allow_ambiguous);
 const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)

@@ -12349,6 +12349,17 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
     return -1;
 }
 
+virDomainDiskDefPtr
+virDomainDiskByAddress(virDomainDefPtr def,
+                       virDevicePCIAddressPtr pci_address,
+                       unsigned int bus,
+                       unsigned int target,
+                       unsigned int unit)
+{
+    int idx = virDomainDiskIndexByAddress(def, pci_address, bus, target, unit);
+    return idx < 0 ? NULL : def->disks[idx];
+}
+
 int
 virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
                          bool allow_ambiguous)
@@ -12386,6 +12397,15 @@ virDomainDiskPathByName(virDomainDefPtr def, const char *name)
     int idx = virDomainDiskIndexByName(def, name, true);
 
     return idx < 0 ? NULL : virDomainDiskGetSource(def->disks[idx]);
+}
+
+virDomainDiskDefPtr
+virDomainDiskByName(virDomainDefPtr def,
+                    const char *name,
+                    bool allow_ambiguous)
+{
+    int idx = virDomainDiskIndexByName(def, name, allow_ambiguous);
+    return idx < 0 ? NULL : def->disks[idx];
 }
 
 int virDomainDiskInsert(virDomainDefPtr def,
