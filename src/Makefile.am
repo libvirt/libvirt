@@ -2003,29 +2003,13 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt.syms
 
-libvirt.def: libvirt.syms
+%.def: %.syms
 	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
 	printf 'EXPORTS\n' > $@-tmp && \
 	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d'	\
 	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
-	mv $@-tmp libvirt.def
-
-libvirt_qemu.def: $(srcdir)/libvirt_qemu.syms
-	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
-	printf 'EXPORTS\n' > $@-tmp && \
-	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d'	\
-	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
-	chmod a-w $@-tmp && \
-	mv $@-tmp libvirt_qemu.def
-
-libvirt_lxc.def: $(srcdir)/libvirt_lxc.syms
-	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
-	printf 'EXPORTS\n' > $@-tmp && \
-	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d'	\
-	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
-	chmod a-w $@-tmp && \
-	mv $@-tmp libvirt_lxc.def
+	mv $@-tmp $@
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =
