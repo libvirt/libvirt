@@ -9,6 +9,10 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <idmap>
+    <uid start='0' target='1000' count='10'/>
+    <gid start='0' target='1000' count='10'/>
+  </idmap>
   <cpu>
     <topology sockets='2' cores='1' threads='1'/>
     <numa>

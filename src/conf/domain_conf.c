@@ -11836,6 +11836,7 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
     if (virDomainDeviceInfoParseXML(memdevNode, NULL, &def->info, flags) < 0)
         goto error;
 
+    ctxt->node = save;
     return def;
 
  error:
