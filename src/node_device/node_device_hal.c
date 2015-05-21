@@ -372,7 +372,7 @@ gather_capability(LibHalContext *ctx, const char *udi,
         virNodeDevCapsDefPtr caps;
         if (VIR_ALLOC(caps) < 0)
             return ENOMEM;
-        caps->type = entry->type;
+        caps->data.type = entry->type;
         if (entry->gather_fn) {
             int rv = (*entry->gather_fn)(ctx, udi, &caps->data);
             if (rv != 0) {
