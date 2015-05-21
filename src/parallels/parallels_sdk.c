@@ -1379,10 +1379,21 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
 
     return dom;
  error:
-    if (dom && !olddom)
+    if (dom && !olddom) {
+        /* Domain isn't persistent means that we haven't yet set
+         * prlsdkDomObjFreePrivate and should call it manually
+         */
+        if (!dom->persistent)
+            prlsdkDomObjFreePrivate(pdom);
+
         virDomainObjListRemove(privconn->domains, dom);
-    virDomainDefFree(def);
-    prlsdkDomObjFreePrivate(pdom);
+    }
+    /* Delete newly allocated def only if we haven't assigned it to domain
+     * Otherwise we will end up with domain having invalid def within it
+     */
+    if (!dom)
+        virDomainDefFree(def);
+
     return NULL;
 }
 
