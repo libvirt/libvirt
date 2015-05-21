@@ -1312,6 +1312,12 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
             *s = '\0';
     }
 
+    pret = PrlVmCfg_GetAutoStart(sdkdom, &autostart);
+    prlsdkCheckRetGoto(pret, error);
+
+    if (prlsdkGetDomainState(sdkdom, &domainState) < 0)
+        goto error;
+
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
@@ -1349,15 +1355,6 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
     dom->privateDataFreeFunc = prlsdkDomObjFreePrivate;
     dom->persistent = 1;
 
-    if (prlsdkGetDomainState(sdkdom, &domainState) < 0)
-        goto error;
-
-    if (prlsdkConvertDomainState(domainState, envId, dom) < 0)
-        goto error;
-
-    pret = PrlVmCfg_GetAutoStart(sdkdom, &autostart);
-    prlsdkCheckRetGoto(pret, error);
-
     switch (autostart) {
     case PAO_VM_START_ON_LOAD:
         dom->autostart = 1;
@@ -1370,6 +1367,9 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
                        _("Unknown autostart mode: %X"), autostart);
         goto error;
     }
+
+    if (prlsdkConvertDomainState(domainState, envId, dom) < 0)
+        goto error;
 
     if (!pdom->sdkdom) {
         pret = PrlHandle_AddRef(sdkdom);
