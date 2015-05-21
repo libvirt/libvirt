@@ -323,24 +323,22 @@
         <value>ipv4</value>
       </attribute>
       <interleave>
-        <choice>
+        <optional>
           <ref name="dhcp-element"/>
-          <group>
-            <oneOrMore>
-              <element name="ip">
-                <attribute name="address"><ref name="ipv4Addr"/></attribute>
-                <optional>
-                  <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
-                </optional>
-              </element>
-            </oneOrMore>
+        </optional>
+        <zeroOrMore>
+          <element name="ip">
+            <attribute name="address"><ref name="ipv4Addr"/></attribute>
             <optional>
-              <element name="route">
-                <attribute name="gateway"><ref name="ipv4Addr"/></attribute>
-              </element>
+              <attribute name="prefix"><ref name="ipv4Prefix"/></attribute>
             </optional>
-          </group>
-        </choice>
+          </element>
+        </zeroOrMore>
+        <optional>
+          <element name="route">
+            <attribute name="gateway"><ref name="ipv4Addr"/></attribute>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

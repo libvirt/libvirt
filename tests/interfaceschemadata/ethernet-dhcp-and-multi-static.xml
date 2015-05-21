@@ -1,0 +1,9 @@
+<interface type='ethernet' name='eth1'>
+  <start mode='onboot'/>
+  <protocol family='ipv4'>
+    <dhcp peerdns='yes'/>
+    <ip address='192.168.0.5' prefix='24'/>
+    <ip address='1.2.3.4' prefix='32'/>
+    <route gateway='192.168.0.1'/>
+  </protocol>
+</interface>
