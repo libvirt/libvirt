@@ -389,7 +389,9 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
 
     snprintf(portstr, sizeof(portstr), "%d", port);
 
-    if (virNetSocketNewListenTCP(hostname, portstr, &socks, &nsocks) < 0) {
+    if (virNetSocketNewListenTCP(hostname, portstr,
+                                 AF_UNSPEC,
+                                 &socks, &nsocks) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Fail to create socket for incoming migration"));
         goto error;
@@ -491,7 +493,9 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
     snprintf(portstr, sizeof(portstr), "%d", port);
 
     /* socket connect to dst host:port */
-    if (virNetSocketNewConnectTCP(hostname, portstr, &sock) < 0) {
+    if (virNetSocketNewConnectTCP(hostname, portstr,
+                                  AF_UNSPEC,
+                                  &sock) < 0) {
         virReportSystemError(saved_errno,
                              _("unable to connect to '%s:%s'"),
                              hostname, portstr);

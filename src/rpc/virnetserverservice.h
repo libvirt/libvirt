@@ -51,6 +51,7 @@ virNetServerServicePtr virNetServerServiceNewFDOrUNIX(const char *path,
                                                       unsigned int *cur_fd);
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
+                                                 int family,
                                                  int auth,
 # if WITH_GNUTLS
                                                  virNetTLSContextPtr tls,

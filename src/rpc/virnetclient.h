@@ -41,7 +41,8 @@ virNetClientPtr virNetClientNewUNIX(const char *path,
                                     const char *binary);
 
 virNetClientPtr virNetClientNewTCP(const char *nodename,
-                                   const char *service);
+                                   const char *service,
+                                   int family);
 
 virNetClientPtr virNetClientNewSSH(const char *nodename,
                                    const char *service,
@@ -55,6 +56,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
 
 virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *port,
+                                       int family,
                                        const char *username,
                                        const char *privkeyPath,
                                        const char *knownHostsPath,

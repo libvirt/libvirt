@@ -349,11 +349,14 @@ virNetClientPtr virNetClientNewUNIX(const char *path,
 
 
 virNetClientPtr virNetClientNewTCP(const char *nodename,
-                                   const char *service)
+                                   const char *service,
+                                   int family)
 {
     virNetSocketPtr sock;
 
-    if (virNetSocketNewConnectTCP(nodename, service, &sock) < 0)
+    if (virNetSocketNewConnectTCP(nodename, service,
+                                  family,
+                                  &sock) < 0)
         return NULL;
 
     return virNetClientNew(sock, nodename);
@@ -383,6 +386,7 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
         VAR = VAL;
 virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *port,
+                                       int family,
                                        const char *username,
                                        const char *privkeyPath,
                                        const char *knownHostsPath,
@@ -473,7 +477,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     if (!(command = virBufferContentAndReset(&buf)))
         goto no_memory;
 
-    if (virNetSocketNewConnectLibSSH2(host, port, username, privkey,
+    if (virNetSocketNewConnectLibSSH2(host, port,
+                                      family,
+                                      username, privkey,
                                       knownhosts, knownHostsVerify, authMethods,
                                       command, authPtr, uri, &sock) != 0)
         goto cleanup;

@@ -166,7 +166,9 @@ static int testSocketTCPAccept(const void *opaque)
 
     snprintf(portstr, sizeof(portstr), "%d", data->port);
 
-    if (virNetSocketNewListenTCP(data->lnode, portstr, &lsock, &nlsock) < 0)
+    if (virNetSocketNewListenTCP(data->lnode, portstr,
+                                 AF_UNSPEC,
+                                 &lsock, &nlsock) < 0)
         goto cleanup;
 
     for (i = 0; i < nlsock; i++) {
@@ -174,7 +176,9 @@ static int testSocketTCPAccept(const void *opaque)
             goto cleanup;
     }
 
-    if (virNetSocketNewConnectTCP(data->cnode, portstr, &csock) < 0)
+    if (virNetSocketNewConnectTCP(data->cnode, portstr,
+                                  AF_UNSPEC,
+                                  &csock) < 0)
         goto cleanup;
 
     virObjectUnref(csock);

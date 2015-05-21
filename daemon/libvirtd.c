@@ -509,6 +509,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                       config->listen_addr, config->tcp_port);
             if (!(svcTCP = virNetServerServiceNewTCP(config->listen_addr,
                                                      config->tcp_port,
+                                                     AF_UNSPEC,
                                                      config->auth_tcp,
 #if WITH_GNUTLS
                                                      NULL,
@@ -552,6 +553,7 @@ daemonSetupNetworking(virNetServerPtr srv,
             if (!(svcTLS =
                   virNetServerServiceNewTCP(config->listen_addr,
                                             config->tls_port,
+                                            AF_UNSPEC,
                                             config->auth_tls,
                                             ctxt,
                                             false,

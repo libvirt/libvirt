@@ -3866,7 +3866,9 @@ qemuMigrationConnect(virQEMUDriverPtr driver,
 
     if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
-    if (virNetSocketNewConnectTCP(host, port, &sock) == 0) {
+    if (virNetSocketNewConnectTCP(host, port,
+                                  AF_UNSPEC,
+                                  &sock) == 0) {
         spec->dest.fd.qemu = virNetSocketDupFD(sock, true);
         virObjectUnref(sock);
     }

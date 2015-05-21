@@ -143,6 +143,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
 
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
+                                                 int family,
                                                  int auth,
 #if WITH_GNUTLS
                                                  virNetTLSContextPtr tls,
@@ -169,6 +170,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
 
     if (virNetSocketNewListenTCP(nodename,
                                  service,
+                                 family,
                                  &svc->socks,
                                  &svc->nsocks) < 0)
         goto error;

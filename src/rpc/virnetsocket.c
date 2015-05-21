@@ -219,6 +219,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
 int virNetSocketNewListenTCP(const char *nodename,
                              const char *service,
+                             int family,
                              virNetSocketPtr **retsocks,
                              size_t *nretsocks)
 {
@@ -236,6 +237,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     *nretsocks = 0;
 
     memset(&hints, 0, sizeof(hints));
+    hints.ai_family = family;
     hints.ai_flags = AI_PASSIVE;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -454,6 +456,7 @@ int virNetSocketNewListenFD(int fd,
 
 int virNetSocketNewConnectTCP(const char *nodename,
                               const char *service,
+                              int family,
                               virNetSocketPtr *retsock)
 {
     struct addrinfo *ai = NULL;
@@ -470,6 +473,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
     memset(&remoteAddr, 0, sizeof(remoteAddr));
 
     memset(&hints, 0, sizeof(hints));
+    hints.ai_family = family;
     hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG;
     hints.ai_socktype = SOCK_STREAM;
 
@@ -801,6 +805,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
 int
 virNetSocketNewConnectLibSSH2(const char *host,
                               const char *port,
+                              int family,
                               const char *username,
                               const char *privkey,
                               const char *knownHosts,
@@ -892,7 +897,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
     }
 
     /* connect to remote server */
-    if ((ret = virNetSocketNewConnectTCP(host, port, &sock)) < 0)
+    if ((ret = virNetSocketNewConnectTCP(host, port, family, &sock)) < 0)
         goto error;
 
     /* connect to the host using ssh */
@@ -915,6 +920,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
 int
 virNetSocketNewConnectLibSSH2(const char *host ATTRIBUTE_UNUSED,
                               const char *port ATTRIBUTE_UNUSED,
+                              int family ATTRIBUTE_UNUSED,
                               const char *username ATTRIBUTE_UNUSED,
                               const char *privkey ATTRIBUTE_UNUSED,
                               const char *knownHosts ATTRIBUTE_UNUSED,
