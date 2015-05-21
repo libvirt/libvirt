@@ -82,11 +82,10 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
         if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
             if (vm->newDef) {
-                int indx = virDomainDiskIndexByName(vm->newDef, disk->dst, false);
                 virStorageSourcePtr copy = NULL;
 
-                if (indx >= 0) {
-                    persistDisk = vm->newDef->disks[indx];
+                if ((persistDisk = virDomainDiskByName(vm->newDef,
+                                                       disk->dst, false))) {
                     copy = virStorageSourceCopy(disk->mirror, false);
                     if (virStorageSourceInitChainElement(copy,
                                                          persistDisk->src,

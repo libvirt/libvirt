@@ -357,21 +357,6 @@ qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
-static virDomainDiskDefPtr
-qemuProcessFindDomainDiskByPath(virDomainObjPtr vm,
-                                const char *path)
-{
-    int idx = virDomainDiskIndexByName(vm->def, path, true);
-
-    if (idx >= 0)
-        return vm->def->disks[idx];
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("no disk found with path %s"),
-                   path);
-    return NULL;
-}
-
 virDomainDiskDefPtr
 qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
                                  const char *alias)
@@ -492,10 +477,12 @@ qemuProcessFindVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     int ret = -1;
 
     virObjectLock(vm);
-    disk = qemuProcessFindDomainDiskByPath(vm, path);
-
-    if (!disk)
+    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no disk found with path %s"),
+                       path);
         goto cleanup;
+    }
 
     ret = qemuProcessGetVolumeQcowPassphrase(conn, disk, secretRet, secretLen);
 

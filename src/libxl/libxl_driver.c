@@ -3502,18 +3502,16 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr orig;
     virDomainDiskDefPtr disk;
-    int idx;
     int ret = -1;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
             disk = dev->data.disk;
-            if ((idx = virDomainDiskIndexByName(vmdef, disk->dst, false)) < 0) {
+            if (!(orig = virDomainDiskByName(vmdef, disk->dst, false))) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("target %s doesn't exist."), disk->dst);
                 goto cleanup;
             }
-            orig = vmdef->disks[idx];
             if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM)) {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("this disk doesn't support update"));

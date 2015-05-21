@@ -1850,9 +1850,10 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
         for (j = 0; j < ndisk; j++) {
             virJSONValuePtr disk = virJSONValueArrayGet(entry, j);
             virJSONValuePtr pci;
-            int diskaddr[3], pciaddr[4], idx;
+            int diskaddr[3], pciaddr[4];
             const char *diskaddr_comp[] = {"bus", "target", "unit"};
             const char *pciaddr_comp[] = {"domain", "bus", "slot", "function"};
+            virDomainDiskDefPtr diskDef;
 
             if (!disk) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1892,12 +1893,12 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
             pci_address.bus = pciaddr[1];
             pci_address.slot = pciaddr[2];
             pci_address.function = pciaddr[3];
-            if ((idx = virDomainDiskIndexByAddress(
+            if (!(diskDef = virDomainDiskByAddress(
                      vmdef, &pci_address,
-                     diskaddr[0], diskaddr[1], diskaddr[2])) < 0)
+                     diskaddr[0], diskaddr[1], diskaddr[2])))
                 continue;
 
-            if (VIR_STRDUP(*alias, vmdef->disks[idx]->dst) < 0)
+            if (VIR_STRDUP(*alias, diskDef->dst) < 0)
                 goto cleanup;
 
             if (*alias) {

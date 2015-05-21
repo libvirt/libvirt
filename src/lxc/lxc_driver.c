@@ -2332,7 +2332,7 @@ lxcDomainBlockStats(virDomainPtr dom,
                     const char *path,
                     virDomainBlockStatsPtr stats)
 {
-    int ret = -1, idx;
+    int ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
     virLXCDomainObjPrivatePtr priv;
@@ -2367,12 +2367,11 @@ lxcDomainBlockStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+    if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path: %s"), path);
         goto cleanup;
     }
-    disk = vm->def->disks[idx];
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2400,7 +2399,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
                          int * nparams,
                          unsigned int flags)
 {
-    int tmp, ret = -1, idx;
+    int tmp, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
     virLXCDomainObjPrivatePtr priv;
@@ -2449,12 +2448,11 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
             goto cleanup;
         }
     } else {
-        if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+        if (!(disk = virDomainDiskByName(vm->def, path, false))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("invalid path: %s"), path);
             goto cleanup;
         }
-        disk = vm->def->disks[idx];
 
         if (!disk->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -8559,13 +8559,11 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
-        pos = virDomainDiskIndexByName(vmdef, disk->dst, false);
-        if (pos < 0) {
+        if (!(orig = virDomainDiskByName(vmdef, disk->dst, false))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("target %s doesn't exist."), disk->dst);
             return -1;
         }
-        orig = vmdef->disks[pos];
         if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
             !(orig->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -11163,7 +11161,7 @@ qemuDomainBlockResize(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    int ret = -1, idx;
+    int ret = -1;
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
 
@@ -11203,12 +11201,11 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
 
-    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+    if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path: %s"), path);
         goto endjob;
     }
-    disk = vm->def->disks[idx];
 
     /* qcow2 and qed must be sized on 512 byte blocks/sectors,
      * so adjust size if necessary to round up.
@@ -11291,13 +11288,10 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (*path) {
-        int idx;
-
-        if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+        if (!(disk = virDomainDiskByName(vm->def, path, false))) {
             virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
             goto cleanup;
         }
-        disk = vm->def->disks[idx];
 
         if (!disk->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -12178,7 +12172,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int ret = -1;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr src;
-    int idx;
     bool activeFail = false;
     virQEMUDriverConfigPtr cfg = NULL;
 
@@ -12205,14 +12198,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
-    /* Check the path belongs to this domain. */
-    if ((idx = virDomainDiskIndexByName(vm->def, path, false)) < 0) {
+    if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path %s not assigned to domain"), path);
         goto endjob;
     }
 
-    disk = vm->def->disks[idx];
     src = disk->src;
     if (virStorageSourceIsEmpty(src)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -14640,15 +14631,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
         if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
-        if (vm->newDef) {
-            int indx = virDomainDiskIndexByName(vm->newDef,
-                                                vm->def->disks[i]->dst,
-                                                false);
-            if (indx >= 0) {
-                persistDisk = vm->newDef->disks[indx];
-                persist = true;
-            }
-        }
+        if (vm->newDef &&
+            (persistDisk = virDomainDiskByName(vm->newDef,
+                                               vm->def->disks[i]->dst,
+                                               false)))
+            persist = true;
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &snap->def->disks[i],
@@ -14681,15 +14668,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                 if (snap->def->disks[i].snapshot ==
                     VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
                     continue;
-                if (vm->newDef) {
-                    int indx = virDomainDiskIndexByName(vm->newDef,
-                                                        vm->def->disks[i]->dst,
-                                                        false);
-                    if (indx >= 0) {
-                        persistDisk = vm->newDef->disks[indx];
-                        persist = true;
-                    }
-                }
+                if (vm->newDef &&
+                    (persistDisk = virDomainDiskByName(vm->newDef,
+                                                       vm->def->disks[i]->dst,
+                                                       false)))
+                    persist = true;
 
                 qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
                                                        vm->def->disks[i],
@@ -17687,7 +17670,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     int ret = -1;
     size_t i;
     int idx = -1;
-    int conf_idx = -1;
+    virDomainDiskDefPtr conf_disk = NULL;
     bool set_bytes = false;
     bool set_iops = false;
     bool set_bytes_max = false;
@@ -17921,7 +17904,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if ((conf_idx = virDomainDiskIndexByName(persistentDef, disk, true)) < 0) {
+        if (!(conf_disk = virDomainDiskByName(persistentDef, disk, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("missing persistent configuration for disk '%s'"),
                            disk);
@@ -17999,8 +17982,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        sa_assert(persistentDef);
-        oldinfo = &persistentDef->disks[conf_idx]->blkdeviotune;
+        oldinfo = &conf_disk->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
             info.read_bytes_sec = oldinfo->read_bytes_sec;
@@ -18011,7 +17993,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             info.read_iops_sec = oldinfo->read_iops_sec;
             info.write_iops_sec = oldinfo->write_iops_sec;
         }
-        persistentDef->disks[conf_idx]->blkdeviotune = info;
+        conf_disk->blkdeviotune = info;
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         if (ret < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -18105,14 +18087,14 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        int idx = virDomainDiskIndexByName(persistentDef, disk, true);
-        if (idx < 0) {
+        virDomainDiskDefPtr diskDef;
+        if (!(diskDef = virDomainDiskByName(persistentDef, disk, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("disk '%s' was not found in the domain config"),
                            disk);
             goto endjob;
         }
-        reply = persistentDef->disks[idx]->blkdeviotune;
+        reply = diskDef->blkdeviotune;
     }
 
     for (i = 0; i < QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX && i < *nparams; i++) {

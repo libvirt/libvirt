@@ -1594,21 +1594,19 @@ qemuMigrationPrecreateStorage(virConnectPtr conn,
 
     for (i = 0; i < nbd->ndisks; i++) {
         virDomainDiskDefPtr disk;
-        int indx;
         const char *diskSrcPath;
 
         VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
                   nbd->disks[i].target, nbd->disks[i].capacity);
 
-        if ((indx = virDomainDiskIndexByName(vm->def,
-                                             nbd->disks[i].target, false)) < 0) {
+        if (!(disk = virDomainDiskByName(vm->def, nbd->disks[i].target,
+                                         false))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to find disk by target: %s"),
                            nbd->disks[i].target);
             goto cleanup;
         }
 
-        disk = vm->def->disks[indx];
         diskSrcPath = virDomainDiskGetSource(disk);
 
         if (disk->src->shared || disk->src->readonly ||
