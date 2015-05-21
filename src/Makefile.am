@@ -1290,6 +1290,7 @@ endif ! WITH_DRIVER_MODULES
 libvirt_driver_lxc_impl_la_CFLAGS = \
 		$(LIBNL_CFLAGS) \
 		$(FUSE_CFLAGS) \
+		$(XDR_CFLAGS) \
 		-I$(srcdir)/access \
 		-I$(srcdir)/conf \
 		$(AM_CFLAGS)
@@ -2216,6 +2217,7 @@ libvirt_setuid_rpc_client_la_CFLAGS =		\
 		-I$(srcdir)/rpc			\
 		$(AM_CFLAGS)			\
 		$(SECDRIVER_CFLAGS)		\
+		$(XDR_CFLAGS)			\
 		$(NULL)
 endif WITH_LXC
 
@@ -2665,6 +2667,7 @@ libvirt_lxc_CFLAGS =				\
 		$(LIBNL_CFLAGS)			\
 		$(FUSE_CFLAGS)			\
 		$(DBUS_CFLAGS)			\
+		$(XDR_CFLAGS)			\
 		$(NULL)
 if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
