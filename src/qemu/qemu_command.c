@@ -7021,6 +7021,19 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         }
         virBufferAddLit(buf, "host");
 
+        if (def->os.arch == VIR_ARCH_ARMV7L &&
+            host->arch == VIR_ARCH_AARCH64) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("QEMU binary does not support CPU "
+                                 "host-passthrough for armv7l on "
+                                 "aarch64 host"));
+                goto cleanup;
+            }
+
+            virBufferAddLit(buf, ",aarch64=off");
+        }
+
         if (ARCH_IS_PPC64(def->os.arch) &&
             cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
             def->cpu->model != NULL) {

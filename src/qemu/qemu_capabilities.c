@@ -284,6 +284,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "aes-key-wrap",
               "dea-key-wrap",
               "pci-serial",
+              "aarch64-off",
     );
 
 
@@ -3282,6 +3283,12 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* vmport option is supported v2.2.0 onwards */
     if (qemuCaps->version >= 2002000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_VMPORT_OPT);
+
+    /* -cpu ...,aarch64=off supported in v2.3.0 and onwards. But it
+       isn't detectable via qmp at this point */
+    if (qemuCaps->arch == VIR_ARCH_AARCH64 &&
+        qemuCaps->version >= 2003000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;

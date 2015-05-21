@@ -228,6 +228,7 @@ typedef enum {
     QEMU_CAPS_AES_KEY_WRAP       = 186, /* -machine aes_key_wrap */
     QEMU_CAPS_DEA_KEY_WRAP       = 187, /* -machine dea_key_wrap */
     QEMU_CAPS_DEVICE_PCI_SERIAL  = 188, /* -device pci-serial */
+    QEMU_CAPS_CPU_AARCH64_OFF    = 189, /* -cpu ...,aarch64=off */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

@@ -1,0 +1,35 @@
+<domain type="kvm">
+  <name>armtest</name>
+  <uuid>496d7ea8-9739-544b-4ebd-ef08be936e6a</uuid>
+  <memory>1048576</memory>
+  <currentMemory>1048576</currentMemory>
+  <vcpu>1</vcpu>
+  <os>
+    <type arch="armv7l" machine="virt">hvm</type>
+    <kernel>/arm.kernel</kernel>
+    <initrd>/arm.initrd</initrd>
+    <cmdline>console=ttyAMA0,115200n8 rw root=/dev/vda rootwait physmap.enabled=0</cmdline>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode='host-passthrough'/>
+  <clock offset="utc"/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <disk type='file' device='disk'>
+      <source file='/arm.raw'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+      <model type='virtio'/>
+    </interface>
+    <console type='pty'/>
+  </devices>
+</domain>
