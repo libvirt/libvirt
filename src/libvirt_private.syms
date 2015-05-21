@@ -1120,6 +1120,7 @@ virBitmapSetBit;
 virBitmapSize;
 virBitmapString;
 virBitmapToData;
+virBitmapToDataBuf;
 
 
 # util/virbuffer.h

@@ -492,24 +492,43 @@ virBitmapPtr virBitmapNewData(void *data, int len)
  *
  * Convert a bitmap to a chunk of data containing bits information.
  * Data consists of sequential bytes, with lower bytes containing
- * lower bits.
+ * lower bits. This function allocates @data.
  *
  * Returns 0 on success, -1 otherwise.
  */
 int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
 {
     int len;
-    unsigned long *l;
-    size_t i, j;
-    unsigned char *bytes;
 
     len = (bitmap->max_bit + CHAR_BIT - 1) / CHAR_BIT;
 
     if (VIR_ALLOC_N(*data, len) < 0)
         return -1;
 
-    bytes = *data;
     *dataLen = len;
+
+    virBitmapToDataBuf(bitmap, *data, *dataLen);
+
+    return 0;
+}
+
+/**
+ * virBitmapToDataBuf:
+ * @bytes: pointer to memory to fill
+ * @len: len of @bytes in byte
+ *
+ * Convert a bitmap to a chunk of data containing bits information.
+ * Data consists of sequential bytes, with lower bytes containing
+ * lower bits.
+ */
+void virBitmapToDataBuf(virBitmapPtr bitmap,
+                        unsigned char *bytes,
+                        size_t len)
+{
+    unsigned long *l;
+    size_t i, j;
+
+    memset(bytes, 0, len);
 
     /* htole64 is not provided by gnulib, so we do the conversion by hand */
     l = bitmap->map;
@@ -520,8 +539,6 @@ int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
         }
         bytes[i] = *l >> (j * CHAR_BIT);
     }
-
-    return 0;
 }
 
 /**

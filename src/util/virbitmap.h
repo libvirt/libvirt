@@ -88,6 +88,9 @@ virBitmapPtr virBitmapNewCopy(virBitmapPtr src) ATTRIBUTE_NONNULL(1);
 virBitmapPtr virBitmapNewData(void *data, int len) ATTRIBUTE_NONNULL(1);
 
 int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
+void virBitmapToDataBuf(virBitmapPtr bitmap, unsigned char *data, size_t len)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool virBitmapEqual(virBitmapPtr b1, virBitmapPtr b2);
