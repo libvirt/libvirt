@@ -1023,33 +1023,32 @@ virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
                           virNetworkIpDefPtr def)
 {
-
+    int ret = -1;
     xmlNodePtr cur;
+    virSocketAddrRange range;
+    virNetworkDHCPHostDef host;
+
+    memset(&range, 0, sizeof(range));
+    memset(&host, 0, sizeof(host));
 
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "range")) {
 
-            if (VIR_REALLOC_N(def->ranges, def->nranges + 1) < 0)
-                return -1;
-            if (virSocketAddrRangeParseXML(networkName, def, cur,
-                                           &def->ranges[def->nranges]) < 0) {
-                return -1;
-            }
-            def->nranges++;
+            if (virSocketAddrRangeParseXML(networkName, def, cur, &range) < 0)
+                goto cleanup;
+            if (VIR_APPEND_ELEMENT(def->ranges, def->nranges, range) < 0)
+                goto cleanup;
 
         } else if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "host")) {
 
-            if (VIR_REALLOC_N(def->hosts, def->nhosts + 1) < 0)
-                return -1;
             if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
-                                              &def->hosts[def->nhosts],
-                                              false) < 0) {
-                return -1;
-            }
-            def->nhosts++;
+                                              &host, false) < 0)
+                goto cleanup;
+            if (VIR_APPEND_ELEMENT(def->hosts, def->nhosts, host) < 0)
+                goto cleanup;
 
         } else if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) &&
                    cur->type == XML_ELEMENT_NODE &&
@@ -1069,7 +1068,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
                 virSocketAddrParse(&inaddr, server, AF_UNSPEC) < 0) {
                 VIR_FREE(file);
                 VIR_FREE(server);
-                return -1;
+                goto cleanup;
             }
 
             def->bootfile = file;
@@ -1080,7 +1079,10 @@ virNetworkDHCPDefParseXML(const char *networkName,
         cur = cur->next;
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virNetworkDHCPHostDefClear(&host);
+    return ret;
 }
 
 static int
