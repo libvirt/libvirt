@@ -697,6 +697,14 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     if (ret && !virFileIsExecutable(ret))
         VIR_FREE(ret);
 
+    if (guestarch == VIR_ARCH_ARMV7L &&
+        !ret &&
+        hostarch == VIR_ARCH_AARCH64) {
+        ret = virFindFileInPath("qemu-system-aarch64");
+        if (ret && !virFileIsExecutable(ret))
+            VIR_FREE(ret);
+    }
+
     if (guestarch == VIR_ARCH_I686 &&
         !ret &&
         hostarch == VIR_ARCH_X86_64) {
