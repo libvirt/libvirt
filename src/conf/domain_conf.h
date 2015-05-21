@@ -2069,7 +2069,7 @@ struct _virDomainCputune {
     long long emulator_quota;
     size_t nvcpupin;
     virDomainPinDefPtr *vcpupin;
-    virDomainPinDefPtr emulatorpin;
+    virBitmapPtr emulatorpin;
 
     size_t nvcpusched;
     virDomainThreadSchedParamPtr vcpusched;
@@ -2673,12 +2673,6 @@ int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
 void virDomainPinDel(virDomainPinDefPtr **pindef_list,
                      size_t *npin,
                      int vcpu);
-
-int virDomainEmulatorPinAdd(virDomainDefPtr def,
-                              unsigned char *cpumap,
-                              int maplen);
-
-int virDomainEmulatorPinDel(virDomainDefPtr def);
 
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 

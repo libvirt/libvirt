@@ -5374,22 +5374,18 @@ qemuDomainPinEmulator(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virCgroupPtr cgroup_emulator = NULL;
-    pid_t pid;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
-    size_t newVcpuPinNum = 0;
-    virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     virObjectEventPtr event = NULL;
-    char * str = NULL;
+    char *str = NULL;
     virTypedParameterPtr eventParams = NULL;
     int eventNparams = 0;
     int eventMaxparams = 0;
-
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5436,65 +5432,33 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (virBitmapIsAllSet(pcpumap))
         doReset = true;
 
-    pid = vm->pid;
-
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-
-        if (priv->vcpupids != NULL) {
-            if (VIR_ALLOC(newVcpuPin) < 0)
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR,
+                                   0, false, &cgroup_emulator) < 0)
                 goto endjob;
 
-            if (virDomainPinAdd(&newVcpuPin, &newVcpuPinNum, cpumap, maplen, -1) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to update vcpupin"));
-                virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
+            if (qemuSetupCgroupCpusetCpus(cgroup_emulator, pcpumap) < 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("failed to set cpuset.cpus in cgroup"
+                                 " for emulator threads"));
                 goto endjob;
             }
-
-            if (virCgroupHasController(priv->cgroup,
-                                       VIR_CGROUP_CONTROLLER_CPUSET)) {
-                /*
-                 * Configure the corresponding cpuset cgroup.
-                 */
-                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR,
-                                       0, false, &cgroup_emulator) < 0)
-                    goto endjob;
-                if (qemuSetupCgroupCpusetCpus(cgroup_emulator,
-                                              newVcpuPin[0]->cpumask) < 0) {
-                    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                                   _("failed to set cpuset.cpus in cgroup"
-                                     " for emulator threads"));
-                    goto endjob;
-                }
-            } else {
-                if (virProcessSetAffinity(pid, pcpumap) < 0) {
-                    virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                                   _("failed to set cpu affinity for "
-                                     "emulator threads"));
-                    goto endjob;
-                }
-            }
-
-            if (doReset) {
-                if (virDomainEmulatorPinDel(vm->def) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to delete emulatorpin xml of "
-                                     "a running domain"));
-                    goto endjob;
-                }
-            } else {
-                virDomainPinDefFree(vm->def->cputune.emulatorpin);
-                vm->def->cputune.emulatorpin = newVcpuPin[0];
-                VIR_FREE(newVcpuPin);
-            }
-
-            if (newVcpuPin)
-                virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
         } else {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cpu affinity is not supported"));
-            goto endjob;
+            if (virProcessSetAffinity(vm->pid, pcpumap) < 0) {
+                virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                               _("failed to set cpu affinity for "
+                                 "emulator thread"));
+                goto endjob;
+            }
         }
+
+        virBitmapFree(vm->def->cputune.emulatorpin);
+        vm->def->cputune.emulatorpin = NULL;
+
+        if (!doReset &&
+            !(vm->def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+            goto endjob;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
@@ -5510,22 +5474,12 @@ qemuDomainPinEmulator(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        virBitmapFree(persistentDef->cputune.emulatorpin);
+        persistentDef->cputune.emulatorpin = NULL;
 
-        if (doReset) {
-            if (virDomainEmulatorPinDel(persistentDef) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to delete emulatorpin xml of "
-                                 "a persistent domain"));
-                goto endjob;
-            }
-        } else {
-            if (virDomainEmulatorPinAdd(persistentDef, cpumap, maplen) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to update or add emulatorpin xml "
-                                 "of a persistent domain"));
-                goto endjob;
-            }
-        }
+        if (!doReset &&
+            !(persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+            goto endjob;
 
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         goto endjob;
@@ -5592,7 +5546,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
         goto cleanup;
 
     if (targetDef->cputune.emulatorpin) {
-        cpumask = targetDef->cputune.emulatorpin->cpumask;
+        cpumask = targetDef->cputune.emulatorpin;
     } else if (targetDef->cpumask) {
         cpumask = targetDef->cpumask;
     } else {

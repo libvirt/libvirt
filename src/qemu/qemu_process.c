@@ -2414,7 +2414,7 @@ qemuProcessSetEmulatorAffinity(virDomainObjPtr vm)
     int ret = -1;
 
     if (def->cputune.emulatorpin)
-        cpumask = def->cputune.emulatorpin->cpumask;
+        cpumask = def->cputune.emulatorpin;
     else if (def->cpumask)
         cpumask = def->cpumask;
     else

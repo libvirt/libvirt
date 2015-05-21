@@ -2474,7 +2474,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
-    virDomainPinDefFree(def->cputune.emulatorpin);
+    virBitmapFree(def->cputune.emulatorpin);
 
     for (i = 0; i < def->cputune.nvcpusched; i++)
         virBitmapFree(def->cputune.vcpusched[i].ids);
@@ -13569,36 +13569,26 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 }
 
 
-
 /* Parse the XML definition for emulatorpin.
  * emulatorpin has the form of
  *   <emulatorpin cpuset='0'/>
  */
-static virDomainPinDefPtr
+static virBitmapPtr
 virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 {
-    virDomainPinDefPtr def;
+    virBitmapPtr def = NULL;
     char *tmp = NULL;
-
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing cpuset for emulatorpin"));
-        goto error;
+        return NULL;
     }
 
-    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-        goto error;
+    ignore_value(virBitmapParse(tmp, 0, &def, VIR_DOMAIN_CPUMASK_LEN));
 
     VIR_FREE(tmp);
     return def;
-
- error:
-    VIR_FREE(tmp);
-    VIR_FREE(def);
-    return NULL;
 }
 
 
@@ -17768,50 +17758,6 @@ virDomainPinDel(virDomainPinDefPtr **pindef_list,
     }
 }
 
-int
-virDomainEmulatorPinAdd(virDomainDefPtr def,
-                        unsigned char *cpumap,
-                        int maplen)
-{
-    virDomainPinDefPtr emulatorpin = NULL;
-
-    if (!def->cputune.emulatorpin) {
-        /* No emulatorpin exists yet. */
-        if (VIR_ALLOC(emulatorpin) < 0)
-            return -1;
-
-        emulatorpin->id = -1;
-        emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!emulatorpin->cpumask) {
-            virDomainPinDefFree(emulatorpin);
-            return -1;
-        }
-
-        def->cputune.emulatorpin = emulatorpin;
-    } else {
-        /* Since there is only 1 emulatorpin for each vm,
-         * juest replace the old one.
-         */
-        virBitmapFree(def->cputune.emulatorpin->cpumask);
-        def->cputune.emulatorpin->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!def->cputune.emulatorpin->cpumask)
-            return -1;
-    }
-
-    return 0;
-}
-
-int
-virDomainEmulatorPinDel(virDomainDefPtr def)
-{
-    if (!def->cputune.emulatorpin)
-        return 0;
-
-    virDomainPinDefFree(def->cputune.emulatorpin);
-    def->cputune.emulatorpin = NULL;
-
-    return 0;
-}
 
 static int
 virDomainEventActionDefFormat(virBufferPtr buf,
@@ -21105,7 +21051,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         char *cpumask;
         virBufferAddLit(buf, "<emulatorpin ");
 
-        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin->cpumask)))
+        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin)))
             goto error;
 
         virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
