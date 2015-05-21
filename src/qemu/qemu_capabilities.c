@@ -723,19 +723,6 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     return ret;
 }
 
-
-static bool
-virQEMUCapsIsValidForKVM(virArch hostarch,
-                         virArch guestarch)
-{
-    if (hostarch == guestarch)
-        return true;
-    if (hostarch == VIR_ARCH_X86_64 &&
-        guestarch == VIR_ARCH_I686)
-        return true;
-    return false;
-}
-
 static int
 virQEMUCapsInitGuest(virCapsPtr caps,
                      virQEMUCapsCachePtr cache,
@@ -747,6 +734,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     char *binary = NULL;
     virQEMUCapsPtr qemubinCaps = NULL;
     virQEMUCapsPtr kvmbinCaps = NULL;
+    bool native_kvm, x86_32on64_kvm, arm_32on64_kvm;
     int ret = -1;
 
     /* Check for existence of base emulator, or alternate base
@@ -764,16 +752,38 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     /* qemu-kvm/kvm binaries can only be used if
      *  - host & guest arches match
-     * Or
-     *  - hostarch is x86_64 and guest arch is i686
-     * The latter simply needs "-cpu qemu32"
+     *  - hostarch is x86_64 and guest arch is i686 (needs -cpu qemu32)
+     *  - hostarch is aarch64 and guest arch is armv7l (needs -cpu aarch64=off)
      */
-    if (virQEMUCapsIsValidForKVM(hostarch, guestarch)) {
-        const char *const kvmbins[] = { "/usr/libexec/qemu-kvm", /* RHEL */
-                                        "qemu-kvm", /* Fedora */
-                                        "kvm" }; /* Upstream .spec */
+    native_kvm = (hostarch == guestarch);
+    x86_32on64_kvm = (hostarch == VIR_ARCH_X86_64 &&
+        guestarch == VIR_ARCH_I686);
+    arm_32on64_kvm = (hostarch == VIR_ARCH_AARCH64 &&
+        guestarch == VIR_ARCH_ARMV7L);
+
+    if (native_kvm || x86_32on64_kvm || arm_32on64_kvm) {
+        const char *kvmbins[] = {
+            "/usr/libexec/qemu-kvm", /* RHEL */
+            "qemu-kvm", /* Fedora */
+            "kvm", /* Debian/Ubuntu */
+            NULL,
+        };
+
+        /* x86 32-on-64 can be used with qemu-system-i386 and
+         * qemu-system-x86_64, so if we don't find a specific kvm binary,
+         * we can just fall back to the host arch native binary and
+         * everything works fine.
+         *
+         * arm is different in that 32-on-64 _only_ works with
+         * qemu-system-aarch64. So we have to add it to the kvmbins list
+         */
+        if (arm_32on64_kvm)
+            kvmbins[3] = "qemu-system-aarch64";
 
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
+            if (!kvmbins[i])
+                continue;
+
             kvmbin = virFindFileInPath(kvmbins[i]);
 
             if (!kvmbin)
