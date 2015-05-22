@@ -797,34 +797,17 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     virDomainDefPtr def = vm->def;
     libxl_bitmap map;
     virBitmapPtr cpumask = NULL;
-    uint8_t *cpumap = NULL;
-    virNodeInfo nodeinfo;
-    size_t cpumaplen;
     int vcpu;
-    size_t i;
     int ret = -1;
-
-    if (libxlDriverNodeGetInfo(driver, &nodeinfo) < 0)
-        goto cleanup;
-
-    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
 
     for (vcpu = 0; vcpu < def->cputune.nvcpupin; ++vcpu) {
         if (vcpu != def->cputune.vcpupin[vcpu]->id)
             continue;
 
-        if (VIR_ALLOC_N(cpumap, cpumaplen) < 0)
-            goto cleanup;
-
         cpumask = def->cputune.vcpupin[vcpu]->cpumask;
 
-        for (i = 0; i < virBitmapSize(cpumask); ++i) {
-            if (virBitmapIsBitSet(cpumask, i))
-                VIR_USE_CPU(cpumap, i);
-        }
-
-        map.size = cpumaplen;
-        map.map = cpumap;
+        if (virBitmapToData(cpumask, &map.map, (int *)&map.size) < 0)
+            goto cleanup;
 
         if (libxl_set_vcpuaffinity(cfg->ctx, def->id, vcpu, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -832,13 +815,13 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
             goto cleanup;
         }
 
-        VIR_FREE(cpumap);
+        VIR_FREE(map.map);
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpumap);
+    VIR_FREE(map.map);
     virObjectUnref(cfg);
     return ret;
 }
