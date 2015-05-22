@@ -794,24 +794,22 @@ int
 libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    virDomainDefPtr def = vm->def;
+    virDomainPinDefPtr pin;
     libxl_bitmap map;
     virBitmapPtr cpumask = NULL;
-    int vcpu;
+    size_t i;
     int ret = -1;
 
-    for (vcpu = 0; vcpu < def->cputune.nvcpupin; ++vcpu) {
-        if (vcpu != def->cputune.vcpupin[vcpu]->id)
-            continue;
-
-        cpumask = def->cputune.vcpupin[vcpu]->cpumask;
+    for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
+        pin = vm->def->cputune.vcpupin[i];
+        cpumask = pin->cpumask;
 
         if (virBitmapToData(cpumask, &map.map, (int *)&map.size) < 0)
             goto cleanup;
 
-        if (libxl_set_vcpuaffinity(cfg->ctx, def->id, vcpu, &map) != 0) {
+        if (libxl_set_vcpuaffinity(cfg->ctx, vm->def->id, pin->id, &map) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to pin vcpu '%d' with libxenlight"), vcpu);
+                           _("Failed to pin vcpu '%d' with libxenlight"), pin->id);
             goto cleanup;
         }
 
