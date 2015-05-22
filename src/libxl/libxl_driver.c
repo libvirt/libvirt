@@ -2307,10 +2307,8 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
-    virDomainPinDefPtr *vcpupin_list;
-    virBitmapPtr cpumask = NULL;
-    int maxcpu, hostcpus, vcpu, pcpu, n, ret = -1;
-    unsigned char *cpumap;
+    int hostcpus, vcpu, ret = -1;
+    virBitmapPtr allcpumap = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -2338,33 +2336,33 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     if ((hostcpus = libxl_get_max_cpus(cfg->ctx)) < 0)
         goto cleanup;
 
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
+    if (!(allcpumap = virBitmapNew(hostcpus)))
+        goto cleanup;
 
-    /* initialize cpumaps */
-    memset(cpumaps, 0xff, maplen * ncpumaps);
-    if (maxcpu % 8) {
-        for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-            cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-            cpumap[maplen - 1] &= (1 << maxcpu % 8) - 1;
-        }
+    virBitmapSetAll(allcpumap);
+
+    memset(cpumaps, 0x00, maplen * ncpumaps);
+
+    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
+        virDomainPinDefPtr pininfo;
+        virBitmapPtr bitmap = NULL;
+
+        pininfo = virDomainPinFind(targetDef->cputune.vcpupin,
+                                   targetDef->cputune.nvcpupin,
+                                   vcpu);
+
+        if (pininfo && pininfo->cpumask)
+            bitmap = pininfo->cpumask;
+        else
+            bitmap = allcpumap;
+
+        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
     }
 
-    /* if vcpupin setting exists, there may be unused pcpus */
-    for (n = 0; n < targetDef->cputune.nvcpupin; n++) {
-        vcpupin_list = targetDef->cputune.vcpupin;
-        vcpu = vcpupin_list[n]->id;
-        cpumask = vcpupin_list[n]->cpumask;
-        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-        for (pcpu = 0; pcpu < maxcpu; pcpu++) {
-            if (!virBitmapIsBitSet(cpumask, pcpu))
-                VIR_UNUSE_CPU(cpumap, pcpu);
-        }
-    }
     ret = ncpumaps;
 
  cleanup:
+    virBitmapFree(allcpumap);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);
