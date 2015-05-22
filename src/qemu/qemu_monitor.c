@@ -3214,17 +3214,40 @@ qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
 }
 
 
-int
-qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
-                        const char *device,
-                        virDomainBlockJobInfoPtr info,
-                        unsigned long long *bandwidth)
+virHashTablePtr
+qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("device=%s, info=%p, bandwidth=%p", device, info, bandwidth);
+    QEMU_CHECK_MONITOR_JSON_NULL(mon);
+    return qemuMonitorJSONGetAllBlockJobInfo(mon);
+}
 
-    QEMU_CHECK_MONITOR_JSON(mon);
 
-    return qemuMonitorJSONBlockJobInfo(mon, device, info, bandwidth);
+/**
+ * qemuMonitorGetBlockJobInfo:
+ * Parse Block Job information, and populate info for the named device.
+ * Return 1 if info available, 0 if device has no block job, and -1 on error.
+ */
+int
+qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
+                           const char *alias,
+                           qemuMonitorBlockJobInfoPtr info)
+{
+    virHashTablePtr all;
+    qemuMonitorBlockJobInfoPtr data;
+    int ret = 0;
+
+    VIR_DEBUG("alias=%s, info=%p", alias, info);
+
+    if (!(all = qemuMonitorGetAllBlockJobInfo(mon)))
+        return -1;
+
+    if ((data = virHashLookup(all, alias))) {
+        *info = *data;
+        ret = 1;
+    }
+
+    virHashFree(all);
+    return ret;
 }
 
 

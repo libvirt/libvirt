@@ -4124,29 +4124,30 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Returns -1 on error, 0 if not the right device, 1 if info was
- * populated.  However, rather than populate info->bandwidth (which
- * might overflow on 32-bit machines), bandwidth is tracked optionally
- * on the side.  */
+
 static int
-qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
-                                  const char *device,
-                                  virDomainBlockJobInfoPtr info,
-                                  unsigned long long *bandwidth)
+qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
+                                 virJSONValuePtr entry)
 {
-    const char *this_dev;
+    qemuMonitorBlockJobInfoPtr info = NULL;
+    const char *device;
     const char *type;
 
-    if ((this_dev = virJSONValueObjectGetString(entry, "device")) == NULL) {
+    if (!(device = virJSONValueObjectGetString(entry, "device"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("entry was missing 'device'"));
         return -1;
     }
-    if (!STREQ(this_dev, device))
-        return 0;
+    if (STRPREFIX(device, QEMU_DRIVE_HOST_PREFIX))
+        device += strlen(QEMU_DRIVE_HOST_PREFIX);
 
-    type = virJSONValueObjectGetString(entry, "type");
-    if (!type) {
+    if (VIR_ALLOC(info) < 0 ||
+        virHashAddEntry(blockJobs, device, info) < 0) {
+        VIR_FREE(info);
+        return -1;
+    }
+
+    if (!(type = virJSONValueObjectGetString(entry, "type"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("entry was missing 'type'"));
         return -1;
@@ -4160,8 +4161,7 @@ qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
     else
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
 
-    if (bandwidth &&
-        virJSONValueObjectGetNumberUlong(entry, "speed", bandwidth) < 0) {
+    if (virJSONValueObjectGetNumberUlong(entry, "speed", &info->bandwidth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("entry was missing 'speed'"));
         return -1;
@@ -4178,30 +4178,23 @@ qemuMonitorJSONGetBlockJobInfoOne(virJSONValuePtr entry,
                        _("entry was missing 'len'"));
         return -1;
     }
-    return 1;
+
+    return 0;
 }
 
-/**
- * qemuMonitorJSONBlockJobInfo:
- * Parse Block Job information, and populate info for the named device.
- * Return 1 if info available, 0 if device has no block job, and -1 on error.
- */
-int
-qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
-                            const char *device,
-                            virDomainBlockJobInfoPtr info,
-                            unsigned long long *bandwidth)
+virHashTablePtr
+qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     int nr_results;
     size_t i;
-    int ret = -1;
+    virHashTablePtr blockJobs = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("query-block-jobs", NULL);
     if (!cmd)
-        return -1;
+        return NULL;
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
@@ -4223,22 +4216,29 @@ qemuMonitorJSONBlockJobInfo(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    for (i = ret = 0; i < nr_results && ret == 0; i++) {
+    if (!(blockJobs = virHashCreate(nr_results, virHashValueFree)))
+        goto cleanup;
+
+    for (i = 0; i < nr_results; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing array element"));
-            ret = -1;
-            goto cleanup;
+            goto error;
         }
-        ret = qemuMonitorJSONGetBlockJobInfoOne(entry, device, info,
-                                                bandwidth);
+        if (qemuMonitorJSONParseBlockJobInfo(blockJobs, entry) < 0)
+            goto error;
     }
 
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    return ret;
+    return blockJobs;
+
+ error:
+    virHashFree(blockJobs);
+    blockJobs = NULL;
+    goto cleanup;
 }
 
 

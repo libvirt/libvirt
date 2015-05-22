@@ -774,10 +774,19 @@ int qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
                                 unsigned long long bandwidth,
                                 bool modern);
 
-int qemuMonitorBlockJobInfo(qemuMonitorPtr mon,
-                            const char *device,
-                            virDomainBlockJobInfoPtr info,
-                            unsigned long long *bandwidth)
+typedef struct _qemuMonitorBlockJobInfo qemuMonitorBlockJobInfo;
+typedef qemuMonitorBlockJobInfo *qemuMonitorBlockJobInfoPtr;
+struct _qemuMonitorBlockJobInfo {
+    int type; /* virDomainBlockJobType */
+    unsigned long long bandwidth; /* in bytes/s */
+    virDomainBlockJobCursor cur;
+    virDomainBlockJobCursor end;
+};
+
+virHashTablePtr qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon);
+int qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
+                               const char *device,
+                               qemuMonitorBlockJobInfoPtr info)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuMonitorOpenGraphics(qemuMonitorPtr mon,

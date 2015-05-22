@@ -16083,7 +16083,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 {
     int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainBlockJobInfo info;
+    qemuMonitorBlockJobInfo info;
     virStorageSourcePtr oldsrc = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -16097,7 +16097,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     /* Probe the status, if needed.  */
     if (!disk->mirrorState) {
         qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorBlockJobInfo(priv->mon, device, &info, NULL);
+        rc = qemuMonitorGetBlockJobInfo(priv->mon, disk->info.alias, &info);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
         if (rc < 0)
@@ -16430,16 +16430,16 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
 
 static int
-qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
-                           virDomainBlockJobInfoPtr info, unsigned int flags)
+qemuDomainGetBlockJobInfo(virDomainPtr dom,
+                          const char *path,
+                          virDomainBlockJobInfoPtr info,
+                          unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    char *device = NULL;
-    int idx;
     virDomainDiskDefPtr disk;
     int ret = -1;
-    unsigned long long bandwidth;
+    qemuMonitorBlockJobInfo rawInfo;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
@@ -16462,31 +16462,34 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom, const char *path,
     if (qemuDomainSupportsBlockJobs(vm, NULL) < 0)
         goto endjob;
 
-    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
+    if (!(disk = virDomainDiskByName(vm->def, path, true)))
         goto endjob;
-    disk = vm->def->disks[idx];
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorBlockJobInfo(qemuDomainGetMonitor(vm), device, info,
-                                  &bandwidth);
+    ret = qemuMonitorGetBlockJobInfo(qemuDomainGetMonitor(vm),
+                                     disk->info.alias, &rawInfo);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret < 0)
         goto endjob;
 
+    info->cur = rawInfo.cur;
+    info->end = rawInfo.end;
+
+    info->type = rawInfo.type;
     if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
         info->type = disk->mirrorJob;
-    if (bandwidth) {
-        if (!(flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES))
-            bandwidth = VIR_DIV_UP(bandwidth, 1024 * 1024);
-        info->bandwidth = bandwidth;
-        if (info->bandwidth != bandwidth) {
-            virReportError(VIR_ERR_OVERFLOW,
-                           _("bandwidth %llu cannot be represented in result"),
-                           bandwidth);
-            goto endjob;
-        }
+
+    if (rawInfo.bandwidth &&
+        !(flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES))
+        rawInfo.bandwidth = VIR_DIV_UP(rawInfo.bandwidth, 1024 * 1024);
+    info->bandwidth = rawInfo.bandwidth;
+    if (info->bandwidth != rawInfo.bandwidth) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth %llu cannot be represented in result"),
+                       rawInfo.bandwidth);
+        goto endjob;
     }
 
     /* Snoop block copy operations, so future cancel operations can
