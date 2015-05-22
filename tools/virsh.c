@@ -1811,7 +1811,7 @@ vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
     ret = vshCommandOptString(cmd, name, &str);
     if (ret <= 0)
         return ret;
-    if (virStrToLong_ull(str, &end, 10, value) < 0 ||
+    if (virStrToLong_ullp(str, &end, 10, value) < 0 ||
         virScaleInteger(value, end, scale, max) < 0)
         return -1;
     return 1;
