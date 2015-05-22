@@ -20626,6 +20626,10 @@ virDomainRedirFilterDefFormat(virBufferPtr buf,
 {
     size_t i;
 
+    /* no need format an empty redirfilter */
+    if (filter->nusbdevs == 0)
+        return 0;
+
     virBufferAddLit(buf, "<redirfilter>\n");
     virBufferAdjustIndent(buf, 2);
     for (i = 0; i < filter->nusbdevs; i++) {
