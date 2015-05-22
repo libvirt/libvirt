@@ -5291,8 +5291,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
     int hostcpus, vcpu;
-    unsigned char *cpumap;
     virCapsPtr caps = NULL;
+    virBitmapPtr allcpumap = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5319,6 +5319,11 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
+    if (!(allcpumap = virBitmapNew(hostcpus)))
+        goto cleanup;
+
+    virBitmapSetAll(allcpumap);
+
     /* Clamp to actual number of vcpus */
     if (ncpumaps > targetDef->vcpus)
         ncpumaps = targetDef->vcpus;
@@ -5329,37 +5334,23 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
         virDomainPinDefPtr pininfo;
         virBitmapPtr bitmap = NULL;
-        unsigned char *tmpmap = NULL;
-        int tmpmaplen;
 
         pininfo = virDomainPinFind(targetDef->cputune.vcpupin,
                                    targetDef->cputune.nvcpupin,
                                    vcpu);
-        if (!pininfo) {
-            if (!(bitmap = virBitmapNew(hostcpus)))
-                goto cleanup;
-            virBitmapSetAll(bitmap);
-        } else {
-            bitmap = pininfo->cpumask;
-        }
 
-        if (virBitmapToData(bitmap, &tmpmap, &tmpmaplen) < 0) {
-            if (!pininfo)
-                virBitmapFree(bitmap);
-            goto cleanup;
-        }
-        if (tmpmaplen > maplen)
-            tmpmaplen = maplen;
-        cpumap = VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-        memcpy(cpumap, tmpmap, tmpmaplen);
-        if (!pininfo)
-            virBitmapFree(bitmap);
-        VIR_FREE(tmpmap);
+        if (pininfo && pininfo->cpumask)
+            bitmap = pininfo->cpumask;
+        else
+            bitmap = allcpumap;
+
+        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
     }
 
     ret = ncpumaps;
 
  cleanup:
+    virBitmapFree(allcpumap);
     virDomainObjEndAPI(&vm);
     virObjectUnref(caps);
     return ret;
