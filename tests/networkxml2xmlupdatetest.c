@@ -202,6 +202,11 @@ mymain(void)
                   "dhcp6host-routed-network-range",
                   VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST,
                   0);
+    DO_TEST_INDEX_FAIL("add-dhcp-range-outside-net",
+                       "dhcp-range-10",
+                       "dhcp6host-routed-network",
+                       VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST,
+                       0);
     DO_TEST_INDEX("append-dhcp-range",
                   "dhcp-range",
                   "dhcp6host-routed-network",

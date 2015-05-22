@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2009-2013, 2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -96,7 +96,9 @@ int virSocketAddrSetPort(virSocketAddrPtr addr, int port);
 int virSocketAddrGetPort(virSocketAddrPtr addr);
 
 int virSocketAddrGetRange(virSocketAddrPtr start,
-                          virSocketAddrPtr end);
+                          virSocketAddrPtr end,
+                          virSocketAddrPtr network,
+                          int prefix);
 
 int virSocketAddrIsNetmask(virSocketAddrPtr netmask);
 

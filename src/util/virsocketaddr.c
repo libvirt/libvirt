@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -605,31 +605,69 @@ int virSocketAddrCheckNetmask(virSocketAddrPtr addr1, virSocketAddrPtr addr2,
  * virSocketGetRange:
  * @start: start of an IP range
  * @end: end of an IP range
+ * @network: IP address of network that should completely contain this range
+ * @prefix: prefix of the network
  *
- * Check the order of the 2 addresses and compute the range, this
- * will return 1 for identical addresses. Errors can come from incompatible
- * addresses type, excessive range (>= 2^^16) where the two addresses are
- * unrelated or inverted start and end.
+ * Check the order of the 2 addresses and compute the range, this will
+ * return 1 for identical addresses. Errors can come from incompatible
+ * addresses type, excessive range (>= 2^^16) where the two addresses
+ * are unrelated, inverted start and end, or a range that is not
+ * within network/prefix.
  *
  * Returns the size of the range or -1 in case of failure
  */
-int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end)
+int
+virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end,
+                      virSocketAddrPtr network, int prefix)
 {
     int ret = 0;
     size_t i;
+    virSocketAddr netmask;
 
-    if ((start == NULL) || (end == NULL))
-        return -1;
-    if (start->data.stor.ss_family != end->data.stor.ss_family)
+    if (start == NULL || end == NULL || network == NULL)
         return -1;
 
-    if (start->data.stor.ss_family == AF_INET) {
+    if (VIR_SOCKET_ADDR_FAMILY(start) != VIR_SOCKET_ADDR_FAMILY(end) ||
+        VIR_SOCKET_ADDR_FAMILY(start) != VIR_SOCKET_ADDR_FAMILY(network))
+        return -1;
+
+    if (prefix < 0 ||
+        virSocketAddrPrefixToNetmask(prefix, &netmask, VIR_SOCKET_ADDR_FAMILY(network)) < 0)
+        return -1;
+
+    /* both start and end of range need to be in the same network as
+     * "network"
+     */
+    if (virSocketAddrCheckNetmask(start, network, &netmask) <= 0 ||
+        virSocketAddrCheckNetmask(end, network, &netmask) <= 0)
+        return -1;
+
+    if (VIR_SOCKET_ADDR_IS_FAMILY(start, AF_INET)) {
         virSocketAddrIPv4 t1, t2;
+        virSocketAddr netaddr, broadcast;
+
+        if (virSocketAddrBroadcast(network, &netmask, &broadcast) < 0 ||
+            virSocketAddrMask(network, &netmask, &netaddr) < 0)
+           return -1;
+
+        /* Don't allow the start of the range to be the network
+         * address (usually "...0") or the end of the range to be the
+         * broadcast address (usually "...255"). (the opposite also
+         * isn't allowed, but checking for that is implicit in all the
+         * other combined checks) (IPv6 doesn't have broadcast and
+         * network addresses, so this check is only done for IPv4)
+         */
+        if (virSocketAddrEqual(start, &netaddr) ||
+            virSocketAddrEqual(end, &broadcast))
+            return -1;
 
         if ((virSocketAddrGetIPv4Addr(start, &t1) < 0) ||
             (virSocketAddrGetIPv4Addr(end, &t2) < 0))
             return -1;
 
+        /* legacy check that everything except the last two bytes are
+         * the same
+         */
         for (i = 0; i < 2; i++) {
             if (t1[i] != t2[i])
                 return -1;
@@ -638,13 +676,16 @@ int virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end)
         if (ret < 0)
             return -1;
         ret++;
-    } else if (start->data.stor.ss_family == AF_INET6) {
+    } else if (VIR_SOCKET_ADDR_IS_FAMILY(start, AF_INET6)) {
         virSocketAddrIPv6 t1, t2;
 
         if ((virSocketAddrGetIPv6Addr(start, &t1) < 0) ||
             (virSocketAddrGetIPv6Addr(end, &t2) < 0))
             return -1;
 
+        /* legacy check that everything except the last two bytes are
+         * the same
+         */
         for (i = 0; i < 7; i++) {
             if (t1[i] != t2[i])
                 return -1;

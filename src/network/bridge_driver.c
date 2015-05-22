@@ -1193,7 +1193,9 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
             nbleases += virSocketAddrGetRange(&ipdef->ranges[r].start,
-                                              &ipdef->ranges[r].end);
+                                              &ipdef->ranges[r].end,
+                                              &ipdef->address,
+                                              virNetworkIpDefPrefix(ipdef));
         }
 
         /*
