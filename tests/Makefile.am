@@ -188,6 +188,7 @@ if WITH_REMOTE
 test_programs += \
 	virnetmessagetest \
 	virnetsockettest \
+	virnetservertest \
 	virnetserverclienttest \
 	$(NULL)
 if WITH_GNUTLS
@@ -920,6 +921,12 @@ virnetmessagetest_LDADD = $(LDADDS)
 virnetsockettest_SOURCES = \
 	virnetsockettest.c testutils.h testutils.c
 virnetsockettest_LDADD = $(LDADDS)
+
+virnetservertest_SOURCES = \
+	virnetservertest.c \
+	testutils.h testutils.c
+virnetservertest_CFLAGS = $(XDR_CFLAGS) $(AM_CFLAGS)
+virnetservertest_LDADD = $(LDADDS)
 
 virnetserverclienttest_SOURCES = \
 	virnetserverclienttest.c \

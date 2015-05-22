@@ -1,0 +1,14 @@
+   virnetservertest data files
+   ===========================
+
+The various input-data-*.json files are a record of all the historical
+formats that libvirt has been able to produce data for. Everytime a
+new field is added to the JSON output, a *new* input data file should
+be created. We must not add new fields to existing input-data files,
+nor must we ever re-structure them if code changes, as we must check
+new code handles the legacy formats.
+
+The various output-data-*.json files are the record of what the *new*
+JSON output should look like for the correspondingly named input-data
+file. It is permissible to change the existing output-data-*.json
+files if the format we save in is updated.
