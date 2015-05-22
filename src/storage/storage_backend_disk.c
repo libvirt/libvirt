@@ -309,7 +309,12 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
                                pool->def->source.devices[0].path,
                                NULL);
 
-    pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+    /* If a volume is passed, virStorageBackendDiskMakeVol only updates the
+     * pool allocation for that single volume.
+     */
+    if (!vol)
+        pool->def->allocation = 0;
+    pool->def->capacity = pool->def->available = 0;
 
     ret = virCommandRunNul(cmd,
                            6,
