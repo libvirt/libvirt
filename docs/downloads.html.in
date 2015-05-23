@@ -71,6 +71,20 @@
     <pre>
       <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a></pre>
 
+    <p>
+      In addition to this repository, there are the following read-only git
+      repositories which mirror the master one. Note that we currently do not
+      use the full set of features on these mirrors (e.g. pull requests on
+      GitHub, so please don't use them). All patch review and discussion only
+      occurs on the <a href="contact.html">libvir-list</a> mailing list. Also
+      note that some repositories listed below allow HTTP checkouts too.
+    </p>
+
+    <pre>
+      <a href="https://github.com/libvirtproject/libvirt">https://github.com/libvirtproject/libvirt</a>
+      <a href="http://repo.or.cz/w/libvirt.git">http://repo.or.cz/w/libvirt.git</a>
+      <a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/libvirt</a></pre>
+
     <br />
 
     <h1>libvirt Application Development Guide</h1>
