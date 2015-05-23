@@ -2605,6 +2605,7 @@ int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
  * <qemuCaps>
  *   <qemuctime>234235253</qemuctime>
  *   <selfctime>234235253</selfctime>
+ *   <selfvers>1002016</selfvers>
  *   <usedQMP/>
  *   <flag name='foo'/>
  *   <flag name='bar'/>
@@ -2617,7 +2618,8 @@ int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
  */
 static int
 virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
-                     time_t *qemuctime, time_t *selfctime)
+                     time_t *qemuctime, time_t *selfctime,
+                     unsigned long *selfvers)
 {
     xmlDocPtr doc = NULL;
     int ret = -1;
@@ -2627,6 +2629,7 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
     xmlXPathContextPtr ctxt = NULL;
     char *str = NULL;
     long long int l;
+    unsigned long lu;
 
     if (!(doc = virXMLParseFile(filename)))
         goto cleanup;
@@ -2659,6 +2662,10 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
         goto cleanup;
     }
     *selfctime = (time_t)l;
+
+    *selfvers = 0;
+    if (virXPathULong("string(./selfvers)", ctxt, &lu) == 0)
+        *selfvers = lu;
 
     qemuCaps->usedQMP = virXPathBoolean("count(./usedQMP) > 0",
                                         ctxt) > 0;
@@ -2798,6 +2805,8 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
                       (long long)qemuCaps->ctime);
     virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
                       (long long)virGetSelfLastChanged());
+    virBufferAsprintf(&buf, "<selfvers>%lu</selfvers>\n",
+                      (unsigned long)LIBVIR_VERSION_NUMBER);
 
     if (qemuCaps->usedQMP)
         virBufferAddLit(&buf, "<usedQMP/>\n");
@@ -2938,6 +2947,7 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
     struct stat sb;
     time_t qemuctime;
     time_t selfctime;
+    unsigned long selfvers;
 
     if (virAsprintf(&capsdir, "%s/capabilities", cacheDir) < 0)
         goto cleanup;
@@ -2970,7 +2980,8 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
         goto cleanup;
     }
 
-    if (virQEMUCapsLoadCache(qemuCaps, capsfile, &qemuctime, &selfctime) < 0) {
+    if (virQEMUCapsLoadCache(qemuCaps, capsfile, &qemuctime, &selfctime,
+                             &selfvers) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
                  capsfile, qemuCaps->binary, err ? NULLSTR(err->message) :
@@ -2983,12 +2994,14 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
 
     /* Discard cache if QEMU binary or libvirtd changed */
     if (qemuctime != qemuCaps->ctime ||
-        selfctime != virGetSelfLastChanged()) {
+        selfctime != virGetSelfLastChanged() ||
+        selfvers != LIBVIR_VERSION_NUMBER) {
         VIR_DEBUG("Outdated cached capabilities '%s' for '%s' "
-                  "(%lld vs %lld, %lld vs %lld)",
+                  "(%lld vs %lld, %lld vs %lld, %lu vs %lu)",
                   capsfile, qemuCaps->binary,
                   (long long)qemuctime, (long long)qemuCaps->ctime,
-                  (long long)selfctime, (long long)virGetSelfLastChanged());
+                  (long long)selfctime, (long long)virGetSelfLastChanged(),
+                  selfvers, (unsigned long)LIBVIR_VERSION_NUMBER);
         ignore_value(unlink(capsfile));
         virQEMUCapsReset(qemuCaps);
         ret = 0;
