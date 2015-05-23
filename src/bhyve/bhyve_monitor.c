@@ -48,7 +48,7 @@ struct _bhyveMonitor {
 static void
 bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
 {
-    const struct timespec zerowait = {};
+    const struct timespec zerowait = { 0, 0 };
     bhyveMonitorPtr mon = opaque;
     struct kevent kev;
     int rc, status;
