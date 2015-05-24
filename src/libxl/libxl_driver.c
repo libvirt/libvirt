@@ -74,6 +74,7 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define LIBXL_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
 #define HYPERVISOR_CAPABILITIES "/proc/xen/capabilities"
+#define HYPERVISOR_XENSTORED "/dev/xen/xenstored"
 
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
@@ -427,8 +428,6 @@ static bool
 libxlDriverShouldLoad(bool privileged)
 {
     bool ret = false;
-    int status;
-    char *output = NULL;
 
     /* Don't load if non-root */
     if (!privileged) {
@@ -436,24 +435,27 @@ libxlDriverShouldLoad(bool privileged)
         return ret;
     }
 
-    if (!virFileExists(HYPERVISOR_CAPABILITIES)) {
-        VIR_INFO("Disabling driver as " HYPERVISOR_CAPABILITIES
-                 " does not exist");
-        return ret;
-    }
-    /*
-     * Don't load if not running on a Xen control domain (dom0). It is not
-     * sufficient to check for the file to exist as any guest can mount
-     * xenfs to /proc/xen.
-     */
-    status = virFileReadAll(HYPERVISOR_CAPABILITIES, 10, &output);
-    if (status >= 0)
-        status = strncmp(output, "control_d", 9);
-    VIR_FREE(output);
-    if (status) {
-        VIR_INFO("No Xen capabilities detected, probably not running "
-                 "in a Xen Dom0.  Disabling libxenlight driver");
+    if (virFileExists(HYPERVISOR_CAPABILITIES)) {
+        int status;
+        char *output = NULL;
+        /*
+         * Don't load if not running on a Xen control domain (dom0). It is not
+         * sufficient to check for the file to exist as any guest can mount
+         * xenfs to /proc/xen.
+         */
+        status = virFileReadAll(HYPERVISOR_CAPABILITIES, 10, &output);
+        if (status >= 0)
+            status = strncmp(output, "control_d", 9);
+        VIR_FREE(output);
+        if (status) {
+            VIR_INFO("No Xen capabilities detected, probably not running "
+                     "in a Xen Dom0.  Disabling libxenlight driver");
 
+            return ret;
+        }
+    } else if (!virFileExists(HYPERVISOR_XENSTORED)) {
+        VIR_INFO("Disabling driver as neither " HYPERVISOR_CAPABILITIES
+                 " nor " HYPERVISOR_XENSTORED " exist");
         return ret;
     }
 
