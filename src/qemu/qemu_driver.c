@@ -4870,12 +4870,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                   VIR_DOMAIN_VCPU_MAXIMUM |
                   VIR_DOMAIN_VCPU_GUEST, -1);
 
-    if (!nvcpus || (unsigned short) nvcpus != nvcpus) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("argument out of range: %d"), nvcpus);
-        return -1;
-    }
-
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 

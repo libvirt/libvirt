@@ -13893,7 +13893,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     int n;
     long id = -1;
     virDomainDefPtr def;
-    unsigned long count;
     bool uuid_generated = false;
     virHashTablePtr bootHash = NULL;
     bool usb_none = false;
@@ -14176,44 +14175,31 @@ virDomainDefParseXML(xmlDocPtr xml,
                                   &def->mem.swap_hard_limit) < 0)
         goto error;
 
-    n = virXPathULong("string(./vcpu[1])", ctxt, &count);
-    if (n == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("maximum vcpus must be an integer"));
-        goto error;
-    } else if (n < 0) {
-        def->maxvcpus = 1;
-    } else {
-        def->maxvcpus = count;
-        if (count == 0 || (unsigned short) count != count) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid maximum number of vCPUs '%lu'"), count);
+    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &def->maxvcpus)) < 0) {
+        if (n == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("maximum vcpus count must be an integer"));
             goto error;
         }
+
+        def->maxvcpus = 1;
     }
 
-    n = virXPathULong("string(./vcpu[1]/@current)", ctxt, &count);
-    if (n == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("current vcpus must be an integer"));
-        goto error;
-    } else if (n < 0) {
-        def->vcpus = def->maxvcpus;
-    } else {
-        def->vcpus = count;
-        if (count == 0 || (unsigned short) count != count) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid current number of vCPUs '%lu'"), count);
+    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &def->vcpus)) < 0) {
+        if (n == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("current vcpus count must be an integer"));
             goto error;
         }
 
-        if (def->maxvcpus < count) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("maxvcpus must not be less than current vcpus "
-                             "(%d < %lu)"),
-                           def->maxvcpus, count);
-            goto error;
-        }
+        def->vcpus = def->maxvcpus;
+    }
+
+    if (def->maxvcpus < def->vcpus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("maxvcpus must not be less than current vcpus "
+                         "(%u < %u)"), def->maxvcpus, def->vcpus);
+        goto error;
     }
 
     tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
