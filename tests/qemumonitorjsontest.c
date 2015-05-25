@@ -1706,45 +1706,6 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStatus(const void *data)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetSpiceMigrationStatus(const void *data)
-{
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
-    int ret = -1;
-    bool spiceMigrated;
-
-    if (!test)
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-spice",
-                               "{"
-                               "    \"return\": {"
-                               "        \"migrated\": true,"
-                               "        \"enabled\": false,"
-                               "        \"mouse-mode\": \"client\""
-                               "    },"
-                               "    \"id\": \"libvirt-14\""
-                               "}") < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitorTestGetMonitor(test),
-                                               &spiceMigrated) < 0)
-        goto cleanup;
-
-    if (!spiceMigrated) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid spice migration status: %d, expecting 1",
-                       spiceMigrated);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    qemuMonitorTestFree(test);
-    return ret;
-}
-
-static int
 testHashEqualChardevInfo(const void *value1, const void *value2)
 {
     const qemuMonitorChardevInfo *info1 = value1;
@@ -2400,7 +2361,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
     DO_TEST(qemuMonitorJSONGetMigrationStatus);
-    DO_TEST(qemuMonitorJSONGetSpiceMigrationStatus);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);

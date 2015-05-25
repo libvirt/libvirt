@@ -1481,6 +1481,33 @@ qemuProcessHandleSerialChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                               virDomainObjPtr vm,
+                               void *opaque ATTRIBUTE_UNUSED)
+{
+    qemuDomainObjPrivatePtr priv;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("Spice migration completed for domain %p %s",
+              vm, vm->def->name);
+
+    priv = vm->privateData;
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        VIR_DEBUG("got SPICE_MIGRATE_COMPLETED event without a migration job");
+        goto cleanup;
+    }
+
+    priv->job.spiceMigrated = true;
+    virDomainObjSignal(vm);
+
+ cleanup:
+    virObjectUnlock(vm);
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuProcessHandleMonitorEOF,
     .errorNotify = qemuProcessHandleMonitorError,
@@ -1504,6 +1531,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainDeviceDeleted = qemuProcessHandleDeviceDeleted,
     .domainNicRxFilterChanged = qemuProcessHandleNicRxFilterChanged,
     .domainSerialChange = qemuProcessHandleSerialChanged,
+    .domainSpiceMigrated = qemuProcessHandleSpiceMigrated,
 };
 
 static int

@@ -498,8 +498,6 @@ struct _qemuMonitorMigrationStatus {
 
 int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
                                   qemuMonitorMigrationStatusPtr status);
-int qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
-                                       bool *spice_migrated);
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,

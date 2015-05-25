@@ -136,6 +136,7 @@ struct qemuDomainJobObj {
     qemuDomainJobInfoPtr current;       /* async job progress data */
     qemuDomainJobInfoPtr completed;     /* statistics data of a recently completed job */
     bool abortJob;                      /* abort of the job requested */
+    bool spiceMigrated;                 /* spice migration completed */
 };
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,

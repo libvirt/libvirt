@@ -2124,16 +2124,6 @@ qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetSpiceMigrationStatus(qemuMonitorPtr mon,
-                                   bool *spice_migrated)
-{
-    QEMU_CHECK_MONITOR_JSON(mon);
-
-    return qemuMonitorJSONGetSpiceMigrationStatus(mon, spice_migrated);
-}
-
-
-int
 qemuMonitorMigrateToFd(qemuMonitorPtr mon,
                        unsigned int flags,
                        int fd)

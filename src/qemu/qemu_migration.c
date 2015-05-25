@@ -2416,45 +2416,29 @@ qemuMigrationSetPinAll(virQEMUDriverPtr driver,
 }
 
 static int
-qemuMigrationWaitForSpice(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm)
+qemuMigrationWaitForSpice(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool wait_for_spice = false;
-    bool spice_migrated = false;
     size_t i = 0;
-    int rc;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {
-        for (i = 0; i < vm->def->ngraphics; i++) {
-            if (vm->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-                wait_for_spice = true;
-                break;
-            }
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION))
+        return 0;
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        if (vm->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            wait_for_spice = true;
+            break;
         }
     }
 
     if (!wait_for_spice)
         return 0;
 
-    while (!spice_migrated) {
-        /* Poll every 50ms for progress & to allow cancellation */
-        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
-
-        if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                           QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    while (!priv->job.spiceMigrated && !priv->job.abortJob) {
+        if (virDomainObjWait(vm) < 0)
             return -1;
-
-        rc = qemuMonitorGetSpiceMigrationStatus(priv->mon, &spice_migrated);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
-        if (rc < 0)
-            return -1;
-        virObjectUnlock(vm);
-        nanosleep(&ts, NULL);
-        virObjectLock(vm);
     }
-
     return 0;
 }
 
@@ -3680,7 +3664,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
     if (retcode == 0) {
         /* If guest uses SPICE and supports seamless migration we have to hold
          * up domain shutdown until SPICE server transfers its data */
-        qemuMigrationWaitForSpice(driver, vm);
+        qemuMigrationWaitForSpice(vm);
 
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
