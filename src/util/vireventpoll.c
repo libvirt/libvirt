@@ -357,9 +357,10 @@ static int virEventPollCalculateTimeout(int *timeout)
             return -1;
 
         EVENT_DEBUG("Schedule timeout then=%llu now=%llu", then, now);
-        *timeout = then - now;
-        if (*timeout < 0)
+        if (then <= now)
             *timeout = 0;
+        else
+            *timeout = ((then - now) > INT_MAX) ? INT_MAX : (then - now);
     } else {
         *timeout = -1;
     }
