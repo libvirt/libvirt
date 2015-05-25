@@ -2246,14 +2246,6 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
         }
     }
 
-    /* full bitmap means reset the settings (if any). */
-    if (virBitmapIsAllSet(pcpumap)) {
-        virDomainPinDel(&targetDef->cputune.vcpupin,
-                        &targetDef->cputune.nvcpupin,
-                        vcpu);
-        goto done;
-    }
-
     if (!targetDef->cputune.vcpupin) {
         if (VIR_ALLOC(targetDef->cputune.vcpupin) < 0)
             goto endjob;
@@ -2269,7 +2261,6 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
         goto endjob;
     }
 
- done:
     ret = 0;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {

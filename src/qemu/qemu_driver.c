@@ -5033,7 +5033,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virCgroupPtr cgroup_vcpu = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    bool doReset = false;
     size_t newVcpuPinNum = 0;
     virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
@@ -5092,12 +5091,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    /* pinning to all physical cpus means resetting,
-     * so check if we can reset setting.
-     */
-    if (virBitmapIsAllSet(pcpumap))
-        doReset = true;
-
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
 
         if (priv->vcpupids == NULL) {
@@ -5146,19 +5139,13 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             }
         }
 
-        if (doReset) {
-            virDomainPinDel(&vm->def->cputune.vcpupin,
-                            &vm->def->cputune.nvcpupin,
-                            vcpu);
-        } else {
-            if (vm->def->cputune.vcpupin)
-                virDomainPinDefArrayFree(vm->def->cputune.vcpupin,
-                                         vm->def->cputune.nvcpupin);
+        if (vm->def->cputune.vcpupin)
+            virDomainPinDefArrayFree(vm->def->cputune.vcpupin,
+                                     vm->def->cputune.nvcpupin);
 
-            vm->def->cputune.vcpupin = newVcpuPin;
-            vm->def->cputune.nvcpupin = newVcpuPinNum;
-            newVcpuPin = NULL;
-        }
+        vm->def->cputune.vcpupin = newVcpuPin;
+        vm->def->cputune.nvcpupin = newVcpuPinNum;
+        newVcpuPin = NULL;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
@@ -5178,26 +5165,20 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
 
-        if (doReset) {
-            virDomainPinDel(&persistentDef->cputune.vcpupin,
-                            &persistentDef->cputune.nvcpupin,
-                            vcpu);
-        } else {
-            if (!persistentDef->cputune.vcpupin) {
-                if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)
-                    goto endjob;
-                persistentDef->cputune.nvcpupin = 0;
-            }
-            if (virDomainPinAdd(&persistentDef->cputune.vcpupin,
-                                &persistentDef->cputune.nvcpupin,
-                                cpumap,
-                                maplen,
-                                vcpu) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to update or add vcpupin xml of "
-                                 "a persistent domain"));
+        if (!persistentDef->cputune.vcpupin) {
+            if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)
                 goto endjob;
-            }
+            persistentDef->cputune.nvcpupin = 0;
+        }
+        if (virDomainPinAdd(&persistentDef->cputune.vcpupin,
+                            &persistentDef->cputune.nvcpupin,
+                            cpumap,
+                            maplen,
+                            vcpu) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to update or add vcpupin xml of "
+                             "a persistent domain"));
+            goto endjob;
         }
 
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);

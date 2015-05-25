@@ -2365,8 +2365,7 @@ I<vcpu> or omit I<vcpu> to list all at once.
 I<cpulist> is a list of physical CPU numbers. Its syntax is a comma
 separated list and a special markup using '-' and '^' (ex. '0-4', '0-3,^2') can
 also be allowed. The '-' denotes the range and the '^' denotes exclusive.
-If you want to reset vcpupin setting, that is, to pin the I<vcpu> to all
-physical cpus, simply specify 'r' as a I<cpulist>.
+For pinning the I<vcpu> to all physical cpus specify 'r' as a I<cpulist>.
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
