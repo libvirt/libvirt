@@ -10524,6 +10524,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
+    virDomainNumatuneMemMode tmpmode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
     char *nodeset = NULL;
     int ret = -1;
     virCapsPtr caps = NULL;
@@ -10567,12 +10568,12 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 
         switch (i) {
         case 0: /* fill numa mode here */
+            ignore_value(virDomainNumatuneGetMode(def->numa, -1, &tmpmode));
+
             if (virTypedParameterAssign(param, VIR_DOMAIN_NUMA_MODE,
-                                        VIR_TYPED_PARAM_INT, 0) < 0)
+                                        VIR_TYPED_PARAM_INT, tmpmode) < 0)
                 goto cleanup;
 
-            virDomainNumatuneGetMode(def->numa, -1,
-                                     (virDomainNumatuneMemMode *) &param->value.i);
             break;
 
         case 1: /* fill numa nodeset here */
