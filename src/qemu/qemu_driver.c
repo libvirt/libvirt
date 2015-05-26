@@ -12995,42 +12995,72 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static int qemuDomainGetJobInfo(virDomainPtr dom,
-                                virDomainJobInfoPtr info)
+static int
+qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                              virDomainObjPtr vm,
+                              bool completed,
+                              qemuDomainJobInfoPtr jobInfo)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobInfoPtr info;
+    int ret = -1;
+
+    if (!completed &&
+        !virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (completed)
+        info = priv->job.completed;
+    else
+        info = priv->job.current;
+
+    if (!info) {
+        jobInfo->type = VIR_DOMAIN_JOB_NONE;
+        ret = 0;
+        goto cleanup;
+    }
+    *jobInfo = *info;
+
+    if (jobInfo->type == VIR_DOMAIN_JOB_BOUNDED ||
+        jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED)
+        ret = qemuDomainJobInfoUpdateTime(jobInfo);
+    else
+        ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainGetJobInfo(virDomainPtr dom,
+                     virDomainJobInfoPtr info)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainJobInfo jobInfo;
     virDomainObjPtr vm;
     int ret = -1;
-    qemuDomainObjPrivatePtr priv;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainGetJobInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (priv->job.current) {
-            /* Refresh elapsed time again just to ensure it
-             * is fully updated. This is primarily for benefit
-             * of incoming migration which we don't currently
-             * monitor actively in the background thread
-             */
-            if (qemuDomainJobInfoUpdateTime(priv->job.current) < 0 ||
-                qemuDomainJobInfoToInfo(priv->job.current, info) < 0)
-                goto cleanup;
-        } else {
-            memset(info, 0, sizeof(*info));
-            info->type = VIR_DOMAIN_JOB_NONE;
-        }
-    } else {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (qemuDomainGetJobStatsInternal(driver, vm, false, &jobInfo) < 0)
+        goto cleanup;
+
+    if (jobInfo.type == VIR_DOMAIN_JOB_NONE) {
+        memset(info, 0, sizeof(*info));
+        info->type = VIR_DOMAIN_JOB_NONE;
+        ret = 0;
         goto cleanup;
     }
 
-    ret = 0;
+    ret = qemuDomainJobInfoToInfo(&jobInfo, info);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -13045,9 +13075,11 @@ qemuDomainGetJobStats(virDomainPtr dom,
                       int *nparams,
                       unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
-    qemuDomainJobInfoPtr jobInfo;
+    qemuDomainJobInfo jobInfo;
+    bool completed = !!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED);
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_JOB_STATS_COMPLETED, -1);
@@ -13055,24 +13087,14 @@ qemuDomainGetJobStats(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainGetJobStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED) &&
-        !virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    priv = vm->privateData;
+    if (qemuDomainGetJobStatsInternal(driver, vm, completed, &jobInfo) < 0)
         goto cleanup;
-    }
 
-    if (flags & VIR_DOMAIN_JOB_STATS_COMPLETED)
-        jobInfo = priv->job.completed;
-    else
-        jobInfo = priv->job.current;
-
-    if (!jobInfo) {
+    if (jobInfo.type == VIR_DOMAIN_JOB_NONE) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;
@@ -13080,23 +13102,10 @@ qemuDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    /* Refresh elapsed time again just to ensure it
-     * is fully updated. This is primarily for benefit
-     * of incoming migration which we don't currently
-     * monitor actively in the background thread
-     */
-    if ((jobInfo->type == VIR_DOMAIN_JOB_BOUNDED ||
-         jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) &&
-        qemuDomainJobInfoUpdateTime(jobInfo) < 0)
-        goto cleanup;
+    ret = qemuDomainJobInfoToParams(&jobInfo, type, params, nparams);
 
-    if (qemuDomainJobInfoToParams(jobInfo, type, params, nparams) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_JOB_STATS_COMPLETED)
+    if (completed && ret == 0)
         VIR_FREE(priv->job.completed);
-
-    ret = 0;
 
  cleanup:
     virDomainObjEndAPI(&vm);
