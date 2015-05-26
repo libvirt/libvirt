@@ -9,8 +9,5 @@
   </source>
   <target>
     <path>/dev/zvol/testpool</path>
-    <permissions>
-      <mode>0755</mode>
-    </permissions>
   </target>
 </pool>
