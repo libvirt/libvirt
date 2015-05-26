@@ -1641,26 +1641,36 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     virCapsHostNUMACellCPUPtr cpus;
     int ncpus;
     int s, c, t;
-    int id;
+    int id, cid;
+    int onlinecpus ATTRIBUTE_UNUSED;
 
     if (nodeGetInfo(&nodeinfo) < 0)
         return -1;
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    onlinecpus = nodeinfo.cpus;
 
     if (VIR_ALLOC_N(cpus, ncpus) < 0)
         return -1;
 
-    id = 0;
+    id = cid = 0;
     for (s = 0; s < nodeinfo.sockets; s++) {
         for (c = 0; c < nodeinfo.cores; c++) {
             for (t = 0; t < nodeinfo.threads; t++) {
-                cpus[id].id = id;
-                cpus[id].socket_id = s;
-                cpus[id].core_id = c;
-                if (!(cpus[id].siblings = virBitmapNew(ncpus)))
-                    goto error;
-                ignore_value(virBitmapSetBit(cpus[id].siblings, id));
+#ifdef __linux__
+                if (virNodeGetCpuValue(SYSFS_CPU_PATH, id, "online", 1)) {
+#endif
+                    cpus[cid].id = id;
+                    cpus[cid].socket_id = s;
+                    cpus[cid].core_id = c;
+                    if (!(cpus[cid].siblings = virBitmapNew(ncpus)))
+                        goto error;
+                    ignore_value(virBitmapSetBit(cpus[cid].siblings, id));
+                    cid++;
+#ifdef __linux__
+                }
+#endif
+
                 id++;
             }
         }
@@ -1668,7 +1678,11 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
 
     if (virCapabilitiesAddHostNUMACell(caps, 0,
                                        nodeinfo.memory,
+#ifdef __linux__
+                                       onlinecpus, cpus,
+#else
                                        ncpus, cpus,
+#endif
                                        0, NULL,
                                        0, NULL) < 0)
         goto error;
