@@ -2509,6 +2509,7 @@ static void virDomainObjDispose(void *obj)
     virDomainObjPtr dom = obj;
 
     VIR_DEBUG("obj=%p", dom);
+    virCondDestroy(&dom->cond);
     virDomainDefFree(dom->def);
     virDomainDefFree(dom->newDef);
 
@@ -2528,6 +2529,12 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
 
     if (!(domain = virObjectLockableNew(virDomainObjClass)))
         return NULL;
+
+    if (virCondInit(&domain->cond) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to initialize domain condition"));
+        goto error;
+    }
 
     if (xmlopt->privateData.alloc) {
         if (!(domain->privateData = (xmlopt->privateData.alloc)()))
@@ -2648,6 +2655,46 @@ virDomainObjEndAPI(virDomainObjPtr *vm)
     virObjectUnlock(*vm);
     virObjectUnref(*vm);
     *vm = NULL;
+}
+
+
+void
+virDomainObjSignal(virDomainObjPtr vm)
+{
+    virCondSignal(&vm->cond);
+}
+
+
+void
+virDomainObjBroadcast(virDomainObjPtr vm)
+{
+    virCondBroadcast(&vm->cond);
+}
+
+
+int
+virDomainObjWait(virDomainObjPtr vm)
+{
+    if (virCondWait(&vm->cond, &vm->parent.lock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to wait for domain condition"));
+        return -1;
+    }
+    return 0;
+}
+
+
+int
+virDomainObjWaitUntil(virDomainObjPtr vm,
+                      unsigned long long whenms)
+{
+    if (virCondWaitUntil(&vm->cond, &vm->parent.lock, whenms) < 0 &&
+        errno != ETIMEDOUT) {
+        virReportSystemError(errno, "%s",
+                             _("failed to wait for domain condition"));
+        return -1;
+    }
+    return 0;
 }
 
 

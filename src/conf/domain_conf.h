@@ -2318,6 +2318,7 @@ typedef struct _virDomainObj virDomainObj;
 typedef virDomainObj *virDomainObjPtr;
 struct _virDomainObj {
     virObjectLockable parent;
+    virCond cond;
 
     pid_t pid;
     virDomainStateReason state;
@@ -2437,6 +2438,11 @@ void virDomainObjEndAPI(virDomainObjPtr *vm);
 bool virDomainObjTaint(virDomainObjPtr obj,
                        virDomainTaintFlags taint);
 
+void virDomainObjSignal(virDomainObjPtr vm);
+void virDomainObjBroadcast(virDomainObjPtr vm);
+int virDomainObjWait(virDomainObjPtr vm);
+int virDomainObjWaitUntil(virDomainObjPtr vm,
+                          unsigned long long whenms);
 
 int virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def);
 int virDomainDeviceDefCheckUnsupportedMemoryDevice(virDomainDeviceDefPtr dev);
