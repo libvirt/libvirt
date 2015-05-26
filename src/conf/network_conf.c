@@ -861,12 +861,8 @@ virSocketAddrRangeParseXML(const char *networkName,
 
     /* do a sanity check of the range */
     if (virSocketAddrGetRange(&range->start, &range->end, &ipdef->address,
-                              virNetworkIpDefPrefix(ipdef)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid dhcp range '%s' to '%s' in network '%s'"),
-                       start, end, networkName);
+                              virNetworkIpDefPrefix(ipdef)) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 

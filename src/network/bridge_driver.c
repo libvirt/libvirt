@@ -1181,6 +1181,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     while (ipdef) {
         for (r = 0; r < ipdef->nranges; r++) {
+            int thisRange;
+
             if (!(saddr = virSocketAddrFormat(&ipdef->ranges[r].start)) ||
                 !(eaddr = virSocketAddrFormat(&ipdef->ranges[r].end)))
                 goto cleanup;
@@ -1189,10 +1191,13 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                               saddr, eaddr);
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
-            nbleases += virSocketAddrGetRange(&ipdef->ranges[r].start,
+            thisRange = virSocketAddrGetRange(&ipdef->ranges[r].start,
                                               &ipdef->ranges[r].end,
                                               &ipdef->address,
                                               virNetworkIpDefPrefix(ipdef));
+            if (thisRange < 0)
+                goto cleanup;
+            nbleases += thisRange;
         }
 
         /*
