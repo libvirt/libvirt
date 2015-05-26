@@ -1216,8 +1216,8 @@ parallelsDomainGetMaxMemory(virDomainPtr domain)
     return ret;
 }
 
-static virHypervisorDriver parallelsDriver = {
-    .name = "Parallels",
+static virHypervisorDriver vzDriver = {
+    .name = "vz",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
     .connectClose = parallelsConnectClose,          /* 0.10.0 */
     .connectGetVersion = parallelsConnectGetVersion,   /* 0.10.0 */
@@ -1267,11 +1267,15 @@ static virHypervisorDriver parallelsDriver = {
     .domainGetMaxMemory = parallelsDomainGetMaxMemory, /* 1.2.15 */
 };
 
-static virConnectDriver parallelsConnectDriver = {
-    .hypervisorDriver = &parallelsDriver,
+static virConnectDriver vzConnectDriver = {
+    .hypervisorDriver = &vzDriver,
     .storageDriver = &parallelsStorageDriver,
     .networkDriver = &parallelsNetworkDriver,
 };
+
+/* Parallels domain type backward compatibility*/
+static virHypervisorDriver parallelsDriver;
+static virConnectDriver parallelsConnectDriver;
 
 /**
  * parallelsRegister:
@@ -1291,7 +1295,15 @@ parallelsRegister(void)
 
     VIR_FREE(prlctl_path);
 
+    /* Backward compatibility with Parallels domain type */
+    parallelsDriver = vzDriver;
+    parallelsDriver.name = "Parallels";
+    parallelsConnectDriver = vzConnectDriver;
+    parallelsConnectDriver.hypervisorDriver = &parallelsDriver;
     if (virRegisterConnectDriver(&parallelsConnectDriver, false) < 0)
+        return -1;
+
+    if (virRegisterConnectDriver(&vzConnectDriver, false) < 0)
         return -1;
 
     return 0;
