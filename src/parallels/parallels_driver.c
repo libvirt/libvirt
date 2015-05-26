@@ -120,6 +120,33 @@ parallelsBuildCapabilities(void)
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                         VIR_ARCH_X86_64,
+                                         "vz",
+                                         NULL, 0, NULL)) == NULL)
+        goto error;
+
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                         VIR_ARCH_I686,
+                                         "vz",
+                                         NULL, 0, NULL)) == NULL)
+        goto error;
+
+
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VZ,
+                                      NULL, NULL, 0, NULL) == NULL)
+        goto error;
+
+    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                         VIR_ARCH_X86_64,
+                                         "vz",
+                                         NULL, 0, NULL)) == NULL)
+        goto error;
+
+    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VZ,
+                                      NULL, NULL, 0, NULL) == NULL)
+        goto error;
+
     if (nodeGetInfo(&nodeinfo))
         goto error;
 
