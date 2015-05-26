@@ -107,6 +107,9 @@ struct _virLXCController {
 
     pid_t initpid;
 
+    size_t nnbdpids;
+    pid_t *nbdpids;
+
     size_t nveths;
     char **veths;
 
@@ -282,6 +285,8 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     virObjectUnref(ctrl->server);
     virLXCControllerFreeFuse(ctrl);
+
+    VIR_FREE(ctrl->nbdpids);
 
     virCgroupFree(&ctrl->cgroup);
 
@@ -525,6 +530,38 @@ static int virLXCControllerSetupNBDDeviceDisk(virDomainDiskDefPtr disk)
     return 0;
 }
 
+static int virLXCControllerAppendNBDPids(virLXCControllerPtr ctrl,
+                                         const char *dev)
+{
+    char *pidpath = NULL;
+    pid_t *pids;
+    size_t npids;
+    size_t i;
+    int ret = -1;
+    pid_t pid;
+
+    if (!STRPREFIX(dev, "/dev/") ||
+        virAsprintf(&pidpath, "/sys/devices/virtual/block/%s/pid", dev + 5) < 0)
+        goto cleanup;
+
+    if (virPidFileReadPath(pidpath, &pid) < 0)
+        goto cleanup;
+
+    if (virProcessGetPids(pid, &npids, &pids) < 0)
+        goto cleanup;
+
+    for (i = 0; i < npids; i++) {
+        if (VIR_APPEND_ELEMENT(ctrl->nbdpids, ctrl->nnbdpids, pids[i]) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(pids);
+    VIR_FREE(pidpath);
+    return ret;
+}
 
 static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
 {
@@ -569,6 +606,12 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
         } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_NBD) {
             if (virLXCControllerSetupNBDDeviceFS(fs) < 0)
+                goto cleanup;
+
+            /* The NBD device will be cleaned up while the cgroup will end.
+             * For this we need to remember the qemu-nbd pid and add it to
+             * the cgroup*/
+            if (virLXCControllerAppendNBDPids(ctrl, fs->src) < 0)
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -628,6 +671,12 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 goto cleanup;
             }
             if (virLXCControllerSetupNBDDeviceDisk(disk) < 0)
+                goto cleanup;
+
+            /* The NBD device will be cleaned up while the cgroup will end.
+             * For this we need to remember the qemu-nbd pid and add it to
+             * the cgroup*/
+            if (virLXCControllerAppendNBDPids(ctrl, virDomainDiskGetSource(disk)) < 0)
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -781,6 +830,7 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
     virBitmapPtr auto_nodeset = NULL;
     int ret = -1;
     virBitmapPtr nodeset = NULL;
+    size_t i;
 
     VIR_DEBUG("Setting up cgroup resource limits");
 
@@ -797,6 +847,12 @@ static int virLXCControllerSetupCgroupLimits(virLXCControllerPtr ctrl)
 
     if (virCgroupAddTask(ctrl->cgroup, getpid()) < 0)
         goto cleanup;
+
+    /* Add all qemu-nbd tasks to the cgroup */
+    for (i = 0; i < ctrl->nnbdpids; i++) {
+        if (virCgroupAddTask(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
+            goto cleanup;
+    }
 
     if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodeset) < 0)
         goto cleanup;
