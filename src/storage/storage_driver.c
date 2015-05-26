@@ -1646,11 +1646,14 @@ storageVolDeleteInternal(virStorageVolPtr obj,
         goto cleanup;
 
     /* Update pool metadata - don't update meta data from error paths
-     * in this module since the allocation/available weren't adjusted yet
+     * in this module since the allocation/available weren't adjusted yet.
+     * Ignore the disk backend since it updates the pool values.
      */
     if (updateMeta) {
-        pool->def->allocation -= vol->target.allocation;
-        pool->def->available += vol->target.allocation;
+        if (pool->def->type != VIR_STORAGE_POOL_DISK) {
+            pool->def->allocation -= vol->target.allocation;
+            pool->def->available += vol->target.allocation;
+        }
     }
 
     for (i = 0; i < pool->volumes.count; i++) {
@@ -1872,9 +1875,13 @@ storageVolCreateXML(virStoragePoolPtr obj,
         backend->refreshVol(obj->conn, pool, voldef) < 0)
         goto cleanup;
 
-    /* Update pool metadata */
-    pool->def->allocation += buildvoldef->target.allocation;
-    pool->def->available -= buildvoldef->target.allocation;
+    /* Update pool metadata ignoring the disk backend since
+     * it updates the pool values.
+     */
+    if (pool->def->type != VIR_STORAGE_POOL_DISK) {
+        pool->def->allocation += buildvoldef->target.allocation;
+        pool->def->available -= buildvoldef->target.allocation;
+    }
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
@@ -2056,9 +2063,13 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     }
     newvol = NULL;
 
-    /* Updating pool metadata */
-    pool->def->allocation += allocation;
-    pool->def->available -= allocation;
+    /* Updating pool metadata ignoring the disk backend since
+     * it updates the pool values
+     */
+    if (pool->def->type != VIR_STORAGE_POOL_DISK) {
+        pool->def->allocation += allocation;
+        pool->def->available -= allocation;
+    }
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              volobj->name, pool->def->name);
