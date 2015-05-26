@@ -205,6 +205,9 @@ prlsdkInit(void)
 {
     PRL_RESULT ret;
 
+    /* Disable console output */
+    PrlApi_SwitchConsoleLogging(0);
+
     ret = PrlApi_InitEx(PARALLELS_API_VER, PAM_SERVER, 0, 0);
     if (PRL_FAILED(ret)) {
         logPrlError(ret);
