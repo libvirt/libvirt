@@ -2442,67 +2442,110 @@ qemuMigrationWaitForSpice(virDomainObjPtr vm)
     return 0;
 }
 
-static int
-qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             const char *job,
-                             qemuDomainAsyncJob asyncJob)
+
+static void
+qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorMigrationStatus status;
-    qemuDomainJobInfoPtr jobInfo;
-    int ret;
-
-    memset(&status, 0, sizeof(status));
-
-    ret = qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob);
-    if (ret < 0) {
-        /* Guest already exited or waiting for the job timed out; nothing
-         * further to update. */
-        return ret;
-    }
-    ret = qemuMonitorGetMigrationStatus(priv->mon, &status);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
-
-    if (ret < 0 ||
-        qemuDomainJobInfoUpdateTime(priv->job.current) < 0)
-        return -1;
-
-    ret = -1;
-    jobInfo = priv->job.current;
-    switch (status.status) {
+    switch (jobInfo->status.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
         jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
-        /* fall through */
-    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
-    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
-    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
-        ret = 0;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
         jobInfo->type = VIR_DOMAIN_JOB_NONE;
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("%s: %s"), job, _("is not active"));
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
         jobInfo->type = VIR_DOMAIN_JOB_FAILED;
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("%s: %s"), job, _("unexpectedly failed"));
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
         jobInfo->type = VIR_DOMAIN_JOB_CANCELLED;
-        virReportError(VIR_ERR_OPERATION_ABORTED,
-                       _("%s: %s"), job, _("canceled by client"));
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
         break;
     }
-    jobInfo->status = status;
+}
 
-    return ret;
+
+int
+qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            qemuDomainAsyncJob asyncJob,
+                            qemuDomainJobInfoPtr jobInfo)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    memset(&jobInfo->status, 0, sizeof(jobInfo->status));
+    rv = qemuMonitorGetMigrationStatus(priv->mon, &jobInfo->status);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
+        return -1;
+
+    qemuMigrationUpdateJobType(jobInfo);
+    return qemuDomainJobInfoUpdateTime(jobInfo);
+}
+
+
+static int
+qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobInfoPtr jobInfo = priv->job.current;
+    qemuDomainJobInfo newInfo = *jobInfo;
+
+    if (qemuMigrationFetchJobStatus(driver, vm, asyncJob, &newInfo) < 0)
+        return -1;
+
+    *jobInfo = newInfo;
+    return 0;
+}
+
+
+static int
+qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *job,
+                            qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobInfoPtr jobInfo = priv->job.current;
+
+    if (qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
+        return -1;
+
+    switch (jobInfo->type) {
+    case VIR_DOMAIN_JOB_NONE:
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("%s: %s"), job, _("is not active"));
+        return -1;
+
+    case VIR_DOMAIN_JOB_FAILED:
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("%s: %s"), job, _("unexpectedly failed"));
+        return -1;
+
+    case VIR_DOMAIN_JOB_CANCELLED:
+        virReportError(VIR_ERR_OPERATION_ABORTED,
+                       _("%s: %s"), job, _("canceled by client"));
+        return -1;
+
+    case VIR_DOMAIN_JOB_BOUNDED:
+    case VIR_DOMAIN_JOB_UNBOUNDED:
+    case VIR_DOMAIN_JOB_COMPLETED:
+    case VIR_DOMAIN_JOB_LAST:
+        break;
+    }
+    return 0;
 }
 
 
@@ -2543,7 +2586,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
-        if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) == -1)
+        if (qemuMigrationCheckJobStatus(driver, vm, job, asyncJob) < 0)
             goto error;
 
         if (storage &&
@@ -4208,8 +4251,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * rather failed later on.  Check its status before waiting for a
          * connection from qemu which may never be initiated.
          */
-        if (qemuMigrationUpdateJobStatus(driver, vm, _("migration job"),
-                                         QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        if (qemuMigrationCheckJobStatus(driver, vm, _("migration job"),
+                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto cancel;
 
         while ((fd = accept(spec->dest.unix_socket.sock, NULL, NULL)) < 0) {

@@ -188,4 +188,9 @@ int qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 int qemuMigrationCancel(virQEMUDriverPtr driver,
                         virDomainObjPtr vm);
 
+int qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                qemuDomainAsyncJob asyncJob,
+                                qemuDomainJobInfoPtr jobInfo);
+
 #endif /* __QEMU_MIGRATION_H__ */
