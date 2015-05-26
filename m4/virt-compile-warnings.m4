@@ -59,6 +59,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Waggregate-return"
     # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
     dontwarn="$dontwarn -Wenum-compare"
+    # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
+    dontwarn="$dontwarn -Wformat-signedness"
 
     # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
     # which triggers spurious warnings for our usage
