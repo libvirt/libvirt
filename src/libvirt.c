@@ -109,7 +109,7 @@ VIR_LOG_INIT("libvirt");
  * - use reference counting to guarantee coherent pointer state ?
  */
 
-#define MAX_DRIVERS 20
+#define MAX_DRIVERS 21
 
 static virConnectDriverPtr virConnectDriverTab[MAX_DRIVERS];
 static int virConnectDriverTabCount;
