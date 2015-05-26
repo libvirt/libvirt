@@ -9646,7 +9646,8 @@ virDomainInputDefParseXML(const virDomainDef *dom,
                 goto error;
             }
         } else {
-            if (dom->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
+            if (dom->virtType == VIR_DOMAIN_VIRT_VZ ||
+                dom->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
                 if (def->bus != VIR_DOMAIN_INPUT_BUS_PARALLELS) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("parallels containers don't support "
@@ -9682,7 +9683,8 @@ virDomainInputDefParseXML(const virDomainDef *dom,
         } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN) {
             def->bus = VIR_DOMAIN_INPUT_BUS_XEN;
         } else {
-            if ((dom->virtType == VIR_DOMAIN_VIRT_PARALLELS))
+            if ((dom->virtType == VIR_DOMAIN_VIRT_VZ ||
+                 dom->virtType == VIR_DOMAIN_VIRT_PARALLELS))
                 def->bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
         }
     }
@@ -11172,6 +11174,7 @@ virDomainVideoDefaultType(const virDomainDef *def)
     case VIR_DOMAIN_VIRT_VMWARE:
         return VIR_DOMAIN_VIDEO_TYPE_VMVGA;
 
+    case VIR_DOMAIN_VIRT_VZ:
     case VIR_DOMAIN_VIRT_PARALLELS:
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             return VIR_DOMAIN_VIDEO_TYPE_VGA;
@@ -15320,7 +15323,8 @@ virDomainDefParseXML(xmlDocPtr xml,
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
             (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-             def->virtType == VIR_DOMAIN_VIRT_PARALLELS &&
+             (def->virtType == VIR_DOMAIN_VIRT_VZ ||
+              def->virtType == VIR_DOMAIN_VIRT_PARALLELS)  &&
              input->bus == VIR_DOMAIN_INPUT_BUS_PARALLELS &&
              (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
               input->type == VIR_DOMAIN_INPUT_TYPE_KBD))) {
@@ -15356,7 +15360,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
             input_bus = VIR_DOMAIN_INPUT_BUS_PS2;
         if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-            def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
+            (def->virtType == VIR_DOMAIN_VIRT_VZ ||
+             def->virtType == VIR_DOMAIN_VIRT_PARALLELS))
             input_bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
 
         if (virDomainDefMaybeAddInput(def,
@@ -21625,7 +21630,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
                 autoInput.bus = VIR_DOMAIN_INPUT_BUS_PS2;
             else if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-                     def->virtType == VIR_DOMAIN_VIRT_PARALLELS)
+                     (def->virtType == VIR_DOMAIN_VIRT_VZ ||
+                      def->virtType == VIR_DOMAIN_VIRT_PARALLELS))
                 autoInput.bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
             else
                autoInput.bus = VIR_DOMAIN_INPUT_BUS_XEN;
