@@ -18946,7 +18946,12 @@ qemuDomainSetTime(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION)) {
+    /* On x86, the rtc-reset-reinjection QMP command must be called after
+     * setting the time to avoid trouble down the line. If the command is
+     * not available, don't set the time at all and report an error */
+    if (ARCH_IS_X86(vm->def->os.arch) &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION))
+    {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot set time: qemu doesn't support "
                          "rtc-reset-reinjection command"));
@@ -18969,13 +18974,16 @@ qemuDomainSetTime(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuDomainObjEnterMonitor(driver, vm);
-    rv = qemuMonitorRTCResetReinjection(priv->mon);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto endjob;
+    /* Don't try to call rtc-reset-reinjection if it's not available */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION)) {
+        qemuDomainObjEnterMonitor(driver, vm);
+        rv = qemuMonitorRTCResetReinjection(priv->mon);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto endjob;
 
-    if (rv < 0)
-        goto endjob;
+        if (rv < 0)
+            goto endjob;
+    }
 
     ret = 0;
 
