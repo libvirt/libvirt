@@ -926,6 +926,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     virNetworkDNSDefPtr dns = &network->def->dns;
     virNetworkIpDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
     bool ipv6SLAAC;
+    char *saddr = NULL, *eaddr = NULL;
 
     *configstr = NULL;
 
@@ -1180,14 +1181,10 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     while (ipdef) {
         for (r = 0; r < ipdef->nranges; r++) {
-            char *saddr = virSocketAddrFormat(&ipdef->ranges[r].start);
-            if (!saddr)
+            if (!(saddr = virSocketAddrFormat(&ipdef->ranges[r].start)) ||
+                !(eaddr = virSocketAddrFormat(&ipdef->ranges[r].end)))
                 goto cleanup;
-            char *eaddr = virSocketAddrFormat(&ipdef->ranges[r].end);
-            if (!eaddr) {
-                VIR_FREE(saddr);
-                goto cleanup;
-            }
+
             virBufferAsprintf(&configbuf, "dhcp-range=%s,%s\n",
                               saddr, eaddr);
             VIR_FREE(saddr);
@@ -1289,6 +1286,8 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     ret = 0;
 
  cleanup:
+    VIR_FREE(saddr);
+    VIR_FREE(eaddr);
     virBufferFreeAndReset(&configbuf);
     return ret;
 }
