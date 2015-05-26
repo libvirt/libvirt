@@ -118,7 +118,8 @@ VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "vbox",
               "phyp",
               "parallels",
-              "bhyve")
+              "bhyve",
+              "vz")
 
 VIR_ENUM_IMPL(virDomainOS, VIR_DOMAIN_OSTYPE_LAST,
               "hvm",
