@@ -12939,14 +12939,26 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               bool completed,
                               qemuDomainJobInfoPtr jobInfo)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr info;
+    bool fetch = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int ret = -1;
+
+    if (completed)
+        fetch = false;
+
+    /* Do not ask QEMU if migration is not even running yet  */
+    if (!priv->job.current || !priv->job.current->status.status)
+        fetch = false;
+
+    if (fetch &&
+        qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        return -1;
 
     if (!completed &&
         !virDomainObjIsActive(vm)) {
@@ -12968,12 +12980,19 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     *jobInfo = *info;
 
     if (jobInfo->type == VIR_DOMAIN_JOB_BOUNDED ||
-        jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED)
-        ret = qemuDomainJobInfoUpdateTime(jobInfo);
-    else
+        jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
+        if (fetch)
+            ret = qemuMigrationFetchJobStatus(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                              jobInfo);
+        else
+            ret = qemuDomainJobInfoUpdateTime(jobInfo);
+    } else {
         ret = 0;
+    }
 
  cleanup:
+    if (fetch)
+        qemuDomainObjEndJob(driver, vm);
     return ret;
 }
 
