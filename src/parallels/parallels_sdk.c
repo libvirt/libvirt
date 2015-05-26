@@ -1256,7 +1256,11 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
         pdom = olddom->privateData;
     }
 
-    def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
+    if (STREQ(privconn->drivername, "vz"))
+        def->virtType = VIR_DOMAIN_VIRT_VZ;
+    else
+        def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
+
     def->id = -1;
 
     /* we will remove this field in the near future, so let's set it

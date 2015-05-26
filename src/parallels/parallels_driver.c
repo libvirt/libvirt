@@ -241,6 +241,8 @@ parallelsOpenDefault(virConnectPtr conn)
         goto err_free;
     }
 
+    privconn->drivername = conn->driver->name;
+
     if (prlsdkInit()) {
         VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
         goto err_free;
