@@ -296,7 +296,17 @@ parallelsConnectOpen(virConnectPtr conn,
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "parallels"))
+    if (!conn->uri->scheme)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (STRNEQ(conn->uri->scheme, "vz") &&
+        STRNEQ(conn->uri->scheme, "parallels"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (STREQ(conn->uri->scheme, "vz") && STRNEQ(conn->driver->name, "vz"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (STREQ(conn->uri->scheme, "parallels") && STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
     /* Remote driver should handle these. */

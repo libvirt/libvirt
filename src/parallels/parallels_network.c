@@ -334,7 +334,8 @@ parallelsNetworkOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (STRNEQ(conn->driver->name, "Parallels"))
+    if (STRNEQ(conn->driver->name, "vz") &&
+        STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
     if (!(privconn->networks = virNetworkObjListNew()))
