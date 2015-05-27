@@ -2022,11 +2022,15 @@ qemuMonitorExpirePassword(qemuMonitorPtr mon,
 }
 
 
+/*
+ * Returns: 0 if balloon not supported, +1 if balloon adjust worked
+ * or -1 on failure
+ */
 int
 qemuMonitorSetBalloon(qemuMonitorPtr mon,
-                      unsigned long newmem)
+                      unsigned long long newmem)
 {
-    VIR_DEBUG("newmem=%lu", newmem);
+    VIR_DEBUG("newmem=%llu", newmem);
 
     QEMU_CHECK_MONITOR(mon);
 

@@ -2175,16 +2175,14 @@ int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
     return ret;
 }
 
-/*
- * Returns: 0 if balloon not supported, +1 if balloon adjust worked
- * or -1 on failure
- */
-int qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
-                              unsigned long newmem)
+
+int
+qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
+                          unsigned long long newmem)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("balloon",
-                                                     "U:value", ((unsigned long long)newmem)*1024,
+                                                     "U:value", newmem * 1024,
                                                      NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)

@@ -401,7 +401,7 @@ int qemuMonitorExpirePassword(qemuMonitorPtr mon,
                               int type,
                               const char *expire_time);
 int qemuMonitorSetBalloon(qemuMonitorPtr mon,
-                          unsigned long newmem);
+                          unsigned long long newmem);
 int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online);
 
 
