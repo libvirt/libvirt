@@ -2320,7 +2320,10 @@ storageVolResize(virStorageVolPtr obj,
     }
 
     if (flags & VIR_STORAGE_VOL_RESIZE_DELTA) {
-        abs_capacity = vol->target.capacity + capacity;
+        if (flags & VIR_STORAGE_VOL_RESIZE_SHRINK)
+            abs_capacity = vol->target.capacity - MIN(capacity, vol->target.capacity);
+        else
+            abs_capacity = vol->target.capacity + capacity;
         flags &= ~VIR_STORAGE_VOL_RESIZE_DELTA;
     } else {
         abs_capacity = capacity;
