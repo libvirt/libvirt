@@ -2617,8 +2617,6 @@ static int qemuDomainGetInfo(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    int err;
-    unsigned long long balloon;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -2641,43 +2639,10 @@ static int qemuDomainGetInfo(virDomainPtr dom,
     info->maxMem = virDomainDefGetMemoryActual(vm->def);
 
     if (virDomainObjIsActive(vm)) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
+        if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
+            goto cleanup;
 
-        if ((vm->def->memballoon != NULL) &&
-            (vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)) {
-            info->memory = virDomainDefGetMemoryActual(vm->def);
-        } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
-            info->memory = vm->def->mem.cur_balloon;
-        } else if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
-            if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-                goto cleanup;
-            if (!virDomainObjIsActive(vm)) {
-                err = 0;
-            } else {
-                qemuDomainObjEnterMonitor(driver, vm);
-                err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
-                if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-                    qemuDomainObjEndJob(driver, vm);
-                    goto cleanup;
-                }
-            }
-            qemuDomainObjEndJob(driver, vm);
-
-            if (err < 0) {
-                /* We couldn't get current memory allocation but that's not
-                 * a show stopper; we wouldn't get it if there was a job
-                 * active either
-                 */
-                info->memory = vm->def->mem.cur_balloon;
-            } else if (err == 0) {
-                /* Balloon not supported, so maxmem is always the allocation */
-                info->memory = virDomainDefGetMemoryActual(vm->def);
-            } else {
-                info->memory = balloon;
-            }
-        } else {
-            info->memory = vm->def->mem.cur_balloon;
-        }
+        info->memory = vm->def->mem.cur_balloon;
     } else {
         info->memory = 0;
     }
@@ -7172,57 +7137,24 @@ qemuDomainObjRestore(virConnectPtr conn,
 }
 
 
-static char *qemuDomainGetXMLDesc(virDomainPtr dom,
-                                  unsigned int flags)
+static char
+*qemuDomainGetXMLDesc(virDomainPtr dom,
+                      unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
-    unsigned long long balloon;
-    int err = 0;
-    qemuDomainObjPrivatePtr priv;
 
     /* Flags checked by virDomainDefFormat */
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    /* Refresh current memory based on balloon info if supported */
-    if ((vm->def->memballoon != NULL) &&
-        (vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT) &&
-        (virDomainObjIsActive(vm))) {
-        /* Don't delay if someone's using the monitor, just use
-         * existing most recent data instead */
-        if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
-            if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-                goto cleanup;
-
-            if (!virDomainObjIsActive(vm)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s", _("domain is not running"));
-                goto endjob;
-            }
-
-            qemuDomainObjEnterMonitor(driver, vm);
-            err = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                err = -1;
-
- endjob:
-            qemuDomainObjEndJob(driver, vm);
-            if (err < 0)
-                goto cleanup;
-            if (err > 0)
-                vm->def->mem.cur_balloon = balloon;
-            /* err == 0 indicates no balloon support, so ignore it */
-        }
-    }
+    if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
+        goto cleanup;
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE))
         flags |= QEMU_DOMAIN_FORMAT_LIVE_FLAGS;

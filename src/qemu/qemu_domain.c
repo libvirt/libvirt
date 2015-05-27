@@ -3196,3 +3196,69 @@ qemuDomainMachineIsI440FX(const virDomainDef *def)
             STRPREFIX(def->os.machine, "pc-i440") ||
             STRPREFIX(def->os.machine, "rhel"));
 }
+
+
+/**
+ * qemuDomainUpdateCurrentMemorySize:
+ *
+ * Updates the current balloon size from the monitor if necessary. In case when
+ * the balloon is not present for the domain, the function recalculates the
+ * maximum size to reflect possible changes.
+ *
+ * Returns 0 on success and updates vm->def->mem.cur_balloon if necessary, -1 on
+ * error and reports libvirt error.
+ */
+int
+qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned long long balloon;
+    int ret = -1;
+
+    /* inactive domain doesn't need size update */
+    if (!virDomainObjIsActive(vm))
+        return 0;
+
+    /* if no balloning is available, the current size equals to the current
+     * full memory size */
+    if (!vm->def->memballoon ||
+        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+        return 0;
+    }
+
+    /* current size is always automagically updated via the event */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT))
+        return 0;
+
+    /* here we need to ask the monitor */
+
+    /* Don't delay if someone's using the monitor, just use existing most
+     * recent data instead */
+    if (qemuDomainJobAllowed(priv, QEMU_JOB_QUERY)) {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            return -1;
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+            goto endjob;
+        }
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        ret = qemuMonitorGetBalloonInfo(priv->mon, &balloon);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            ret = -1;
+
+ endjob:
+        qemuDomainObjEndJob(driver, vm);
+
+        if (ret < 0)
+            return -1;
+    }
+
+    vm->def->mem.cur_balloon = balloon;
+
+    return 0;
+}
