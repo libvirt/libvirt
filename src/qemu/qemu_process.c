@@ -4897,6 +4897,11 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
+    /* Since CPUs were not started yet, the ballon could not return the memory
+     * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
+     * and friends return the correct size in case they can't grab the job */
+    vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+
     VIR_DEBUG("Detecting actual memory size for video device");
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
         goto cleanup;
