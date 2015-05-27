@@ -663,12 +663,9 @@ static int qemuMonitorParseBalloonInfo(char *text,
 /* The reply from QEMU contains 'ballon: actual=421' where value is in MB */
 #define BALLOON_PREFIX "balloon: "
 
-/*
- * Returns: 0 if balloon not supported, +1 if balloon query worked
- * or -1 on failure
- */
-int qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long long *currmem)
+int
+qemuMonitorTextGetBalloonInfo(qemuMonitorPtr mon,
+                              unsigned long long *currmem)
 {
     char *reply = NULL;
     int ret = -1;

@@ -1688,6 +1688,10 @@ qemuMonitorGetVirtType(qemuMonitorPtr mon,
 }
 
 
+/**
+ * Returns: 0 if balloon not supported, +1 if balloon query worked
+ * or -1 on failure
+ */
 int
 qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
                           unsigned long long *currmem)

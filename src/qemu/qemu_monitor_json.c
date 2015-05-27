@@ -1365,12 +1365,9 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
 }
 
 
-/*
- * Returns: 0 if balloon not supported, +1 if balloon query worked
- * or -1 on failure
- */
-int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
-                                  unsigned long long *currmem)
+int
+qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
+                              unsigned long long *currmem)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-balloon",
