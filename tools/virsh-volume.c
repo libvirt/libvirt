@@ -1124,14 +1124,10 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     unsigned long long capacity = 0;
     unsigned int flags = 0;
     bool ret = false;
-    bool delta = false;
+    bool delta = vshCommandOptBool(cmd, "delta");
 
     if (vshCommandOptBool(cmd, "allocate"))
         flags |= VIR_STORAGE_VOL_RESIZE_ALLOCATE;
-    if (vshCommandOptBool(cmd, "delta")) {
-        delta = true;
-        flags |= VIR_STORAGE_VOL_RESIZE_DELTA;
-    }
     if (vshCommandOptBool(cmd, "shrink"))
         flags |= VIR_STORAGE_VOL_RESIZE_SHRINK;
 
@@ -1144,14 +1140,19 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     if (*capacityStr == '-') {
         /* The API always requires a positive value; but we allow a
          * negative value for convenience.  */
-        if (delta && vshCommandOptBool(cmd, "shrink")) {
+        if (vshCommandOptBool(cmd, "shrink")) {
             capacityStr++;
+            delta = true;
         } else {
             vshError(ctl, "%s",
-                     _("negative size requires --delta and --shrink"));
+                     _("negative size requires --shrink"));
             goto cleanup;
         }
     }
+
+    if (delta)
+        flags |= VIR_STORAGE_VOL_RESIZE_DELTA;
+
     if (vshVolSize(capacityStr, &capacity) < 0) {
         vshError(ctl, _("Malformed size %s"), capacityStr);
         goto cleanup;
