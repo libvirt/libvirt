@@ -2292,7 +2292,7 @@ storageVolResize(virStorageVolPtr obj,
     virStorageBackendPtr backend;
     virStoragePoolObjPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
-    unsigned long long abs_capacity, delta;
+    unsigned long long abs_capacity, delta = 0;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
@@ -2341,18 +2341,10 @@ storageVolResize(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    if (flags & VIR_STORAGE_VOL_RESIZE_SHRINK)
-        delta = vol->target.allocation - abs_capacity;
-    else
+    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE)
         delta = abs_capacity - vol->target.allocation;
 
-    /* If the operation is going to increase the allocation value and not
-     * just the capacity value, then let's make sure there's enough space
-     * in the pool in order to perform that operation
-     */
-    if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE &&
-        !(flags & VIR_STORAGE_VOL_RESIZE_SHRINK) &&
-        delta > pool->def->available) {
+    if (delta > pool->def->available) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Not enough space left in storage pool"));
         goto cleanup;
@@ -2375,15 +2367,8 @@ storageVolResize(virStorageVolPtr obj,
      */
     if (flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE) {
         vol->target.allocation = abs_capacity;
-
-        /* Update pool metadata */
-        if (flags & VIR_STORAGE_VOL_RESIZE_SHRINK) {
-           pool->def->allocation -= delta;
-           pool->def->available += delta;
-        } else {
-           pool->def->allocation += delta;
-           pool->def->available -= delta;
-        }
+        pool->def->allocation += delta;
+        pool->def->available -= delta;
     }
 
     ret = 0;
