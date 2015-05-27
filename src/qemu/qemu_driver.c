@@ -2611,9 +2611,12 @@ static int qemuDomainSendKey(virDomainPtr domain,
     return ret;
 }
 
-static int qemuDomainGetInfo(virDomainPtr dom,
-                             virDomainInfoPtr info)
+
+static int
+qemuDomainGetInfo(virDomainPtr dom,
+                  virDomainInfoPtr info)
 {
+    unsigned long long maxmem;
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
@@ -2624,11 +2627,27 @@ static int qemuDomainGetInfo(virDomainPtr dom,
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
+        goto cleanup;
+
+    memset(info, 0, sizeof(*info));
+
     info->state = virDomainObjGetState(vm, NULL);
 
-    if (!virDomainObjIsActive(vm)) {
-        info->cpuTime = 0;
-    } else {
+    maxmem = virDomainDefGetMemoryActual(vm->def);
+    if (VIR_ASSIGN_IS_OVERFLOW(info->maxMem, maxmem)) {
+        virReportError(VIR_ERR_OVERFLOW, "%s",
+                       _("Initial memory size too large"));
+        goto cleanup;
+    }
+
+    if (virDomainObjIsActive(vm)) {
+        if (VIR_ASSIGN_IS_OVERFLOW(info->memory, vm->def->mem.cur_balloon)) {
+            virReportError(VIR_ERR_OVERFLOW, "%s",
+                           _("Current memory size too large"));
+            goto cleanup;
+        }
+
         if (qemuGetProcessInfo(&(info->cpuTime), NULL, NULL, vm->pid, 0) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("cannot read cputime for domain"));
@@ -2636,18 +2655,11 @@ static int qemuDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = virDomainDefGetMemoryActual(vm->def);
-
-    if (virDomainObjIsActive(vm)) {
-        if (qemuDomainUpdateCurrentMemorySize(driver, vm) < 0)
-            goto cleanup;
-
-        info->memory = vm->def->mem.cur_balloon;
-    } else {
-        info->memory = 0;
+    if (VIR_ASSIGN_IS_OVERFLOW(info->nrVirtCpu, vm->def->vcpus)) {
+        virReportError(VIR_ERR_OVERFLOW, "%s", _("cpu count too large"));
+        goto cleanup;
     }
 
-    info->nrVirtCpu = vm->def->vcpus;
     ret = 0;
 
  cleanup:
