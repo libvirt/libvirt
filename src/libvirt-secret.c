@@ -1,7 +1,7 @@
 /*
  * libvirt-secret.c: entry points for virSecretPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -336,7 +336,7 @@ virSecretLookupByUsage(virConnectPtr conn,
 virSecretPtr
 virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, xml, flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 

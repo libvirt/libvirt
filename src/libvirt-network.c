@@ -290,7 +290,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
 virNetworkPtr
 virNetworkLookupByName(virConnectPtr conn, const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -404,7 +404,7 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 virNetworkPtr
 virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s", conn, xmlDesc);
+    VIR_DEBUG("conn=%p, xmlDesc=%s", conn, NULLSTR(xmlDesc));
 
     virResetLastError();
 
@@ -444,7 +444,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
 virNetworkPtr
 virNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
-    VIR_DEBUG("conn=%p, xml=%s", conn, xml);
+    VIR_DEBUG("conn=%p, xml=%s", conn, NULLSTR(xml));
 
     virResetLastError();
 

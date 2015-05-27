@@ -284,7 +284,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
 virInterfacePtr
 virInterfaceLookupByName(virConnectPtr conn, const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -323,7 +323,7 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
 virInterfacePtr
 virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
 {
-    VIR_DEBUG("conn=%p, macstr=%s", conn, macstr);
+    VIR_DEBUG("conn=%p, macstr=%s", conn, NULLSTR(macstr));
 
     virResetLastError();
 
@@ -464,7 +464,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 virInterfacePtr
 virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, xml, flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 

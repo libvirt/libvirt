@@ -1,7 +1,7 @@
 /*
  * libvirt-nwfilter.c: entry points for virNwfilterPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -162,7 +162,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
 virNWFilterPtr
 virNWFilterLookupByName(virConnectPtr conn, const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -382,7 +382,7 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
 virNWFilterPtr
 virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s", conn, xmlDesc);
+    VIR_DEBUG("conn=%p, xmlDesc=%s", conn, NULLSTR(xmlDesc));
 
     virResetLastError();
 

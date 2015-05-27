@@ -321,7 +321,7 @@ int
 virConnectGetMaxVcpus(virConnectPtr conn,
                       const char *type)
 {
-    VIR_DEBUG("conn=%p, type=%s", conn, type);
+    VIR_DEBUG("conn=%p, type=%s", conn, NULLSTR(type));
 
     virResetLastError();
 
@@ -965,7 +965,7 @@ virConnectCompareCPU(virConnectPtr conn,
                      const char *xmlDesc,
                      unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, xmlDesc, flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -1009,7 +1009,7 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
                            unsigned int flags)
 {
     VIR_DEBUG("conn=%p, arch=%s, models=%p, flags=%x",
-              conn, arch, models, flags);
+              conn, NULLSTR(arch), models, flags);
     virResetLastError();
 
     if (models)

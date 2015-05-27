@@ -364,7 +364,7 @@ virStoragePoolPtr
 virStoragePoolLookupByName(virConnectPtr conn,
                            const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -521,7 +521,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
                         const char *xmlDesc,
                         unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, xmlDesc, flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -564,7 +564,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
                         const char *xml,
                         unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, xml, flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 
@@ -1290,7 +1290,7 @@ virStorageVolPtr
 virStorageVolLookupByName(virStoragePoolPtr pool,
                           const char *name)
 {
-    VIR_DEBUG("pool=%p, name=%s", pool, name);
+    VIR_DEBUG("pool=%p, name=%s", pool, NULLSTR(name));
 
     virResetLastError();
 
@@ -1330,7 +1330,7 @@ virStorageVolPtr
 virStorageVolLookupByKey(virConnectPtr conn,
                          const char *key)
 {
-    VIR_DEBUG("conn=%p, key=%s", conn, key);
+    VIR_DEBUG("conn=%p, key=%s", conn, NULLSTR(key));
 
     virResetLastError();
 
@@ -1370,7 +1370,7 @@ virStorageVolPtr
 virStorageVolLookupByPath(virConnectPtr conn,
                           const char *path)
 {
-    VIR_DEBUG("conn=%p, path=%s", conn, path);
+    VIR_DEBUG("conn=%p, path=%s", conn, NULLSTR(path));
 
     virResetLastError();
 
@@ -1463,7 +1463,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
                        const char *xmlDesc,
                        unsigned int flags)
 {
-    VIR_DEBUG("pool=%p, xmlDesc=%s, flags=%x", pool, xmlDesc, flags);
+    VIR_DEBUG("pool=%p, xmlDesc=%s, flags=%x", pool, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -1516,7 +1516,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                            unsigned int flags)
 {
     VIR_DEBUG("pool=%p, xmlDesc=%s, clonevol=%p, flags=%x",
-              pool, xmlDesc, clonevol, flags);
+              pool, NULLSTR(xmlDesc), clonevol, flags);
 
     virResetLastError();
 

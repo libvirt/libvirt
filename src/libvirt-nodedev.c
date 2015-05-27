@@ -1,7 +1,7 @@
 /*
  * libvirt-nodedev.c: entry points for virNodeDevPtr APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -160,7 +160,7 @@ virNodeListDevices(virConnectPtr conn,
                    unsigned int flags)
 {
     VIR_DEBUG("conn=%p, cap=%s, names=%p, maxnames=%d, flags=%x",
-          conn, cap, names, maxnames, flags);
+              conn, NULLSTR(cap), names, maxnames, flags);
 
     virResetLastError();
 
@@ -199,7 +199,7 @@ virNodeListDevices(virConnectPtr conn,
 virNodeDevicePtr
 virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%p", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -242,7 +242,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                                  const char *wwpn,
                                  unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, wwnn=%p, wwpn=%p, flags=%x", conn, wwnn, wwpn, flags);
+    VIR_DEBUG("conn=%p, wwnn=%s, wwpn=%s, flags=%x", conn, NULLSTR(wwnn), NULLSTR(wwpn), flags);
 
     virResetLastError();
 
@@ -694,7 +694,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
                        const char *xmlDesc,
                        unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, xmlDesc, flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 

@@ -167,7 +167,7 @@ virDomainPtr
 virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
                    unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, xmlDesc, flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -235,7 +235,7 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
                             unsigned int flags)
 {
     VIR_DEBUG("conn=%p, xmlDesc=%s, nfiles=%u, files=%p, flags=%x",
-              conn, xmlDesc, nfiles, files, flags);
+              conn, NULLSTR(xmlDesc), nfiles, files, flags);
 
     virResetLastError();
 
@@ -413,7 +413,7 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name)
 {
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
+    VIR_DEBUG("conn=%p, name=%s", conn, NULLSTR(name));
 
     virResetLastError();
 
@@ -955,7 +955,7 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
 int
 virDomainRestore(virConnectPtr conn, const char *from)
 {
-    VIR_DEBUG("conn=%p, from=%s", conn, from);
+    VIR_DEBUG("conn=%p, from=%s", conn, NULLSTR(from));
 
     virResetLastError();
 
@@ -1025,7 +1025,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
                       unsigned int flags)
 {
     VIR_DEBUG("conn=%p, from=%s, dxml=%s, flags=%x",
-              conn, from, NULLSTR(dxml), flags);
+              conn, NULLSTR(from), NULLSTR(dxml), flags);
 
     virResetLastError();
 
@@ -1089,7 +1089,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
                              unsigned int flags)
 {
     VIR_DEBUG("conn=%p, file=%s, flags=%x",
-              conn, file, flags);
+              conn, NULLSTR(file), flags);
 
     virResetLastError();
 
@@ -1162,7 +1162,7 @@ virDomainSaveImageDefineXML(virConnectPtr conn, const char *file,
                             const char *dxml, unsigned int flags)
 {
     VIR_DEBUG("conn=%p, file=%s, dxml=%s, flags=%x",
-              conn, file, dxml, flags);
+              conn, NULLSTR(file), NULLSTR(dxml), flags);
 
     virResetLastError();
 
@@ -2623,7 +2623,7 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
                               unsigned int flags)
 {
     VIR_DEBUG("conn=%p, format=%s, config=%s, flags=%x",
-              conn, nativeFormat, nativeConfig, flags);
+              conn, NULLSTR(nativeFormat), NULLSTR(nativeConfig), flags);
 
     virResetLastError();
 
@@ -2673,7 +2673,7 @@ virConnectDomainXMLToNative(virConnectPtr conn,
                             unsigned int flags)
 {
     VIR_DEBUG("conn=%p, format=%s, xml=%s, flags=%x",
-              conn, nativeFormat, domainXml, flags);
+              conn, NULLSTR(nativeFormat), NULLSTR(domainXml), flags);
 
     virResetLastError();
 
@@ -4597,7 +4597,7 @@ virDomainMigrateFinish(virConnectPtr dconn,
 {
     VIR_DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, "
               "flags=%lx", dconn, NULLSTR(dname), cookie, cookielen,
-              uri, flags);
+              NULLSTR(uri), flags);
 
     virResetLastError();
 
@@ -4639,8 +4639,8 @@ virDomainMigratePrepare2(virConnectPtr dconn,
 {
     VIR_DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p,"
               "flags=%lx, dname=%s, bandwidth=%lu, dom_xml=%s", dconn,
-              cookie, cookielen, uri_in, uri_out, flags, NULLSTR(dname),
-              bandwidth, dom_xml);
+              cookie, cookielen, NULLSTR(uri_in), uri_out, flags, NULLSTR(dname),
+              bandwidth, NULLSTR(dom_xml));
 
     virResetLastError();
 
@@ -4681,7 +4681,7 @@ virDomainMigrateFinish2(virConnectPtr dconn,
 {
     VIR_DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, "
               "flags=%lx, retcode=%d", dconn, NULLSTR(dname), cookie,
-              cookielen, uri, flags, retcode);
+              cookielen, NULLSTR(uri), flags, retcode);
 
     virResetLastError();
 
@@ -4721,7 +4721,7 @@ virDomainMigratePrepareTunnel(virConnectPtr conn,
 {
     VIR_DEBUG("conn=%p, stream=%p, flags=%lx, dname=%s, "
               "bandwidth=%lu, dom_xml=%s", conn, st, flags,
-              NULLSTR(dname), bandwidth, dom_xml);
+              NULLSTR(dname), bandwidth, NULLSTR(dom_xml));
 
     virResetLastError();
 
@@ -4817,8 +4817,8 @@ virDomainMigratePrepare3(virConnectPtr dconn,
     VIR_DEBUG("dconn=%p, cookiein=%p, cookieinlen=%d, cookieout=%p, "
               "cookieoutlen=%p, uri_in=%s, uri_out=%p, flags=%lx, dname=%s, "
               "bandwidth=%lu, dom_xml=%s",
-              dconn, cookiein, cookieinlen, cookieout, cookieoutlen, uri_in,
-              uri_out, flags, NULLSTR(dname), bandwidth, dom_xml);
+              dconn, cookiein, cookieinlen, cookieout, cookieoutlen, NULLSTR(uri_in),
+              uri_out, flags, NULLSTR(dname), bandwidth, NULLSTR(dom_xml));
 
     virResetLastError();
 
@@ -4866,7 +4866,7 @@ virDomainMigratePrepareTunnel3(virConnectPtr conn,
               "cookieoutlen=%p, flags=%lx, dname=%s, bandwidth=%lu, "
               "dom_xml=%s",
               conn, st, cookiein, cookieinlen, cookieout, cookieoutlen, flags,
-              NULLSTR(dname), bandwidth, dom_xml);
+              NULLSTR(dname), bandwidth, NULLSTR(dom_xml));
 
     virResetLastError();
 
@@ -6377,7 +6377,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
 virDomainPtr
 virDomainDefineXML(virConnectPtr conn, const char *xml)
 {
-    VIR_DEBUG("conn=%p, xml=%s", conn, xml);
+    VIR_DEBUG("conn=%p, xml=%s", conn, NULLSTR(xml));
 
     virResetLastError();
 
@@ -6425,7 +6425,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml)
 virDomainPtr
 virDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s flags=%x", conn, xml, flags);
+    VIR_DEBUG("conn=%p, xml=%s flags=%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 
