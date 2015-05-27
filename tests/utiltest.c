@@ -172,6 +172,35 @@ testRoundValueToPowerOfTwo(const void *data ATTRIBUTE_UNUSED)
 }
 
 
+#define TEST_OVERFLOW(var, val, expect)                                        \
+    tmp = val;                                                                 \
+    if (VIR_ASSIGN_IS_OVERFLOW(var, tmp) != expect) {                          \
+        fprintf(stderr, "\noverflow check failed: "                            \
+                "var: " #var " val: " #val "\n");                              \
+        return -1;                                                             \
+    }
+
+static int
+testOverflowCheckMacro(const void *data ATTRIBUTE_UNUSED)
+{
+    long long tmp;
+    unsigned char luchar;
+    char lchar;
+
+    TEST_OVERFLOW(luchar, 254, false);
+    TEST_OVERFLOW(luchar, 255, false);
+    TEST_OVERFLOW(luchar, 256, true);
+    TEST_OVERFLOW(luchar, 767, true);
+
+    TEST_OVERFLOW(lchar, 127, false);
+    TEST_OVERFLOW(lchar, -128, false);
+    TEST_OVERFLOW(lchar, -129, true);
+    TEST_OVERFLOW(lchar, 128, true);
+
+    return 0;
+}
+
+
 
 
 static int
@@ -193,6 +222,7 @@ mymain(void)
     DO_TEST(DiskNameToIndex);
     DO_TEST(ParseVersionString);
     DO_TEST(RoundValueToPowerOfTwo);
+    DO_TEST(OverflowCheckMacro);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

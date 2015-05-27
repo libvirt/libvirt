@@ -247,4 +247,15 @@ unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
 unsigned long long virMemoryMaxValue(bool ulong);
 
+/**
+ * VIR_ASSIGN_IS_OVERFLOW:
+ * @rvalue: value that is checked (evaluated twice)
+ * @lvalue: value that the check is against (used in typeof())
+ *
+ * This macro assigns @lvalue to @rvalue and evaluates as true if the value of
+ * @rvalue did not fit into the @lvalue.
+ */
+# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue)                                \
+    (((lvalue) = (rvalue)) != (rvalue))
+
 #endif /* __VIR_UTIL_H__ */
