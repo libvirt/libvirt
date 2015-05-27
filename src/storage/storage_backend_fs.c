@@ -807,7 +807,7 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
         (needs_create_as_uid || !virFileExists(pool->def->target.path)))
         mode = VIR_STORAGE_DEFAULT_POOL_PERM_MODE;
     if (needs_create_as_uid)
-        flags |= VIR_DIR_CREATE_AS_UID;
+        dir_create_flags |= VIR_DIR_CREATE_AS_UID;
 
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
