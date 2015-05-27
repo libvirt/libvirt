@@ -4270,8 +4270,6 @@ int qemuProcessStart(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
-    unsigned long cur_balloon;
-    int period = 0;
     size_t i;
     bool rawio_set = false;
     char *nodeset = NULL;
@@ -4880,28 +4878,24 @@ int qemuProcessStart(virConnectPtr conn,
     if (qemuDomainUpdateMemoryDeviceInfo(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    /* Technically, qemuProcessStart can be called from inside
-     * QEMU_ASYNC_JOB_MIGRATION_IN, but we are okay treating this like
-     * a sync job since no other job can call into the domain until
-     * migration completes.  */
     VIR_DEBUG("Setting initial memory amount");
-    cur_balloon = vm->def->mem.cur_balloon;
-    if (cur_balloon != vm->def->mem.cur_balloon) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("unable to set balloon to %lld"),
-                       vm->def->mem.cur_balloon);
-        goto cleanup;
+    if (vm->def->memballoon &&
+        vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        unsigned long long balloon = vm->def->mem.cur_balloon;
+        int period = vm->def->memballoon->period;
+
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            goto cleanup;
+
+        if (period)
+            qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
+
+        if (qemuMonitorSetBalloon(priv->mon, balloon) < 0)
+            goto exit_monitor;
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto cleanup;
     }
-    if (vm->def->memballoon && vm->def->memballoon->period)
-        period = vm->def->memballoon->period;
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
-    if (period)
-        qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
-    if (qemuMonitorSetBalloon(priv->mon, cur_balloon) < 0)
-        goto exit_monitor;
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
 
     VIR_DEBUG("Detecting actual memory size for video device");
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
