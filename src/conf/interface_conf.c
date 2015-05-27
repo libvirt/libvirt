@@ -1,7 +1,7 @@
 /*
  * interface_conf.c: interfaces XML handling
  *
- * Copyright (C) 2006-2010, 2013, 2014 Red Hat, Inc.
+ * Copyright (C) 2006-2010, 2013-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -548,39 +548,34 @@ virInterfaceDefParseBondItfs(virInterfaceDefPtr def,
     virInterfaceDefPtr itf;
     int nbItf;
     size_t i;
-    int ret = 0;
+    int ret = -1;
 
     nbItf = virXPathNodeSet("./interface", ctxt, &interfaces);
-    if (nbItf < 0) {
-        ret = -1;
-        goto error;
-    }
+    if (nbItf < 0)
+        goto cleanup;
 
     if (nbItf == 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("bond has no interfaces"));
-        ret = -1;
-        goto error;
+        ret = 0;
+        goto cleanup;
     }
 
-    if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0) {
-        ret = -1;
-        goto error;
-    }
+    if (VIR_ALLOC_N(def->data.bond.itf, nbItf) < 0)
+        goto cleanup;
+
     def->data.bond.nbItf = nbItf;
 
     for (i = 0; i < nbItf; i++) {
         ctxt->node = interfaces[i];
         itf = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_BOND);
         if (itf == NULL) {
-            ret = -1;
             def->data.bond.nbItf = i;
-            goto error;
+            goto cleanup;
         }
         def->data.bond.itf[i] = itf;
     }
 
- error:
+    ret = 0;
+ cleanup:
     VIR_FREE(interfaces);
     ctxt->node = bond;
     return ret;
