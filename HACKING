@@ -18,7 +18,12 @@ listen to feedback.
 and is browsable along with other libvirt-related repositories (e.g.
 libvirt-python) online <http://libvirt.org/git/>.
 
-(3) Post patches in unified diff format, with git rename detection enabled. You
+(3) Patches to translations are maintained via the zanata project
+<https://fedora.zanata.org/>. If you want to fix a translation in a .po file,
+join the appropriate language team. The libvirt release process automatically
+pulls the latest version of each translation file from zanata.
+
+(4) Post patches in unified diff format, with git rename detection enabled. You
 need a one-time setup of:
 
   git config diff.renames true
@@ -70,7 +75,7 @@ the correct version if needed though).
 
 
 
-(4) In your commit message, make the summary line reasonably short (60 characters
+(5) In your commit message, make the summary line reasonably short (60 characters
 is typical), followed by a blank line, followed by any longer description of
 why your patch makes sense. If the patch fixes a regression, and you know what
 commit introduced the problem, mentioning that is useful. If the patch
@@ -82,7 +87,7 @@ is up to you if you want to include or omit them in the commit message.
 
 
 
-(5) Split large changes into a series of smaller patches, self-contained if
+(6) Split large changes into a series of smaller patches, self-contained if
 possible, with an explanation of each patch and an explanation of how the
 sequence of patches fits together. Moreover, please keep in mind that it's
 required to be able to compile cleanly (*including* "make check" and "make
@@ -93,10 +98,10 @@ things).
 
 
 
-(6) Make sure your patches apply against libvirt GIT. Developers only follow GIT
+(7) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.
 
-(7) Run the automated tests on your code before submitting any changes. In
+(8) Run the automated tests on your code before submitting any changes. In
 particular, configure with compile warnings set to -Werror. This is done
 automatically for a git checkout; from a tarball, use:
 
@@ -149,7 +154,7 @@ various tests under gdb or Valgrind.
 
 
 
-(8) The Valgrind test should produce similar output to "make check". If the output
+(9) The Valgrind test should produce similar output to "make check". If the output
 has traces within libvirt API's, then investigation is required in order to
 determine the cause of the issue. Output such as the following indicates some
 sort of leak:
@@ -225,7 +230,7 @@ to "tests/.valgrind.supp" in order to suppress the warning:
 
 
 
-(9) Update tests and/or documentation, particularly if you are adding a new
+(10) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
 
 
