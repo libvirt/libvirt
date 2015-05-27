@@ -5673,7 +5673,9 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        virReportError(VIR_ERR_NO_NODE_DEVICE,
+                       _("no node device with matching name '%s'"),
+                       name);
         goto cleanup;
     }
 
@@ -5893,7 +5895,9 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     testDriverUnlock(driver);
 
     if (!obj) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        virReportError(VIR_ERR_NO_NODE_DEVICE,
+                       _("no node device with matching name '%s'"),
+                       dev->name);
         goto out;
     }
 

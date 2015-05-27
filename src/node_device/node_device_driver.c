@@ -248,7 +248,9 @@ nodeDeviceLookupByName(virConnectPtr conn, const char *name)
     nodeDeviceUnlock();
 
     if (!obj) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        virReportError(VIR_ERR_NO_NODE_DEVICE,
+                       _("no node device with matching name '%s'"),
+                       name);
         goto cleanup;
     }
 
@@ -597,8 +599,10 @@ nodeDeviceCreateXML(virConnectPtr conn,
      * we're returning what we get... */
 
     if (dev == NULL)
-        virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
-
+        virReportError(VIR_ERR_NO_NODE_DEVICE,
+                       _("no node device for '%s' with matching "
+                         "wwnn '%s' and wwpn '%s'"),
+                       def->name, wwnn, wwpn);
  cleanup:
     nodeDeviceUnlock();
     virNodeDeviceDefFree(def);
@@ -621,7 +625,9 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     nodeDeviceUnlock();
 
     if (!obj) {
-        virReportError(VIR_ERR_NO_NODE_DEVICE, NULL);
+        virReportError(VIR_ERR_NO_NODE_DEVICE,
+                       _("no node device with matching name '%s'"),
+                       dev->name);
         goto out;
     }
 
