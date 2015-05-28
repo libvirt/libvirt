@@ -284,7 +284,8 @@ vshBuildPoolXML(vshControl *ctl,
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
     virBufferAdjustIndent(&buf, 2);
     virBufferAsprintf(&buf, "<name>%s</name>\n", name);
-    if (srcHost || srcPath || srcDev || srcFormat || srcName) {
+    if (srcHost || srcPath || srcDev || srcFormat || srcName ||
+        (adapterWwnn && adapterWwpn) || adapterName) {
         virBufferAddLit(&buf, "<source>\n");
         virBufferAdjustIndent(&buf, 2);
 
