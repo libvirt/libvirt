@@ -1,7 +1,7 @@
 /*
  * storage_driver.c: core driver for storage APIs
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1808,9 +1808,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count+1) < 0)
-        goto cleanup;
 
     if (!backend->createVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
@@ -1824,14 +1821,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
     VIR_FREE(voldef->key);
     if (backend->createVol(obj->conn, pool, voldef) < 0)
         goto cleanup;
-
-    pool->volumes.objs[pool->volumes.count++] = voldef;
-    volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
-                              voldef->key, NULL, NULL);
-    if (!volobj) {
-        pool->volumes.count--;
-        goto cleanup;
-    }
 
     if (VIR_ALLOC(buildvoldef) < 0) {
         voldef = NULL;
@@ -1861,15 +1850,18 @@ storageVolCreateXML(virStoragePoolPtr obj,
         voldef->building = false;
         pool->asyncjobs--;
 
-        if (buildret < 0) {
-            VIR_FREE(buildvoldef);
-            storageVolDeleteInternal(volobj, backend, pool, voldef,
-                                     0, false);
-            voldef = NULL;
+        if (buildret < 0)
             goto cleanup;
-        }
-
     }
+
+    if (VIR_REALLOC_N(pool->volumes.objs,
+                      pool->volumes.count+1) < 0)
+        goto cleanup;
+
+    pool->volumes.objs[pool->volumes.count++] = voldef;
+    if (!(volobj = virGetStorageVol(obj->conn, pool->def->name, voldef->name,
+                                    voldef->key, NULL, NULL)))
+        goto cleanup;
 
     if (backend->refreshVol &&
         backend->refreshVol(obj->conn, pool, voldef) < 0)
