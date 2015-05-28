@@ -10837,7 +10837,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("your QEMU is too old to support pvpanic"));
+                           _("the QEMU binary does not support the "
+                             "panic device"));
             goto error;
         }
     }
