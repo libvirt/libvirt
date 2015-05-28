@@ -1486,6 +1486,18 @@ qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorEmitSpiceMigrated(qemuMonitorPtr mon)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainSpiceMigrated, mon->vm);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
