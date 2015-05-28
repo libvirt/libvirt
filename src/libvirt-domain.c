@@ -7906,11 +7906,6 @@ virDomainPinIOThread(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
-    if ((unsigned short) iothread_id != iothread_id) {
-        virReportError(VIR_ERR_OVERFLOW, _("input too large: %u"),
-                       iothread_id);
-        goto error;
-    }
     virCheckPositiveArgGoto(iothread_id, error);
     virCheckNonNullArgGoto(cpumap, error);
     virCheckPositiveArgGoto(maplen, error);
