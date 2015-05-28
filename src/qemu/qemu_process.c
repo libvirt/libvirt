@@ -2376,7 +2376,7 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
         /* If any CPU has custom affinity that differs from the
          * VM default affinity, we must reject it
          */
-        for (n = 0; n < def->vcpus; n++) {
+        for (n = 0; n < def->cputune.nvcpupin; n++) {
             if (!virBitmapEqual(def->cpumask,
                                 def->cputune.vcpupin[n]->cpumask)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
