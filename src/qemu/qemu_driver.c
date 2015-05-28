@@ -17812,6 +17812,12 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
          * because we need vm->privateData which need
          * virDomainLiveConfigHelperMethod to do so. */
         priv = vm->privateData;
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("block I/O throttling not supported with this "
+                         "QEMU binary"));
+            goto endjob;
+        }
         supportMaxOptions = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX);
     }
 
