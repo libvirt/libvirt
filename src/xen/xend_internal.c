@@ -1853,9 +1853,7 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
 {
     char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64];
     size_t i, j;
-    int ret;
     xenUnifiedPrivatePtr priv = conn->privateData;
-    virDomainDefPtr def = NULL;
 
     if (maplen > (int)sizeof(cpumap_t)) {
         virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -1882,37 +1880,9 @@ xenDaemonDomainPinVcpu(virConnectPtr conn,
 
     snprintf(buf, sizeof(buf), "%d", vcpu);
 
-    ret = xend_op(conn, minidef->name, "op", "pincpu", "vcpu", buf,
-                  "cpumap", mapstr, NULL);
+    return xend_op(conn, minidef->name, "op", "pincpu", "vcpu", buf,
+                   "cpumap", mapstr, NULL);
 
-    if (!(def = xenDaemonDomainFetch(conn,
-                                     minidef->id,
-                                     minidef->name,
-                                     NULL)))
-        goto cleanup;
-
-    if (ret == 0) {
-        if (!def->cputune.vcpupin) {
-            if (VIR_ALLOC(def->cputune.vcpupin) < 0)
-                goto cleanup;
-            def->cputune.nvcpupin = 0;
-        }
-        if (virDomainPinAdd(&def->cputune.vcpupin,
-                            &def->cputune.nvcpupin,
-                            cpumap,
-                            maplen,
-                            vcpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("failed to add vcpupin xml entry"));
-            return -1;
-        }
-    }
-
-    return ret;
-
- cleanup:
-    virDomainDefFree(def);
-    return -1;
 }
 
 /**
