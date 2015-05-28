@@ -16,10 +16,15 @@
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <serial type='pty'>
+      <target port='0'/>
+      <address type='spapr-vio'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+      <address type='spapr-vio'/>
+    </console>
     <memballoon model='none'/>
-    <nvram>
-      <address type='spapr-vio' reg='0x4000'/>
-    </nvram>
     <panic/>
   </devices>
 </domain>

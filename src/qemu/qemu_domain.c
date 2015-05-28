@@ -959,6 +959,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addDefaultMemballoon = true;
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
+    bool addPanicDevice = false;
 
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1011,6 +1012,11 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         addPCIRoot = true;
         addDefaultUSBKBD = true;
         addDefaultUSBMouse = true;
+        /* For pSeries guests, the firmware provides the same
+         * functionality as the pvpanic device, so automatically
+         * add the definition if not already present */
+        if (STRPREFIX(def->os.machine, "pseries"))
+            addPanicDevice = true;
         break;
 
     case VIR_ARCH_ALPHA:
@@ -1092,6 +1098,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                                   VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
         return -1;
+
+    if (addPanicDevice && !def->panic) {
+        virDomainPanicDefPtr panic;
+        if (VIR_ALLOC(panic) < 0)
+            return -1;
+
+        def->panic = panic;
+    }
 
     return 0;
 }

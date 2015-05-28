@@ -5944,6 +5944,11 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 1.2.1, QEMU and KVM only</span>
     </p>
     <p>
+      For pSeries guests, this feature is always enabled since it's
+      implemented by the guest firmware, thus libvirt automatically
+      adds the <code>panic</code> element to the domain XML.
+    </p>
+    <p>
       Example: usage of panic configuration
     </p>
 <pre>
