@@ -12076,7 +12076,7 @@ vshEventTrayChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!data->loop && *data->count)
         return;
     vshPrint(data->ctl,
-             _("event 'disk-change' for domain %s disk %s: %s\n"),
+             _("event 'tray-change' for domain %s disk %s: %s\n"),
              virDomainGetName(dom), alias,
              vshDomainEventTrayChangeToString(reason));
     (*data->count)++;
