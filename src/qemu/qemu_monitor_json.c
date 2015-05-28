@@ -85,6 +85,7 @@ static void qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleNicRxFilterChanged(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSerialChange(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleMigrationStatus(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -100,6 +101,7 @@ static qemuEventHandler eventHandlers[] = {
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
+    { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
     { "RESET", qemuMonitorJSONHandleReset, },
@@ -982,6 +984,27 @@ qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon,
                                    virJSONValuePtr data ATTRIBUTE_UNUSED)
 {
     qemuMonitorEmitSpiceMigrated(mon);
+}
+
+
+static void
+qemuMonitorJSONHandleMigrationStatus(qemuMonitorPtr mon,
+                                     virJSONValuePtr data)
+{
+    const char *str;
+    int status;
+
+    if (!(str = virJSONValueObjectGetString(data, "status"))) {
+        VIR_WARN("missing status in migration event");
+        return;
+    }
+
+    if ((status = qemuMonitorMigrationStatusTypeFromString(str)) == -1) {
+        VIR_WARN("unknown status '%s' in migration event", str);
+        return;
+    }
+
+    qemuMonitorEmitMigrationStatus(mon, status);
 }
 
 

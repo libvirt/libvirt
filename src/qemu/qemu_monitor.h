@@ -186,6 +186,11 @@ typedef int (*qemuMonitorDomainSpiceMigratedCallback)(qemuMonitorPtr mon,
                                                       virDomainObjPtr vm,
                                                       void *opaque);
 
+typedef int (*qemuMonitorDomainMigrationStatusCallback)(qemuMonitorPtr mon,
+                                                        virDomainObjPtr vm,
+                                                        int status,
+                                                        void *opaque);
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
@@ -214,6 +219,7 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainNicRxFilterChangedCallback domainNicRxFilterChanged;
     qemuMonitorDomainSerialChangeCallback domainSerialChange;
     qemuMonitorDomainSpiceMigratedCallback domainSpiceMigrated;
+    qemuMonitorDomainMigrationStatusCallback domainMigrationStatus;
 };
 
 char *qemuMonitorEscapeArg(const char *in);
@@ -313,6 +319,8 @@ int qemuMonitorEmitSerialChange(qemuMonitorPtr mon,
                                 const char *devAlias,
                                 bool connected);
 int qemuMonitorEmitSpiceMigrated(qemuMonitorPtr mon);
+int qemuMonitorEmitMigrationStatus(qemuMonitorPtr mon,
+                                   int status);
 
 int qemuMonitorStartCPUs(qemuMonitorPtr mon,
                          virConnectPtr conn);

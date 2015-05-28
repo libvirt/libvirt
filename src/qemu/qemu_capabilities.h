@@ -230,6 +230,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_PCI_SERIAL  = 188, /* -device pci-serial */
     QEMU_CAPS_CPU_AARCH64_OFF    = 189, /* -cpu ...,aarch64=off */
     QEMU_CAPS_VHOSTUSER_MULTIQUEUE = 190, /* vhost-user with -netdev queues= */
+    QEMU_CAPS_MIGRATION_EVENT    = 191, /* MIGRATION event */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;

@@ -287,6 +287,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "aarch64-off",
 
               "vhost-user-multiqueue", /* 190 */
+              "migration-event",
     );
 
 
@@ -1505,6 +1506,7 @@ struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "BALLOON_CHANGE", QEMU_CAPS_BALLOON_EVENT },
     { "SPICE_MIGRATE_COMPLETED", QEMU_CAPS_SEAMLESS_MIGRATION },
     { "DEVICE_DELETED", QEMU_CAPS_DEVICE_DEL_EVENT },
+    { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {

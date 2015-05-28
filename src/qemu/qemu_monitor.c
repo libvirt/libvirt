@@ -1498,6 +1498,20 @@ qemuMonitorEmitSpiceMigrated(qemuMonitorPtr mon)
 
 
 int
+qemuMonitorEmitMigrationStatus(qemuMonitorPtr mon,
+                               int status)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, status=%s",
+              mon, NULLSTR(qemuMonitorMigrationStatusTypeToString(status)));
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainMigrationStatus, mon->vm, status);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
