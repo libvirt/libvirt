@@ -2494,6 +2494,24 @@ qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
 }
 
 
+static const char *
+qemuMigrationJobName(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    switch (priv->job.asyncJob) {
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
+        return _("migration job");
+    case QEMU_ASYNC_JOB_SAVE:
+        return _("domain save job");
+    case QEMU_ASYNC_JOB_DUMP:
+        return _("domain core dump job");
+    default:
+        return _("job");
+    }
+}
+
+
 static int
 qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
@@ -2514,7 +2532,6 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 static int
 qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            const char *job,
                             qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2525,18 +2542,18 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 
     switch (jobInfo->type) {
     case VIR_DOMAIN_JOB_NONE:
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("%s: %s"), job, _("is not active"));
+        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
+                       qemuMigrationJobName(vm), _("is not active"));
         return -1;
 
     case VIR_DOMAIN_JOB_FAILED:
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("%s: %s"), job, _("unexpectedly failed"));
+        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
+                       qemuMigrationJobName(vm), _("unexpectedly failed"));
         return -1;
 
     case VIR_DOMAIN_JOB_CANCELLED:
-        virReportError(VIR_ERR_OPERATION_ABORTED,
-                       _("%s: %s"), job, _("canceled by client"));
+        virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
+                       qemuMigrationJobName(vm), _("canceled by client"));
         return -1;
 
     case VIR_DOMAIN_JOB_BOUNDED:
@@ -2562,23 +2579,8 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
-    const char *job;
     int pauseReason;
     int ret = -1;
-
-    switch (priv->job.asyncJob) {
-    case QEMU_ASYNC_JOB_MIGRATION_OUT:
-        job = _("migration job");
-        break;
-    case QEMU_ASYNC_JOB_SAVE:
-        job = _("domain save job");
-        break;
-    case QEMU_ASYNC_JOB_DUMP:
-        job = _("domain core dump job");
-        break;
-    default:
-        job = _("job");
-    }
 
     jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
@@ -2586,7 +2588,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
         /* Poll every 50ms for progress & to allow cancellation */
         struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
 
-        if (qemuMigrationCheckJobStatus(driver, vm, job, asyncJob) < 0)
+        if (qemuMigrationCheckJobStatus(driver, vm, asyncJob) < 0)
             goto error;
 
         if (storage &&
@@ -2597,8 +2599,8 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
         if (abort_on_error &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("%s: %s"), job, _("failed due to I/O error"));
+            virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
+                           qemuMigrationJobName(vm), _("failed due to I/O error"));
             goto error;
         }
 
@@ -4251,7 +4253,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * rather failed later on.  Check its status before waiting for a
          * connection from qemu which may never be initiated.
          */
-        if (qemuMigrationCheckJobStatus(driver, vm, _("migration job"),
+        if (qemuMigrationCheckJobStatus(driver, vm,
                                         QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
             goto cancel;
 
