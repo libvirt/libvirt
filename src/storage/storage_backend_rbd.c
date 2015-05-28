@@ -1,7 +1,7 @@
 /*
  * storage_backend_rbd.c: storage backend for RBD (RADOS Block Device) handling
  *
- * Copyright (C) 2013-2014 Red Hat, Inc.
+ * Copyright (C) 2013-2015 Red Hat, Inc.
  * Copyright (C) 2012 Wido den Hollander
  *
  * This library is free software; you can redistribute it and/or
@@ -426,7 +426,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
     VIR_DEBUG("Removing RBD image %s/%s", pool->def->source.name, vol->name);
 
     if (flags & VIR_STORAGE_VOL_DELETE_ZEROED)
-        VIR_WARN("%s", _("This storage backend does not supported zeroed removal of volumes"));
+        VIR_WARN("%s", _("This storage backend does not support zeroed removal of volumes"));
 
     if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
         goto cleanup;
@@ -435,7 +435,7 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
         goto cleanup;
 
     r = rbd_remove(ptr.ioctx, vol->name);
-    if (r < 0) {
+    if (r < 0 && (-r) != ENOENT) {
         virReportSystemError(-r, _("failed to remove volume '%s/%s'"),
                              pool->def->source.name, vol->name);
         goto cleanup;
