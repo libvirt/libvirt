@@ -537,6 +537,7 @@ mymain(void)
     DO_TEST("virtio-rng-egd");
 
     DO_TEST("pseries-nvram");
+    DO_TEST("pseries-panic-no-address");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");

@@ -5960,7 +5960,8 @@ qemu-kvm -net nic,model=? /dev/null
     <dd>
       <p>
         address of panic. The default ioport is 0x505. Most users
-        don't need to specify an address.
+        don't need to specify an address, and doing so is forbidden
+        altogether for pSeries guests.
       </p>
     </dd>
   </dl>

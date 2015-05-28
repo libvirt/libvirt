@@ -10821,25 +10821,41 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->panic) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
-            if (def->panic->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+        if (ARCH_IS_PPC64(def->os.arch) && STRPREFIX(def->os.machine, "pseries")) {
+            /* For pSeries guests, the firmware provides the same
+             * functionality as the pvpanic device. The address
+             * cannot be configured by the user */
+            if (def->panic->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting the panic device address is not "
+                                 "supported for pSeries guests"));
+                goto error;
+            }
+        } else {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("the QEMU binary does not support the "
+                                 "panic device"));
+                goto error;
+            }
+
+            switch (def->panic->info.type) {
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
                 virCommandAddArg(cmd, "-device");
                 virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
                                        def->panic->info.addr.isa.iobase);
-            } else if (def->panic->info.type ==
-                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                break;
+
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
                 virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
-            } else {
+                break;
+
+            default:
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("panic is supported only "
                                  "with ISA address type"));
                 goto error;
             }
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the QEMU binary does not support the "
-                             "panic device"));
-            goto error;
         }
     }
 
