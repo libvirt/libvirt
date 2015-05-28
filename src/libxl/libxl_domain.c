@@ -690,7 +690,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     int vnc_port;
     char *file;
-    size_t i;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
@@ -723,16 +722,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
                                         vnc_port) < 0)
                 VIR_DEBUG("Could not mark port %d as unused", vnc_port);
         }
-    }
-
-    /* Remove any cputune settings */
-    if (vm->def->cputune.nvcpupin) {
-        for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
-            virBitmapFree(vm->def->cputune.vcpupin[i]->cpumask);
-            VIR_FREE(vm->def->cputune.vcpupin[i]);
-        }
-        VIR_FREE(vm->def->cputune.vcpupin);
-        vm->def->cputune.nvcpupin = 0;
     }
 
     if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) > 0) {
