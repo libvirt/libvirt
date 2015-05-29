@@ -5202,13 +5202,11 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
                          int maplen,
                          unsigned int flags)
 {
-
-    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr targetDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr targetDef;
     int ret = -1;
     int hostcpus, vcpu;
-    virCapsPtr caps = NULL;
     virBitmapPtr allcpumap = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5220,18 +5218,11 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (virDomainGetVcpuPinInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, &def, &targetDef) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &targetDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        targetDef = vm->def;
-
-    /* Coverity didn't realize that targetDef must be set if we got here.  */
-    sa_assert(targetDef);
+    if (def)
+        targetDef = def;
 
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
@@ -5269,7 +5260,6 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
  cleanup:
     virBitmapFree(allcpumap);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
