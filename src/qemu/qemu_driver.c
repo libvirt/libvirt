@@ -2433,10 +2433,10 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1, r;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -2452,17 +2452,13 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto endjob;
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     /* Set the balloon driver collection interval */
     priv = vm->privateData;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-
+    if (def) {
         qemuDomainObjEnterMonitor(driver, vm);
         r = qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -2473,13 +2469,12 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
             goto endjob;
         }
 
-        vm->def->memballoon->period = period;
+        def->memballoon->period = period;
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        sa_assert(persistentDef);
+    if (persistentDef) {
         persistentDef->memballoon->period = period;
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         goto endjob;
@@ -2491,7 +2486,6 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
