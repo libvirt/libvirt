@@ -2546,6 +2546,14 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
                              virDomainObjPtr domain);
 
+int virDomainObjUpdateModificationImpact(virDomainObjPtr vm,
+                                         unsigned int *flags);
+
+int virDomainObjGetDefs(virDomainObjPtr vm,
+                        unsigned int flags,
+                        virDomainDefPtr *liveDef,
+                        virDomainDefPtr *persDef);
+
 int
 virDomainLiveConfigHelperMethod(virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,

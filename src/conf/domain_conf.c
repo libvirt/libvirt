@@ -2824,6 +2824,53 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
         return domain->def;
 }
 
+
+/**
+ * virDomainObjUpdateModificationImpact:
+ *
+ * @vm: domain object
+ * @flags: flags to update the modification impact on
+ *
+ * Resolves virDomainModificationImpact flags in @flags so that they correctly
+ * apply to the actual state of @vm. @flags may be modified after call to this
+ * function.
+ *
+ * Returns 0 on success if @flags point to a valid combination for @vm or -1 on
+ * error.
+ */
+int
+virDomainObjUpdateModificationImpact(virDomainObjPtr vm,
+                                     unsigned int *flags)
+{
+    bool isActive = virDomainObjIsActive(vm);
+
+    if ((*flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
+        VIR_DOMAIN_AFFECT_CURRENT) {
+        if (isActive)
+            *flags |= VIR_DOMAIN_AFFECT_LIVE;
+        else
+            *flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    }
+
+    if (!isActive && (*flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        return -1;
+    }
+
+    if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!vm->persistent) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("transient domains do not have any "
+                             "persistent config"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Helper method for --current, --live, and --config options, and check
  * whether domain is active or can get persistent domain configuration.
@@ -2838,44 +2885,68 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
                                 unsigned int *flags,
                                 virDomainDefPtr *persistentDef)
 {
-    bool isActive;
-    int ret = -1;
-
-    isActive = virDomainObjIsActive(dom);
-
-    if ((*flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) ==
-        VIR_DOMAIN_AFFECT_CURRENT) {
-        if (isActive)
-            *flags |= VIR_DOMAIN_AFFECT_LIVE;
-        else
-            *flags |= VIR_DOMAIN_AFFECT_CONFIG;
-    }
-
-    if (!isActive && (*flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not running"));
-        goto cleanup;
-    }
+    if (virDomainObjUpdateModificationImpact(dom, flags) < 0)
+        return -1;
 
     if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!dom->persistent) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("transient domains do not have any "
-                             "persistent config"));
-            goto cleanup;
-        }
         if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Get persistent config failed"));
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
+
+
+/**
+ * virDomainObjGetDefs:
+ *
+ * @vm: domain object
+ * @flags: for virDomainModificationImpact
+ * @liveDef: Set to the pointer to the live definition of @vm.
+ * @persDef: Set to the pointer to the config definition of @vm.
+ *
+ * Helper function to resolve @flags and retrieve correct domain pointer
+ * objects. This function should be used only when the hypervisor driver always
+ * creates vm->newDef once the vm is started. (qemu driver does that)
+ *
+ * If @liveDef or @persDef are set it implies that @flags request modification
+ * of thereof.
+ *
+ * Returns 0 on success and sets @liveDef and @persDef; -1 if @flags are
+ * inappropriate.
+ */
+int
+virDomainObjGetDefs(virDomainObjPtr vm,
+                    unsigned int flags,
+                    virDomainDefPtr *liveDef,
+                    virDomainDefPtr *persDef)
+{
+    if (liveDef)
+        *liveDef = NULL;
+
+    if (*persDef)
+        *persDef = NULL;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        return -1;
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (liveDef)
+            *liveDef = vm->def;
+
+        if (persDef)
+            *liveDef = vm->newDef;
+    } else {
+        if (persDef)
+            *persDef = vm->def;
+    }
+
+    return 0;
+}
+
 
 /*
  * The caller must hold a lock on the driver owning 'doms',
