@@ -9201,10 +9201,10 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -9240,14 +9240,10 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -9259,7 +9255,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     }
 
     ret = 0;
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
 
@@ -9339,8 +9335,8 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                 }
 
                 if (j != ndevices ||
-                    qemuDomainMergeBlkioDevice(&vm->def->blkio.devices,
-                                               &vm->def->blkio.ndevices,
+                    qemuDomainMergeBlkioDevice(&def->blkio.devices,
+                                               &def->blkio.ndevices,
                                                devices, ndevices, param->field) < 0)
                     ret = -1;
                 virBlkioDeviceArrayClear(devices, ndevices);
@@ -9353,10 +9349,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     }
     if (ret < 0)
         goto endjob;
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        /* Clang can't see that if we get here, persistentDef was set.  */
-        sa_assert(persistentDef);
-
+    if (persistentDef) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
 
@@ -9395,7 +9388,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
