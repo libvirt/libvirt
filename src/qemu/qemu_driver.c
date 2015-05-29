@@ -5016,7 +5016,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     virCgroupPtr cgroup_vcpu = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
@@ -5024,7 +5025,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     virObjectEventPtr event = NULL;
     char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
     char *str = NULL;
@@ -5043,26 +5043,22 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (virDomainPinVcpuFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     priv = vm->privateData;
 
-    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && vcpu >= vm->def->vcpus) {
+    if (def && vcpu >= def->vcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu %d is out of range of live cpu count %d"),
-                       vcpu, vm->def->vcpus);
+                       vcpu, def->vcpus);
         goto endjob;
     }
 
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && vcpu >= persistentDef->vcpus) {
+    if (persistentDef && vcpu >= persistentDef->vcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu %d is out of range of persistent cpu count %d"),
                        vcpu, persistentDef->vcpus);
@@ -5078,21 +5074,20 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-
+    if (def) {
         if (priv->vcpupids == NULL) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
             goto endjob;
         }
 
-        if (vm->def->cputune.vcpupin) {
-            newVcpuPin = virDomainPinDefCopy(vm->def->cputune.vcpupin,
-                                             vm->def->cputune.nvcpupin);
+        if (def->cputune.vcpupin) {
+            newVcpuPin = virDomainPinDefCopy(def->cputune.vcpupin,
+                                             def->cputune.nvcpupin);
             if (!newVcpuPin)
                 goto endjob;
 
-            newVcpuPinNum = vm->def->cputune.nvcpupin;
+            newVcpuPinNum = def->cputune.nvcpupin;
         } else {
             if (VIR_ALLOC(newVcpuPin) < 0)
                 goto endjob;
@@ -5126,12 +5121,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             }
         }
 
-        if (vm->def->cputune.vcpupin)
-            virDomainPinDefArrayFree(vm->def->cputune.vcpupin,
-                                     vm->def->cputune.nvcpupin);
+        if (def->cputune.vcpupin)
+            virDomainPinDefArrayFree(def->cputune.vcpupin,
+                                     def->cputune.nvcpupin);
 
-        vm->def->cputune.vcpupin = newVcpuPin;
-        vm->def->cputune.nvcpupin = newVcpuPinNum;
+        def->cputune.vcpupin = newVcpuPin;
+        def->cputune.nvcpupin = newVcpuPinNum;
         newVcpuPin = NULL;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
@@ -5150,8 +5145,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-
+    if (persistentDef) {
         if (!persistentDef->cputune.vcpupin) {
             if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)
                 goto endjob;
@@ -5187,7 +5181,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         qemuDomainEventQueue(driver, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
