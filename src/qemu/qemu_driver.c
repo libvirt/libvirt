@@ -5796,8 +5796,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virQEMUDriverConfigPtr cfg = NULL;
     virDomainObjPtr vm;
-    virCapsPtr caps = NULL;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     virBitmapPtr pcpumap = NULL;
     qemuDomainObjPrivatePtr priv;
     virCgroupPtr cgroup_iothread = NULL;
@@ -5820,9 +5820,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
     if (virDomainPinIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Changing affinity for IOThread dynamically is "
@@ -5833,9 +5830,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto endjob;
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto cleanup;
 
     if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
         goto endjob;
@@ -5846,12 +5842,11 @@ qemuDomainPinIOThread(virDomainPtr dom,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-
+    if (def) {
         virDomainIOThreadIDDefPtr iothrid;
         virBitmapPtr cpumask;
 
-        if (!(iothrid = virDomainIOThreadIDFind(vm->def, iothread_id))) {
+        if (!(iothrid = virDomainIOThreadIDFind(def, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("iothread %d not found"), iothread_id);
             goto endjob;
@@ -5901,12 +5896,9 @@ qemuDomainPinIOThread(virDomainPtr dom,
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         virDomainIOThreadIDDefPtr iothrid;
         virBitmapPtr cpumask;
-
-        /* Coverity didn't realize that targetDef must be set if we got here. */
-        sa_assert(persistentDef);
 
         if (!(iothrid = virDomainIOThreadIDFind(persistentDef, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -5938,7 +5930,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
     VIR_FREE(str);
     virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
