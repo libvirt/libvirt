@@ -2303,10 +2303,10 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1, r;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -2323,26 +2323,21 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto endjob;
+
 
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         /* resize the maximum memory */
 
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (def) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot resize the maximum memory on an "
                              "active domain"));
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            /* Help clang 2.8 decipher the logic flow.  */
-            sa_assert(persistentDef);
-
+        if (persistentDef) {
             /* resizing memory with NUMA nodes specified doesn't work as there
              * is no way to change the individual node sizes with this API */
             if (virDomainNumaGetNodeCount(persistentDef->numa) > 0) {
@@ -2372,9 +2367,9 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         /* resize the current memory */
         unsigned long oldmax = 0;
 
-        if (flags & VIR_DOMAIN_AFFECT_LIVE)
-            oldmax = virDomainDefGetMemoryActual(vm->def);
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (def)
+            oldmax = virDomainDefGetMemoryActual(def);
+        if (persistentDef) {
             if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
                 oldmax = virDomainDefGetMemoryActual(persistentDef);
         }
@@ -2385,13 +2380,13 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (def) {
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
             r = qemuMonitorSetBalloon(priv->mon, newmem);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 goto endjob;
-            virDomainAuditMemory(vm, vm->def->mem.cur_balloon, newmem, "update",
+            virDomainAuditMemory(vm, def->mem.cur_balloon, newmem, "update",
                                  r == 1);
             if (r < 0)
                 goto endjob;
@@ -2405,8 +2400,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             }
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            sa_assert(persistentDef);
+        if (persistentDef) {
             persistentDef->mem.cur_balloon = newmem;
             ret = virDomainSaveConfig(cfg->configDir, persistentDef);
             goto endjob;
@@ -2419,7 +2413,6 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
