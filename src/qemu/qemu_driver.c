@@ -5508,8 +5508,6 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     virBitmapPtr cpumask = NULL;
     virBitmapPtr bitmap = NULL;
     virCapsPtr caps = NULL;
-    unsigned char *tmpmap = NULL;
-    int tmpmaplen;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5547,12 +5545,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
         cpumask = bitmap;
     }
 
-    if (virBitmapToData(cpumask, &tmpmap, &tmpmaplen) < 0)
-        goto cleanup;
-    if (tmpmaplen > maplen)
-        tmpmaplen = maplen;
-    memcpy(cpumaps, tmpmap, tmpmaplen);
-    VIR_FREE(tmpmap);
+    virBitmapToDataBuf(cpumask, cpumaps, maplen);
 
     ret = 1;
 
