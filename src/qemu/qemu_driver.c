@@ -6155,32 +6155,22 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                       unsigned int flags)
 {
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
+    virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1;
 
     cfg = virQEMUDriverGetConfig(driver);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot change IOThreads for an inactive domain"));
-            goto endjob;
-        }
-
+    if (def) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("IOThreads not supported with this binary"));
@@ -6199,7 +6189,7 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         if (add) {
             if (!virDomainIOThreadIDAdd(persistentDef, iothread_id))
                 goto endjob;
@@ -6231,7 +6221,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
