@@ -5760,7 +5760,6 @@ qemuDomainGetIOThreadInfo(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    virCapsPtr caps = NULL;
     virDomainDefPtr targetDef = NULL;
     int ret = -1;
 
@@ -5773,27 +5772,16 @@ qemuDomainGetIOThreadInfo(virDomainPtr dom,
     if (virDomainGetIOThreadInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, NULL, &targetDef) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &targetDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        targetDef = vm->def;
-
-    /* Coverity didn't realize that targetDef must be set if we got here.  */
-    sa_assert(targetDef);
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
+    if (!targetDef)
         ret = qemuDomainGetIOThreadsLive(driver, vm, info);
     else
         ret = qemuDomainGetIOThreadsConfig(targetDef, info);
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
