@@ -952,6 +952,9 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         qemuDomainObjPrivatePtr priv = vm->privateData;
         VIR_DEBUG("Transitioned guest %s to paused state due to IO error", vm->def->name);
 
+        if (priv->signalIOError)
+            virDomainObjBroadcast(vm);
+
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_IOERROR);
         lifecycleEvent = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,

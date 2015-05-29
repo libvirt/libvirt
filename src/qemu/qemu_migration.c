@@ -2661,20 +2661,28 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
+    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rv;
 
     jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
     while ((rv = qemuMigrationCompleted(driver, vm, asyncJob, dconn,
                                         abort_on_error, storage)) != 1) {
-        /* Poll every 50ms for progress & to allow cancellation */
-        struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
-
         if (rv < 0)
             return rv;
 
-        virObjectUnlock(vm);
-        nanosleep(&ts, NULL);
-        virObjectLock(vm);
+        if (events) {
+            if (virDomainObjWait(vm) < 0) {
+                jobInfo->type = VIR_DOMAIN_JOB_FAILED;
+                return -2;
+            }
+        } else {
+            /* Poll every 50ms for progress & to allow cancellation */
+            struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
+
+            virObjectUnlock(vm);
+            nanosleep(&ts, NULL);
+            virObjectLock(vm);
+        }
     }
 
     qemuDomainJobInfoUpdateDowntime(jobInfo);
@@ -4148,6 +4156,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
+    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rc;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
@@ -4177,6 +4186,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                        virLockManagerPluginGetName(driver->lockManager));
         return -1;
     }
+
+    if (events)
+        priv->signalIOError = abort_on_error;
 
     mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                  cookieFlags | QEMU_MIGRATION_COOKIE_GRAPHICS);
@@ -4386,6 +4398,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     }
 
     qemuMigrationCookieFree(mig);
+
+    if (events)
+        priv->signalIOError = false;
 
     if (orig_err) {
         virSetError(orig_err);
@@ -5029,6 +5044,18 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuMigrationConnectionClosed(virConnectPtr conn,
+                              int reason,
+                              void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+
+    VIR_DEBUG("conn=%p, reason=%d, vm=%s", conn, reason, vm->def->name);
+    virDomainObjBroadcast(vm);
+}
+
+
 static int virConnectCredType[] = {
     VIR_CRED_AUTHNAME,
     VIR_CRED_PASSPHRASE,
@@ -5104,6 +5131,11 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
                                cfg->keepAliveCount) < 0)
         goto cleanup;
 
+    if (virConnectRegisterCloseCallback(dconn, qemuMigrationConnectionClosed,
+                                        vm, NULL) < 0) {
+        goto cleanup;
+    }
+
     qemuDomainObjEnterRemote(vm);
     p2p = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                    VIR_DRV_FEATURE_MIGRATION_P2P);
@@ -5169,6 +5201,7 @@ static int doPeer2PeerMigrate(virQEMUDriverPtr driver,
  cleanup:
     orig_err = virSaveLastError();
     qemuDomainObjEnterRemote(vm);
+    virConnectUnregisterCloseCallback(dconn, qemuMigrationConnectionClosed);
     virObjectUnref(dconn);
     qemuDomainObjExitRemote(vm);
     if (orig_err) {
