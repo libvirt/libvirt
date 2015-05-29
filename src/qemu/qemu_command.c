@@ -1447,9 +1447,6 @@ qemuDomainAssignVirtioSerialAddresses(virDomainDefPtr def,
     virDomainVirtioSerialAddrSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
-    if (virDomainControllerFindByType(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) == -1)
-        return 0;
-
     if (!(addrs = virDomainVirtioSerialAddrSetCreate()))
         goto cleanup;
 
