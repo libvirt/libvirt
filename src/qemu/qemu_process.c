@@ -1510,6 +1510,36 @@ qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                 virDomainObjPtr vm,
+                                 int status,
+                                 void *opaque ATTRIBUTE_UNUSED)
+{
+    qemuDomainObjPrivatePtr priv;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("Migration of domain %p %s changed state to %s",
+              vm, vm->def->name,
+              qemuMonitorMigrationStatusTypeToString(status));
+
+    priv = vm->privateData;
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_IN) {
+        VIR_DEBUG("got MIGRATION event without a migration job");
+        goto cleanup;
+    }
+
+    priv->job.current->status.status = status;
+    virDomainObjBroadcast(vm);
+
+ cleanup:
+    virObjectUnlock(vm);
+    return 0;
+}
+
+
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuProcessHandleMonitorEOF,
     .errorNotify = qemuProcessHandleMonitorError,
@@ -1534,6 +1564,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainNicRxFilterChanged = qemuProcessHandleNicRxFilterChanged,
     .domainSerialChange = qemuProcessHandleSerialChanged,
     .domainSpiceMigrated = qemuProcessHandleSpiceMigrated,
+    .domainMigrationStatus = qemuProcessHandleMigrationStatus,
 };
 
 static int

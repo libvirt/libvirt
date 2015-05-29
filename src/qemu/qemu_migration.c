@@ -2552,7 +2552,11 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
 
-    if (qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
+    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+
+    if (events)
+        qemuMigrationUpdateJobType(jobInfo);
+    else if (qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
         return -1;
 
     switch (jobInfo->type) {
@@ -2571,9 +2575,15 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
                        qemuMigrationJobName(vm), _("canceled by client"));
         return -1;
 
+    case VIR_DOMAIN_JOB_COMPLETED:
+        /* Fetch statistics of a completed migration */
+        if (events &&
+            qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_JOB_BOUNDED:
     case VIR_DOMAIN_JOB_UNBOUNDED:
-    case VIR_DOMAIN_JOB_COMPLETED:
     case VIR_DOMAIN_JOB_LAST:
         break;
     }
