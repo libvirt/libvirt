@@ -4837,11 +4837,11 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1;
     unsigned int maxvcpus = 0;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     qemuAgentCPUInfoPtr cpuinfo = NULL;
     int ncpuinfo;
     qemuDomainObjPrivatePtr priv;
@@ -4865,20 +4865,15 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (virDomainSetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE && !(flags & VIR_DOMAIN_VCPU_GUEST) &&
-        virNumaIsAvailable()) {
+    if (def && !(flags & VIR_DOMAIN_VCPU_GUEST) && virNumaIsAvailable()) {
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                                false, &cgroup_temp) < 0)
             goto endjob;
@@ -4894,9 +4889,9 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        maxvcpus = vm->def->maxvcpus;
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (def)
+        maxvcpus = def->maxvcpus;
+    if (persistentDef) {
         if (!maxvcpus || maxvcpus > persistentDef->maxvcpus)
             maxvcpus = persistentDef->maxvcpus;
     }
@@ -4945,7 +4940,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             goto endjob;
         }
     } else {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (def) {
             if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
                 goto endjob;
 
@@ -4953,7 +4948,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (persistentDef) {
             /* remove vcpupin entries for vcpus that were unplugged */
             if (nvcpus < persistentDef->vcpus) {
                 for (i = persistentDef->vcpus - 1; i >= nvcpus; i--)
@@ -4989,7 +4984,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     VIR_FREE(cpuinfo);
     VIR_FREE(mem_mask);
     VIR_FREE(all_nodes_str);
