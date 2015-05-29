@@ -5518,8 +5518,8 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1;
-    virCapsPtr caps = NULL;
     qemuAgentCPUInfoPtr cpuinfo = NULL;
     int ncpuinfo = -1;
     size_t i;
@@ -5537,18 +5537,11 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &def) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        def = vm->def;
 
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (persistentDef) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("vCPU count provided by the guest agent can only be "
                              " requested for live domains"));
@@ -5589,6 +5582,9 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
                 ret++;
         }
     } else {
+        if (!def)
+            def = persistentDef;
+
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
             ret = def->maxvcpus;
         else
@@ -5598,7 +5594,6 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     VIR_FREE(cpuinfo);
     return ret;
 }
