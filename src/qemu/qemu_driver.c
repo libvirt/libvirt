@@ -1416,7 +1416,7 @@ static int
 qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                          unsigned char *cpumaps, int maplen)
 {
-    int maxcpu, hostcpus;
+    int hostcpus;
     size_t i, v;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -1428,10 +1428,6 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                        "%s", _("cpu affinity is not supported"));
         return -1;
     }
-
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
 
     /* Clamp to actual number of vcpus */
     if (maxinfo > priv->nvcpupids)
@@ -1457,25 +1453,15 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
         }
 
         if (cpumaps != NULL) {
-            memset(cpumaps, 0, maplen * maxinfo);
             for (v = 0; v < maxinfo; v++) {
                 unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
                 virBitmapPtr map = NULL;
-                unsigned char *tmpmap = NULL;
-                int tmpmapLen = 0;
 
                 if (virProcessGetAffinity(priv->vcpupids[v],
-                                          &map, maxcpu) < 0)
+                                          &map, hostcpus) < 0)
                     return -1;
-                if (virBitmapToData(map, &tmpmap, &tmpmapLen) < 0) {
-                    virBitmapFree(map);
-                    return -1;
-                }
-                if (tmpmapLen > maplen)
-                    tmpmapLen = maplen;
-                memcpy(cpumap, tmpmap, tmpmapLen);
 
-                VIR_FREE(tmpmap);
+                virBitmapToDataBuf(map, cpumap, maplen);
                 virBitmapFree(map);
             }
         }
