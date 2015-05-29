@@ -5272,13 +5272,13 @@ qemuDomainPinEmulator(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virCgroupPtr cgroup_emulator = NULL;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     bool doReset = false;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     virObjectEventPtr event = NULL;
     char *str = NULL;
     virTypedParameterPtr eventParams = NULL;
@@ -5296,9 +5296,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (virDomainPinEmulatorEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Changing affinity for emulator thread dynamically "
@@ -5309,8 +5306,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     priv = vm->privateData;
@@ -5330,7 +5326,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (virBitmapIsAllSet(pcpumap))
         doReset = true;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR,
                                    0, false, &cgroup_emulator) < 0)
@@ -5351,11 +5347,11 @@ qemuDomainPinEmulator(virDomainPtr dom,
             }
         }
 
-        virBitmapFree(vm->def->cputune.emulatorpin);
-        vm->def->cputune.emulatorpin = NULL;
+        virBitmapFree(def->cputune.emulatorpin);
+        def->cputune.emulatorpin = NULL;
 
         if (!doReset &&
-            !(vm->def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+            !(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
@@ -5371,7 +5367,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         virBitmapFree(persistentDef->cputune.emulatorpin);
         persistentDef->cputune.emulatorpin = NULL;
 
@@ -5395,7 +5391,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
         qemuDomainEventQueue(driver, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
-    virObjectUnref(caps);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
