@@ -1894,7 +1894,7 @@ virStoragePoolLoadState(virStoragePoolObjListPtr pools,
 
  cleanup:
     VIR_FREE(stateFile);
-    xmlFree(xml);
+    xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
     return pool;
 
