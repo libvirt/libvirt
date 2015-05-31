@@ -885,6 +885,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
 
     virDomainAuditMemory(vm, 0, vm->def->mem.cur_balloon, "start", true);
     virDomainAuditVcpu(vm, 0, vm->def->vcpus, "start", true);
+    if (vm->def->iothreads)
+        virDomainAuditIOThread(vm, 0, vm->def->iothreads, "start", true);
 
     virDomainAuditLifecycle(vm, "start", reason, success);
 }
