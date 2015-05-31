@@ -3271,7 +3271,7 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
         ret = qemuDomainRemoveChrDevice(driver, vm, dev->data.chr);
         break;
     case VIR_DOMAIN_DEVICE_RNG:
-        qemuDomainRemoveRNGDevice(driver, vm, dev->data.rng);
+        ret = qemuDomainRemoveRNGDevice(driver, vm, dev->data.rng);
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
