@@ -350,6 +350,11 @@ int virChrdevOpen(virChrdevsPtr devs,
     switch (source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
         path = source->data.file.path;
+        if (!path) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("PTY device is not yet assigned"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         path = source->data.nix.path;
