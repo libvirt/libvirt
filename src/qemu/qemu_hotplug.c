@@ -1695,7 +1695,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
  audit:
     virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
  cleanup:
-    if (vm)
+    if (ret < 0 && vm)
         qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
     VIR_FREE(charAlias);
     VIR_FREE(objAlias);
