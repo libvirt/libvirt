@@ -478,40 +478,36 @@ int virNetDevSetNamespace(const char *ifname, pid_t pidInNs)
     char *phy_path = NULL;
     int len;
 
-    const char *argv[] = {
-        "ip", "link", "set", ifname, "netns", NULL, NULL
-    };
-
-    const char *iwargv[] = {
-        "iw", "phy", NULL, "set", "netns", NULL, NULL
-    };
-
     if (virAsprintf(&pid, "%lld", (long long) pidInNs) == -1)
         return -1;
-
-    argv[5] = pid;
-    if (virRun(argv, NULL) < 0)
-        goto cleanup;
 
     /* The 802.11 wireless devices only move together with their PHY. */
     if (virNetDevSysfsFile(&phy_path, ifname, "phy80211/name") < 0)
         goto cleanup;
 
-    if ((len = virFileReadAllQuiet(phy_path, 1024, &phy) < 0)) {
-        if (errno == ENOENT) {
-            /* Okay, this is not a wireless card. Claim success. */
-            ret = 0;
-        }
-        goto cleanup;
+    if ((len = virFileReadAllQuiet(phy_path, 1024, &phy)) <= 0) {
+        /* Not a wireless device. */
+        const char *argv[] = {
+            "ip", "link", "set", ifname, "netns", NULL, NULL
+        };
+
+        argv[5] = pid;
+        if (virRun(argv, NULL) < 0)
+            goto cleanup;
+
+    } else {
+        const char *argv[] = {
+            "iw", "phy", NULL, "set", "netns", NULL, NULL
+        };
+
+        /* Remove a line break. */
+        phy[len - 1] = '\0';
+
+        argv[2] = phy;
+        argv[5] = pid;
+        if (virRun(argv, NULL) < 0)
+            goto cleanup;
     }
-
-    /* Remove a line break. */
-    phy[len - 1] = '\0';
-
-    iwargv[2] = phy;
-    iwargv[5] = pid;
-    if (virRun(iwargv, NULL) < 0)
-        goto cleanup;
 
     ret = 0;
  cleanup:
