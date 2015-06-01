@@ -2065,7 +2065,7 @@
           <interleave>
             <element name="source">
               <attribute name="network">
-                <ref name="deviceName"/>
+                <text/>
               </attribute>
               <optional>
                 <attribute name="portgroup">
