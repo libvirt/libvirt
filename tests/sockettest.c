@@ -98,10 +98,12 @@ static int testRange(const char *saddrstr, const char *eaddrstr, int size, bool 
 
     int gotsize = virSocketAddrGetRange(&saddr, &eaddr);
     VIR_DEBUG("Size want %d vs got %d", size, gotsize);
-    if (gotsize < 0 || gotsize != size) {
-        return pass ? -1 : 0;
+    if (pass) {
+        /* fail if virSocketAddrGetRange returns failure, or unexpected size */
+        return (gotsize < 0 || gotsize != size) ? -1 : 0;
     } else {
-        return pass ? 0 : -1;
+        /* succeed if virSocketAddrGetRange fails, otherwise fail. */
+        return gotsize < 0 ? 0 : -1;
     }
 }
 
