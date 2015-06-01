@@ -115,6 +115,7 @@ mymain(void)
     DO_TEST("netboot-network", restricted);
     DO_TEST("netboot-proxy-network", restricted);
     DO_TEST("nat-network-dns-srv-record-minimal", restricted);
+    DO_TEST("nat-network-name-with-quotes", restricted);
     DO_TEST("routed-network", full);
     DO_TEST("nat-network", dhcpv6);
     DO_TEST("nat-network-dns-txt-record", full);

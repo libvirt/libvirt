@@ -151,6 +151,7 @@ addnhostsNew(const char *name,
              const char *config_dir)
 {
     dnsmasqAddnHostsfile *addnhostsfile;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (VIR_ALLOC(addnhostsfile) < 0)
         return NULL;
@@ -158,13 +159,20 @@ addnhostsNew(const char *name,
     addnhostsfile->hosts = NULL;
     addnhostsfile->nhosts = 0;
 
-    if (virAsprintf(&addnhostsfile->path, "%s/%s.%s", config_dir, name,
-                    DNSMASQ_ADDNHOSTSFILE_SUFFIX) < 0)
+    virBufferAsprintf(&buf, "%s", config_dir);
+    virBufferEscapeString(&buf, "/%s", name);
+    virBufferAsprintf(&buf, ".%s", DNSMASQ_ADDNHOSTSFILE_SUFFIX);
+
+    if (virBufferCheckError(&buf) < 0)
+                goto error;
+
+    if (!(addnhostsfile->path = virBufferContentAndReset(&buf)))
         goto error;
 
     return addnhostsfile;
 
  error:
+    virBufferFreeAndReset(&buf);
     addnhostsFree(addnhostsfile);
     return NULL;
 }
@@ -357,6 +365,7 @@ hostsfileNew(const char *name,
              const char *config_dir)
 {
     dnsmasqHostsfile *hostsfile;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (VIR_ALLOC(hostsfile) < 0)
         return NULL;
@@ -364,13 +373,19 @@ hostsfileNew(const char *name,
     hostsfile->hosts = NULL;
     hostsfile->nhosts = 0;
 
-    if (virAsprintf(&hostsfile->path, "%s/%s.%s", config_dir, name,
-                    DNSMASQ_HOSTSFILE_SUFFIX) < 0)
-        goto error;
+    virBufferAsprintf(&buf, "%s", config_dir);
+    virBufferEscapeString(&buf, "/%s", name);
+    virBufferAsprintf(&buf, ".%s", DNSMASQ_HOSTSFILE_SUFFIX);
 
+    if (virBufferCheckError(&buf) < 0)
+                goto error;
+
+    if (!(hostsfile->path = virBufferContentAndReset(&buf)))
+        goto error;
     return hostsfile;
 
  error:
+    virBufferFreeAndReset(&buf);
     hostsfileFree(hostsfile);
     return NULL;
 }
