@@ -1932,7 +1932,8 @@ static int
 qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                bool check,
-                               qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob,
+                               virConnectPtr dconn)
 {
     virErrorPtr err = NULL;
     int ret = -1;
@@ -1963,6 +1964,13 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
     }
 
     while ((rv = qemuMigrationDriveMirrorCancelled(driver, vm, check)) != 1) {
+        if (check && !failed &&
+            dconn && virConnectIsAlive(dconn) <= 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Lost connection to destination host"));
+            failed = true;
+        }
+
         if (rv < 0) {
             failed = true;
             if (rv == -2)
@@ -2015,7 +2023,8 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
                          unsigned long speed,
                          unsigned int *migrate_flags,
                          size_t nmigrate_disks,
-                         const char **migrate_disks)
+                         const char **migrate_disks,
+                         virConnectPtr dconn)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -2092,6 +2101,12 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                            qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                            _("canceled by client"));
+            goto cleanup;
+        }
+
+        if (dconn && virConnectIsAlive(dconn) <= 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Lost connection to destination host"));
             goto cleanup;
         }
 
@@ -3749,7 +3764,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
 
         /* cancel any outstanding NBD jobs */
         qemuMigrationCancelDriveMirror(driver, vm, false,
-                                       QEMU_ASYNC_JOB_MIGRATION_OUT);
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT, NULL);
 
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -4169,7 +4184,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                          migrate_speed,
                                          &migrate_flags,
                                          nmigrate_disks,
-                                         migrate_disks) < 0) {
+                                         migrate_disks,
+                                         dconn) < 0) {
                 goto cleanup;
             }
         } else {
@@ -4328,7 +4344,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     /* cancel any outstanding NBD jobs */
     if (mig && mig->nbd) {
         if (qemuMigrationCancelDriveMirror(driver, vm, ret == 0,
-                                           QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                           dconn) < 0)
             ret = -1;
     }
 
@@ -5929,7 +5946,7 @@ qemuMigrationCancel(virQEMUDriverPtr driver,
     }
 
     if (qemuMigrationCancelDriveMirror(driver, vm, false,
-                                       QEMU_ASYNC_JOB_NONE) < 0)
+                                       QEMU_ASYNC_JOB_NONE, NULL) < 0)
         goto endsyncjob;
 
     ret = 0;
