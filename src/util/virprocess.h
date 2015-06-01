@@ -60,6 +60,8 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map);
 
 virBitmapPtr virProcessGetAffinity(pid_t pid);
 
+int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids);
+
 int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp);
 

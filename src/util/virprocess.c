@@ -600,6 +600,53 @@ virProcessGetAffinity(pid_t pid ATTRIBUTE_UNUSED)
 #endif /* HAVE_SCHED_GETAFFINITY */
 
 
+int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
+{
+    int ret = -1;
+    char *taskPath = NULL;
+    DIR *dir = NULL;
+    int value;
+    struct dirent *ent;
+
+    *npids = 0;
+    *pids = NULL;
+
+    if (virAsprintf(&taskPath, "/proc/%llu/task",
+                    (unsigned long long)pid) < 0)
+        goto cleanup;
+
+    if (!(dir = opendir(taskPath)))
+        goto cleanup;
+
+    while ((value = virDirRead(dir, &ent, taskPath)) > 0) {
+        pid_t tmp_pid;
+
+        /* Skip . and .. */
+        if (STRPREFIX(ent->d_name, "."))
+            continue;
+
+        if (virStrToLong_i(ent->d_name, NULL, 10, &tmp_pid) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(*pids, *npids, tmp_pid) < 0)
+            goto cleanup;
+    }
+
+    if (value < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (!dir)
+        closedir(dir);
+    VIR_FREE(taskPath);
+    if (ret < 0)
+        VIR_FREE(*pids);
+    return ret;
+}
+
+
 int virProcessGetNamespaces(pid_t pid,
                             size_t *nfdlist,
                             int **fdlist)

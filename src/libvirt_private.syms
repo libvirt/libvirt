@@ -1988,6 +1988,7 @@ virProcessAbort;
 virProcessExitWithStatus;
 virProcessGetAffinity;
 virProcessGetNamespaces;
+virProcessGetPids;
 virProcessGetStartTime;
 virProcessKill;
 virProcessKillPainfully;
