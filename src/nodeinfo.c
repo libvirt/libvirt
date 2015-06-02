@@ -361,15 +361,9 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
     if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &str) < 0)
         goto cleanup;
 
-    i = 0;
-    while (str[i] != '\0') {
-        if (c_isdigit(str[i]))
-            ret += count_one_bits(str[i] - '0');
-        else if (str[i] >= 'A' && str[i] <= 'F')
-            ret += count_one_bits(str[i] - 'A' + 10);
-        else if (str[i] >= 'a' && str[i] <= 'f')
-            ret += count_one_bits(str[i] - 'a' + 10);
-        i++;
+    for (i = 0; str[i] != '\0'; i++) {
+        if (c_isxdigit(str[i]))
+            ret += count_one_bits(virHexToBin(str[i]));
     }
 
  cleanup:
