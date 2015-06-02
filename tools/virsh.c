@@ -1860,33 +1860,42 @@ vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
     return NULL;
 }
 
-/* Parse an optional --timeout parameter in seconds, but store the
- * value of the timeout in milliseconds.  Return -1 on error, 0 if
- * no timeout was requested, and 1 if timeout was set.  */
+/*
+ * vshCommandOptTimeoutToMs:
+ * @ctl virsh control structure
+ * @cmd command reference
+ * @timeout result
+ *
+ * Parse an optional --timeout parameter in seconds, but store the
+ * value of the timeout in milliseconds.
+ * See vshCommandOptInt()
+ */
 int
 vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
 {
-    int rv = vshCommandOptInt(cmd, "timeout", timeout);
+    int ret;
+    unsigned int utimeout;
 
-    if (rv < 0 || (rv > 0 && *timeout < 1)) {
+    if ((ret = vshCommandOptUInt(cmd, "timeout", &utimeout)) < 0)
         vshError(ctl,
                  _("Numeric value for <%s> option is malformed or out of range"),
                  "timeout");
-        return -1;
-    }
-    if (rv > 0) {
-        /* Ensure that we can multiply by 1000 without overflowing. */
-        if (*timeout > INT_MAX / 1000) {
-            vshError(ctl,
-                     _("Numeric value for <%s> option is malformed or out of range"),
-                     "timeout");
-            return -1;
-        }
-        *timeout *= 1000;
-    }
-    return rv;
-}
+    if (ret <= 0)
+        return ret;
 
+    /* Ensure that the timeout is not zero and that we can convert
+     * it from seconds to milliseconds without overflowing. */
+    if (utimeout == 0 || utimeout > INT_MAX / 1000) {
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "timeout");
+        ret = -1;
+    } else {
+        *timeout = ((int) utimeout) * 1000;
+    }
+
+    return ret;
+}
 
 static bool
 vshConnectionUsability(vshControl *ctl, virConnectPtr conn)
