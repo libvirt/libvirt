@@ -340,7 +340,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     /* Providing a period will adjust the balloon driver collection period.
      * This is not really an unsigned long, but it
      */
-    if ((rv = vshCommandOptInt(cmd, "period", &period)) < 0) {
+    if ((rv = vshCommandOptInt(ctl, cmd, "period", &period)) < 0) {
         vshError(ctl,
                  _("Numeric value for <%s> option is malformed or out of range"),
                  "period");
@@ -1436,7 +1436,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    rv = vshCommandOptLongLong(cmd, "time", &seconds);
+    rv = vshCommandOptLongLong(ctl, cmd, "time", &seconds);
 
     if (rv < 0) {
         /* invalid integer format */
@@ -2165,7 +2165,7 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         ndoms = 1;
 
-        while ((opt = vshCommandOptArgv(cmd, opt))) {
+        while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
             if (!(dom = vshLookupDomainBy(ctl, opt->data,
                                           VSH_BYID | VSH_BYUUID | VSH_BYNAME)))
                 goto cleanup;
@@ -2244,9 +2244,9 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(cmd, "interface", &ifacestr) < 0)
+    if (vshCommandOptString(ctl, cmd, "interface", &ifacestr) < 0)
         goto cleanup;
-    if (vshCommandOptString(cmd, "source", &sourcestr) < 0)
+    if (vshCommandOptString(ctl, cmd, "source", &sourcestr) < 0)
         goto cleanup;
 
     if (sourcestr) {

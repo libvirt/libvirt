@@ -843,7 +843,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
     /* use "no-stp" because we want "stp" to default true */
     stp = !vshCommandOptBool(cmd, "no-stp");
 
-    if (vshCommandOptUInt(cmd, "delay", &delay) < 0) {
+    if (vshCommandOptUInt(ctl, cmd, "delay", &delay) < 0) {
         vshError(ctl,
                  _("Numeric value for <%s> option is malformed or out of range"),
                  "delay");

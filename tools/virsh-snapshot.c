@@ -440,7 +440,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "diskspec")) {
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
-        while ((opt = vshCommandOptArgv(cmd, opt))) {
+        while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
             if (vshParseSnapshotDiskspec(ctl, &buf, opt->data) < 0)
                 goto cleanup;
         }

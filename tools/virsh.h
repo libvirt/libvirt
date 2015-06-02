@@ -279,42 +279,43 @@ bool vshCmddefHelp(vshControl *ctl, const char *name);
 const vshCmdGrp *vshCmdGrpSearch(const char *grpname);
 bool vshCmdGrpHelp(vshControl *ctl, const char *name);
 
-int vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptUInt(const vshCmd *cmd, const char *name,
-                      unsigned int *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptUIntWrap(const vshCmd *cmd, const char *name,
-                          unsigned int *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptUL(const vshCmd *cmd, const char *name,
-                    unsigned long *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptULWrap(const vshCmd *cmd, const char *name,
-                        unsigned long *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptString(const vshCmd *cmd, const char *name,
-                        const char **value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptInt(vshControl *ctl, const vshCmd *cmd,
+                     const char *name, int *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptUInt(vshControl *ctl, const vshCmd *cmd,
+                      const char *name, unsigned int *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptUIntWrap(vshControl *ctl, const vshCmd *cmd,
+                          const char *name, unsigned int *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptUL(vshControl *ctl, const vshCmd *cmd,
+                    const char *name, unsigned long *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
+                        const char *name, unsigned long *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptString(vshControl *ctl, const vshCmd *cmd,
+                        const char *name, const char **value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 int vshCommandOptStringReq(vshControl *ctl, const vshCmd *cmd,
                            const char *name, const char **value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptLongLong(const vshCmd *cmd, const char *name,
-                          long long *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptULongLong(const vshCmd *cmd, const char *name,
-                           unsigned long long *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptULongLongWrap(const vshCmd *cmd, const char *name,
-                               unsigned long long *value)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
-                           unsigned long long *value, int scale,
-                           unsigned long long max)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptLongLong(vshControl *ctl, const vshCmd *cmd,
+                          const char *name, long long *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptULongLong(vshControl *ctl, const vshCmd *cmd,
+                           const char *name, unsigned long long *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptULongLongWrap(vshControl *ctl, const vshCmd *cmd,
+                               const char *name, unsigned long long *value)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshCommandOptScaledInt(vshControl *ctl, const vshCmd *cmd,
+                           const char *name, unsigned long long *value,
+                           int scale, unsigned long long max)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
-const vshCmdOpt *vshCommandOptArgv(const vshCmd *cmd,
+const vshCmdOpt *vshCommandOptArgv(vshControl *ctl, const vshCmd *cmd,
                                    const vshCmdOpt *opt);
 int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 

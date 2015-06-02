@@ -607,7 +607,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
  {
     const char *name = NULL;
 
-    if (vshCommandOptString(cmd, "command", &name) <= 0) {
+    if (vshCommandOptString(ctl, cmd, "command", &name) <= 0) {
         const vshCmdGrp *grp;
         const vshCmdDef *def;
 
@@ -875,7 +875,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptString(cmd, "dir", &dir) <= 0)
+    if (vshCommandOptString(ctl, cmd, "dir", &dir) <= 0)
         dir = dir_malloced = virGetUserDirectory();
     if (!dir)
         dir = "/";
@@ -978,7 +978,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "xml"))
         xml = true;
 
-    while ((opt = vshCommandOptArgv(cmd, opt))) {
+    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         char *str;
         virBuffer xmlbuf = VIR_BUFFER_INITIALIZER;
 
@@ -1504,6 +1504,7 @@ vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt,
 
 /**
  * vshCommandOptInt:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1515,7 +1516,8 @@ vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt,
  * <0 in all other cases (@value untouched)
  */
 int
-vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
+vshCommandOptInt(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                 const char *name, int *value)
 {
     vshCmdOpt *arg;
     int ret;
@@ -1530,7 +1532,8 @@ vshCommandOptInt(const vshCmd *cmd, const char *name, int *value)
 }
 
 static int
-vshCommandOptUIntInternal(const vshCmd *cmd,
+vshCommandOptUIntInternal(vshControl *ctl ATTRIBUTE_UNUSED,
+                          const vshCmd *cmd,
                           const char *name,
                           unsigned int *value,
                           bool wrap)
@@ -1554,6 +1557,7 @@ vshCommandOptUIntInternal(const vshCmd *cmd,
 
 /**
  * vshCommandOptUInt:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1562,13 +1566,15 @@ vshCommandOptUIntInternal(const vshCmd *cmd,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
+vshCommandOptUInt(vshControl *ctl, const vshCmd *cmd,
+                  const char *name, unsigned int *value)
 {
-    return vshCommandOptUIntInternal(cmd, name, value, false);
+    return vshCommandOptUIntInternal(ctl, cmd, name, value, false);
 }
 
 /**
  * vshCommandOptUIntWrap:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1577,13 +1583,15 @@ vshCommandOptUInt(const vshCmd *cmd, const char *name, unsigned int *value)
  * See vshCommandOptInt()
  */
 int
-vshCommandOptUIntWrap(const vshCmd *cmd, const char *name, unsigned int *value)
+vshCommandOptUIntWrap(vshControl *ctl, const vshCmd *cmd,
+                      const char *name, unsigned int *value)
 {
-    return vshCommandOptUIntInternal(cmd, name, value, true);
+    return vshCommandOptUIntInternal(ctl, cmd, name, value, true);
 }
 
 static int
-vshCommandOptULInternal(const vshCmd *cmd,
+vshCommandOptULInternal(vshControl *ctl ATTRIBUTE_UNUSED,
+                        const vshCmd *cmd,
                         const char *name,
                         unsigned long *value,
                         bool wrap)
@@ -1607,6 +1615,7 @@ vshCommandOptULInternal(const vshCmd *cmd,
 
 /*
  * vshCommandOptUL:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1615,13 +1624,15 @@ vshCommandOptULInternal(const vshCmd *cmd,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
+vshCommandOptUL(vshControl *ctl, const vshCmd *cmd,
+                const char *name, unsigned long *value)
 {
-    return vshCommandOptULInternal(cmd, name, value, false);
+    return vshCommandOptULInternal(ctl, cmd, name, value, false);
 }
 
 /**
  * vshCommandOptULWrap:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1630,13 +1641,15 @@ vshCommandOptUL(const vshCmd *cmd, const char *name, unsigned long *value)
  * See vshCommandOptInt()
  */
 int
-vshCommandOptULWrap(const vshCmd *cmd, const char *name, unsigned long *value)
+vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
+                    const char *name, unsigned long *value)
 {
-    return vshCommandOptULInternal(cmd, name, value, true);
+    return vshCommandOptULInternal(ctl, cmd, name, value, true);
 }
 
 /**
  * vshCommandOptString:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1648,7 +1661,8 @@ vshCommandOptULWrap(const vshCmd *cmd, const char *name, unsigned long *value)
  * <0 in all other cases (@value untouched)
  */
 int
-vshCommandOptString(const vshCmd *cmd, const char *name, const char **value)
+vshCommandOptString(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                    const char *name, const char **value)
 {
     vshCmdOpt *arg;
     int ret;
@@ -1710,6 +1724,7 @@ vshCommandOptStringReq(vshControl *ctl,
 
 /**
  * vshCommandOptLongLong:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1718,8 +1733,8 @@ vshCommandOptStringReq(vshControl *ctl,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptLongLong(const vshCmd *cmd, const char *name,
-                      long long *value)
+vshCommandOptLongLong(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                      const char *name, long long *value)
 {
     vshCmdOpt *arg;
     int ret;
@@ -1734,7 +1749,8 @@ vshCommandOptLongLong(const vshCmd *cmd, const char *name,
 }
 
 static int
-vshCommandOptULongLongInternal(const vshCmd *cmd,
+vshCommandOptULongLongInternal(vshControl *ctl ATTRIBUTE_UNUSED,
+                               const vshCmd *cmd,
                                const char *name,
                                unsigned long long *value,
                                bool wrap)
@@ -1758,6 +1774,7 @@ vshCommandOptULongLongInternal(const vshCmd *cmd,
 
 /**
  * vshCommandOptULongLong:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1766,14 +1783,15 @@ vshCommandOptULongLongInternal(const vshCmd *cmd,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptULongLong(const vshCmd *cmd, const char *name,
-                       unsigned long long *value)
+vshCommandOptULongLong(vshControl *ctl, const vshCmd *cmd,
+                       const char *name, unsigned long long *value)
 {
-    return vshCommandOptULongLongInternal(cmd, name, value, false);
+    return vshCommandOptULongLongInternal(ctl, cmd, name, value, false);
 }
 
 /**
  * vshCommandOptULongLongWrap:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1782,14 +1800,15 @@ vshCommandOptULongLong(const vshCmd *cmd, const char *name,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptULongLongWrap(const vshCmd *cmd, const char *name,
-                       unsigned long long *value)
+vshCommandOptULongLongWrap(vshControl *ctl, const vshCmd *cmd,
+                           const char *name, unsigned long long *value)
 {
-    return vshCommandOptULongLongInternal(cmd, name, value, true);
+    return vshCommandOptULongLongInternal(ctl, cmd, name, value, true);
 }
 
 /**
  * vshCommandOptScaledInt:
+ * @ctl virsh control structure
  * @cmd command reference
  * @name option name
  * @value result
@@ -1800,9 +1819,9 @@ vshCommandOptULongLongWrap(const vshCmd *cmd, const char *name,
  * See vshCommandOptInt()
  */
 int
-vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
-                       unsigned long long *value, int scale,
-                       unsigned long long max)
+vshCommandOptScaledInt(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                       const char *name, unsigned long long *value,
+                       int scale, unsigned long long max)
 {
     vshCmdOpt *arg;
     char *end;
@@ -1838,6 +1857,7 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
 
 /**
  * vshCommandOptArgv:
+ * @ctl virsh control structure
  * @cmd command reference
  * @opt starting point for the search
  *
@@ -1848,7 +1868,8 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
  * list of supported options in CMD->def->opts.
  */
 const vshCmdOpt *
-vshCommandOptArgv(const vshCmd *cmd, const vshCmdOpt *opt)
+vshCommandOptArgv(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                  const vshCmdOpt *opt)
 {
     opt = opt ? opt->next : cmd->opts;
 
@@ -1876,7 +1897,7 @@ vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
     int ret;
     unsigned int utimeout;
 
-    if ((ret = vshCommandOptUInt(cmd, "timeout", &utimeout)) < 0)
+    if ((ret = vshCommandOptUInt(ctl, cmd, "timeout", &utimeout)) < 0)
         vshError(ctl,
                  _("Numeric value for <%s> option is malformed or out of range"),
                  "timeout");

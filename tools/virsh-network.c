@@ -936,7 +936,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptInt(cmd, "parent-index", &parentIndex) < 0) {
+    if (vshCommandOptInt(ctl, cmd, "parent-index", &parentIndex) < 0) {
         vshError(ctl,
                  _("Numeric value for <%s> option is malformed or out of range"),
                  "parent-index");
@@ -1227,7 +1227,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptString(cmd, "event", &eventName) < 0)
+    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
         vshError(ctl, "%s", _("either --list or event type is required"));
@@ -1337,7 +1337,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virNetworkPtr network = NULL;
 
-    if (vshCommandOptString(cmd, "mac", &mac) < 0)
+    if (vshCommandOptString(ctl, cmd, "mac", &mac) < 0)
         return false;
 
     if (!(network = vshCommandOptNetwork(ctl, cmd, &name)))
