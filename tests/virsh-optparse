@@ -137,4 +137,183 @@ virsh -q -c $test_url qemu-monitor-command test a >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
+### Test a regular numeric option
+
+# Non-numeric value
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <start> option is malformed or out of range
+EOF
+virsh -q -c $test_url cpu-stats test --start abc >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with invalid suffix
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <start> option is malformed or out of range
+EOF
+virsh -q -c $test_url cpu-stats test --start 42WB >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with valid suffix. Suffixes are not supported for
+# regular numeric options, so this value is rejected
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <start> option is malformed or out of range
+EOF
+virsh -q -c $test_url cpu-stats test --start 42MB >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value bigger than INT_MAX
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <start> option is malformed or out of range
+EOF
+virsh -q -c $test_url cpu-stats test --start 2147483648 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Negative numeric value. The value is not valid for the command
+# we're testing, but it has been parsed correctly
+cat <<\EOF > exp-err || framework_failure
+error: Invalid value for start CPU
+EOF
+virsh -q -c $test_url cpu-stats test --start -1 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Zero. The test driver doesn't support the operation so the command
+# fails, but the value has been parsed correctly
+cat <<\EOF > exp-err || framework_failure
+error: Failed to retrieve CPU statistics for domain 'test'
+error: this function is not supported by the connection driver: virDomainGetCPUStats
+EOF
+virsh -q -c $test_url cpu-stats test --start 0 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Valid numeric value. The test driver doesn't support the operation
+# so the command fails, but the value has been parsed correctly
+cat <<\EOF > exp-err || framework_failure
+error: Failed to retrieve CPU statistics for domain 'test'
+error: this function is not supported by the connection driver: virDomainGetCPUStats
+EOF
+virsh -q -c $test_url cpu-stats test --start 42 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+### Test a scaled numeric option
+
+# Non-numeric value
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <size> option is malformed or out of range
+EOF
+virsh -q -c $test_url setmaxmem test abc >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with invalid suffix
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <size> option is malformed or out of range
+EOF
+virsh -q -c $test_url setmaxmem test 42WB >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with valid suffix
+virsh -q -c $test_url setmaxmem test 42MB >out 2>err || fail=1
+test -s out && fail=1
+test -s err && fail=1
+
+# Numeric value bigger than INT_MAX. No failure here because
+# scaled numeric values are unsigned long long
+virsh -q -c $test_url setmaxmem test 2147483648 >out 2>err || fail=1
+test -s out && fail=1
+test -s err && fail=1
+
+# Negative numeric value
+cat <<\EOF > exp-err || framework_failure
+error: Numeric value for <size> option is malformed or out of range
+EOF
+virsh -q -c $test_url setmaxmem test -1 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Zero. The value is not valid for the command we're testing, but
+# it has been parsed correctly
+cat <<\EOF > exp-err || framework_failure
+error: Unable to change MaxMemorySize
+error: memory in virDomainSetMaxMemory must not be zero
+EOF
+virsh -q -c $test_url setmaxmem test 0 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value
+virsh -q -c $test_url setmaxmem test 42 >out 2>err || fail=1
+test -s out && fail=1
+test -s err && fail=1
+
+### Test the <timeout> option (numeric option converted to ms)
+
+# Non-numeric value
+cat <<\EOF > exp-err || framework_failure
+error: invalid timeout
+EOF
+virsh -q -c $test_url event --all --timeout abc >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value that's too big to be converted to ms and still
+# fit inside an int
+cat <<\EOF > exp-err || framework_failure
+error: timeout is too big
+EOF
+virsh -q -c $test_url event --all --timeout 2147484 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with invalid suffix
+cat <<\EOF > exp-err || framework_failure
+error: invalid timeout
+EOF
+virsh -q -c $test_url event --all --timeout 42WB >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value with valid suffix. Suffixes are not supported for
+# the <timeout> option, so this value is rejected
+cat <<\EOF > exp-err || framework_failure
+error: invalid timeout
+EOF
+virsh -q -c $test_url event --all --timeout 42MB >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Negative value
+cat <<\EOF > exp-err || framework_failure
+error: invalid timeout
+EOF
+virsh -q -c $test_url event --all --timeout -1 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Zero. This is not a valid timeout, but the value is parsed
+# correctly
+cat <<\EOF > exp-err || framework_failure
+error: invalid timeout
+EOF
+virsh -q -c $test_url event --all --timeout 0 >out 2>err && fail=1
+test -s out && fail=1
+compare exp-err err || fail=1
+
+# Numeric value. No events will be received and the command will
+# fail after a second, but the value has been parsed correctly
+cat <<\EOF > exp-out || framework_failure
+event loop timed out
+events received: 0
+EOF
+virsh -q -c $test_url event --all --timeout 1 >out 2>err && fail=1
+test -s err && fail=1
+compare exp-out out || fail=1
+
 (exit $fail); exit $fail
