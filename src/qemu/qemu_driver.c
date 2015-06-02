@@ -1457,8 +1457,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                 unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
                 virBitmapPtr map = NULL;
 
-                if (virProcessGetAffinity(priv->vcpupids[v],
-                                          &map, hostcpus) < 0)
+                if (!(map = virProcessGetAffinity(priv->vcpupids[v])))
                     return -1;
 
                 virBitmapToDataBuf(map, cpumap, maplen);
@@ -5727,7 +5726,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
             goto endjob;
         info_ret[i]->iothread_id = iothreads[i]->iothread_id;
 
-        if (virProcessGetAffinity(iothreads[i]->thread_id, &map, hostcpus) < 0)
+        if (!(map = virProcessGetAffinity(iothreads[i]->thread_id)))
             goto endjob;
 
         if (virBitmapToData(map, &info_ret[i]->cpumap,
