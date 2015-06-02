@@ -1869,13 +1869,17 @@ vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
     int rv = vshCommandOptInt(cmd, "timeout", timeout);
 
     if (rv < 0 || (rv > 0 && *timeout < 1)) {
-        vshError(ctl, "%s", _("invalid timeout"));
+        vshError(ctl,
+                 _("Numeric value for <%s> option is malformed or out of range"),
+                 "timeout");
         return -1;
     }
     if (rv > 0) {
         /* Ensure that we can multiply by 1000 without overflowing. */
         if (*timeout > INT_MAX / 1000) {
-            vshError(ctl, "%s", _("timeout is too big"));
+            vshError(ctl,
+                     _("Numeric value for <%s> option is malformed or out of range"),
+                     "timeout");
             return -1;
         }
         *timeout *= 1000;
