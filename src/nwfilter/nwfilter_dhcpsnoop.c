@@ -1958,8 +1958,8 @@ virNWFilterSnoopLeaseFileLoad(void)
             break;
         }
         ln++;
-        /* key len 55 = "VMUUID"+'-'+"MAC" */
-        if (sscanf(line, "%u %55s %16s %16s", &ipl.timeout,
+        /* key len 54 = "VMUUID"+'-'+"MAC" */
+        if (sscanf(line, "%u %54s %15s %15s", &ipl.timeout,
                    ifkey, ipstr, srvstr) < 4) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("virNWFilterSnoopLeaseFileLoad lease file "
