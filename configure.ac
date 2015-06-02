@@ -25,6 +25,10 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl Make automake keep quiet about wildcards & other GNUmake-isms; also keep
 dnl quiet about the fact that we intentionally cater to automake 1.9
 AM_INIT_AUTOMAKE([-Wno-portability -Wno-obsolete tar-ustar subdir-objects])
+dnl older automake's default of ARFLAGS=cru is noisy on newer binutils;
+dnl we don't really need the 'u' even in older toolchains.  Then there is
+dnl older libtool, which spelled it AR_FLAGS
+m4_divert_text([DEFAULTS], [: "${ARFLAGS=cr} ${AR_FLAGS=cr}"])
 
 # Maintainer note - comment this line out if you plan to rerun
 # GNULIB_POSIXCHECK testing to see if libvirt should be using more modules.
