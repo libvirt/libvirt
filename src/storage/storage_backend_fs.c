@@ -537,6 +537,10 @@ virStorageBackendFileSystemCheck(virStoragePoolObjPtr pool,
     } else {
         int ret;
         *isActive = false;
+
+        if (virStorageBackendFileSystemIsValid(pool) < 0)
+            return -1;
+
         if ((ret = virStorageBackendFileSystemIsMounted(pool)) != 0) {
             if (ret < 0)
                 return -1;
