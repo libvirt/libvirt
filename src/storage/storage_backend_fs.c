@@ -362,8 +362,13 @@ virStorageBackendFileSystemIsValid(virStoragePoolObjPtr pool)
         }
     } else {
         if (pool->def->source.ndevice != 1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("missing source device"));
+            if (pool->def->source.ndevice == 0)
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing source device"));
+            else
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("expected exactly 1 device for the "
+                                 "storage pool"));
             return -1;
         }
     }
