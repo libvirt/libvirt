@@ -1804,16 +1804,16 @@ vshCommandOptScaledInt(const vshCmd *cmd, const char *name,
                        unsigned long long *value, int scale,
                        unsigned long long max)
 {
-    const char *str;
-    int ret;
+    vshCmdOpt *arg;
     char *end;
+    int ret;
 
-    ret = vshCommandOptString(cmd, name, &str);
-    if (ret <= 0)
+    if ((ret = vshCommandOpt(cmd, name, &arg, true)) <= 0)
         return ret;
-    if (virStrToLong_ullp(str, &end, 10, value) < 0 ||
+    if (virStrToLong_ullp(arg->data, &end, 10, value) < 0 ||
         virScaleInteger(value, end, scale, max) < 0)
         return -1;
+
     return 1;
 }
 
