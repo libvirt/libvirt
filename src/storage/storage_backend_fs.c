@@ -336,7 +336,6 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to check for status
  *
  * Determine if a storage pool is already mounted
@@ -369,7 +368,6 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 }
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to mount
  *
  * Ensure that a FS storage pool is mounted on its target location.
@@ -474,7 +472,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 }
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to unmount
  *
  * Ensure that a FS storage pool is not mounted on its target location.
