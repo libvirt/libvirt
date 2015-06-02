@@ -537,7 +537,7 @@ int virProcessGetAffinity(pid_t pid,
 
 #elif defined(HAVE_BSD_CPU_AFFINITY)
 
-int virProcessSetAffinity(pid_t pid ATTRIBUTE_UNUSED,
+int virProcessSetAffinity(pid_t pid,
                           virBitmapPtr map)
 {
     size_t i;
