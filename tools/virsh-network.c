@@ -936,12 +936,8 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptInt(ctl, cmd, "parent-index", &parentIndex) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "parent-index");
+    if (vshCommandOptInt(ctl, cmd, "parent-index", &parentIndex) < 0)
         goto cleanup;
-    }
 
     /* The goal is to have a full xml element in the "xml"
      * string. This is provided in the --xml option, either directly

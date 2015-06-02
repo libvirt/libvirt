@@ -693,19 +693,11 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
 
-    if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "offset");
+    if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
-    }
 
-    if (vshCommandOptULongLongWrap(ctl, cmd, "length", &length) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "length");
+    if (vshCommandOptULongLongWrap(ctl, cmd, "length", &length) < 0)
         return false;
-    }
 
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
@@ -806,19 +798,11 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
 
-    if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "offset");
+    if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
-    }
 
-    if (vshCommandOptULongLongWrap(ctl, cmd, "length", &length) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "length");
+    if (vshCommandOptULongLongWrap(ctl, cmd, "length", &length) < 0)
         return false;
-    }
 
     if (!(vol = vshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;

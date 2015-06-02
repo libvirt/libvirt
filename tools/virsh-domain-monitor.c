@@ -340,12 +340,8 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
     /* Providing a period will adjust the balloon driver collection period.
      * This is not really an unsigned long, but it
      */
-    if ((rv = vshCommandOptInt(ctl, cmd, "period", &period)) < 0) {
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "period");
+    if ((rv = vshCommandOptInt(ctl, cmd, "period", &period)) < 0)
         goto cleanup;
-    }
     if (rv > 0) {
         if (period < 0) {
             vshError(ctl, _("Invalid collection period value '%d'"), period);
@@ -1440,9 +1436,6 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 
     if (rv < 0) {
         /* invalid integer format */
-        vshError(ctl,
-                 _("Numeric value for <%s> option is malformed or out of range"),
-                 "time");
         goto cleanup;
     } else if (rv > 0) {
         /* valid integer to set */
