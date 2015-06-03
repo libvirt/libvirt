@@ -11599,14 +11599,19 @@ qemuDomainMemoryStats(virDomainPtr dom,
         goto endjob;
     }
 
-    priv = vm->privateData;
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    if (vm->def->memballoon &&
+        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+        priv = vm->privateData;
+        qemuDomainObjEnterMonitor(driver, vm);
+        ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            ret = -1;
 
-    if (ret < 0 || ret >= nr_stats)
-        goto endjob;
+        if (ret < 0 || ret >= nr_stats)
+            goto endjob;
+    } else {
+        ret = 0;
+    }
 
     if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
