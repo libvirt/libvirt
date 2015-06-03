@@ -482,8 +482,9 @@ int qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
                                        virHashTablePtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
-                                  const char *curpath,
-                                  const char *name,
-                                  char **path);
+int qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
+                                const char *curpath,
+                                const char *name,
+                                char **path)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 #endif /* QEMU_MONITOR_JSON_H */

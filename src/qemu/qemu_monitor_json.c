@@ -6645,21 +6645,18 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
 
 /**
- * Search the qom objects by it's known name.  The name is compared against
- * filed 'type' formatted as 'link<%name>'.
+ * Recursively search for a QOM object link.
  *
- * This procedure will be call recursively until found or the qom-list is
- * exhausted.
+ * For @name, this function finds the first QOM object
+ * named @name, recursively going through all the "child<>"
+ * entries, starting from @curpath.
  *
  * Returns:
- *
  *   0  - Found
- *  -1  - Error bail out
+ *  -1  - Error - bail out
  *  -2  - Not found
- *
- * NOTE: This assumes we have already called qemuDomainObjEnterMonitor()
  */
-int
+static int
 qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
                               const char *curpath,
                               const char *name,
@@ -6668,13 +6665,9 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
     ssize_t i, npaths = 0;
     int ret = -2;
     char *nextpath = NULL;
-    char *type = NULL;
     qemuMonitorJSONListPathPtr *paths = NULL;
 
-    if (virAsprintf(&type, "link<%s>", name) < 0)
-        return -1;
-
-    VIR_DEBUG("Searching for '%s' Object Path starting at '%s'", type, curpath);
+    VIR_DEBUG("Searching for '%s' Object Path starting at '%s'", name, curpath);
 
     npaths = qemuMonitorJSONGetObjectListPaths(mon, curpath, &paths);
     if (npaths < 0)
@@ -6682,8 +6675,8 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
 
     for (i = 0; i < npaths && ret == -2; i++) {
 
-        if (STREQ_NULLABLE(paths[i]->type, type)) {
-            VIR_DEBUG("Path to '%s' is '%s/%s'", type, curpath, paths[i]->name);
+        if (STREQ_NULLABLE(paths[i]->type, name)) {
+            VIR_DEBUG("Path to '%s' is '%s/%s'", name, curpath, paths[i]->name);
             ret = 0;
             if (virAsprintf(path, "%s/%s", curpath, paths[i]->name) < 0) {
                 *path = NULL;
@@ -6711,6 +6704,34 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
         qemuMonitorJSONListPathFree(paths[i]);
     VIR_FREE(paths);
     VIR_FREE(nextpath);
-    VIR_FREE(type);
+    return ret;
+}
+
+
+/**
+ * Recursively search for a QOM object link.
+ *
+ * For @name, this function finds the first QOM object
+ * pointed to by a link in the form of 'link<@name>'
+ *
+ * Returns:
+ *   0  - Found
+ *  -1  - Error
+ *  -2  - Not found
+ */
+int
+qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
+                            const char *curpath,
+                            const char *name,
+                            char **path)
+{
+    char *linkname = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&linkname, "link<%s>", name) < 0)
+        return -1;
+
+    ret = qemuMonitorJSONFindObjectPath(mon, curpath, linkname, path);
+    VIR_FREE(linkname);
     return ret;
 }

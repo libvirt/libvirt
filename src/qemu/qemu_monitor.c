@@ -1111,7 +1111,7 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorJSONFindObjectPath(mon, curpath, "virtio-balloon-pci", &path) < 0)
+    if (qemuMonitorJSONFindLinkPath(mon, curpath, "virtio-balloon-pci", &path) < 0)
         return -1;
 
     nprops = qemuMonitorJSONGetObjectListPaths(mon, path, &bprops);
@@ -1160,7 +1160,7 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        ret = qemuMonitorJSONFindObjectPath(mon, "/", videoName, &path);
+        ret = qemuMonitorJSONFindLinkPath(mon, "/", videoName, &path);
         if (ret < 0) {
             if (ret == -2)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
