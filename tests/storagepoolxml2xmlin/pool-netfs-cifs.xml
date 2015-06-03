@@ -1,0 +1,12 @@
+<pool type='netfs'>
+  <source>
+    <host name='example.com'/>
+    <format type='cifs'/>
+    <dir path='samba_share'/>
+  </source>
+  <name>netfs-cifs</name>
+  <uuid>d5609ced-94b1-489e-b218-eff35c30336a</uuid>
+  <target>
+    <path>/mnt/cifs</path>
+  </target>
+</pool>

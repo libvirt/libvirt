@@ -1,0 +1,15 @@
+<pool type='netfs'>
+  <name>netfs-cifs</name>
+  <uuid>d5609ced-94b1-489e-b218-eff35c30336a</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <host name='example.com'/>
+    <dir path='samba_share'/>
+    <format type='cifs'/>
+  </source>
+  <target>
+    <path>/mnt/cifs</path>
+  </target>
+</pool>

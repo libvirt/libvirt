@@ -84,6 +84,7 @@ mymain(void)
     DO_TEST("pool-iscsi-auth");
     DO_TEST("pool-netfs");
     DO_TEST("pool-netfs-gluster");
+    DO_TEST("pool-netfs-cifs");
     DO_TEST("pool-scsi");
     DO_TEST("pool-scsi-type-scsi-host");
     DO_TEST("pool-scsi-type-fc-host");
