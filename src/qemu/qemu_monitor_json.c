@@ -6721,7 +6721,6 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
  */
 int
 qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
-                            const char *curpath,
                             const char *name,
                             char **path)
 {
@@ -6731,7 +6730,7 @@ qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
     if (virAsprintf(&linkname, "link<%s>", name) < 0)
         return -1;
 
-    ret = qemuMonitorJSONFindObjectPath(mon, curpath, linkname, path);
+    ret = qemuMonitorJSONFindObjectPath(mon, "/", linkname, path);
     VIR_FREE(linkname);
     return ret;
 }

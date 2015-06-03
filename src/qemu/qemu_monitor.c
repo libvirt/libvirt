@@ -1085,8 +1085,7 @@ qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
  * NOTE: This assumes we have already called qemuDomainObjEnterMonitor()
  */
 static int
-qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
-                                 const char *curpath)
+qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon)
 {
     ssize_t i, nprops = 0;
     int ret = -1;
@@ -1111,7 +1110,7 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon,
         return -1;
     }
 
-    if (qemuMonitorJSONFindLinkPath(mon, curpath, "virtio-balloon-pci", &path) < 0)
+    if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", &path) < 0)
         return -1;
 
     nprops = qemuMonitorJSONGetObjectListPaths(mon, path, &bprops);
@@ -1160,7 +1159,7 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        ret = qemuMonitorJSONFindLinkPath(mon, "/", videoName, &path);
+        ret = qemuMonitorJSONFindLinkPath(mon, videoName, &path);
         if (ret < 0) {
             if (ret == -2)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1643,7 +1642,7 @@ qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        ignore_value(qemuMonitorFindBalloonObjectPath(mon, "/"));
+        ignore_value(qemuMonitorFindBalloonObjectPath(mon));
         mon->ballooninit = true;
         return qemuMonitorJSONGetMemoryStats(mon, mon->balloonpath,
                                              stats, nr_stats);
@@ -1676,7 +1675,7 @@ qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
     if (period < 0)
         return -1;
 
-    if (qemuMonitorFindBalloonObjectPath(mon, "/") == 0) {
+    if (qemuMonitorFindBalloonObjectPath(mon) == 0) {
         ret = qemuMonitorJSONSetMemoryStatsPeriod(mon, mon->balloonpath,
                                                   period);
 
