@@ -505,6 +505,8 @@ virSocketAddrBroadcast(const virSocketAddr *addr,
                        const virSocketAddr *netmask,
                        virSocketAddrPtr broadcast)
 {
+    memset(broadcast, 0, sizeof(*broadcast));
+
     if ((addr->data.stor.ss_family != AF_INET) ||
         (netmask->data.stor.ss_family != AF_INET)) {
         broadcast->data.stor.ss_family = AF_UNSPEC;
