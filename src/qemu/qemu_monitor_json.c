@@ -6642,3 +6642,75 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+/**
+ * Search the qom objects by it's known name.  The name is compared against
+ * filed 'type' formatted as 'link<%name>'.
+ *
+ * This procedure will be call recursively until found or the qom-list is
+ * exhausted.
+ *
+ * Returns:
+ *
+ *   0  - Found
+ *  -1  - Error bail out
+ *  -2  - Not found
+ *
+ * NOTE: This assumes we have already called qemuDomainObjEnterMonitor()
+ */
+int
+qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
+                              const char *curpath,
+                              const char *name,
+                              char **path)
+{
+    ssize_t i, npaths = 0;
+    int ret = -2;
+    char *nextpath = NULL;
+    char *type = NULL;
+    qemuMonitorJSONListPathPtr *paths = NULL;
+
+    if (virAsprintf(&type, "link<%s>", name) < 0)
+        return -1;
+
+    VIR_DEBUG("Searching for '%s' Object Path starting at '%s'", type, curpath);
+
+    npaths = qemuMonitorJSONGetObjectListPaths(mon, curpath, &paths);
+    if (npaths < 0)
+        goto cleanup;
+
+    for (i = 0; i < npaths && ret == -2; i++) {
+
+        if (STREQ_NULLABLE(paths[i]->type, type)) {
+            VIR_DEBUG("Path to '%s' is '%s/%s'", type, curpath, paths[i]->name);
+            ret = 0;
+            if (virAsprintf(path, "%s/%s", curpath, paths[i]->name) < 0) {
+                *path = NULL;
+                ret = -1;
+            }
+            goto cleanup;
+        }
+
+        /* Type entries that begin with "child<" are a branch that can be
+         * traversed looking for more entries
+         */
+        if (paths[i]->type && STRPREFIX(paths[i]->type, "child<")) {
+            if (virAsprintf(&nextpath, "%s/%s", curpath, paths[i]->name) < 0) {
+                ret = -1;
+                goto cleanup;
+            }
+
+            ret = qemuMonitorJSONFindObjectPath(mon, nextpath, name, path);
+            VIR_FREE(nextpath);
+        }
+    }
+
+ cleanup:
+    for (i = 0; i < npaths; i++)
+        qemuMonitorJSONListPathFree(paths[i]);
+    VIR_FREE(paths);
+    VIR_FREE(nextpath);
+    VIR_FREE(type);
+    return ret;
+}
