@@ -11577,6 +11577,7 @@ qemuDomainMemoryStats(virDomainPtr dom,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -11594,27 +11595,29 @@ qemuDomainMemoryStats(virDomainPtr dom,
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-    } else {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
-
-        if (ret >= 0 && ret < nr_stats) {
-            long rss;
-            if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
-                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                               _("cannot get RSS for domain"));
-            } else {
-                stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
-                stats[ret].val = rss;
-                ret++;
-            }
-
-        }
+        goto endjob;
     }
 
+    priv = vm->privateData;
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    if (ret >= 0 && ret < nr_stats) {
+        long rss;
+        if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("cannot get RSS for domain"));
+        } else {
+            stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
+            stats[ret].val = rss;
+            ret++;
+        }
+
+    }
+
+ endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
