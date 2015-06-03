@@ -616,10 +616,16 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     prlsdkCheckRetGoto(pret, error);
 
     for (i = 0; i < hddCount; ++i) {
+
+        PRL_UINT32 emulatedType;
+
         pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
         prlsdkCheckRetGoto(pret, error);
 
-        if (IS_CT(def)) {
+        pret = PrlVmDev_GetEmulatedType(hdd, &emulatedType);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (PDT_USE_REAL_DEVICE != emulatedType && IS_CT(def)) {
 
             if (VIR_ALLOC(fs) < 0)
                 goto error;
