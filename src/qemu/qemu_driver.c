@@ -11580,6 +11580,7 @@ qemuDomainMemoryStats(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
+    long rss;
 
     virCheckFlags(0, -1);
 
@@ -11604,17 +11605,16 @@ qemuDomainMemoryStats(virDomainPtr dom,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
-    if (ret >= 0 && ret < nr_stats) {
-        long rss;
-        if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("cannot get RSS for domain"));
-        } else {
-            stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
-            stats[ret].val = rss;
-            ret++;
-        }
+    if (ret < 0 || ret >= nr_stats)
+        goto endjob;
 
+    if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("cannot get RSS for domain"));
+    } else {
+        stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
+        stats[ret].val = rss;
+        ret++;
     }
 
  endjob:
