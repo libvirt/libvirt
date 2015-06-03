@@ -38,7 +38,7 @@
 #define VIR_FROM_THIS VIR_FROM_ESX
 
 /*
- * The UUID of a network is the MD5 sum of it's key. Therefore, verify that
+ * The UUID of a network is the MD5 sum of its key. Therefore, verify that
  * UUID and MD5 sum match in size, because we rely on that.
  */
 verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);

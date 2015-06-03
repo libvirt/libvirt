@@ -4603,7 +4603,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             readWriteDisk->location = realReadWriteDisksPath[it];
             /*
              * We get the current snapshot's read-only disk uuid in order to add the
-             * read-write disk to the media registry as it's child. The read-only disk
+             * read-write disk to the media registry as its child. The read-only disk
              * is already in the media registry because it is the fake disk's parent.
              */
             parentUuid = virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,

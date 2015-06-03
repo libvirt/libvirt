@@ -2959,7 +2959,7 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
             is_reg = !!S_ISREG(sb.st_mode);
             /* If the path is regular file which exists
              * already and dynamic_ownership is off, we don't
-             * want to change it's ownership, just open it as-is */
+             * want to change its ownership, just open it as-is */
             if (is_reg && !dynamicOwnership) {
                 uid = sb.st_uid;
                 gid = sb.st_gid;
@@ -16396,7 +16396,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
      * XXX On libvirtd restarts, if we missed the qemu event, we need
      * to double check what state qemu is in.
      * XXX We should be using qemu's rerror flag to make sure the job
-     * remains alive until we know it's final state.
+     * remains alive until we know its final state.
      * XXX If the abort command is synchronous but the qemu event says
      * that pivot failed, we need to reflect that failure into the
      * overall return value.  */

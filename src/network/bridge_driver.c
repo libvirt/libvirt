@@ -1601,7 +1601,7 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
     return ret;
 }
 
-/* write file and return it's name (which must be freed by caller) */
+/* write file and return its name (which must be freed by caller) */
 static int
 networkRadvdConfWrite(virNetworkDriverStatePtr driver,
                       virNetworkObjPtr network,

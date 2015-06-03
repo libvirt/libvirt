@@ -42,7 +42,7 @@
 #define VIR_FROM_THIS VIR_FROM_ESX
 
 /*
- * The UUID of a storage pool is the MD5 sum of it's mount path. Therefore,
+ * The UUID of a storage pool is the MD5 sum of its mount path. Therefore,
  * verify that UUID and MD5 sum match in size, because we rely on that.
  */
 verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);

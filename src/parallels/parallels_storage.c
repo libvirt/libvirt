@@ -212,7 +212,7 @@ parallelsPoolCreateByPath(virConnectPtr conn, const char *path)
 
 /*
  * Create pool of type VIR_STORAGE_POOL_DIR with
- * path to the VM, if it's not exists.
+ * path to the VM, if it does not exist.
  */
 static virStoragePoolObjPtr
 parallelsPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)

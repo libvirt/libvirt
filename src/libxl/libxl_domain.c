@@ -518,7 +518,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 
     /*
      * Similar to the xl implementation, ignore SUSPEND.  Any actions needed
-     * after calling libxl_domain_suspend() are handled by it's callers.
+     * after calling libxl_domain_suspend() are handled by its callers.
      */
     if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
         goto error;

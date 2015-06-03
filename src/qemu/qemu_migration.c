@@ -125,7 +125,7 @@ struct _qemuMigrationCookieNetData {
     int vporttype; /* enum virNetDevVPortProfile */
 
     /*
-     * Array of pointers to saved data. Each VIF will have it's own
+     * Array of pointers to saved data. Each VIF will have its own
      * data to transfer.
      */
     char *portdata;

@@ -122,7 +122,7 @@
               This optional element contains information on PCI Express part of
               the device. For example, it can contain a child element
               <code>link</code> which addresses the PCI Express device's link.
-              While a device has it's own capabilities
+              While a device has its own capabilities
               (<code>validity='cap'</code>), the actual run time capabilities
               are negotiated on the device initialization
               (<code>validity='sta'</code>). The <code>link</code> element then

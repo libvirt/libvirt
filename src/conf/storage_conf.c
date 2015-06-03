@@ -2335,7 +2335,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     char *parent_name = NULL;
     unsigned int fc_hostnum;
 
-    /* If we have a parent defined, get it's hostnum, and compare to the
+    /* If we have a parent defined, get its hostnum, and compare to the
      * scsi_hostnum. If they are the same, then we have a match
      */
     if (fc_adapter.data.fchost.parent &&
