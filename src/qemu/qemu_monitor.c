@@ -1091,22 +1091,12 @@ qemuMonitorFindBalloonObjectPath(qemuMonitorPtr mon)
     int ret = -1;
     char *path = NULL;
     qemuMonitorJSONListPathPtr *bprops = NULL;
-    virDomainObjPtr vm = mon->vm;
 
     if (mon->balloonpath) {
         return 0;
     } else if (mon->ballooninit) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot determine balloon device path"));
-        return -1;
-    }
-
-    /* Not supported */
-    if (!vm->def->memballoon ||
-        vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Memory balloon model must be virtio to "
-                         "get memballoon path"));
         return -1;
     }
 
