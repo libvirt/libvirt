@@ -500,8 +500,13 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
     if (virDomainDiskSetSource(disk, buf) < 0)
         goto cleanup;
 
-    pret = PrlVmDev_GetIfaceType(prldisk, &ifType);
-    prlsdkCheckRetGoto(pret, cleanup);
+    /* Let physical devices added to CT look like SATA disks */
+    if (isCt)
+        ifType = PMS_SATA_DEVICE;
+    else {
+        pret = PrlVmDev_GetIfaceType(prldisk, &ifType);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
 
     pret = PrlVmDev_GetStackIndex(prldisk, &pos);
     prlsdkCheckRetGoto(pret, cleanup);
