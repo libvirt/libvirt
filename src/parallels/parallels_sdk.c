@@ -3080,6 +3080,13 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
 
         if (prlsdkAddDeviceToBootList(sdkdom, devIndex, devType, 0) < 0)
             goto cleanup;
+
+        /* If we add physical device as a boot disk to container
+         * we have to specify mount point for it */
+        if (isCt) {
+            pret = PrlVmDevHd_SetMountPoint(sdkdisk, "/");
+            prlsdkCheckRetGoto(pret, cleanup);
+        }
     }
 
     return 0;
@@ -3314,6 +3321,13 @@ prlsdkDoApplyConfig(virConnectPtr conn,
             goto error;
     }
 
+    for (i = 0; i < def->nfss; i++) {
+        if (STREQ(def->fss[i]->dst, "/"))
+            needBoot = false;
+        if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
+            goto error;
+    }
+
     for (i = 0; i < def->ndisks; i++) {
         bool bootDisk = false;
 
@@ -3324,11 +3338,6 @@ prlsdkDoApplyConfig(virConnectPtr conn,
             bootDisk = true;
         }
         if (prlsdkAddDisk(sdkdom, def->disks[i], bootDisk, IS_CT(def)) < 0)
-            goto error;
-    }
-
-    for (i = 0; i < def->nfss; i++) {
-        if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
             goto error;
     }
 
