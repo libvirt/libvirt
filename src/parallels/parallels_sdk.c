@@ -456,7 +456,8 @@ prlsdkAddDomainVideoInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 static int
 prlsdkGetDiskInfo(PRL_HANDLE prldisk,
                   virDomainDiskDefPtr disk,
-                  bool isCdrom)
+                  bool isCdrom,
+                  bool isCt)
 {
     char *buf = NULL;
     PRL_UINT32 buflen = 0;
@@ -631,7 +632,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
             if (!(disk = virDomainDiskDefNew(NULL)))
                 goto error;
 
-            if (prlsdkGetDiskInfo(hdd, disk, false) < 0)
+            if (prlsdkGetDiskInfo(hdd, disk, false, IS_CT(def)) < 0)
                 goto error;
 
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
@@ -671,7 +672,7 @@ prlsdkAddDomainOpticalDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         if (!(disk = virDomainDiskDefNew(NULL)))
             goto error;
 
-        if (prlsdkGetDiskInfo(cdrom, disk, true) < 0)
+        if (prlsdkGetDiskInfo(cdrom, disk, true, IS_CT(def)) < 0)
             goto error;
 
         PrlHandle_Free(cdrom);
@@ -2915,7 +2916,10 @@ static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
     return ret;
 }
 
-static int prlsdkAddDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool bootDisk)
+static int prlsdkAddDisk(PRL_HANDLE sdkdom,
+                         virDomainDiskDefPtr disk,
+                         bool bootDisk,
+                         bool isCt)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
@@ -3096,7 +3100,7 @@ prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
     if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
-    ret = prlsdkAddDisk(privdom->sdkdom, disk, false);
+    ret = prlsdkAddDisk(privdom->sdkdom, disk, false, IS_CT(dom->def));
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job))) {
@@ -3319,7 +3323,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
             needBoot = false;
             bootDisk = true;
         }
-        if (prlsdkAddDisk(sdkdom, def->disks[i], bootDisk) < 0)
+        if (prlsdkAddDisk(sdkdom, def->disks[i], bootDisk, IS_CT(def)) < 0)
             goto error;
     }
 
