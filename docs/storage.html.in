@@ -291,7 +291,8 @@
         the <a href="#StorageBackendGluster">gluster</a> pool.)
       </li>
       <li>
-        <code>cifs</code> - use the SMB (samba) or CIFS file system
+        <code>cifs</code> - use the SMB (samba) or CIFS file system.
+        The mount will use "-o guest" to mount the directory anonymously.
       </li>
     </ul>
 

@@ -426,6 +426,8 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
                     pool->def->source.format == VIR_STORAGE_POOL_NETFS_AUTO);
     bool glusterfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
                       pool->def->source.format == VIR_STORAGE_POOL_NETFS_GLUSTERFS);
+    bool cifsfs = (pool->def->type == VIR_STORAGE_POOL_NETFS &&
+                   pool->def->source.format == VIR_STORAGE_POOL_NETFS_CIFS);
     virCommandPtr cmd = NULL;
     int ret = -1;
     int rc;
@@ -444,11 +446,17 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     }
 
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
-        if (virAsprintf(&src, "%s:%s",
-                        pool->def->source.hosts[0].name,
-                        pool->def->source.dir) == -1)
-            return -1;
-
+        if (pool->def->source.format == VIR_STORAGE_POOL_NETFS_CIFS) {
+            if (virAsprintf(&src, "//%s/%s",
+                            pool->def->source.hosts[0].name,
+                            pool->def->source.dir) == -1)
+                return -1;
+        } else {
+            if (virAsprintf(&src, "%s:%s",
+                            pool->def->source.hosts[0].name,
+                            pool->def->source.dir) == -1)
+                return -1;
+        }
     } else {
         if (VIR_STRDUP(src, pool->def->source.devices[0].path) < 0)
             return -1;
@@ -467,6 +475,15 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
                                    "-o",
                                    "direct-io-mode=1",
                                    pool->def->target.path,
+                                   NULL);
+    else if (cifsfs)
+        cmd = virCommandNewArgList(MOUNT,
+                                   "-t",
+                                   virStoragePoolFormatFileSystemNetTypeToString(pool->def->source.format),
+                                   src,
+                                   pool->def->target.path,
+                                   "-o",
+                                   "guest",
                                    NULL);
     else
         cmd = virCommandNewArgList(MOUNT,

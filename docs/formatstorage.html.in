@@ -124,11 +124,14 @@
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
-        type <code>dir</code>), or optionally to select a subdirectory
+        types <code>dir</code>, <code>netfs</code>, <code>gluster</code>),
+        or optionally to select a subdirectory
         within a pool that resembles a filesystem (pool
         type <code>gluster</code>). May
         only occur once. Contains a single attribute <code>path</code>
-        which is the fully qualified path to the backing directory.
+        which is the fully qualified path to the backing directory or
+        for a <code>netfs</code> pool type using <code>format</code>
+        type "cifs", the path to the Samba share without the leading slash.
         <span class="since">Since 0.4.1</span></dd>
       <dt><code>adapter</code></dt>
       <dd>Provides the source for pools backed by SCSI adapters (pool
