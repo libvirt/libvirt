@@ -2459,6 +2459,14 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     priv = vm->privateData;
 
     if (def) {
+        if (!def->memballoon ||
+            def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Memory balloon model must be virtio to set the"
+                             " collection period"));
+            goto endjob;
+        }
+
         qemuDomainObjEnterMonitor(driver, vm);
         r = qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -2475,6 +2483,13 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     }
 
     if (persistentDef) {
+        if (!persistentDef->memballoon ||
+            persistentDef->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Memory balloon model must be virtio to set the"
+                             " collection period"));
+            goto endjob;
+        }
         persistentDef->memballoon->period = period;
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
         goto endjob;
