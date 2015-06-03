@@ -6,8 +6,7 @@
 
 <h2>Presentation</h2>
     <p>The libvirt-php, originally called php-libvirt, is the PHP API bindings for
-       the libvirt virtualization toolkit originally developed by Radek Hladik but
-       currently maintained by Red Hat.</p>
+       the libvirt virtualization toolkit originally developed by Radek Hladik.</p>
 
 <h2>Getting the source</h2>
 <p> The PHP bindings code source is now maintained in a <a
@@ -26,7 +25,7 @@ It can also be browsed at
 
 <p></p>
 <h2>Project pages</h2>
-<p>Since February 2011 the project have it's own pages hosted at libvirt.org. For more information on the project
+<p>Since February 2011 the project has its own pages hosted at libvirt.org. For more information on the project
    please refer to <a href="http://libvirt.org/php">http://libvirt.org/php</a>.
 
 </p>
