@@ -1699,7 +1699,7 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
     parallelsConnPtr privconn = opaque;
     PRL_RESULT pret = PRL_ERR_UNINITIALIZED;
     PRL_HANDLE_TYPE handleType;
-    PRL_EVENT_TYPE prlEventType;
+    PRL_EVENT_ISSUER_TYPE prlIssuerType = PIE_UNKNOWN;
 
     pret = PrlHandle_GetType(prlEvent, &handleType);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -1715,20 +1715,15 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
         goto cleanup;
     }
 
-    PrlEvent_GetType(prlEvent, &prlEventType);
+    PrlEvent_GetIssuerType(prlEvent, &prlIssuerType);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    switch (prlEventType) {
-        case PET_DSP_EVT_VM_STATE_CHANGED:
-        case PET_DSP_EVT_VM_CONFIG_CHANGED:
-        case PET_DSP_EVT_VM_CREATED:
-        case PET_DSP_EVT_VM_ADDED:
-        case PET_DSP_EVT_VM_DELETED:
-        case PET_DSP_EVT_VM_UNREGISTERED:
+    switch (prlIssuerType) {
+        case PIE_VIRTUAL_MACHINE:
             pret = prlsdkHandleVmEvent(privconn, prlEvent);
             break;
         default:
-            VIR_DEBUG("Skipping event of type %d", prlEventType);
+            VIR_DEBUG("Skipping event of issuer type %d", prlIssuerType);
     }
 
     pret = PRL_ERR_SUCCESS;
