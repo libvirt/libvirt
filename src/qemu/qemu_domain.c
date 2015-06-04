@@ -3256,9 +3256,9 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
 
         if (ret < 0)
             return -1;
-    }
 
-    vm->def->mem.cur_balloon = balloon;
+        vm->def->mem.cur_balloon = balloon;
+    }
 
     return 0;
 }
