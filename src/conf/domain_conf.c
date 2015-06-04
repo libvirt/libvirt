@@ -2927,7 +2927,7 @@ virDomainObjGetDefs(virDomainObjPtr vm,
     if (liveDef)
         *liveDef = NULL;
 
-    if (*persDef)
+    if (persDef)
         *persDef = NULL;
 
     if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
@@ -2938,7 +2938,7 @@ virDomainObjGetDefs(virDomainObjPtr vm,
             *liveDef = vm->def;
 
         if (persDef)
-            *liveDef = vm->newDef;
+            *persDef = vm->newDef;
     } else {
         if (persDef)
             *persDef = vm->def;
