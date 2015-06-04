@@ -27,6 +27,12 @@
       <model type='definitely-not-virtio'/>
       <backend tap='/dev/null'/>
     </interface>
+    <interface type='user'>
+      <mac address='52:54:00:e5:48:59'/>
+      <model type='virtio'/>
+      <driver name='vhost'/>
+      <backend tap='/dev/null' vhost='/dev/zero'/>
+    </interface>
     <serial type='pty'>
       <target port='0'/>
     </serial>

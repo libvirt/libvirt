@@ -8626,7 +8626,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                                queues);
                 goto error;
             }
-            def->driver.virtio.queues = q;
+            if (q > 1)
+                def->driver.virtio.queues = q;
         }
         if ((str = virXPathString("string(./driver/host/@csum)", ctxt))) {
             if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
