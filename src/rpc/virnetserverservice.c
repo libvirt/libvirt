@@ -301,12 +301,15 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
 
         /* IO callback is initially disabled, until we're ready
          * to deal with incoming clients */
+        virObjectRef(svc);
         if (virNetSocketAddIOCallback(svc->socks[i],
                                       0,
                                       virNetServerServiceAccept,
                                       svc,
-                                      virObjectFreeCallback) < 0)
+                                      virObjectFreeCallback) < 0) {
+            virObjectUnref(svc);
             goto error;
+        }
     }
 
 
@@ -386,7 +389,6 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
                                       svc,
                                       virObjectFreeCallback) < 0) {
             virObjectUnref(svc);
-            virObjectUnref(sock);
             goto error;
         }
     }
