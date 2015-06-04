@@ -474,12 +474,14 @@ virProcessGetAffinity(pid_t pid)
     size_t i;
     cpu_set_t *mask;
     size_t masklen;
+    size_t ncpus;
     virBitmapPtr ret = NULL;
 
 # ifdef CPU_ALLOC
     /* 262144 cpus ought to be enough for anyone */
-    masklen = CPU_ALLOC_SIZE(1024 << 8);
-    mask = CPU_ALLOC(1024 << 8);
+    ncpus = 1024 << 8;
+    masklen = CPU_ALLOC_SIZE(ncpus);
+    mask = CPU_ALLOC(ncpus);
 
     if (!mask) {
         virReportOOMError();
@@ -488,6 +490,7 @@ virProcessGetAffinity(pid_t pid)
 
     CPU_ZERO_S(masklen, mask);
 # else
+    ncpus = 1024;
     if (VIR_ALLOC(mask) < 0)
         return NULL;
 
@@ -501,11 +504,12 @@ virProcessGetAffinity(pid_t pid)
         goto cleanup;
     }
 
-    if (!(ret = virBitmapNew(masklen * 8)))
+    if (!(ret = virBitmapNew(ncpus)))
           goto cleanup;
 
-    for (i = 0; i < masklen * 8; i++) {
+    for (i = 0; i < ncpus; i++) {
 # ifdef CPU_ALLOC
+         /* coverity[overrun-local] */
         if (CPU_ISSET_S(i, masklen, mask))
             ignore_value(virBitmapSetBit(ret, i));
 # else
