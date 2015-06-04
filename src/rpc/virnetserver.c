@@ -259,8 +259,8 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
 }
 
 
-static int virNetServerAddClient(virNetServerPtr srv,
-                                 virNetServerClientPtr client)
+int virNetServerAddClient(virNetServerPtr srv,
+                          virNetServerClientPtr client)
 {
     virObjectLock(srv);
 

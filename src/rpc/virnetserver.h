@@ -79,6 +79,9 @@ int virNetServerAddService(virNetServerPtr srv,
                            virNetServerServicePtr svc,
                            const char *mdnsEntryName);
 
+int virNetServerAddClient(virNetServerPtr srv,
+                          virNetServerClientPtr client);
+
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);
 
