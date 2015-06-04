@@ -536,13 +536,14 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
         goto error;
     }
 
-    if (client->privateData && client->privateDataPreExecRestart &&
-        !(child = client->privateDataPreExecRestart(client, client->privateData)))
-        goto error;
+    if (client->privateData && client->privateDataPreExecRestart) {
+        if (!(child = client->privateDataPreExecRestart(client, client->privateData)))
+            goto error;
 
-    if (virJSONValueObjectAppend(object, "privateData", child) < 0) {
-        virJSONValueFree(child);
-        goto error;
+        if (virJSONValueObjectAppend(object, "privateData", child) < 0) {
+            virJSONValueFree(child);
+            goto error;
+        }
     }
 
     virObjectUnlock(client);
