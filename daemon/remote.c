@@ -1068,7 +1068,7 @@ remoteRelayDomainEventDeviceAdded(virConnectPtr conn,
         return -1;
 
     make_nonnull_domain(&data.dom, dom);
-    data.callbackID = callback->callbackID,
+    data.callbackID = callback->callbackID;
 
     remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED,
