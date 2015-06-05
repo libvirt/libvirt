@@ -1362,15 +1362,6 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
   dnl Check for new polkit first - just a binary
   AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
   if test "x$PKCHECK_PATH" != "x" ; then
-    AC_DEFINE_UNQUOTED([PKCHECK_PATH],["$PKCHECK_PATH"],[Location of pkcheck program])
-    AC_MSG_CHECKING([whether pkcheck supports uid value])
-    pkcheck_supports_uid=`$PKG_CONFIG --variable pkcheck_supports_uid polkit-gobject-1`
-    if test "x$pkcheck_supports_uid" = "xtrue"; then
-      AC_MSG_RESULT([yes])
-      AC_DEFINE_UNQUOTED([PKCHECK_SUPPORTS_UID], 1, [Pass uid to pkcheck])
-    else
-      AC_MSG_RESULT([no])
-    fi
     AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
         [use PolicyKit for UNIX socket access checks])
     AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
