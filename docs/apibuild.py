@@ -1028,9 +1028,12 @@ class CParser:
                     name = string.split(name, '(') [0]
                 except:
                     pass
-                info = self.parseMacroComment(name, not self.is_header)
+                strValue = None
+                if len(lst) == 1 and lst[0][0] == '"' and lst[0][-1] == '"':
+                    strValue = lst[0][1:-1]
+                (args, desc) = self.parseMacroComment(name, not self.is_header)
                 self.index_add(name, self.filename, not self.is_header,
-                                "macro", info)
+                               "macro", (args, desc, strValue))
                 return token
 
         #
@@ -2144,24 +2147,30 @@ class docBuilder:
 
     def serialize_macro(self, output, name):
         id = self.idx.macros[name]
-        output.write("    <macro name='%s' file='%s'>\n" % (name,
+        output.write("    <macro name='%s' file='%s'" % (name,
                      self.modulename_file(id.header)))
-        if id.info is not None:
-            try:
-                (args, desc) = id.info
-                if desc is not None and desc != "":
-                    output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
-                    self.indexString(name, desc)
-                for arg in args:
-                    (name, desc) = arg
-                    if desc is not None and desc != "":
-                        output.write("      <arg name='%s' info='%s'/>\n" % (
-                                     name, escape(desc)))
-                        self.indexString(name, desc)
-                    else:
-                        output.write("      <arg name='%s'/>\n" % (name))
-            except:
-                pass
+        if id.info is None:
+            args = []
+            desc = None
+            strValue = None
+        else:
+            (args, desc, strValue) = id.info
+
+        if strValue is not None:
+            output.write(" string='%s'" % strValue)
+        output.write(">\n")
+
+        if desc is not None and desc != "":
+            output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
+            self.indexString(name, desc)
+        for arg in args:
+            (name, desc) = arg
+            if desc is not None and desc != "":
+                output.write("      <arg name='%s' info='%s'/>\n" % (
+                             name, escape(desc)))
+                self.indexString(name, desc)
+            else:
+                output.write("      <arg name='%s'/>\n" % (name))
         output.write("    </macro>\n")
 
     def serialize_union(self, output, field, desc):
