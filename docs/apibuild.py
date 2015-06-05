@@ -1356,32 +1356,32 @@ class CParser:
                 token = self.token()
                 return token
             elif token[0] == "name":
-                    self.cleanupComment()
-                    if name is not None:
-                        if self.comment is not None:
-                            comment = string.strip(self.comment)
-                            self.comment = None
-                        self.enums.append((name, value, comment))
-                    name = token[1]
-                    comment = ""
+                self.cleanupComment()
+                if name is not None:
+                    if self.comment is not None:
+                        comment = string.strip(self.comment)
+                        self.comment = None
+                    self.enums.append((name, value, comment))
+                name = token[1]
+                comment = ""
+                token = self.token()
+                if token[0] == "op" and token[1][0] == "=":
+                    value = ""
+                    if len(token[1]) > 1:
+                        value = token[1][1:]
                     token = self.token()
-                    if token[0] == "op" and token[1][0] == "=":
-                        value = ""
-                        if len(token[1]) > 1:
-                            value = token[1][1:]
+                    while token[0] != "sep" or (token[1] != ',' and
+                          token[1] != '}'):
+                        value = value + token[1]
                         token = self.token()
-                        while token[0] != "sep" or (token[1] != ',' and
-                              token[1] != '}'):
-                            value = value + token[1]
-                            token = self.token()
-                    else:
-                        try:
-                            value = "%d" % (int(value) + 1)
-                        except:
-                            self.warning("Failed to compute value of enum %s" % (name))
-                            value=""
-                    if token[0] == "sep" and token[1] == ",":
-                        token = self.token()
+                else:
+                    try:
+                        value = "%d" % (int(value) + 1)
+                    except:
+                        self.warning("Failed to compute value of enum %s" % (name))
+                        value=""
+                if token[0] == "sep" and token[1] == ",":
+                    token = self.token()
             else:
                 token = self.token()
         return token
