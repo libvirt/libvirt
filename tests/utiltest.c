@@ -184,8 +184,8 @@ static int
 testOverflowCheckMacro(const void *data ATTRIBUTE_UNUSED)
 {
     long long tmp;
-    unsigned char luchar;
-    char lchar;
+    uint8_t luchar;
+    int8_t lchar;
 
     TEST_OVERFLOW(luchar, 254, false);
     TEST_OVERFLOW(luchar, 255, false);
