@@ -331,7 +331,9 @@
   <define name="ostypehvm">
     <element name="type">
       <optional>
-        <ref name="archList"/>
+        <attribute name="arch">
+          <ref name="archnames"/>
+        </attribute>
       </optional>
       <optional>
         <attribute name="machine">
@@ -344,29 +346,13 @@
     </element>
   </define>
 
-  <define name="archList">
-    <attribute name="arch">
-      <choice>
-        <value>armv7l</value>
-        <value>aarch64</value>
-        <value>i686</value>
-        <value>x86_64</value>
-        <value>mips</value>
-        <value>ppc</value>
-        <value>ppc64</value>
-        <value>ppc64le</value>
-        <value>s390</value>
-        <value>s390x</value>
-        <value>sparc</value>
-      </choice>
-    </attribute>
-  </define>
-
   <define name="osexe">
     <element name="os">
       <element name="type">
         <optional>
-          <ref name="archList"/>
+          <attribute name="arch">
+            <ref name="archnames"/>
+          </attribute>
         </optional>
         <value>exe</value>
       </element>
