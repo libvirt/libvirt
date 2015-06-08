@@ -1541,7 +1541,7 @@ libxlDriverConfigNew(void)
 
     cfg->logger =
         (xentoollog_logger *)xtl_createlogger_stdiostream(cfg->logger_file,
-                                                          XTL_DEBUG, 0);
+                                      XTL_DEBUG, XTL_STDIOSTREAM_SHOW_DATE);
     if (!cfg->logger) {
         VIR_ERROR(_("cannot create logger for libxenlight, disabling driver"));
         goto error;
