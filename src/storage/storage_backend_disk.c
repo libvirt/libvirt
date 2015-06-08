@@ -472,8 +472,9 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         /* eg parted /dev/sda mklabel --script msdos */
         int format = pool->def->source.format;
         const char *fmt;
-        if (format == VIR_STORAGE_POOL_DISK_UNKNOWN ||
-            format == VIR_STORAGE_POOL_DISK_DOS)
+        if (format == VIR_STORAGE_POOL_DISK_UNKNOWN)
+            format = pool->def->source.format = VIR_STORAGE_POOL_DISK_DOS;
+        if (format == VIR_STORAGE_POOL_DISK_DOS)
             fmt = "msdos";
         else
             fmt = virStoragePoolFormatDiskTypeToString(format);
