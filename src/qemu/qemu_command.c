@@ -3724,7 +3724,7 @@ qemuBuildDriveStr(virConnectPtr conn,
                           disk->geometry.sectors);
 
         if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
-            virBufferEscapeString(&opt, ",trans=%s", trans);
+            virBufferAsprintf(&opt, ",trans=%s", trans);
     }
 
     if (disk->serial &&
