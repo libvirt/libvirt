@@ -566,7 +566,7 @@ virProcessGetAffinity(pid_t pid)
         return NULL;
     }
 
-    if (!(*map = virBitmapNew(sizeof(mask) * 8)))
+    if (!(ret = virBitmapNew(sizeof(mask) * 8)))
         return NULL;
 
     for (i = 0; i < sizeof(mask) * 8; i++)
