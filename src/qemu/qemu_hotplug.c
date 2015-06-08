@@ -2052,20 +2052,6 @@ int qemuDomainAttachHostDevice(virConnectPtr conn,
     return -1;
 }
 
-static virDomainNetDefPtr *qemuDomainFindNet(virDomainObjPtr vm,
-                                             virDomainNetDefPtr dev)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (virMacAddrCmp(&vm->def->nets[i]->mac, &dev->mac) == 0)
-            return &vm->def->nets[i];
-    }
-
-    return NULL;
-}
-
-
 static int
 qemuDomainChangeNetBridge(virDomainObjPtr vm,
                           virDomainNetDefPtr olddev,
@@ -2195,7 +2181,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                     virDomainDeviceDefPtr dev)
 {
     virDomainNetDefPtr newdev = dev->data.net;
-    virDomainNetDefPtr *devslot = qemuDomainFindNet(vm, newdev);
+    virDomainNetDefPtr *devslot = NULL;
     virDomainNetDefPtr olddev;
     int oldType, newType;
     bool needReconnect = false;
@@ -2205,8 +2191,13 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needReplaceDevDef = false;
     bool needBandwidthSet = false;
     int ret = -1;
+    int changeidx = -1;
 
-    if (!devslot || !(olddev = *devslot)) {
+    if ((changeidx = virDomainNetFindIdx(vm->def, newdev)) < 0)
+        goto cleanup;
+    devslot = &vm->def->nets[changeidx];
+
+    if (!(olddev = *devslot)) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("cannot find existing network device to modify"));
         goto cleanup;
