@@ -647,37 +647,28 @@ static const vshCmdOptDef opts_network_list[] = {
     {.name = NULL}
 };
 
+#define FILTER(NAME, FLAG)              \
+    if (vshCommandOptBool(cmd, NAME))   \
+        flags |= (FLAG)
 static bool
 cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     vshNetworkListPtr list = NULL;
     size_t i;
-    bool inactive = vshCommandOptBool(cmd, "inactive");
-    bool all = vshCommandOptBool(cmd, "all");
-    bool persistent = vshCommandOptBool(cmd, "persistent");
-    bool transient = vshCommandOptBool(cmd, "transient");
-    bool autostart = vshCommandOptBool(cmd, "autostart");
-    bool no_autostart = vshCommandOptBool(cmd, "no-autostart");
     unsigned int flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE;
 
-    if (inactive)
+    if (vshCommandOptBool(cmd, "inactive"))
         flags = VIR_CONNECT_LIST_NETWORKS_INACTIVE;
 
-    if (all)
+    if (vshCommandOptBool(cmd, "all"))
         flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE |
                 VIR_CONNECT_LIST_NETWORKS_INACTIVE;
 
-    if (persistent)
-         flags |= VIR_CONNECT_LIST_NETWORKS_PERSISTENT;
+    FILTER("persistent", VIR_CONNECT_LIST_NETWORKS_PERSISTENT);
+    FILTER("transient", VIR_CONNECT_LIST_NETWORKS_TRANSIENT);
 
-    if (transient)
-         flags |= VIR_CONNECT_LIST_NETWORKS_TRANSIENT;
-
-    if (autostart)
-         flags |= VIR_CONNECT_LIST_NETWORKS_AUTOSTART;
-
-    if (no_autostart)
-         flags |= VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART;
+    FILTER("autostart", VIR_CONNECT_LIST_NETWORKS_AUTOSTART);
+    FILTER("no-autostart", VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART);
 
     if (!(list = vshNetworkListCollect(ctl, flags)))
         return false;
@@ -707,6 +698,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshNetworkListFree(list);
     return true;
 }
+#undef FILTER
 
 /*
  * "net-name" command
