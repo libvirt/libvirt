@@ -3310,6 +3310,16 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
                                                      &pooldef->source) < 0)
                goto cleanup;
 
+           /* Source pool may not fill in the secrettype field,
+            * so we need to do so here
+            */
+           if (def->src->auth && !def->src->auth->secrettype) {
+               const char *secrettype =
+                   virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
+               if (VIR_STRDUP(def->src->auth->secrettype, secrettype) < 0)
+                   goto cleanup;
+           }
+
            if (virStorageAddISCSIPoolSourceHost(def, pooldef) < 0)
                goto cleanup;
            break;

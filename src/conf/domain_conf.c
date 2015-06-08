@@ -6571,6 +6571,16 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlStrEqual(cur->name, BAD_CAST "auth")) {
                 if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
                     goto error;
+                /* Shared processing code with storage pools can leave
+                 * this empty, but disk formatting uses it as does command
+                 * creation - so use the secretType to attempt to fill it in.
+                 */
+                if (!authdef->secrettype) {
+                    const char *secrettype =
+                        virSecretUsageTypeToString(authdef->secretType);
+                    if (VIR_STRDUP(authdef->secrettype, secrettype) < 0)
+                        goto error;
+                }
                 if ((auth_secret_usage =
                      virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -6790,7 +6800,11 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         cur = cur->next;
     }
 
-    if (auth_secret_usage != -1 && auth_secret_usage != expected_secret_usage) {
+    /* Disk volume types will have authentication information handled in
+     * virStorageTranslateDiskSourcePool
+     */
+    if (def->src->type != VIR_STORAGE_TYPE_VOLUME &&
+        auth_secret_usage != -1 && auth_secret_usage != expected_secret_usage) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid secret type '%s'"),
                        virSecretUsageTypeToString(auth_secret_usage));
