@@ -1316,7 +1316,7 @@ int virGetUserID(const char *name ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserID is not available"));
 
-    return 0;
+    return -1;
 }
 
 
@@ -1326,7 +1326,7 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetGroupID is not available"));
 
-    return 0;
+    return -1;
 }
 
 int
