@@ -14141,6 +14141,81 @@ virDomainThreadSchedParse(xmlNodePtr node,
     return -1;
 }
 
+
+static int
+virDomainVcpuParse(virDomainDefPtr def,
+                   xmlXPathContextPtr ctxt)
+{
+    int n;
+    char *tmp = NULL;
+    int ret = -1;
+
+    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &def->maxvcpus)) < 0) {
+        if (n == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("maximum vcpus count must be an integer"));
+            goto cleanup;
+        }
+
+        def->maxvcpus = 1;
+    }
+
+    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &def->vcpus)) < 0) {
+        if (n == -2) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("current vcpus count must be an integer"));
+            goto cleanup;
+        }
+
+        def->vcpus = def->maxvcpus;
+    }
+
+    if (def->maxvcpus < def->vcpus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("maxvcpus must not be less than current vcpus "
+                         "(%u < %u)"), def->maxvcpus, def->vcpus);
+        goto cleanup;
+    }
+
+    tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
+    if (tmp) {
+        if ((def->placement_mode =
+             virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Unsupported CPU placement mode '%s'"),
+                            tmp);
+             goto cleanup;
+        }
+        VIR_FREE(tmp);
+    } else {
+        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+    }
+
+    if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
+        if (tmp) {
+            if (virBitmapParse(tmp, 0, &def->cpumask,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(def->cpumask)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'cpuset': %s"), tmp);
+                goto cleanup;
+            }
+
+            VIR_FREE(tmp);
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(tmp);
+
+    return ret;
+}
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -14437,63 +14512,8 @@ virDomainDefParseXML(xmlDocPtr xml,
                                   &def->mem.swap_hard_limit) < 0)
         goto error;
 
-    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &def->maxvcpus)) < 0) {
-        if (n == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("maximum vcpus count must be an integer"));
-            goto error;
-        }
-
-        def->maxvcpus = 1;
-    }
-
-    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &def->vcpus)) < 0) {
-        if (n == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("current vcpus count must be an integer"));
-            goto error;
-        }
-
-        def->vcpus = def->maxvcpus;
-    }
-
-    if (def->maxvcpus < def->vcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("maxvcpus must not be less than current vcpus "
-                         "(%u < %u)"), def->maxvcpus, def->vcpus);
+    if (virDomainVcpuParse(def, ctxt) < 0)
         goto error;
-    }
-
-    tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
-    if (tmp) {
-        if ((def->placement_mode =
-             virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Unsupported CPU placement mode '%s'"),
-                            tmp);
-             goto error;
-        }
-        VIR_FREE(tmp);
-    } else {
-        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-    }
-
-    if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
-        if (tmp) {
-            if (virBitmapParse(tmp, 0, &def->cpumask,
-                               VIR_DOMAIN_CPUMASK_LEN) < 0)
-                goto error;
-
-            if (virBitmapIsAllClear(def->cpumask)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid value of 'cpuset': %s"), tmp);
-                goto error;
-            }
-
-            VIR_FREE(tmp);
-        }
-    }
 
     /* Optional - iothreads */
     tmp = virXPathString("string(./iothreads[1])", ctxt);
