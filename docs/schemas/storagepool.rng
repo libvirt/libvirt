@@ -412,7 +412,7 @@
       <element name='format'>
         <attribute name='type'>
           <choice>
-            <value>none</value>
+            <value>unknown</value>
             <value>dos</value>
             <value>dvh</value>
             <value>gpt</value>
