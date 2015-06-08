@@ -2834,6 +2834,7 @@ events until a timeout or interrupt key.
 Returns basic information about the I<network> object.
 
 =item B<net-list> [I<--inactive> | I<--all>]
+                  { [I<--table>] | I<--name> | I<--uuid> }
                   [I<--persistent>] [<--transient>]
                   [I<--autostart>] [<--no-autostart>]
 
@@ -2843,6 +2844,12 @@ inactive ones will be listed. You may also want to filter the returned networks
 by I<--persistent> to list the persistent ones, I<--transient> to list the
 transient ones, I<--autostart> to list the ones with autostart enabled, and
 I<--no-autostart> to list the ones with autostart disabled.
+
+If I<--name> is specified, network names are printed instead of the table
+formatted one per line. If I<--uuid> is specified network's UUID's are printed
+instead of names. Flag I<--table> specifies that the legacy table-formatted
+output should be used. This is the default. All of these are mutually
+exclusive.
 
 NOTE: When talking to older servers, this command is forced to use a series of
 API calls with an inherent race, where a pool might not be listed or might appear

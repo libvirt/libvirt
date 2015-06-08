@@ -644,6 +644,18 @@ static const vshCmdOptDef opts_network_list[] = {
      .type = VSH_OT_BOOL,
      .help = N_("list networks with autostart disabled")
     },
+    {.name = "uuid",
+     .type = VSH_OT_BOOL,
+     .help = N_("list uuid's only")
+    },
+    {.name = "name",
+     .type = VSH_OT_BOOL,
+     .help = N_("list network names only")
+    },
+    {.name = "table",
+     .type = VSH_OT_BOOL,
+     .help = N_("list table (default)")
+    },
     {.name = NULL}
 };
 
@@ -655,6 +667,11 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     vshNetworkListPtr list = NULL;
     size_t i;
+    bool ret = false;
+    bool optName = vshCommandOptBool(cmd, "name");
+    bool optTable = vshCommandOptBool(cmd, "table");
+    bool optUUID = vshCommandOptBool(cmd, "uuid");
+    char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned int flags = VIR_CONNECT_LIST_NETWORKS_ACTIVE;
 
     if (vshCommandOptBool(cmd, "inactive"))
@@ -670,33 +687,57 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     FILTER("autostart", VIR_CONNECT_LIST_NETWORKS_AUTOSTART);
     FILTER("no-autostart", VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART);
 
+    if (optTable + optName + optUUID > 1) {
+        vshError(ctl, "%s",
+                 _("Only one argument from --table, --name and --uuid "
+                   "may be specified."));
+        return false;
+    }
+
+    if (!optUUID && !optName)
+        optTable = true;
+
     if (!(list = vshNetworkListCollect(ctl, flags)))
         return false;
 
-    vshPrintExtra(ctl, " %-20s %-10s %-13s %s\n", _("Name"), _("State"),
-                  _("Autostart"), _("Persistent"));
-    vshPrintExtra(ctl,
-                  "----------------------------------------------------------\n");
+    if (optTable) {
+        vshPrintExtra(ctl, " %-20s %-10s %-13s %s\n", _("Name"), _("State"),
+                      _("Autostart"), _("Persistent"));
+        vshPrintExtra(ctl,
+                      "----------------------------------------------------------\n");
+    }
 
     for (i = 0; i < list->nnets; i++) {
         virNetworkPtr network = list->nets[i];
         const char *autostartStr;
         int is_autostart = 0;
 
-        if (virNetworkGetAutostart(network, &is_autostart) < 0)
-            autostartStr = _("no autostart");
-        else
-            autostartStr = is_autostart ? _("yes") : _("no");
+        if (optTable) {
+            if (virNetworkGetAutostart(network, &is_autostart) < 0)
+                autostartStr = _("no autostart");
+            else
+                autostartStr = is_autostart ? _("yes") : _("no");
 
-        vshPrint(ctl, " %-20s %-10s %-13s %s\n",
-                 virNetworkGetName(network),
-                 virNetworkIsActive(network) ? _("active") : _("inactive"),
-                 autostartStr,
-                 virNetworkIsPersistent(network) ? _("yes") : _("no"));
+            vshPrint(ctl, " %-20s %-10s %-13s %s\n",
+                     virNetworkGetName(network),
+                     virNetworkIsActive(network) ? _("active") : _("inactive"),
+                     autostartStr,
+                     virNetworkIsPersistent(network) ? _("yes") : _("no"));
+        } else if (optUUID) {
+            if (virNetworkGetUUIDString(network, uuid) < 0) {
+                vshError(ctl, "%s", _("Failed to get network's UUID"));
+                goto cleanup;
+            }
+            vshPrint(ctl, "%s\n", uuid);
+        } else if (optName) {
+            vshPrint(ctl, "%s\n", virNetworkGetName(network));
+        }
     }
 
+    ret = true;
+ cleanup:
     vshNetworkListFree(list);
-    return true;
+    return ret;
 }
 #undef FILTER
 
