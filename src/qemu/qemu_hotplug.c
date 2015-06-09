@@ -680,7 +680,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
 
 
 static int
-qemuDomainAttachUSBMassstorageDevice(virConnectPtr conn,
+qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
                                      virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk)
@@ -823,7 +823,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                _("disk device='lun' is not supported for usb bus"));
                 break;
             }
-            ret = qemuDomainAttachUSBMassstorageDevice(conn, driver, vm,
+            ret = qemuDomainAttachUSBMassStorageDevice(conn, driver, vm,
                                                        disk);
         } else if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
             ret = qemuDomainAttachVirtioDiskDevice(conn, driver, vm, disk);
