@@ -1,7 +1,7 @@
 /*
  * domain_addr.c: helper APIs for managing domain device addresses
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -42,16 +42,21 @@ virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
 {
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
-    virDomainPCIConnectFlags flagsMatchMask = VIR_PCI_CONNECT_TYPES_MASK;
 
-    if (fromConfig)
-       flagsMatchMask |= VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG;
+    if (fromConfig) {
+        /* If the requested connection was manually specified in
+         * config, allow a PCI device to connect to a PCIe slot, or
+         * vice versa.
+         */
+        if (busFlags & VIR_PCI_CONNECT_TYPES_ENDPOINT)
+            busFlags |= VIR_PCI_CONNECT_TYPES_ENDPOINT;
+    }
 
     /* If this bus doesn't allow the type of connection (PCI
      * vs. PCIe) required by the device, or if the device requires
      * hot-plug and this bus doesn't have it, return false.
      */
-    if (!(devFlags & busFlags & flagsMatchMask)) {
+    if (!(devFlags & busFlags & VIR_PCI_CONNECT_TYPES_MASK)) {
         if (reportError) {
             if (devFlags & VIR_PCI_CONNECT_TYPE_PCI) {
                 virReportError(errType,
@@ -174,8 +179,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
          * specified in user config *and* the particular device being
          * attached also allows it
          */
-        bus->flags = (VIR_PCI_CONNECT_TYPE_PCIE |
-                      VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE;
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;

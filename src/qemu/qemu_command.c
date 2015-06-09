@@ -1621,8 +1621,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
-              flags = (VIR_PCI_CONNECT_TYPE_PCI |
-                       VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+              flags = VIR_PCI_CONNECT_TYPE_PCI;
               break;
            case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
               /* should this be PCIE-only? Or do we need to allow PCI
@@ -1643,8 +1642,7 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         switch (device->data.sound->model) {
         case VIR_DOMAIN_SOUND_MODEL_ICH6:
         case VIR_DOMAIN_SOUND_MODEL_ICH9:
-            flags = (VIR_PCI_CONNECT_TYPE_PCI |
-                     VIR_PCI_CONNECT_TYPE_EITHER_IF_CONFIG);
+            flags = VIR_PCI_CONNECT_TYPE_PCI;
             break;
         }
         break;

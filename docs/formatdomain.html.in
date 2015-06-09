@@ -3060,17 +3060,21 @@
       bus (for example, the machine types based on the Q35 chipset),
       the pcie-root controller with index=0 is auto-added to the
       domain's configuration. pcie-root has also no address, provides
-      31 slots (numbered 1-31) and can only be used to attach PCIe
-      devices. In order to connect standard PCI devices on a system
-      which has a pcie-root controller, a pci controller
+      31 slots (numbered 1-31) that can be used to attach PCIe or PCI
+      devices (although libvirt will never auto-assign a PCI device to
+      a PCIe slot, it will allow manual specification of such an
+      assignment). Devices connected to pcie-root cannot be
+      hotplugged. In order to make standard PCI slots available on a
+      system which has a pcie-root controller, a pci controller
       with <code>model='dmi-to-pci-bridge'</code> is automatically
-      added. A dmi-to-pci-bridge controller plugs into a PCIe slot (as
-      provided by pcie-root), and itself provides 31 standard PCI
-      slots (which are not hot-pluggable). In order to have
+      added, usually at the defacto standard location of slot=0x1e. A
+      dmi-to-pci-bridge controller plugs into a PCIe slot (as provided
+      by pcie-root), and itself provides 31 standard PCI slots (which
+      also do not support device hotplug). In order to have
       hot-pluggable PCI slots in the guest system, a pci-bridge
       controller will also be automatically created and connected to
       one of the slots of the auto-created dmi-to-pci-bridge
-      controller; all guest devices with PCI addresses that are
+      controller; all guest PCI devices with addresses that are
       auto-determined by libvirt will be placed on this pci-bridge
       device.  (<span class="since">since 1.1.2</span>).
     </p>
