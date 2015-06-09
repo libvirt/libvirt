@@ -12411,6 +12411,15 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
 
     VSH_EXCLUSIVE_OPTIONS_VAR(eject, block);
 
+    if (vshCommandOptStringReq(ctl, cmd, "source", &source) < 0)
+        return false;
+
+    /* Docs state that update without source is eject */
+    if (update && !source) {
+        update = false;
+        eject = true;
+    }
+
     if (eject) {
         update_type = VSH_UPDATE_DISK_XML_EJECT;
         action = "eject";
@@ -12443,9 +12452,6 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
-        goto cleanup;
-
-    if (vshCommandOptStringReq(ctl, cmd, "source", &source) < 0)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG)
