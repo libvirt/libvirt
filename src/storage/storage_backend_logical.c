@@ -862,7 +862,8 @@ virStorageBackendLogicalVolWipe(virConnectPtr conn,
      * unsupported.
      */
     virReportError(VIR_ERR_NO_SUPPORT,
-                   _("logical volue '%s' is sparse, volume wipe not supported"),
+                   _("logical volume '%s' is sparse, volume wipe "
+                     "not supported"),
                    vol->target.path);
     return -1;
 }
