@@ -2511,6 +2511,9 @@
       <dd>If present, this specify serial number of virtual hard drive.
           For example, it may look
           like <code>&lt;serial&gt;WD-WMAP9A966149&lt;/serial&gt;</code>.
+          Not supported for scsi-block devices, that is those using
+          disk <code>type</code> 'block' using <code>device</code> 'lun'
+          on <code>bus</code> 'scsi'.
           <span class="since">Since 0.7.1</span>
       </dd>
       <dt><code>wwn</code></dt>

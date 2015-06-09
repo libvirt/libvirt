@@ -3731,6 +3731,13 @@ qemuBuildDriveStr(virConnectPtr conn,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
         if (qemuSafeSerialParamValue(disk->serial) < 0)
             goto error;
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("scsi-block 'lun' devices do not support the "
+                             "serial property"));
+            goto error;
+        }
         virBufferAddLit(&opt, ",serial=");
         virBufferEscape(&opt, '\\', " ", "%s", disk->serial);
     }
