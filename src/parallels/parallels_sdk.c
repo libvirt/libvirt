@@ -501,9 +501,9 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
         goto cleanup;
 
     /* Let physical devices added to CT look like SATA disks */
-    if (isCt)
+    if (isCt) {
         ifType = PMS_SATA_DEVICE;
-    else {
+    } else {
         pret = PrlVmDev_GetIfaceType(prldisk, &ifType);
         prlsdkCheckRetGoto(pret, cleanup);
     }

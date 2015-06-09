@@ -1252,13 +1252,13 @@ parallelsDomainBlockStats(virDomainPtr domain, const char *path,
             if (prlsdkGetBlockStats(dom, dom->def->disks[i], &s) < 0)
                 goto cleanup;
 
-#define     PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
-            if (s.VAR != -1)                            \
-                stats->VAR += s.VAR;
+#define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
+        if (s.VAR != -1)                            \
+           stats->VAR += s.VAR;
 
             PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_SUM_STATS)
 
-#undef      PARALLELS_SUM_STATS
+#undef PARALLELS_SUM_STATS
         }
     }
     stats->errs = -1;
