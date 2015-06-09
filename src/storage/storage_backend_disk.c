@@ -851,6 +851,24 @@ virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
 }
 
 
+static int
+virStorageBackendDiskVolWipe(virConnectPtr conn,
+                             virStoragePoolObjPtr pool,
+                             virStorageVolDefPtr vol,
+                             unsigned int algorithm,
+                             unsigned int flags)
+{
+    if (vol->source.partType != VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
+        return virStorageBackendVolWipeLocal(conn, pool, vol, algorithm, flags);
+
+    /* Wiping an extended partition is not support */
+    virReportError(VIR_ERR_NO_SUPPORT,
+                   _("cannot wipe extended partition '%s'"),
+                   vol->target.path);
+    return -1;
+}
+
+
 virStorageBackend virStorageBackendDisk = {
     .type = VIR_STORAGE_POOL_DISK,
 
@@ -862,5 +880,5 @@ virStorageBackend virStorageBackendDisk = {
     .buildVolFrom = virStorageBackendDiskBuildVolFrom,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
-    .wipeVol = virStorageBackendVolWipeLocal,
+    .wipeVol = virStorageBackendDiskVolWipe,
 };
