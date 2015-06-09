@@ -74,11 +74,22 @@ struct _parallelsConn {
 typedef struct _parallelsConn parallelsConn;
 typedef struct _parallelsConn *parallelsConnPtr;
 
+struct _parallelsCountersCache {
+    PRL_HANDLE stats;
+    virCond cond;
+    // -1 - unsubscribed
+    // > -1 - subscribed
+    int count;
+};
+
+typedef struct _parallelsCountersCache parallelsCountersCache;
+
 struct parallelsDomObj {
     int id;
     char *uuid;
     char *home;
     PRL_HANDLE sdkdom;
+    parallelsCountersCache cache;
 };
 
 typedef struct parallelsDomObj *parallelsDomObjPtr;
@@ -92,6 +103,7 @@ int parallelsNetworkClose(virConnectPtr conn);
 extern virNetworkDriver parallelsNetworkDriver;
 
 virDomainObjPtr parallelsDomObjFromDomain(virDomainPtr domain);
+virDomainObjPtr parallelsDomObjFromDomainRef(virDomainPtr domain);
 
 virJSONValuePtr parallelsParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
@@ -106,5 +118,11 @@ virStorageVolPtr parallelsStorageVolLookupByPathLocked(virConnectPtr conn,
                                                        const char *path);
 int parallelsStorageVolDefRemove(virStoragePoolObjPtr privpool,
                                  virStorageVolDefPtr privvol);
+
+#define PARALLELS_BLOCK_STATS_FOREACH(OP)                                   \
+            OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")    \
+            OP(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES, "read_total")   \
+            OP(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ, "write_requests")  \
+            OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
 
 #endif

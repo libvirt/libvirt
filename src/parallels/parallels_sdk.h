@@ -64,3 +64,5 @@ int
 prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
 int
 prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
+int
+prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);

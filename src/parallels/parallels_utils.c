@@ -64,6 +64,34 @@ parallelsDomObjFromDomain(virDomainPtr domain)
 
 }
 
+/**
+ * parallelsDomObjFromDomainRef:
+ * @domain: Domain pointer that has to be looked up
+ *
+ * This function looks up @domain and returns the appropriate virDomainObjPtr
+ * that has to be released by calling virDomainObjEndAPI().
+ *
+ * Returns the domain object with incremented reference counter which is locked
+ * on success, NULL otherwise.
+ */
+virDomainObjPtr
+parallelsDomObjFromDomainRef(virDomainPtr domain)
+{
+    virDomainObjPtr vm;
+    parallelsConnPtr privconn = domain->conn->privateData;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    vm = virDomainObjListFindByUUIDRef(privconn->domains, domain->uuid);
+    if (!vm) {
+        virUUIDFormat(domain->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, domain->name);
+        return NULL;
+    }
+
+    return vm;
+}
 
 static int
 parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)

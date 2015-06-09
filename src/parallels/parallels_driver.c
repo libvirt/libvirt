@@ -51,6 +51,7 @@
 #include "nodeinfo.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
+#include "virtypedparam.h"
 
 #include "parallels_driver.h"
 #include "parallels_utils.h"
@@ -1218,6 +1219,109 @@ parallelsDomainGetMaxMemory(virDomainPtr domain)
     return ret;
 }
 
+static int
+parallelsDomainBlockStats(virDomainPtr domain, const char *path,
+                     virDomainBlockStatsPtr stats)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+    size_t i;
+    int idx;
+
+    if (!(dom = parallelsDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (*path) {
+        if ((idx = virDomainDiskIndexByName(dom->def, path, false)) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
+            goto cleanup;
+        }
+        if (prlsdkGetBlockStats(dom, dom->def->disks[idx], stats) < 0)
+            goto cleanup;
+    } else {
+        virDomainBlockStatsStruct s;
+
+#define PARALLELS_ZERO_STATS(VAR, TYPE, NAME)           \
+        stats->VAR = 0;
+
+        PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_ZERO_STATS)
+
+#undef PARALLELS_ZERO_STATS
+
+        for (i = 0; i < dom->def->ndisks; i++) {
+            if (prlsdkGetBlockStats(dom, dom->def->disks[i], &s) < 0)
+                goto cleanup;
+
+#define     PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
+            if (s.VAR != -1)                            \
+                stats->VAR += s.VAR;
+
+            PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_SUM_STATS)
+
+#undef      PARALLELS_SUM_STATS
+        }
+    }
+    stats->errs = -1;
+    ret = 0;
+
+ cleanup:
+    if (dom)
+        virDomainObjEndAPI(&dom);
+
+    return ret;
+}
+
+static int
+parallelsDomainBlockStatsFlags(virDomainPtr domain,
+                          const char *path,
+                          virTypedParameterPtr params,
+                          int *nparams,
+                          unsigned int flags)
+{
+    virDomainBlockStatsStruct stats;
+    int ret = -1;
+    size_t i;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+    /* We don't return strings, and thus trivially support this flag.  */
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (parallelsDomainBlockStats(domain, path, &stats) < 0)
+        goto cleanup;
+
+    if (*nparams == 0) {
+#define PARALLELS_COUNT_STATS(VAR, TYPE, NAME)       \
+        if ((stats.VAR) != -1)                       \
+            ++*nparams;
+
+        PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_COUNT_STATS)
+
+#undef PARALLELS_COUNT_STATS
+        ret = 0;
+        goto cleanup;
+    }
+
+    i = 0;
+#define PARALLELS_BLOCK_STATS_ASSIGN_PARAM(VAR, TYPE, NAME)                    \
+    if (i < *nparams && (stats.VAR) != -1) {                                   \
+        if (virTypedParameterAssign(params + i, TYPE,                          \
+                                    VIR_TYPED_PARAM_LLONG, (stats.VAR)) < 0)   \
+            goto cleanup;                                                      \
+        i++;                                                                   \
+    }
+
+    PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_BLOCK_STATS_ASSIGN_PARAM)
+
+#undef PARALLELS_BLOCK_STATS_ASSIGN_PARAM
+
+    *nparams = i;
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = parallelsConnectOpen,            /* 0.10.0 */
@@ -1267,6 +1371,8 @@ static virHypervisorDriver vzDriver = {
     .domainManagedSave = parallelsDomainManagedSave, /* 1.2.14 */
     .domainManagedSaveRemove = parallelsDomainManagedSaveRemove, /* 1.2.14 */
     .domainGetMaxMemory = parallelsDomainGetMaxMemory, /* 1.2.15 */
+    .domainBlockStats = parallelsDomainBlockStats, /* 1.2.17 */
+    .domainBlockStatsFlags = parallelsDomainBlockStatsFlags, /* 1.2.17 */
 };
 
 static virConnectDriver vzConnectDriver = {

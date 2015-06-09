@@ -21,6 +21,7 @@
  */
 
 #include <config.h>
+#include <stdarg.h>
 
 #include "virerror.h"
 #include "viralloc.h"
@@ -29,6 +30,7 @@
 #include "virlog.h"
 #include "datatypes.h"
 #include "domain_conf.h"
+#include "virtime.h"
 
 #include "parallels_sdk.h"
 
@@ -410,6 +412,8 @@ prlsdkDomObjFreePrivate(void *p)
         return;
 
     PrlHandle_Free(pdom->sdkdom);
+    PrlHandle_Free(pdom->cache.stats);
+    virCondDestroy(&pdom->cache.cond);
     VIR_FREE(pdom->uuid);
     VIR_FREE(pdom->home);
     VIR_FREE(p);
@@ -1267,6 +1271,13 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
      * to NULL temporarily */
     pdom->uuid = NULL;
 
+    pdom->cache.stats = PRL_INVALID_HANDLE;
+    pdom->cache.count = -1;
+    if (virCondInit(&pdom->cache.cond) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize condition"));
+        goto error;
+    }
+
     if (prlsdkGetDomainIds(sdkdom, &def->name, def->uuid) < 0)
         goto error;
 
@@ -1629,6 +1640,51 @@ prlsdkHandleVmRemovedEvent(parallelsConnPtr privconn,
     return;
 }
 
+#define PARALLELS_STATISTICS_DROP_COUNT 3
+
+static PRL_RESULT
+prlsdkHandlePerfEvent(parallelsConnPtr privconn,
+                           PRL_HANDLE event,
+                           unsigned char *uuid)
+{
+    virDomainObjPtr dom = NULL;
+    parallelsDomObjPtr privdom = NULL;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    dom = virDomainObjListFindByUUID(privconn->domains, uuid);
+    if (dom == NULL)
+        goto cleanup;
+    privdom = dom->privateData;
+
+    // delayed event after unsubscribe
+    if (privdom->cache.count == -1)
+        goto cleanup;
+
+    PrlHandle_Free(privdom->cache.stats);
+    privdom->cache.stats = PRL_INVALID_HANDLE;
+
+    if (privdom->cache.count > PARALLELS_STATISTICS_DROP_COUNT) {
+        job = PrlVm_UnsubscribeFromPerfStats(privdom->sdkdom);
+        if (PRL_FAILED(waitJob(job)))
+            goto cleanup;
+        // change state to unsubscribed
+        privdom->cache.count = -1;
+    } else {
+        ++privdom->cache.count;
+        privdom->cache.stats = event;
+        // thus we get own of event handle
+        event = PRL_INVALID_HANDLE;
+        virCondSignal(&privdom->cache.cond);
+    }
+
+ cleanup:
+    PrlHandle_Free(event);
+    if (dom)
+        virObjectUnlock(dom);
+
+    return PRL_ERR_SUCCESS;
+}
+
 static void
 prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
 {
@@ -1639,13 +1695,13 @@ prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
     PRL_EVENT_TYPE prlEventType;
 
     pret = PrlEvent_GetType(prlEvent, &prlEventType);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetGoto(pret, cleanup);
 
     pret = PrlEvent_GetIssuerId(prlEvent, uuidstr, &bufsize);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetGoto(pret, cleanup);
 
     if (prlsdkUUIDParse(uuidstr, uuid) < 0)
-        return;
+        goto cleanup;
 
     switch (prlEventType) {
         case PET_DSP_EVT_VM_STATE_CHANGED:
@@ -1662,12 +1718,18 @@ prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
         case PET_DSP_EVT_VM_UNREGISTERED:
             prlsdkHandleVmRemovedEvent(privconn, uuid);
             break;
+        case PET_DSP_EVT_VM_PERFSTATS:
+            prlsdkHandlePerfEvent(privconn, prlEvent, uuid);
+            // above function takes own of event
+            prlEvent = PRL_INVALID_HANDLE;
+            break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Can't handle event of type %d"), prlEventType);
     }
 
- error:
+ cleanup:
+    PrlHandle_Free(prlEvent);
     return;
 }
 
@@ -1695,6 +1757,8 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
     switch (prlIssuerType) {
         case PIE_VIRTUAL_MACHINE:
             prlsdkHandleVmEvent(privconn, prlEvent);
+            // above function takes own of event
+            prlEvent = PRL_INVALID_HANDLE;
             break;
         default:
             VIR_DEBUG("Skipping event of issuer type %d", prlIssuerType);
@@ -1704,6 +1768,7 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
     PrlHandle_Free(prlEvent);
     return PRL_ERR_SUCCESS;
 }
+
 
 int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn)
 {
@@ -3441,4 +3506,131 @@ prlsdkDomainManagedSaveRemove(virDomainObjPtr dom)
         return -1;
 
     return 0;
+}
+
+static int
+prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
+{
+    PRL_HANDLE param = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
+    PRL_INT64 pval = 0;
+    int ret = -1;
+
+    pret = PrlEvent_GetParamByName(sdkstats, name, &param);
+    if (pret == PRL_ERR_NO_DATA) {
+        *val = -1;
+        ret = 0;
+        goto cleanup;
+    } else if (PRL_FAILED(pret)) {
+        logPrlError(pret);
+        goto cleanup;
+    }
+    pret = PrlEvtPrm_ToInt64(param, &pval);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    *val = pval;
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(param);
+    return ret;
+}
+
+#define PARALLELS_STATISTICS_TIMEOUT (60 * 1000)
+
+static int
+prlsdkGetStatsParam(virDomainObjPtr dom, const char *name, long long *val)
+{
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    unsigned long long now;
+
+    if (privdom->cache.stats != PRL_INVALID_HANDLE) {
+        // reset count to keep subscribtion
+        privdom->cache.count = 0;
+        return prlsdkExtractStatsParam(privdom->cache.stats, name, val);
+    }
+
+    if (privdom->cache.count == -1) {
+        job = PrlVm_SubscribeToPerfStats(privdom->sdkdom, NULL);
+        if (PRL_FAILED(waitJob(job)))
+            goto error;
+    }
+
+    // change state to subscribed in case of unsubscribed
+    // or reset count so we stop unsubscribe attempts
+    privdom->cache.count = 0;
+
+    if (virTimeMillisNow(&now) < 0) {
+        virReportSystemError(errno, "%s", _("Unable to get current time"));
+        goto error;
+    }
+
+    while (privdom->cache.stats == PRL_INVALID_HANDLE) {
+        if (virCondWaitUntil(&privdom->cache.cond, &dom->parent.lock,
+                        now + PARALLELS_STATISTICS_TIMEOUT) < 0) {
+            if (errno == ETIMEDOUT) {
+                virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                               _("Timeout on waiting statistics event."));
+                goto error;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to wait on monitor condition"));
+                goto error;
+            }
+        }
+    }
+
+    return prlsdkExtractStatsParam(privdom->cache.stats, name, val);
+ error:
+    return -1;
+}
+
+int
+prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats)
+{
+    virDomainDeviceDriveAddressPtr address;
+    int idx;
+    const char *prefix;
+    int ret = -1;
+    char *name = NULL;
+
+    address = &disk->info.addr.drive;
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        prefix = "ide";
+        idx = address->bus * 2 + address->unit;
+        break;
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        prefix = "sata";
+        idx = address->unit;
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        prefix = "scsi";
+        idx = address->unit;
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unknown disk bus: %X"), disk->bus);
+        goto cleanup;
+    }
+
+
+#define PRLSDK_GET_STAT_PARAM(VAL, TYPE, NAME)                          \
+    if (virAsprintf(&name, "devices.%s%d.%s", prefix, idx, NAME) < 0)   \
+        goto cleanup;                                                   \
+    if (prlsdkGetStatsParam(dom, name, &stats->VAL) < 0)                \
+        goto cleanup;                                                   \
+    VIR_FREE(name);
+
+    PARALLELS_BLOCK_STATS_FOREACH(PRLSDK_GET_STAT_PARAM)
+
+#undef PRLSDK_GET_STAT_PARAM
+
+    ret = 0;
+
+ cleanup:
+
+    VIR_FREE(name);
+    return ret;
 }
