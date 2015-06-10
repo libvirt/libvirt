@@ -93,7 +93,7 @@
 # include "xenapi/xenapi_driver.h"
 #endif
 #ifdef WITH_PARALLELS
-# include "parallels/parallels_driver.h"
+# include "vz/vz_driver.h"
 #endif
 #ifdef WITH_BHYVE
 # include "bhyve/bhyve_driver.h"

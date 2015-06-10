@@ -558,7 +558,7 @@ DRIVER_SOURCE_FILES = \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(OPENVZ_DRIVER_SOURCES) \
-	$(PARALLELS_DRIVER_SOURCES) \
+	$(VZ_DRIVER_SOURCES) \
 	$(PHYP_DRIVER_SOURCES) \
 	$(QEMU_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
@@ -826,15 +826,15 @@ HYPERV_DRIVER_EXTRA_DIST =							\
 		hyperv/hyperv_wmi_generator.py					\
 		$(HYPERV_DRIVER_GENERATED)
 
-PARALLELS_DRIVER_SOURCES =					\
-		parallels/parallels_driver.h			\
-		parallels/parallels_driver.c			\
-		parallels/parallels_utils.c			\
-		parallels/parallels_utils.h			\
-		parallels/parallels_storage.c		\
-		parallels/parallels_network.c		\
-		parallels/parallels_sdk.h			\
-		parallels/parallels_sdk.c
+VZ_DRIVER_SOURCES =					\
+		vz/vz_driver.h			\
+		vz/vz_driver.c			\
+		vz/vz_utils.c			\
+		vz/vz_utils.h			\
+		vz/vz_storage.c		\
+		vz/vz_network.c		\
+		vz/vz_sdk.h			\
+		vz/vz_sdk.c
 
 BHYVE_DRIVER_SOURCES =						\
 		bhyve/bhyve_capabilities.c			\
@@ -1415,13 +1415,13 @@ libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
 endif WITH_HYPERV
 
 if WITH_PARALLELS
-noinst_LTLIBRARIES += libvirt_driver_parallels.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_parallels.la
-libvirt_driver_parallels_la_CFLAGS = \
+noinst_LTLIBRARIES += libvirt_driver_vz.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_vz.la
+libvirt_driver_vz_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS) \
 		$(PARALLELS_SDK_CFLAGS) $(LIBNL_CFLAGS)
-libvirt_driver_parallels_la_LIBADD = $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
-libvirt_driver_parallels_la_SOURCES = $(PARALLELS_DRIVER_SOURCES)
+libvirt_driver_vz_la_LIBADD = $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
+libvirt_driver_vz_la_SOURCES = $(VZ_DRIVER_SOURCES)
 endif WITH_PARALLELS
 
 if WITH_BHYVE
@@ -1787,7 +1787,7 @@ EXTRA_DIST +=							\
 		$(ESX_DRIVER_EXTRA_DIST)			\
 		$(HYPERV_DRIVER_SOURCES)			\
 		$(HYPERV_DRIVER_EXTRA_DIST)			\
-		$(PARALLELS_DRIVER_SOURCES)			\
+		$(VZ_DRIVER_SOURCES)				\
 		$(BHYVE_DRIVER_SOURCES)				\
 		$(NETWORK_DRIVER_SOURCES)			\
 		$(INTERFACE_DRIVER_SOURCES)			\

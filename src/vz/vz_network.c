@@ -1,5 +1,5 @@
 /*
- * parallels_network.c: core privconn functions for managing
+ * vz_network.c: core privconn functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2013-2014 Red Hat, Inc.
@@ -30,7 +30,7 @@
 #include "virfile.h"
 #include "virnetdev.h"
 #include "md5.h"
-#include "parallels_utils.h"
+#include "vz_utils.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS

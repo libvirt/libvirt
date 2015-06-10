@@ -1,5 +1,5 @@
 /*
- * parallels_sdk.c: core driver functions for managing
+ * vz_sdk.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2014 Parallels, Inc.
@@ -32,7 +32,7 @@
 #include "domain_conf.h"
 #include "virtime.h"
 
-#include "parallels_sdk.h"
+#include "vz_sdk.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define JOB_INFINIT_WAIT_TIMEOUT UINT_MAX

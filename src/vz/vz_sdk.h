@@ -1,5 +1,5 @@
 /*
- * parallels_sdk.h: core driver functions for managing
+ * vz_sdk.h: core driver functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2014 Parallels, Inc.
@@ -22,7 +22,7 @@
 
 #include <Parallels.h>
 
-#include "parallels_utils.h"
+#include "vz_utils.h"
 
 int prlsdkInit(void);
 void prlsdkDeinit(void);

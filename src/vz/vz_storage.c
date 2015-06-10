@@ -1,5 +1,5 @@
 /*
- * parallels_storage.c: core driver functions for managing
+ * vz_storage.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2013-2014 Red Hat, Inc.
@@ -37,7 +37,7 @@
 #include "virstoragefile.h"
 #include "virerror.h"
 #include "virfile.h"
-#include "parallels_utils.h"
+#include "vz_utils.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS

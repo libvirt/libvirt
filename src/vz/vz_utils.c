@@ -1,5 +1,5 @@
 /*
- * parallels_utils.c: core driver functions for managing
+ * vz_utils.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2012 Parallels, Inc.
@@ -28,7 +28,7 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virjson.h"
-#include "parallels_utils.h"
+#include "vz_utils.h"
 #include "virstring.h"
 #include "datatypes.h"
 

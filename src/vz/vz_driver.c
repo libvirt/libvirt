@@ -1,5 +1,5 @@
 /*
- * parallels_driver.c: core driver functions for managing
+ * vz_driver.c: core driver functions for managing
  * Parallels Cloud Server hosts
  *
  * Copyright (C) 2014-2015 Red Hat, Inc.
@@ -53,9 +53,9 @@
 #include "cpu/cpu.h"
 #include "virtypedparam.h"
 
-#include "parallels_driver.h"
-#include "parallels_utils.h"
-#include "parallels_sdk.h"
+#include "vz_driver.h"
+#include "vz_utils.h"
+#include "vz_sdk.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 
