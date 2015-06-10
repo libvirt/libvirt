@@ -1069,9 +1069,9 @@ qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
 
 
 /**
- * Search the qom objects for the balloon driver object by it's known name
- * of "virtio-balloon-pci".  The entry for the driver will be found by using
- * function "qemuMonitorFindObjectPath".
+ * Search the qom objects for the balloon driver object by its known names
+ * of "virtio-balloon-pci" or "virtio-balloon-ccw". The entry for the driver
+ * will be found by using function "qemuMonitorJSONFindLinkPath".
  *
  * Once found, check the entry to ensure it has the correct property listed.
  * If it does not, then obtaining statistics from QEMU will not be possible.
@@ -1081,6 +1081,7 @@ static void
 qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon)
 {
     ssize_t i, nprops = 0;
+    int flp_ret = 0;
     char *path = NULL;
     qemuMonitorJSONListPathPtr *bprops = NULL;
 
@@ -1093,8 +1094,14 @@ qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon)
     }
     mon->ballooninit = true;
 
-    if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", &path) < 0)
+    flp_ret = qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", &path);
+    if (flp_ret == -2) {
+        /* pci object was not found retry search for ccw object */
+        if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-ccw", &path) < 0)
+            return;
+    } else if (flp_ret < 0) {
         return;
+    }
 
     nprops = qemuMonitorJSONGetObjectListPaths(mon, path, &bprops);
     if (nprops < 0)
