@@ -434,7 +434,7 @@ virGlobalInit(void)
         goto error;
 # endif
 # ifdef WITH_PARALLELS
-    if (parallelsRegister() == -1)
+    if (vzRegister() == -1)
         goto error;
 # endif
 #endif

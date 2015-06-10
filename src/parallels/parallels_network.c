@@ -36,11 +36,11 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PARALLELS_ROUTED_NETWORK_UUID   "eb593dd1-6846-45b0-84a0-de0729286982"
 
-#define parallelsParseError()                                                  \
+#define vzParseError()                                                  \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
-static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj)
+static int vzGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj)
 {
     const char *ifname;
     char *bridgeLink = NULL;
@@ -51,7 +51,7 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
     int ret = -1;
 
     if (!(ifname = virJSONValueObjectGetString(jobj, "Bound To"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -100,7 +100,7 @@ static int parallelsGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj
     return ret;
 }
 
-static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
+static int vzGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
 {
     const char *tmp;
     virJSONValuePtr jobj = NULL, jobj2;
@@ -109,15 +109,15 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
     if (VIR_EXPAND_N(def->ips, def->nips, 1) < 0)
         goto cleanup;
 
-    jobj = parallelsParseOutput("prlsrvctl", "net", "info", "-j", name, NULL);
+    jobj = vzParseOutput("prlsrvctl", "net", "info", "-j", name, NULL);
 
     if (!jobj) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (!(jobj2 = virJSONValueObjectGet(jobj, "Parallels adapter"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -125,27 +125,27 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
         goto cleanup;
 
     if (!(tmp = virJSONValueObjectGetString(jobj2, "IP address"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (virSocketAddrParseIPv4(&def->ips[0].address, tmp) < 0) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (!(tmp = virJSONValueObjectGetString(jobj2, "Subnet mask"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (virSocketAddrParseIPv4(&def->ips[0].netmask, tmp) < 0) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (!(jobj2 = virJSONValueObjectGet(jobj, "DHCPv4 server"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -153,22 +153,22 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
         goto cleanup;
 
     if (!(tmp = virJSONValueObjectGetString(jobj2, "IP scope start address"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (virSocketAddrParseIPv4(&def->ips[0].ranges[0].start, tmp) < 0) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (!(tmp = virJSONValueObjectGetString(jobj2, "IP scope end address"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (virSocketAddrParseIPv4(&def->ips[0].ranges[0].end, tmp) < 0) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -179,7 +179,7 @@ static int parallelsGetHostOnlyNetInfo(virNetworkDefPtr def, const char *name)
 }
 
 static int
-parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
+vzLoadNetwork(vzConnPtr privconn, virJSONValuePtr jobj)
 {
     int ret = -1;
     virNetworkObjPtr net = NULL;
@@ -192,7 +192,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
         goto cleanup;
 
     if (!(tmp = virJSONValueObjectGetString(jobj, "Network ID"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -206,14 +206,14 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     def->uuid_specified = 1;
 
     if (!(tmp = virJSONValueObjectGetString(jobj, "Type"))) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     if (STREQ(tmp, PARALLELS_BRIDGED_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_BRIDGE;
 
-        if (parallelsGetBridgedNetInfo(def, jobj) < 0) {
+        if (vzGetBridgedNetInfo(def, jobj) < 0) {
 
             /* Only mandatory networks are required to be configured completely */
             if (STRNEQ(def->name, PARALLELS_REQUIRED_BRIDGED_NETWORK))
@@ -224,7 +224,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
     } else if (STREQ(tmp, PARALLELS_HOSTONLY_NETWORK_TYPE)) {
         def->forward.type = VIR_NETWORK_FORWARD_NONE;
 
-        if (parallelsGetHostOnlyNetInfo(def, def->name) < 0) {
+        if (vzGetHostOnlyNetInfo(def, def->name) < 0) {
 
             /* Only mandatory networks are required to be configured completely */
             if (STRNEQ(def->name, PARALLELS_REQUIRED_HOSTONLY_NETWORK))
@@ -233,7 +233,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
             goto cleanup;
         }
     } else {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
@@ -251,7 +251,7 @@ parallelsLoadNetwork(parallelsConnPtr privconn, virJSONValuePtr jobj)
 }
 
 static int
-parallelsAddRoutedNetwork(parallelsConnPtr privconn)
+vzAddRoutedNetwork(vzConnPtr privconn)
 {
     virNetworkObjPtr net = NULL;
     virNetworkDefPtr def;
@@ -285,38 +285,38 @@ parallelsAddRoutedNetwork(parallelsConnPtr privconn)
     return -1;
 }
 
-static int parallelsLoadNetworks(parallelsConnPtr privconn)
+static int vzLoadNetworks(vzConnPtr privconn)
 {
     virJSONValuePtr jobj, jobj2;
     int ret = -1;
     int count;
     size_t i;
 
-    jobj = parallelsParseOutput("prlsrvctl", "net", "list", "-j", NULL);
+    jobj = vzParseOutput("prlsrvctl", "net", "list", "-j", NULL);
 
     if (!jobj) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     count = virJSONValueArraySize(jobj);
     if (count < 0) {
-        parallelsParseError();
+        vzParseError();
         goto cleanup;
     }
 
     for (i = 0; i < count; i++) {
         jobj2 = virJSONValueArrayGet(jobj, i);
         if (!jobj2) {
-            parallelsParseError();
+            vzParseError();
             goto cleanup;
         }
 
-        if (parallelsLoadNetwork(privconn, jobj2) < 0)
+        if (vzLoadNetwork(privconn, jobj2) < 0)
             goto cleanup;
     }
 
-    if (parallelsAddRoutedNetwork(privconn) < 0)
+    if (vzAddRoutedNetwork(privconn) < 0)
         goto cleanup;
 
     ret = 0;
@@ -327,10 +327,10 @@ static int parallelsLoadNetworks(parallelsConnPtr privconn)
 }
 
 virDrvOpenStatus
-parallelsNetworkOpen(virConnectPtr conn,
+vzNetworkOpen(virConnectPtr conn,
                      unsigned int flags)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -341,7 +341,7 @@ parallelsNetworkOpen(virConnectPtr conn,
     if (!(privconn->networks = virNetworkObjListNew()))
         goto error;
 
-    if (parallelsLoadNetworks(conn->privateData) < 0)
+    if (vzLoadNetworks(conn->privateData) < 0)
         goto error;
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -351,9 +351,9 @@ parallelsNetworkOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_ERROR;
 }
 
-int parallelsNetworkClose(virConnectPtr conn)
+int vzNetworkClose(virConnectPtr conn)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
 
     if (!privconn)
         return 0;
@@ -362,21 +362,21 @@ int parallelsNetworkClose(virConnectPtr conn)
     return 0;
 }
 
-static int parallelsConnectNumOfNetworks(virConnectPtr conn)
+static int vzConnectNumOfNetworks(virConnectPtr conn)
 {
     int nactive;
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
 
     nactive = virNetworkObjListNumOfNetworks(privconn->networks,
                                              true, NULL, conn);
     return nactive;
 }
 
-static int parallelsConnectListNetworks(virConnectPtr conn,
+static int vzConnectListNetworks(virConnectPtr conn,
                                         char **const names,
                                         int nnames)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     int got;
 
     got = virNetworkObjListGetNames(privconn->networks,
@@ -384,21 +384,21 @@ static int parallelsConnectListNetworks(virConnectPtr conn,
     return got;
 }
 
-static int parallelsConnectNumOfDefinedNetworks(virConnectPtr conn)
+static int vzConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
     int ninactive;
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
 
     ninactive = virNetworkObjListNumOfNetworks(privconn->networks,
                                                false, NULL, conn);
     return ninactive;
 }
 
-static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
+static int vzConnectListDefinedNetworks(virConnectPtr conn,
                                                char **const names,
                                                int nnames)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     int got;
 
     got = virNetworkObjListGetNames(privconn->networks,
@@ -406,21 +406,21 @@ static int parallelsConnectListDefinedNetworks(virConnectPtr conn,
     return got;
 }
 
-static int parallelsConnectListAllNetworks(virConnectPtr conn,
+static int vzConnectListAllNetworks(virConnectPtr conn,
                                            virNetworkPtr **nets,
                                            unsigned int flags)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
     return virNetworkObjListExport(conn, privconn->networks, nets, NULL, flags);
 }
 
-static virNetworkPtr parallelsNetworkLookupByUUID(virConnectPtr conn,
+static virNetworkPtr vzNetworkLookupByUUID(virConnectPtr conn,
                                                   const unsigned char *uuid)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
@@ -438,10 +438,10 @@ static virNetworkPtr parallelsNetworkLookupByUUID(virConnectPtr conn,
     return ret;
 }
 
-static virNetworkPtr parallelsNetworkLookupByName(virConnectPtr conn,
+static virNetworkPtr vzNetworkLookupByName(virConnectPtr conn,
                                                   const char *name)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     virNetworkObjPtr network;
     virNetworkPtr ret = NULL;
 
@@ -459,10 +459,10 @@ static virNetworkPtr parallelsNetworkLookupByName(virConnectPtr conn,
     return ret;
 }
 
-static char *parallelsNetworkGetXMLDesc(virNetworkPtr net,
+static char *vzNetworkGetXMLDesc(virNetworkPtr net,
                                         unsigned int flags)
 {
-    parallelsConnPtr privconn = net->conn->privateData;
+    vzConnPtr privconn = net->conn->privateData;
     virNetworkObjPtr network;
     char *ret = NULL;
 
@@ -482,9 +482,9 @@ static char *parallelsNetworkGetXMLDesc(virNetworkPtr net,
     return ret;
 }
 
-static int parallelsNetworkIsActive(virNetworkPtr net)
+static int vzNetworkIsActive(virNetworkPtr net)
 {
-    parallelsConnPtr privconn = net->conn->privateData;
+    vzConnPtr privconn = net->conn->privateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -500,9 +500,9 @@ static int parallelsNetworkIsActive(virNetworkPtr net)
     return ret;
 }
 
-static int parallelsNetworkIsPersistent(virNetworkPtr net)
+static int vzNetworkIsPersistent(virNetworkPtr net)
 {
-    parallelsConnPtr privconn = net->conn->privateData;
+    vzConnPtr privconn = net->conn->privateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -518,10 +518,10 @@ static int parallelsNetworkIsPersistent(virNetworkPtr net)
     return ret;
 }
 
-static int parallelsNetworkGetAutostart(virNetworkPtr net,
+static int vzNetworkGetAutostart(virNetworkPtr net,
                                  int *autostart)
 {
-    parallelsConnPtr privconn = net->conn->privateData;
+    vzConnPtr privconn = net->conn->privateData;
     virNetworkObjPtr network;
     int ret = -1;
 
@@ -540,17 +540,17 @@ static int parallelsNetworkGetAutostart(virNetworkPtr net,
     return ret;
 }
 
-virNetworkDriver parallelsNetworkDriver = {
+virNetworkDriver vzNetworkDriver = {
     .name = "Parallels",
-    .connectNumOfNetworks = parallelsConnectNumOfNetworks, /* 1.0.1 */
-    .connectListNetworks = parallelsConnectListNetworks, /* 1.0.1 */
-    .connectNumOfDefinedNetworks = parallelsConnectNumOfDefinedNetworks, /* 1.0.1 */
-    .connectListDefinedNetworks = parallelsConnectListDefinedNetworks, /* 1.0.1 */
-    .connectListAllNetworks = parallelsConnectListAllNetworks, /* 1.0.1 */
-    .networkLookupByUUID = parallelsNetworkLookupByUUID, /* 1.0.1 */
-    .networkLookupByName = parallelsNetworkLookupByName, /* 1.0.1 */
-    .networkGetXMLDesc = parallelsNetworkGetXMLDesc, /* 1.0.1 */
-    .networkGetAutostart = parallelsNetworkGetAutostart, /* 1.0.1 */
-    .networkIsActive = parallelsNetworkIsActive, /* 1.0.1 */
-    .networkIsPersistent = parallelsNetworkIsPersistent, /* 1.0.1 */
+    .connectNumOfNetworks = vzConnectNumOfNetworks, /* 1.0.1 */
+    .connectListNetworks = vzConnectListNetworks, /* 1.0.1 */
+    .connectNumOfDefinedNetworks = vzConnectNumOfDefinedNetworks, /* 1.0.1 */
+    .connectListDefinedNetworks = vzConnectListDefinedNetworks, /* 1.0.1 */
+    .connectListAllNetworks = vzConnectListAllNetworks, /* 1.0.1 */
+    .networkLookupByUUID = vzNetworkLookupByUUID, /* 1.0.1 */
+    .networkLookupByName = vzNetworkLookupByName, /* 1.0.1 */
+    .networkGetXMLDesc = vzNetworkGetXMLDesc, /* 1.0.1 */
+    .networkGetAutostart = vzNetworkGetAutostart, /* 1.0.1 */
+    .networkIsActive = vzNetworkIsActive, /* 1.0.1 */
+    .networkIsPersistent = vzNetworkIsPersistent, /* 1.0.1 */
 };

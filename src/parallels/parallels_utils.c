@@ -35,7 +35,7 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 
 /**
- * parallelsDomObjFromDomain:
+ * vzDomObjFromDomain:
  * @domain: Domain pointer that has to be looked up
  *
  * This function looks up @domain and returns the appropriate virDomainObjPtr
@@ -45,10 +45,10 @@
  * on success, NULL otherwise.
  */
 virDomainObjPtr
-parallelsDomObjFromDomain(virDomainPtr domain)
+vzDomObjFromDomain(virDomainPtr domain)
 {
     virDomainObjPtr vm;
-    parallelsConnPtr privconn = domain->conn->privateData;
+    vzConnPtr privconn = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     vm = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
@@ -65,7 +65,7 @@ parallelsDomObjFromDomain(virDomainPtr domain)
 }
 
 /**
- * parallelsDomObjFromDomainRef:
+ * vzDomObjFromDomainRef:
  * @domain: Domain pointer that has to be looked up
  *
  * This function looks up @domain and returns the appropriate virDomainObjPtr
@@ -75,10 +75,10 @@ parallelsDomObjFromDomain(virDomainPtr domain)
  * on success, NULL otherwise.
  */
 virDomainObjPtr
-parallelsDomObjFromDomainRef(virDomainPtr domain)
+vzDomObjFromDomainRef(virDomainPtr domain)
 {
     virDomainObjPtr vm;
-    parallelsConnPtr privconn = domain->conn->privateData;
+    vzConnPtr privconn = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     vm = virDomainObjListFindByUUIDRef(privconn->domains, domain->uuid);
@@ -94,7 +94,7 @@ parallelsDomObjFromDomainRef(virDomainPtr domain)
 }
 
 static int
-parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
+vzDoCmdRun(char **outbuf, const char *binary, va_list list)
 {
     virCommandPtr cmd = virCommandNewVAList(binary, list);
     int ret = -1;
@@ -119,7 +119,7 @@ parallelsDoCmdRun(char **outbuf, const char *binary, va_list list)
  * pointer to virJSONValue or NULL in case of error.
  */
 virJSONValuePtr
-parallelsParseOutput(const char *binary, ...)
+vzParseOutput(const char *binary, ...)
 {
     char *outbuf;
     virJSONValuePtr jobj = NULL;
@@ -127,7 +127,7 @@ parallelsParseOutput(const char *binary, ...)
     int ret;
 
     va_start(list, binary);
-    ret = parallelsDoCmdRun(&outbuf, binary, list);
+    ret = vzDoCmdRun(&outbuf, binary, list);
     va_end(list);
     if (ret)
         return NULL;
@@ -147,14 +147,14 @@ parallelsParseOutput(const char *binary, ...)
  * for freeing the buffer.
  */
 char *
-parallelsGetOutput(const char *binary, ...)
+vzGetOutput(const char *binary, ...)
 {
     char *outbuf;
     va_list list;
     int ret;
 
     va_start(list, binary);
-    ret = parallelsDoCmdRun(&outbuf, binary, list);
+    ret = vzDoCmdRun(&outbuf, binary, list);
     va_end(list);
     if (ret)
         return NULL;
@@ -168,13 +168,13 @@ parallelsGetOutput(const char *binary, ...)
  * Return value is 0 in case of success, else - -1
  */
 int
-parallelsCmdRun(const char *binary, ...)
+vzCmdRun(const char *binary, ...)
 {
     int ret;
     va_list list;
 
     va_start(list, binary);
-    ret = parallelsDoCmdRun(NULL, binary, list);
+    ret = vzDoCmdRun(NULL, binary, list);
     va_end(list);
 
     return ret;
@@ -185,7 +185,7 @@ parallelsCmdRun(const char *binary, ...)
  * concatenating first and second function arguments.
  */
 char *
-parallelsAddFileExt(const char *path, const char *ext)
+vzAddFileExt(const char *path, const char *ext)
 {
     char *new_path = NULL;
     size_t len = strlen(path) + strlen(ext) + 1;

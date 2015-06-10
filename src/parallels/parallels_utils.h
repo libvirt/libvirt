@@ -33,13 +33,13 @@
 # include "virthread.h"
 # include "virjson.h"
 
-# define parallelsParseError()                                                 \
+# define vzParseError()                                                 \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
                      __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
 # define IS_CT(def)  (def->os.type == VIR_DOMAIN_OSTYPE_EXE)
 
-# define parallelsDomNotFoundError(domain)                               \
+# define vzDomNotFoundError(domain)                               \
     do {                                                                 \
         char uuidstr[VIR_UUID_STRING_BUFLEN];                            \
         virUUIDFormat(domain->uuid, uuidstr);                            \
@@ -55,7 +55,7 @@
 # define PARALLELS_REQUIRED_BRIDGED_NETWORK  "Bridged"
 # define PARALLELS_BRIDGED_NETWORK_TYPE  "bridged"
 
-struct _parallelsConn {
+struct _vzConn {
     virMutex lock;
 
     /* Immutable pointer, self-locking APIs */
@@ -71,10 +71,10 @@ struct _parallelsConn {
     const char *drivername;
 };
 
-typedef struct _parallelsConn parallelsConn;
-typedef struct _parallelsConn *parallelsConnPtr;
+typedef struct _vzConn vzConn;
+typedef struct _vzConn *vzConnPtr;
 
-struct _parallelsCountersCache {
+struct _vzCountersCache {
     PRL_HANDLE stats;
     virCond cond;
     // -1 - unsubscribed
@@ -82,41 +82,41 @@ struct _parallelsCountersCache {
     int count;
 };
 
-typedef struct _parallelsCountersCache parallelsCountersCache;
+typedef struct _vzCountersCache vzCountersCache;
 
-struct parallelsDomObj {
+struct vzDomObj {
     int id;
     char *uuid;
     char *home;
     PRL_HANDLE sdkdom;
-    parallelsCountersCache cache;
+    vzCountersCache cache;
 };
 
-typedef struct parallelsDomObj *parallelsDomObjPtr;
+typedef struct vzDomObj *vzDomObjPtr;
 
-virDrvOpenStatus parallelsStorageOpen(virConnectPtr conn, unsigned int flags);
-int parallelsStorageClose(virConnectPtr conn);
-extern virStorageDriver parallelsStorageDriver;
+virDrvOpenStatus vzStorageOpen(virConnectPtr conn, unsigned int flags);
+int vzStorageClose(virConnectPtr conn);
+extern virStorageDriver vzStorageDriver;
 
-virDrvOpenStatus parallelsNetworkOpen(virConnectPtr conn, unsigned int flags);
-int parallelsNetworkClose(virConnectPtr conn);
-extern virNetworkDriver parallelsNetworkDriver;
+virDrvOpenStatus vzNetworkOpen(virConnectPtr conn, unsigned int flags);
+int vzNetworkClose(virConnectPtr conn);
+extern virNetworkDriver vzNetworkDriver;
 
-virDomainObjPtr parallelsDomObjFromDomain(virDomainPtr domain);
-virDomainObjPtr parallelsDomObjFromDomainRef(virDomainPtr domain);
+virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
+virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
-virJSONValuePtr parallelsParseOutput(const char *binary, ...)
+virJSONValuePtr vzParseOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-char * parallelsGetOutput(const char *binary, ...)
+char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-int parallelsCmdRun(const char *binary, ...)
+int vzCmdRun(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-char * parallelsAddFileExt(const char *path, const char *ext);
-void parallelsDriverLock(parallelsConnPtr driver);
-void parallelsDriverUnlock(parallelsConnPtr driver);
-virStorageVolPtr parallelsStorageVolLookupByPathLocked(virConnectPtr conn,
+char * vzAddFileExt(const char *path, const char *ext);
+void vzDriverLock(vzConnPtr driver);
+void vzDriverUnlock(vzConnPtr driver);
+virStorageVolPtr vzStorageVolLookupByPathLocked(virConnectPtr conn,
                                                        const char *path);
-int parallelsStorageVolDefRemove(virStoragePoolObjPtr privpool,
+int vzStorageVolDefRemove(virStoragePoolObjPtr privpool,
                                  virStorageVolDefPtr privvol);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                                   \

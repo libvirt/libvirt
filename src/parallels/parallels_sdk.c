@@ -226,7 +226,7 @@ prlsdkDeinit(void)
 };
 
 int
-prlsdkConnect(parallelsConnPtr privconn)
+prlsdkConnect(vzConnPtr privconn)
 {
     PRL_RESULT ret;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
@@ -249,7 +249,7 @@ prlsdkConnect(parallelsConnPtr privconn)
 }
 
 void
-prlsdkDisconnect(parallelsConnPtr privconn)
+prlsdkDisconnect(vzConnPtr privconn)
 {
     PRL_HANDLE job;
 
@@ -260,7 +260,7 @@ prlsdkDisconnect(parallelsConnPtr privconn)
 }
 
 static int
-prlsdkSdkDomainLookup(parallelsConnPtr privconn,
+prlsdkSdkDomainLookup(vzConnPtr privconn,
                       const char *id,
                       unsigned int flags,
                       PRL_HANDLE *sdkdom)
@@ -295,7 +295,7 @@ prlsdkUUIDFormat(const unsigned char *uuid, char *uuidstr)
 }
 
 static PRL_HANDLE
-prlsdkSdkDomainLookupByUUID(parallelsConnPtr privconn, const unsigned char *uuid)
+prlsdkSdkDomainLookupByUUID(vzConnPtr privconn, const unsigned char *uuid)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
@@ -406,7 +406,7 @@ prlsdkGetDomainState(PRL_HANDLE sdkdom, VIRTUAL_MACHINE_STATE_PTR vmState)
 static void
 prlsdkDomObjFreePrivate(void *p)
 {
-    parallelsDomObjPtr pdom = p;
+    vzDomObjPtr pdom = p;
 
     if (!pdom)
         return;
@@ -1244,13 +1244,13 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDefPtr def)
  * The function return a pointer to a locked virDomainObj.
  */
 static virDomainObjPtr
-prlsdkLoadDomain(parallelsConnPtr privconn,
+prlsdkLoadDomain(vzConnPtr privconn,
                  PRL_HANDLE sdkdom,
                  virDomainObjPtr olddom)
 {
     virDomainObjPtr dom = NULL;
     virDomainDefPtr def = NULL;
-    parallelsDomObjPtr pdom = NULL;
+    vzDomObjPtr pdom = NULL;
     VIRTUAL_MACHINE_STATE domainState;
 
     PRL_UINT32 buflen = 0;
@@ -1428,7 +1428,7 @@ prlsdkLoadDomain(parallelsConnPtr privconn,
 }
 
 int
-prlsdkLoadDomains(parallelsConnPtr privconn)
+prlsdkLoadDomains(vzConnPtr privconn)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE result;
@@ -1472,7 +1472,7 @@ prlsdkLoadDomains(parallelsConnPtr privconn)
 }
 
 virDomainObjPtr
-prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid)
+prlsdkAddDomain(vzConnPtr privconn, const unsigned char *uuid)
 {
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     virDomainObjPtr dom;
@@ -1493,11 +1493,11 @@ prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid)
 }
 
 int
-prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
+prlsdkUpdateDomain(vzConnPtr privconn, virDomainObjPtr dom)
 {
     PRL_HANDLE job;
     virDomainObjPtr retdom = NULL;
-    parallelsDomObjPtr pdom = dom->privateData;
+    vzDomObjPtr pdom = dom->privateData;
 
     job = PrlVm_RefreshConfig(pdom->sdkdom);
     if (waitJob(job))
@@ -1507,7 +1507,7 @@ prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
     return retdom ? 0 : -1;
 }
 
-static int prlsdkSendEvent(parallelsConnPtr privconn,
+static int prlsdkSendEvent(vzConnPtr privconn,
                            virDomainObjPtr dom,
                            virDomainEventType lvEventType,
                            int lvEventTypeDetails)
@@ -1558,7 +1558,7 @@ prlsdkNewStateToEvent(VIRTUAL_MACHINE_STATE domainState,
 }
 
 static void
-prlsdkHandleVmStateEvent(parallelsConnPtr privconn,
+prlsdkHandleVmStateEvent(vzConnPtr privconn,
                          PRL_HANDLE prlEvent,
                          unsigned char *uuid)
 {
@@ -1566,7 +1566,7 @@ prlsdkHandleVmStateEvent(parallelsConnPtr privconn,
     PRL_HANDLE eventParam = PRL_INVALID_HANDLE;
     PRL_INT32 domainState;
     virDomainObjPtr dom = NULL;
-    parallelsDomObjPtr pdom;
+    vzDomObjPtr pdom;
     virDomainEventType lvEventType = 0;
     int lvEventTypeDetails = 0;
 
@@ -1596,7 +1596,7 @@ prlsdkHandleVmStateEvent(parallelsConnPtr privconn,
 }
 
 static void
-prlsdkHandleVmConfigEvent(parallelsConnPtr privconn,
+prlsdkHandleVmConfigEvent(vzConnPtr privconn,
                           unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
@@ -1617,7 +1617,7 @@ prlsdkHandleVmConfigEvent(parallelsConnPtr privconn,
 }
 
 static void
-prlsdkHandleVmAddedEvent(parallelsConnPtr privconn,
+prlsdkHandleVmAddedEvent(vzConnPtr privconn,
                        unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
@@ -1634,7 +1634,7 @@ prlsdkHandleVmAddedEvent(parallelsConnPtr privconn,
 }
 
 static void
-prlsdkHandleVmRemovedEvent(parallelsConnPtr privconn,
+prlsdkHandleVmRemovedEvent(vzConnPtr privconn,
                            unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
@@ -1655,12 +1655,12 @@ prlsdkHandleVmRemovedEvent(parallelsConnPtr privconn,
 #define PARALLELS_STATISTICS_DROP_COUNT 3
 
 static PRL_RESULT
-prlsdkHandlePerfEvent(parallelsConnPtr privconn,
+prlsdkHandlePerfEvent(vzConnPtr privconn,
                            PRL_HANDLE event,
                            unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
-    parallelsDomObjPtr privdom = NULL;
+    vzDomObjPtr privdom = NULL;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     dom = virDomainObjListFindByUUID(privconn->domains, uuid);
@@ -1698,7 +1698,7 @@ prlsdkHandlePerfEvent(parallelsConnPtr privconn,
 }
 
 static void
-prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
+prlsdkHandleVmEvent(vzConnPtr privconn, PRL_HANDLE prlEvent)
 {
     PRL_RESULT pret = PRL_ERR_FAILURE;
     char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
@@ -1748,7 +1748,7 @@ prlsdkHandleVmEvent(parallelsConnPtr privconn, PRL_HANDLE prlEvent)
 static PRL_RESULT
 prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
 {
-    parallelsConnPtr privconn = opaque;
+    vzConnPtr privconn = opaque;
     PRL_RESULT pret = PRL_ERR_FAILURE;
     PRL_HANDLE_TYPE handleType;
     PRL_EVENT_ISSUER_TYPE prlIssuerType = PIE_UNKNOWN;
@@ -1782,7 +1782,7 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
 }
 
 
-int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn)
+int prlsdkSubscribeToPCSEvents(vzConnPtr privconn)
 {
     PRL_RESULT pret = PRL_ERR_UNINITIALIZED;
 
@@ -1796,7 +1796,7 @@ int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn)
     return -1;
 }
 
-void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn)
+void prlsdkUnsubscribeFromPCSEvents(vzConnPtr privconn)
 {
     PRL_RESULT ret = PRL_ERR_UNINITIALIZED;
     ret = PrlSrv_UnregEventHandler(privconn->server,
@@ -1857,11 +1857,11 @@ PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom)
 }
 
 int
-prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
+prlsdkDomainChangeStateLocked(vzConnPtr privconn,
                               virDomainObjPtr dom,
                               prlsdkChangeStateFunc chstate)
 {
-    parallelsDomObjPtr pdom;
+    vzDomObjPtr pdom;
     PRL_RESULT pret;
     virErrorNumber virerr;
 
@@ -1890,11 +1890,11 @@ int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate)
 {
-    parallelsConnPtr privconn = domain->conn->privateData;
+    vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom;
     int ret = -1;
 
-    if (!(dom = parallelsDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
     ret = prlsdkDomainChangeStateLocked(privconn, dom, chstate);
@@ -2007,7 +2007,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    /* we fill only type and arch fields in parallelsLoadDomain for
+    /* we fill only type and arch fields in vzLoadDomain for
      * hvm type and also init for containers, so we can check that all
      * other paramenters are null and boot devices config is default */
 
@@ -2781,7 +2781,7 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
 }
 
 static int prlsdkAddNet(PRL_HANDLE sdkdom,
-                        parallelsConnPtr privconn,
+                        vzConnPtr privconn,
                         virDomainNetDefPtr net,
                         bool isCt)
 {
@@ -2885,7 +2885,7 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     return ret;
 }
 
-static void prlsdkDelNet(parallelsConnPtr privconn, virDomainNetDefPtr net)
+static void prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
 {
     PRL_RESULT pret;
     PRL_HANDLE vnet = PRL_INVALID_HANDLE;
@@ -3111,7 +3111,7 @@ int
 prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 {
     int ret = -1;
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
@@ -3181,7 +3181,7 @@ int
 prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 {
     int ret = -1, idx;
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     idx = prlsdkGetDiskIndex(privdom->sdkdom, disk);
@@ -3368,7 +3368,7 @@ prlsdkApplyConfig(virConnectPtr conn,
                   virDomainObjPtr dom,
                   virDomainDefPtr new)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     int ret;
@@ -3397,7 +3397,7 @@ prlsdkApplyConfig(virConnectPtr conn,
 int
 prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE result = PRL_INVALID_HANDLE;
@@ -3437,7 +3437,7 @@ prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def)
 int
 prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 {
-    parallelsConnPtr privconn = conn->privateData;
+    vzConnPtr privconn = conn->privateData;
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     PRL_GET_VM_CONFIG_PARAM_DATA confParam;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
@@ -3498,9 +3498,9 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 }
 
 int
-prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
+prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
 {
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
     size_t i;
 
@@ -3522,7 +3522,7 @@ prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom)
 int
 prlsdkDomainManagedSaveRemove(virDomainObjPtr dom)
 {
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
 
     job = PrlVm_DropSuspendedState(privdom->sdkdom);
@@ -3565,7 +3565,7 @@ prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
 static int
 prlsdkGetStatsParam(virDomainObjPtr dom, const char *name, long long *val)
 {
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     unsigned long long now;
 

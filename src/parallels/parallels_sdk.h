@@ -26,15 +26,15 @@
 
 int prlsdkInit(void);
 void prlsdkDeinit(void);
-int prlsdkConnect(parallelsConnPtr privconn);
-void prlsdkDisconnect(parallelsConnPtr privconn);
+int prlsdkConnect(vzConnPtr privconn);
+void prlsdkDisconnect(vzConnPtr privconn);
 int
-prlsdkLoadDomains(parallelsConnPtr privconn);
+prlsdkLoadDomains(vzConnPtr privconn);
 virDomainObjPtr
-prlsdkAddDomain(parallelsConnPtr privconn, const unsigned char *uuid);
-int prlsdkUpdateDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
-int prlsdkSubscribeToPCSEvents(parallelsConnPtr privconn);
-void prlsdkUnsubscribeFromPCSEvents(parallelsConnPtr privconn);
+prlsdkAddDomain(vzConnPtr privconn, const unsigned char *uuid);
+int prlsdkUpdateDomain(vzConnPtr privconn, virDomainObjPtr dom);
+int prlsdkSubscribeToPCSEvents(vzConnPtr privconn);
+void prlsdkUnsubscribeFromPCSEvents(vzConnPtr privconn);
 PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkKill(PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom);
@@ -47,7 +47,7 @@ int
 prlsdkDomainChangeState(virDomainPtr domain,
                         prlsdkChangeStateFunc chstate);
 int
-prlsdkDomainChangeStateLocked(parallelsConnPtr privconn,
+prlsdkDomainChangeStateLocked(vzConnPtr privconn,
                               virDomainObjPtr dom,
                               prlsdkChangeStateFunc chstate);
 int
@@ -57,7 +57,7 @@ prlsdkApplyConfig(virConnectPtr conn,
 int prlsdkCreateVm(virConnectPtr conn, virDomainDefPtr def);
 int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
 int
-prlsdkUnregisterDomain(parallelsConnPtr privconn, virDomainObjPtr dom);
+prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom);
 int
 prlsdkDomainManagedSaveRemove(virDomainObjPtr dom);
 int

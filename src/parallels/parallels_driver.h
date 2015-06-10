@@ -23,6 +23,6 @@
 #ifndef PARALLELS_DRIVER_H
 # define PARALLELS_DRIVER_H
 
-int parallelsRegister(void);
+int vzRegister(void);
 
 #endif
