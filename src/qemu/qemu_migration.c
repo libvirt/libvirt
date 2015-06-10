@@ -2524,7 +2524,8 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                qemuDomainAsyncJob asyncJob,
                                virConnectPtr dconn,
-                               bool abort_on_error)
+                               bool abort_on_error,
+                               bool storage)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
@@ -2554,6 +2555,10 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
         if (qemuMigrationUpdateJobStatus(driver, vm, job, asyncJob) == -1)
             goto error;
+
+        if (storage &&
+            qemuMigrationDriveMirrorReady(driver, vm) < 0)
+            break;
 
         /* cancel migration if disk I/O error is emitted while migrating */
         if (abort_on_error &&
@@ -4231,19 +4236,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     rc = qemuMigrationWaitForCompletion(driver, vm,
                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                        dconn, abort_on_error);
+                                        dconn, abort_on_error, !!mig->nbd);
     if (rc == -2)
         goto cancel;
     else if (rc == -1)
         goto cleanup;
-
-    /* Confirm state of drive mirrors */
-    if (mig->nbd) {
-        if (qemuMigrationDriveMirrorReady(driver, vm) != 1) {
-            ret = -1;
-            goto cancel;
-        }
-    }
 
     /* When migration completed, QEMU will have paused the
      * CPUs for us, but unless we're using the JSON monitor
@@ -5756,7 +5753,8 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (rc < 0)
         goto cleanup;
 
-    rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob, NULL, false);
+    rc = qemuMigrationWaitForCompletion(driver, vm, asyncJob,
+                                        NULL, false, false);
 
     if (rc < 0) {
         if (rc == -2) {
