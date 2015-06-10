@@ -50,6 +50,12 @@ virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
          */
         if (busFlags & VIR_PCI_CONNECT_TYPES_ENDPOINT)
             busFlags |= VIR_PCI_CONNECT_TYPES_ENDPOINT;
+        /* Also allow manual specification of bus to override
+         * libvirt's assumptions about whether or not hotplug
+         * capability will be required.
+         */
+        if (devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)
+            busFlags |= VIR_PCI_CONNECT_HOTPLUGGABLE;
     }
 
     /* If this bus doesn't allow the type of connection (PCI
