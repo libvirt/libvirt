@@ -92,7 +92,7 @@
 #ifdef WITH_XENAPI
 # include "xenapi/xenapi_driver.h"
 #endif
-#ifdef WITH_PARALLELS
+#ifdef WITH_VZ
 # include "vz/vz_driver.h"
 #endif
 #ifdef WITH_BHYVE
@@ -433,7 +433,7 @@ virGlobalInit(void)
     if (xenapiRegister() == -1)
         goto error;
 # endif
-# ifdef WITH_PARALLELS
+# ifdef WITH_VZ
     if (vzRegister() == -1)
         goto error;
 # endif
@@ -1164,7 +1164,7 @@ do_open(const char *name,
 #ifndef WITH_XENAPI
              STRCASEEQ(ret->uri->scheme, "xenapi") ||
 #endif
-#ifndef WITH_PARALLELS
+#ifndef WITH_VZ
              STRCASEEQ(ret->uri->scheme, "parallels") ||
 #endif
              false)) {

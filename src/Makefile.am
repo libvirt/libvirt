@@ -1414,7 +1414,7 @@ libvirt_driver_hyperv_la_LIBADD = $(OPENWSMAN_LIBS)
 libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
 endif WITH_HYPERV
 
-if WITH_PARALLELS
+if WITH_VZ
 noinst_LTLIBRARIES += libvirt_driver_vz.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_vz.la
 libvirt_driver_vz_la_CFLAGS = \
@@ -1422,7 +1422,7 @@ libvirt_driver_vz_la_CFLAGS = \
 		$(PARALLELS_SDK_CFLAGS) $(LIBNL_CFLAGS)
 libvirt_driver_vz_la_LIBADD = $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
 libvirt_driver_vz_la_SOURCES = $(VZ_DRIVER_SOURCES)
-endif WITH_PARALLELS
+endif WITH_VZ
 
 if WITH_BHYVE
 noinst_LTLIBRARIES += libvirt_driver_bhyve_impl.la

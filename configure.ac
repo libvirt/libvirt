@@ -562,10 +562,10 @@ AC_ARG_WITH([hyperv],
   [AS_HELP_STRING([--with-hyperv],
     [add Hyper-V support @<:@default=check@:>@])])
 m4_divert_text([DEFAULTS], [with_hyperv=check])
-AC_ARG_WITH([parallels],
-  [AS_HELP_STRING([--with-parallels],
-    [add Parallels Cloud Server support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_parallels=check])
+AC_ARG_WITH([vz],
+  [AS_HELP_STRING([--with-vz],
+    [add Virtuozzo support @<:@default=check@:>@])])
+m4_divert_text([DEFAULTS], [with_vz=check])
 AC_ARG_WITH([test],
   [AS_HELP_STRING([--with-test],
     [add test driver support @<:@default=yes@:>@])])
@@ -1082,22 +1082,22 @@ dnl Checks for the Parallels driver
 dnl
 
 
-if test "$with_parallels" = "yes" ||
-   test "$with_parallels" = "check"; then
+if test "$with_vz" = "yes" ||
+   test "$with_vz" = "check"; then
     PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk],
                       [PARALLELS_SDK_FOUND=yes], [PARALLELS_SDK_FOUND=no])
 
-    if test "$with_parallels" = "yes" && test "$PARALLELS_SDK_FOUND" = "no"; then
+    if test "$with_vz" = "yes" && test "$PARALLELS_SDK_FOUND" = "no"; then
         AC_MSG_ERROR([Parallels Virtualization SDK is needed to build the Parallels driver.])
     fi
 
-    with_parallels=$PARALLELS_SDK_FOUND
-    if test "$with_parallels" = "yes"; then
-        AC_DEFINE_UNQUOTED([WITH_PARALLELS], 1,
-                           [whether Parallels driver is enabled])
+    with_vz=$PARALLELS_SDK_FOUND
+    if test "$with_vz" = "yes"; then
+        AC_DEFINE_UNQUOTED([WITH_VZ], 1,
+                           [whether vz driver is enabled])
     fi
 fi
-AM_CONDITIONAL([WITH_PARALLELS], [test "$with_parallels" = "yes"])
+AM_CONDITIONAL([WITH_VZ], [test "$with_vz" = "yes"])
 
 dnl
 dnl Checks for bhyve driver
@@ -2833,7 +2833,7 @@ AC_MSG_NOTICE([      LXC: $with_lxc])
 AC_MSG_NOTICE([     PHYP: $with_phyp])
 AC_MSG_NOTICE([      ESX: $with_esx])
 AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
-AC_MSG_NOTICE([Parallels: $with_parallels])
+AC_MSG_NOTICE([       vz: $with_vz])
 LIBVIRT_DRIVER_RESULT_BHYVE
 AC_MSG_NOTICE([     Test: $with_test])
 AC_MSG_NOTICE([   Remote: $with_remote])
