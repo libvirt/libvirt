@@ -1837,6 +1837,10 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                             &info->addr.pci) < 0)
         VIR_WARN("Unable to release PCI address on %s",
                  NULLSTR(devstr));
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&
+        virDomainVirtioSerialAddrRelease(priv->vioserialaddrs, info) < 0)
+        VIR_WARN("Unable to release virtio-serial address on %s",
+                 NULLSTR(devstr));
 }
 
 
