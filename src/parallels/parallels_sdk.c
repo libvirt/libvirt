@@ -1912,21 +1912,21 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     if (def->title) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("titles are not supported by parallels driver"));
+                       _("titles are not supported by vz driver"));
         return -1;
     }
 
     if (def->blkio.ndevices > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("blkio parameters are not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
     if (virDomainDefGetMemoryActual(def) != def->mem.cur_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("changing balloon parameters is not supported "
-                     "by parallels driver"));
+                     "by vz driver"));
        return -1;
     }
 
@@ -1944,7 +1944,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Memory parameter is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -1957,7 +1957,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (def->placement_mode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing cpu placement mode is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -1967,7 +1967,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         def->cputune.quota) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cputune is not supported by parallels driver"));
+                       _("cputune is not supported by vz driver"));
         return -1;
     }
 
@@ -1993,7 +1993,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
          virDomainNumatuneHasPerNodeBinding(def->numa)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("numa parameters are not supported "
-                          "by parallels driver"));
+                          "by vz driver"));
         return -1;
     }
 
@@ -2003,7 +2003,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("on_reboot, on_poweroff and on_crash parameters "
-                         "are not supported by parallels driver"));
+                         "are not supported by vz driver"));
         return -1;
     }
 
@@ -2020,7 +2020,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing OS parameters is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2035,7 +2035,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing OS type is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2046,7 +2046,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing OS parameters is not supported "
-                             "by parallels driver"));
+                             "by vz driver"));
             return -1;
         }
     } else {
@@ -2056,7 +2056,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing OS parameters is not supported "
-                             "by parallels driver"));
+                             "by vz driver"));
             return -1;
         }
     }
@@ -2064,7 +2064,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (def->emulator) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing emulator is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2072,7 +2072,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         if (def->features[i]) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("changing features is not supported "
-                             "by parallels driver"));
+                             "by vz driver"));
             return -1;
         }
     }
@@ -2082,14 +2082,14 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing clock parameters is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
     if (!IS_CT(def) && def->nfss != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Filesystems in VMs are not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2100,7 +2100,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing devices parameters is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2114,7 +2114,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing input devices parameters is not supported "
-                         "by parallels driver"));
+                         "by vz driver"));
         return -1;
     }
 
@@ -2224,7 +2224,7 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
 
     if (def->ngraphics > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server supports only "
+                       _("vz driver supports only "
                          "one VNC per domain."));
         return -1;
     }
@@ -2233,35 +2233,35 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
 
     if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server supports only "
+                       _("vz driver supports only "
                          "VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.websocket != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "websockets for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.keymap != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "keymap setting for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.sharePolicy == VIR_DOMAIN_GRAPHICS_VNC_SHARE_ALLOW_EXCLUSIVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "exclusive share policy for VNC graphics."));
         return -1;
     }
 
     if (gr->data.vnc.socket) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "VNC graphics over unix sockets."));
         return -1;
     }
@@ -2269,21 +2269,21 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
     if (gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL ||
             gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "given action in case of password change."));
         return -1;
     }
 
     if (gr->data.vnc.auth.expires) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "setting password expire time."));
         return -1;
     }
 
     if (gr->nListens > 1) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Parallels driver doesn't support more than "
+                       _("vz driver doesn't support more than "
                          "one listening VNC server per domain"));
         return -1;
     }
@@ -2291,7 +2291,7 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
     if (gr->nListens == 1 &&
         virDomainGraphicsListenGetType(gr, 0) != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Parallels driver supports only address-based VNC listening"));
+                       _("vz driver supports only address-based VNC listening"));
         return -1;
     }
 
@@ -2314,7 +2314,7 @@ static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
     } else {
         if (def->nvideos != 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Parallels Cloud Server supports "
+                           _("vz driver supports "
                              "only one video adapter."));
             return -1;
         }
@@ -2324,21 +2324,21 @@ static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
 
     if (v->type != VIR_DOMAIN_VIDEO_TYPE_VGA) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server supports "
+                       _("vz driver supports "
                          "only VGA video adapters."));
         return -1;
     }
 
     if (v->heads != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "multihead video adapters."));
         return -1;
     }
 
     if (v->accel != NULL && (v->accel->support2d || v->accel->support3d)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "setting video acceleration parameters."));
         return -1;
     }
@@ -2351,14 +2351,14 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
     if (chr->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified character device type is not supported "
-                         "by parallels driver."));
+                         "by vz driver."));
         return -1;
     }
 
     if (chr->targetTypeAttr) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified character device target type is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2369,21 +2369,21 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified character device source type is not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting device info for character devices is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (chr->nseclabels > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting security labels is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2396,70 +2396,70 @@ static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
         net->type != VIR_DOMAIN_NET_TYPE_BRIDGE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified network adapter type is not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->backend.tap || net->backend.vhost) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface backend parameters are not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->data.network.portgroup) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Virtual network portgroups are not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->tune.sndbuf_specified) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting interface sndbuf is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->script) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting interface script is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->ifname_guest) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting guest interface name is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting device info for network devices is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->filter) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting network filter is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->bandwidth) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting network bandwidth is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (net->vlan.trunk) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting up vlans is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2473,7 +2473,7 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only hard disks and cdroms are supported "
-                         "by parallels driver."));
+                         "by vz driver."));
         return -1;
     }
 
@@ -2481,7 +2481,7 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
        disk->blockio.physical_block_size) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk block sizes is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2494,82 +2494,82 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk io limits is not "
-                         "supported by parallels driver yet."));
+                         "supported by vz driver yet."));
         return -1;
     }
 
     if (disk->serial) {
         VIR_INFO("%s", _("Setting disk serial number is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
     }
 
     if (disk->wwn) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk wwn id is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->vendor) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk vendor is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->product) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk product id is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->error_policy != VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk error policy is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->iomode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting disk io mode is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->copy_on_read) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Disk copy_on_read is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting up disk startup policy is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Transient disks are not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->discard) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting up disk discard parameter is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (disk->iothread) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting up disk io thread # is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2578,7 +2578,7 @@ static int prlsdkCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only disk and block storage types are "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
 
     }
@@ -2591,49 +2591,49 @@ static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
     if (fs->type != VIR_DOMAIN_FS_TYPE_FILE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only file based filesystems are "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only ploop fs driver is "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing fs access mode is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->wrpolicy != VIR_DOMAIN_FS_WRPOLICY_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Changing fs write policy is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->format != VIR_STORAGE_FILE_PLOOP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only ploop disk images are "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->readonly) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting readonly for filesystems is "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
     if (fs->space_hard_limit || fs->space_soft_limit) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting fs quotas is not "
-                         "supported by parallels driver."));
+                         "supported by vz driver."));
         return -1;
     }
 
@@ -2737,7 +2737,7 @@ static int prlsdkAddSerial(PRL_HANDLE sdkdom, virDomainChrDefPtr chr)
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parallels Cloud Server doesn't support "
+                       _("vz driver doesn't support "
                          "specified serial source type."));
         goto cleanup;
     }
@@ -2818,7 +2818,7 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     if (isCt) {
         if (net->model)
              VIR_WARN("Setting network adapter for containers is not "
-                      "supported by Parallels Cloud Server.");
+                      "supported by vz driver.");
     } else {
         if (STREQ(net->model, "rtl8139")) {
             pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);
@@ -2829,7 +2829,7 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified network adapter model is not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
             goto cleanup;
         }
         prlsdkCheckRetGoto(pret, cleanup);
@@ -2965,7 +2965,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid format of "
-                           "disk %s, Parallels Cloud Server supports only "
+                           "disk %s, vz driver supports only "
                            "images in ploop format."), disk->src->path);
             goto cleanup;
         }
@@ -2998,14 +2998,14 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     if (drive->controller > 0) {
         /* We have only one controller of each type */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                       "address of disk %s, Parallels Cloud Server has "
+                       "address of disk %s, vz driver supports "
                        "only one controller."), disk->dst);
         goto cleanup;
     }
 
     if (drive->target > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                       "address of disk %s, Parallels Cloud Server has "
+                       "address of disk %s, vz driver supports "
                        "only target 0."), disk->dst);
         goto cleanup;
     }
@@ -3014,7 +3014,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     case VIR_DOMAIN_DISK_BUS_IDE:
         if (drive->unit > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                           "address of disk %s, Parallels Cloud Server has "
+                           "address of disk %s, vz driver supports "
                            "only units 0-1 for IDE bus."), disk->dst);
             goto cleanup;
         }
@@ -3025,7 +3025,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (drive->bus > 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                           "address of disk %s, Parallels Cloud Server has "
+                           "address of disk %s, vz driver supports "
                            "only bus 0 for SCSI bus."), disk->dst);
             goto cleanup;
         }
@@ -3036,7 +3036,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     case VIR_DOMAIN_DISK_BUS_SATA:
         if (drive->bus > 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                           "address of disk %s, Parallels Cloud Server has "
+                           "address of disk %s, vz driver supports "
                            "only bus 0 for SATA bus."), disk->dst);
             goto cleanup;
         }
@@ -3047,7 +3047,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified disk bus is not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
         goto cleanup;
     }
 
@@ -3056,7 +3056,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
 
     if (STRNEQ(dst, disk->dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                       "address of disk %s, Parallels Cloud Server supports "
+                       "address of disk %s, vz driver supports "
                        "only defaults address to logical device name."), disk->dst);
         goto cleanup;
     }
@@ -3081,7 +3081,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified disk cache mode is not "
-                         "supported by Parallels Cloud Server."));
+                         "supported by vz driver."));
         goto cleanup;
     }
 
