@@ -974,8 +974,10 @@ int virNetServerAddService(virNetServerPtr srv,
 
         if (!virNetServerMDNSAddEntry(srv->mdnsGroup,
                                       mdnsEntryName,
-                                      port))
+                                      port)) {
+            srv->nservices--;
             goto error;
+        }
     }
 
     srv->services[srv->nservices-1] = svc;
