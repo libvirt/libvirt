@@ -2384,11 +2384,27 @@ virDirCreate(const char *path,
                                  path);
             goto parenterror;
         }
-        if (!WIFEXITED(status) || (ret = -WEXITSTATUS(status)) == -EACCES) {
-            /* fall back to the simpler method, which works better in
-             * some cases */
-            return virDirCreateNoFork(path, mode, uid, gid, flags);
+
+        /*
+         * If waitpid succeeded, but if the child exited abnormally or
+         * reported non-zero status, report failure, except for EACCES where
+         * we try to fall back to non-fork method as in the original logic
+         * introduced and explained by commit 98f6f381.
+         */
+        if (!WIFEXITED(status) || (WEXITSTATUS(status)) != 0) {
+            if (WEXITSTATUS(status) == EACCES)
+                return virDirCreateNoFork(path, mode, uid, gid, flags);
+            char *msg = virProcessTranslateStatus(status);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("child failed to create '%s': %s"),
+                           path, msg);
+            VIR_FREE(msg);
+            if (WIFEXITED(status))
+                ret = -WEXITSTATUS(status);
+            else
+                ret = -EACCES;
         }
+
  parenterror:
         return ret;
     }
