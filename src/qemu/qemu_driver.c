@@ -8016,7 +8016,8 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
 static int
 qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
                              virDomainDefPtr vmdef,
-                             virDomainDeviceDefPtr dev)
+                             virDomainDeviceDefPtr dev,
+                             virConnectPtr conn)
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
@@ -8033,6 +8034,8 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
                            _("target %s already exists"), disk->dst);
             return -1;
         }
+        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+            return -1;
         if (qemuCheckDiskConfig(disk) < 0)
             return -1;
         if (virDomainDiskInsert(vmdef, disk))
@@ -8501,7 +8504,8 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainAttachDeviceConfig(qemuCaps, vmdef, dev)) < 0)
+        if ((ret = qemuDomainAttachDeviceConfig(qemuCaps, vmdef, dev,
+                                                dom->conn)) < 0)
             goto endjob;
     }
 

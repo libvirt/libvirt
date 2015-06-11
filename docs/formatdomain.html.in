@@ -1944,8 +1944,10 @@
             defaulting to "disk".
             <p>
             Using "lun" (<span class="since">since 0.9.10</span>) is only
-            valid when type is "block" or "network" using the iSCSI protocol,
-            and behaves identically to "disk",
+            valid when the <code>type</code> is "block" or "network" for
+            <code>protocol='iscsi'</code> or when the <code>type</code>
+            is "volume" when using an iSCSI source <code>pool</code>.
+            Configured in this manner, the LUN behaves identically to "disk",
             except that generic SCSI commands from the guest are accepted
             and passed through to the physical device. Also note that
             device='lun' will only be recognized for actual raw devices,
@@ -2062,6 +2064,13 @@
               Using "host" as the <code>mode</code> value indicates to use the
               LUN's path as it shows up on host (e.g.
               'file=/dev/disk/by-path/ip-example.com:3260-iscsi-iqn.2013-07.com.example:iscsi-pool-lun-1').
+
+              Using a LUN from an iSCSI source pool provides the same
+              features as a <code>disk</code> configured using
+              <code>type</code> 'block' or 'network and <code>device</code>
+              of 'lun' with respect to how the LUN is presented to and
+              may used by the guest.
+
               </p>
               </dd>
           </dl>

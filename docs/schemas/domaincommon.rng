@@ -1218,6 +1218,7 @@
             <choice>
               <ref name="diskSourceNetwork"/>
               <ref name="diskSourceBlock"/>
+              <ref name="diskSourceVolume"/>
             </choice>
             <ref name="diskSpecsExtra"/>
           </interleave>
