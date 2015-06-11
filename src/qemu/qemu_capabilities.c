@@ -358,6 +358,8 @@ static virArch virQEMUCapsArchFromString(const char *arch)
         return VIR_ARCH_I686;
     if (STREQ(arch, "arm"))
         return VIR_ARCH_ARMV7L;
+    if (STREQ(arch, "or32"))
+        return VIR_ARCH_OR32;
 
     return virArchFromString(arch);
 }
@@ -369,6 +371,8 @@ static const char *virQEMUCapsArchToString(virArch arch)
         return "i386";
     else if (arch == VIR_ARCH_ARMV7L)
         return "arm";
+    else if (arch == VIR_ARCH_OR32)
+        return "or32";
 
     return virArchToString(arch);
 }
