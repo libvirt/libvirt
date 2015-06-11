@@ -678,7 +678,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
                               virDomainOSTypeToString(ostype));
         if (arch)
             virBufferAsprintf(&buf, "arch=%s ", virArchToString(arch));
-        if (domaintype)
+        if (domaintype != -1)
             virBufferAsprintf(&buf, "domaintype=%s ",
                               virDomainVirtTypeToString(domaintype));
         if (emulator)
