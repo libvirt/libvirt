@@ -3,7 +3,6 @@
     "max_workers": 50,
     "priority_workers": 5,
     "max_clients": 100,
-    "max_anonymous_clients": 10,
     "keepaliveInterval": 120,
     "keepaliveCount": 5,
     "keepaliveRequired": true,
