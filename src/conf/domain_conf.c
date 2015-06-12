@@ -2933,11 +2933,11 @@ virDomainObjGetDefs(virDomainObjPtr vm,
     if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
         return -1;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (liveDef)
+    if (virDomainObjIsActive(vm)) {
+        if (liveDef && (flags & VIR_DOMAIN_AFFECT_LIVE))
             *liveDef = vm->def;
 
-        if (persDef)
+        if (persDef && (flags & VIR_DOMAIN_AFFECT_CONFIG))
             *persDef = vm->newDef;
     } else {
         if (persDef)
