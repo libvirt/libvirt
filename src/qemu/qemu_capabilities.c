@@ -2229,6 +2229,44 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
         mach->maxCpus = qemuCaps->machineMaxCpus[i];
     }
 
+    /* Make sure all canonical machine types also have their own entry so that
+     * /capabilities/guest/arch[@name='...']/machine/text() XPath selects all
+     * supported machine types.
+     */
+    i = 0;
+    while (i < *nmachines) {
+        size_t j;
+        bool found = false;
+        virCapsGuestMachinePtr machine = (*machines)[i];
+
+        if (!machine->canonical) {
+            i++;
+            continue;
+        }
+
+        for (j = 0; j < *nmachines; j++) {
+            if (STREQ(machine->canonical, (*machines)[j]->name)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virCapsGuestMachinePtr mach;
+            if (VIR_ALLOC(mach) < 0)
+                goto error;
+            if (VIR_INSERT_ELEMENT_COPY(*machines, i, *nmachines, mach) < 0) {
+                VIR_FREE(mach);
+                goto error;
+            }
+            if (VIR_STRDUP(mach->name, machine->canonical) < 0)
+                goto error;
+            mach->maxCpus = machine->maxCpus;
+            i++;
+        }
+        i++;
+    }
+
     return 0;
 
  error:
