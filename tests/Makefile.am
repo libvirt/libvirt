@@ -138,6 +138,7 @@ EXTRA_DIST =		\
 	vircgroupdata \
 	virfiledata \
 	virnetdevtestdata \
+	virnetserverdata \
 	virpcitestdata \
 	virscsidata \
 	virusbtestdata \
