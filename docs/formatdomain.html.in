@@ -3024,6 +3024,9 @@
       PCI controllers have an optional <code>model</code> attribute with
       possible values <code>pci-root</code>, <code>pcie-root</code>,
       <code>pci-bridge</code>, or <code>dmi-to-pci-bridge</code>.
+      (pci-root and pci-bridge <span class="since">since 1.0.5</span>,
+      pcie-root and dmi-to-pci-bridge <span class="since">since
+      1.1.2</span>)
       The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
       have an optional <code>pcihole64</code> element specifying how big
       (in kilobytes, or in the unit specified by <code>pcihole64</code>'s
@@ -3043,7 +3046,6 @@
       only refer to PCI buses provided by already specified PCI controllers.
       Leaving gaps in the PCI controller indexes might lead to an invalid
       configuration.
-      (pci-root and pci-bridge <span class="since">since 1.0.5</span>)
     </p>
 <pre>
   ...
