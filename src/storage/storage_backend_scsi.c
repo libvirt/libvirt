@@ -324,6 +324,15 @@ getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
 }
 
 
+/*
+ * Search a device entry for the "block" file
+ *
+ * Returns
+ *
+ *   0 => Found it
+ *   -1 => Fatal error
+ *   -2 => Didn't find in lun_path directory
+ */
 static int
 getBlockDevice(uint32_t host,
                uint32_t bus,
@@ -337,36 +346,47 @@ getBlockDevice(uint32_t host,
     int retval = -1;
     int direrr;
 
+    *block_device = NULL;
+
     if (virAsprintf(&lun_path, "/sys/bus/scsi/devices/%u:%u:%u:%u",
                     host, bus, target, lun) < 0)
-        goto out;
+        goto cleanup;
 
-    lun_dir = opendir(lun_path);
-    if (lun_dir == NULL) {
+    if (!(lun_dir = opendir(lun_path))) {
         virReportSystemError(errno,
                              _("Failed to opendir sysfs path '%s'"),
                              lun_path);
-        goto out;
+        goto cleanup;
     }
 
     while ((direrr = virDirRead(lun_dir, &lun_dirent, lun_path)) > 0) {
         if (STREQLEN(lun_dirent->d_name, "block", 5)) {
             if (strlen(lun_dirent->d_name) == 5) {
-                retval = getNewStyleBlockDevice(lun_path,
-                                                lun_dirent->d_name,
-                                                block_device);
+                if (getNewStyleBlockDevice(lun_path,
+                                           lun_dirent->d_name,
+                                           block_device) < 0)
+                    goto cleanup;
             } else {
-                retval = getOldStyleBlockDevice(lun_path,
-                                                lun_dirent->d_name,
-                                                block_device);
+                if (getOldStyleBlockDevice(lun_path,
+                                           lun_dirent->d_name,
+                                           block_device) < 0)
+                    goto cleanup;
             }
             break;
         }
     }
+    if (direrr < 0)
+        goto cleanup;
+    if (!*block_device) {
+        retval = -2;
+        goto cleanup;
+    }
 
-    closedir(lun_dir);
+    retval = 0;
 
- out:
+ cleanup:
+    if (lun_dir)
+        closedir(lun_dir);
     VIR_FREE(lun_path);
     return retval;
 }
@@ -412,9 +432,9 @@ processLU(virStoragePoolObjPtr pool,
     VIR_DEBUG("%u:%u:%u:%u is a Direct-Access LUN",
               host, bus, target, lun);
 
-    if (getBlockDevice(host, bus, target, lun, &block_device) < 0) {
+    if ((retval = getBlockDevice(host, bus, target, lun, &block_device)) < 0) {
         VIR_DEBUG("Failed to find block device for this LUN");
-        return -1;
+        return retval;
     }
 
     retval = virStorageBackendSCSINewLun(pool, host, bus, target, lun,
