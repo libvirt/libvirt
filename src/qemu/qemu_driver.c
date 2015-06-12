@@ -5285,7 +5285,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    bool doReset = false;
     virBitmapPtr pcpumap = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virObjectEventPtr event = NULL;
@@ -5329,12 +5328,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
         goto endjob;
     }
 
-    /* pinning to all physical cpus means resetting,
-     * so check if we can reset setting.
-     */
-    if (virBitmapIsAllSet(pcpumap))
-        doReset = true;
-
     if (def) {
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR,
@@ -5359,8 +5352,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         virBitmapFree(def->cputune.emulatorpin);
         def->cputune.emulatorpin = NULL;
 
-        if (!doReset &&
-            !(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+        if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
@@ -5380,8 +5372,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         virBitmapFree(persistentDef->cputune.emulatorpin);
         persistentDef->cputune.emulatorpin = NULL;
 
-        if (!doReset &&
-            !(persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+        if (!(persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;
 
         ret = virDomainSaveConfig(cfg->configDir, persistentDef);
