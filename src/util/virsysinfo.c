@@ -150,7 +150,7 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
 
 #if defined(__powerpc__)
 static int
-virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
+virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
 {
     int ret = -1;
     char *eol = NULL;
@@ -193,7 +193,7 @@ virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
         def = NULL;
     }
 
-    *system = def;
+    *sysdef = def;
     def = NULL;
     ret = 0;
  cleanup:
@@ -280,7 +280,7 @@ virSysinfoRead(void)
 
 #elif defined(__arm__) || defined(__aarch64__)
 static int
-virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
+virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
 {
     int ret = -1;
     char *eol = NULL;
@@ -323,7 +323,7 @@ virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
         def = NULL;
     }
 
-    *system = def;
+    *sysdef = def;
     def = NULL;
     ret = 0;
  cleanup:
@@ -452,7 +452,7 @@ virSysinfoParseLine(const char *base, const char *name, char **value)
 }
 
 static int
-virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
+virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
 {
     int ret = -1;
     virSysinfoSystemDefPtr def;
@@ -478,7 +478,7 @@ virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
         def = NULL;
     }
 
-    *system = def;
+    *sysdef = def;
     def = NULL;
     ret = 0;
  cleanup:
@@ -646,7 +646,7 @@ virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
 }
 
 static int
-virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
+virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *sysdef)
 {
     int ret = -1;
     const char *cur, *eol = NULL;
@@ -708,7 +708,7 @@ virSysinfoParseSystem(const char *base, virSysinfoSystemDefPtr *system)
         def = NULL;
     }
 
-    *system = def;
+    *sysdef = def;
     def = NULL;
     ret = 0;
  cleanup:

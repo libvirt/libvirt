@@ -11155,7 +11155,7 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
 static int
 virSysinfoSystemParseXML(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
-                         virSysinfoSystemDefPtr *system,
+                         virSysinfoSystemDefPtr *sysdef,
                          unsigned char *domUUID,
                          bool uuid_generated)
 {
@@ -11218,7 +11218,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
         def = NULL;
     }
 
-    *system = def;
+    *sysdef = def;
     def = NULL;
     ret = 0;
  cleanup:
