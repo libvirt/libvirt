@@ -5213,7 +5213,6 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
 {
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
-    virDomainDefPtr targetDef;
     int ret = -1;
     int hostcpus, vcpu;
     virBitmapPtr allcpumap = NULL;
@@ -5227,11 +5226,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (virDomainGetVcpuPinInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjGetDefs(vm, flags, &def, &targetDef) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
-
-    if (def)
-        targetDef = def;
 
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
@@ -5242,8 +5238,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virBitmapSetAll(allcpumap);
 
     /* Clamp to actual number of vcpus */
-    if (ncpumaps > targetDef->vcpus)
-        ncpumaps = targetDef->vcpus;
+    if (ncpumaps > def->vcpus)
+        ncpumaps = def->vcpus;
 
     if (ncpumaps < 1)
         goto cleanup;
@@ -5252,8 +5248,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         virDomainPinDefPtr pininfo;
         virBitmapPtr bitmap = NULL;
 
-        pininfo = virDomainPinFind(targetDef->cputune.vcpupin,
-                                   targetDef->cputune.nvcpupin,
+        pininfo = virDomainPinFind(def->cputune.vcpupin,
+                                   def->cputune.nvcpupin,
                                    vcpu);
 
         if (pininfo && pininfo->cpumask)
