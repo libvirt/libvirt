@@ -715,4 +715,9 @@ LIBVIRT_1.2.16 {
         virDomainSetUserPassword;
 } LIBVIRT_1.2.15;
 
+LIBVIRT_1.3.0 {
+    global:
+        virTypedParamsAddStringList;
+} LIBVIRT_1.2.16;
+
 # .... define new API here using predicted next version number ....

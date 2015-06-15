@@ -326,6 +326,12 @@ virTypedParamsAddString (virTypedParameterPtr *params,
                          const char *name,
                          const char *value);
 int
+virTypedParamsAddStringList(virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams,
+                         const char *name,
+                         const char **values);
+int
 virTypedParamsAddFromString(virTypedParameterPtr *params,
                          int *nparams,
                          int *maxparams,

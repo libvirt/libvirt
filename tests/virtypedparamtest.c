@@ -126,6 +126,31 @@ testTypedParamsFilter(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
+testTypedParamsAddStringList(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int rv = 0;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0, maxparams = 0, i;
+
+    const char *values[] = {
+        "foo", "bar", "foobar", NULL
+    };
+
+    rv = virTypedParamsAddStringList(&params, &nparams, &maxparams, "param",
+                                     values);
+
+    for (i = 0; i < nparams; i++) {
+        if (STRNEQ(params[i].field, "param") ||
+            STRNEQ(params[i].value.s, values[i]) ||
+            params[i].type != VIR_TYPED_PARAM_STRING)
+            rv = -1;
+    }
+
+    virTypedParamsFree(params, nparams);
+    return rv;
+}
+
+static int
 testTypedParamsGetStringList(const void *opaque ATTRIBUTE_UNUSED)
 {
     size_t i;
@@ -258,6 +283,9 @@ mymain(void)
         rv = -1;
 
     if (virtTestRun("Get All Strings", testTypedParamsGetStringList, NULL) < 0)
+        rv = -1;
+
+    if (virtTestRun("Add string list", testTypedParamsAddStringList, NULL) < 0)
         rv = -1;
 
     if (rv < 0)

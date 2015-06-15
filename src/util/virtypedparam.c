@@ -1187,6 +1187,42 @@ virTypedParamsAddString(virTypedParameterPtr *params,
     return -1;
 }
 
+/**
+ * virTypedParamsAddStringList:
+ * @params: array of typed parameters
+ * @nparams: number of parameters in the @params array
+ * @maxparams: maximum number of parameters that can be stored in @params
+ *      array without allocating more memory
+ * @name: name of the parameter to store values to
+ * @values: the values to store into the new parameters
+ *
+ * Packs NULL-terminated list of strings @values into @params under the
+ * key @name.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virTypedParamsAddStringList(virTypedParameterPtr *params,
+                            int *nparams,
+                            int *maxparams,
+                            const char *name,
+                            const char **values)
+{
+    size_t i;
+    int rv = -1;
+
+    if (!values)
+        return 0;
+
+    for (i = 0; values[i]; i++) {
+        if ((rv = virTypedParamsAddString(params, nparams, maxparams,
+                                          name, values[i])) < 0)
+            break;
+    }
+
+    return rv;
+}
+
 
 /**
  * virTypedParamsAddFromString:
