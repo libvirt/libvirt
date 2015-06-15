@@ -482,6 +482,51 @@ virTypedParamsGet(virTypedParameterPtr params,
 }
 
 
+/**
+ * virTypedParamsFilter:
+ * @params: array of typed parameters
+ * @nparams: number of parameters in the @params array
+ * @name: name of the parameter to find
+ * @ret: pointer to the returned array
+ *
+ * Filters @params retaining only the parameters named @name in the
+ * resulting array @ret. Caller should free the @ret array but not
+ * the items since they are pointing to the @params elements.
+ *
+ * Returns amount of elements in @ret on success, -1 on error.
+ */
+int
+virTypedParamsFilter(virTypedParameterPtr params,
+                     int nparams,
+                     const char *name,
+                     virTypedParameterPtr **ret)
+{
+    size_t i, alloc = 0, n = 0;
+
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(name, error);
+    virCheckNonNullArgGoto(ret, error);
+
+    *ret = NULL;
+
+    for (i = 0; i < nparams; i++) {
+        if (STREQ(params[i].field, name)) {
+            if (VIR_RESIZE_N(*ret, alloc, n, 1) < 0)
+                goto error;
+
+            (*ret)[n] = &params[i];
+
+            n++;
+        }
+    }
+
+    return n;
+
+ error:
+    return -1;
+}
+
+
 #define VIR_TYPED_PARAM_CHECK_TYPE(check_type)                              \
     do { if (param->type != check_type) {                                   \
         virReportError(VIR_ERR_INVALID_ARG,                                 \
@@ -746,6 +791,63 @@ virTypedParamsGetString(virTypedParameterPtr params,
         *value = param->value.s;
 
     return 1;
+}
+
+
+/**
+ * virTypedParamsGetStringList:
+ * @params: array of typed parameters
+ * @nparams: number of parameters in the @params array
+ * @name: name of the parameter to find
+ * @values: array of returned values
+ *
+ * Finds all parameters with desired @name within @params and
+ * store their values into @values. The @values array is self
+ * allocated and its length is stored into @picked. When no
+ * longer needed, caller should free the returned array, but not
+ * the items since they are taken from @params array.
+ *
+ * Returns amount of strings in @values array on success,
+ * -1 otherwise.
+ */
+int
+virTypedParamsGetStringList(virTypedParameterPtr params,
+                            int nparams,
+                            const char *name,
+                            const char ***values)
+{
+    size_t i, n;
+    int nfiltered;
+    virTypedParameterPtr *filtered = NULL;
+
+    virResetLastError();
+
+    virCheckNonNullArgGoto(values, error);
+    *values = NULL;
+
+    nfiltered = virTypedParamsFilter(params, nparams, name, &filtered);
+
+    if (nfiltered < 0)
+        goto error;
+
+    if (nfiltered &&
+        VIR_ALLOC_N(*values, nfiltered) < 0)
+        goto error;
+
+    for (n = 0, i = 0; i < nfiltered; i++) {
+        if (filtered[i]->type == VIR_TYPED_PARAM_STRING)
+            (*values)[n++] = filtered[i]->value.s;
+    }
+
+    VIR_FREE(filtered);
+    return n;
+
+ error:
+    if (values)
+        VIR_FREE(*values);
+    VIR_FREE(filtered);
+    virDispatchError(NULL);
+    return -1;
 }
 
 

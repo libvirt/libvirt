@@ -45,6 +45,20 @@ bool virTypedParamsCheck(virTypedParameterPtr params,
                          const char **names,
                          int nnames);
 
+int
+virTypedParamsGetStringList(virTypedParameterPtr params,
+                            int nparams,
+                            const char *name,
+                            const char ***values);
+int
+virTypedParamsFilter(virTypedParameterPtr params,
+                     int nparams,
+                     const char *name,
+                     virTypedParameterPtr **ret)
+    ATTRIBUTE_RETURN_CHECK  ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
+
+
 int virTypedParameterAssign(virTypedParameterPtr param, const char *name,
                             int type, /* TYPE arg */ ...)
     ATTRIBUTE_RETURN_CHECK;
