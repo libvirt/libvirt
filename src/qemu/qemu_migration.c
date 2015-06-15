@@ -1966,8 +1966,9 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
+        /* Force "raw" format for NBD export */
         mon_ret = qemuMonitorDriveMirror(priv->mon, diskAlias, nbd_dest,
-                                         NULL, speed, 0, 0, mirror_flags);
+                                         "raw", speed, 0, 0, mirror_flags);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0) {
             qemuBlockJobSyncEnd(driver, vm, disk, NULL);
