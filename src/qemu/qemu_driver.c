@@ -9919,6 +9919,13 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     return ret;
 }
 
+
+#define QEMU_ASSIGN_MEM_PARAM(index, name, value)                              \
+    if (index < *nparams &&                                                    \
+        virTypedParameterAssign(&params[index], name, VIR_TYPED_PARAM_ULLONG,   \
+                                value) < 0)                                    \
+        goto cleanup
+
 static int
 qemuDomainGetMemoryParameters(virDomainPtr dom,
                               virTypedParameterPtr params,
@@ -9926,13 +9933,13 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
                               unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
+    unsigned long long swap_hard_limit, mem_hard_limit, mem_soft_limit;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -9979,85 +9986,28 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        for (i = 0; i < *nparams && i < QEMU_NB_MEM_PARAM; i++) {
-            virMemoryParameterPtr param = &params[i];
-            unsigned long long value;
+        mem_hard_limit = persistentDef->mem.hard_limit;
+        mem_soft_limit = persistentDef->mem.soft_limit;
+        swap_hard_limit = persistentDef->mem.swap_hard_limit;
+    } else {
+        if (virCgroupGetMemoryHardLimit(priv->cgroup, &mem_hard_limit) < 0)
+            goto cleanup;
 
-            switch (i) {
-            case 0: /* fill memory hard limit here */
-                value = persistentDef->mem.hard_limit;
-                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
-                    goto cleanup;
-                break;
+        if (virCgroupGetMemorySoftLimit(priv->cgroup, &mem_soft_limit) < 0)
+            goto cleanup;
 
-            case 1: /* fill memory soft limit here */
-                value = persistentDef->mem.soft_limit;
-                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
-                    goto cleanup;
-                break;
-
-            case 2: /* fill swap hard limit here */
-                value = persistentDef->mem.swap_hard_limit;
-                if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                            VIR_TYPED_PARAM_ULLONG, value) < 0)
-                    goto cleanup;
-                break;
-
-            /* coverity[dead_error_begin] */
-            default:
-                break;
-                /* should not hit here */
-            }
-        }
-        goto out;
-    }
-
-    for (i = 0; i < *nparams && i < QEMU_NB_MEM_PARAM; i++) {
-        virTypedParameterPtr param = &params[i];
-        unsigned long long val = 0;
-
-        switch (i) {
-        case 0: /* fill memory hard limit here */
-            if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0)
+        if (virCgroupGetMemSwapHardLimit(priv->cgroup, &swap_hard_limit) < 0) {
+            if (!virLastErrorIsSystemErrno(ENOENT) &&
+                !virLastErrorIsSystemErrno(EOPNOTSUPP))
                 goto cleanup;
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_MEMORY_HARD_LIMIT,
-                                        VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
-            break;
-
-        case 1: /* fill memory soft limit here */
-            if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0)
-                goto cleanup;
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_MEMORY_SOFT_LIMIT,
-                                        VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
-            break;
-
-        case 2: /* fill swap hard limit here */
-            if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0) {
-                if (!virLastErrorIsSystemErrno(ENOENT) &&
-                    !virLastErrorIsSystemErrno(EOPNOTSUPP))
-                    goto cleanup;
-                val = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
-            }
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
-                                        VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
-            break;
-
-        /* coverity[dead_error_begin] */
-        default:
-            break;
-            /* should not hit here */
+            swap_hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
         }
     }
 
- out:
+    QEMU_ASSIGN_MEM_PARAM(0, VIR_DOMAIN_MEMORY_HARD_LIMIT, mem_hard_limit);
+    QEMU_ASSIGN_MEM_PARAM(1, VIR_DOMAIN_MEMORY_SOFT_LIMIT, mem_soft_limit);
+    QEMU_ASSIGN_MEM_PARAM(2, VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit);
+
     if (QEMU_NB_MEM_PARAM < *nparams)
         *nparams = QEMU_NB_MEM_PARAM;
     ret = 0;
@@ -10068,6 +10018,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     virObjectUnref(cfg);
     return ret;
 }
+#undef QEMU_ASSIGN_MEM_PARAM
 
 static int
 qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
