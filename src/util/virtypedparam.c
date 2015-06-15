@@ -749,14 +749,6 @@ virTypedParamsGetString(virTypedParameterPtr params,
 }
 
 
-#define VIR_TYPED_PARAM_CHECK()                                     \
-    do { if (virTypedParamsGet(*params, n, name)) {                 \
-        virReportError(VIR_ERR_INVALID_ARG,                         \
-                       _("Parameter '%s' is already set"), name);   \
-        goto error;                                                 \
-    } } while (0)
-
-
 /**
  * virTypedParamsAddInt:
  * @params: pointer to the array of typed parameters
@@ -787,7 +779,6 @@ virTypedParamsAddInt(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -835,7 +826,6 @@ virTypedParamsAddUInt(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -883,7 +873,6 @@ virTypedParamsAddLLong(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -931,7 +920,6 @@ virTypedParamsAddULLong(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -979,7 +967,6 @@ virTypedParamsAddDouble(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -1027,7 +1014,6 @@ virTypedParamsAddBoolean(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -1078,7 +1064,6 @@ virTypedParamsAddString(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
@@ -1136,7 +1121,6 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
 
     virResetLastError();
 
-    VIR_TYPED_PARAM_CHECK();
     if (VIR_RESIZE_N(*params, max, n, 1) < 0)
         goto error;
     *maxparams = max;
