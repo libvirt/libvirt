@@ -354,7 +354,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
 
     if (net->backend.tap) {
         tunpath = net->backend.tap;
-        if (!cfg->privileged) {
+        if (!(virQEMUDriverIsPrivileged(driver))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("cannot use custom tap device in session mode"));
             goto cleanup;
@@ -381,7 +381,7 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
     }
 
-    if (cfg->privileged) {
+    if (virQEMUDriverIsPrivileged(driver)) {
         if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
                                            def->uuid, tunpath, tapfd, *tapfdSize,
                                            virDomainNetGetActualVirtPortProfile(net),
@@ -8362,7 +8362,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         /* network and bridge use a tap device, and direct uses a
          * macvtap device
          */
-        if (cfg->privileged && nicindexes && nnicindexes && net->ifname) {
+        if (virQEMUDriverIsPrivileged(driver) && nicindexes && nnicindexes &&
+            net->ifname) {
             if (virNetDevGetIndex(net->ifname, &nicindex) < 0 ||
                 VIR_APPEND_ELEMENT(*nicindexes, *nnicindexes, nicindex) < 0)
                 goto cleanup;
@@ -8842,7 +8843,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     emulator = def->emulator;
 
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         /* If we have no cgroups then we can have no tunings that
          * require them */
 

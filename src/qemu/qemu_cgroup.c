@@ -714,7 +714,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    if (!cfg->privileged)
+    if (!virQEMUDriverIsPrivileged(driver))
         goto done;
 
     if (!virCgroupAvailable())
@@ -745,7 +745,7 @@ qemuInitCgroup(virQEMUDriverPtr driver,
 
     if (virCgroupNewMachine(vm->def->name,
                             "qemu",
-                            cfg->privileged,
+                            true,
                             vm->def->uuid,
                             NULL,
                             vm->pid,
@@ -844,7 +844,7 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if (!cfg->privileged)
+    if (!virQEMUDriverIsPrivileged(driver))
         goto done;
 
     if (!virCgroupAvailable())
@@ -1247,21 +1247,16 @@ qemuRemoveCgroup(virQEMUDriverPtr driver,
                  virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    cfg = virQEMUDriverGetConfig(driver);
-
     if (virCgroupTerminateMachine(vm->def->name,
                                   "qemu",
-                                  cfg->privileged) < 0) {
+                                  virQEMUDriverIsPrivileged(driver)) < 0) {
         if (!virCgroupNewIgnoreError())
             VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
     }
-
-    virObjectUnref(cfg);
 
     return virCgroupRemove(priv->cgroup);
 }

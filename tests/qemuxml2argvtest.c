@@ -486,8 +486,8 @@ mymain(void)
     driver.config = virQEMUDriverConfigNew(false);
     if (driver.config == NULL)
         return EXIT_FAILURE;
-    else
-        driver.config->privileged = true;
+
+    driver.privileged = true;
 
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);

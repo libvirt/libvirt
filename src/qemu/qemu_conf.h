@@ -81,7 +81,6 @@ typedef virQEMUDriverConfig *virQEMUDriverConfigPtr;
 struct _virQEMUDriverConfig {
     virObject parent;
 
-    bool privileged;
     const char *uri;
 
     uid_t user;
@@ -198,6 +197,9 @@ struct _virQEMUDriver {
     /* Atomic inc/dec only */
     unsigned int nactive;
 
+    /* Immutable value */
+    bool privileged;
+
     /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;
     void *inhibitOpaque;
@@ -273,6 +275,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename);
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
+bool virQEMUDriverIsPrivileged(virQEMUDriverPtr driver);
 
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver);
 virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,

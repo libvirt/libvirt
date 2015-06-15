@@ -2045,7 +2045,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
-    if (cfg->privileged &&
+    if (virQEMUDriverIsPrivileged(driver) &&
         (!cfg->clearEmulatorCapabilities ||
          cfg->user == 0 ||
          cfg->group == 0))
@@ -2189,7 +2189,7 @@ qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     oflags = O_CREAT | O_WRONLY;
     /* Only logrotate files in /var/log, so only append if running privileged */
-    if (cfg->privileged || append)
+    if (virQEMUDriverIsPrivileged(driver) || append)
         oflags |= O_APPEND;
     else
         oflags |= O_TRUNC;

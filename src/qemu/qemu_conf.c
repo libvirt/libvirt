@@ -164,7 +164,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (!(cfg = virObjectNew(virQEMUDriverConfigClass)))
         return NULL;
 
-    cfg->privileged = privileged;
     cfg->uri = privileged ? "qemu:///system" : "qemu:///session";
 
     if (privileged) {
@@ -871,6 +870,12 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
     conf = virObjectRef(driver->config);
     qemuDriverUnlock(driver);
     return conf;
+}
+
+bool
+virQEMUDriverIsPrivileged(virQEMUDriverPtr driver)
+{
+    return driver->privileged;
 }
 
 virDomainXMLOptionPtr

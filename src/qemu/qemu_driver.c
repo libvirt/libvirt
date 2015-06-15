@@ -421,7 +421,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
         mgr = NULL;
     }
 
-    if (cfg->privileged) {
+    if (virQEMUDriverIsPrivileged(driver)) {
         if (!(mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
                                              cfg->user,
                                              cfg->group,
@@ -652,6 +652,8 @@ qemuStateInitialize(bool privileged,
     /* Don't have a dom0 so start from 1 */
     qemu_driver->nextvmid = 1;
 
+    qemu_driver->privileged = privileged;
+
     if (!(qemu_driver->domains = virDomainObjListNew()))
         goto error;
 
@@ -871,7 +873,7 @@ qemuStateInitialize(bool privileged,
                                  hugepagePath);
             goto error;
         }
-        if (cfg->privileged) {
+        if (privileged) {
             if (virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
                                   0, S_IXGRP | S_IXOTH) < 0)
                 goto error;
@@ -1161,7 +1163,7 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
             goto cleanup;
         }
 
-        if (cfg->privileged) {
+        if (virQEMUDriverIsPrivileged(qemu_driver)) {
             if (STRNEQ(conn->uri->path, "/system") &&
                 STRNEQ(conn->uri->path, "/session")) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -8927,7 +8929,6 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverPtr driver = dom->conn->privateData;
-    virQEMUDriverConfigPtr cfg = NULL;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -8937,8 +8938,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     if (virDomainGetSchedulerTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("CPU tuning is not available in session mode"));
         goto cleanup;
@@ -8969,7 +8969,6 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -9195,7 +9194,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
     if (virDomainSetBlkioParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Block I/O tuning is not available in session mode"));
         goto cleanup;
@@ -9367,7 +9366,6 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
     int ret = -1;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
-    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -9386,8 +9384,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
     if (virDomainGetBlkioParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Block I/O tuning is not available in session mode"));
         goto cleanup;
@@ -9762,7 +9759,6 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
  cleanup:
     virDomainObjEndAPI(&vm);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -9810,7 +9806,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Memory tuning is not available in session mode"));
         goto cleanup;
@@ -9937,7 +9933,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    virQEMUDriverConfigPtr cfg = NULL;
     unsigned long long swap_hard_limit, mem_hard_limit, mem_soft_limit;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -9952,8 +9947,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Memory tuning is not available in session mode"));
         goto cleanup;
@@ -10004,7 +9998,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(cfg);
     return ret;
 }
 #undef QEMU_ASSIGN_MEM_PARAM
@@ -10134,7 +10127,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
         goto endjob;
 
     if (def) {
-        if (!cfg->privileged) {
+        if (!virQEMUDriverIsPrivileged(driver)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("NUMA tuning is not available in session mode"));
             goto endjob;
@@ -10382,7 +10375,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainSetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("CPU tuning is not available in session mode"));
         goto cleanup;
@@ -10676,7 +10669,6 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
-    virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -10693,8 +10685,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainGetSchedulerParametersFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (!cfg->privileged) {
+    if (!virQEMUDriverIsPrivileged(driver)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("CPU tuning is not available in session mode"));
         goto cleanup;
@@ -10793,7 +10784,6 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
  cleanup:
     virDomainObjEndAPI(&vm);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return ret;
 }
 
