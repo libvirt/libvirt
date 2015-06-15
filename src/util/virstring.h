@@ -258,6 +258,7 @@ size_t virStringListLength(char **strings);
 
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);
+int virStringToUpper(char **dst, const char *src);
 
 ssize_t virStringSearch(const char *str,
                         const char *regexp,

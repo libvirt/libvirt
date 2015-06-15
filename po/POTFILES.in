@@ -258,7 +258,6 @@ src/xenconfig/xen_xm.c
 tests/virpolkittest.c
 tools/libvirt-guests.sh.in
 tools/virsh.c
-tools/virsh.h
 tools/virsh-console.c
 tools/virsh-domain-monitor.c
 tools/virsh-domain.c
@@ -277,3 +276,5 @@ tools/virt-host-validate-lxc.c
 tools/virt-host-validate-qemu.c
 tools/virt-host-validate.c
 tools/virt-login-shell.c
+tools/vsh.c
+tools/vsh.h

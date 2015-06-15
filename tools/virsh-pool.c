@@ -34,12 +34,14 @@
 #include "virstring.h"
 
 virStoragePoolPtr
-vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
-                    const char **name, unsigned int flags)
+virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
+                      const char **name, unsigned int flags)
 {
     virStoragePoolPtr pool = NULL;
     const char *n = NULL;
-    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
+    virshControlPtr priv = ctl->privData;
+
+    virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
@@ -51,16 +53,16 @@ vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
         *name = n;
 
     /* try it by UUID */
-    if ((flags & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+    if ((flags & VIRSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool UUID\n",
                  cmd->def->name, optname);
-        pool = virStoragePoolLookupByUUIDString(ctl->conn, n);
+        pool = virStoragePoolLookupByUUIDString(priv->conn, n);
     }
     /* try it by NAME */
-    if (!pool && (flags & VSH_BYNAME)) {
+    if (!pool && (flags & VIRSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as pool NAME\n",
                  cmd->def->name, optname);
-        pool = virStoragePoolLookupByName(ctl->conn, n);
+        pool = virStoragePoolLookupByName(priv->conn, n);
     }
 
     if (!pool)
@@ -102,7 +104,7 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     int autostart;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     autostart = !vshCommandOptBool(cmd, "disable");
@@ -154,6 +156,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -161,7 +164,7 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    pool = virStoragePoolCreateXML(ctl->conn, buffer, 0);
+    pool = virStoragePoolCreateXML(priv->conn, buffer, 0);
     VIR_FREE(buffer);
 
     if (pool != NULL) {
@@ -249,10 +252,10 @@ static const vshCmdOptDef opts_pool_X_as[] = {
 };
 
 static int
-vshBuildPoolXML(vshControl *ctl,
-                const vshCmd *cmd,
-                const char **retname,
-                char **xml)
+virshBuildPoolXML(vshControl *ctl,
+                  const vshCmd *cmd,
+                  const char **retname,
+                  char **xml)
 {
     const char *name = NULL, *type = NULL, *srcHost = NULL, *srcPath = NULL,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
@@ -365,15 +368,16 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
+    virshControlPtr priv = ctl->privData;
 
-    if (!vshBuildPoolXML(ctl, cmd, &name, &xml))
+    if (!virshBuildPoolXML(ctl, cmd, &name, &xml))
         return false;
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
         VIR_FREE(xml);
     } else {
-        pool = virStoragePoolCreateXML(ctl->conn, xml, 0);
+        pool = virStoragePoolCreateXML(priv->conn, xml, 0);
         VIR_FREE(xml);
 
         if (pool != NULL) {
@@ -417,6 +421,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -424,7 +429,7 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    pool = virStoragePoolDefineXML(ctl->conn, buffer, 0);
+    pool = virStoragePoolDefineXML(priv->conn, buffer, 0);
     VIR_FREE(buffer);
 
     if (pool != NULL) {
@@ -458,15 +463,16 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
+    virshControlPtr priv = ctl->privData;
 
-    if (!vshBuildPoolXML(ctl, cmd, &name, &xml))
+    if (!virshBuildPoolXML(ctl, cmd, &name, &xml))
         return false;
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
         VIR_FREE(xml);
     } else {
-        pool = virStoragePoolDefineXML(ctl->conn, xml, 0);
+        pool = virStoragePoolDefineXML(priv->conn, xml, 0);
         VIR_FREE(xml);
 
         if (pool != NULL) {
@@ -518,7 +524,7 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     unsigned int flags = 0;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     if (vshCommandOptBool(cmd, "no-overwrite"))
@@ -568,7 +574,7 @@ cmdPoolDestroy(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     if (virStoragePoolDestroy(pool) == 0) {
@@ -611,7 +617,7 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     if (virStoragePoolDelete(pool, 0) == 0) {
@@ -654,7 +660,7 @@ cmdPoolRefresh(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     if (virStoragePoolRefresh(pool, 0) == 0) {
@@ -706,7 +712,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (inactive)
         flags |= VIR_STORAGE_XML_INACTIVE;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
     dump = virStoragePoolGetXMLDesc(pool, flags);
@@ -722,7 +728,7 @@ cmdPoolDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-vshStoragePoolSorter(const void *a, const void *b)
+virshStoragePoolSorter(const void *a, const void *b)
 {
     virStoragePoolPtr *pa = (virStoragePoolPtr *) a;
     virStoragePoolPtr *pb = (virStoragePoolPtr *) b;
@@ -737,14 +743,14 @@ vshStoragePoolSorter(const void *a, const void *b)
                          virStoragePoolGetName(*pb));
 }
 
-struct vshStoragePoolList {
+struct virshStoragePoolList {
     virStoragePoolPtr *pools;
     size_t npools;
 };
-typedef struct vshStoragePoolList *vshStoragePoolListPtr;
+typedef struct virshStoragePoolList *virshStoragePoolListPtr;
 
 static void
-vshStoragePoolListFree(vshStoragePoolListPtr list)
+virshStoragePoolListFree(virshStoragePoolListPtr list)
 {
     size_t i;
 
@@ -758,11 +764,11 @@ vshStoragePoolListFree(vshStoragePoolListPtr list)
     VIR_FREE(list);
 }
 
-static vshStoragePoolListPtr
-vshStoragePoolListCollect(vshControl *ctl,
-                          unsigned int flags)
+static virshStoragePoolListPtr
+virshStoragePoolListCollect(vshControl *ctl,
+                            unsigned int flags)
 {
-    vshStoragePoolListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshStoragePoolListPtr list = vshMalloc(ctl, sizeof(*list));
     size_t i;
     int ret;
     char **names = NULL;
@@ -774,9 +780,10 @@ vshStoragePoolListCollect(vshControl *ctl,
     int nActivePools = 0;
     int nInactivePools = 0;
     int nAllPools = 0;
+    virshControlPtr priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
-    if ((ret = virConnectListAllStoragePools(ctl->conn,
+    if ((ret = virConnectListAllStoragePools(priv->conn,
                                              &list->pools,
                                              flags)) >= 0) {
         list->npools = ret;
@@ -792,7 +799,7 @@ vshStoragePoolListCollect(vshControl *ctl,
         unsigned int newflags = flags & (VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
                                          VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE);
         vshResetLibvirtError();
-        if ((ret = virConnectListAllStoragePools(ctl->conn, &list->pools,
+        if ((ret = virConnectListAllStoragePools(priv->conn, &list->pools,
                                                  newflags)) >= 0) {
             list->npools = ret;
             goto filter;
@@ -818,7 +825,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     /* Get the number of active pools */
     if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
         VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
-        if ((nActivePools = virConnectNumOfStoragePools(ctl->conn)) < 0) {
+        if ((nActivePools = virConnectNumOfStoragePools(priv->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of active pools "));
             goto cleanup;
         }
@@ -827,7 +834,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     /* Get the number of inactive pools */
     if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
         VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)) {
-        if ((nInactivePools = virConnectNumOfDefinedStoragePools(ctl->conn)) < 0) {
+        if ((nInactivePools = virConnectNumOfDefinedStoragePools(priv->conn)) < 0) {
             vshError(ctl, "%s", _("Failed to get the number of inactive pools"));
             goto cleanup;
         }
@@ -843,7 +850,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     /* Retrieve a list of active storage pool names */
     if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
         VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
-        if (virConnectListStoragePools(ctl->conn,
+        if (virConnectListStoragePools(priv->conn,
                                        names, nActivePools) < 0) {
             vshError(ctl, "%s", _("Failed to list active pools"));
             goto cleanup;
@@ -853,7 +860,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     /* Add the inactive storage pools to the end of the name list */
     if (!VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE) ||
         VSH_MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)) {
-        if (virConnectListDefinedStoragePools(ctl->conn,
+        if (virConnectListDefinedStoragePools(priv->conn,
                                               &names[nActivePools],
                                               nInactivePools) < 0) {
             vshError(ctl, "%s", _("Failed to list inactive pools"));
@@ -866,14 +873,14 @@ vshStoragePoolListCollect(vshControl *ctl,
 
     /* get active pools */
     for (i = 0; i < nActivePools; i++) {
-        if (!(pool = virStoragePoolLookupByName(ctl->conn, names[i])))
+        if (!(pool = virStoragePoolLookupByName(priv->conn, names[i])))
             continue;
         list->pools[list->npools++] = pool;
     }
 
     /* get inactive pools */
     for (i = 0; i < nInactivePools; i++) {
-        if (!(pool = virStoragePoolLookupByName(ctl->conn, names[i])))
+        if (!(pool = virStoragePoolLookupByName(priv->conn, names[i])))
             continue;
         list->pools[list->npools++] = pool;
     }
@@ -924,7 +931,7 @@ vshStoragePoolListCollect(vshControl *ctl,
     /* sort the list */
     if (list->pools && list->npools)
         qsort(list->pools, list->npools,
-              sizeof(*list->pools), vshStoragePoolSorter);
+              sizeof(*list->pools), virshStoragePoolSorter);
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)
@@ -937,7 +944,7 @@ vshStoragePoolListCollect(vshControl *ctl,
         VIR_FREE(names[i]);
 
     if (!success) {
-        vshStoragePoolListFree(list);
+        virshStoragePoolListFree(list);
         list = NULL;
     }
 
@@ -946,8 +953,8 @@ vshStoragePoolListCollect(vshControl *ctl,
 }
 
 
-VIR_ENUM_DECL(vshStoragePoolState)
-VIR_ENUM_IMPL(vshStoragePoolState,
+VIR_ENUM_DECL(virshStoragePoolState)
+VIR_ENUM_IMPL(virshStoragePoolState,
               VIR_STORAGE_POOL_STATE_LAST,
               N_("inactive"),
               N_("building"),
@@ -956,9 +963,9 @@ VIR_ENUM_IMPL(vshStoragePoolState,
               N_("inaccessible"))
 
 static const char *
-vshStoragePoolStateToString(int state)
+virshStoragePoolStateToString(int state)
 {
-    const char *str = vshStoragePoolStateTypeToString(state);
+    const char *str = virshStoragePoolStateTypeToString(state);
     return str ? _(str) : _("unknown");
 }
 
@@ -1032,7 +1039,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     };
     struct poolInfoText *poolInfoTexts = NULL;
     unsigned int flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE;
-    vshStoragePoolListPtr list = NULL;
+    virshStoragePoolListPtr list = NULL;
     const char *type = NULL;
     bool details = vshCommandOptBool(cmd, "details");
     bool inactive, all;
@@ -1122,7 +1129,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         virStringFreeList(poolTypes);
     }
 
-    if (!(list = vshStoragePoolListCollect(ctl, flags)))
+    if (!(list = virshStoragePoolListCollect(ctl, flags)))
         goto cleanup;
 
     poolInfoTexts = vshCalloc(ctl, list->npools, sizeof(*poolInfoTexts));
@@ -1168,7 +1175,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         } else {
             /* Decide which state string to display */
             if (details) {
-                const char *state = vshStoragePoolStateToString(info.state);
+                const char *state = virshStoragePoolStateToString(info.state);
 
                 poolInfoTexts[i].state = vshStrdup(ctl, state);
 
@@ -1371,7 +1378,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
     VIR_FREE(poolInfoTexts);
 
-    vshStoragePoolListFree(list);
+    virshStoragePoolListFree(list);
     return ret;
 }
 
@@ -1416,6 +1423,7 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
     char *srcSpec = NULL;
     char *srcList;
     const char *initiator = NULL;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "host", &host) < 0 ||
@@ -1453,7 +1461,7 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
         srcSpec = virBufferContentAndReset(&buf);
     }
 
-    srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
+    srcList = virConnectFindStoragePoolSources(priv->conn, type, srcSpec, 0);
     VIR_FREE(srcSpec);
     if (srcList == NULL) {
         vshError(ctl, _("Failed to find any %s pool sources"), type);
@@ -1496,6 +1504,7 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
 {
     const char *type = NULL, *srcSpecFile = NULL;
     char *srcSpec = NULL, *srcList;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
@@ -1507,7 +1516,7 @@ cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
                                       &srcSpec) < 0)
         return false;
 
-    srcList = virConnectFindStoragePoolSources(ctl->conn, type, srcSpec, 0);
+    srcList = virConnectFindStoragePoolSources(priv->conn, type, srcSpec, 0);
     VIR_FREE(srcSpec);
     if (srcList == NULL) {
         vshError(ctl, _("Failed to find any %s pool sources"), type);
@@ -1551,7 +1560,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", NULL)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virStoragePoolGetName(pool));
@@ -1563,7 +1572,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
         double val;
         const char *unit;
         vshPrint(ctl, "%-15s %s\n", _("State:"),
-                 vshStoragePoolStateToString(info.state));
+                 virshStoragePoolStateToString(info.state));
 
         /* Check and display whether the pool is persistent or not */
         persistent = virStoragePoolIsPersistent(pool);
@@ -1626,8 +1635,7 @@ cmdPoolName(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
 
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-                                           VSH_BYUUID)))
+    if (!(pool = virshCommandOptPoolBy(ctl, cmd, "pool", NULL, VIRSH_BYUUID)))
         return false;
 
     vshPrint(ctl, "%s\n", virStoragePoolGetName(pool));
@@ -1664,7 +1672,7 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name = NULL;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
          return false;
 
     if (virStoragePoolCreate(pool, 0) == 0) {
@@ -1707,7 +1715,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(pool = vshCommandOptPool(ctl, cmd, "pool", &name)))
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
         return false;
 
     if (virStoragePoolUndefine(pool) == 0) {
@@ -1749,8 +1757,7 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
-    if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-                                           VSH_BYNAME)))
+    if (!(pool = virshCommandOptPoolBy(ctl, cmd, "pool", NULL, VIRSH_BYNAME)))
         return false;
 
     if (virStoragePoolGetUUIDString(pool, uuid) != -1)
@@ -1792,8 +1799,9 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool_edited = NULL;
     unsigned int flags = VIR_STORAGE_XML_INACTIVE;
     char *tmp_desc = NULL;
+    virshControlPtr priv = ctl->privData;
 
-    pool = vshCommandOptPool(ctl, cmd, "pool", NULL);
+    pool = virshCommandOptPool(ctl, cmd, "pool", NULL);
     if (pool == NULL)
         goto cleanup;
 
@@ -1818,7 +1826,7 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
         goto edit_cleanup;                                              \
     } while (0)
 #define EDIT_DEFINE \
-    (pool_edited = virStoragePoolDefineXML(ctl->conn, doc_edited, 0))
+    (pool_edited = virStoragePoolDefineXML(priv->conn, doc_edited, 0))
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Pool %s XML configuration edited.\n"),

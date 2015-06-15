@@ -28,8 +28,8 @@
 
 # include "virsh.h"
 
-char *vshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
-                              bool title, unsigned int flags)
+char *virshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
+                                bool title, unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 extern const vshCmdDef domMonitoringCmds[];

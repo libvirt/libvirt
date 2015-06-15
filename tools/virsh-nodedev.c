@@ -65,6 +65,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -72,7 +73,7 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    dev = virNodeDeviceCreateXML(ctl->conn, buffer, 0);
+    dev = virNodeDeviceCreateXML(priv->conn, buffer, 0);
     VIR_FREE(buffer);
 
     if (dev != NULL) {
@@ -123,6 +124,7 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     const char *device_value = NULL;
     char **arr = NULL;
     int narr;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
         return false;
@@ -137,9 +139,9 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
         if (!virValidateWWN(arr[0]) || !virValidateWWN(arr[1]))
             goto cleanup;
 
-        dev = virNodeDeviceLookupSCSIHostByWWN(ctl->conn, arr[0], arr[1], 0);
+        dev = virNodeDeviceLookupSCSIHostByWWN(priv->conn, arr[0], arr[1], 0);
     } else {
-        dev = virNodeDeviceLookupByName(ctl->conn, device_value);
+        dev = virNodeDeviceLookupByName(priv->conn, device_value);
     }
 
     if (!dev) {
@@ -162,22 +164,22 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-struct vshNodeList {
+struct virshNodeList {
     char **names;
     char **parents;
 };
 
 static const char *
-vshNodeListLookup(int devid, bool parent, void *opaque)
+virshNodeListLookup(int devid, bool parent, void *opaque)
 {
-    struct vshNodeList *arrays = opaque;
+    struct virshNodeList *arrays = opaque;
     if (parent)
         return arrays->parents[devid];
     return arrays->names[devid];
 }
 
 static int
-vshNodeDeviceSorter(const void *a, const void *b)
+virshNodeDeviceSorter(const void *a, const void *b)
 {
     virNodeDevicePtr *na = (virNodeDevicePtr *) a;
     virNodeDevicePtr *nb = (virNodeDevicePtr *) b;
@@ -192,14 +194,14 @@ vshNodeDeviceSorter(const void *a, const void *b)
                          virNodeDeviceGetName(*nb));
 }
 
-struct vshNodeDeviceList {
+struct virshNodeDeviceList {
     virNodeDevicePtr *devices;
     size_t ndevices;
 };
-typedef struct vshNodeDeviceList *vshNodeDeviceListPtr;
+typedef struct virshNodeDeviceList *virshNodeDeviceListPtr;
 
 static void
-vshNodeDeviceListFree(vshNodeDeviceListPtr list)
+virshNodeDeviceListFree(virshNodeDeviceListPtr list)
 {
     size_t i;
 
@@ -213,13 +215,13 @@ vshNodeDeviceListFree(vshNodeDeviceListPtr list)
     VIR_FREE(list);
 }
 
-static vshNodeDeviceListPtr
-vshNodeDeviceListCollect(vshControl *ctl,
+static virshNodeDeviceListPtr
+virshNodeDeviceListCollect(vshControl *ctl,
                          char **capnames,
                          int ncapnames,
                          unsigned int flags)
 {
-    vshNodeDeviceListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNodeDeviceListPtr list = vshMalloc(ctl, sizeof(*list));
     size_t i;
     int ret;
     virNodeDevicePtr device;
@@ -227,9 +229,10 @@ vshNodeDeviceListCollect(vshControl *ctl,
     size_t deleted = 0;
     int ndevices = 0;
     char **names = NULL;
+    virshControlPtr priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
-    if ((ret = virConnectListAllNodeDevices(ctl->conn,
+    if ((ret = virConnectListAllNodeDevices(priv->conn,
                                             &list->devices,
                                             flags)) >= 0) {
         list->ndevices = ret;
@@ -249,7 +252,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
     /* fall back to old method (0.10.1 and older) */
     vshResetLibvirtError();
 
-    ndevices = virNodeNumOfDevices(ctl->conn, NULL, 0);
+    ndevices = virNodeNumOfDevices(priv->conn, NULL, 0);
     if (ndevices < 0) {
         vshError(ctl, "%s", _("Failed to count node devices"));
         goto cleanup;
@@ -260,7 +263,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
 
     names = vshMalloc(ctl, sizeof(char *) * ndevices);
 
-    ndevices = virNodeListDevices(ctl->conn, NULL, names, ndevices, 0);
+    ndevices = virNodeListDevices(priv->conn, NULL, names, ndevices, 0);
     if (ndevices < 0) {
         vshError(ctl, "%s", _("Failed to list node devices"));
         goto cleanup;
@@ -271,7 +274,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
 
     /* get the node devices */
     for (i = 0; i < ndevices; i++) {
-        if (!(device = virNodeDeviceLookupByName(ctl->conn, names[i])))
+        if (!(device = virNodeDeviceLookupByName(priv->conn, names[i])))
             continue;
         list->devices[list->ndevices++] = device;
     }
@@ -336,7 +339,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
     /* sort the list */
     if (list->devices && list->ndevices)
         qsort(list->devices, list->ndevices,
-              sizeof(*list->devices), vshNodeDeviceSorter);
+              sizeof(*list->devices), virshNodeDeviceSorter);
 
     /* truncate the list if filter simulation deleted entries */
     if (deleted)
@@ -350,7 +353,7 @@ vshNodeDeviceListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        vshNodeDeviceListFree(list);
+        virshNodeDeviceListFree(list);
         list = NULL;
     }
 
@@ -392,7 +395,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     unsigned int flags = 0;
     char **caps = NULL;
     int ncaps = 0;
-    vshNodeDeviceListPtr list = NULL;
+    virshNodeDeviceListPtr list = NULL;
     int cap_type = -1;
 
     ignore_value(vshCommandOptString(ctl, cmd, "cap", &cap_str));
@@ -455,7 +458,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         }
     }
 
-    if (!(list = vshNodeDeviceListCollect(ctl, caps, ncaps, flags))) {
+    if (!(list = virshNodeDeviceListCollect(ctl, caps, ncaps, flags))) {
         ret = false;
         goto cleanup;
     }
@@ -463,7 +466,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (tree) {
         char **parents = vshMalloc(ctl, sizeof(char *) * list->ndevices);
         char **names = vshMalloc(ctl, sizeof(char *) * list->ndevices);
-        struct vshNodeList arrays = { names, parents };
+        struct virshNodeList arrays = { names, parents };
 
         for (i = 0; i < list->ndevices; i++)
             names[i] = vshStrdup(ctl, virNodeDeviceGetName(list->devices[i]));
@@ -480,7 +483,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         for (i = 0; i < list->ndevices; i++) {
             if (parents[i] == NULL &&
-                vshTreePrint(ctl, vshNodeListLookup, &arrays,
+                vshTreePrint(ctl, virshNodeListLookup, &arrays,
                              list->ndevices, i) < 0)
                 ret = false;
         }
@@ -498,7 +501,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
  cleanup:
     virStringFreeList(caps);
-    vshNodeDeviceListFree(list);
+    virshNodeDeviceListFree(list);
     return ret;
 }
 
@@ -534,6 +537,7 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     char **arr = NULL;
     int narr;
     bool ret = false;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
          return false;
@@ -548,9 +552,9 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
         if (!virValidateWWN(arr[0]) || !virValidateWWN(arr[1]))
             goto cleanup;
 
-        device = virNodeDeviceLookupSCSIHostByWWN(ctl->conn, arr[0], arr[1], 0);
+        device = virNodeDeviceLookupSCSIHostByWWN(priv->conn, arr[0], arr[1], 0);
     } else {
-        device = virNodeDeviceLookupByName(ctl->conn, device_value);
+        device = virNodeDeviceLookupByName(priv->conn, device_value);
     }
 
     if (!device) {
@@ -606,13 +610,14 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     const char *driverName = NULL;
     virNodeDevicePtr device;
     bool ret = true;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
 
     ignore_value(vshCommandOptString(ctl, cmd, "driver", &driverName));
 
-    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+    if (!(device = virNodeDeviceLookupByName(priv->conn, name))) {
         vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
@@ -666,11 +671,12 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virNodeDevicePtr device;
     bool ret = true;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
 
-    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+    if (!(device = virNodeDeviceLookupByName(priv->conn, name))) {
         vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }
@@ -715,11 +721,12 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     virNodeDevicePtr device;
     bool ret = true;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
 
-    if (!(device = virNodeDeviceLookupByName(ctl->conn, name))) {
+    if (!(device = virNodeDeviceLookupByName(priv->conn, name))) {
         vshError(ctl, _("Could not find matching device '%s'"), name);
         return false;
     }

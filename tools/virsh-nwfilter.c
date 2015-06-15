@@ -33,13 +33,15 @@
 #include "virutil.h"
 
 virNWFilterPtr
-vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
-                        const char **name, unsigned int flags)
+virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
+                          const char **name, unsigned int flags)
 {
     virNWFilterPtr nwfilter = NULL;
     const char *n = NULL;
     const char *optname = "nwfilter";
-    virCheckFlags(VSH_BYUUID | VSH_BYNAME, NULL);
+    virshControlPtr priv = ctl->privData;
+
+    virCheckFlags(VIRSH_BYUUID | VIRSH_BYNAME, NULL);
 
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
@@ -51,16 +53,16 @@ vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
         *name = n;
 
     /* try it by UUID */
-    if ((flags & VSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
+    if ((flags & VIRSH_BYUUID) && strlen(n) == VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter UUID\n",
                  cmd->def->name, optname);
-        nwfilter = virNWFilterLookupByUUIDString(ctl->conn, n);
+        nwfilter = virNWFilterLookupByUUIDString(priv->conn, n);
     }
     /* try it by NAME */
-    if (!nwfilter && (flags & VSH_BYNAME)) {
+    if (!nwfilter && (flags & VIRSH_BYNAME)) {
         vshDebug(ctl, VSH_ERR_DEBUG, "%s: <%s> trying as nwfilter NAME\n",
                  cmd->def->name, optname);
-        nwfilter = virNWFilterLookupByName(ctl->conn, n);
+        nwfilter = virNWFilterLookupByName(priv->conn, n);
     }
 
     if (!nwfilter)
@@ -98,6 +100,7 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -105,7 +108,7 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    nwfilter = virNWFilterDefineXML(ctl->conn, buffer);
+    nwfilter = virNWFilterDefineXML(priv->conn, buffer);
     VIR_FREE(buffer);
 
     if (nwfilter != NULL) {
@@ -148,7 +151,7 @@ cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     const char *name;
 
-    if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, &name)))
+    if (!(nwfilter = virshCommandOptNWFilter(ctl, cmd, &name)))
         return false;
 
     if (virNWFilterUndefine(nwfilter) == 0) {
@@ -191,7 +194,7 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
     char *dump;
 
-    if (!(nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL)))
+    if (!(nwfilter = virshCommandOptNWFilter(ctl, cmd, NULL)))
         return false;
 
     dump = virNWFilterGetXMLDesc(nwfilter, 0);
@@ -207,7 +210,7 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 }
 
 static int
-vshNWFilterSorter(const void *a, const void *b)
+virshNWFilterSorter(const void *a, const void *b)
 {
     virNWFilterPtr *fa = (virNWFilterPtr *) a;
     virNWFilterPtr *fb = (virNWFilterPtr *) b;
@@ -222,14 +225,14 @@ vshNWFilterSorter(const void *a, const void *b)
                          virNWFilterGetName(*fb));
 }
 
-struct vshNWFilterList {
+struct virshNWFilterList {
     virNWFilterPtr *filters;
     size_t nfilters;
 };
-typedef struct vshNWFilterList *vshNWFilterListPtr;
+typedef struct virshNWFilterList *virshNWFilterListPtr;
 
 static void
-vshNWFilterListFree(vshNWFilterListPtr list)
+virshNWFilterListFree(virshNWFilterListPtr list)
 {
     size_t i;
 
@@ -243,11 +246,11 @@ vshNWFilterListFree(vshNWFilterListPtr list)
     VIR_FREE(list);
 }
 
-static vshNWFilterListPtr
-vshNWFilterListCollect(vshControl *ctl,
-                       unsigned int flags)
+static virshNWFilterListPtr
+virshNWFilterListCollect(vshControl *ctl,
+                         unsigned int flags)
 {
-    vshNWFilterListPtr list = vshMalloc(ctl, sizeof(*list));
+    virshNWFilterListPtr list = vshMalloc(ctl, sizeof(*list));
     size_t i;
     int ret;
     virNWFilterPtr filter;
@@ -255,9 +258,10 @@ vshNWFilterListCollect(vshControl *ctl,
     size_t deleted = 0;
     int nfilters = 0;
     char **names = NULL;
+    virshControlPtr priv = ctl->privData;
 
     /* try the list with flags support (0.10.2 and later) */
-    if ((ret = virConnectListAllNWFilters(ctl->conn,
+    if ((ret = virConnectListAllNWFilters(priv->conn,
                                           &list->filters,
                                           flags)) >= 0) {
         list->nfilters = ret;
@@ -279,7 +283,7 @@ vshNWFilterListCollect(vshControl *ctl,
     /* fall back to old method (0.9.13 and older) */
     vshResetLibvirtError();
 
-    nfilters = virConnectNumOfNWFilters(ctl->conn);
+    nfilters = virConnectNumOfNWFilters(priv->conn);
     if (nfilters < 0) {
         vshError(ctl, "%s", _("Failed to count network filters"));
         goto cleanup;
@@ -290,7 +294,7 @@ vshNWFilterListCollect(vshControl *ctl,
 
     names = vshMalloc(ctl, sizeof(char *) * nfilters);
 
-    nfilters = virConnectListNWFilters(ctl->conn, names, nfilters);
+    nfilters = virConnectListNWFilters(priv->conn, names, nfilters);
     if (nfilters < 0) {
         vshError(ctl, "%s", _("Failed to list network filters"));
         goto cleanup;
@@ -301,7 +305,7 @@ vshNWFilterListCollect(vshControl *ctl,
 
     /* get the network filters */
     for (i = 0; i < nfilters; i++) {
-        if (!(filter = virNWFilterLookupByName(ctl->conn, names[i])))
+        if (!(filter = virNWFilterLookupByName(priv->conn, names[i])))
             continue;
         list->filters[list->nfilters++] = filter;
     }
@@ -313,7 +317,7 @@ vshNWFilterListCollect(vshControl *ctl,
     /* sort the list */
     if (list->filters && list->nfilters)
         qsort(list->filters, list->nfilters,
-              sizeof(*list->filters), vshNWFilterSorter);
+              sizeof(*list->filters), virshNWFilterSorter);
 
     /* truncate the list for not found filter objects */
     if (deleted)
@@ -327,7 +331,7 @@ vshNWFilterListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        vshNWFilterListFree(list);
+        virshNWFilterListFree(list);
         list = NULL;
     }
 
@@ -356,9 +360,9 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    vshNWFilterListPtr list = NULL;
+    virshNWFilterListPtr list = NULL;
 
-    if (!(list = vshNWFilterListCollect(ctl, 0)))
+    if (!(list = virshNWFilterListCollect(ctl, 0)))
         return false;
 
     vshPrintExtra(ctl, " %-36s  %-20s \n", _("UUID"), _("Name"));
@@ -374,7 +378,7 @@ cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
                  virNWFilterGetName(nwfilter));
     }
 
-    vshNWFilterListFree(list);
+    virshNWFilterListFree(list);
     return true;
 }
 
@@ -406,8 +410,9 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virNWFilterPtr nwfilter = NULL;
     virNWFilterPtr nwfilter_edited = NULL;
+    virshControlPtr priv = ctl->privData;
 
-    nwfilter = vshCommandOptNWFilter(ctl, cmd, NULL);
+    nwfilter = virshCommandOptNWFilter(ctl, cmd, NULL);
     if (nwfilter == NULL)
         goto cleanup;
 
@@ -421,7 +426,7 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
         goto edit_cleanup;                                      \
     } while (0)
 #define EDIT_DEFINE \
-    (nwfilter_edited = virNWFilterDefineXML(ctl->conn, doc_edited))
+    (nwfilter_edited = virNWFilterDefineXML(priv->conn, doc_edited))
 #include "virsh-edit.c"
 
     vshPrint(ctl, _("Network filter %s XML configuration edited.\n"),

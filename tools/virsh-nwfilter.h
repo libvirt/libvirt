@@ -29,13 +29,13 @@
 # include "virsh.h"
 
 virNWFilterPtr
-vshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
-                        const char **name, unsigned int flags);
+virshCommandOptNWFilterBy(vshControl *ctl, const vshCmd *cmd,
+                          const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define vshCommandOptNWFilter(_ctl, _cmd, _name)                    \
-    vshCommandOptNWFilterBy(_ctl, _cmd, _name,                      \
-                            VSH_BYUUID|VSH_BYNAME)
+# define virshCommandOptNWFilter(_ctl, _cmd, _name)                    \
+    virshCommandOptNWFilterBy(_ctl, _cmd, _name,                       \
+                              VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef nwfilterCmds[];
 

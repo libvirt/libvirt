@@ -28,15 +28,15 @@
 
 # include "virsh.h"
 
-virStorageVolPtr vshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
-                                    const char *optname,
-                                    const char *pooloptname,
-                                    const char **name, unsigned int flags);
+virStorageVolPtr virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
+                                      const char *optname,
+                                      const char *pooloptname,
+                                      const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define vshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name)   \
-    vshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,     \
-                           VSH_BYUUID|VSH_BYNAME)
+# define virshCommandOptVol(_ctl, _cmd, _optname, _pooloptname, _name)   \
+    virshCommandOptVolBy(_ctl, _cmd, _optname, _pooloptname, _name,      \
+                         VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef storageVolCmds[];
 

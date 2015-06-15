@@ -28,10 +28,10 @@
 
 #  include <virsh.h>
 
-int vshRunConsole(vshControl *ctl,
-                  virDomainPtr dom,
-                  const char *dev_name,
-                  unsigned int flags);
+int virshRunConsole(vshControl *ctl,
+                    virDomainPtr dom,
+                    const char *dev_name,
+                    unsigned int flags);
 
 # endif /* !WIN32 */
 

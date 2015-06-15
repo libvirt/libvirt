@@ -28,14 +28,14 @@
 
 # include "virsh.h"
 
-virInterfacePtr vshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
-                                         const char *optname,
-                                         const char **name, unsigned int flags);
+virInterfacePtr virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
+                                           const char *optname,
+                                           const char **name, unsigned int flags);
 
 /* default is lookup by Name and MAC */
-# define vshCommandOptInterface(_ctl, _cmd, _name)                    \
-    vshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name,                \
-                             VSH_BYMAC|VSH_BYNAME)
+# define virshCommandOptInterface(_ctl, _cmd, _name)                    \
+    virshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name,                 \
+                               VIRSH_BYMAC | VIRSH_BYNAME)
 
 extern const vshCmdDef ifaceCmds[];
 

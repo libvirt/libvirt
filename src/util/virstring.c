@@ -1020,3 +1020,35 @@ virStringStripControlChars(char *str)
     }
     str[j] = '\0';
 }
+
+/**
+ * virStringToUpper:
+ * @str: string to capitalize
+ * @dst: where to store the new capitalized string
+ *
+ * Capitalize the string with replacement of all '-' characters for '_'
+ * characters. Caller frees the result.
+ *
+ * Returns 0 if src is NULL, 1 if capitalization was successfull, -1 on failure.
+ */
+int
+virStringToUpper(char **dst, const char *src)
+{
+    char *cap = NULL;
+    size_t i;
+
+    if (!src)
+        return 0;
+
+    if (VIR_ALLOC_N(cap, strlen(src) + 1) < 0)
+        return -1;
+
+    for (i = 0; src[i]; i++) {
+        cap[i] = c_toupper(src[i]);
+        if (cap[i] == '-')
+            cap[i] = '_';
+    }
+
+    *dst = cap;
+    return 1;
+}

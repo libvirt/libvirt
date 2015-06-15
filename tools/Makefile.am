@@ -179,7 +179,11 @@ virt_login_shell_CFLAGS =					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)
 
+virt_shell_SOURCES =					\
+		vsh.c vsh.h
+
 virsh_SOURCES =							\
+		$(virt_shell_SOURCES)			\
 		virsh.c virsh.h					\
 		virsh-console.c virsh-console.h			\
 		virsh-domain.c virsh-domain.h			\

@@ -295,7 +295,7 @@ virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
 
 
 static char
-vshGetEscapeChar(const char *s)
+virshGetEscapeChar(const char *s)
 {
     if (*s == '^')
         return CONTROL(c_toupper(s[1]));
@@ -305,12 +305,13 @@ vshGetEscapeChar(const char *s)
 
 
 int
-vshRunConsole(vshControl *ctl,
-              virDomainPtr dom,
-              const char *dev_name,
-              unsigned int flags)
+virshRunConsole(vshControl *ctl,
+                virDomainPtr dom,
+                const char *dev_name,
+                unsigned int flags)
 {
     virConsolePtr con = NULL;
+    virshControlPtr priv = ctl->privData;
     int ret = -1;
 
     struct sigaction old_sigquit;
@@ -341,7 +342,7 @@ vshRunConsole(vshControl *ctl,
     if (VIR_ALLOC(con) < 0)
         goto cleanup;
 
-    con->escapeChar = vshGetEscapeChar(ctl->escapeChar);
+    con->escapeChar = virshGetEscapeChar(priv->escapeChar);
     con->st = virStreamNew(virDomainGetConnect(dom),
                            VIR_STREAM_NONBLOCK);
     if (!con->st)

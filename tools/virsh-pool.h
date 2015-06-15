@@ -29,13 +29,13 @@
 # include "virsh.h"
 
 virStoragePoolPtr
-vshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
-                    const char **name, unsigned int flags);
+virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
+                      const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define vshCommandOptPool(_ctl, _cmd, _optname, _name)           \
-    vshCommandOptPoolBy(_ctl, _cmd, _optname, _name,             \
-                           VSH_BYUUID|VSH_BYNAME)
+# define virshCommandOptPool(_ctl, _cmd, _optname, _name)           \
+    virshCommandOptPoolBy(_ctl, _cmd, _optname, _name,              \
+                          VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef storagePoolCmds[];
 

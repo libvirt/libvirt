@@ -2189,6 +2189,7 @@ virStringSplit;
 virStringSplitCount;
 virStringStripControlChars;
 virStringStripIPv6Brackets;
+virStringToUpper;
 virStrncpy;
 virStrndup;
 virStrToDouble;
