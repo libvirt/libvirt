@@ -5400,7 +5400,6 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
 {
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
-    virDomainDefPtr targetDef;
     int ret = -1;
     int hostcpus;
     virBitmapPtr cpumask = NULL;
@@ -5415,19 +5414,16 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (virDomainGetEmulatorPinInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjGetDefs(vm, flags, &def, &targetDef) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
-
-    if (def)
-        targetDef = def;
 
     if ((hostcpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    if (targetDef->cputune.emulatorpin) {
-        cpumask = targetDef->cputune.emulatorpin;
-    } else if (targetDef->cpumask) {
-        cpumask = targetDef->cpumask;
+    if (def->cputune.emulatorpin) {
+        cpumask = def->cputune.emulatorpin;
+    } else if (def->cpumask) {
+        cpumask = def->cpumask;
     } else {
         if (!(bitmap = virBitmapNew(hostcpus)))
             goto cleanup;
