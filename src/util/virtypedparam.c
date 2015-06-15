@@ -47,11 +47,19 @@ VIR_ENUM_IMPL(virTypedParameter, VIR_TYPED_PARAM_LAST,
  * internal utility functions (those in libvirt_private.syms) may
  * report errors that the caller will dispatch.  */
 
+static int
+virTypedParamsSortName(const void *left, const void *right)
+{
+    const virTypedParameter *param_left = left, *param_right = right;
+    return strcmp(param_left->field, param_right->field);
+}
+
 /* Validate that PARAMS contains only recognized parameter names with
- * correct types, and with no duplicates.  Pass in as many name/type
- * pairs as appropriate, and pass NULL to end the list of accepted
- * parameters.  Return 0 on success, -1 on failure with error message
- * already issued.  */
+ * correct types, and with no duplicates except for parameters
+ * specified with VIR_TYPED_PARAM_MULTIPLE flag in type.
+ * Pass in as many name/type pairs as appropriate, and pass NULL to end
+ * the list of accepted parameters.  Return 0 on success, -1 on failure
+ * with error message already issued.  */
 int
 virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
 {
@@ -60,59 +68,82 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     size_t i, j;
     const char *name;
     int type;
+    size_t nkeys = 0, nkeysalloc = 0;
+    virTypedParameterPtr sorted = NULL, keys = NULL;
 
     va_start(ap, nparams);
 
-    /* Yes, this is quadratic, but since we reject duplicates and
-     * unknowns, it is constrained by the number of var-args passed
-     * in, which is expected to be small enough to not be
-     * noticeable.  */
-    for (i = 0; i < nparams; i++) {
-        va_end(ap);
-        va_start(ap, nparams);
+    if (VIR_ALLOC_N(sorted, nparams) < 0)
+        goto cleanup;
 
-        name = va_arg(ap, const char *);
-        while (name) {
-            type = va_arg(ap, int);
-            if (STREQ(params[i].field, name)) {
-                if (params[i].type != type) {
-                    const char *badtype;
+    /* Here we intentionally don't copy values */
+    memcpy(sorted, params, sizeof(*params) * nparams);
+    qsort(sorted, nparams, sizeof(*sorted), virTypedParamsSortName);
 
-                    badtype = virTypedParameterTypeToString(params[i].type);
-                    if (!badtype)
-                        badtype = virTypedParameterTypeToString(0);
-                    virReportError(VIR_ERR_INVALID_ARG,
-                                   _("invalid type '%s' for parameter '%s', "
-                                     "expected '%s'"),
-                                   badtype, params[i].field,
-                                   virTypedParameterTypeToString(type));
-                }
-                break;
-            }
-            name = va_arg(ap, const char *);
-        }
-        if (!name) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("parameter '%s' not supported"),
-                           params[i].field);
+    name = va_arg(ap, const char *);
+    while (name) {
+        type = va_arg(ap, int);
+        if (VIR_RESIZE_N(keys, nkeysalloc, nkeys, 1) < 0)
+            goto cleanup;
+
+        if (virStrcpyStatic(keys[nkeys].field, name) == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Field name '%s' too long"), name);
             goto cleanup;
         }
-        for (j = 0; j < i; j++) {
-            if (STREQ(params[i].field, params[j].field)) {
+
+        keys[nkeys].type = type & ~VIR_TYPED_PARAM_MULTIPLE;
+        /* Value is not used anyway */
+        keys[nkeys].value.i = type & VIR_TYPED_PARAM_MULTIPLE;
+
+        nkeys++;
+        name = va_arg(ap, const char *);
+    }
+
+    qsort(keys, nkeys, sizeof(*keys), virTypedParamsSortName);
+
+    for (i = 0, j = 0; i < nparams && j < nkeys;) {
+        if (STRNEQ(sorted[i].field, keys[j].field)) {
+            j++;
+        } else {
+            if (i > j && !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parameter '%s' occurs multiple times"),
-                               params[i].field);
+                               sorted[i].field);
                 goto cleanup;
             }
+            if (sorted[i].type != keys[j].type) {
+                const char *badtype;
+
+                badtype = virTypedParameterTypeToString(sorted[i].type);
+                if (!badtype)
+                    badtype = virTypedParameterTypeToString(0);
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("invalid type '%s' for parameter '%s', "
+                                 "expected '%s'"),
+                               badtype, sorted[i].field,
+                               virTypedParameterTypeToString(keys[j].type));
+                goto cleanup;
+            }
+            i++;
         }
+    }
+
+    if (j == nkeys && i != nparams) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("parameter '%s' not supported"),
+                       sorted[i].field);
+        goto cleanup;
     }
 
     ret = 0;
  cleanup:
     va_end(ap);
+    VIR_FREE(sorted);
+    VIR_FREE(keys);
     return ret;
-
 }
+
 
 /* Check if params contains only specified parameter names. Return true if
  * only specified names are present in params, false if params contains any
