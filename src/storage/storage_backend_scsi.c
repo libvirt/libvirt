@@ -301,27 +301,25 @@ getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
                        char **block_device)
 {
     char *blockp = NULL;
-    int retval = 0;
+    int retval = -1;
 
     /* old-style; just parse out the sd */
-    blockp = strrchr(block_name, ':');
-    if (blockp == NULL) {
+    if (!(blockp = strrchr(block_name, ':'))) {
         /* Hm, wasn't what we were expecting; have to give up */
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse block name %s"),
                        block_name);
-        retval = -1;
+        goto cleanup;
     } else {
         blockp++;
-        if (VIR_STRDUP(*block_device, blockp) < 0) {
-            retval = -1;
-            goto out;
-        }
+        if (VIR_STRDUP(*block_device, blockp) < 0)
+            goto cleanup;
 
         VIR_DEBUG("Block device is '%s'", *block_device);
     }
 
- out:
+    retval = 0;
+ cleanup:
     return retval;
 }
 
