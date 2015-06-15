@@ -385,6 +385,7 @@ virDomainObjEndAPI;
 virDomainObjFormat;
 virDomainObjGetDefs;
 virDomainObjGetMetadata;
+virDomainObjGetOneDef;
 virDomainObjGetPersistentDef;
 virDomainObjGetState;
 virDomainObjListAdd;

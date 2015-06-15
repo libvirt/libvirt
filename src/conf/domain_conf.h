@@ -2553,6 +2553,7 @@ int virDomainObjGetDefs(virDomainObjPtr vm,
                         unsigned int flags,
                         virDomainDefPtr *liveDef,
                         virDomainDefPtr *persDef);
+virDomainDefPtr virDomainObjGetOneDef(virDomainObjPtr vm, unsigned int flags);
 
 int
 virDomainLiveConfigHelperMethod(virCapsPtr caps,
