@@ -286,7 +286,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "pci-serial",
               "aarch64-off",
 
-              "vhost-user-multiq", /* 190 */
+              "vhost-user-multiqueue", /* 190 */
     );
 
 
@@ -3317,7 +3317,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* vhost-user supports multi-queue from v2.4.0 onwards,
      * but there is no way to query for that capability */
     if (qemuCaps->version >= 2004000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQ);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;

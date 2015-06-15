@@ -8148,7 +8148,7 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
                       net->info.alias, net->info.alias);
 
     if (queues > 1) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQ)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("multi-queue is not supported for vhost-user "
                              "with this QEMU binary"));
