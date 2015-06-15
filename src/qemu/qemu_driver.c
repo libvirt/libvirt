@@ -11246,12 +11246,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
     int ret = -1;
     virDomainNetDefPtr net = NULL, persistentNet = NULL;
     virNetDevBandwidthPtr bandwidth = NULL, newBandwidth = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     bool inboundSpecified = false, outboundSpecified = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -11280,31 +11280,24 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (virDomainSetInterfaceParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        net = virDomainNetFind(vm->def, device);
-        if (!net) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Can't find device %s"), device);
-            goto endjob;
-        }
+    if (def &&
+        !(net = virDomainNetFind(vm->def, device))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find device %s"), device);
+        goto endjob;
     }
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        persistentNet = virDomainNetFind(persistentDef, device);
-        if (!persistentNet) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Can't find device %s"), device);
-            goto endjob;
-        }
+
+    if (persistentDef &&
+        !(persistentNet = virDomainNetFind(persistentDef, device))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Can't find device %s"), device);
+        goto endjob;
     }
 
     if ((VIR_ALLOC(bandwidth) < 0) ||
@@ -11340,7 +11333,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (!bandwidth->out->average)
         VIR_FREE(bandwidth->out);
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (net) {
         if (VIR_ALLOC(newBandwidth) < 0)
             goto endjob;
 
@@ -11392,7 +11385,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentNet) {
         if (!persistentNet->bandwidth) {
             persistentNet->bandwidth = bandwidth;
             bandwidth = NULL;
@@ -11426,7 +11419,6 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virNetDevBandwidthFree(bandwidth);
     virNetDevBandwidthFree(newBandwidth);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
