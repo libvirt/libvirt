@@ -255,44 +255,41 @@ getNewStyleBlockDevice(const char *lun_path,
     char *block_path = NULL;
     DIR *block_dir = NULL;
     struct dirent *block_dirent = NULL;
-    int retval = 0;
+    int retval = -1;
     int direrr;
 
     if (virAsprintf(&block_path, "%s/block", lun_path) < 0)
-        goto out;
+        goto cleanup;
 
     VIR_DEBUG("Looking for block device in '%s'", block_path);
 
-    block_dir = opendir(block_path);
-    if (block_dir == NULL) {
+    if (!(block_dir = opendir(block_path))) {
         virReportSystemError(errno,
                              _("Failed to opendir sysfs path '%s'"),
                              block_path);
-        retval = -1;
-        goto out;
+        goto cleanup;
     }
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
-
         if (STREQLEN(block_dirent->d_name, ".", 1))
             continue;
 
-        if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0) {
-            closedir(block_dir);
-            retval = -1;
-            goto out;
-        }
+        if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0)
+            goto cleanup;
 
         VIR_DEBUG("Block device is '%s'", *block_device);
 
         break;
     }
+
     if (direrr < 0)
-        retval = -1;
+        goto cleanup;
 
-    closedir(block_dir);
+    retval = 0;
 
- out:
+ cleanup:
+    if (block_dir)
+        closedir(block_dir);
     VIR_FREE(block_path);
     return retval;
 }
