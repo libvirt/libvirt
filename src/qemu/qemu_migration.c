@@ -2699,14 +2699,14 @@ qemuMigrationCleanup(virDomainObjPtr vm,
 
 
 /* The caller is supposed to lock the vm and start a migration job. */
-static char
-*qemuMigrationBeginPhase(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         const char *xmlin,
-                         const char *dname,
-                         char **cookieout,
-                         int *cookieoutlen,
-                         unsigned long flags)
+static char *
+qemuMigrationBeginPhase(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        const char *xmlin,
+                        const char *dname,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        unsigned long flags)
 {
     char *rv = NULL;
     qemuMigrationCookiePtr mig = NULL;
