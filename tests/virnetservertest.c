@@ -119,6 +119,8 @@ testCreateServer(const char *host, int family)
         goto error;
 
  cleanup:
+    if (!srv)
+        virDispatchError(NULL);
     virObjectUnref(cln1);
     virObjectUnref(cln2);
     virObjectUnref(svc1);
@@ -235,14 +237,8 @@ static int testExecRestart(const void *opaque)
     ret = 0;
 
  cleanup:
-    if (ret < 0) {
-        virErrorPtr err = virGetLastError();
-        /* Rather be safe, we have lot of missing errors */
-        if (err)
-            fprintf(stderr, "%s\n", err->message);
-        else
-            fprintf(stderr, "%s\n", "Unknown error");
-    }
+    if (ret < 0)
+        virDispatchError(NULL);
  fail:
     VIR_FREE(infile);
     VIR_FREE(outfile);
@@ -263,6 +259,12 @@ static int
 mymain(void)
 {
     int ret = 0;
+
+    if (virInitialize() < 0 ||
+        virEventRegisterDefaultImpl() < 0) {
+        virDispatchError(NULL);
+        return EXIT_FAILURE;
+    }
 
     /* Hack to make it easier to generate new JSON files when
      * the RPC classes change. Just set this env var, save
