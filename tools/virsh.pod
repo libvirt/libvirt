@@ -989,12 +989,12 @@ unlimited. The hypervisor can choose whether to reject the value or
 convert it to the maximum value allowed.
 
 =item B<blockcopy> I<domain> I<path> { I<dest> [I<format>] [I<--blockdev>]
-| I<xml> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
+| I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
 [I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
 [I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>]
 
 Copy a disk backing image chain to a destination.  Either I<dest> as
-the destination file name, or I<xml> as the name of an XML file containing
+the destination file name, or I<--xml> with the name of an XML file containing
 a top-level <disk> element describing the destination, must be present.
 Additionally, if I<dest> is given, I<format> should be specified to declare
 the format of the destination (if I<format> is omitted, then libvirt
