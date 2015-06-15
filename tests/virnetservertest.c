@@ -35,6 +35,13 @@ testCreateServer(const char *host, int family)
     virNetServerClientPtr cln1 = NULL, cln2 = NULL;
     virNetSocketPtr sk1 = NULL, sk2 = NULL;
     int fdclient[2];
+    const char *mdns_entry = NULL;
+    const char *mdns_group = NULL;
+
+# ifdef WITH_AVAHI
+    mdns_entry = "libvirt-ro";
+    mdns_group = "libvirtTest";
+# endif
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {
         virReportSystemError(errno, "%s",
@@ -44,11 +51,7 @@ testCreateServer(const char *host, int family)
 
     if (!(srv = virNetServerNew(10, 50, 5, 100, 10,
                                 120, 5, true,
-# ifdef WITH_AVAHI
-                                "libvirtTest",
-# else
-                                NULL,
-# endif
+                                mdns_group,
                                 NULL,
                                 NULL,
                                 NULL,
@@ -79,9 +82,9 @@ testCreateServer(const char *host, int family)
                                            5)))
         goto error;
 
-    if (virNetServerAddService(srv, svc1, "libvirt-ro") < 0)
+    if (virNetServerAddService(srv, svc1, mdns_entry) < 0)
         goto error;
-    if (virNetServerAddService(srv, svc2, "libvirt-ro") < 0)
+    if (virNetServerAddService(srv, svc2, mdns_entry) < 0)
         goto error;
 
     if (virNetSocketNewConnectSockFD(fdclient[0], &sk1) < 0)
