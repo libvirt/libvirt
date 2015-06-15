@@ -12091,7 +12091,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
     ret = qemuMigrationPrepareDirect(driver, dconn,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
-                                     &def, origname, NULL, flags);
+                                     &def, origname, NULL, 0, NULL, flags);
 
  cleanup:
     VIR_FREE(origname);
@@ -12144,7 +12144,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationPerform(driver, dom->conn, vm,
-                               NULL, dconnuri, uri, NULL, NULL,
+                               NULL, dconnuri, uri, NULL, NULL, 0, NULL,
                                cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
                                flags, dname, resource, false);
@@ -12221,7 +12221,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     }
 
     return qemuMigrationBegin(domain->conn, vm, xmlin, dname,
-                              cookieout, cookieoutlen, flags);
+                              cookieout, cookieoutlen, 0, NULL, flags);
 }
 
 static char *
@@ -12234,11 +12234,14 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
 {
     const char *xmlin = NULL;
     const char *dname = NULL;
+    const char **migrate_disks = NULL;
+    int nmigrate_disks;
+    char *ret = NULL;
     virDomainObjPtr vm;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
-        return NULL;
+        goto cleanup;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_XML,
@@ -12246,18 +12249,30 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_NAME,
                                 &dname) < 0)
-        return NULL;
+        goto cleanup;
+
+    nmigrate_disks = virTypedParamsGetStringList(params, nparams,
+                                                 VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                                 &migrate_disks);
+
+    if (nmigrate_disks < 0)
+        goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(domain)))
-        return NULL;
+        goto cleanup;
 
     if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0) {
         virDomainObjEndAPI(&vm);
-        return NULL;
+        goto cleanup;
     }
 
-    return qemuMigrationBegin(domain->conn, vm, xmlin, dname,
-                              cookieout, cookieoutlen, flags);
+    ret = qemuMigrationBegin(domain->conn, vm, xmlin, dname,
+                             cookieout, cookieoutlen,
+                             nmigrate_disks, migrate_disks, flags);
+
+ cleanup:
+    VIR_FREE(migrate_disks);
+    return ret;
 }
 
 
@@ -12301,7 +12316,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, origname, NULL, flags);
+                                     &def, origname, NULL, 0, NULL, flags);
 
  cleanup:
     VIR_FREE(origname);
@@ -12327,6 +12342,8 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *dname = NULL;
     const char *uri_in = NULL;
     const char *listenAddress = cfg->migrationAddress;
+    int nmigrate_disks;
+    const char **migrate_disks = NULL;
     char *origname = NULL;
     int ret = -1;
 
@@ -12346,6 +12363,13 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
                                 &listenAddress) < 0)
+        goto cleanup;
+
+    nmigrate_disks = virTypedParamsGetStringList(params, nparams,
+                                                 VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                                 &migrate_disks);
+
+    if (nmigrate_disks < 0)
         goto cleanup;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -12368,9 +12392,11 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
-                                     &def, origname, listenAddress, flags);
+                                     &def, origname, listenAddress,
+                                     nmigrate_disks, migrate_disks, flags);
 
  cleanup:
+    VIR_FREE(migrate_disks);
     VIR_FREE(origname);
     virDomainDefFree(def);
     virObjectUnref(cfg);
@@ -12501,7 +12527,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     }
 
     return qemuMigrationPerform(driver, dom->conn, vm, xmlin,
-                                dconnuri, uri, NULL, NULL,
+                                dconnuri, uri, NULL, NULL, 0, NULL,
                                 cookiein, cookieinlen,
                                 cookieout, cookieoutlen,
                                 flags, dname, resource, true);
@@ -12525,11 +12551,14 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     const char *uri = NULL;
     const char *graphicsuri = NULL;
     const char *listenAddress = NULL;
+    int nmigrate_disks;
+    const char **migrate_disks = NULL;
     unsigned long long bandwidth = 0;
+    int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
-        return -1;
+        return ret;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_XML,
@@ -12549,20 +12578,31 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS,
                                 &listenAddress) < 0)
-        return -1;
+        goto cleanup;
+
+    nmigrate_disks = virTypedParamsGetStringList(params, nparams,
+                                                 VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                                 &migrate_disks);
+
+    if (nmigrate_disks < 0)
+        goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
-        return -1;
+        goto cleanup;
 
     if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0) {
         virDomainObjEndAPI(&vm);
-        return -1;
+        goto cleanup;
     }
 
-    return qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
-                                dconnuri, uri, graphicsuri, listenAddress,
-                                cookiein, cookieinlen, cookieout, cookieoutlen,
-                                flags, dname, bandwidth, true);
+    ret = qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
+                               dconnuri, uri, graphicsuri, listenAddress,
+                               nmigrate_disks, migrate_disks,
+                               cookiein, cookieinlen, cookieout, cookieoutlen,
+                               flags, dname, bandwidth, true);
+ cleanup:
+    VIR_FREE(migrate_disks);
+    return ret;
 }
 
 

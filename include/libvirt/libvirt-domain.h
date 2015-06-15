@@ -748,6 +748,15 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_LISTEN_ADDRESS    "listen_address"
 
+/**
+ * VIR_MIGRATE_PARAM_MIGRATE_DISKS:
+ *
+ * virDomainMigrate* params multiple field: The multiple values that list
+ * the block devices to be migrated. At the moment this is only supported
+ * by the QEMU driver but not for the tunnelled migration.
+ */
+# define VIR_MIGRATE_PARAM_MIGRATE_DISKS    "migrate_disks"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
