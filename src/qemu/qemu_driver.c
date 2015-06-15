@@ -10277,24 +10277,16 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                             int *nparams,
                             unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr persistentDef = NULL;
     virDomainNumatuneMemMode tmpmode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
     char *nodeset = NULL;
     int ret = -1;
-    virCapsPtr caps = NULL;
     virDomainDefPtr def = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-    /* We blindly return a string, and let libvirt.c and
-     * remote_driver.c do the filtering on behalf of older clients
-     * that can't parse it.  */
-    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -10302,11 +10294,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
     if ((*nparams) == 0) {
@@ -10314,11 +10302,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
         ret = 0;
         goto cleanup;
     }
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-        def = persistentDef;
-    else
-        def = vm->def;
 
     for (i = 0; i < QEMU_NB_NUMA_PARAM && i < *nparams; i++) {
         virMemoryParameterPtr param = &params[i];
@@ -10357,7 +10340,6 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
  cleanup:
     VIR_FREE(nodeset);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
