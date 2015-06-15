@@ -9936,7 +9936,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
-    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
     unsigned long long swap_hard_limit, mem_hard_limit, mem_soft_limit;
@@ -9944,9 +9943,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-    /* We don't return strings, and thus trivially support this flag.  */
-    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -9963,20 +9959,8 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, NULL, &persistentDef) < 0)
         goto cleanup;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cgroup memory controller is not mounted"));
-            goto cleanup;
-        }
-    }
 
     if ((*nparams) == 0) {
         /* Current number of memory parameters supported by cgroups */
@@ -9985,11 +9969,17 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         mem_hard_limit = persistentDef->mem.hard_limit;
         mem_soft_limit = persistentDef->mem.soft_limit;
         swap_hard_limit = persistentDef->mem.swap_hard_limit;
     } else {
+        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("cgroup memory controller is not mounted"));
+            goto cleanup;
+        }
+
         if (virCgroupGetMemoryHardLimit(priv->cgroup, &mem_hard_limit) < 0)
             goto cleanup;
 
@@ -10014,7 +10004,6 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
