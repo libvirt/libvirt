@@ -11468,20 +11468,15 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
                                  int *nparams,
                                  unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
-    virDomainDefPtr persistentDef = NULL;
     virDomainNetDefPtr net = NULL;
     int ret = -1;
-    virCapsPtr caps = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
@@ -11489,11 +11484,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
     if (virDomainGetInterfaceParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
     if ((*nparams) == 0) {
@@ -11501,10 +11492,6 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
         ret = 0;
         goto cleanup;
     }
-
-    def = persistentDef;
-    if (!def)
-        def = vm->def;
 
     net = virDomainNetFind(def, device);
     if (!net) {
@@ -11576,7 +11563,6 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
