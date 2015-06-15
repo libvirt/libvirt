@@ -1521,6 +1521,7 @@ to the I<uri> namespace is displayed instead of being modified.
 [I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>]
 [I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
+[I<--migrate-disks> B<disk-list>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1536,15 +1537,17 @@ with incremental copy (same base image shared between source and destination).
 In both cases the disk images have to exist on destination host, the
 I<--copy-storage-...> options only tell libvirt to transfer data from the
 images on source host to the images found at the same place on the destination
-host. I<--change-protection> enforces that no incompatible configuration
-changes will be made to the domain while the migration is underway; this flag
-is implicitly enabled when supported by the hypervisor, but can be explicitly
-used to reject the migration if the hypervisor lacks change protection
-support.  I<--verbose> displays the progress of migration.  I<--compressed>
-activates compression of memory pages that have to be transferred repeatedly
-during live migration. I<--abort-on-error> cancels the migration if a soft
-error (for example I/O error) happens during the migration. I<--auto-converge>
-forces convergence during live migration.
+host. By default only non-shared non-readonly images are transferred. Use
+I<--migrate-disks> to explicitly specify a list of disk targets to
+transfer via the comma separated B<disk-list> argument. I<--change-protection>
+enforces that no incompatible configuration changes will be made to the domain
+while the migration is underway; this flag is implicitly enabled when supported
+by the hypervisor, but can be explicitly used to reject the migration if the
+hypervisor lacks change protection support.  I<--verbose> displays the progress
+of migration.  I<--compressed> activates compression of memory pages that have
+to be transferred repeatedly during live migration. I<--abort-on-error> cancels
+the migration if a soft error (for example I/O error) happens during the
+migration. I<--auto-converge> forces convergence during live migration.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.

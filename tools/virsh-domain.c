@@ -9806,6 +9806,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_STRING,
      .help = N_("filename containing updated XML for the target")
     },
+    {.name = "migrate-disks",
+     .type = VSH_OT_STRING,
+     .help = N_("comma separated list of disks to be migrated")
+    },
     {.name = NULL}
 };
 
@@ -9864,6 +9868,25 @@ doMigrate(void *opaque)
         virTypedParamsAddString(&params, &nparams, &maxparams,
                                 VIR_MIGRATE_PARAM_DEST_NAME, opt) < 0)
         goto save_error;
+
+    if (vshCommandOptStringReq(ctl, cmd, "migrate-disks", &opt) < 0)
+        goto out;
+    if (opt) {
+        char **val = NULL;
+
+        val = virStringSplit(opt, ",", 0);
+
+        if (virTypedParamsAddStringList(&params,
+                                        &nparams,
+                                        &maxparams,
+                                        VIR_MIGRATE_PARAM_MIGRATE_DISKS,
+                                        (const char **)val) < 0) {
+            VIR_FREE(val);
+            goto save_error;
+        }
+
+        VIR_FREE(val);
+    }
 
     if (vshCommandOptStringReq(ctl, cmd, "xml", &opt) < 0)
         goto out;
