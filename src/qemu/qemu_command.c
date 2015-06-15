@@ -4957,6 +4957,40 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
 }
 
 
+static bool
+qemuCheckMemoryDimmConflict(virDomainDefPtr def,
+                            virDomainMemoryDefPtr mem)
+{
+    size_t i;
+
+    for (i = 0; i < def->nmems; i++) {
+         virDomainMemoryDefPtr tmp = def->mems[i];
+
+         if (tmp == mem ||
+             tmp->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
+             continue;
+
+         if (mem->info.addr.dimm.slot == tmp->info.addr.dimm.slot) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("memory device slot '%u' is already being "
+                              "used by another memory device"),
+                            mem->info.addr.dimm.slot);
+             return true;
+         }
+
+         if (mem->info.addr.dimm.base != 0 &&
+             mem->info.addr.dimm.base == tmp->info.addr.dimm.base) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("memory device base '0x%llx' is already being "
+                              "used by another memory device"),
+                            mem->info.addr.dimm.base);
+             return true;
+         }
+    }
+
+    return false;
+}
+
 char *
 qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
                          virDomainDefPtr def,
@@ -4998,6 +5032,9 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
                           mem->targetNode, mem->info.alias, mem->info.alias);
 
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            if (qemuCheckMemoryDimmConflict(def, mem))
+                return NULL;
+
             virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
             virBufferAsprintf(&buf, ",addr=%llu", mem->info.addr.dimm.base);
         }
