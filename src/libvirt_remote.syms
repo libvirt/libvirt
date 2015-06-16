@@ -99,7 +99,6 @@ virNetServerAddClient;
 virNetServerAddProgram;
 virNetServerAddService;
 virNetServerClose;
-virNetServerGetNClients;
 virNetServerHasClients;
 virNetServerKeepAliveRequired;
 virNetServerNew;
