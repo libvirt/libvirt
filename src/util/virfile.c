@@ -2376,6 +2376,7 @@ virDirCreate(const char *path,
     if (pid) { /* parent */
         /* wait for child to complete, and retrieve its exit code */
         VIR_FREE(groups);
+
         while ((waitret = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
         if (waitret == -1) {
             ret = -errno;
@@ -2416,6 +2417,7 @@ virDirCreate(const char *path,
         ret = errno;
         goto childerror;
     }
+
     if (mkdir(path, mode) < 0) {
         ret = errno;
         if (ret != EACCES) {
@@ -2425,6 +2427,7 @@ virDirCreate(const char *path,
         }
         goto childerror;
     }
+
     /* check if group was set properly by creating after
      * setgid. If not, try doing it with chown */
     if (stat(path, &st) == -1) {
@@ -2433,6 +2436,7 @@ virDirCreate(const char *path,
                              _("stat of '%s' failed"), path);
         goto childerror;
     }
+
     if ((st.st_gid != gid) && (chown(path, (uid_t) -1, gid) < 0)) {
         ret = errno;
         virReportSystemError(errno,
@@ -2440,12 +2444,14 @@ virDirCreate(const char *path,
                              path, (unsigned int) gid);
         goto childerror;
     }
+
     if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              path, mode);
         goto childerror;
     }
+
  childerror:
     if ((ret & 0xff) != ret) {
         VIR_WARN("unable to pass desired return value %d", ret);
