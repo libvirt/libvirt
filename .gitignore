@@ -176,8 +176,6 @@
 /tools/virsh-*-edit.c
 /tools/virt-*-validate
 /tools/virt-sanlock-cleanup
-/tools/virt-admin/virt-admin.1
-/tools/virt-admin/virt-admin
 /tools/wireshark/src/plugin.c
 /tools/wireshark/src/libvirt
 /update.log

@@ -1680,10 +1680,6 @@ dnl virsh libraries
 VIRSH_LIBS="$VIRSH_LIBS $READLINE_LIBS"
 AC_SUBST([VIRSH_LIBS])
 
-dnl virt-admin libraries
-VIRT_ADMIN_LIBS="$VIRT_ADMIN_LIBS $READLINE_LIBS"
-AC_SUBST([VIRT_ADMIN_LIBS])
-
 dnl check if the network driver should be compiled
 
 AC_ARG_WITH([network],
@@ -2816,8 +2812,7 @@ AC_CONFIG_FILES([\
         examples/xml/nwfilter/Makefile \
         examples/lxcconvert/Makefile \
         tools/wireshark/Makefile \
-        tools/wireshark/src/Makefile \
-        tools/virt-admin/Makefile])
+        tools/wireshark/src/Makefile])
 AC_OUTPUT
 
 AC_MSG_NOTICE([])
