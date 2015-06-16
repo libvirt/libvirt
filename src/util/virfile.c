@@ -2397,12 +2397,12 @@ virDirCreate(const char *path,
 
     /* set desired uid/gid, then attempt to create the directory */
     if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
-        ret = -errno;
+        ret = errno;
         goto childerror;
     }
     if (mkdir(path, mode) < 0) {
-        ret = -errno;
-        if (ret != -EACCES) {
+        ret = errno;
+        if (ret != EACCES) {
             /* in case of EACCES, the parent will retry */
             virReportSystemError(errno, _("child failed to create directory '%s'"),
                                  path);
@@ -2412,13 +2412,13 @@ virDirCreate(const char *path,
     /* check if group was set properly by creating after
      * setgid. If not, try doing it with chown */
     if (stat(path, &st) == -1) {
-        ret = -errno;
+        ret = errno;
         virReportSystemError(errno,
                              _("stat of '%s' failed"), path);
         goto childerror;
     }
     if ((st.st_gid != gid) && (chown(path, (uid_t) -1, gid) < 0)) {
-        ret = -errno;
+        ret = errno;
         virReportSystemError(errno,
                              _("cannot chown '%s' to group %u"),
                              path, (unsigned int) gid);
@@ -2431,6 +2431,10 @@ virDirCreate(const char *path,
         goto childerror;
     }
  childerror:
+    if ((ret & 0xff) != ret) {
+        VIR_WARN("unable to pass desired return value %d", ret);
+        ret = 0xff;
+    }
     _exit(ret);
 }
 
