@@ -850,7 +850,7 @@ typedef struct {
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
     { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false, false },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_RDONLY, false, false, false },
+    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
     { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", NULL, MS_BIND, false, false, true },
     { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", NULL, MS_BIND, false, false, true },
     { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
@@ -1030,7 +1030,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
 
         if (bindOverReadonly &&
             mount(mnt_src, mnt->dst, NULL,
-                  MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+                  MS_BIND|MS_REMOUNT|mnt_mflags|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to re-mount %s on %s flags=%x"),
                                  mnt_src, mnt->dst,
