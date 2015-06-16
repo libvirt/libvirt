@@ -168,4 +168,5 @@
     <flag name='pc-dimm'/>
     <flag name='pci-serial'/>
     <flag name='ioh3420'/>
+    <flag name='x3130-upstream'/>
   </qemuCaps>

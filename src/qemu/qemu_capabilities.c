@@ -290,6 +290,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "migration-event",
               "gpex-pcihost",
               "ioh3420",
+              "x3130-upstream",
     );
 
 
@@ -1572,6 +1573,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },
     { "gpex-pcihost", QEMU_CAPS_OBJECT_GPEX},
     { "ioh3420", QEMU_CAPS_DEVICE_IOH3420 },
+    { "x3130-upstream", QEMU_CAPS_DEVICE_X3130_UPSTREAM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

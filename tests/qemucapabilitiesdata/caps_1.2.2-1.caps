@@ -121,4 +121,5 @@
     <flag name='qxl.vgamem_mb'/>
     <flag name='qxl-vga.vgamem_mb'/>
     <flag name='ioh3420'/>
+    <flag name='x3130-upstream'/>
   </qemuCaps>
