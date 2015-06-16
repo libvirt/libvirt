@@ -987,7 +987,7 @@ static bool wantReboot;
 static virMutex lock = VIR_MUTEX_INITIALIZER;
 
 
-static void virLXCControllerSignalChildIO(virNetDaemonPtr daemon,
+static void virLXCControllerSignalChildIO(virNetDaemonPtr dmn,
                                           siginfo_t *info ATTRIBUTE_UNUSED,
                                           void *opaque)
 {
@@ -998,7 +998,7 @@ static void virLXCControllerSignalChildIO(virNetDaemonPtr daemon,
     ret = waitpid(-1, &status, WNOHANG);
     VIR_DEBUG("Got sig child %d vs %lld", ret, (unsigned long long)ctrl->initpid);
     if (ret == ctrl->initpid) {
-        virNetDaemonQuit(daemon);
+        virNetDaemonQuit(dmn);
         virMutexLock(&lock);
         if (WIFSIGNALED(status) &&
             WTERMSIG(status) == SIGHUP) {
