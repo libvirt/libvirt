@@ -58,6 +58,9 @@ static int update_caps(virNodeDeviceObjPtr dev)
         case VIR_NODE_DEV_CAP_NET:
             if (virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
                 return -1;
+            virBitmapFree(cap->data.net.features);
+            if (virNetDevGetFeatures(cap->data.net.ifname, &cap->data.net.features) < 0)
+                return -1;
             break;
         case VIR_NODE_DEV_CAP_PCI_DEV:
            if (nodeDeviceSysfsGetPCIRelatedDevCaps(dev->def->sysfs_path,
