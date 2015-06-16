@@ -638,7 +638,7 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
     ret = 0;
 
  cleanup:
-    if (!dir)
+    if (dir)
         closedir(dir);
     VIR_FREE(taskPath);
     if (ret < 0)
