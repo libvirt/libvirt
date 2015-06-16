@@ -484,7 +484,7 @@ testDomObjFromDomain(virDomainPtr domain)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     testDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
+    vm = virDomainObjListFindByUUIDRef(driver->domains, domain->uuid);
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -6262,19 +6262,17 @@ static int
 testDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    int n = -1;
+    int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     n = virDomainSnapshotObjListNum(vm->snapshots, NULL, flags);
 
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6285,20 +6283,18 @@ testDomainSnapshotListNames(virDomainPtr domain,
                             unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    int n = -1;
+    int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     n = virDomainSnapshotObjListGetNames(vm->snapshots, NULL, names, nameslen,
                                          flags);
 
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6308,19 +6304,17 @@ testDomainListAllSnapshots(virDomainPtr domain,
                            unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    int n = -1;
+    int n;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     n = virDomainListSnapshots(vm->snapshots, NULL, domain, snaps, flags);
 
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6338,7 +6332,7 @@ testDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
@@ -6347,8 +6341,7 @@ testDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
                                          flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6364,7 +6357,7 @@ testDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
@@ -6372,8 +6365,7 @@ testDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot,
     n = virDomainSnapshotObjListNum(vm->snapshots, snap, flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6390,7 +6382,7 @@ testDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
@@ -6399,8 +6391,7 @@ testDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
                                flags);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return n;
 }
 
@@ -6416,7 +6407,7 @@ testDomainSnapshotLookupByName(virDomainPtr domain,
     virCheckFlags(0, NULL);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     if (!(snap = testSnapObjFromName(vm, name)))
         goto cleanup;
@@ -6424,8 +6415,7 @@ testDomainSnapshotLookupByName(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return snapshot;
 }
 
@@ -6434,18 +6424,16 @@ testDomainHasCurrentSnapshot(virDomainPtr domain,
                              unsigned int flags)
 {
     virDomainObjPtr vm;
-    int ret = -1;
+    int ret;
 
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     ret = (vm->current_snapshot != NULL);
 
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -6460,7 +6448,7 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     virCheckFlags(0, NULL);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return NULL;
 
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
@@ -6475,8 +6463,7 @@ testDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
     parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return parent;
 }
 
@@ -6490,7 +6477,7 @@ testDomainSnapshotCurrent(virDomainPtr domain,
     virCheckFlags(0, NULL);
 
     if (!(vm = testDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     if (!vm->current_snapshot) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
@@ -6501,8 +6488,7 @@ testDomainSnapshotCurrent(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, vm->current_snapshot->def->name);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return snapshot;
 }
 
@@ -6518,7 +6504,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return NULL;
 
     if (!(snap = testSnapObjFromSnapshot(vm, snapshot)))
         goto cleanup;
@@ -6530,8 +6516,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                                      0);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return xml;
 }
 
@@ -6540,19 +6525,17 @@ testDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
                             unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
-    int ret = -1;
+    int ret;
 
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     ret = (vm->current_snapshot &&
            STREQ(snapshot->name, vm->current_snapshot->def->name));
 
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -6567,7 +6550,7 @@ testDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     virCheckFlags(0, -1);
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
-        goto cleanup;
+        return -1;
 
     if (!testSnapObjFromSnapshot(vm, snapshot))
         goto cleanup;
@@ -6575,8 +6558,7 @@ testDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
     ret = 1;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -6717,7 +6699,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
             snap->sibling = other->first_child;
             other->first_child = snap;
         }
-        virObjectUnlock(vm);
+        virDomainObjEndAPI(&vm);
     }
     if (event) {
         testDriverLock(privconn);
@@ -6854,8 +6836,7 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     ret = 0;
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -7067,7 +7048,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     } else {
         virObjectUnref(event2);
     }
-    virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     testDriverUnlock(privconn);
 
     return ret;
