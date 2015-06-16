@@ -317,6 +317,7 @@ endif ! WITH_POLKIT
 
 remote.c: $(DAEMON_GENERATED)
 remote.h: $(DAEMON_GENERATED)
+admin_server.c: $(DAEMON_GENERATED)
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \
