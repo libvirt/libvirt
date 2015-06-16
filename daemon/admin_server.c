@@ -114,27 +114,4 @@ adminDispatchConnectClose(virNetServerPtr server ATTRIBUTE_UNUSED,
     return 0;
 }
 
-
-static char *
-admHello(virNetDaemonPtr dmn,
-         unsigned int flags)
-{
-    char *ret = NULL;
-    virNetServerPtr srv = NULL;
-    size_t nclients;
-
-    virCheckFlags(0, NULL);
-
-    if (!(srv = virNetDaemonGetServer(dmn, 0)))
-        return NULL;
-
-    nclients = virNetServerGetNClients(srv);
-    if (virAsprintf(&ret, "Clients: %zu", nclients) < 0)
-        goto cleanup;
-
- cleanup:
-    virObjectUnref(srv);
-    return ret;
-}
-
 #include "admin_dispatch.h"

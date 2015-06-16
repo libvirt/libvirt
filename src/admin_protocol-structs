@@ -2,14 +2,7 @@
 struct admin_connect_open_args {
         u_int                      flags;
 };
-struct admin_hello_args {
-        u_int                      flags;
-};
-struct admin_hello_ret {
-        admin_string               greeting;
-};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
-        ADMIN_PROC_HELLO = 3,
 };

@@ -384,29 +384,3 @@ virAdmConnectRef(virAdmConnectPtr conn)
 
     return 0;
 }
-
-
-/**
- * virAdmHello:
- * @conn: a connection object
- * @flags: unused, 0 for now
- *
- * Testing function.
- *
- * Returns the number of connected clients as a string.  Yes, as a
- * string.  Because it's just for testing.
- */
-char *
-virAdmHello(virAdmConnectPtr conn,
-            unsigned int flags)
-{
-    char *ret = NULL;
-
-    virResetLastError();
-
-    ret = remoteAdminHello(conn, flags);
-    if (!ret)
-        virDispatchError(NULL);
-
-    return ret;
-}
