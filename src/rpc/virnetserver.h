@@ -33,8 +33,6 @@
 # include "virobject.h"
 # include "virjson.h"
 
-typedef struct _virNetServer virNetServer;
-typedef virNetServer *virNetServerPtr;
 
 virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_workers,
