@@ -1213,13 +1213,12 @@ qemuIsSharedHostdev(virDomainHostdevDefPtr hostdev)
 
 
 static char *
-qemuGetSharedHostdevKey(virDomainHostdevDefPtr hostdev)
+qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     char *dev_name = NULL;
     char *dev_path = NULL;
-    char *key = NULL;
 
     if (!(dev_name = virSCSIDeviceGetDevName(NULL,
                                              scsihostsrc->adapter,
@@ -1228,18 +1227,32 @@ qemuGetSharedHostdevKey(virDomainHostdevDefPtr hostdev)
                                              scsihostsrc->unit)))
         goto cleanup;
 
-    if (virAsprintf(&dev_path, "/dev/%s", dev_name) < 0)
+    ignore_value(virAsprintf(&dev_path, "/dev/%s", dev_name));
+
+ cleanup:
+    VIR_FREE(dev_name);
+    return dev_path;
+}
+
+
+static char *
+qemuGetSharedHostdevKey(virDomainHostdevDefPtr hostdev)
+{
+    char *key = NULL;
+    char *dev_path = NULL;
+
+    if (!(dev_path = qemuGetHostdevPath(hostdev)))
         goto cleanup;
 
     if (!(key = qemuGetSharedDeviceKey(dev_path)))
         goto cleanup;
 
  cleanup:
-    VIR_FREE(dev_name);
     VIR_FREE(dev_path);
 
     return key;
 }
+
 
 static int
 qemuAddSharedHostdev(virQEMUDriverPtr driver,
