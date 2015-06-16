@@ -1201,6 +1201,17 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
 }
 
 
+static bool
+qemuIsSharedHostdev(virDomainHostdevDefPtr hostdev)
+{
+    return (hostdev->shareable &&
+        (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+         hostdev->source.subsys.u.scsi.protocol !=
+         VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI));
+}
+
+
 static char *
 qemuGetSharedHostdevKey(virDomainHostdevDefPtr hostdev)
 {
@@ -1238,10 +1249,7 @@ qemuAddSharedHostdev(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret = -1;
 
-    if (!hostdev->shareable ||
-        !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-          hostdev->source.subsys.u.scsi.protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI))
+    if (!qemuIsSharedHostdev(hostdev))
         return 0;
 
     if (!(key = qemuGetSharedHostdevKey(hostdev)))
@@ -1342,10 +1350,7 @@ qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret;
 
-    if (!hostdev->shareable ||
-        !(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-          hostdev->source.subsys.u.scsi.protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI))
+    if (!qemuIsSharedHostdev(hostdev))
         return 0;
 
     if (!(key = qemuGetSharedHostdevKey(hostdev)))
@@ -1407,11 +1412,10 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         hostdev = dev->data.hostdev;
 
+        if (!qemuIsSharedHostdev(hostdev))
+            return 0;
 
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type ==
-            VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-            hostdev->source.subsys.u.scsi.sgio) {
+        if (hostdev->source.subsys.u.scsi.sgio) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'sgio' is not supported for SCSI "
                              "generic device yet "));
