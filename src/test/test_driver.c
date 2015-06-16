@@ -2445,6 +2445,7 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 {
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
+    virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1, maxvcpus;
 
@@ -2452,71 +2453,53 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    /* At least one of LIVE or CONFIG must be set.  MAXIMUM cannot be
-     * mixed with LIVE.  */
-    if ((flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) == 0 ||
-        (flags & (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) ==
-         (VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid flag combination: (0x%x)"), flags);
+    if ((maxvcpus = testConnectGetMaxVcpus(domain->conn, NULL)) < 0)
         return -1;
-    }
-    if (!nrCpus || (maxvcpus = testConnectGetMaxVcpus(domain->conn, NULL)) < nrCpus) {
+
+    if (nrCpus > maxvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("argument out of range: %d"), nrCpus);
+                       _("requested cpu amount exceeds maximum supported amount "
+                         "(%d > %d)"), nrCpus, maxvcpus);
         return -1;
     }
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
 
-    if (!virDomainObjIsActive(privdom) && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cannot hotplug vcpus for an inactive domain"));
+    if (virDomainObjGetDefs(privdom, flags, &def, &persistentDef) < 0)
         goto cleanup;
-    }
 
-    /* We allow more cpus in guest than host, but not more than the
-     * domain's starting limit.  */
-    if (!(flags & (VIR_DOMAIN_VCPU_MAXIMUM)) &&
-        privdom->def->maxvcpus < maxvcpus)
-        maxvcpus = privdom->def->maxvcpus;
-
-    if (nrCpus > maxvcpus) {
+    if (def && def->maxvcpus < nrCpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested cpu amount exceeds maximum (%d > %d)"),
-                       nrCpus, maxvcpus);
+                       nrCpus, def->maxvcpus);
         goto cleanup;
     }
 
-    if (!(persistentDef = virDomainObjGetPersistentDef(privconn->caps,
-                                                       privconn->xmlopt,
-                                                       privdom)))
+    if (persistentDef &&
+        !(flags & VIR_DOMAIN_VCPU_MAXIMUM) &&
+        persistentDef->maxvcpus < nrCpus) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("requested cpu amount exceeds maximum (%d > %d)"),
+                       nrCpus, persistentDef->maxvcpus);
+        goto cleanup;
+    }
+
+    if (def &&
+        testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0) < 0)
         goto cleanup;
 
-    switch (flags) {
-    case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_AFFECT_CONFIG:
-        persistentDef->maxvcpus = nrCpus;
-        if (nrCpus < persistentDef->vcpus)
+    if (persistentDef) {
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+            persistentDef->maxvcpus = nrCpus;
+            if (nrCpus < persistentDef->vcpus)
+                persistentDef->vcpus = nrCpus;
+        } else {
             persistentDef->vcpus = nrCpus;
-        ret = 0;
-        break;
-
-    case VIR_DOMAIN_AFFECT_CONFIG:
-        persistentDef->vcpus = nrCpus;
-        ret = 0;
-        break;
-
-    case VIR_DOMAIN_AFFECT_LIVE:
-        ret = testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0);
-        break;
-
-    case VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG:
-        ret = testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0);
-        if (ret == 0)
-            persistentDef->vcpus = nrCpus;
-        break;
+        }
     }
+
+    ret = 0;
 
  cleanup:
     virDomainObjEndAPI(&privdom);
