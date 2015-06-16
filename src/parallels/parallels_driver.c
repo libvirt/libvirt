@@ -1371,8 +1371,8 @@ static virHypervisorDriver vzDriver = {
     .domainManagedSave = parallelsDomainManagedSave, /* 1.2.14 */
     .domainManagedSaveRemove = parallelsDomainManagedSaveRemove, /* 1.2.14 */
     .domainGetMaxMemory = parallelsDomainGetMaxMemory, /* 1.2.15 */
-    .domainBlockStats = parallelsDomainBlockStats, /* 1.2.17 */
-    .domainBlockStatsFlags = parallelsDomainBlockStatsFlags, /* 1.2.17 */
+    .domainBlockStats = parallelsDomainBlockStats, /* 1.3.0 */
+    .domainBlockStatsFlags = parallelsDomainBlockStatsFlags, /* 1.3.0 */
 };
 
 static virConnectDriver vzConnectDriver = {
