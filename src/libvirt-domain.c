@@ -7267,12 +7267,6 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
                           VIR_DOMAIN_AFFECT_CONFIG,
                           error);
 
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_AFFECT_CURRENT,
-                             VIR_DOMAIN_AFFECT_LIVE,
-                             error);
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_AFFECT_CURRENT,
-                             VIR_DOMAIN_AFFECT_CONFIG,
-                             error);
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_VCPU_GUEST,
                              VIR_DOMAIN_AFFECT_CONFIG,
                              error);
