@@ -2576,12 +2576,8 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(privconn->caps, privconn->xmlopt,
-                                        vm, &flags, &def) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        def = vm->def;
 
     ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
 
