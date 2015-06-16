@@ -4583,13 +4583,20 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+            def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("wrong function called for pci-root/pcie-root"));
+            return NULL;
+        }
+        if (def->idx == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("index for pci controllers of model '%s' must be > 0"),
+                           virDomainControllerModelPCITypeToString(def->model));
+            goto error;
+        }
         switch (def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-            if (def->idx == 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("PCI bridge index should be > 0"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "pci-bridge,chassis_nr=%d,id=%s",
                               def->idx, def->info.alias);
             break;
@@ -4600,18 +4607,8 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
                                  "controller is not supported in this QEMU binary"));
                 goto error;
             }
-            if (def->idx == 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("dmi-to-pci-bridge index should be > 0"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "i82801b11-bridge,id=%s", def->info.alias);
             break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("wrong function called for pci-root/pcie-root"));
-            return NULL;
         }
         break;
 
