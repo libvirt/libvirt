@@ -197,10 +197,21 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-        /* provides one slot which is pcie and hotpluggable */
-        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE | VIR_PCI_CONNECT_HOTPLUGGABLE;
+        /* provides one slot which is pcie, can be used by devices
+         * that must connect to some type of "pcie-*-port", and
+         * is hotpluggable
+         */
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE
+           | VIR_PCI_CONNECT_TYPE_PCIE_PORT
+           | VIR_PCI_CONNECT_HOTPLUGGABLE;
         bus->minSlot = 0;
         bus->maxSlot = 0;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        /* 31 slots, can only accept pcie-switch-port, no hotplug */
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH;
+        bus->minSlot = 0;
+        bus->maxSlot = 31;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

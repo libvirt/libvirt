@@ -3032,10 +3032,11 @@
       PCI controllers have an optional <code>model</code> attribute with
       possible values <code>pci-root</code>, <code>pcie-root</code>,
       <code>pcie-root-port</code>, <code>pci-bridge</code>,
-      or <code>dmi-to-pci-bridge</code>.
+      <code>dmi-to-pci-bridge</code>, or <code>pcie-switch-upstream-port</code>.
       (pci-root and pci-bridge <span class="since">since 1.0.5</span>,
       pcie-root and dmi-to-pci-bridge <span class="since">since
-      1.1.2</span>, pcie-root-port <span class="since">since 1.2.19</span>)
+      1.1.2</span>, pcie-root-port and
+      pcie-switch-upstream-port <span class="since">since 1.2.19</span>)
       The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
       have an optional <code>pcihole64</code> element specifying how big
       (in kilobytes, or in the unit specified by <code>pcihole64</code>'s

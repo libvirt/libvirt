@@ -1741,6 +1741,8 @@
                     <value>i82801b11-bridge</value>
                     <!-- implementations of 'pcie-root-port' -->
                     <value>ioh3420</value>
+                    <!-- implementations of 'pcie-switch-upstream-port' -->
+                    <value>x3130-upstream</value>
                   </choice>
                 </attribute>
                 <empty/>
@@ -1787,6 +1789,7 @@
                     <value>pci-bridge</value>
                     <value>dmi-to-pci-bridge</value>
                     <value>pcie-root-port</value>
+                    <value>pcie-switch-upstream-port</value>
                   </choice>
                 </attribute>
               </group>

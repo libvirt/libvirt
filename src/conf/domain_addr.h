@@ -41,6 +41,12 @@ typedef enum {
    /* PCI Express devices can connect to this bus */
    VIR_PCI_CONNECT_TYPE_PCIE_ROOT = 1 << 4,
    /* for devices that can only connect to pcie-root (i.e. root-port) */
+   VIR_PCI_CONNECT_TYPE_PCIE_PORT = 1 << 5,
+   /* devices that can only connect to a pcie-root-port
+    * or pcie-downstream-switch-port
+    */
+   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH = 1 << 6,
+   /* devices that can only connect to a pcie-switch */
 } virDomainPCIConnectFlags;
 
 typedef struct {
@@ -73,7 +79,8 @@ typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;
  */
 # define VIR_PCI_CONNECT_TYPES_MASK \
    (VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE | \
-    VIR_PCI_CONNECT_TYPE_PCIE_ROOT)
+    VIR_PCI_CONNECT_TYPE_PCIE_ROOT | VIR_PCI_CONNECT_TYPE_PCIE_PORT | \
+    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH)
 
 /* combination of all bits that could be used to connect a normal
  * endpoint device (i.e. excluding the connection possible between an
