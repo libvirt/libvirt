@@ -2691,6 +2691,10 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                               info->addr.ccw.cssid,
                               info->addr.ccw.ssid,
                               info->addr.ccw.devno);
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+        virBufferAsprintf(buf, ",iobase=0x%x,irq=0x%x",
+                          info->addr.isa.iobase,
+                          info->addr.isa.irq);
     }
 
     ret = 0;
@@ -11071,11 +11075,15 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
-            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("no addresses are supported for isa-serial"));
+                               _("isa-serial requires address of isa type"));
                 goto error;
             }
+
+            if (qemuBuildDeviceAddressStr(&cmd, def, &serial->info, qemuCaps) < 0)
+                goto error;
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:

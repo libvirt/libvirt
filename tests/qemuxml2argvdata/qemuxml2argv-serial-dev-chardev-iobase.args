@@ -1,0 +1,7 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults -chardev socket,\
+id=charmonitor,path=/tmp/test-monitor,server,nowait -mon chardev=charmonitor,\
+id=monitor,mode=readline -no-acpi -boot c -usb -hda /dev/HostVG/QEMUGuest1 -chardev \
+tty,id=charserial0,path=/dev/ttyS2 -device isa-serial,chardev=charserial0,\
+id=serial0,iobase=0x3f8,irq=0x4 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
