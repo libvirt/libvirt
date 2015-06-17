@@ -19102,7 +19102,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
             virBufferAsprintf(buf, "<adapter name='%s'/>\n",
                               scsihostsrc->adapter);
             virBufferAsprintf(buf,
-                              "<address %sbus='%d' target='%d' unit='%d'/>\n",
+                              "<address %sbus='%u' target='%u' unit='%u'/>\n",
                               includeTypeInAddr ? "type='scsi' " : "",
                               scsihostsrc->bus, scsihostsrc->target,
                               scsihostsrc->unit);

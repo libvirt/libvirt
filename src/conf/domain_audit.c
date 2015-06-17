@@ -427,7 +427,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             } else {
                 virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
                     &scsisrc->u.host;
-                if (virAsprintfQuiet(&address, "%s:%d:%d:%d",
+                if (virAsprintfQuiet(&address, "%s:%u:%u:%u",
                                      scsihostsrc->adapter, scsihostsrc->bus,
                                      scsihostsrc->target,
                                      scsihostsrc->unit) < 0) {

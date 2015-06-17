@@ -1482,7 +1482,7 @@ virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr hostdev_mgr,
                                   scsihostsrc->adapter, scsihostsrc->bus,
                                   scsihostsrc->target, scsihostsrc->unit,
                                   hostdev->readonly, hostdev->shareable))) {
-        VIR_WARN("Unable to reattach SCSI device %s:%d:%d:%d on domain %s",
+        VIR_WARN("Unable to reattach SCSI device %s:%u:%u:%u on domain %s",
                  scsihostsrc->adapter, scsihostsrc->bus, scsihostsrc->target,
                  scsihostsrc->unit, dom_name);
         return;
@@ -1492,7 +1492,7 @@ virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr hostdev_mgr,
      * because qemuProcessStart could fail half way through. */
 
     if (!(tmp = virSCSIDeviceListFind(hostdev_mgr->activeSCSIHostdevs, scsi))) {
-        VIR_WARN("Unable to find device %s:%d:%d:%d "
+        VIR_WARN("Unable to find device %s:%u:%u:%u "
                  "in list of active SCSI devices",
                  scsihostsrc->adapter, scsihostsrc->bus,
                  scsihostsrc->target, scsihostsrc->unit);
@@ -1500,7 +1500,7 @@ virHostdevReAttachSCSIHostDevices(virHostdevManagerPtr hostdev_mgr,
         return;
     }
 
-    VIR_DEBUG("Removing %s:%d:%d:%d dom=%s from activeSCSIHostdevs",
+    VIR_DEBUG("Removing %s:%u:%u:%u dom=%s from activeSCSIHostdevs",
                scsihostsrc->adapter, scsihostsrc->bus, scsihostsrc->target,
                scsihostsrc->unit, dom_name);
 

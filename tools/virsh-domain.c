@@ -724,8 +724,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         } else if (STRPREFIX((const char *)target, "sd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
                 virBufferAsprintf(&buf,
-                                  "<address type='drive' controller='%d'"
-                                  " bus='%d' unit='%d' />\n",
+                                  "<address type='drive' controller='%u'"
+                                  " bus='%u' unit='%u' />\n",
                                   diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
                                   diskAddr.addr.scsi.unit);
             } else {
