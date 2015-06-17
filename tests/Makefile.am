@@ -72,6 +72,7 @@ LDADDS = \
 	../src/libvirt.la
 
 EXTRA_DIST =		\
+	.valgrind.supp \
 	bhyvexml2argvdata \
 	bhyvexml2xmloutdata \
 	capabilityschemadata \
@@ -93,12 +94,12 @@ EXTRA_DIST =		\
 	lxcxml2xmldata \
 	lxcxml2xmloutdata \
 	networkschematest \
+	networkxml2confdata \
+	networkxml2firewalldata \
 	networkxml2xmlin \
 	networkxml2xmlout \
-	networkxml2confdata \
 	networkxml2xmlupdatein \
 	networkxml2xmlupdateout \
-	networkxml2firewalldata \
 	nodedevschemadata \
 	nodedevschematest \
 	nodeinfodata     \
@@ -116,41 +117,40 @@ EXTRA_DIST =		\
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
 	qemuxmlnsdata \
+	schematestutils.sh \
 	secretxml2xmlin \
 	securityselinuxhelperdata \
 	securityselinuxlabeldata \
-	schematestutils.sh \
 	sexpr2xmldata \
 	storagepoolschemadata \
 	storagepoolschematest \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \
-	storagevolxml2argvdata \
 	storagevolschemadata \
 	storagevolschematest \
+	storagevolxml2argvdata \
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
 	sysinfodata \
 	test-lib.sh	\
-	vircaps2xmldata \
 	vboxsnapshotxmldata \
-	virsh-uriprecedence \
+	vircaps2xmldata \
 	vircgroupdata \
 	virfiledata \
+	virmock.h \
 	virnetdaemondata \
 	virnetdevtestdata \
 	virpcitestdata \
 	virscsidata \
+	virsh-uriprecedence \
 	virusbtestdata \
+	vmwareverdata \
 	vmx2xmldata \
 	xencapsdata \
-	xmconfigdata \
 	xlconfigdata \
+	xmconfigdata \
 	xml2sexprdata \
-	xml2vmxdata \
-	vmwareverdata \
-	.valgrind.supp \
-	virmock.h
+	xml2vmxdata
 
 test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
