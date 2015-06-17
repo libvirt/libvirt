@@ -2423,8 +2423,6 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             def->controllers[i]->idx == 0)
             continue;
 
-        if (def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
-            continue;
         if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             continue;
 
