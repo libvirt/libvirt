@@ -752,6 +752,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT,
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE,
     VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE,
+    VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT,
 
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST
 } virDomainControllerModelPCI;
@@ -760,6 +761,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE,
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCI_BRIDGE,
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_I82801B11_BRIDGE,
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420,
 
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST
 } virDomainControllerPCIModelName;
@@ -820,7 +822,11 @@ struct _virDomainPCIControllerOpts {
      * compatibility.
      */
     int chassisNr; /* used by pci-bridge, -1 == unspecified */
- };
+    /* chassis & port used by
+     * pcie-root-port/pcie-switch-downstream-port, -1 = unspecified */
+    int chassis;
+    int port;
+};
 
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {

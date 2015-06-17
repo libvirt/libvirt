@@ -183,9 +183,9 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         /* slots 1 - 31, no hotplug, PCIe only unless the address was
          * specified in user config *and* the particular device being
-         * attached also allows it
+         * attached also allows it.
          */
-        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE;
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE | VIR_PCI_CONNECT_TYPE_PCIE_ROOT;
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -195,6 +195,12 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->flags = VIR_PCI_CONNECT_TYPE_PCI;
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        /* provides one slot which is pcie and hotpluggable */
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE | VIR_PCI_CONNECT_HOTPLUGGABLE;
+        bus->minSlot = 0;
+        bus->maxSlot = 0;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

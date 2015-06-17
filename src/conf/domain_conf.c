@@ -324,13 +324,15 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pci-root",
               "pcie-root",
               "pci-bridge",
-              "dmi-to-pci-bridge")
+              "dmi-to-pci-bridge",
+              "pcie-root-port")
 
 VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
               "none",
               "pci-bridge",
-              "i82801b11-bridge")
+              "i82801b11-bridge",
+              "ioh3420")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
@@ -1552,6 +1554,8 @@ virDomainControllerDefNew(virDomainControllerType type)
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         def->opts.pciopts.chassisNr = -1;
+        def->opts.pciopts.chassis = -1;
+        def->opts.pciopts.port = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -7814,6 +7818,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *modelName = NULL;
     bool processedTarget = false;
     char *chassisNr = NULL;
+    char *chassis = NULL;
+    char *port = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7874,6 +7880,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                     goto error;
                 }
                 chassisNr = virXMLPropString(cur, "chassisNr");
+                chassis = virXMLPropString(cur, "chassis");
+                port = virXMLPropString(cur, "port");
                 processedTarget = true;
             }
         }
@@ -8008,6 +8016,40 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 goto error;
             }
         }
+        if (chassis) {
+            if (virStrToLong_i(chassis, NULL, 0,
+                               &def->opts.pciopts.chassis) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid chassis '%s' in PCI controller"),
+                               chassis);
+                goto error;
+            }
+            if (def->opts.pciopts.chassis < 0 ||
+                def->opts.pciopts.chassis > 255) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller chassis '%s' out of range "
+                                 "- must be 0-255"),
+                               chassis);
+                goto error;
+            }
+        }
+        if (port) {
+            if (virStrToLong_i(port, NULL, 0,
+                               &def->opts.pciopts.port) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid port '%s' in PCI controller"),
+                               port);
+                goto error;
+            }
+            if (def->opts.pciopts.port < 0 ||
+                def->opts.pciopts.port > 255) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller port '%s' out of range "
+                                 "- must be 0-255"),
+                               port);
+                goto error;
+            }
+        }
         break;
 
     default:
@@ -8035,6 +8077,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(max_sectors);
     VIR_FREE(modelName);
     VIR_FREE(chassisNr);
+    VIR_FREE(chassis);
+    VIR_FREE(port);
 
     return def;
 
@@ -19089,7 +19133,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
             pcihole64 = true;
         if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
             pciModel = true;
-        if (def->opts.pciopts.chassisNr != -1)
+        if (def->opts.pciopts.chassisNr != -1 ||
+            def->opts.pciopts.chassis != -1 ||
+            def->opts.pciopts.port != -1)
             pciTarget = true;
         break;
 
@@ -19119,6 +19165,12 @@ virDomainControllerDefFormat(virBufferPtr buf,
             if (def->opts.pciopts.chassisNr != -1)
                 virBufferAsprintf(buf, " chassisNr='%d'",
                                   def->opts.pciopts.chassisNr);
+            if (def->opts.pciopts.chassis != -1)
+                virBufferAsprintf(buf, " chassis='%d'",
+                                  def->opts.pciopts.chassis);
+            if (def->opts.pciopts.port != -1)
+                virBufferAsprintf(buf, " port='0x%x'",
+                                  def->opts.pciopts.port);
             virBufferAddLit(buf, "/>\n");
         }
 

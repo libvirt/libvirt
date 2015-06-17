@@ -3031,10 +3031,11 @@
     <p>
       PCI controllers have an optional <code>model</code> attribute with
       possible values <code>pci-root</code>, <code>pcie-root</code>,
-      <code>pci-bridge</code>, or <code>dmi-to-pci-bridge</code>.
+      <code>pcie-root-port</code>, <code>pci-bridge</code>,
+      or <code>dmi-to-pci-bridge</code>.
       (pci-root and pci-bridge <span class="since">since 1.0.5</span>,
       pcie-root and dmi-to-pci-bridge <span class="since">since
-      1.1.2</span>)
+      1.1.2</span>, pcie-root-port <span class="since">since 1.2.19</span>)
       The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
       have an optional <code>pcihole64</code> element specifying how big
       (in kilobytes, or in the unit specified by <code>pcihole64</code>'s
@@ -3078,6 +3079,23 @@
         (normally libvirt automatically sets this to the same value as
         the index attribute of the pci controller). If set, chassisNr
         must be between 0 and 255.
+      </dd>
+      <dt><code>chassis</code></dt>
+      <dd>
+        pcie-root-port controllers can also have
+        a <code>chassis</code> attribute in
+        the <code>&lt;target&gt;</code> subelement, which is used to
+        set the controller's "chassis" configuration value, which is
+        visible to the virtual machine. If set, chassis must be
+        between 0 and 255.
+      </dd>
+      <dt><code>port</code></dt>
+      <dd>
+        pcie-root-port controllers can also have a <code>port</code>
+        attribute in the <code>&lt;target&gt;</code> subelement, which
+        is used to set the controller's "port" configuration value,
+        which is visible to the virtual machine. If set, port must be
+        between 0 and 255.
       </dd>
     </dl>
     <p>
@@ -3124,6 +3142,17 @@
       controller; all guest PCI devices with addresses that are
       auto-determined by libvirt will be placed on this pci-bridge
       device.  (<span class="since">since 1.1.2</span>).
+    </p>
+    <p>
+      Domains with an implicit pcie-root can also add controllers
+      with <code>model='pcie-root-port'</code>. This is a simple type of
+      bridge device that can connect only to one of the 31 slots on
+      the pcie-root bus on the upstream side, and makes a single
+      (PCIe, hotpluggable) port (at slot='0') available on the
+      downstream side. This controller can be used to provide a single
+      slot to later hotplug a PCIe device (but is not itself
+      hotpluggable - it must be in the configuration when the domain
+      is started). (<span class="since">since 1.2.19</span>)
     </p>
 <pre>
   ...

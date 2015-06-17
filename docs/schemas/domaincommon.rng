@@ -1739,6 +1739,8 @@
                     <value>pci-bridge</value>
                     <!-- implementations of 'dmi-to-pci-bridge' -->
                     <value>i82801b11-bridge</value>
+                    <!-- implementations of 'pcie-root-port' -->
+                    <value>ioh3420</value>
                   </choice>
                 </attribute>
                 <empty/>
@@ -1748,6 +1750,16 @@
               <element name="target">
                 <optional>
                   <attribute name='chassisNr'>
+                    <ref name='uint8range'/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="chassis">
+                    <ref name='uint8range'/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="port">
                     <ref name='uint8range'/>
                   </attribute>
                 </optional>
@@ -1774,6 +1786,7 @@
                   <choice>
                     <value>pci-bridge</value>
                     <value>dmi-to-pci-bridge</value>
+                    <value>pcie-root-port</value>
                   </choice>
                 </attribute>
               </group>
