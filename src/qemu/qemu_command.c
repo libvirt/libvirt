@@ -8526,9 +8526,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     return ret;
 }
 
-static int
-qemuBuildShmemDevCmd(virCommandPtr cmd,
-                     virDomainDefPtr def,
+char *
+qemuBuildShmemDevStr(virDomainDefPtr def,
                      virDomainShmemDefPtr shmem,
                      virQEMUCapsPtr qemuCaps)
 {
@@ -8582,14 +8581,38 @@ qemuBuildShmemDevCmd(virCommandPtr cmd,
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &buf);
-
-    return 0;
+    return virBufferContentAndReset(&buf);
 
  error:
     virBufferFreeAndReset(&buf);
-    return -1;
+    return NULL;
+}
+
+char *
+qemuBuildShmemBackendStr(virDomainShmemDefPtr shmem,
+                         virQEMUCapsPtr qemuCaps)
+{
+    char *devstr = NULL;
+    virDomainChrSourceDef source = {
+        .type = VIR_DOMAIN_CHR_TYPE_UNIX,
+        .data.nix = {
+            .path = shmem->server.path,
+            .listen = false,
+        }
+    };
+
+    if (!shmem->server.path &&
+        virAsprintf(&source.data.nix.path,
+                    "/var/lib/libvirt/shmem-%s-sock",
+                    shmem->name) < 0)
+        return NULL;
+
+    devstr = qemuBuildChrChardevStr(&source, shmem->info.alias, qemuCaps);
+
+    if (!shmem->server.path)
+        VIR_FREE(source.data.nix.path);
+
+    return devstr;
 }
 
 static int
@@ -8598,35 +8621,18 @@ qemuBuildShmemCommandLine(virCommandPtr cmd,
                           virDomainShmemDefPtr shmem,
                           virQEMUCapsPtr qemuCaps)
 {
-    if (qemuBuildShmemDevCmd(cmd, def, shmem, qemuCaps) < 0)
+    char *devstr = NULL;
+
+    if (!(devstr = qemuBuildShmemDevStr(def, shmem, qemuCaps)))
         return -1;
+    virCommandAddArgList(cmd, "-device", devstr, NULL);
+    VIR_FREE(devstr);
 
     if (shmem->server.enabled) {
-        char *devstr = NULL;
-        virDomainChrSourceDef source = {
-            .type = VIR_DOMAIN_CHR_TYPE_UNIX,
-            .data.nix = {
-                .path = shmem->server.path,
-                .listen = false,
-            }
-        };
-
-        if (!shmem->server.path &&
-            virAsprintf(&source.data.nix.path,
-                        "/var/lib/libvirt/shmem-%s-sock",
-                        shmem->name) < 0)
+        if (!(devstr = qemuBuildShmemBackendStr(shmem, qemuCaps)))
             return -1;
 
-        devstr = qemuBuildChrChardevStr(&source, shmem->info.alias, qemuCaps);
-
-        if (!shmem->server.path)
-            VIR_FREE(source.data.nix.path);
-
-        if (!devstr)
-            return -1;
-
-        virCommandAddArg(cmd, "-chardev");
-        virCommandAddArg(cmd, devstr);
+        virCommandAddArgList(cmd, "-chardev", devstr, NULL);
         VIR_FREE(devstr);
     }
 

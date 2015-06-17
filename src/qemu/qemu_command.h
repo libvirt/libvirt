@@ -194,6 +194,13 @@ int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
                              const char **type,
                              virJSONValuePtr *props);
 
+char *qemuBuildShmemDevStr(virDomainDefPtr def,
+                           virDomainShmemDefPtr shmem,
+                           virQEMUCapsPtr qemuCaps);
+char *qemuBuildShmemBackendStr(virDomainShmemDefPtr shmem,
+                               virQEMUCapsPtr qemuCaps);
+
+
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
 /* Legacy, pre device support */
