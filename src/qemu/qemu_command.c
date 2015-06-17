@@ -2562,6 +2562,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                                                flags) < 0)
             goto error;
     }
+
     /* Further non-primary video cards which have to be qxl type */
     for (i = 1; i < def->nvideos; i++) {
         if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
@@ -2573,6 +2574,16 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             continue;
         if (virDomainPCIAddressReserveNextSlot(addrs, &def->videos[i]->info,
                                                flags) < 0)
+            goto error;
+    }
+
+    /* Shared Memory */
+    for (i = 0; i < def->nshmems; i++) {
+        if (def->shmems[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        if (virDomainPCIAddressReserveNextSlot(addrs,
+                                               &def->shmems[i]->info, flags) < 0)
             goto error;
     }
     for (i = 0; i < def->ninputs; i++) {

@@ -23,6 +23,7 @@
     </shmem>
     <shmem name='shmem2'>
       <size unit='M'>256</size>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </shmem>
     <shmem name='shmem3'>
       <size unit='M'>512</size>
