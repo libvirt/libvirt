@@ -8563,9 +8563,9 @@ qemuBuildShmemDevCmd(virCommandPtr cmd,
     }
 
     if (!shmem->server.enabled) {
-        virBufferAsprintf(&buf, ",shm=%s", shmem->name);
+        virBufferAsprintf(&buf, ",shm=%s,id=%s", shmem->name, shmem->info.alias);
     } else {
-        virBufferAsprintf(&buf, ",chardev=char%s", shmem->info.alias);
+        virBufferAsprintf(&buf, ",chardev=char%s,id=%s", shmem->info.alias, shmem->info.alias);
         if (shmem->msi.enabled) {
             virBufferAddLit(&buf, ",msi=on");
             if (shmem->msi.vectors)
