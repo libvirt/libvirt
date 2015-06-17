@@ -137,8 +137,8 @@ EXTRA_DIST =		\
 	virsh-uriprecedence \
 	vircgroupdata \
 	virfiledata \
+	virnetdaemondata \
 	virnetdevtestdata \
-	virnetserverdata \
 	virpcitestdata \
 	virscsidata \
 	virusbtestdata \
