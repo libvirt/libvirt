@@ -8593,24 +8593,14 @@ qemuBuildShmemBackendStr(virDomainShmemDefPtr shmem,
                          virQEMUCapsPtr qemuCaps)
 {
     char *devstr = NULL;
-    virDomainChrSourceDef source = {
-        .type = VIR_DOMAIN_CHR_TYPE_UNIX,
-        .data.nix = {
-            .path = shmem->server.path,
-            .listen = false,
-        }
-    };
 
-    if (!shmem->server.path &&
-        virAsprintf(&source.data.nix.path,
+    if (!shmem->server.chr.data.nix.path &&
+        virAsprintf(&shmem->server.chr.data.nix.path,
                     "/var/lib/libvirt/shmem-%s-sock",
                     shmem->name) < 0)
         return NULL;
 
-    devstr = qemuBuildChrChardevStr(&source, shmem->info.alias, qemuCaps);
-
-    if (!shmem->server.path)
-        VIR_FREE(source.data.nix.path);
+    devstr = qemuBuildChrChardevStr(&shmem->server.chr, shmem->info.alias, qemuCaps);
 
     return devstr;
 }

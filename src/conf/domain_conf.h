@@ -1601,7 +1601,7 @@ struct _virDomainShmemDef {
     unsigned long long size;
     struct {
         bool enabled;
-        char *path;
+        virDomainChrSourceDef chr;
     } server;
     struct {
         bool enabled;

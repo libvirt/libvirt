@@ -1948,7 +1948,7 @@ void virDomainShmemDefFree(virDomainShmemDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    VIR_FREE(def->server.path);
+    virDomainChrSourceDefClear(&def->server.chr);
     VIR_FREE(def->name);
     VIR_FREE(def);
 }
@@ -11158,8 +11158,10 @@ virDomainShmemDefParseXML(xmlNodePtr node,
     if ((server = virXPathNode("./server[1]", ctxt))) {
         def->server.enabled = true;
 
+        def->server.chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        def->server.chr.data.nix.listen = false;
         if ((tmp = virXMLPropString(server, "path")))
-            def->server.path = virFileSanitizePath(tmp);
+            def->server.chr.data.nix.path = virFileSanitizePath(tmp);
         VIR_FREE(tmp);
     }
 
@@ -20195,7 +20197,7 @@ virDomainShmemDefFormat(virBufferPtr buf,
 
     if (def->server.enabled) {
         virBufferAddLit(buf, "<server");
-        virBufferEscapeString(buf, " path='%s'", def->server.path);
+        virBufferEscapeString(buf, " path='%s'", def->server.chr.data.nix.path);
         virBufferAddLit(buf, "/>\n");
     }
 
