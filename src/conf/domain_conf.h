@@ -463,7 +463,7 @@ struct _virDomainHostdevSubsysSCSIHost {
     char *adapter;
     unsigned bus;
     unsigned target;
-    unsigned unit;
+    unsigned long long unit;
 };
 
 typedef struct _virDomainHostdevSubsysSCSIiSCSI virDomainHostdevSubsysSCSIiSCSI;

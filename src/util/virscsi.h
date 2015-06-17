@@ -37,18 +37,18 @@ char *virSCSIDeviceGetSgName(const char *sysfs_prefix,
                              const char *adapter,
                              unsigned int bus,
                              unsigned int target,
-                             unsigned int unit);
+                             unsigned long long unit);
 char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
                               const char *adapter,
                               unsigned int bus,
                               unsigned int target,
-                              unsigned int unit);
+                              unsigned long long unit);
 
 virSCSIDevicePtr virSCSIDeviceNew(const char *sysfs_prefix,
                                   const char *adapter,
                                   unsigned int bus,
                                   unsigned int target,
-                                  unsigned int unit,
+                                  unsigned long long unit,
                                   bool readonly,
                                   bool shareable);
 
@@ -61,7 +61,7 @@ const char *virSCSIDeviceGetName(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetAdapter(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetBus(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetTarget(virSCSIDevicePtr dev);
-unsigned int virSCSIDeviceGetUnit(virSCSIDevicePtr dev);
+unsigned long long virSCSIDeviceGetUnit(virSCSIDevicePtr dev);
 bool virSCSIDeviceGetReadonly(virSCSIDevicePtr dev);
 bool virSCSIDeviceGetShareable(virSCSIDevicePtr dev);
 

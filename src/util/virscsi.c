@@ -56,7 +56,7 @@ struct _virSCSIDevice {
     unsigned int adapter;
     unsigned int bus;
     unsigned int target;
-    unsigned int unit;
+    unsigned long long unit;
 
     char *name; /* adapter:bus:target:unit */
     char *id;   /* model:vendor */
@@ -110,7 +110,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
                        const char *adapter,
                        unsigned int bus,
                        unsigned int target,
-                       unsigned int unit)
+                       unsigned long long unit)
 {
     DIR *dir = NULL;
     struct dirent *entry;
@@ -123,7 +123,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
         return NULL;
 
     if (virAsprintf(&path,
-                    "%s/%d:%u:%u:%u/scsi_generic",
+                    "%s/%d:%u:%u:%llu/scsi_generic",
                     prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
@@ -157,7 +157,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
                         const char *adapter,
                         unsigned int bus,
                         unsigned int target,
-                        unsigned int unit)
+                        unsigned long long unit)
 {
     DIR *dir = NULL;
     struct dirent *entry;
@@ -170,7 +170,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
         return NULL;
 
     if (virAsprintf(&path,
-                    "%s/%d:%u:%u:%u/block",
+                    "%s/%d:%u:%u:%llu/block",
                     prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
@@ -200,7 +200,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
                  const char *adapter,
                  unsigned int bus,
                  unsigned int target,
-                 unsigned int unit,
+                 unsigned long long unit,
                  bool readonly,
                  bool shareable)
 {
@@ -227,7 +227,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
     if (virSCSIDeviceGetAdapterId(adapter, &dev->adapter) < 0)
         goto cleanup;
 
-    if (virAsprintf(&dev->name, "%d:%u:%u:%u", dev->adapter,
+    if (virAsprintf(&dev->name, "%d:%u:%u:%llu", dev->adapter,
                     dev->bus, dev->target, dev->unit) < 0 ||
         virAsprintf(&dev->sg_path, "%s/%s",
                     sysfs_prefix ? sysfs_prefix : "/dev", sg) < 0)
@@ -347,7 +347,7 @@ virSCSIDeviceGetTarget(virSCSIDevicePtr dev)
     return dev->target;
 }
 
-unsigned int
+unsigned long long
 virSCSIDeviceGetUnit(virSCSIDevicePtr dev)
 {
     return dev->unit;

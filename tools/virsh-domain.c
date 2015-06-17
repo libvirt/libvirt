@@ -415,7 +415,7 @@ struct PCIAddress {
 struct SCSIAddress {
     unsigned int controller;
     unsigned int bus;
-    unsigned int unit;
+    unsigned long long unit;
 };
 
 struct IDEAddress {
@@ -488,7 +488,7 @@ static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
         return -1;
 
     unit++;
-    if (virStrToLong_uip(unit, NULL, 0, &scsiAddr->unit) != 0)
+    if (virStrToLong_ullp(unit, NULL, 0, &scsiAddr->unit) != 0)
         return -1;
 
     return 0;
@@ -725,7 +725,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             if (diskAddr.type == DISK_ADDR_TYPE_SCSI) {
                 virBufferAsprintf(&buf,
                                   "<address type='drive' controller='%u'"
-                                  " bus='%u' unit='%u' />\n",
+                                  " bus='%u' unit='%llu' />\n",
                                   diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
                                   diskAddr.addr.scsi.unit);
             } else {

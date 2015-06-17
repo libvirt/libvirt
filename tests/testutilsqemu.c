@@ -462,7 +462,7 @@ testSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                         const char *adapter ATTRIBUTE_UNUSED,
                         unsigned int bus ATTRIBUTE_UNUSED,
                         unsigned int target ATTRIBUTE_UNUSED,
-                        unsigned int unit ATTRIBUTE_UNUSED)
+                        unsigned long long unit ATTRIBUTE_UNUSED)
 {
     char *sg = NULL;
 

@@ -63,7 +63,7 @@ struct _qemuBuildCommandLineCallbacks {
                                       const char *adapter,
                                       unsigned int bus,
                                       unsigned int target,
-                                      unsigned int unit);
+                                      unsigned long long unit);
 };
 
 extern qemuBuildCommandLineCallbacks buildCommandLineCallbacks;

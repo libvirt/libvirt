@@ -5037,7 +5037,7 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                     goto cleanup;
                 }
 
-                if (virStrToLong_uip(unit, NULL, 0, &scsihostsrc->unit) < 0) {
+                if (virStrToLong_ullp(unit, NULL, 0, &scsihostsrc->unit) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse unit '%s'"), unit);
                     goto cleanup;
@@ -19102,7 +19102,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
             virBufferAsprintf(buf, "<adapter name='%s'/>\n",
                               scsihostsrc->adapter);
             virBufferAsprintf(buf,
-                              "<address %sbus='%u' target='%u' unit='%u'/>\n",
+                              "<address %sbus='%u' target='%u' unit='%llu'/>\n",
                               includeTypeInAddr ? "type='scsi' " : "",
                               scsihostsrc->bus, scsihostsrc->target,
                               scsihostsrc->unit);
