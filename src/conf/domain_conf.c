@@ -5024,20 +5024,20 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(bus, NULL, 0, &scsihostsrc->bus) < 0) {
+                if (virStrToLong_uip(bus, NULL, 0, &scsihostsrc->bus) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse bus '%s'"), bus);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(target, NULL, 0,
+                if (virStrToLong_uip(target, NULL, 0,
                                     &scsihostsrc->target) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse target '%s'"), target);
                     goto cleanup;
                 }
 
-                if (virStrToLong_ui(unit, NULL, 0, &scsihostsrc->unit) < 0) {
+                if (virStrToLong_uip(unit, NULL, 0, &scsihostsrc->unit) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("cannot parse unit '%s'"), unit);
                     goto cleanup;

@@ -480,15 +480,15 @@ static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
 
     controller = (char *)str;
 
-    if (virStrToLong_ui(controller, &bus, 0, &scsiAddr->controller) != 0)
+    if (virStrToLong_uip(controller, &bus, 0, &scsiAddr->controller) != 0)
         return -1;
 
     bus++;
-    if (virStrToLong_ui(bus, &unit, 0, &scsiAddr->bus) != 0)
+    if (virStrToLong_uip(bus, &unit, 0, &scsiAddr->bus) != 0)
         return -1;
 
     unit++;
-    if (virStrToLong_ui(unit, NULL, 0, &scsiAddr->unit) != 0)
+    if (virStrToLong_uip(unit, NULL, 0, &scsiAddr->unit) != 0)
         return -1;
 
     return 0;
