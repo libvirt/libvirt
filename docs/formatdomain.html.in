@@ -2866,7 +2866,7 @@
       <dd>Drive addresses have the following additional
         attributes: <code>controller</code> (a 2-digit controller
         number), <code>bus</code> (a 2-digit bus number),
-        <code>target</code> (a 2-digit bus number),
+        <code>target</code> (a 2-digit target number),
         and <code>unit</code> (a 2-digit unit number on the bus).
       </dd>
       <dt><code>type='virtio-serial'</code></dt>
@@ -3175,7 +3175,7 @@
     &lt;hostdev mode='subsystem' type='scsi' sgio='filtered' rawio='yes'&gt;
       &lt;source&gt;
         &lt;adapter name='scsi_host0'/&gt;
-        &lt;address type='scsi' bus='0' target='0' unit='0'/&gt;
+        &lt;address bus='0' target='0' unit='0'/&gt;
       &lt;/source&gt;
       &lt;readonly/&gt;
       &lt;address type='drive' controller='0' bus='0' target='0' unit='0'/&gt;
