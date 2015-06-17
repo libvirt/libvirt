@@ -65,14 +65,6 @@
 
 VIR_LOG_INIT("test.test_driver");
 
-/* Driver specific info to carry with a domain */
-struct _testDomainObjPrivate {
-    virVcpuInfoPtr vcpu_infos;
-
-    unsigned char *cpumaps;
-};
-typedef struct _testDomainObjPrivate testDomainObjPrivate;
-typedef struct _testDomainObjPrivate *testDomainObjPrivatePtr;
 
 #define MAX_CPUS 128
 
@@ -181,25 +173,6 @@ static void testObjectEventQueue(testDriverPtr driver,
         return;
 
     virObjectEventStateQueue(driver->eventState, event);
-}
-
-static void *testDomainObjPrivateAlloc(void)
-{
-    testDomainObjPrivatePtr priv;
-
-    if (VIR_ALLOC(priv) < 0)
-        return NULL;
-
-    return priv;
-}
-
-static void testDomainObjPrivateFree(void *data)
-{
-    testDomainObjPrivatePtr priv = data;
-
-    VIR_FREE(priv->vcpu_infos);
-    VIR_FREE(priv->cpumaps);
-    VIR_FREE(priv);
 }
 
 #define TEST_NAMESPACE_HREF "http://libvirt.org/schemas/domain/test/1.0"
@@ -401,11 +374,6 @@ testBuildCapabilities(virConnectPtr conn)
 static testDriverPtr
 testDriverNew(void)
 {
-    virDomainXMLPrivateDataCallbacks priv = {
-        .alloc = testDomainObjPrivateAlloc,
-        .free = testDomainObjPrivateFree
-    };
-
     virDomainXMLNamespace ns = {
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
@@ -421,7 +389,7 @@ testDriverNew(void)
         goto error;
     }
 
-    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, &priv, &ns)) ||
+    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, NULL, &ns)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
         !(ret->domains = virDomainObjListNew()) ||
         !(ret->networks = virNetworkObjListNew()))
@@ -601,95 +569,6 @@ testDomainGenerateIfnames(virDomainDefPtr domdef)
     return 0;
 }
 
-/* Helper to update info for a single VCPU */
-static int
-testDomainUpdateVCPU(virDomainObjPtr dom,
-                     int vcpu,
-                     int maplen,
-                     int maxcpu)
-{
-    testDomainObjPrivatePtr privdata = dom->privateData;
-    virVcpuInfoPtr info = &privdata->vcpu_infos[vcpu];
-    unsigned char *cpumap = VIR_GET_CPUMAP(privdata->cpumaps, maplen, vcpu);
-    size_t j;
-    bool cpu;
-
-    memset(info, 0, sizeof(virVcpuInfo));
-    memset(cpumap, 0, maplen);
-
-    info->number    = vcpu;
-    info->state     = VIR_VCPU_RUNNING;
-    info->cpuTime   = 5000000;
-    info->cpu       = 0;
-
-    if (dom->def->cpumask) {
-        for (j = 0; j < maxcpu && j < VIR_DOMAIN_CPUMASK_LEN; ++j) {
-            if (virBitmapGetBit(dom->def->cpumask, j, &cpu) < 0)
-                return -1;
-            if (cpu) {
-                VIR_USE_CPU(cpumap, j);
-                info->cpu = j;
-            }
-        }
-    } else {
-        for (j = 0; j < maxcpu; ++j) {
-            if ((j % 3) == 0) {
-                /* Mark of every third CPU as usable */
-                VIR_USE_CPU(cpumap, j);
-                info->cpu = j;
-            }
-        }
-    }
-
-    return 0;
-}
-
-/*
- * Update domain VCPU amount and info
- *
- * @conn: virConnectPtr
- * @dom : domain needing updates
- * @nvcpus: New amount of vcpus for the domain
- * @clear_all: If true, rebuild info for ALL vcpus, not just newly added vcpus
- */
-static int
-testDomainUpdateVCPUs(testDriverPtr privconn,
-                      virDomainObjPtr dom,
-                      int nvcpus,
-                      unsigned int clear_all)
-{
-    testDomainObjPrivatePtr privdata = dom->privateData;
-    size_t i;
-    int ret = -1;
-    int cpumaplen, maxcpu;
-
-    maxcpu  = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
-    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-
-    if (VIR_REALLOC_N(privdata->vcpu_infos, nvcpus) < 0)
-        goto cleanup;
-
-    if (VIR_REALLOC_N(privdata->cpumaps, nvcpus * cpumaplen) < 0)
-        goto cleanup;
-
-    /* Set running VCPU and cpumap state */
-    if (clear_all) {
-        for (i = 0; i < nvcpus; ++i)
-            if (testDomainUpdateVCPU(dom, i, cpumaplen, maxcpu) < 0)
-                goto cleanup;
-
-    } else if (nvcpus > dom->def->vcpus) {
-        /* VCPU amount has grown, populate info for the new vcpus */
-        for (i = dom->def->vcpus; i < nvcpus; ++i)
-            if (testDomainUpdateVCPU(dom, i, cpumaplen, maxcpu) < 0)
-                goto cleanup;
-    }
-
-    dom->def->vcpus = nvcpus;
-    ret = 0;
- cleanup:
-    return ret;
-}
 
 static void
 testDomainShutdownState(virDomainPtr domain,
@@ -715,9 +594,6 @@ testDomainStartState(testDriverPtr privconn,
                      virDomainRunningReason reason)
 {
     int ret = -1;
-
-    if (testDomainUpdateVCPUs(privconn, dom, dom->def->vcpus, 1) < 0)
-        goto cleanup;
 
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
     dom->def->id = virAtomicIntAdd(&privconn->nextDomID, 1);
@@ -2443,7 +2319,6 @@ static int
 testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
                         unsigned int flags)
 {
-    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
@@ -2485,9 +2360,8 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         goto cleanup;
     }
 
-    if (def &&
-        testDomainUpdateVCPUs(privconn, privdom, nrCpus, 0) < 0)
-        goto cleanup;
+    if (def)
+        def->vcpus = nrCpus;
 
     if (persistentDef) {
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
@@ -2519,13 +2393,14 @@ static int testDomainGetVcpus(virDomainPtr domain,
                               int maplen)
 {
     testDriverPtr privconn = domain->conn->privateData;
-    testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
+    virDomainDefPtr def;
     size_t i;
-    int v, maxcpu, hostcpus;
+    int maxcpu, hostcpus;
     int ret = -1;
     struct timeval tv;
     unsigned long long statbase;
+    virBitmapPtr allcpumap = NULL;
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
@@ -2536,7 +2411,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
         goto cleanup;
     }
 
-    privdomdata = privdom->privateData;
+    def = privdom->def;
 
     if (gettimeofday(&tv, NULL) < 0) {
         virReportSystemError(errno,
@@ -2546,49 +2421,52 @@ static int testDomainGetVcpus(virDomainPtr domain,
 
     statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
 
-
     hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
     maxcpu = maplen * 8;
     if (maxcpu > hostcpus)
         maxcpu = hostcpus;
 
+    if (!(allcpumap = virBitmapNew(hostcpus)))
+        goto cleanup;
+
+    virBitmapSetAll(allcpumap);
+
     /* Clamp to actual number of vcpus */
     if (maxinfo > privdom->def->vcpus)
         maxinfo = privdom->def->vcpus;
 
-    /* Populate virVcpuInfo structures */
-    if (info != NULL) {
-        memset(info, 0, sizeof(*info) * maxinfo);
+    memset(info, 0, sizeof(*info) * maxinfo);
+    memset(cpumaps, 0, maxinfo * maplen);
 
-        for (i = 0; i < maxinfo; i++) {
-            virVcpuInfo privinfo = privdomdata->vcpu_infos[i];
+    for (i = 0; i < maxinfo; i++) {
+        virDomainPinDefPtr pininfo;
+        virBitmapPtr bitmap = NULL;
 
-            info[i].number = privinfo.number;
-            info[i].state = privinfo.state;
-            info[i].cpu = privinfo.cpu;
+        pininfo = virDomainPinFind(def->cputune.vcpupin,
+                                   def->cputune.nvcpupin,
+                                   i);
 
-            /* Fake an increasing cpu time value */
-            info[i].cpuTime = statbase / 10;
-        }
-    }
+        if (pininfo && pininfo->cpumask)
+            bitmap = pininfo->cpumask;
+        else if (def->cpumask)
+            bitmap = def->cpumask;
+        else
+            bitmap = allcpumap;
 
-    /* Populate cpumaps */
-    if (cpumaps != NULL) {
-        int privmaplen = VIR_CPU_MAPLEN(hostcpus);
-        memset(cpumaps, 0, maplen * maxinfo);
+        if (cpumaps)
+            virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
 
-        for (v = 0; v < maxinfo; v++) {
-            unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
+        info[i].number = i;
+        info[i].state = VIR_VCPU_RUNNING;
+        info[i].cpu = virBitmapLastSetBit(bitmap);
 
-            for (i = 0; i < maxcpu; i++) {
-                if (VIR_CPU_USABLE(privdomdata->cpumaps, privmaplen, v, i))
-                    VIR_USE_CPU(cpumap, i);
-            }
-        }
+        /* Fake an increasing cpu time value */
+        info[i].cpuTime = statbase / 10;
     }
 
     ret = maxinfo;
  cleanup:
+    virBitmapFree(allcpumap);
     virDomainObjEndAPI(&privdom);
     return ret;
 }
@@ -2598,16 +2476,14 @@ static int testDomainPinVcpu(virDomainPtr domain,
                              unsigned char *cpumap,
                              int maplen)
 {
-    testDriverPtr privconn = domain->conn->privateData;
-    testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
-    unsigned char *privcpumap;
-    size_t i;
-    int maxcpu, hostcpus, privmaplen;
+    virDomainDefPtr def;
     int ret = -1;
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
+
+    def = privdom->def;
 
     if (!virDomainObjIsActive(privdom)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2621,20 +2497,19 @@ static int testDomainPinVcpu(virDomainPtr domain,
         goto cleanup;
     }
 
-    privdomdata = privdom->privateData;
-    hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
-    privmaplen = VIR_CPU_MAPLEN(hostcpus);
-
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
-    privcpumap = VIR_GET_CPUMAP(privdomdata->cpumaps, privmaplen, vcpu);
-    memset(privcpumap, 0, privmaplen);
-
-    for (i = 0; i < maxcpu; i++) {
-        if (VIR_CPU_USABLE(cpumap, maplen, 0, i))
-            VIR_USE_CPU(privcpumap, i);
+    if (!def->cputune.vcpupin) {
+        if (VIR_ALLOC(def->cputune.vcpupin) < 0)
+            goto cleanup;
+        def->cputune.nvcpupin = 0;
+    }
+    if (virDomainPinAdd(&def->cputune.vcpupin,
+                        &def->cputune.nvcpupin,
+                        cpumap,
+                        maplen,
+                        vcpu) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to update or add vcpupin"));
+        goto cleanup;
     }
 
     ret = 0;
