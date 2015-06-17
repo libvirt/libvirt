@@ -3833,10 +3833,10 @@
       <ref name="driveBus"/>
     </attribute>
     <attribute name="target">
-      <ref name="driveTarget"/>
+      <ref name="driveSCSITarget"/>
     </attribute>
     <attribute name="unit">
-      <ref name="driveUnit"/>
+      <ref name="driveSCSIUnit"/>
     </attribute>
   </define>
   <define name="usbportaddress">
@@ -5152,9 +5152,19 @@
       <param name="pattern">[0-9]{1,2}</param>
     </data>
   </define>
+  <define name="driveSCSITarget">
+    <data type="string">
+      <param name="pattern">[0-9]{1,10}</param>
+    </data>
+  </define>
   <define name="driveUnit">
     <data type="string">
       <param name="pattern">[0-9]{1,2}</param>
+    </data>
+  </define>
+  <define name="driveSCSIUnit">
+    <data type="string">
+      <param name="pattern">[0-9]{1,20}</param>
     </data>
   </define>
   <define name="featureName">

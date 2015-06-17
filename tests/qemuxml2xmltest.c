@@ -577,6 +577,7 @@ mymain(void)
     DO_TEST("hostdev-scsi-rawio");
 
     DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
+    DO_TEST("hostdev-scsi-large-unit");
 
     DO_TEST("hostdev-scsi-lsi-iscsi");
     DO_TEST("hostdev-scsi-lsi-iscsi-auth");

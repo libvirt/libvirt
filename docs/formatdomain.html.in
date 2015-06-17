@@ -3283,7 +3283,14 @@
           </dd>
           <dt>scsi</dt>
           <dd>SCSI devices are described by both the <code>adapter</code>
-            and <code>address</code> elements.
+            and <code>address</code> elements. The <code>address</code>
+            element includes a <code>bus</code> attribute (a 2-digit bus
+            number), a <code>target</code> attribute (a 10-digit target
+            number), and a <code>unit</code> attribute (a 20-digit unit
+            number on the bus). Not all hypervisors support larger
+            <code>target</code> and <code>unit</code> values. It is up
+            to each hypervisor to determine the maximum value supported
+            for the adapter.
             <p>
             <span class="since">Since 1.2.8</span>, the <code>source</code>
             element of a SCSI device may contain the <code>protocol</code>
