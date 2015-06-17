@@ -120,4 +120,5 @@
     <flag name='vmware-svga.vgamem_mb'/>
     <flag name='qxl.vgamem_mb'/>
     <flag name='qxl-vga.vgamem_mb'/>
+    <flag name='ioh3420'/>
   </qemuCaps>

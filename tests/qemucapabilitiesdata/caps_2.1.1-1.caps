@@ -167,4 +167,5 @@
     <flag name='qxl-vga.vgamem_mb'/>
     <flag name='pc-dimm'/>
     <flag name='pci-serial'/>
+    <flag name='ioh3420'/>
   </qemuCaps>

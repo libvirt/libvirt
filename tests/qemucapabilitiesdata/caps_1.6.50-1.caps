@@ -151,4 +151,5 @@
     <flag name='qxl.vgamem_mb'/>
     <flag name='qxl-vga.vgamem_mb'/>
     <flag name='pci-serial'/>
+    <flag name='ioh3420'/>
   </qemuCaps>
