@@ -3150,6 +3150,7 @@ prlsdkGetDiskIndex(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
         pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
         prlsdkCheckRetGoto(pret, cleanup);
 
+        buflen = 0;
         pret = PrlVmDev_GetFriendlyName(hdd, 0, &buflen);
         prlsdkCheckRetGoto(pret, cleanup);
 
