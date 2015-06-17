@@ -2900,7 +2900,7 @@ static void prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
     pret = PrlVirtNet_SetNetworkId(vnet, net->data.network.name);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    PrlSrv_DeleteVirtualNetwork(privconn->server, vnet, 0);
+    job = PrlSrv_DeleteVirtualNetwork(privconn->server, vnet, 0);
     if (PRL_FAILED(pret = waitJob(job)))
         goto cleanup;
 
