@@ -1,0 +1,60 @@
+<domain type='qemu'>
+  <name>q35-test</name>
+  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='q35'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='sda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pcie-root'/>
+    <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
+    <controller type='pci' index='2' model='pci-bridge'/>
+    <controller type='pci' index='3' model='pcie-root-port'/>
+    <controller type='pci' index='4' model='pcie-root-port'/>
+    <controller type='pci' index='5' model='pcie-root-port'/>
+    <controller type='pci' index='6' model='pcie-root-port'/>
+    <controller type='pci' index='7' model='pcie-root-port'/>
+    <controller type='pci' index='8' model='pcie-root-port'/>
+    <controller type='pci' index='9' model='pcie-root-port'/>
+    <controller type='pci' index='10' model='pcie-root-port'/>
+    <controller type='pci' index='11' model='pcie-root-port'/>
+    <controller type='pci' index='12' model='pcie-root-port'/>
+    <controller type='pci' index='13' model='pcie-root-port'/>
+    <controller type='pci' index='14' model='pcie-root-port'/>
+    <controller type='pci' index='15' model='pcie-root-port'/>
+    <controller type='pci' index='16' model='pcie-root-port'/>
+    <controller type='pci' index='17' model='pcie-root-port'/>
+    <controller type='pci' index='18' model='pcie-root-port'/>
+    <controller type='pci' index='19' model='pcie-root-port'/>
+    <controller type='pci' index='20' model='pcie-root-port'/>
+    <controller type='pci' index='21' model='pcie-root-port'/>
+    <controller type='pci' index='22' model='pcie-root-port'/>
+    <controller type='pci' index='23' model='pcie-root-port'/>
+    <controller type='pci' index='24' model='pcie-root-port'/>
+    <controller type='pci' index='25' model='pcie-root-port'/>
+    <controller type='pci' index='26' model='pcie-root-port'/>
+    <controller type='pci' index='27' model='pcie-root-port'/>
+    <controller type='pci' index='28' model='pcie-root-port'/>
+    <controller type='pci' index='29' model='pcie-root-port'/>
+    <controller type='pci' index='30' model='pcie-root-port'/>
+    <controller type='pci' index='31' model='pcie-root-port'/>
+    <controller type='sata' index='0'/>
+    <video>
+      <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
+    </video>
+    <memballoon model='none'/>
+  </devices>
+</domain>
