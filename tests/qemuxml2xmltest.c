@@ -570,6 +570,7 @@ mymain(void)
     DO_TEST("pcie-root-port");
     DO_TEST("pcie-root-port-too-many");
     DO_TEST("pcie-switch-upstream-port");
+    DO_TEST("pcie-switch-downstream-port");
 
     DO_TEST("hostdev-scsi-lsi");
     DO_TEST("hostdev-scsi-virtio-scsi");

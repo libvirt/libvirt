@@ -1743,6 +1743,8 @@
                     <value>ioh3420</value>
                     <!-- implementations of 'pcie-switch-upstream-port' -->
                     <value>x3130-upstream</value>
+                    <!-- implementations of 'pcie-switch-downstream-port' -->
+                    <value>xio3130-downstream</value>
                   </choice>
                 </attribute>
                 <empty/>
@@ -1790,6 +1792,7 @@
                     <value>dmi-to-pci-bridge</value>
                     <value>pcie-root-port</value>
                     <value>pcie-switch-upstream-port</value>
+                    <value>pcie-switch-downstream-port</value>
                   </choice>
                 </attribute>
               </group>

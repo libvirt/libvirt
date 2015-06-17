@@ -326,7 +326,8 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pci-bridge",
               "dmi-to-pci-bridge",
               "pcie-root-port",
-              "pcie-switch-upstream-port")
+              "pcie-switch-upstream-port",
+              "pcie-switch-downstream-port")
 
 VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
@@ -334,7 +335,8 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "pci-bridge",
               "i82801b11-bridge",
               "ioh3420",
-              "x3130-upstream")
+              "x3130-upstream",
+              "xio3130-downstream")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",

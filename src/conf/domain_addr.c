@@ -197,6 +197,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
         /* provides one slot which is pcie, can be used by devices
          * that must connect to some type of "pcie-*-port", and
          * is hotpluggable
