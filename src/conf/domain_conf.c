@@ -12658,8 +12658,7 @@ virDomainDiskDefDstDuplicates(virDomainDefPtr def)
 
     for (i = 1; i < def->ndisks; i++) {
         for (j = 0; j < i; j++) {
-            if (def->disks[i]->bus == def->disks[j]->bus &&
-                STREQ(def->disks[i]->dst, def->disks[j]->dst)) {
+            if (STREQ(def->disks[i]->dst, def->disks[j]->dst)) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("target '%s' duplicated for disk sources "
                                  "'%s' and '%s'"),
