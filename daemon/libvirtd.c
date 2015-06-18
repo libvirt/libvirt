@@ -455,33 +455,34 @@ daemonSetupNetworking(virNetServerPtr srv,
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
     int unix_sock_adm_mask = 0;
+    int ret = -1;
 
     unsigned int cur_fd = STDERR_FILENO + 1;
     unsigned int nfds = virGetListenFDs();
 
     if (config->unix_sock_group) {
         if (virGetGroupID(config->unix_sock_group, &unix_sock_gid) < 0)
-            return -1;
+            return ret;
     }
 
     if (nfds > (sock_path_ro ? 2 : 1)) {
         VIR_ERROR(_("Too many (%u) FDs passed from caller"), nfds);
-        return -1;
+        return ret;
     }
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_ro_perms);
-        goto error;
+        goto cleanup;
     }
 
     if (virStrToLong_i(config->unix_sock_admin_perms, NULL, 8, &unix_sock_adm_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_admin_perms);
-        goto error;
+        goto cleanup;
     }
 
     if (virStrToLong_i(config->unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_rw_perms);
-        goto error;
+        goto cleanup;
     }
 
     if (!(svc = virNetServerServiceNewFDOrUNIX(sock_path,
@@ -495,7 +496,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                config->max_queued_clients,
                                                config->max_client_requests,
                                                nfds, &cur_fd)))
-        goto error;
+        goto cleanup;
     if (sock_path_ro) {
         if (!(svcRO = virNetServerServiceNewFDOrUNIX(sock_path_ro,
                                                      unix_sock_ro_mask,
@@ -508,18 +509,18 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                      config->max_queued_clients,
                                                      config->max_client_requests,
                                                      nfds, &cur_fd)))
-            goto error;
+            goto cleanup;
     }
 
     if (virNetServerAddService(srv, svc,
                                config->mdns_adv && !ipsock ?
                                "_libvirt._tcp" :
                                NULL) < 0)
-        goto error;
+        goto cleanup;
 
     if (svcRO &&
         virNetServerAddService(srv, svcRO, NULL) < 0)
-        goto error;
+        goto cleanup;
 
     if (sock_path_adm) {
         VIR_DEBUG("Registering unix socket %s", sock_path_adm);
@@ -533,10 +534,10 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                   true,
                                                   config->admin_max_queued_clients,
                                                   config->admin_max_client_requests)))
-            goto error;
+            goto cleanup;
 
         if (virNetServerAddService(srvAdm, svcAdm, NULL) < 0)
-            goto error;
+            goto cleanup;
     }
 
     if (ipsock) {
@@ -553,11 +554,11 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                      false,
                                                      config->max_queued_clients,
                                                      config->max_client_requests)))
-                goto error;
+                goto cleanup;
 
             if (virNetServerAddService(srv, svcTCP,
                                        config->mdns_adv ? "_libvirt._tcp" : NULL) < 0)
-                goto error;
+                goto cleanup;
         }
 
 #if WITH_GNUTLS
@@ -574,14 +575,14 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                        (const char *const*)config->tls_allowed_dn_list,
                                                        config->tls_no_sanity_certificate ? false : true,
                                                        config->tls_no_verify_certificate ? false : true)))
-                    goto error;
+                    goto cleanup;
             } else {
                 if (!(ctxt = virNetTLSContextNewServerPath(NULL,
                                                            !privileged,
                                                            (const char *const*)config->tls_allowed_dn_list,
                                                            config->tls_no_sanity_certificate ? false : true,
                                                            config->tls_no_verify_certificate ? false : true)))
-                    goto error;
+                    goto cleanup;
             }
 
             VIR_DEBUG("Registering TLS socket %s:%s",
@@ -596,12 +597,12 @@ daemonSetupNetworking(virNetServerPtr srv,
                                             config->max_queued_clients,
                                             config->max_client_requests))) {
                 virObjectUnref(ctxt);
-                goto error;
+                goto cleanup;
             }
             if (virNetServerAddService(srv, svcTLS,
                                        config->mdns_adv &&
                                        !config->listen_tcp ? "_libvirt._tcp" : NULL) < 0)
-                goto error;
+                goto cleanup;
 
             virObjectUnref(ctxt);
         }
@@ -610,7 +611,7 @@ daemonSetupNetworking(virNetServerPtr srv,
         if (config->listen_tls) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This libvirtd build does not support TLS"));
-            goto error;
+            goto cleanup;
         }
 #endif
     }
@@ -625,21 +626,21 @@ daemonSetupNetworking(virNetServerPtr srv,
         saslCtxt = virNetSASLContextNewServer(
             (const char *const*)config->sasl_allowed_username_list);
         if (!saslCtxt)
-            goto error;
+            goto cleanup;
     }
 #endif
 
-    return 0;
+    ret = 0;
 
- error:
+ cleanup:
 #if WITH_GNUTLS
     virObjectUnref(svcTLS);
 #endif
     virObjectUnref(svcTCP);
-    virObjectUnref(svc);
     virObjectUnref(svcRO);
     virObjectUnref(svcAdm);
-    return -1;
+    virObjectUnref(svc);
+    return ret;
 }
 
 
