@@ -162,7 +162,7 @@ virNetDaemonAddServer(virNetDaemonPtr dmn, virNetServerPtr srv)
 
     virObjectLock(dmn);
 
-    if (VIR_APPEND_ELEMENT(dmn->servers, dmn->nservers, srv) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(dmn->servers, dmn->nservers, srv) < 0)
         goto cleanup;
 
     virObjectRef(srv);
