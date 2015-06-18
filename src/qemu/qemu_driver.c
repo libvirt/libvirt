@@ -5790,7 +5790,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
         goto endjob;
