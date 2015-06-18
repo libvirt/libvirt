@@ -150,7 +150,7 @@ virStorageBackendSheepdogRefreshAllVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     char **cells = NULL;
     size_t i;
 
-    virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "list", "-r", NULL);
+    virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "list", "-r", NULL);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0)
@@ -195,7 +195,7 @@ virStorageBackendSheepdogRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *output = NULL;
     virCommandPtr cmd;
 
-    cmd = virCommandNewArgList(COLLIE, "node", "info", "-r", NULL);
+    cmd = virCommandNewArgList(SHEEPDOGCLI, "node", "info", "-r", NULL);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0)
@@ -221,7 +221,7 @@ virStorageBackendSheepdogDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
-    virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "delete", vol->name, NULL);
+    virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "delete", vol->name, NULL);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     int ret = virCommandRun(cmd, NULL);
 
@@ -273,7 +273,7 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    cmd = virCommandNewArgList(COLLIE, "vdi", "create", vol->name, NULL);
+    cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     if (virCommandRun(cmd, NULL) < 0)
@@ -358,7 +358,7 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     int ret;
     char *output = NULL;
 
-    virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "list", vol->name, "-r", NULL);
+    virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "list", vol->name, "-r", NULL);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     ret = virCommandRun(cmd, NULL);
@@ -394,7 +394,7 @@ virStorageBackendSheepdogResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
-    virCommandPtr cmd = virCommandNewArgList(COLLIE, "vdi", "resize", vol->name, NULL);
+    virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "resize", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     int ret = virCommandRun(cmd, NULL);

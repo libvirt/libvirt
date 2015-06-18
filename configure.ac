@@ -1959,14 +1959,14 @@ AC_SUBST([LIBRBD_LIBS])
 
 if test "$with_storage_sheepdog" = "yes" ||
    test "$with_storage_sheepdog" = "check"; then
-  AC_PATH_PROG([COLLIE], [collie], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROGS([SHEEPDOGCLI], [collie dog], [], [$PATH:/sbin:/usr/sbin])
 
   if test "$with_storage_sheepdog" = "yes"; then
-    if test -z "$COLLIE"; then
-      AC_MSG_ERROR([We need collie for Sheepdog storage driver])
+    if test -z "$SHEEPDOGCLI"; then
+      AC_MSG_ERROR([We need sheepdog client for Sheepdog storage driver])
     fi
   else
-    if test -z "$COLLIE"; then
+    if test -z "$SHEEPDOGCLI"; then
       with_storage_sheepdog=no
     fi
 
@@ -1978,7 +1978,7 @@ if test "$with_storage_sheepdog" = "yes" ||
   if test "$with_storage_sheepdog" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_STORAGE_SHEEPDOG], 1,
       [whether Sheepdog backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([COLLIE],["$COLLIE"],[Location of collie program])
+    AC_DEFINE_UNQUOTED([SHEEPDOGCLI],["$SHEEPDOGCLI"],[Location of sheepdog client program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_SHEEPDOG],
