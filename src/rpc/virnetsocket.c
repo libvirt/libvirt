@@ -245,6 +245,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     sock->fd = fd;
     sock->errfd = errfd;
     sock->pid = pid;
+    sock->watch = -1;
 
     /* Disable nagle for TCP sockets */
     if (sock->localAddr.data.sa.sa_family == AF_INET ||
@@ -1153,7 +1154,7 @@ void virNetSocketDispose(void *obj)
     PROBE(RPC_SOCKET_DISPOSE,
           "sock=%p", sock);
 
-    if (sock->watch > 0) {
+    if (sock->watch >= 0) {
         virEventRemoveHandle(sock->watch);
         sock->watch = -1;
     }
@@ -1941,7 +1942,7 @@ int virNetSocketAddIOCallback(virNetSocketPtr sock,
 
     virObjectRef(sock);
     virObjectLock(sock);
-    if (sock->watch > 0) {
+    if (sock->watch >= 0) {
         VIR_DEBUG("Watch already registered on socket %p", sock);
         goto cleanup;
     }
@@ -1971,7 +1972,7 @@ void virNetSocketUpdateIOCallback(virNetSocketPtr sock,
                                   int events)
 {
     virObjectLock(sock);
-    if (sock->watch <= 0) {
+    if (sock->watch < 0) {
         VIR_DEBUG("Watch not registered on socket %p", sock);
         virObjectUnlock(sock);
         return;
@@ -1986,7 +1987,7 @@ void virNetSocketRemoveIOCallback(virNetSocketPtr sock)
 {
     virObjectLock(sock);
 
-    if (sock->watch <= 0) {
+    if (sock->watch < 0) {
         VIR_DEBUG("Watch not registered on socket %p", sock);
         virObjectUnlock(sock);
         return;
@@ -1994,6 +1995,7 @@ void virNetSocketRemoveIOCallback(virNetSocketPtr sock)
 
     virEventRemoveHandle(sock->watch);
     /* Don't unref @sock, it's done via eventloop callback. */
+    sock->watch = -1;
 
     virObjectUnlock(sock);
 }
