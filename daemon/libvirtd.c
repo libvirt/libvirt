@@ -534,10 +534,10 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                   config->admin_max_queued_clients,
                                                   config->admin_max_client_requests)))
             goto error;
-    }
 
-    if (virNetServerAddService(srvAdm, svcAdm, NULL) < 0)
-        goto error;
+        if (virNetServerAddService(srvAdm, svcAdm, NULL) < 0)
+            goto error;
+    }
 
     if (ipsock) {
         if (config->listen_tcp) {
