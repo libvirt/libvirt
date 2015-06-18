@@ -1993,6 +1993,7 @@ void virNetSocketRemoveIOCallback(virNetSocketPtr sock)
     }
 
     virEventRemoveHandle(sock->watch);
+    /* Don't unref @sock, it's done via eventloop callback. */
 
     virObjectUnlock(sock);
 }
