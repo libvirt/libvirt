@@ -5506,7 +5506,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("vCPU count provided by the guest agent can only be "
-                             " requested for live domains"));
+                             "requested for live domains"));
             goto cleanup;
         }
 
