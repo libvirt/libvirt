@@ -791,6 +791,8 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
     size_t i;
     int ret = -1;
 
+    libxl_bitmap_init(&map);
+
     for (i = 0; i < vm->def->cputune.nvcpupin; ++i) {
         pin = vm->def->cputune.vcpupin[i];
         cpumask = pin->cpumask;
@@ -804,13 +806,13 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
             goto cleanup;
         }
 
-        VIR_FREE(map.map);
+        libxl_bitmap_dispose(&map); /* Also returns to freshly-init'd state */
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(map.map);
+    libxl_bitmap_dispose(&map);
     virObjectUnref(cfg);
     return ret;
 }
