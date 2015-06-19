@@ -3355,8 +3355,8 @@
       (starting with 0x) or octal (starting with 0) form.
       For PCI devices the element carries 4 attributes allowing to designate
       the device as can be found with the <code>lspci</code> or
-      with <code>virsh
-      nodedev-list</code>. <a href="#elementsAddress">See above</a> for
+      with <code>virsh nodedev-list</code>. For SCSI devices a 'drive'
+      address type must be used. <a href="#elementsAddress">See above</a> for
       more details on the address element.</dd>
       <dt><code>driver</code></dt>
       <dd>

@@ -4029,7 +4029,7 @@ static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
                                     virCapsPtr caps ATTRIBUTE_UNUSED,
-                                    virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+                                    virDomainXMLOptionPtr xmlopt)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
         virDomainChrDefPtr chr = dev->data.chr;
@@ -4117,6 +4117,18 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
         video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        virDomainHostdevDefPtr hdev = dev->data.hostdev;
+
+        if (hdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+            hdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            virDomainHostdevAssignAddress(xmlopt, def, hdev) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Cannot assign SCSI host device address"));
+                return -1;
+        }
+    }
     return 0;
 }
 
@@ -11887,8 +11899,8 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 }
 
 static virDomainHostdevDefPtr
-virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
-                            const virDomainDef *vmdef,
+virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
+                            const virDomainDef *vmdef ATTRIBUTE_UNUSED,
                             xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             virHashTablePtr bootHash,
@@ -11949,11 +11961,11 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                virDomainHostdevAssignAddress(xmlopt, vmdef, def) < 0) {
-
+            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("SCSI host devices must have address specified"));
+                               _("SCSI host device must use 'drive' "
+                                 "address type"));
                 goto error;
             }
 
@@ -15995,9 +16007,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
 
         def->hostdevs[def->nhostdevs++] = hostdev;
-
-        if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
-            goto error;
     }
     VIR_FREE(nodes);
 
