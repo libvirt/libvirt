@@ -38,6 +38,7 @@
 #  define yajl_size_t size_t
 # else
 #  define yajl_size_t unsigned int
+#  define yajl_complete_parse yajl_parse_complete
 # endif
 
 #endif
@@ -1610,7 +1611,8 @@ virJSONValueFromString(const char *jsonstring)
 
     if (yajl_parse(hand,
                    (const unsigned char *)jsonstring,
-                   strlen(jsonstring)) != yajl_status_ok) {
+                   strlen(jsonstring)) != yajl_status_ok ||
+        yajl_complete_parse(hand) != yajl_status_ok) {
         unsigned char *errstr = yajl_get_error(hand, 1,
                                                (const unsigned char*)jsonstring,
                                                strlen(jsonstring));
