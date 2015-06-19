@@ -2312,8 +2312,11 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("failed to query job for disk %s"), path);
             goto cleanup;
         }
-        if (result == 0)
-            break;
+
+        if (result == 0) {
+            vshError(ctl, _("Block Copy unexpectedly failed"));
+            goto cleanup;
+        }
 
         if (verbose)
             vshPrintJobProgress(_("Block Copy"), info.end - info.cur, info.end);
