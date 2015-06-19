@@ -12054,8 +12054,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 }
 
 static virDomainHostdevDefPtr
-virDomainHostdevDefParseXML(const virDomainDef *vmdef ATTRIBUTE_UNUSED,
-                            xmlNodePtr node,
+virDomainHostdevDefParseXML(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             virHashTablePtr bootHash,
                             unsigned int flags)
@@ -12122,7 +12121,6 @@ virDomainHostdevDefParseXML(const virDomainDef *vmdef ATTRIBUTE_UNUSED,
                                  "address type"));
                 goto error;
             }
-
             if (virXPathBoolean("boolean(./readonly)", ctxt))
                 def->readonly = true;
             if (virXPathBoolean("boolean(./shareable)", ctxt))
@@ -12626,7 +12624,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(def, node, ctxt,
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(node, ctxt,
                                                               NULL, flags)))
             goto error;
         break;
@@ -16152,8 +16150,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainHostdevDefPtr hostdev;
 
-        hostdev = virDomainHostdevDefParseXML(def, nodes[i], ctxt,
-                                              bootHash, flags);
+        hostdev = virDomainHostdevDefParseXML(nodes[i], ctxt, bootHash, flags);
         if (!hostdev)
             goto error;
 
