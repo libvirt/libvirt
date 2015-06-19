@@ -766,6 +766,21 @@ virJSONValueObjectGet(virJSONValuePtr object,
 }
 
 
+/* Return the value associated with KEY within OBJECT, but return NULL
+ * if the key is missing or if value is not the correct TYPE.  */
+virJSONValuePtr
+virJSONValueObjectGetByType(virJSONValuePtr object,
+                            const char *key,
+                            virJSONType type)
+{
+    virJSONValuePtr value = virJSONValueObjectGet(object, key);
+
+    if (value && value->type == type)
+        return value;
+    return NULL;
+}
+
+
 int
 virJSONValueObjectKeysNumber(virJSONValuePtr object)
 {
@@ -1057,13 +1072,10 @@ virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap)
 }
 
 
-int
+bool
 virJSONValueIsNull(virJSONValuePtr val)
 {
-    if (val->type != VIR_JSON_TYPE_NULL)
-        return 0;
-
-    return 1;
+    return val->type == VIR_JSON_TYPE_NULL;
 }
 
 
@@ -1071,11 +1083,8 @@ const char *
 virJSONValueObjectGetString(virJSONValuePtr object,
                             const char *key)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return NULL;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return NULL;
 
@@ -1088,11 +1097,8 @@ virJSONValueObjectGetNumberInt(virJSONValuePtr object,
                                const char *key,
                                int *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1105,11 +1111,8 @@ virJSONValueObjectGetNumberUint(virJSONValuePtr object,
                                 const char *key,
                                 unsigned int *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1122,11 +1125,8 @@ virJSONValueObjectGetNumberLong(virJSONValuePtr object,
                                 const char *key,
                                 long long *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1139,11 +1139,8 @@ virJSONValueObjectGetNumberUlong(virJSONValuePtr object,
                                  const char *key,
                                  unsigned long long *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1156,11 +1153,8 @@ virJSONValueObjectGetNumberDouble(virJSONValuePtr object,
                                   const char *key,
                                   double *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1173,11 +1167,8 @@ virJSONValueObjectGetBoolean(virJSONValuePtr object,
                              const char *key,
                              bool *value)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
@@ -1185,15 +1176,26 @@ virJSONValueObjectGetBoolean(virJSONValuePtr object,
 }
 
 
+virJSONValuePtr
+virJSONValueObjectGetObject(virJSONValuePtr object, const char *key)
+{
+    return virJSONValueObjectGetByType(object, key, VIR_JSON_TYPE_OBJECT);
+}
+
+
+virJSONValuePtr
+virJSONValueObjectGetArray(virJSONValuePtr object, const char *key)
+{
+    return virJSONValueObjectGetByType(object, key, VIR_JSON_TYPE_ARRAY);
+}
+
+
 int
 virJSONValueObjectIsNull(virJSONValuePtr object,
                          const char *key)
 {
-    virJSONValuePtr val;
-    if (object->type != VIR_JSON_TYPE_OBJECT)
-        return -1;
+    virJSONValuePtr val = virJSONValueObjectGet(object, key);
 
-    val = virJSONValueObjectGet(object, key);
     if (!val)
         return -1;
 
