@@ -64,6 +64,7 @@ struct _virJSONParser {
     virJSONValuePtr head;
     virJSONParserStatePtr state;
     size_t nstate;
+    int wrap;
 };
 
 
@@ -1556,7 +1557,7 @@ virJSONParserHandleEndArray(void *ctx)
 
     VIR_DEBUG("parser=%p", parser);
 
-    if (!parser->nstate)
+    if (!(parser->nstate - parser->wrap))
         return 0;
 
     state = &(parser->state[parser->nstate-1]);
@@ -1591,7 +1592,7 @@ virJSONValuePtr
 virJSONValueFromString(const char *jsonstring)
 {
     yajl_handle hand;
-    virJSONParser parser = { NULL, NULL, 0 };
+    virJSONParser parser = { NULL, NULL, 0, 0 };
     virJSONValuePtr ret = NULL;
     int rc;
     size_t len = strlen(jsonstring);
@@ -1627,8 +1628,10 @@ virJSONValueFromString(const char *jsonstring)
     rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
 # else
     rc = yajl_parse(hand, (const unsigned char *)"[", 1);
+    parser.wrap = 1;
     if (VIR_YAJL_STATUS_OK(rc))
         rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
+    parser.wrap = 0;
     if (VIR_YAJL_STATUS_OK(rc))
         rc = yajl_parse(hand, (const unsigned char *)"]", 1);
 # endif

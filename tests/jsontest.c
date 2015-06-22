@@ -421,6 +421,7 @@ mymain(void)
     DO_TEST_PARSE_FAIL("comments", "[ /* nope */\n1 // not this either\n]");
     DO_TEST_PARSE_FAIL("trailing garbage", "[] []");
     DO_TEST_PARSE_FAIL("list without array", "1, 1");
+    DO_TEST_PARSE_FAIL("parser abuse", "1] [2");
 
     DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");
     DO_TEST_PARSE_FAIL("unterminated object", "{ \"1\":1, \"2\":1, \"3\":2");
