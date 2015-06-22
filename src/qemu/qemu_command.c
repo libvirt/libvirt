@@ -8816,9 +8816,9 @@ qemuBuildCommandLine(virConnectPtr conn,
          * List of controller types that we add commandline args for,
          * *in the order we want to add them*.
          *
-         * We don't add an explicit FD controller because the
-         * provided PIIX4 device already includes one. It isn't possible to
-         * remove the PIIX4.
+         * The floppy controller is implicit on PIIX4 and older Q35
+         * machines. For newer Q35 machines it is added out of the
+         * controllers loop, after the floppy drives.
          *
          * We don't add PCI/PCIe root controller either, because it's
          * implicit, but we do add PCI bridges and other PCI
@@ -8839,6 +8839,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
     char *boot_order_str = NULL, *boot_opts_str = NULL;
+    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
+    char *fdc_opts_str = NULL;
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateFrom=%s migrateFD=%d "
@@ -9789,8 +9791,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                                     disk->info.alias) < 0)
                         goto error;
 
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                    if (!qemuDomainMachineNeedsFDC(def)) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                    } else {
+                        virBufferAsprintf(&fdc_opts, "%s,", optstr);
+                    }
                     VIR_FREE(optstr);
 
                     if (bootindex) {
@@ -9800,8 +9806,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                                         bootindex) < 0)
                             goto error;
 
-                        virCommandAddArg(cmd, "-global");
-                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                        if (!qemuDomainMachineNeedsFDC(def)) {
+                            virCommandAddArg(cmd, "-global");
+                            virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                        } else {
+                            virBufferAsprintf(&fdc_opts, "%s,", optstr);
+                        }
                         VIR_FREE(optstr);
                     }
                 } else {
@@ -9814,6 +9824,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                     VIR_FREE(optstr);
                 }
             }
+        }
+        /* Newer Q35 machine types require an explicit FDC controller */
+        virBufferTrim(&fdc_opts, ",", -1);
+        if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
+            virCommandAddArg(cmd, "-device");
+            virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
+            VIR_FREE(fdc_opts_str);
         }
     } else {
         for (i = 0; i < def->ndisks; i++) {

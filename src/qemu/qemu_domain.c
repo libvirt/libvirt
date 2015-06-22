@@ -3245,6 +3245,25 @@ qemuDomainMachineIsI440FX(const virDomainDef *def)
 }
 
 
+bool
+qemuDomainMachineNeedsFDC(const virDomainDef *def)
+{
+    char *p = STRSKIP(def->os.machine, "pc-q35-");
+
+    if (p) {
+        if (STRPREFIX(p, "1.") ||
+            STRPREFIX(p, "2.0") ||
+            STRPREFIX(p, "2.1") ||
+            STRPREFIX(p, "2.2") ||
+            STRPREFIX(p, "2.3"))
+            return false;
+        return true;
+    }
+    return false;
+}
+
+
+
 /**
  * qemuDomainUpdateCurrentMemorySize:
  *

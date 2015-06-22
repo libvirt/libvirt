@@ -607,6 +607,15 @@ mymain(void)
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);
+    DO_TEST("boot-floppy-q35",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_ICH9_AHCI);
+    DO_TEST("bootindex-floppy-q35",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_ICH9_AHCI, QEMU_CAPS_BOOT_MENU,
+            QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-multi", QEMU_CAPS_BOOT_MENU);
     DO_TEST("boot-menu-enable",
             QEMU_CAPS_BOOT_MENU, QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE);
