@@ -330,8 +330,7 @@ virCPUDefParseXML(xmlNodePtr node,
         goto error;
 
     if (n > 0) {
-        if (!def->model && def->mode != VIR_CPU_MODE_HOST_MODEL &&
-            def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        if (!def->model && def->mode == VIR_CPU_MODE_CUSTOM) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Non-empty feature list specified without "
                              "CPU model"));
@@ -518,10 +517,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
                       (def->mode == VIR_CPU_MODE_HOST_MODEL ||
                        (def->mode == VIR_CPU_MODE_CUSTOM && def->model)));
 
-    if (!def->model &&
-        def->mode != VIR_CPU_MODE_HOST_MODEL &&
-        def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
-        def->nfeatures) {
+    if (!def->model && def->mode == VIR_CPU_MODE_CUSTOM && def->nfeatures) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Non-empty feature list specified without CPU model"));
         return -1;
