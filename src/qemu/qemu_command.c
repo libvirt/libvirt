@@ -9784,18 +9784,25 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (withDeviceArg) {
                 if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+                    if (virAsprintf(&optstr, "drive%c=drive-%s",
+                                    disk->info.addr.drive.unit ? 'B' : 'A',
+                                    disk->info.alias) < 0)
+                        goto error;
+
                     virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "isa-fdc.drive%c=drive-%s",
-                                           disk->info.addr.drive.unit
-                                           ? 'B' : 'A',
-                                           disk->info.alias);
+                    virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                    VIR_FREE(optstr);
 
                     if (bootindex) {
+                        if (virAsprintf(&optstr, "bootindex%c=%d",
+                                        disk->info.addr.drive.unit
+                                        ? 'B' : 'A',
+                                        bootindex) < 0)
+                            goto error;
+
                         virCommandAddArg(cmd, "-global");
-                        virCommandAddArgFormat(cmd, "isa-fdc.bootindex%c=%d",
-                                               disk->info.addr.drive.unit
-                                               ? 'B' : 'A',
-                                               bootindex);
+                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                        VIR_FREE(optstr);
                     }
                 } else {
                     virCommandAddArg(cmd, "-device");
