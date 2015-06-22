@@ -135,6 +135,26 @@ static const virNodeInfo defaultNodeInfo = {
     2,
 };
 
+static void
+testDriverFree(testDriverPtr driver)
+{
+    if (!driver)
+        return;
+
+    virObjectUnref(driver->caps);
+    virObjectUnref(driver->xmlopt);
+    virObjectUnref(driver->domains);
+    virNodeDeviceObjListFree(&driver->devs);
+    virObjectUnref(driver->networks);
+    virInterfaceObjListFree(&driver->ifaces);
+    virStoragePoolObjListFree(&driver->pools);
+    virObjectEventStateFree(driver->eventState);
+    VIR_FREE(driver->path);
+    virMutexUnlock(&driver->lock);
+    virMutexDestroy(&driver->lock);
+
+    VIR_FREE(driver);
+}
 
 static void testObjectEventQueue(testDriverPtr driver,
                                  virObjectEventPtr event);
@@ -830,16 +850,7 @@ testOpenDefault(virConnectPtr conn)
     return VIR_DRV_OPEN_SUCCESS;
 
  error:
-    if (privconn) {
-        virObjectUnref(privconn->domains);
-        virObjectUnref(privconn->networks);
-        virInterfaceObjListFree(&privconn->ifaces);
-        virStoragePoolObjListFree(&privconn->pools);
-        virNodeDeviceObjListFree(&privconn->devs);
-        virObjectUnref(privconn->caps);
-        virObjectEventStateFree(privconn->eventState);
-        virMutexDestroy(&privconn->lock);
-    }
+    testDriverFree(privconn);
     conn->privateData = NULL;
     virDomainDefFree(domdef);
     defaultConnections--;
@@ -1465,14 +1476,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
  error:
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
-    virObjectUnref(privconn->domains);
-    virObjectUnref(privconn->networks);
-    virInterfaceObjListFree(&privconn->ifaces);
-    virStoragePoolObjListFree(&privconn->pools);
-    VIR_FREE(privconn->path);
-    virObjectEventStateFree(privconn->eventState);
-    testDriverUnlock(privconn);
-    VIR_FREE(privconn);
+    testDriverFree(privconn);
     conn->privateData = NULL;
     return VIR_DRV_OPEN_ERROR;
 }
@@ -1590,20 +1594,7 @@ static int testConnectClose(virConnectPtr conn)
     }
 
     testDriverLock(privconn);
-    virObjectUnref(privconn->caps);
-    virObjectUnref(privconn->xmlopt);
-    virObjectUnref(privconn->domains);
-    virNodeDeviceObjListFree(&privconn->devs);
-    virObjectUnref(privconn->networks);
-    virInterfaceObjListFree(&privconn->ifaces);
-    virStoragePoolObjListFree(&privconn->pools);
-    virObjectEventStateFree(privconn->eventState);
-    VIR_FREE(privconn->path);
-
-    testDriverUnlock(privconn);
-    virMutexDestroy(&privconn->lock);
-
-    VIR_FREE(privconn);
+    testDriverFree(privconn);
 
     if (dflt) {
         defaultConn = NULL;
