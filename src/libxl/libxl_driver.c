@@ -79,6 +79,15 @@ VIR_LOG_INIT("libxl.libxl_driver");
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
 
+#define LIBXL_CHECK_DOM0_GOTO(name, label)                               \
+    do {                                                                  \
+        if (STREQ_NULLABLE(name, "Domain-0")) {                           \
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",               \
+                           _("Domain-0 does not support requested operation")); \
+            goto label;                                                   \
+        }                                                                 \
+    } while (0)
+
 
 static libxlDriverPrivatePtr libxl_driver;
 
@@ -501,6 +510,63 @@ const struct libxl_event_hooks ev_hooks = {
 };
 
 static int
+libxlAddDom0(libxlDriverPrivatePtr driver)
+{
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr oldDef = NULL;
+    libxl_dominfo d_info;
+    int ret = -1;
+
+    libxl_dominfo_init(&d_info);
+
+    /* Ensure we have a dom0 */
+    if (libxl_domain_info(cfg->ctx, &d_info, 0) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("unable to get Domain-0 information from libxenlight"));
+        goto cleanup;
+    }
+
+    if (!(def = virDomainDefNew()))
+        goto cleanup;
+
+    def->id = 0;
+    def->virtType = VIR_DOMAIN_VIRT_XEN;
+    if (VIR_STRDUP(def->name, "Domain-0") < 0)
+        goto cleanup;
+
+    def->os.type = VIR_DOMAIN_OSTYPE_XEN;
+
+    if (virUUIDParse("00000000-0000-0000-0000-000000000000", def->uuid) < 0)
+        goto cleanup;
+
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
+                                   driver->xmlopt,
+                                   0,
+                                   &oldDef)))
+        goto cleanup;
+
+    def = NULL;
+
+    vm->def->vcpus = d_info.vcpu_online;
+    vm->def->maxvcpus = d_info.vcpu_max_id + 1;
+    vm->def->mem.cur_balloon = d_info.current_memkb;
+    vm->def->mem.max_balloon = d_info.max_memkb;
+
+    ret = 0;
+
+ cleanup:
+    libxl_dominfo_dispose(&d_info);
+    virDomainDefFree(def);
+    virDomainDefFree(oldDef);
+    if (vm)
+        virObjectUnlock(vm);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+static int
 libxlStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
@@ -614,6 +680,10 @@ libxlStateInitialize(bool privileged,
     }
 
     if (!(libxl_driver->xmlopt = libxlCreateXMLConf()))
+        goto error;
+
+    /* Add Domain-0 */
+    if (libxlAddDom0(libxl_driver) < 0)
         goto error;
 
     /* Load running domains first. */
@@ -1030,6 +1100,8 @@ libxlDomainSuspend(virDomainPtr dom)
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
+
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -1085,6 +1157,8 @@ libxlDomainResume(virDomainPtr dom)
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
+
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
 
     if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1146,6 +1220,8 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
+
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
 
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -1212,6 +1288,8 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
+
     if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
@@ -1253,6 +1331,8 @@ libxlDomainDestroyFlags(virDomainPtr dom,
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
+
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
 
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1656,6 +1736,8 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
+
     if (virDomainSaveFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -1782,6 +1864,8 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
+
     if (virDomainCoreDumpEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -1876,6 +1960,8 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
+
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
 
     if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -4000,6 +4086,8 @@ libxlDomainSetAutostart(virDomainPtr dom, int autostart)
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
+
     if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -4293,6 +4381,8 @@ libxlDomainOpenConsole(virDomainPtr dom,
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
+
+    LIBXL_CHECK_DOM0_GOTO(vm->def->name, cleanup);
 
     if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -4816,6 +4906,12 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
 
     if (!(vm = libxlDomObjFromDomain(domain)))
         return NULL;
+
+    if (STREQ_NULLABLE(vm->def->name, "Domain-0")) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Domain-0 cannot be migrated"));
+            return NULL;
+    }
 
     if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0) {
         virObjectUnlock(vm);
