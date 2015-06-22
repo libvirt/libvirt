@@ -163,7 +163,7 @@ EXTRA_DIST=					\
   sitemap.html.in aclperms.htmlinc \
   todo.pl hvsupport.pl todo.cfg-example
 
-acl.html:: $(srcdir)/aclperms.htmlinc
+acl.html.tmp: $(srcdir)/aclperms.htmlinc
 
 $(srcdir)/aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
         $(srcdir)/genaclperms.pl Makefile.am
