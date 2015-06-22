@@ -416,7 +416,7 @@ mymain(void)
     DO_TEST_PARSE("boolean", "true");
     DO_TEST_PARSE("null", "null");
     DO_TEST_PARSE_FAIL("incomplete keyword", "tr");
-    DO_TEST_PARSE_FAIL("overdone keyword", "truest");
+    DO_TEST_PARSE_FAIL("overdone keyword", "[ truest ]");
     DO_TEST_PARSE_FAIL("unknown keyword", "huh");
 
     DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");

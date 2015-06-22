@@ -36,9 +36,12 @@
 
 # ifdef WITH_YAJL2
 #  define yajl_size_t size_t
+#  define VIR_YAJL_STATUS_OK(status) ((status) == yajl_status_ok)
 # else
 #  define yajl_size_t unsigned int
 #  define yajl_complete_parse yajl_parse_complete
+#  define VIR_YAJL_STATUS_OK(status) \
+    ((status) == yajl_status_ok || (status) == yajl_status_insufficient_data)
 # endif
 
 #endif
@@ -1590,6 +1593,8 @@ virJSONValueFromString(const char *jsonstring)
     yajl_handle hand;
     virJSONParser parser = { NULL, NULL, 0 };
     virJSONValuePtr ret = NULL;
+    int rc;
+    size_t len = strlen(jsonstring);
 # ifndef WITH_YAJL2
     yajl_parser_config cfg = { 1, 1 };
 # endif
@@ -1611,9 +1616,8 @@ virJSONValueFromString(const char *jsonstring)
         goto cleanup;
     }
 
-    if (yajl_parse(hand,
-                   (const unsigned char *)jsonstring,
-                   strlen(jsonstring)) != yajl_status_ok ||
+    rc = yajl_parse(hand, (const unsigned char *)jsonstring, len);
+    if (!VIR_YAJL_STATUS_OK(rc) ||
         yajl_complete_parse(hand) != yajl_status_ok) {
         unsigned char *errstr = yajl_get_error(hand, 1,
                                                (const unsigned char*)jsonstring,
@@ -1622,7 +1626,7 @@ virJSONValueFromString(const char *jsonstring)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot parse json %s: %s"),
                        jsonstring, (const char*) errstr);
-        VIR_FREE(errstr);
+        yajl_free_error(hand, errstr);
         virJSONValueFree(parser.head);
         goto cleanup;
     }
