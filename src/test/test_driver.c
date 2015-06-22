@@ -5617,31 +5617,23 @@ static int testConnectListAllDomains(virConnectPtr conn,
 }
 
 static int
-testNodeGetCPUMap(virConnectPtr conn,
+testNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
                   unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags)
 {
-    testDriverPtr privconn = conn->privateData;
-    int ret = -1;
-
     virCheckFlags(0, -1);
 
-    testDriverLock(privconn);
     if (cpumap) {
         if (VIR_ALLOC_N(*cpumap, 1) < 0)
-            goto cleanup;
+            return -1;
         *cpumap[0] = 0x15;
     }
 
     if (online)
         *online = 3;
 
-    ret = 8;
-
- cleanup:
-    testDriverUnlock(privconn);
-    return ret;
+    return  8;
 }
 
 static char *
