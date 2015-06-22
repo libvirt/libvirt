@@ -1597,7 +1597,7 @@ virJSONValueFromString(const char *jsonstring)
     int rc;
     size_t len = strlen(jsonstring);
 # ifndef WITH_YAJL2
-    yajl_parser_config cfg = { 0, 1 };
+    yajl_parser_config cfg = { 0, 1 }; /* Match yajl 2 default behavior */
     virJSONValuePtr tmp;
 # endif
 
@@ -1605,10 +1605,6 @@ virJSONValueFromString(const char *jsonstring)
 
 # ifdef WITH_YAJL2
     hand = yajl_alloc(&parserCallbacks, NULL, &parser);
-    if (hand) {
-        yajl_config(hand, yajl_allow_comments, 0);
-        yajl_config(hand, yajl_dont_validate_strings, 0);
-    }
 # else
     hand = yajl_alloc(&parserCallbacks, &cfg, NULL, &parser);
 # endif

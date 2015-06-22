@@ -422,6 +422,7 @@ mymain(void)
     DO_TEST_PARSE_FAIL("trailing garbage", "[] []");
     DO_TEST_PARSE_FAIL("list without array", "1, 1");
     DO_TEST_PARSE_FAIL("parser abuse", "1] [2");
+    DO_TEST_PARSE_FAIL("invalid UTF-8", "\"\x80\"");
 
     DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");
     DO_TEST_PARSE_FAIL("unterminated object", "{ \"1\":1, \"2\":1, \"3\":2");
@@ -430,6 +431,7 @@ mymain(void)
     DO_TEST_PARSE_FAIL("array of an object with an array as a key",
                        "[ {[\"key1\", \"key2\"]: \"value\"} ]");
     DO_TEST_PARSE_FAIL("object with unterminated key", "{ \"key:7 }");
+    DO_TEST_PARSE_FAIL("duplicate key", "{ \"a\": 1, \"a\": 1 }");
 
     DO_TEST_FULL("lookup on array", Lookup,
                  "[ 1 ]", NULL, false);
