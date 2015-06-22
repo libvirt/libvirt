@@ -136,7 +136,6 @@ static const virNodeInfo defaultNodeInfo = {
 };
 
 
-static int testConnectClose(virConnectPtr conn);
 static void testObjectEventQueue(testDriverPtr driver,
                                  virObjectEventPtr event);
 
