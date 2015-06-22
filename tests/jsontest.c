@@ -418,6 +418,7 @@ mymain(void)
     DO_TEST_PARSE_FAIL("incomplete keyword", "tr");
     DO_TEST_PARSE_FAIL("overdone keyword", "[ truest ]");
     DO_TEST_PARSE_FAIL("unknown keyword", "huh");
+    DO_TEST_PARSE_FAIL("comments", "[ /* nope */\n1 // not this either\n]");
 
     DO_TEST_PARSE_FAIL("object with numeric keys", "{ 1:1, 2:1, 3:2 }");
     DO_TEST_PARSE_FAIL("unterminated object", "{ \"1\":1, \"2\":1, \"3\":2");
