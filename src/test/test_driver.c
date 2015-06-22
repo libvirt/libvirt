@@ -117,7 +117,7 @@ struct _testDriver {
 typedef struct _testDriver testDriver;
 typedef testDriver *testDriverPtr;
 
-static testDriver defaultConn;
+static testDriverPtr defaultConn;
 static int defaultConnections;
 static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
@@ -691,7 +691,7 @@ static int
 testOpenDefault(virConnectPtr conn)
 {
     int u;
-    testDriverPtr privconn = &defaultConn;
+    testDriverPtr privconn = NULL;
     virDomainDefPtr domdef = NULL;
     virDomainObjPtr domobj = NULL;
     virNetworkDefPtr netdef = NULL;
@@ -705,17 +705,18 @@ testOpenDefault(virConnectPtr conn)
 
     virMutexLock(&defaultLock);
     if (defaultConnections++) {
-        conn->privateData = &defaultConn;
+        conn->privateData = defaultConn;
         virMutexUnlock(&defaultLock);
         return VIR_DRV_OPEN_SUCCESS;
     }
 
+    if (VIR_ALLOC(privconn) < 0)
+        goto error;
+
     if (virMutexInit(&privconn->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
-        defaultConnections--;
-        virMutexUnlock(&defaultLock);
-        return VIR_DRV_OPEN_ERROR;
+        goto error;
     }
 
     conn->privateData = privconn;
@@ -822,19 +823,23 @@ testOpenDefault(virConnectPtr conn)
     }
     virNodeDeviceObjUnlock(nodeobj);
 
+    defaultConn = privconn;
+
     virMutexUnlock(&defaultLock);
 
     return VIR_DRV_OPEN_SUCCESS;
 
  error:
-    virObjectUnref(privconn->domains);
-    virObjectUnref(privconn->networks);
-    virInterfaceObjListFree(&privconn->ifaces);
-    virStoragePoolObjListFree(&privconn->pools);
-    virNodeDeviceObjListFree(&privconn->devs);
-    virObjectUnref(privconn->caps);
-    virObjectEventStateFree(privconn->eventState);
-    virMutexDestroy(&privconn->lock);
+    if (privconn) {
+        virObjectUnref(privconn->domains);
+        virObjectUnref(privconn->networks);
+        virInterfaceObjListFree(&privconn->ifaces);
+        virStoragePoolObjListFree(&privconn->pools);
+        virNodeDeviceObjListFree(&privconn->devs);
+        virObjectUnref(privconn->caps);
+        virObjectEventStateFree(privconn->eventState);
+        virMutexDestroy(&privconn->lock);
+    }
     conn->privateData = NULL;
     virDomainDefFree(domdef);
     defaultConnections--;
@@ -1573,8 +1578,10 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
 static int testConnectClose(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
+    bool dflt = false;
 
-    if (privconn == &defaultConn) {
+    if (privconn == defaultConn) {
+        dflt = true;
         virMutexLock(&defaultLock);
         if (--defaultConnections) {
             virMutexUnlock(&defaultLock);
@@ -1596,10 +1603,13 @@ static int testConnectClose(virConnectPtr conn)
     testDriverUnlock(privconn);
     virMutexDestroy(&privconn->lock);
 
-    if (privconn == &defaultConn)
+    VIR_FREE(privconn);
+
+    if (dflt) {
+        defaultConn = NULL;
         virMutexUnlock(&defaultLock);
-    else
-        VIR_FREE(privconn);
+    }
+
     conn->privateData = NULL;
     return 0;
 }
