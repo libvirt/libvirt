@@ -1206,7 +1206,7 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (version >= 13000) {
             if (strstr(netdev, "bridge"))
                 virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
-           virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
         }
     }
 
