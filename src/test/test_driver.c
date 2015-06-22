@@ -92,7 +92,7 @@ struct _testAuth {
 typedef struct _testAuth testAuth;
 typedef struct _testAuth *testAuthPtr;
 
-struct _testConn {
+struct _testDriver {
     virMutex lock;
 
     char *path;
@@ -114,10 +114,10 @@ struct _testConn {
 
     virObjectEventStatePtr eventState;
 };
-typedef struct _testConn testConn;
-typedef testConn *testConnPtr;
+typedef struct _testDriver testDriver;
+typedef testDriver *testDriverPtr;
 
-static testConn defaultConn;
+static testDriver defaultConn;
 static int defaultConnections;
 static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
@@ -137,15 +137,15 @@ static const virNodeInfo defaultNodeInfo = {
 
 
 static int testConnectClose(virConnectPtr conn);
-static void testObjectEventQueue(testConnPtr driver,
+static void testObjectEventQueue(testDriverPtr driver,
                                  virObjectEventPtr event);
 
-static void testDriverLock(testConnPtr driver)
+static void testDriverLock(testDriverPtr driver)
 {
     virMutexLock(&driver->lock);
 }
 
-static void testDriverUnlock(testConnPtr driver)
+static void testDriverUnlock(testDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
@@ -311,7 +311,7 @@ testBuildXMLConfig(void)
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virCapsPtr caps;
     virCapsGuestPtr guest;
     int guest_types[] = { VIR_DOMAIN_OSTYPE_HVM,
@@ -480,7 +480,7 @@ static virDomainObjPtr
 testDomObjFromDomain(virDomainPtr domain)
 {
     virDomainObjPtr vm;
-    testConnPtr driver = domain->conn->privateData;
+    testDriverPtr driver = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     testDriverLock(driver);
@@ -601,7 +601,7 @@ testDomainUpdateVCPU(virDomainObjPtr dom,
  * @clear_all: If true, rebuild info for ALL vcpus, not just newly added vcpus
  */
 static int
-testDomainUpdateVCPUs(testConnPtr privconn,
+testDomainUpdateVCPUs(testDriverPtr privconn,
                       virDomainObjPtr dom,
                       int nvcpus,
                       unsigned int clear_all)
@@ -658,7 +658,7 @@ testDomainShutdownState(virDomainPtr domain,
 
 /* Set up domain runtime state */
 static int
-testDomainStartState(testConnPtr privconn,
+testDomainStartState(testDriverPtr privconn,
                      virDomainObjPtr dom,
                      virDomainRunningReason reason)
 {
@@ -692,7 +692,7 @@ static int
 testOpenDefault(virConnectPtr conn)
 {
     int u;
-    testConnPtr privconn = &defaultConn;
+    testDriverPtr privconn = &defaultConn;
     virDomainDefPtr domdef = NULL;
     virDomainObjPtr domobj = NULL;
     virNetworkDefPtr netdef = NULL;
@@ -1002,7 +1002,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
 }
 
 static int
-testParseDomainSnapshots(testConnPtr privconn,
+testParseDomainSnapshots(testDriverPtr privconn,
                          virDomainObjPtr domobj,
                          const char *file,
                          xmlXPathContextPtr ctxt)
@@ -1058,7 +1058,7 @@ testParseDomainSnapshots(testConnPtr privconn,
 }
 
 static int
-testParseDomains(testConnPtr privconn,
+testParseDomains(testDriverPtr privconn,
                  const char *file,
                  xmlXPathContextPtr ctxt)
 {
@@ -1123,7 +1123,7 @@ testParseDomains(testConnPtr privconn,
 }
 
 static int
-testParseNetworks(testConnPtr privconn,
+testParseNetworks(testDriverPtr privconn,
                   const char *file,
                   xmlXPathContextPtr ctxt)
 {
@@ -1162,7 +1162,7 @@ testParseNetworks(testConnPtr privconn,
 }
 
 static int
-testParseInterfaces(testConnPtr privconn,
+testParseInterfaces(testDriverPtr privconn,
                     const char *file,
                     xmlXPathContextPtr ctxt)
 {
@@ -1258,7 +1258,7 @@ testOpenVolumesForPool(const char *file,
 }
 
 static int
-testParseStorage(testConnPtr privconn,
+testParseStorage(testDriverPtr privconn,
                  const char *file,
                  xmlXPathContextPtr ctxt)
 {
@@ -1310,7 +1310,7 @@ testParseStorage(testConnPtr privconn,
 }
 
 static int
-testParseNodedevs(testConnPtr privconn,
+testParseNodedevs(testDriverPtr privconn,
                   const char *file,
                   xmlXPathContextPtr ctxt)
 {
@@ -1349,7 +1349,7 @@ testParseNodedevs(testConnPtr privconn,
 }
 
 static int
-testParseAuthUsers(testConnPtr privconn,
+testParseAuthUsers(testDriverPtr privconn,
                    xmlXPathContextPtr ctxt)
 {
     int num, ret = -1;
@@ -1395,7 +1395,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    testConnPtr privconn;
+    testDriverPtr privconn;
 
     if (VIR_ALLOC(privconn) < 0)
         return VIR_DRV_OPEN_ERROR;
@@ -1477,7 +1477,7 @@ static int
 testConnectAuthenticate(virConnectPtr conn,
                         virConnectAuthPtr auth)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
     ssize_t i;
     char *username = NULL, *password = NULL;
@@ -1573,7 +1573,7 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
 
 static int testConnectClose(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
 
     if (privconn == &defaultConn) {
         virMutexLock(&defaultLock);
@@ -1657,7 +1657,7 @@ testConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int testNodeGetInfo(virConnectPtr conn,
                            virNodeInfoPtr info)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     testDriverLock(privconn);
     memcpy(info, &privconn->nodeInfo, sizeof(virNodeInfo));
     testDriverUnlock(privconn);
@@ -1666,7 +1666,7 @@ static int testNodeGetInfo(virConnectPtr conn,
 
 static char *testConnectGetCapabilities(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     char *xml;
     testDriverLock(privconn);
     xml = virCapabilitiesFormatXML(privconn->caps);
@@ -1676,7 +1676,7 @@ static char *testConnectGetCapabilities(virConnectPtr conn)
 
 static int testConnectNumOfDomains(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int count;
 
     testDriverLock(privconn);
@@ -1688,7 +1688,7 @@ static int testConnectNumOfDomains(virConnectPtr conn)
 
 static int testDomainIsActive(virDomainPtr dom)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
@@ -1709,7 +1709,7 @@ static int testDomainIsActive(virDomainPtr dom)
 
 static int testDomainIsPersistent(virDomainPtr dom)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr obj;
     int ret = -1;
 
@@ -1737,7 +1737,7 @@ static virDomainPtr
 testDomainCreateXML(virConnectPtr conn, const char *xml,
                       unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
@@ -1789,7 +1789,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 static virDomainPtr testDomainLookupByID(virConnectPtr conn,
                                          int id)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
@@ -1815,7 +1815,7 @@ static virDomainPtr testDomainLookupByID(virConnectPtr conn,
 static virDomainPtr testDomainLookupByUUID(virConnectPtr conn,
                                            const unsigned char *uuid)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
@@ -1841,7 +1841,7 @@ static virDomainPtr testDomainLookupByUUID(virConnectPtr conn,
 static virDomainPtr testDomainLookupByName(virConnectPtr conn,
                                            const char *name)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
@@ -1867,7 +1867,7 @@ static int testConnectListDomains(virConnectPtr conn,
                                   int *ids,
                                   int maxids)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n;
 
     testDriverLock(privconn);
@@ -1879,7 +1879,7 @@ static int testConnectListDomains(virConnectPtr conn,
 
 static int testDomainDestroy(virDomainPtr domain)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -1912,7 +1912,7 @@ static int testDomainDestroy(virDomainPtr domain)
 
 static int testDomainResume(virDomainPtr domain)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -1952,7 +1952,7 @@ static int testDomainResume(virDomainPtr domain)
 
 static int testDomainSuspend(virDomainPtr domain)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -1995,7 +1995,7 @@ static int testDomainSuspend(virDomainPtr domain)
 static int testDomainShutdownFlags(virDomainPtr domain,
                                    unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -2043,7 +2043,7 @@ static int testDomainShutdown(virDomainPtr domain)
 static int testDomainReboot(virDomainPtr domain,
                             unsigned int action ATTRIBUTE_UNUSED)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -2109,7 +2109,7 @@ static int testDomainReboot(virDomainPtr domain,
 static int testDomainGetInfo(virDomainPtr domain,
                              virDomainInfoPtr info)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     struct timeval tv;
     virDomainObjPtr privdom;
     int ret = -1;
@@ -2148,7 +2148,7 @@ testDomainGetState(virDomainPtr domain,
                    int *reason,
                    unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -2178,7 +2178,7 @@ static int
 testDomainSaveFlags(virDomainPtr domain, const char *path,
                     const char *dxml, unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     char *xml = NULL;
     int fd = -1;
     int len;
@@ -2285,7 +2285,7 @@ testDomainRestoreFlags(virConnectPtr conn,
                        const char *dxml,
                        unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     char *xml = NULL;
     char magic[15];
     int fd = -1;
@@ -2389,7 +2389,7 @@ static int testDomainCoreDumpWithFormat(virDomainPtr domain,
                                         unsigned int dumpformat,
                                         unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     int fd = -1;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
@@ -2475,7 +2475,7 @@ testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
 static unsigned long long
 testDomainGetMaxMemory(virDomainPtr domain)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     unsigned long long ret = 0;
 
@@ -2499,7 +2499,7 @@ testDomainGetMaxMemory(virDomainPtr domain)
 static int testDomainSetMaxMemory(virDomainPtr domain,
                                   unsigned long memory)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -2525,7 +2525,7 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
 static int testDomainSetMemory(virDomainPtr domain,
                                unsigned long memory)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -2555,7 +2555,7 @@ static int testDomainSetMemory(virDomainPtr domain,
 static int
 testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
@@ -2598,7 +2598,7 @@ static int
 testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
                         unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
     virDomainDefPtr persistentDef;
     int ret = -1, maxvcpus;
@@ -2697,7 +2697,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
                               unsigned char *cpumaps,
                               int maplen)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
     size_t i;
@@ -2783,7 +2783,7 @@ static int testDomainPinVcpu(virDomainPtr domain,
                              unsigned char *cpumap,
                              int maplen)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     testDomainObjPrivatePtr privdomdata;
     virDomainObjPtr privdom;
     unsigned char *privcpumap;
@@ -2836,7 +2836,7 @@ static int testDomainPinVcpu(virDomainPtr domain,
 
 static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr privdom;
     char *ret = NULL;
@@ -2866,7 +2866,7 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
 static int testConnectNumOfDefinedDomains(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int count;
 
     testDriverLock(privconn);
@@ -2881,7 +2881,7 @@ static int testConnectListDefinedDomains(virConnectPtr conn,
                                          int maxnames)
 {
 
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n;
 
     testDriverLock(privconn);
@@ -2897,7 +2897,7 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
                                              const char *xml,
                                              unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virDomainPtr ret = NULL;
     virDomainDefPtr def;
     virDomainObjPtr dom = NULL;
@@ -2958,7 +2958,7 @@ static char *testDomainGetMetadata(virDomainPtr dom,
                                    const char *uri,
                                    unsigned int flags)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr privdom;
     char *ret = NULL;
 
@@ -2990,7 +2990,7 @@ static int testDomainSetMetadata(virDomainPtr dom,
                                  const char *uri,
                                  unsigned int flags)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -3021,7 +3021,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       unsigned long long *freemems,
                                       int startCell, int maxCells)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int cell;
     size_t i;
     int ret = -1;
@@ -3048,7 +3048,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
 
 static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -3096,7 +3096,7 @@ static int testDomainCreate(virDomainPtr domain)
 static int testDomainUndefineFlags(virDomainPtr domain,
                                    unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int nsnapshots;
@@ -3168,7 +3168,7 @@ static int testDomainUndefine(virDomainPtr domain)
 static int testDomainGetAutostart(virDomainPtr domain,
                                   int *autostart)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -3194,7 +3194,7 @@ static int testDomainGetAutostart(virDomainPtr domain,
 static int testDomainSetAutostart(virDomainPtr domain,
                                   int autostart)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -3235,7 +3235,7 @@ testDomainGetSchedulerParametersFlags(virDomainPtr domain,
                                       int *nparams,
                                       unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
 
@@ -3279,7 +3279,7 @@ testDomainSetSchedulerParametersFlags(virDomainPtr domain,
                                       int nparams,
                                       unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     int ret = -1;
     size_t i;
@@ -3327,7 +3327,7 @@ static int testDomainBlockStats(virDomainPtr domain,
                                 const char *path,
                                 virDomainBlockStatsPtr stats)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     struct timeval tv;
     unsigned long long statbase;
@@ -3379,7 +3379,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
                                     const char *path,
                                     virDomainInterfaceStatsPtr stats)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     struct timeval tv;
     unsigned long long statbase;
@@ -3437,7 +3437,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
 static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
                                              const unsigned char *uuid)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
@@ -3457,7 +3457,7 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
 static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
                                              const char *name)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
@@ -3477,7 +3477,7 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
 
 static int testConnectNumOfNetworks(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int numActive;
 
     numActive = virNetworkObjListNumOfNetworks(privconn->networks,
@@ -3486,7 +3486,7 @@ static int testConnectNumOfNetworks(virConnectPtr conn)
 }
 
 static int testConnectListNetworks(virConnectPtr conn, char **const names, int nnames) {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n;
 
     n = virNetworkObjListGetNames(privconn->networks,
@@ -3496,7 +3496,7 @@ static int testConnectListNetworks(virConnectPtr conn, char **const names, int n
 
 static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int numInactive;
 
     numInactive = virNetworkObjListNumOfNetworks(privconn->networks,
@@ -3505,7 +3505,7 @@ static int testConnectNumOfDefinedNetworks(virConnectPtr conn)
 }
 
 static int testConnectListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n;
 
     n = virNetworkObjListGetNames(privconn->networks,
@@ -3518,7 +3518,7 @@ testConnectListAllNetworks(virConnectPtr conn,
                            virNetworkPtr **nets,
                            unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
@@ -3527,7 +3527,7 @@ testConnectListAllNetworks(virConnectPtr conn,
 
 static int testNetworkIsActive(virNetworkPtr net)
 {
-    testConnPtr privconn = net->conn->privateData;
+    testDriverPtr privconn = net->conn->privateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -3545,7 +3545,7 @@ static int testNetworkIsActive(virNetworkPtr net)
 
 static int testNetworkIsPersistent(virNetworkPtr net)
 {
-    testConnPtr privconn = net->conn->privateData;
+    testDriverPtr privconn = net->conn->privateData;
     virNetworkObjPtr obj;
     int ret = -1;
 
@@ -3564,7 +3564,7 @@ static int testNetworkIsPersistent(virNetworkPtr net)
 
 static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
     virNetworkPtr ret = NULL;
@@ -3597,7 +3597,7 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
 static
 virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virNetworkDefPtr def;
     virNetworkObjPtr net = NULL;
     virNetworkPtr ret = NULL;
@@ -3626,7 +3626,7 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
 
 static int testNetworkUndefine(virNetworkPtr network)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
     virObjectEventPtr event = NULL;
@@ -3666,7 +3666,7 @@ testNetworkUpdate(virNetworkPtr net,
                   const char *xml,
                   unsigned int flags)
 {
-    testConnPtr privconn = net->conn->privateData;
+    testDriverPtr privconn = net->conn->privateData;
     virNetworkObjPtr network = NULL;
     int isActive, ret = -1;
 
@@ -3706,7 +3706,7 @@ testNetworkUpdate(virNetworkPtr net,
 
 static int testNetworkCreate(virNetworkPtr network)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
     virObjectEventPtr event = NULL;
@@ -3738,7 +3738,7 @@ static int testNetworkCreate(virNetworkPtr network)
 
 static int testNetworkDestroy(virNetworkPtr network)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
     virObjectEventPtr event = NULL;
@@ -3768,7 +3768,7 @@ static int testNetworkDestroy(virNetworkPtr network)
 static char *testNetworkGetXMLDesc(virNetworkPtr network,
                                    unsigned int flags)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     char *ret = NULL;
 
@@ -3788,7 +3788,7 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
 }
 
 static char *testNetworkGetBridgeName(virNetworkPtr network) {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     char *bridge = NULL;
     virNetworkObjPtr privnet;
 
@@ -3815,7 +3815,7 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
 static int testNetworkGetAutostart(virNetworkPtr network,
                                    int *autostart)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
 
@@ -3836,7 +3836,7 @@ static int testNetworkGetAutostart(virNetworkPtr network,
 static int testNetworkSetAutostart(virNetworkPtr network,
                                    int autostart)
 {
-    testConnPtr privconn = network->conn->privateData;
+    testDriverPtr privconn = network->conn->privateData;
     virNetworkObjPtr privnet;
     int ret = -1;
 
@@ -3862,7 +3862,7 @@ static int testNetworkSetAutostart(virNetworkPtr network,
 
 static int testConnectNumOfInterfaces(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     size_t i;
     int count = 0;
 
@@ -3879,7 +3879,7 @@ static int testConnectNumOfInterfaces(virConnectPtr conn)
 
 static int testConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
 
@@ -3908,7 +3908,7 @@ static int testConnectListInterfaces(virConnectPtr conn, char **const names, int
 
 static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     size_t i;
     int count = 0;
 
@@ -3925,7 +3925,7 @@ static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 
 static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
 
@@ -3955,7 +3955,7 @@ static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const nam
 static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
                                                  const char *name)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr iface;
     virInterfacePtr ret = NULL;
 
@@ -3979,7 +3979,7 @@ static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
 static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
                                                       const char *mac)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr iface;
     int ifacect;
     virInterfacePtr ret = NULL;
@@ -4008,7 +4008,7 @@ static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
 
 static int testInterfaceIsActive(virInterfacePtr iface)
 {
-    testConnPtr privconn = iface->conn->privateData;
+    testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr obj;
     int ret = -1;
 
@@ -4030,7 +4030,7 @@ static int testInterfaceIsActive(virInterfacePtr iface)
 static int testInterfaceChangeBegin(virConnectPtr conn,
                                     unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -4057,7 +4057,7 @@ static int testInterfaceChangeBegin(virConnectPtr conn,
 static int testInterfaceChangeCommit(virConnectPtr conn,
                                      unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -4085,7 +4085,7 @@ static int testInterfaceChangeCommit(virConnectPtr conn,
 static int testInterfaceChangeRollback(virConnectPtr conn,
                                        unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -4117,7 +4117,7 @@ static int testInterfaceChangeRollback(virConnectPtr conn,
 static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
                                      unsigned int flags)
 {
-    testConnPtr privconn = iface->conn->privateData;
+    testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     char *ret = NULL;
 
@@ -4145,7 +4145,7 @@ static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
 static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xmlStr,
                                               unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virInterfaceDefPtr def;
     virInterfaceObjPtr iface = NULL;
     virInterfacePtr ret = NULL;
@@ -4172,7 +4172,7 @@ static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xm
 
 static int testInterfaceUndefine(virInterfacePtr iface)
 {
-    testConnPtr privconn = iface->conn->privateData;
+    testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     int ret = -1;
 
@@ -4197,7 +4197,7 @@ static int testInterfaceUndefine(virInterfacePtr iface)
 static int testInterfaceCreate(virInterfacePtr iface,
                                unsigned int flags)
 {
-    testConnPtr privconn = iface->conn->privateData;
+    testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     int ret = -1;
 
@@ -4230,7 +4230,7 @@ static int testInterfaceCreate(virInterfacePtr iface,
 static int testInterfaceDestroy(virInterfacePtr iface,
                                 unsigned int flags)
 {
-    testConnPtr privconn = iface->conn->privateData;
+    testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
     int ret = -1;
 
@@ -4282,7 +4282,7 @@ static virStoragePoolPtr
 testStoragePoolLookupByUUID(virConnectPtr conn,
                             const unsigned char *uuid)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
 
@@ -4308,7 +4308,7 @@ static virStoragePoolPtr
 testStoragePoolLookupByName(virConnectPtr conn,
                             const char *name)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
 
@@ -4339,7 +4339,7 @@ testStoragePoolLookupByVolume(virStorageVolPtr vol)
 static int
 testConnectNumOfStoragePools(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int numActive = 0;
     size_t i;
 
@@ -4357,7 +4357,7 @@ testConnectListStoragePools(virConnectPtr conn,
                             char **const names,
                             int nnames)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
 
@@ -4386,7 +4386,7 @@ testConnectListStoragePools(virConnectPtr conn,
 static int
 testConnectNumOfDefinedStoragePools(virConnectPtr conn)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int numInactive = 0;
     size_t i;
 
@@ -4407,7 +4407,7 @@ testConnectListDefinedStoragePools(virConnectPtr conn,
                                    char **const names,
                                    int nnames)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int n = 0;
     size_t i;
 
@@ -4438,7 +4438,7 @@ testConnectListAllStoragePools(virConnectPtr conn,
                                virStoragePoolPtr **pools,
                                unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL, -1);
@@ -4453,7 +4453,7 @@ testConnectListAllStoragePools(virConnectPtr conn,
 
 static int testStoragePoolIsActive(virStoragePoolPtr pool)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr obj;
     int ret = -1;
 
@@ -4474,7 +4474,7 @@ static int testStoragePoolIsActive(virStoragePoolPtr pool)
 
 static int testStoragePoolIsPersistent(virStoragePoolPtr pool)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr obj;
     int ret = -1;
 
@@ -4499,7 +4499,7 @@ static int
 testStoragePoolCreate(virStoragePoolPtr pool,
                       unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4588,7 +4588,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
                          const char *xml,
                          unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
@@ -4635,7 +4635,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
                          const char *xml,
                          unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
@@ -4674,7 +4674,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
 static int
 testStoragePoolUndefine(virStoragePoolPtr pool)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4707,7 +4707,7 @@ static int
 testStoragePoolBuild(virStoragePoolPtr pool,
                      unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4740,7 +4740,7 @@ testStoragePoolBuild(virStoragePoolPtr pool,
 static int
 testStoragePoolDestroy(virStoragePoolPtr pool)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4779,7 +4779,7 @@ static int
 testStoragePoolDelete(virStoragePoolPtr pool,
                       unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4814,7 +4814,7 @@ static int
 testStoragePoolRefresh(virStoragePoolPtr pool,
                        unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4848,7 +4848,7 @@ static int
 testStoragePoolGetInfo(virStoragePoolPtr pool,
                        virStoragePoolInfoPtr info)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4882,7 +4882,7 @@ static char *
 testStoragePoolGetXMLDesc(virStoragePoolPtr pool,
                           unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     char *ret = NULL;
 
@@ -4910,7 +4910,7 @@ static int
 testStoragePoolGetAutostart(virStoragePoolPtr pool,
                             int *autostart)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4941,7 +4941,7 @@ static int
 testStoragePoolSetAutostart(virStoragePoolPtr pool,
                             int autostart)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -4975,7 +4975,7 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
 static int
 testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     int ret = -1;
 
@@ -5008,7 +5008,7 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
                            char **const names,
                            int maxnames)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     size_t i = 0;
     int n = 0;
@@ -5055,7 +5055,7 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
                               virStorageVolPtr **vols,
                               unsigned int flags)
 {
-    testConnPtr privconn = obj->conn->privateData;
+    testDriverPtr privconn = obj->conn->privateData;
     virStoragePoolObjPtr pool;
     size_t i;
     virStorageVolPtr *tmp_vols = NULL;
@@ -5122,7 +5122,7 @@ static virStorageVolPtr
 testStorageVolLookupByName(virStoragePoolPtr pool,
                            const char *name ATTRIBUTE_UNUSED)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     virStorageVolPtr ret = NULL;
@@ -5167,7 +5167,7 @@ static virStorageVolPtr
 testStorageVolLookupByKey(virConnectPtr conn,
                           const char *key)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     size_t i;
     virStorageVolPtr ret = NULL;
 
@@ -5203,7 +5203,7 @@ static virStorageVolPtr
 testStorageVolLookupByPath(virConnectPtr conn,
                            const char *path)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     size_t i;
     virStorageVolPtr ret = NULL;
 
@@ -5240,7 +5240,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
                         const char *xmldesc,
                         unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol = NULL;
     virStorageVolPtr ret = NULL;
@@ -5314,7 +5314,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                             virStorageVolPtr clonevol,
                             unsigned int flags)
 {
-    testConnPtr privconn = pool->conn->privateData;
+    testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol = NULL, origvol = NULL;
     virStorageVolPtr ret = NULL;
@@ -5396,7 +5396,7 @@ static int
 testStorageVolDelete(virStorageVolPtr vol,
                      unsigned int flags)
 {
-    testConnPtr privconn = vol->conn->privateData;
+    testDriverPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     size_t i;
@@ -5469,7 +5469,7 @@ static int
 testStorageVolGetInfo(virStorageVolPtr vol,
                       virStorageVolInfoPtr info)
 {
-    testConnPtr privconn = vol->conn->privateData;
+    testDriverPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     int ret = -1;
@@ -5515,7 +5515,7 @@ static char *
 testStorageVolGetXMLDesc(virStorageVolPtr vol,
                          unsigned int flags)
 {
-    testConnPtr privconn = vol->conn->privateData;
+    testDriverPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     char *ret = NULL;
@@ -5558,7 +5558,7 @@ testStorageVolGetXMLDesc(virStorageVolPtr vol,
 static char *
 testStorageVolGetPath(virStorageVolPtr vol)
 {
-    testConnPtr privconn = vol->conn->privateData;
+    testDriverPtr privconn = vol->conn->privateData;
     virStoragePoolObjPtr privpool;
     virStorageVolDefPtr privvol;
     char *ret = NULL;
@@ -5604,7 +5604,7 @@ testNodeNumOfDevices(virConnectPtr conn,
                      const char *cap,
                      unsigned int flags)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ndevs = 0;
     size_t i;
 
@@ -5627,7 +5627,7 @@ testNodeListDevices(virConnectPtr conn,
                     int maxnames,
                     unsigned int flags)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ndevs = 0;
     size_t i;
 
@@ -5660,7 +5660,7 @@ testNodeListDevices(virConnectPtr conn,
 static virNodeDevicePtr
 testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     virNodeDeviceObjPtr obj;
     virNodeDevicePtr ret = NULL;
 
@@ -5687,7 +5687,7 @@ static char *
 testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
                          unsigned int flags)
 {
-    testConnPtr driver = dev->conn->privateData;
+    testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
@@ -5715,7 +5715,7 @@ testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
 static char *
 testNodeDeviceGetParent(virNodeDevicePtr dev)
 {
-    testConnPtr driver = dev->conn->privateData;
+    testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
     char *ret = NULL;
 
@@ -5747,7 +5747,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
 static int
 testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
-    testConnPtr driver = dev->conn->privateData;
+    testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
@@ -5778,7 +5778,7 @@ testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 static int
 testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 {
-    testConnPtr driver = dev->conn->privateData;
+    testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
@@ -5817,7 +5817,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
                         const char *xmlDesc,
                         unsigned int flags)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     virNodeDeviceDefPtr def = NULL;
     virNodeDeviceObjPtr obj = NULL;
     char *wwnn = NULL, *wwpn = NULL;
@@ -5881,7 +5881,7 @@ static int
 testNodeDeviceDestroy(virNodeDevicePtr dev)
 {
     int ret = 0;
-    testConnPtr driver = dev->conn->privateData;
+    testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj = NULL;
     char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
@@ -5938,7 +5938,7 @@ testConnectDomainEventRegister(virConnectPtr conn,
                                void *opaque,
                                virFreeCallback freecb)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret = 0;
 
     testDriverLock(driver);
@@ -5955,7 +5955,7 @@ static int
 testConnectDomainEventDeregister(virConnectPtr conn,
                                  virConnectDomainEventCallback callback)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret = 0;
 
     testDriverLock(driver);
@@ -5976,7 +5976,7 @@ testConnectDomainEventRegisterAny(virConnectPtr conn,
                                   void *opaque,
                                   virFreeCallback freecb)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret;
 
     testDriverLock(driver);
@@ -5993,7 +5993,7 @@ static int
 testConnectDomainEventDeregisterAny(virConnectPtr conn,
                                     int callbackID)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret = 0;
 
     testDriverLock(driver);
@@ -6014,7 +6014,7 @@ testConnectNetworkEventRegisterAny(virConnectPtr conn,
                                    void *opaque,
                                    virFreeCallback freecb)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret;
 
     testDriverLock(driver);
@@ -6031,7 +6031,7 @@ static int
 testConnectNetworkEventDeregisterAny(virConnectPtr conn,
                                      int callbackID)
 {
-    testConnPtr driver = conn->privateData;
+    testDriverPtr driver = conn->privateData;
     int ret = 0;
 
     testDriverLock(driver);
@@ -6045,7 +6045,7 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
 
 
 /* driver must be locked before calling */
-static void testObjectEventQueue(testConnPtr driver,
+static void testObjectEventQueue(testDriverPtr driver,
                                  virObjectEventPtr event)
 {
     virObjectEventStateQueue(driver->eventState, event);
@@ -6056,7 +6056,7 @@ static int testConnectListAllDomains(virConnectPtr conn,
                                      virDomainPtr **domains,
                                      unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
@@ -6075,7 +6075,7 @@ testNodeGetCPUMap(virConnectPtr conn,
                   unsigned int *online,
                   unsigned int flags)
 {
-    testConnPtr privconn = conn->privateData;
+    testDriverPtr privconn = conn->privateData;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -6129,7 +6129,7 @@ testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 testDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
     int ret = -1;
@@ -6181,7 +6181,7 @@ testDomainManagedSave(virDomainPtr dom, unsigned int flags)
 static int
 testDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -6205,7 +6205,7 @@ testDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 static int
 testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 {
-    testConnPtr privconn = dom->conn->privateData;
+    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -6597,7 +6597,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
                             unsigned int flags)
 {
-    testConnPtr privconn = domain->conn->privateData;
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
@@ -6844,7 +6844,7 @@ static int
 testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                            unsigned int flags)
 {
-    testConnPtr privconn = snapshot->domain->conn->privateData;
+    testDriverPtr privconn = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     virObjectEventPtr event = NULL;
