@@ -1117,6 +1117,14 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
             goto cleanup;
         }
         break;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = prlsdkAttachNet(privdom, privconn, dev->data.net);
+        if (ret) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("network attach failed"));
+            goto cleanup;
+        }
+        break;
     default:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("device type '%s' cannot be attached"),
@@ -1183,6 +1191,14 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk detach failed"));
+            goto cleanup;
+        }
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = prlsdkDetachNet(privdom, privconn, dev->data.net);
+        if (ret) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("network detach failed"));
             goto cleanup;
         }
         break;

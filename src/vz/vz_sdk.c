@@ -2908,6 +2908,133 @@ static void prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
     PrlHandle_Free(vnet);
 }
 
+int prlsdkAttachNet(virDomainObjPtr dom,
+                    parallelsConnPtr privconn,
+                    virDomainNetDefPtr net)
+{
+    int ret = -1;
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    if (!IS_CT(dom->def)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("network device cannot be attached"));
+        return ret;
+    }
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        return ret;
+
+    ret = prlsdkAddNet(privdom->sdkdom, privconn, net, IS_CT(dom->def));
+    if (ret == 0) {
+        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+        if (PRL_FAILED(waitJob(job))) {
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
+static int
+prlsdkGetNetIndex(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
+{
+    int idx = -1;
+    PRL_RESULT pret;
+    PRL_UINT32 adaptersCount;
+    PRL_UINT32 i;
+    PRL_HANDLE adapter = PRL_INVALID_HANDLE;
+    PRL_UINT32 len;
+    char adapterMac[PRL_MAC_STRING_BUFNAME];
+    char expectedMac[PRL_MAC_STRING_BUFNAME];
+
+    prlsdkFormatMac(&net->mac, expectedMac);
+    pret = PrlVmCfg_GetNetAdaptersCount(sdkdom, &adaptersCount);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    for (i = 0; i < adaptersCount; ++i) {
+
+        pret = PrlVmCfg_GetNetAdapter(sdkdom, i, &adapter);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        len = sizeof(adapterMac);
+        memset(adapterMac, 0, sizeof(adapterMac));
+        pret = PrlVmDevNet_GetMacAddress(adapter, adapterMac, &len);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (memcmp(adapterMac, expectedMac, PRL_MAC_STRING_BUFNAME)) {
+
+            PrlHandle_Free(adapter);
+            adapter = PRL_INVALID_HANDLE;
+            continue;
+        }
+
+        idx = i;
+        break;
+    }
+
+ cleanup:
+    PrlHandle_Free(adapter);
+    return idx;
+}
+
+static int prlsdkDelNetAdapter(PRL_HANDLE sdkdom, int idx)
+{
+    int ret = -1;
+    PRL_RESULT pret;
+    PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
+
+    pret = PrlVmCfg_GetNetAdapter(sdkdom, idx, &sdknet);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlVmDev_Remove(sdknet);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(sdknet);
+    return ret;
+}
+
+int prlsdkDetachNet(virDomainObjPtr dom,
+                    parallelsConnPtr privconn,
+                    virDomainNetDefPtr net)
+{
+    int ret = -1, idx = -1;
+    parallelsDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    if (!IS_CT(dom->def)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("network device cannot be detached"));
+        return ret;
+    }
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        return ret;
+
+    idx = prlsdkGetNetIndex(privdom->sdkdom, net);
+    if (idx < 0)
+        return ret;
+
+    ret = prlsdkDelNet(privconn, net);
+    if (ret != 0)
+        return ret;
+
+    ret = prlsdkDelNetAdapter(privdom->sdkdom, idx);
+    if (ret == 0) {
+        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+        if (PRL_FAILED(waitJob(job))) {
+            return -1;
+        }
+    }
+
+    return ret;
+}
+
 static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
 {
     int ret = -1;
