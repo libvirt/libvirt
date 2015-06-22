@@ -12105,7 +12105,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     else
         def->dst[2] = 'a' + idx;
 
-    if (virDomainDiskDefAssignAddress(xmlopt, def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, def, dom) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid device name '%s'"), def->dst);
         virDomainDiskDefFree(def);
@@ -13248,7 +13248,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 }
             }
 
-            if (virDomainDiskDefAssignAddress(xmlopt, disk) < 0) {
+            if (virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Cannot assign address for device name '%s'"),
                                disk->dst);

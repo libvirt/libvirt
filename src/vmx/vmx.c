@@ -960,7 +960,9 @@ virVMXFloppyDiskNameToUnit(const char *name, int *unit)
 
 
 static int
-virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt, virDomainDiskDefPtr disk)
+virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt,
+                        virDomainDiskDefPtr disk,
+                        virDomainDefPtr vmdef)
 {
     virDomainDiskDef def;
     virDomainDeviceDriveAddressPtr drive;
@@ -979,7 +981,7 @@ virVMXVerifyDiskAddress(virDomainXMLOptionPtr xmlopt, virDomainDiskDefPtr disk)
     def.dst = disk->dst;
     def.bus = disk->bus;
 
-    if (virDomainDiskDefAssignAddress(xmlopt, &def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, &def, vmdef) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not verify disk address"));
         return -1;
@@ -1588,7 +1590,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                &def->disks[def->ndisks]) < 0) {
+                                &def->disks[def->ndisks], def) < 0) {
                 goto cleanup;
             }
 
@@ -1599,7 +1601,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                  VIR_DOMAIN_DISK_BUS_SCSI, controller, unit,
-                                 &def->disks[def->ndisks]) < 0) {
+                                 &def->disks[def->ndisks], def) < 0) {
                 goto cleanup;
             }
 
@@ -1613,7 +1615,7 @@ virVMXParseConfig(virVMXContext *ctx,
         for (unit = 0; unit < 2; ++unit) {
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                &def->disks[def->ndisks]) < 0) {
+                                &def->disks[def->ndisks], def) < 0) {
                 goto cleanup;
             }
 
@@ -1624,7 +1626,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
             if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_CDROM,
                                 VIR_DOMAIN_DISK_BUS_IDE, bus, unit,
-                                &def->disks[def->ndisks]) < 0) {
+                                &def->disks[def->ndisks], def) < 0) {
                 goto cleanup;
             }
 
@@ -1637,7 +1639,7 @@ virVMXParseConfig(virVMXContext *ctx,
     for (unit = 0; unit < 2; ++unit) {
         if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_FLOPPY,
                             VIR_DOMAIN_DISK_BUS_FDC, 0, unit,
-                            &def->disks[def->ndisks]) < 0) {
+                            &def->disks[def->ndisks], def) < 0) {
             goto cleanup;
         }
 
@@ -1925,7 +1927,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 int
 virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr conf,
                 int device, int busType, int controllerOrBus, int unit,
-                virDomainDiskDefPtr *def)
+                virDomainDiskDefPtr *def, virDomainDefPtr vmdef)
 {
     /*
      *          device = {VIR_DOMAIN_DISK_DEVICE_DISK,
@@ -2280,7 +2282,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         goto cleanup;
     }
 
-    if (virDomainDiskDefAssignAddress(xmlopt, *def) < 0) {
+    if (virDomainDiskDefAssignAddress(xmlopt, *def, vmdef) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not assign address to disk '%s'"),
                        virDomainDiskGetSource(*def));
@@ -3189,7 +3191,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:disks */
     for (i = 0; i < def->ndisks; ++i) {
-        if (virVMXVerifyDiskAddress(xmlopt, def->disks[i]) < 0 ||
+        if (virVMXVerifyDiskAddress(xmlopt, def->disks[i], def) < 0 ||
             virVMXHandleLegacySCSIDiskDriverName(def, def->disks[i]) < 0) {
             goto cleanup;
         }

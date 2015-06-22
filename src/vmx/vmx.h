@@ -89,7 +89,8 @@ int virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
 
 int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt,
                     virConfPtr conf, int device, int busType,
-                    int controllerOrBus, int unit, virDomainDiskDefPtr *def);
+                    int controllerOrBus, int unit, virDomainDiskDefPtr *def,
+                    virDomainDefPtr vmdef);
 
 int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def);
 

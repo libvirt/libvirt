@@ -2755,7 +2755,8 @@ int virDomainDiskInsert(virDomainDefPtr def,
 void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk);
 int virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
-                                  virDomainDiskDefPtr def);
+                                  virDomainDiskDefPtr def,
+                                  const virDomainDef *vmdef);
 
 virDomainDiskDefPtr
 virDomainDiskRemove(virDomainDefPtr def, size_t i);

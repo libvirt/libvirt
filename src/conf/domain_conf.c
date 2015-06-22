@@ -4127,7 +4127,7 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
         }
 
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-            virDomainDiskDefAssignAddress(xmlopt, disk) < 0)
+            virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0)
             return -1;
     }
 
@@ -5929,7 +5929,8 @@ virDomainDiskDiffersSourceOnly(virDomainDiskDefPtr disk,
 
 int
 virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
-                              virDomainDiskDefPtr def)
+                              virDomainDiskDefPtr def,
+                              const virDomainDef *vmdef)
 {
     int idx = virDiskNameToIndex(def->dst);
     if (idx < 0) {
@@ -5963,6 +5964,17 @@ virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
              * 7 units per bus, 1 bus per controller, many controllers */
             controller = idx / 7;
             unit = idx % 7;
+        }
+
+        if (virDomainDriveAddressIsUsedByHostdev(vmdef,
+                                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
+                                                 controller, 0, 0, unit)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("using disk target name '%s' conflicts with "
+                             "SCSI host device address controller='%u' "
+                             "bus='%u' target='%u' unit='%u"),
+                           def->dst, controller, 0, 0, unit);
+            return -1;
         }
 
         def->info.addr.drive.controller = controller;
