@@ -1337,9 +1337,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
     }
 
-    if (version >= 2003000) {
+    if (version >= 2003000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ARM_VIRT_PCI);
-    }
 
     return 0;
 }
