@@ -1725,14 +1725,14 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
             goto cleanup;                                                      \
         }                                                                      \
     }
-     QEMU_MONITOR_BLOCK_STAT_GET("rd_bytes", bstats->rd_bytes, true);
-     QEMU_MONITOR_BLOCK_STAT_GET("wr_bytes", bstats->wr_bytes, true);
-     QEMU_MONITOR_BLOCK_STAT_GET("rd_operations", bstats->rd_req, true);
-     QEMU_MONITOR_BLOCK_STAT_GET("wr_operations", bstats->wr_req, true);
-     QEMU_MONITOR_BLOCK_STAT_GET("rd_total_time_ns", bstats->rd_total_times, false);
-     QEMU_MONITOR_BLOCK_STAT_GET("wr_total_time_ns", bstats->wr_total_times, false);
-     QEMU_MONITOR_BLOCK_STAT_GET("flush_operations", bstats->flush_req, false);
-     QEMU_MONITOR_BLOCK_STAT_GET("flush_total_time_ns", bstats->flush_total_times, false);
+    QEMU_MONITOR_BLOCK_STAT_GET("rd_bytes", bstats->rd_bytes, true);
+    QEMU_MONITOR_BLOCK_STAT_GET("wr_bytes", bstats->wr_bytes, true);
+    QEMU_MONITOR_BLOCK_STAT_GET("rd_operations", bstats->rd_req, true);
+    QEMU_MONITOR_BLOCK_STAT_GET("wr_operations", bstats->wr_req, true);
+    QEMU_MONITOR_BLOCK_STAT_GET("rd_total_time_ns", bstats->rd_total_times, false);
+    QEMU_MONITOR_BLOCK_STAT_GET("wr_total_time_ns", bstats->wr_total_times, false);
+    QEMU_MONITOR_BLOCK_STAT_GET("flush_operations", bstats->flush_req, false);
+    QEMU_MONITOR_BLOCK_STAT_GET("flush_total_time_ns", bstats->flush_total_times, false);
 #undef QEMU_MONITOR_BLOCK_STAT_GET
 
     /* it's ok to not have this information here. Just skip silently. */
