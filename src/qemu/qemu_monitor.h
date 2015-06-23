@@ -378,7 +378,11 @@ struct _qemuBlockStats {
     long long flush_total_times;
     unsigned long long capacity;
     unsigned long long physical;
+
+    /* value of wr_highest_offset is valid if it's non 0 or
+     * if wr_highest_offset_valid is true */
     unsigned long long wr_highest_offset;
+    bool wr_highest_offset_valid;
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,

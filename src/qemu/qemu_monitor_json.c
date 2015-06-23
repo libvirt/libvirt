@@ -1699,6 +1699,8 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
 {
     qemuBlockStatsPtr bstats = NULL;
     virJSONValuePtr stats;
+    virJSONValuePtr parent;
+    virJSONValuePtr parentstats;
     int ret = -1;
     int nstats = 0;
     char *entry_name = qemuDomainStorageAlias(dev_name, depth);
@@ -1735,8 +1737,12 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     QEMU_MONITOR_BLOCK_STAT_GET("flush_total_time_ns", bstats->flush_total_times, false);
 #undef QEMU_MONITOR_BLOCK_STAT_GET
 
-    /* it's ok to not have this information here. Just skip silently. */
-    qemuMonitorJSONDevGetBlockExtent(dev, &bstats->wr_highest_offset);
+    if ((parent = virJSONValueObjectGetObject(dev, "parent")) &&
+        (parentstats = virJSONValueObjectGetObject(parent, "stats"))) {
+        if (virJSONValueObjectGetNumberUlong(parentstats, "wr_highest_offset",
+                                             &bstats->wr_highest_offset) == 0)
+            bstats->wr_highest_offset_valid = true;
+    }
 
     if (virHashAddEntry(hash, entry_name, bstats) < 0)
         goto cleanup;

@@ -1538,16 +1538,20 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
         qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
         goto cleanup;
 
-#define CHECK0(var, value) \
+#define CHECK0FULL(var, value, varformat, valformat) \
     if (stats->var != value) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "Invalid " #var " value: %lld, expected %d", \
+                       "Invalid " #var " value: " varformat \
+                       ", expected " valformat, \
                        stats->var, value); \
         goto cleanup; \
     }
 
+#define CHECK0(var, value) CHECK0FULL(var, value, "%lld", "%d")
+
 #define CHECK(NAME, RD_REQ, RD_BYTES, RD_TOTAL_TIMES, WR_REQ, WR_BYTES,        \
-              WR_TOTAL_TIMES, FLUSH_REQ, FLUSH_TOTAL_TIMES)                    \
+              WR_TOTAL_TIMES, FLUSH_REQ, FLUSH_TOTAL_TIMES,                    \
+              WR_HIGHEST_OFFSET, WR_HIGHEST_OFFSET_VALID)                      \
     if (!(stats = virHashLookup(blockstats, NAME))) {                          \
         virReportError(VIR_ERR_INTERNAL_ERROR,                                 \
                        "block stats for device '%s' is missing", NAME);        \
@@ -1560,7 +1564,9 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     CHECK0(wr_bytes, WR_BYTES) \
     CHECK0(wr_total_times, WR_TOTAL_TIMES) \
     CHECK0(flush_req, FLUSH_REQ) \
-    CHECK0(flush_total_times, FLUSH_TOTAL_TIMES)
+    CHECK0(flush_total_times, FLUSH_TOTAL_TIMES) \
+    CHECK0FULL(wr_highest_offset, WR_HIGHEST_OFFSET, "%llu", "%llu") \
+    CHECK0FULL(wr_highest_offset_valid, WR_HIGHEST_OFFSET_VALID, "%d", "%d")
 
     if (qemuMonitorGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
                                         &blockstats, false) < 0)
@@ -1572,9 +1578,9 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
         goto cleanup;
     }
 
-    CHECK("virtio-disk0", 1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0)
-    CHECK("virtio-disk1", 85, 348160, 8232156, 0, 0, 0, 0, 0)
-    CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0)
+    CHECK("virtio-disk0", 1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, 5256018944ULL, true)
+    CHECK("virtio-disk1", 85, 348160, 8232156, 0, 0, 0, 0, 0, 0ULL, true)
+    CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0, 0ULL, true)
 
     if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "virtio-disk0",
                                       &extent) < 0)
@@ -1613,6 +1619,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
 
 #undef CHECK
 #undef CHECK0
+#undef CHECK0FULL
 
  cleanup:
     qemuMonitorTestFree(test);

@@ -93,12 +93,14 @@ struct blockInfoData {
 
 static const struct blockInfoData testBlockInfoData[] =
 {
-/* NAME, rd_req, rd_bytes, wr_req, wr_bytes, rd_total_time, wr_total_time, flush_req, flush_total_time */
-    {"vda", {11, 12, 13, 14, 15, 16, 17, 18, 0, 0, 0}},
-    {"vdb", {21, 22, 23, 24, 25, 26, 27, 28, 0, 0, 0}},
-    {"vdc", {31, 32, 33, -1, 35, 36, 37, 38, 0, 0, 0}},
-    {"vdd", {-1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0}},
-    {"vde", {41, 42, 43, 44, 45, 46, 47, 48, 0, 0, 0}}
+/* NAME, rd_req, rd_bytes, wr_req, wr_bytes, rd_total_time, wr_total_time,
+ * flush_req, flush_total_time, capacity, physical, wr_highest_offset,
+ * wr_highest_offset_valid*/
+    {"vda", {11, 12, 13, 14, 15, 16, 17, 18, 0, 0, 0, false}},
+    {"vdb", {21, 22, 23, 24, 25, 26, 27, 28, 0, 0, 0, false}},
+    {"vdc", {31, 32, 33, -1, 35, 36, 37, 38, 0, 0, 0, false}},
+    {"vdd", {-1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, false}},
+    {"vde", {41, 42, 43, 44, 45, 46, 47, 48, 0, 0, 0, false}}
 };
 
 static const char testBlockInfoReply[] =
