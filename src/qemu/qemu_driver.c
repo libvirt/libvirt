@@ -11800,10 +11800,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
-    virDomainDiskDefPtr disk = NULL;
-    virStorageSourcePtr src;
-    bool activeFail = false;
+    virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = NULL;
+    int rc;
+    virHashTablePtr stats = NULL;
+    qemuBlockStats *entry;
+    char *alias;
 
     virCheckFlags(0, -1);
 
@@ -11815,11 +11817,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (virDomainGetBlockInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    /* Technically, we only need a job if we are going to query the
-     * monitor, which is only for active domains that are using
-     * non-raw block devices.  But it is easier to share code if we
-     * always grab a job; furthermore, grabbing the job ensures that
-     * hot-plug won't change disk behind our backs.  */
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
@@ -11829,53 +11826,72 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    src = disk->src;
-    if (virStorageSourceIsEmpty(src)) {
+    if (virStorageSourceIsEmpty(disk->src)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk '%s' does not currently have a source assigned"),
                        path);
         goto endjob;
     }
 
-    if ((ret = qemuStorageLimitsRefresh(driver, cfg, vm, src)) < 0)
+    /* for inactive domains we have to peek into the files */
+    if (!virDomainObjIsActive(vm)) {
+        if ((qemuStorageLimitsRefresh(driver, cfg, vm, disk->src)) < 0)
+            goto endjob;
+
+        info->capacity = disk->src->capacity;
+        info->allocation = disk->src->allocation;
+        info->physical = disk->src->physical;
+
+        ret = 0;
+        goto endjob;
+    }
+
+    if (!disk->info.alias ||
+        !(alias = qemuDomainStorageAlias(disk->info.alias, 0))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing disk device alias name for %s"), disk->dst);
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorGetAllBlockStatsInfo(qemuDomainGetMonitor(vm),
+                                         &stats, false);
+    if (rc >= 0)
+        rc = qemuMonitorBlockStatsUpdateCapacity(qemuDomainGetMonitor(vm),
+                                                 stats, false);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto endjob;
 
-    if (!src->allocation) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
+    if (!(entry = virHashLookup(stats, alias))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to gather stats for disk '%s'"), disk->dst);
+        goto endjob;
+    }
 
-        /* If the guest is not running, then success/failure return
-         * depends on whether domain is persistent
-         */
-        if (!virDomainObjIsActive(vm)) {
-            activeFail = true;
+    if (!entry->wr_highest_offset_valid) {
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
+            disk->src->format != VIR_STORAGE_FILE_RAW) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to query the maximum written offset of "
+                             "block device '%s'"), disk->dst);
             goto endjob;
         }
 
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetBlockExtent(priv->mon,
-                                        disk->info.alias,
-                                        &src->allocation);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
+        info->allocation = entry->physical;
+    } else {
+        info->allocation = entry->wr_highest_offset;
     }
 
-    if (ret == 0) {
-        info->capacity = src->capacity;
-        info->allocation = src->allocation;
-        info->physical = src->physical;
-    }
+    info->capacity = entry->capacity;
+    info->physical = entry->physical;
+
+    ret = 0;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
  cleanup:
-    /* If we failed to get data from a domain because it's inactive and
-     * it's not a persistent domain, then force failure.
-     */
-    if (activeFail && vm && !vm->persistent) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is not running"));
-        ret = -1;
-    }
+    virHashFree(stats);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
