@@ -279,18 +279,6 @@ static int lxcContainerSetupFDs(int *ttyfd,
               "as the FDs are about to be closed for exec of "
               "the container init process");
 
-    if (setsid() < 0) {
-        virReportSystemError(errno, "%s",
-                             _("setsid failed"));
-        goto cleanup;
-    }
-
-    if (ioctl(*ttyfd, TIOCSCTTY, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("ioctl(TIOCSCTTY) failed"));
-        goto cleanup;
-    }
-
     if (dup2(*ttyfd, STDIN_FILENO) < 0) {
         virReportSystemError(errno, "%s",
                              _("dup2(stdin) failed"));
@@ -2231,7 +2219,7 @@ static int lxcContainerChild(void *data)
 
     VIR_DEBUG("Container TTY path: %s", ttyPath);
 
-    ttyfd = open(ttyPath, O_RDWR|O_NOCTTY);
+    ttyfd = open(ttyPath, O_RDWR);
     if (ttyfd < 0) {
         virReportSystemError(errno,
                              _("Failed to open tty %s"),
