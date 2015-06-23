@@ -95,6 +95,17 @@ void virReportSystemErrorFull(int domcode,
                       0, 0,                                          \
                       _("%s in %s must not be NULL"),                \
                       #argname, __FUNCTION__)
+# define virReportInvalidEmptyStringArg(argname)                     \
+    virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,              \
+                      VIR_FROM_THIS,                                 \
+                      VIR_ERR_INVALID_ARG,                           \
+                      VIR_ERR_ERROR,                                 \
+                      __FUNCTION__,                                  \
+                      #argname,                                      \
+                      NULL,                                          \
+                      0, 0,                                          \
+                      _("string %s in %s must not be empty"),        \
+                      #argname, __FUNCTION__)
 # define virReportInvalidPositiveArg(argname)                        \
     virRaiseErrorFull(__FILE__, __FUNCTION__, __LINE__,              \
                       VIR_FROM_THIS,                                 \

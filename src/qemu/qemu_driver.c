@@ -11530,12 +11530,6 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (virDomainBlockPeekEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!path || path[0] == '\0') {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("NULL or empty path"));
-        goto cleanup;
-    }
-
     /* Check the path belongs to this domain.  */
     if (!(actual = virDomainDiskPathByName(vm->def, path))) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -11820,11 +11814,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     if (virDomainGetBlockInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-
-    if (!path || path[0] == '\0') {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("NULL or empty path"));
-        goto cleanup;
-    }
 
     /* Technically, we only need a job if we are going to query the
      * monitor, which is only for active domains that are using

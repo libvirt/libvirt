@@ -6065,7 +6065,7 @@ virDomainBlockPeek(virDomainPtr dom,
     conn = dom->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
-    virCheckNonNullArgGoto(disk, error);
+    virCheckNonEmptyStringArgGoto(disk, error);
 
     /* Allow size == 0 as an access test. */
     if (size > 0)
@@ -6333,7 +6333,7 @@ virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
         memset(info, 0, sizeof(*info));
 
     virCheckDomainReturn(domain, -1);
-    virCheckNonNullArgGoto(disk, error);
+    virCheckNonEmptyStringArgGoto(disk, error);
     virCheckNonNullArgGoto(info, error);
 
     conn = domain->conn;
