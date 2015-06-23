@@ -14153,32 +14153,35 @@ virDomainThreadSchedParse(xmlNodePtr node,
     }
     VIR_FREE(tmp);
 
-    tmp = virXMLPropString(node, "scheduler");
-    if (tmp) {
-        if ((pol = virProcessSchedPolicyTypeFromString(tmp)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid scheduler attribute: '%s'"),
-                           tmp);
+    if (!(tmp = virXMLPropString(node, "scheduler"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing scheduler attribute"));
+        goto error;
+    }
+
+    if ((pol = virProcessSchedPolicyTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid scheduler attribute: '%s'"),
+                       tmp);
+        goto error;
+    }
+    sp->policy = pol;
+
+    VIR_FREE(tmp);
+    if (sp->policy == VIR_PROC_POLICY_FIFO ||
+        sp->policy == VIR_PROC_POLICY_RR) {
+        tmp = virXMLPropString(node, "priority");
+        if (!tmp) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing scheduler priority"));
             goto error;
         }
-        sp->policy = pol;
-
-        VIR_FREE(tmp);
-        if (sp->policy == VIR_PROC_POLICY_FIFO ||
-            sp->policy == VIR_PROC_POLICY_RR) {
-            tmp = virXMLPropString(node, "priority");
-            if (!tmp) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Missing scheduler priority"));
-                goto error;
-            }
-            if (virStrToLong_i(tmp, NULL, 10, &sp->priority) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Invalid value for element priority"));
-                goto error;
-            }
-            VIR_FREE(tmp);
+        if (virStrToLong_i(tmp, NULL, 10, &sp->priority) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid value for element priority"));
+            goto error;
         }
+        VIR_FREE(tmp);
     }
 
     return 0;
