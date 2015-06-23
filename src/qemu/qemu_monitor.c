@@ -1829,22 +1829,6 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
-                          const char *dev_name,
-                          unsigned long long *extent)
-{
-    VIR_DEBUG("dev_name=%s", dev_name);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (mon->json)
-        return qemuMonitorJSONGetBlockExtent(mon, dev_name, extent);
-    else
-        return qemuMonitorTextGetBlockExtent(mon, dev_name, extent);
-}
-
-
-int
 qemuMonitorBlockResize(qemuMonitorPtr mon,
                        const char *device,
                        unsigned long long size)

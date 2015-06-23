@@ -968,16 +968,6 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
     return ret;
 }
 
-
-int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                  const char *dev_name ATTRIBUTE_UNUSED,
-                                  unsigned long long *extent ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("unable to query block extent with this QEMU"));
-    return -1;
-}
-
 /* Return 0 on success, -1 on failure, or -2 if not supported.  Size
  * is in bytes. */
 int qemuMonitorTextBlockResize(qemuMonitorPtr mon,

@@ -1438,7 +1438,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     virHashTablePtr blockstats = NULL;
     qemuBlockStatsPtr stats;
     int ret = -1;
-    unsigned long long extent;
 
     const char *reply =
         "{"
@@ -1581,39 +1580,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     CHECK("virtio-disk0", 1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, 5256018944ULL, true)
     CHECK("virtio-disk1", 85, 348160, 8232156, 0, 0, 0, 0, 0, 0ULL, true)
     CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0, 0ULL, true)
-
-    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "virtio-disk0",
-                                      &extent) < 0)
-        goto cleanup;
-
-    if (extent != 5256018944ULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid extent: %llu, expected 5256018944",
-                       extent);
-        goto cleanup;
-    }
-
-    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "virtio-disk1",
-                                      &extent) < 0)
-        goto cleanup;
-
-    if (extent != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid extent: %llu, expected 0",
-                       extent);
-        goto cleanup;
-    }
-
-    if (qemuMonitorJSONGetBlockExtent(qemuMonitorTestGetMonitor(test), "ide0-1-0",
-                                      &extent) < 0)
-        goto cleanup;
-
-    if (extent != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid extent: %llu, expected 0",
-                       extent);
-        goto cleanup;
-    }
 
     ret = 0;
 

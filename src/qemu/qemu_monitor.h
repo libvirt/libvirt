@@ -395,9 +395,6 @@ int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
                                         bool backingChain)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuMonitorGetBlockExtent(qemuMonitorPtr mon,
-                              const char *dev_name,
-                              unsigned long long *extent);
 int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            const char *dev_name,
                            unsigned long long size);

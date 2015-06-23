@@ -63,9 +63,6 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
 
 int qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                         virHashTablePtr hash);
-int qemuMonitorTextGetBlockExtent(qemuMonitorPtr mon,
-                                  const char *dev_name,
-                                  unsigned long long *extent);
 int qemuMonitorTextBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                unsigned long long size);
