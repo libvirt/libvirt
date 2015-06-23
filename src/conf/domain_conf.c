@@ -20979,24 +20979,6 @@ virDomainHubDefFormat(virBufferPtr buf,
     return 0;
 }
 
-/*
- * Return true if no <vcpupin> specified in domain XML
- * (I.e. all vcpus inherit the cpuset from "cpuset" of
- * <vcpu>). Or false otherwise.
- */
-static bool
-virDomainIsAllVcpupinInherited(virDomainDefPtr def)
-{
-    size_t i;
-
-    for (i = 0; i < def->cputune.nvcpupin; i++) {
-        if (!virBitmapEqual(def->cputune.vcpupin[i]->cpumask, def->cpumask))
-            return false;
-    }
-
-    return true;
-}
-
 
 static void
 virDomainResourceDefFormat(virBufferPtr buf,
@@ -21127,8 +21109,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     const char *type = NULL;
     int n;
     size_t i;
-    bool blkio = false;
-    bool cputune = false;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int indent;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
                   VIR_DOMAIN_DEF_FORMAT_STATUS |
@@ -21204,62 +21186,47 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
 
-    /* add blkiotune only if there are any */
-    if (def->blkio.weight) {
-        blkio = true;
-    } else {
-        for (n = 0; n < def->blkio.ndevices; n++) {
-            if (def->blkio.devices[n].weight ||
-                def->blkio.devices[n].riops ||
-                def->blkio.devices[n].wiops ||
-                def->blkio.devices[n].rbps ||
-                def->blkio.devices[n].wbps) {
-                blkio = true;
-                break;
-            }
-        }
+    /* start format blkiotune */
+    indent = virBufferGetIndent(buf, false);
+    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    if (def->blkio.weight)
+        virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
+                          def->blkio.weight);
+
+    for (n = 0; n < def->blkio.ndevices; n++) {
+        virBlkioDevicePtr dev = &def->blkio.devices[n];
+
+        if (!dev->weight && !dev->riops && !dev->wiops &&
+            !dev->rbps && !dev->wbps)
+            continue;
+        virBufferAddLit(&childrenBuf, "<device>\n");
+        virBufferAdjustIndent(&childrenBuf, 2);
+        virBufferEscapeString(&childrenBuf, "<path>%s</path>\n",
+                              dev->path);
+        if (dev->weight)
+            virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
+                              dev->weight);
+        if (dev->riops)
+            virBufferAsprintf(&childrenBuf, "<read_iops_sec>%u</read_iops_sec>\n",
+                              dev->riops);
+        if (dev->wiops)
+            virBufferAsprintf(&childrenBuf, "<write_iops_sec>%u</write_iops_sec>\n",
+                              dev->wiops);
+        if (dev->rbps)
+            virBufferAsprintf(&childrenBuf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
+                              dev->rbps);
+        if (dev->wbps)
+            virBufferAsprintf(&childrenBuf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
+                              dev->wbps);
+        virBufferAdjustIndent(&childrenBuf, -2);
+        virBufferAddLit(&childrenBuf, "</device>\n");
     }
-
-    if (blkio) {
+    if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<blkiotune>\n");
-        virBufferAdjustIndent(buf, 2);
-
-        if (def->blkio.weight)
-            virBufferAsprintf(buf, "<weight>%u</weight>\n",
-                              def->blkio.weight);
-
-        for (n = 0; n < def->blkio.ndevices; n++) {
-            virBlkioDevicePtr dev = &def->blkio.devices[n];
-
-            if (!dev->weight && !dev->riops && !dev->wiops &&
-                !dev->rbps && !dev->wbps)
-                continue;
-            virBufferAddLit(buf, "<device>\n");
-            virBufferAdjustIndent(buf, 2);
-            virBufferEscapeString(buf, "<path>%s</path>\n",
-                                  dev->path);
-            if (dev->weight)
-                virBufferAsprintf(buf, "<weight>%u</weight>\n",
-                                  dev->weight);
-            if (dev->riops)
-                virBufferAsprintf(buf, "<read_iops_sec>%u</read_iops_sec>\n",
-                                  dev->riops);
-            if (dev->wiops)
-                virBufferAsprintf(buf, "<write_iops_sec>%u</write_iops_sec>\n",
-                                  dev->wiops);
-            if (dev->rbps)
-                virBufferAsprintf(buf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
-                                  dev->rbps);
-            if (dev->wbps)
-                virBufferAsprintf(buf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
-                                  dev->wbps);
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</device>\n");
-        }
-
-        virBufferAdjustIndent(buf, -2);
+        virBufferAddBuffer(buf, &childrenBuf);
         virBufferAddLit(buf, "</blkiotune>\n");
     }
+    virBufferFreeAndReset(&childrenBuf);
 
     /* add memtune only if there are any */
     if (virMemoryLimitIsSet(def->mem.hard_limit) ||
@@ -21338,35 +21305,26 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
-    if (def->cputune.sharesSpecified ||
-        (def->cputune.nvcpupin && !virDomainIsAllVcpupinInherited(def)) ||
-        def->cputune.period || def->cputune.quota ||
-        def->cputune.emulatorpin ||
-        def->cputune.emulator_period || def->cputune.emulator_quota ||
-        virDomainIOThreadIDArrayHasPin(def) ||
-        def->cputune.vcpusched || def->cputune.iothreadsched) {
-        virBufferAddLit(buf, "<cputune>\n");
-        cputune = true;
-    }
-
-    virBufferAdjustIndent(buf, 2);
+    /* start format cputune */
+    indent = virBufferGetIndent(buf, false);
+    virBufferAdjustIndent(&childrenBuf, indent + 2);
     if (def->cputune.sharesSpecified)
-        virBufferAsprintf(buf, "<shares>%lu</shares>\n",
+        virBufferAsprintf(&childrenBuf, "<shares>%lu</shares>\n",
                           def->cputune.shares);
     if (def->cputune.period)
-        virBufferAsprintf(buf, "<period>%llu</period>\n",
+        virBufferAsprintf(&childrenBuf, "<period>%llu</period>\n",
                           def->cputune.period);
     if (def->cputune.quota)
-        virBufferAsprintf(buf, "<quota>%lld</quota>\n",
+        virBufferAsprintf(&childrenBuf, "<quota>%lld</quota>\n",
                           def->cputune.quota);
 
     if (def->cputune.emulator_period)
-        virBufferAsprintf(buf, "<emulator_period>%llu"
+        virBufferAsprintf(&childrenBuf, "<emulator_period>%llu"
                           "</emulator_period>\n",
                           def->cputune.emulator_period);
 
     if (def->cputune.emulator_quota)
-        virBufferAsprintf(buf, "<emulator_quota>%lld"
+        virBufferAsprintf(&childrenBuf, "<emulator_quota>%lld"
                           "</emulator_quota>\n",
                           def->cputune.emulator_quota);
 
@@ -21376,24 +21334,24 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virBitmapEqual(def->cpumask, def->cputune.vcpupin[i]->cpumask))
             continue;
 
-        virBufferAsprintf(buf, "<vcpupin vcpu='%u' ",
+        virBufferAsprintf(&childrenBuf, "<vcpupin vcpu='%u' ",
                           def->cputune.vcpupin[i]->id);
 
         if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask)))
             goto error;
 
-        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
     }
 
     if (def->cputune.emulatorpin) {
         char *cpumask;
-        virBufferAddLit(buf, "<emulatorpin ");
+        virBufferAddLit(&childrenBuf, "<emulatorpin ");
 
         if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin)))
             goto error;
 
-        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
     }
 
@@ -21404,13 +21362,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (!def->iothreadids[i]->cpumask)
             continue;
 
-        virBufferAsprintf(buf, "<iothreadpin iothread='%u' ",
+        virBufferAsprintf(&childrenBuf, "<iothreadpin iothread='%u' ",
                           def->iothreadids[i]->iothread_id);
 
         if (!(cpumask = virBitmapFormat(def->iothreadids[i]->cpumask)))
             goto error;
 
-        virBufferAsprintf(buf, "cpuset='%s'/>\n", cpumask);
+        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
         VIR_FREE(cpumask);
     }
 
@@ -21420,13 +21378,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         if (!(ids = virBitmapFormat(sp->ids)))
             goto error;
-        virBufferAsprintf(buf, "<vcpusched vcpus='%s' scheduler='%s'",
+        virBufferAsprintf(&childrenBuf, "<vcpusched vcpus='%s' scheduler='%s'",
                           ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
         if (sp->priority)
-            virBufferAsprintf(buf, " priority='%d'", sp->priority);
-        virBufferAddLit(buf, "/>\n");
+            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
+        virBufferAddLit(&childrenBuf, "/>\n");
     }
 
     for (i = 0; i < def->cputune.niothreadsched; i++) {
@@ -21435,18 +21393,21 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
         if (!(ids = virBitmapFormat(sp->ids)))
             goto error;
-        virBufferAsprintf(buf, "<iothreadsched iothreads='%s' scheduler='%s'",
+        virBufferAsprintf(&childrenBuf, "<iothreadsched iothreads='%s' scheduler='%s'",
                           ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
         if (sp->priority)
-            virBufferAsprintf(buf, " priority='%d'", sp->priority);
-        virBufferAddLit(buf, "/>\n");
+            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
+        virBufferAddLit(&childrenBuf, "/>\n");
     }
 
-    virBufferAdjustIndent(buf, -2);
-    if (cputune)
+    if (virBufferUse(&childrenBuf)) {
+        virBufferAddLit(buf, "<cputune>\n");
+        virBufferAddBuffer(buf, &childrenBuf);
         virBufferAddLit(buf, "</cputune>\n");
+    }
+    virBufferFreeAndReset(&childrenBuf);
 
     if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
         goto error;
@@ -22020,6 +21981,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
  error:
     virBufferFreeAndReset(buf);
+    virBufferFreeAndReset(&childrenBuf);
     return -1;
 }
 
