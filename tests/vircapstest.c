@@ -204,11 +204,11 @@ doCapsCompare(virCapsPtr caps,
 
 #define CAPSCOMP(o, a, d, e, m, fo, fa, fd, fe, fm) \
     if (!doCapsCompare(caps, o, a, d, e, m, fo, fa, fd, fe, fm)) \
-        ret = 1;
+        ret = -1;
 
 #define CAPS_EXPECT_ERR(o, a, d, e, m) \
     if (!doCapsExpectFailure(caps, o, a, d, e, m)) \
-        ret = 1;
+        ret = -1;
 
 #ifdef WITH_QEMU
 static int
@@ -224,11 +224,11 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
 
     /* Checking each parameter individually */
     CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu", "pc");
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc-0.11");
     CAPSCOMP(VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_NONE, -1, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu", "pc");
+        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc-0.11");
     CAPSCOMP(-1, VIR_ARCH_AARCH64, -1, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");
@@ -306,7 +306,7 @@ test_virCapsDomainDataLookupLXC(const void *data ATTRIBUTE_UNUSED)
     }
 
     CAPSCOMP(-1, VIR_ARCH_NONE, -1, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_EXE, VIR_ARCH_I686,
+        VIR_DOMAIN_OSTYPE_EXE, VIR_ARCH_X86_64,
         VIR_DOMAIN_VIRT_LXC, "/usr/libexec/libvirt_lxc", NULL);
     CAPSCOMP(-1, VIR_ARCH_X86_64, -1, NULL, NULL,
         VIR_DOMAIN_OSTYPE_EXE, VIR_ARCH_X86_64,
