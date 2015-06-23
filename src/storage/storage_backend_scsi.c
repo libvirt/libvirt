@@ -935,7 +935,8 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virStorageBackendSCSITriggerRescan(host) < 0)
         goto out;
 
-    ignore_value(virStorageBackendSCSIFindLUs(pool, host));
+    if (virStorageBackendSCSIFindLUs(pool, host) < 0)
+        goto out;
 
     ret = 0;
  out:
