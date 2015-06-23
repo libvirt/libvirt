@@ -1103,7 +1103,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups ATTRIBUTE_UNUSED,
     }
 
 # if HAVE_SETGROUPS
-    if (ngroups && setgroups(ngroups, groups) < 0) {
+    if (gid != (gid_t)-1 && setgroups(ngroups, groups) < 0) {
         virReportSystemError(errno, "%s",
                              _("cannot set supplemental groups"));
         return -1;
