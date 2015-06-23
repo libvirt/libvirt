@@ -1142,6 +1142,20 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     return ret;
 }
 
+static int lxcContainerBindMountDevice(const char *src, const char *dst)
+{
+    if (virFileTouch(dst, 0666) < 0)
+        return -1;
+
+    if (mount(src, dst, "none", MS_BIND, NULL) < 0) {
+        virReportSystemError(errno, _("Failed to bind %s on to %s"), src,
+                             dst);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
 {
     size_t i;
@@ -1165,34 +1179,24 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
     }
 
     /* We have private devpts capability, so bind that */
-    if (virFileTouch("/dev/ptmx", 0666) < 0)
+    if (lxcContainerBindMountDevice("/dev/pts/ptmx", "/dev/ptmx") < 0)
         return -1;
-
-    if (mount("/dev/pts/ptmx", "/dev/ptmx", "ptmx", MS_BIND, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to bind /dev/pts/ptmx on to /dev/ptmx"));
-        return -1;
-    }
 
     for (i = 0; i < nttyPaths; i++) {
         char *tty;
         if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0)
             return -1;
-        if (symlink(ttyPaths[i], tty) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to symlink %s to %s"),
-                                 ttyPaths[i], tty);
+
+        if (lxcContainerBindMountDevice(ttyPaths[i], tty) < 0) {
+            return -1;
             VIR_FREE(tty);
-            return -1;
         }
+
         VIR_FREE(tty);
+
         if (i == 0 &&
-            symlink(ttyPaths[i], "/dev/console") < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to symlink %s to /dev/console"),
-                                 ttyPaths[i]);
+            lxcContainerBindMountDevice(ttyPaths[i], "/dev/console") < 0)
             return -1;
-        }
     }
     return 0;
 }
