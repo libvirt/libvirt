@@ -21378,7 +21378,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
-        if (sp->priority)
+        if (sp->policy == VIR_PROC_POLICY_FIFO ||
+            sp->policy == VIR_PROC_POLICY_RR)
             virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
         virBufferAddLit(&childrenBuf, "/>\n");
     }
@@ -21393,7 +21394,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           ids, virProcessSchedPolicyTypeToString(sp->policy));
         VIR_FREE(ids);
 
-        if (sp->priority)
+        if (sp->policy == VIR_PROC_POLICY_FIFO ||
+            sp->policy == VIR_PROC_POLICY_RR)
             virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
         virBufferAddLit(&childrenBuf, "/>\n");
     }
