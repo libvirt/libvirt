@@ -726,8 +726,7 @@
         If no <code>iothreadids</code> are defined, then libvirt numbers
         IOThreads from 1 to the number of <code>iothreads</code> available
         for the domain. For real-time schedulers (<code>fifo</code>,
-        <code>rr</code>), priority must real-time schedulers
-        (<code>fifo</code>, <code>rr</code>), priority must be specified as
+        <code>rr</code>), priority must be specified as
         well (and is ignored for non-real-time ones). The value range
         for the priority depends on the host kernel (usually 1-99).
         <span class="since">Since 1.2.13</span>
