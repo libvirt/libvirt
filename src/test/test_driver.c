@@ -59,6 +59,7 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "virauth.h"
+#include "viratomic.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -95,7 +96,6 @@ typedef struct _testAuth *testAuthPtr;
 struct _testDriver {
     virMutex lock;
 
-    int nextDomID;
     virNodeInfo nodeInfo;
     virInterfaceObjList ifaces;
     bool transaction_running;
@@ -106,6 +106,9 @@ struct _testDriver {
     testCell cells[MAX_CELLS];
     size_t numAuths;
     testAuthPtr auths;
+
+    /* virAtomic access only */
+    volatile int nextDomID;
 
     /* immutable pointer, immutable object after being initialized with
      * testBuildCapabilities */
@@ -417,7 +420,7 @@ testDriverNew(void)
         !(ret->networks = virNetworkObjListNew()))
         goto error;
 
-    ret->nextDomID = 1;
+    virAtomicIntSet(&ret->nextDomID, 1);
 
     return ret;
 
@@ -712,7 +715,7 @@ testDomainStartState(testDriverPtr privconn,
         goto cleanup;
 
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
-    dom->def->id = privconn->nextDomID++;
+    dom->def->id = virAtomicIntAdd(&privconn->nextDomID, 1);
 
     if (virDomainObjSetDefTransient(privconn->caps,
                                     privconn->xmlopt,
