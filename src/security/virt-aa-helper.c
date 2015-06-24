@@ -795,6 +795,9 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
         goto cleanup;
     }
 
+    if (tmp[strlen(tmp) - 1] == '/')
+        tmp[strlen(tmp) - 1] = '\0';
+
     virBufferAsprintf(buf, "  \"%s%s\" %s,\n", tmp, recursive ? "/**" : "", perms);
     if (readonly) {
         virBufferAddLit(buf, "  # don't audit writes to readonly files\n");
