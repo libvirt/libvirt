@@ -96,11 +96,7 @@ struct _testDriver {
     virMutex lock;
 
     int nextDomID;
-    virCapsPtr caps;
-    virDomainXMLOptionPtr xmlopt;
     virNodeInfo nodeInfo;
-    virDomainObjListPtr domains;
-    virNetworkObjListPtr networks;
     virInterfaceObjList ifaces;
     bool transaction_running;
     virInterfaceObjList backupIfaces;
@@ -111,6 +107,16 @@ struct _testDriver {
     size_t numAuths;
     testAuthPtr auths;
 
+    /* immutable pointer, immutable object after being initialized with
+     * testBuildCapabilities */
+    virCapsPtr caps;
+
+    /* immutable pointer, immutable object */
+    virDomainXMLOptionPtr xmlopt;
+
+    /* immutable pointer, self-locking APIs */
+    virDomainObjListPtr domains;
+    virNetworkObjListPtr networks;
     virObjectEventStatePtr eventState;
 };
 typedef struct _testDriver testDriver;
