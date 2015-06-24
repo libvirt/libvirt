@@ -5716,6 +5716,8 @@ qemu-kvm -net nic,model=? /dev/null
           <li> 'i6300esb' &mdash; the recommended device,
             emulating a PCI Intel 6300ESB </li>
           <li> 'ib700' &mdash; emulating an ISA iBase IB700 </li>
+          <li> 'diag288' &mdash; emulating an S390 DIAG288 device
+            <span class="since">Since 1.3.0</span></li>
         </ul>
       </dd>
       <dt><code>action</code></dt>

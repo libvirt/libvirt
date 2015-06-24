@@ -2308,7 +2308,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  *  - VirtIO block
  *  - VirtIO balloon
  *  - Host device passthrough
- *  - Watchdog (not IB700)
+ *  - Watchdog
  *  - pci serial devices
  *
  * Prior to this function being invoked, qemuCollectPCIAddress() will have
@@ -2543,9 +2543,9 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
-    /* A watchdog - skip IB700, it is not a PCI device */
+    /* A watchdog - check if it is a PCI device */
     if (def->watchdog &&
-        def->watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_IB700 &&
+        def->watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB &&
         def->watchdog->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (virDomainPCIAddressReserveNextSlot(addrs, &def->watchdog->info,
                                                flags) < 0)

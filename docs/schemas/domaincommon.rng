@@ -3261,6 +3261,7 @@
         <choice>
           <value>i6300esb</value>
           <value>ib700</value>
+          <value>diag288</value>
         </choice>
       </attribute>
       <optional>
