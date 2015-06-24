@@ -4778,23 +4778,28 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
         }
 
-        /* Now lets see, if the huge page we want to use is even mounted
-         * and ready to use */
-        for (i = 0; i < cfg->nhugetlbfs; i++) {
-            if (cfg->hugetlbfs[i].size == hugepage->size)
-                break;
-        }
+        if (hugepage->size) {
+            /* Now lets see, if the huge page we want to use is even mounted
+             * and ready to use */
+            for (i = 0; i < cfg->nhugetlbfs; i++) {
+                if (cfg->hugetlbfs[i].size == hugepage->size)
+                    break;
+            }
 
-        if (i == cfg->nhugetlbfs) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to find any usable hugetlbfs mount for %llu KiB"),
-                           pagesize);
-            goto cleanup;
-        }
+            if (i == cfg->nhugetlbfs) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to find any usable hugetlbfs mount for %llu KiB"),
+                               hugepage->size);
+                goto cleanup;
+            }
 
-        VIR_FREE(mem_path);
-        if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
-            goto cleanup;
+            if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
+                goto cleanup;
+        } else {
+            if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
+                                                    cfg->nhugetlbfs)))
+                goto cleanup;
+        }
 
         *backendType = "memory-backend-file";
 
