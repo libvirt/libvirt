@@ -505,7 +505,8 @@
     <h2><a name="StorageBackendMultipath">Multipath pools</a></h2>
     <p>
       This provides a pool that contains all the multipath devices on the
-      host. Volume creating is not supported via the libvirt APIs.
+      host. Therefore, only one Multipath pool may be configured per host.
+      Volume creating is not supported via the libvirt APIs.
       The target element is actually ignored, but one is required to appease
       the libvirt XML parser.<br/>
       <br/>
