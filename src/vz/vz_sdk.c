@@ -2929,9 +2929,8 @@ int prlsdkAttachNet(virDomainObjPtr dom,
     ret = prlsdkAddNet(privdom->sdkdom, privconn, net, IS_CT(dom->def));
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job))) {
+        if (PRL_FAILED(waitJob(job)))
             return -1;
-        }
     }
 
     return ret;
@@ -3027,9 +3026,8 @@ int prlsdkDetachNet(virDomainObjPtr dom,
     ret = prlsdkDelNetAdapter(privdom->sdkdom, idx);
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job))) {
+        if (PRL_FAILED(waitJob(job)))
             return -1;
-        }
     }
 
     return ret;
