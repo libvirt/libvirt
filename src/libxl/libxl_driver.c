@@ -2429,6 +2429,7 @@ static char *
 libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     virDomainObjPtr vm;
+    virDomainDefPtr def;
     char *ret = NULL;
 
     /* Flags checked by virDomainDefFormat */
@@ -2439,8 +2440,13 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def,
-                              virDomainDefFormatConvertXMLFlags(flags));
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
+        def = vm->newDef;
+    else
+        def = vm->def;
+
+    ret = virDomainDefFormat(def,
+                             virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
