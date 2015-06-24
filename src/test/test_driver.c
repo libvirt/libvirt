@@ -95,7 +95,6 @@ typedef struct _testAuth *testAuthPtr;
 struct _testDriver {
     virMutex lock;
 
-    char *path;
     int nextDomID;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
@@ -149,7 +148,6 @@ testDriverFree(testDriverPtr driver)
     virInterfaceObjListFree(&driver->ifaces);
     virStoragePoolObjListFree(&driver->pools);
     virObjectEventStateFree(driver->eventState);
-    VIR_FREE(driver->path);
     virMutexUnlock(&driver->lock);
     virMutexDestroy(&driver->lock);
 
@@ -1434,8 +1432,6 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     }
 
     privconn->numCells = 0;
-    if (VIR_STRDUP(privconn->path, file) < 0)
-        goto error;
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
