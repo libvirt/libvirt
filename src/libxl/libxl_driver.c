@@ -372,8 +372,6 @@ libxlReconnectDomain(virDomainObjPtr vm,
                                             vm->def, VIR_HOSTDEV_SP_PCI) < 0)
         goto out;
 
-    virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNKNOWN);
-
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
