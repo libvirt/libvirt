@@ -248,7 +248,8 @@ static int
 virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                 bool *isActive)
 {
-    *isActive = virFileExists("/dev/mpath");
+    *isActive = virFileExists("/dev/mapper") ||
+                virFileExists("/dev/mpath");
     return 0;
 }
 
