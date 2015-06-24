@@ -1,0 +1,8 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M \
+s390-virtio -m 214 -smp 1 -nographic -nodefconfig -nodefaults -chardev \
+socket,id=charmonitor,path=/tmp/test-monitor,server,nowait -mon \
+chardev=charmonitor,id=monitor,mode=readline -no-acpi \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-device diag288,id=watchdog0 -watchdog-action inject-nmi

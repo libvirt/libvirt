@@ -1186,6 +1186,9 @@ mymain(void)
     DO_TEST("watchdog-device", QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("watchdog-dump", NONE);
     DO_TEST("watchdog-injectnmi", NONE);
+    DO_TEST("watchdog-diag288",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DRIVE, QEMU_CAPS_BOOTINDEX, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("balloon-device", QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("balloon-device-auto",
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
