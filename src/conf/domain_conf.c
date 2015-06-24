@@ -506,7 +506,8 @@ VIR_ENUM_IMPL(virDomainWatchdogAction, VIR_DOMAIN_WATCHDOG_ACTION_LAST,
               "poweroff",
               "pause",
               "dump",
-              "none")
+              "none",
+              "inject-nmi")
 
 VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vga",

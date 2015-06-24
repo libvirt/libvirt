@@ -555,7 +555,7 @@ static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr d
 
 VIR_ENUM_DECL(qemuMonitorWatchdogAction)
 VIR_ENUM_IMPL(qemuMonitorWatchdogAction, VIR_DOMAIN_EVENT_WATCHDOG_LAST,
-              "none", "pause", "reset", "poweroff", "shutdown", "debug");
+              "none", "pause", "reset", "poweroff", "shutdown", "debug", "inject-nmi");
 
 static void qemuMonitorJSONHandleWatchdog(qemuMonitorPtr mon, virJSONValuePtr data)
 {

@@ -2842,6 +2842,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF, /* Guest is forcibly powered off */
     VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN, /* Guest is requested to gracefully shutdown */
     VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,    /* No action, a debug message logged */
+    VIR_DOMAIN_EVENT_WATCHDOG_INJECTNMI,/* Inject a non-maskable interrupt into guest */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_WATCHDOG_LAST

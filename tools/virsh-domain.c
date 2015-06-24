@@ -11703,7 +11703,8 @@ VIR_ENUM_IMPL(vshDomainEventWatchdog,
               N_("reset"),
               N_("poweroff"),
               N_("shutdown"),
-              N_("debug"))
+              N_("debug"),
+              N_("inject-nmi"))
 
 static const char *
 vshDomainEventWatchdogToString(int action)

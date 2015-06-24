@@ -5737,6 +5737,9 @@ qemu-kvm -net nic,model=? /dev/null
           <li>'none' &mdash; do nothing</li>
           <li>'dump' &mdash; automatically dump the guest
             <span class="since">Since 0.8.7</span></li>
+          <li>'inject-nmi' &mdash; inject a non-maskable interrupt
+            into the guest
+            <span class="since">Since 1.3.0</span></li>
         </ul>
         <p>
         Note 1: the 'shutdown' action requires that the guest

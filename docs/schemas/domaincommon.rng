@@ -3272,6 +3272,7 @@
             <value>pause</value>
             <value>none</value>
             <value>dump</value>
+            <value>inject-nmi</value>
           </choice>
         </attribute>
       </optional>
