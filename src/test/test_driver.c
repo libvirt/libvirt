@@ -5915,11 +5915,9 @@ testConnectDomainEventRegister(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret = 0;
 
-    testDriverLock(driver);
     if (virDomainEventStateRegister(conn, driver->eventState,
                                     callback, opaque, freecb) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
@@ -5932,11 +5930,9 @@ testConnectDomainEventDeregister(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret = 0;
 
-    testDriverLock(driver);
     if (virDomainEventStateDeregister(conn, driver->eventState,
                                       callback) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
@@ -5953,12 +5949,10 @@ testConnectDomainEventRegisterAny(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret;
 
-    testDriverLock(driver);
     if (virDomainEventStateRegisterID(conn, driver->eventState,
                                       dom, eventID,
                                       callback, opaque, freecb, &ret) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
@@ -5970,11 +5964,9 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret = 0;
 
-    testDriverLock(driver);
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
                                         callbackID) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
@@ -5991,12 +5983,10 @@ testConnectNetworkEventRegisterAny(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret;
 
-    testDriverLock(driver);
     if (virNetworkEventStateRegisterID(conn, driver->eventState,
                                        net, eventID, callback,
                                        opaque, freecb, &ret) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
@@ -6008,11 +5998,9 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     int ret = 0;
 
-    testDriverLock(driver);
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
                                         callbackID) < 0)
         ret = -1;
-    testDriverUnlock(driver);
 
     return ret;
 }
