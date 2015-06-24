@@ -309,24 +309,6 @@ testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     return -1;
 }
 
-static virDomainXMLOptionPtr
-testBuildXMLConfig(void)
-{
-    virDomainXMLPrivateDataCallbacks priv = {
-        .alloc = testDomainObjPrivateAlloc,
-        .free = testDomainObjPrivateFree
-    };
-
-    /* All our XML extensions are input only, so we only need to parse */
-    virDomainXMLNamespace ns = {
-        .parse = testDomainDefNamespaceParse,
-        .free = testDomainDefNamespaceFree,
-    };
-
-    return virDomainXMLOptionNew(NULL, &priv, &ns);
-}
-
-
 static virCapsPtr
 testBuildCapabilities(virConnectPtr conn)
 {
@@ -398,6 +380,45 @@ testBuildCapabilities(virConnectPtr conn)
 
  error:
     virObjectUnref(caps);
+    return NULL;
+}
+
+
+static testDriverPtr
+testDriverNew(void)
+{
+    virDomainXMLPrivateDataCallbacks priv = {
+        .alloc = testDomainObjPrivateAlloc,
+        .free = testDomainObjPrivateFree
+    };
+
+    virDomainXMLNamespace ns = {
+        .parse = testDomainDefNamespaceParse,
+        .free = testDomainDefNamespaceFree,
+    };
+    testDriverPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (virMutexInit(&ret->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
+        goto error;
+    }
+
+    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, &priv, &ns)) ||
+        !(ret->eventState = virObjectEventStateNew()) ||
+        !(ret->domains = virDomainObjListNew()) ||
+        !(ret->networks = virNetworkObjListNew()))
+        goto error;
+
+    ret->nextDomID = 1;
+
+    return ret;
+
+ error:
+    testDriverFree(ret);
     return NULL;
 }
 
@@ -730,23 +751,10 @@ testOpenDefault(virConnectPtr conn)
         return VIR_DRV_OPEN_SUCCESS;
     }
 
-    if (VIR_ALLOC(privconn) < 0)
+    if (!(privconn = testDriverNew()))
         goto error;
-
-    if (virMutexInit(&privconn->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        goto error;
-    }
 
     conn->privateData = privconn;
-
-    if (!(privconn->eventState = virObjectEventStateNew()))
-        goto error;
-
-    if (!(privconn->domains = virDomainObjListNew()) ||
-        !(privconn->networks = virNetworkObjListNew()))
-        goto error;
 
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
@@ -769,11 +777,6 @@ testOpenDefault(virConnectPtr conn)
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
         goto error;
-
-    if (!(privconn->xmlopt = testBuildXMLConfig()))
-        goto error;
-
-    privconn->nextDomID = 1;
 
     if (!(domdef = virDomainDefParseString(defaultDomainXML,
                                            privconn->caps,
@@ -1412,29 +1415,13 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     xmlXPathContextPtr ctxt = NULL;
     testDriverPtr privconn;
 
-    if (VIR_ALLOC(privconn) < 0)
+    if (!(privconn = testDriverNew()))
         return VIR_DRV_OPEN_ERROR;
-    if (virMutexInit(&privconn->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(privconn);
-        return VIR_DRV_OPEN_ERROR;
-    }
 
     testDriverLock(privconn);
     conn->privateData = privconn;
 
-    if (!(privconn->domains = virDomainObjListNew()) ||
-        !(privconn->networks = virNetworkObjListNew()))
-        goto error;
-
     if (!(privconn->caps = testBuildCapabilities(conn)))
-        goto error;
-
-    if (!(privconn->xmlopt = testBuildXMLConfig()))
-        goto error;
-
-    if (!(privconn->eventState = virObjectEventStateNew()))
         goto error;
 
     if (!(doc = virXMLParseFileCtxt(file, &ctxt)))
@@ -1446,7 +1433,6 @@ testOpenFromFile(virConnectPtr conn, const char *file)
         goto error;
     }
 
-    privconn->nextDomID = 1;
     privconn->numCells = 0;
     if (VIR_STRDUP(privconn->path, file) < 0)
         goto error;
