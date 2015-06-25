@@ -2248,20 +2248,24 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 goto cleanup;
 
             for (i = 0; i < def->ncontrollers; i++) {
+                virDomainControllerDefPtr cont = def->controllers[i];
+                int idx = cont->idx;
+                virDevicePCIAddressPtr addr;
+
+                if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+                    continue;
+
+                addr = &cont->info.addr.pci;
                 /* check if every PCI bridge controller's ID is greater than
                  * the bus it is placed onto
                  */
-                virDomainControllerDefPtr cont = def->controllers[i];
-                int idx = cont->idx;
-                int bus = cont->info.addr.pci.bus;
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
-                    idx <= bus) {
+                if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
+                    idx <= addr->bus) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("failed to create PCI bridge "
                                      "on bus %d: too many devices with fixed "
                                      "addresses"),
-                                   bus);
+                                   addr->bus);
                     goto cleanup;
                 }
             }
