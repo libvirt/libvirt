@@ -2885,14 +2885,20 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     return ret;
 }
 
-static void prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
+static int
+prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
 {
+    int ret = -1;
     PRL_RESULT pret;
     PRL_HANDLE vnet = PRL_INVALID_HANDLE;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
-    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE)
-        return;
+    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("unplugging network device of type %s is not supported"),
+                       virDomainNetTypeToString(net->type));
+        return ret;
+    }
 
     pret = PrlVirtNet_Create(&vnet);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -2904,16 +2910,19 @@ static void prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
     if (PRL_FAILED(pret = waitJob(job)))
         goto cleanup;
 
+    ret = 0;
+
  cleanup:
     PrlHandle_Free(vnet);
+    return ret;
 }
 
 int prlsdkAttachNet(virDomainObjPtr dom,
-                    parallelsConnPtr privconn,
+                    vzConnPtr privconn,
                     virDomainNetDefPtr net)
 {
     int ret = -1;
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     if (!IS_CT(dom->def)) {
@@ -2998,11 +3007,11 @@ static int prlsdkDelNetAdapter(PRL_HANDLE sdkdom, int idx)
 }
 
 int prlsdkDetachNet(virDomainObjPtr dom,
-                    parallelsConnPtr privconn,
+                    vzConnPtr privconn,
                     virDomainNetDefPtr net)
 {
     int ret = -1, idx = -1;
-    parallelsDomObjPtr privdom = dom->privateData;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     if (!IS_CT(dom->def)) {

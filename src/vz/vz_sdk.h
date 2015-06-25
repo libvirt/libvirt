@@ -67,6 +67,6 @@ prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
 int
 prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);
 int
-prlsdkAttachNet(virDomainObjPtr dom, parallelsConnPtr privconn, virDomainNetDefPtr net);
+prlsdkAttachNet(virDomainObjPtr dom, vzConnPtr privconn, virDomainNetDefPtr net);
 int
-prlsdkDetachNet(virDomainObjPtr dom, parallelsConnPtr privconn, virDomainNetDefPtr net);
+prlsdkDetachNet(virDomainObjPtr dom, vzConnPtr privconn, virDomainNetDefPtr net);
