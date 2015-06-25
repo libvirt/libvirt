@@ -35,7 +35,7 @@
 
 # define vzParseError()                                                 \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
-                     __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
+                         __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
 # define IS_CT(def)  (def->os.type == VIR_DOMAIN_OSTYPE_EXE)
 
@@ -77,8 +77,8 @@ typedef struct _vzConn *vzConnPtr;
 struct _vzCountersCache {
     PRL_HANDLE stats;
     virCond cond;
-    // -1 - unsubscribed
-    // > -1 - subscribed
+    /* = -1 - unsubscribed
+       > -1 - subscribed */
     int count;
 };
 
@@ -115,14 +115,14 @@ char * vzAddFileExt(const char *path, const char *ext);
 void vzDriverLock(vzConnPtr driver);
 void vzDriverUnlock(vzConnPtr driver);
 virStorageVolPtr vzStorageVolLookupByPathLocked(virConnectPtr conn,
-                                                       const char *path);
+                                                const char *path);
 int vzStorageVolDefRemove(virStoragePoolObjPtr privpool,
-                                 virStorageVolDefPtr privvol);
+                          virStorageVolDefPtr privvol);
 
-# define PARALLELS_BLOCK_STATS_FOREACH(OP)                                   \
-             OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")    \
-             OP(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES, "read_total")   \
-             OP(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ, "write_requests")  \
-             OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
+# define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
+    OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \
+    OP(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES, "read_total")       \
+    OP(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ, "write_requests")      \
+    OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
 
 #endif
