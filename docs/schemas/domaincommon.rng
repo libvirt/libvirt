@@ -1731,6 +1731,19 @@
             <attribute name="type">
               <value>pci</value>
             </attribute>
+            <optional>
+              <element name="model">
+                <attribute name="name">
+                  <choice>
+                    <!-- implementations of 'pci-bridge' -->
+                    <value>pci-bridge</value>
+                    <!-- implementations of 'dmi-to-pci-bridge' -->
+                    <value>i82801b11-bridge</value>
+                  </choice>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
             <!-- *-root controllers have an optional element "pcihole64"-->
             <choice>
               <group>

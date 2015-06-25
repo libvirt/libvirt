@@ -757,6 +757,14 @@ typedef enum {
 } virDomainControllerModelPCI;
 
 typedef enum {
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE,
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCI_BRIDGE,
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_I82801B11_BRIDGE,
+
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST
+} virDomainControllerPCIModelName;
+
+typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO,
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC,
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC,
@@ -797,6 +805,13 @@ typedef virDomainPCIControllerOpts *virDomainPCIControllerOptsPtr;
 struct _virDomainPCIControllerOpts {
     bool pcihole64;
     unsigned long pcihole64size;
+
+    /* the exact controller name is in the "model" subelement, e.g.:
+     * <controller type='pci' model='pcie-root-port'>
+     *   <model name='ioh3420''/>
+     *   ...
+     */
+    int modelName; /* the exact name of the device in hypervisor */
 };
 
 /* Stores the virtual disk controller configuration */
@@ -2978,6 +2993,7 @@ VIR_ENUM_DECL(virDomainDiskDiscard)
 VIR_ENUM_DECL(virDomainDiskMirrorState)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelPCI)
+VIR_ENUM_DECL(virDomainControllerPCIModelName)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)
 VIR_ENUM_DECL(virDomainControllerModelUSB)
 VIR_ENUM_DECL(virDomainFS)

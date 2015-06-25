@@ -326,6 +326,12 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pci-bridge",
               "dmi-to-pci-bridge")
 
+VIR_ENUM_IMPL(virDomainControllerPCIModelName,
+              VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
+              "none",
+              "pci-bridge",
+              "i82801b11-bridge")
+
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
               "buslogic",
@@ -7802,6 +7808,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *queues = NULL;
     char *cmd_per_lun = NULL;
     char *max_sectors = NULL;
+    bool processedModel = false;
+    char *modelName = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7845,6 +7853,15 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 queues = virXMLPropString(cur, "queues");
                 cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
                 max_sectors = virXMLPropString(cur, "max_sectors");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
+                if (processedModel) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("Multiple <model> elements in "
+                                     "controller definition not allowed"));
+                    goto error;
+                }
+                modelName = virXMLPropString(cur, "name");
+                processedModel = true;
             }
         }
         cur = cur->next;
@@ -7953,6 +7970,15 @@ virDomainControllerDefParseXML(xmlNodePtr node,
             def->opts.pciopts.pcihole64size = VIR_DIV_UP(bytes, 1024);
         }
         }
+        if (modelName &&
+            (def->opts.pciopts.modelName
+             = virDomainControllerPCIModelNameTypeFromString(modelName)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown PCI controller model name '%s'"),
+                           modelName);
+            goto error;
+        }
+        break;
 
     default:
         break;
@@ -7977,6 +8003,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(queues);
     VIR_FREE(cmd_per_lun);
     VIR_FREE(max_sectors);
+    VIR_FREE(modelName);
 
     return def;
 
@@ -18988,7 +19015,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
-    bool pcihole64 = false;
+    const char *modelName = NULL;
+    bool pcihole64 = false, pciModel = false;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -19028,16 +19056,30 @@ virDomainControllerDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         if (def->opts.pciopts.pcihole64)
             pcihole64 = true;
+        if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
+            pciModel = true;
         break;
 
     default:
         break;
     }
 
-    if (def->queues || def->cmd_per_lun || def->max_sectors ||
+    if (pciModel ||
+        def->queues || def->cmd_per_lun || def->max_sectors ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
+
+        if (pciModel) {
+            modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
+            if (!modelName) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected model name value %d"),
+                               def->opts.pciopts.modelName);
+                return -1;
+            }
+            virBufferAsprintf(buf, "<model name='%s'/>\n", modelName);
+        }
 
         if (def->queues || def->cmd_per_lun || def->max_sectors) {
             virBufferAddLit(buf, "<driver");
