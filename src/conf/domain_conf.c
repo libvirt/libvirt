@@ -1527,6 +1527,38 @@ virDomainDiskSetFormat(virDomainDiskDefPtr def, int format)
 }
 
 
+static virDomainControllerDefPtr
+virDomainControllerDefNew(virDomainControllerType type)
+{
+    virDomainControllerDefPtr def;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    def->type = type;
+    def->model = -1;
+
+    /* initialize anything that has a non-0 default */
+    switch ((virDomainControllerType) def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+        def->opts.vioserial.ports = -1;
+        def->opts.vioserial.vectors = -1;
+        break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
+        break;
+    }
+
+    return def;
+}
+
+
 void virDomainControllerDefFree(virDomainControllerDefPtr def)
 {
     if (!def)
@@ -7725,9 +7757,10 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                xmlXPathContextPtr ctxt,
                                unsigned int flags)
 {
-    virDomainControllerDefPtr def;
+    virDomainControllerDefPtr def = NULL;
+    int type = 0;
     xmlNodePtr cur = NULL;
-    char *type = NULL;
+    char *typeStr = NULL;
     char *idx = NULL;
     char *model = NULL;
     char *queues = NULL;
@@ -7738,17 +7771,17 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
-
-    type = virXMLPropString(node, "type");
-    if (type) {
-        if ((def->type = virDomainControllerTypeFromString(type)) < 0) {
+    typeStr = virXMLPropString(node, "type");
+    if (typeStr) {
+        if ((type = virDomainControllerTypeFromString(typeStr)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown controller type '%s'"), type);
+                           _("Unknown controller type '%s'"), typeStr);
             goto error;
         }
     }
+
+    if (!(def = virDomainControllerDefNew(type)))
+        goto error;
 
     idx = virXMLPropString(node, "index");
     if (idx) {
@@ -7767,8 +7800,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                            _("Unknown model type '%s'"), model);
             goto error;
         }
-    } else {
-        def->model = -1;
     }
 
     cur = node->children;
@@ -7820,8 +7851,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 VIR_FREE(ports);
                 goto error;
             }
-        } else {
-            def->opts.vioserial.ports = -1;
         }
         VIR_FREE(ports);
 
@@ -7835,8 +7864,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 VIR_FREE(vectors);
                 goto error;
             }
-        } else {
-            def->opts.vioserial.vectors = -1;
         }
         VIR_FREE(vectors);
         break;
@@ -7908,7 +7935,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
  cleanup:
     ctxt->node = saved;
-    VIR_FREE(type);
+    VIR_FREE(typeStr);
     VIR_FREE(idx);
     VIR_FREE(model);
     VIR_FREE(queues);
@@ -14088,17 +14115,11 @@ virDomainDefMaybeAddController(virDomainDefPtr def,
             return 0;
     }
 
-    if (VIR_ALLOC(cont) < 0)
+    if (!(cont = virDomainControllerDefNew(type)))
         return -1;
 
-    cont->type = type;
     cont->idx = idx;
     cont->model = model;
-
-    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
-        cont->opts.vioserial.ports = -1;
-        cont->opts.vioserial.vectors = -1;
-    }
 
     if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
         VIR_FREE(cont);
