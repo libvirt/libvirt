@@ -717,6 +717,7 @@
 
     <!-- Intel CPU models -->
     <model name='Conroe'>
+      <signature family='6' model='15'/>
       <vendor name='Intel'/>
       <feature name='apic'/>
       <feature name='clflush'/>
@@ -748,6 +749,7 @@
     </model>
 
     <model name='Penryn'>
+      <signature family='6' model='23'/>
       <vendor name='Intel'/>
       <feature name='apic'/>
       <feature name='clflush'/>
@@ -781,6 +783,7 @@
     </model>
 
     <model name='Nehalem'>
+      <signature family='6' model='26'/>
       <vendor name='Intel'/>
       <feature name='apic'/>
       <feature name='clflush'/>
@@ -816,6 +819,7 @@
     </model>
 
     <model name='Westmere'>
+      <signature family='6' model='44'/>
       <vendor name='Intel'/>
       <feature name='aes'/>
       <feature name='apic'/>
@@ -852,6 +856,7 @@
     </model>
 
     <model name='SandyBridge'>
+      <signature family='6' model='42'/>
       <vendor name='Intel'/>
       <feature name='aes'/>
       <feature name='apic'/>
@@ -894,6 +899,7 @@
     </model>
 
     <model name='IvyBridge'>
+      <signature family='6' model='58'/>
       <vendor name='Intel'/>
       <feature name='aes'/>
       <feature name='apic'/>
@@ -942,6 +948,7 @@
     </model>
 
     <model name='Haswell-noTSX'>
+      <signature family='6' model='60'/>
       <vendor name='Intel'/>
       <feature name='aes'/>
       <feature name='apic'/>
@@ -994,6 +1001,7 @@
     </model>
 
     <model name='Haswell'>
+      <signature family='6' model='60'/>
       <vendor name='Intel'/>
       <feature name='aes'/>
       <feature name='apic'/>
@@ -1048,6 +1056,7 @@
     </model>
 
     <model name='Broadwell-noTSX'>
+      <signature family='6' model='61'/>
       <vendor name='Intel'/>
       <feature name='3dnowprefetch'/>
       <feature name='adx'/>
@@ -1104,6 +1113,7 @@
     </model>
 
     <model name='Broadwell'>
+      <signature family='6' model='61'/>
       <vendor name='Intel'/>
       <feature name='3dnowprefetch'/>
       <feature name='adx'/>
@@ -1162,6 +1172,7 @@
     </model>
 
     <model name='Skylake-Client'>
+      <signature family='6' model='94'/>
       <vendor name='Intel'/>
       <feature name='3dnowprefetch'/>
       <feature name='abm'/>
@@ -1292,6 +1303,7 @@
     </model>
 
     <model name='Opteron_G1'>
+      <signature family='15' model='6'/>
       <vendor name='AMD'/>
       <feature name='apic'/>
       <feature name='clflush'/>
@@ -1321,6 +1333,7 @@
     </model>
 
     <model name='Opteron_G2'>
+      <signature family='15' model='6'/>
       <vendor name='AMD'/>
       <feature name='apic'/>
       <feature name='clflush'/>
@@ -1354,6 +1367,7 @@
     </model>
 
     <model name='Opteron_G3'>
+      <signature family='15' model='6'/>
       <vendor name='AMD'/>
       <feature name='abm'/>
       <feature name='apic'/>
@@ -1392,6 +1406,7 @@
     </model>
 
     <model name='Opteron_G4'>
+      <signature family='21' model='1'/>
       <vendor name='AMD'/>
       <feature name='3dnowprefetch'/>
       <feature name='abm'/>
@@ -1440,6 +1455,7 @@
     </model>
 
     <model name='Opteron_G5'>
+      <signature family='21' model='2'/>
       <vendor name='AMD'/>
       <feature name='3dnowprefetch'/>
       <feature name='abm'/>

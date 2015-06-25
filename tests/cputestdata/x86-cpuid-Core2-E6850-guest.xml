@@ -1,7 +1,8 @@
 <cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
-  <model fallback='forbid'>core2duo</model>
+  <model fallback='forbid'>Conroe</model>
   <vendor>Intel</vendor>
+  <feature policy='require' name='vme'/>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
   <feature policy='require' name='ss'/>
@@ -9,6 +10,7 @@
   <feature policy='require' name='tm'/>
   <feature policy='require' name='pbe'/>
   <feature policy='require' name='dtes64'/>
+  <feature policy='require' name='monitor'/>
   <feature policy='require' name='ds_cpl'/>
   <feature policy='require' name='vmx'/>
   <feature policy='require' name='smx'/>
@@ -17,5 +19,4 @@
   <feature policy='require' name='cx16'/>
   <feature policy='require' name='xtpr'/>
   <feature policy='require' name='pdcm'/>
-  <feature policy='require' name='lahf_lm'/>
 </cpu>
