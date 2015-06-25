@@ -194,9 +194,6 @@ testme "1" "-c with malformed xml" "-c -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<type arch='x86_64' machine='pc'>hvm</type>,,g" "$template_xml" > "$test_xml"
 testme "1" "-c with no os.type" "-c -u $valid_uuid" "$test_xml"
 
-sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<type arch='x86_64' machine='pc'>hvm</type>,<type>hvm</type>,g" "$template_xml" > "$test_xml"
-testme "1" "-c with no architecture" "-c -u $valid_uuid" "$test_xml"
-
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,hvm</type>,hvm_invalid</type>,g" "$template_xml" > "$test_xml"
 testme "1" "-c with invalid hvm" "-c -u $valid_uuid" "$test_xml"
 

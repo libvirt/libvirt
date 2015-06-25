@@ -73,6 +73,7 @@ typedef struct {
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
     virDomainXMLOptionPtr xmlopt; /* XML parser data */
+    char *virtType;                  /* type of hypervisor (eg qemu, xen, lxc) */
     char *os;                   /* type of os (eg hvm, xen, exe) */
     virArch arch;               /* machine architecture */
     char *newfile;              /* newly added file */
@@ -89,6 +90,7 @@ vahDeinit(vahControl * ctl)
     virObjectUnref(ctl->caps);
     virObjectUnref(ctl->xmlopt);
     VIR_FREE(ctl->files);
+    VIR_FREE(ctl->virtType);
     VIR_FREE(ctl->os);
     VIR_FREE(ctl->newfile);
 
@@ -641,6 +643,7 @@ verify_xpath_context(xmlXPathContextPtr ctxt)
 
 /*
  * Parse the xml we received to fill in the following:
+ * ctl->virtType
  * ctl->os
  * ctl->arch
  *
@@ -668,6 +671,11 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     if (verify_xpath_context(ctxt) != 0)
         goto cleanup;
 
+    ctl->virtType = virXPathString("string(./@type)", ctxt);
+    if (!ctl->virtType) {
+        vah_error(ctl, 0, _("domain type is not defined"));
+        goto cleanup;
+    }
     ctl->os = virXPathString("string(./os/type[1])", ctxt);
     if (!ctl->os) {
         vah_error(ctl, 0, _("os.type is not defined"));
@@ -694,7 +702,7 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
 static int
 get_definition(vahControl * ctl, const char *xmlStr)
 {
-    int rc = -1, ostype;
+    int rc = -1, ostype, virtType;
     virCapsGuestPtr guest;  /* this is freed when caps is freed */
 
     /*
@@ -726,6 +734,21 @@ get_definition(vahControl * ctl, const char *xmlStr)
                                          NULL,
                                          0,
                                          NULL)) == NULL) {
+        vah_error(ctl, 0, _("could not allocate memory"));
+        goto exit;
+    }
+
+    if ((virtType = virDomainVirtTypeFromString(ctl->virtType)) < 0) {
+        vah_error(ctl, 0, _("unknown virtualization type"));
+        goto exit;
+    }
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      virtType,
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL) {
         vah_error(ctl, 0, _("could not allocate memory"));
         goto exit;
     }
