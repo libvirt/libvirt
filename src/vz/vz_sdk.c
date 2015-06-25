@@ -1697,19 +1697,31 @@ prlsdkHandlePerfEvent(vzConnPtr privconn,
     return PRL_ERR_SUCCESS;
 }
 
-static void
-prlsdkHandleVmEvent(vzConnPtr privconn, PRL_HANDLE prlEvent)
+static PRL_RESULT
+prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
 {
+    vzConnPtr privconn = opaque;
     PRL_RESULT pret = PRL_ERR_FAILURE;
+    PRL_HANDLE_TYPE handleType;
     char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRL_UINT32 bufsize = ARRAY_CARDINALITY(uuidstr);
     PRL_EVENT_TYPE prlEventType;
 
-    pret = PrlEvent_GetType(prlEvent, &prlEventType);
+    pret = PrlHandle_GetType(prlEvent, &handleType);
     prlsdkCheckRetGoto(pret, cleanup);
 
+    /* Currently, there is no need to handle anything but events */
+    if (handleType != PHT_EVENT)
+        goto cleanup;
+
+    if (privconn == NULL)
+        goto cleanup;
+
     pret = PrlEvent_GetIssuerId(prlEvent, uuidstr, &bufsize);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlEvent_GetType(prlEvent, &prlEventType);
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (prlsdkUUIDParse(uuidstr, uuid) < 0)
@@ -1736,51 +1748,13 @@ prlsdkHandleVmEvent(vzConnPtr privconn, PRL_HANDLE prlEvent)
         prlEvent = PRL_INVALID_HANDLE;
         break;
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Can't handle event of type %d"), prlEventType);
-    }
-
- cleanup:
-    PrlHandle_Free(prlEvent);
-    return;
-}
-
-static PRL_RESULT
-prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
-{
-    vzConnPtr privconn = opaque;
-    PRL_RESULT pret = PRL_ERR_FAILURE;
-    PRL_HANDLE_TYPE handleType;
-    PRL_EVENT_ISSUER_TYPE prlIssuerType = PIE_UNKNOWN;
-
-    pret = PrlHandle_GetType(prlEvent, &handleType);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    /* Currently, there is no need to handle anything but events */
-    if (handleType != PHT_EVENT)
-        goto cleanup;
-
-    if (privconn == NULL)
-        goto cleanup;
-
-    PrlEvent_GetIssuerType(prlEvent, &prlIssuerType);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    switch (prlIssuerType) {
-    case PIE_VIRTUAL_MACHINE:
-        prlsdkHandleVmEvent(privconn, prlEvent);
-        /* above function takes own of event */
-        prlEvent = PRL_INVALID_HANDLE;
-        break;
-    default:
-        VIR_DEBUG("Skipping event of issuer type %d", prlIssuerType);
+        VIR_DEBUG("Skipping event of type %d", prlEventType);
     }
 
  cleanup:
     PrlHandle_Free(prlEvent);
     return PRL_ERR_SUCCESS;
 }
-
 
 int prlsdkSubscribeToPCSEvents(vzConnPtr privconn)
 {
