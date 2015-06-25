@@ -3432,7 +3432,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         VIR_FREE(priv->origname);
         virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
         priv->nbdPort = 0;
-        qemuDomainRemoveInactive(driver, vm);
+        if (!vm->persistent)
+            qemuDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
     if (event)
