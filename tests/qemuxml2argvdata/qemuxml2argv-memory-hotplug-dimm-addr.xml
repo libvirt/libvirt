@@ -33,7 +33,7 @@
     <memory model='dimm'>
       <source>
         <nodemask>1-3</nodemask>
-        <pagesize unit='KiB'>4096</pagesize>
+        <pagesize unit='KiB'>2048</pagesize>
       </source>
       <target>
         <size unit='KiB'>524287</size>

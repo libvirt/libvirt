@@ -4727,7 +4727,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
-    if (pagesize == 0 || pagesize != system_page_size) {
+    if (pagesize == 0) {
         /* Find the huge page size we want to use */
         for (i = 0; i < def->mem.nhugepages; i++) {
             bool thisHugepage = false;
@@ -4762,34 +4762,35 @@ qemuBuildMemoryBackendStr(unsigned long long size,
 
         if (hugepage)
             pagesize = hugepage->size;
-
-        if (hugepage && hugepage->size == system_page_size) {
-            /* However, if user specified to use "huge" page
-             * of regular system page size, it's as if they
-             * hasn't specified any huge pages at all. */
-            hugepage = NULL;
-        }
     }
 
-    if (hugepage) {
+    if (pagesize == system_page_size) {
+        /* However, if user specified to use "huge" page
+         * of regular system page size, it's as if they
+         * hasn't specified any huge pages at all. */
+        pagesize = 0;
+        hugepage = NULL;
+    }
+
+    if (pagesize || hugepage) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support hugepage memory backing"));
             goto cleanup;
         }
 
-        if (hugepage->size) {
+        if (pagesize) {
             /* Now lets see, if the huge page we want to use is even mounted
              * and ready to use */
             for (i = 0; i < cfg->nhugetlbfs; i++) {
-                if (cfg->hugetlbfs[i].size == hugepage->size)
+                if (cfg->hugetlbfs[i].size == pagesize)
                     break;
             }
 
             if (i == cfg->nhugetlbfs) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to find any usable hugetlbfs mount for %llu KiB"),
-                               hugepage->size);
+                               pagesize);
                 goto cleanup;
             }
 
@@ -4856,7 +4857,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
     }
 
-    if (!hugepage) {
+    if (!hugepage && !pagesize) {
         bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
 
         if ((userNodeset || nodeSpecified || force) &&
