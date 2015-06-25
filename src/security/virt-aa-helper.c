@@ -41,6 +41,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "vircommand.h"
+#include "virlog.h"
 
 #include "security_driver.h"
 #include "security_apparmor.h"
@@ -1271,6 +1272,9 @@ main(int argc, char **argv)
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
+
+    /* Initialize the log system */
+    virLogSetFromEnv();
 
     /* clear the environment */
     environ = NULL;

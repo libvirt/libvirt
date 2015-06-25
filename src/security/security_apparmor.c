@@ -196,6 +196,10 @@ load_profile(virSecurityManagerPtr mgr,
         }
     }
 
+    virCommandAddEnvFormat(cmd,
+                           "LIBVIRT_LOG_OUTPUTS=%d:stderr",
+                           virLogGetDefaultPriority());
+
     virCommandSetInputBuffer(cmd, xml);
     rc = virCommandRun(cmd, NULL);
 
