@@ -36,9 +36,9 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PARALLELS_ROUTED_NETWORK_UUID   "eb593dd1-6846-45b0-84a0-de0729286982"
 
-#define vzParseError()                                                  \
-    virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
-                     __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
+#define vzParseError()                                                          \
+    virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,     \
+                         __FUNCTION__, __LINE__, _("Can't parse prlctl output"))
 
 static int vzGetBridgedNetInfo(virNetworkDefPtr def, virJSONValuePtr jobj)
 {
@@ -328,7 +328,7 @@ static int vzLoadNetworks(vzConnPtr privconn)
 
 virDrvOpenStatus
 vzNetworkOpen(virConnectPtr conn,
-                     unsigned int flags)
+              unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
 
@@ -373,8 +373,8 @@ static int vzConnectNumOfNetworks(virConnectPtr conn)
 }
 
 static int vzConnectListNetworks(virConnectPtr conn,
-                                        char **const names,
-                                        int nnames)
+                                 char **const names,
+                                 int nnames)
 {
     vzConnPtr privconn = conn->privateData;
     int got;
@@ -395,8 +395,8 @@ static int vzConnectNumOfDefinedNetworks(virConnectPtr conn)
 }
 
 static int vzConnectListDefinedNetworks(virConnectPtr conn,
-                                               char **const names,
-                                               int nnames)
+                                        char **const names,
+                                        int nnames)
 {
     vzConnPtr privconn = conn->privateData;
     int got;
@@ -407,8 +407,8 @@ static int vzConnectListDefinedNetworks(virConnectPtr conn,
 }
 
 static int vzConnectListAllNetworks(virConnectPtr conn,
-                                           virNetworkPtr **nets,
-                                           unsigned int flags)
+                                    virNetworkPtr **nets,
+                                    unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
 
@@ -418,7 +418,7 @@ static int vzConnectListAllNetworks(virConnectPtr conn,
 }
 
 static virNetworkPtr vzNetworkLookupByUUID(virConnectPtr conn,
-                                                  const unsigned char *uuid)
+                                           const unsigned char *uuid)
 {
     vzConnPtr privconn = conn->privateData;
     virNetworkObjPtr network;
@@ -439,7 +439,7 @@ static virNetworkPtr vzNetworkLookupByUUID(virConnectPtr conn,
 }
 
 static virNetworkPtr vzNetworkLookupByName(virConnectPtr conn,
-                                                  const char *name)
+                                           const char *name)
 {
     vzConnPtr privconn = conn->privateData;
     virNetworkObjPtr network;
@@ -460,7 +460,7 @@ static virNetworkPtr vzNetworkLookupByName(virConnectPtr conn,
 }
 
 static char *vzNetworkGetXMLDesc(virNetworkPtr net,
-                                        unsigned int flags)
+                                 unsigned int flags)
 {
     vzConnPtr privconn = net->conn->privateData;
     virNetworkObjPtr network;
