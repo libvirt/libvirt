@@ -73,7 +73,7 @@ typedef struct {
     virDomainDefPtr def;        /* VM definition */
     virCapsPtr caps;            /* VM capabilities */
     virDomainXMLOptionPtr xmlopt; /* XML parser data */
-    char *hvm;                  /* type of hypervisor (eg hvm, xen) */
+    char *os;                   /* type of os (eg hvm, xen, exe) */
     virArch arch;               /* machine architecture */
     char *newfile;              /* newly added file */
     bool append;                /* append to .files instead of rewrite */
@@ -89,7 +89,7 @@ vahDeinit(vahControl * ctl)
     virObjectUnref(ctl->caps);
     virObjectUnref(ctl->xmlopt);
     VIR_FREE(ctl->files);
-    VIR_FREE(ctl->hvm);
+    VIR_FREE(ctl->os);
     VIR_FREE(ctl->newfile);
 
     return 0;
@@ -641,7 +641,7 @@ verify_xpath_context(xmlXPathContextPtr ctxt)
 
 /*
  * Parse the xml we received to fill in the following:
- * ctl->hvm
+ * ctl->os
  * ctl->arch
  *
  * These are suitable for setting up a virCapsPtr
@@ -668,8 +668,8 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     if (verify_xpath_context(ctxt) != 0)
         goto cleanup;
 
-    ctl->hvm = virXPathString("string(./os/type[1])", ctxt);
-    if (!ctl->hvm) {
+    ctl->os = virXPathString("string(./os/type[1])", ctxt);
+    if (!ctl->os) {
         vah_error(ctl, 0, _("os.type is not defined"));
         goto cleanup;
     }
@@ -714,7 +714,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
-    if ((ostype = virDomainOSTypeFromString(ctl->hvm)) < 0) {
+    if ((ostype = virDomainOSTypeFromString(ctl->os)) < 0) {
         vah_error(ctl, 0, _("unknown OS type"));
         goto exit;
     }
