@@ -190,8 +190,8 @@ vzConnectGetCapabilities(virConnectPtr conn)
 
 static int
 vzDomainDefPostParse(virDomainDefPtr def,
-                            virCapsPtr caps ATTRIBUTE_UNUSED,
-                            void *opaque ATTRIBUTE_UNUSED)
+                     virCapsPtr caps ATTRIBUTE_UNUSED,
+                     void *opaque ATTRIBUTE_UNUSED)
 {
     /* memory hotplug tunables are not supported by this driver */
     if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
@@ -202,9 +202,9 @@ vzDomainDefPostParse(virDomainDefPtr def,
 
 static int
 vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                                  const virDomainDef *def,
-                                  virCapsPtr caps ATTRIBUTE_UNUSED,
-                                  void *opaque ATTRIBUTE_UNUSED)
+                           const virDomainDef *def,
+                           virCapsPtr caps ATTRIBUTE_UNUSED,
+                           void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
 
@@ -256,7 +256,7 @@ vzOpenDefault(virConnectPtr conn)
         goto error;
 
     if (!(privconn->xmlopt = virDomainXMLOptionNew(&vzDomainDefParserConfig,
-                                                 NULL, NULL)))
+                                                   NULL, NULL)))
         goto error;
 
     if (!(privconn->domains = virDomainObjListNew()))
@@ -289,8 +289,8 @@ vzOpenDefault(virConnectPtr conn)
 
 static virDrvOpenStatus
 vzConnectOpen(virConnectPtr conn,
-                     virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                     unsigned int flags)
+              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+              unsigned int flags)
 {
     int ret;
 
@@ -474,8 +474,8 @@ vzConnectNumOfDefinedDomains(virConnectPtr conn)
 
 static int
 vzConnectListAllDomains(virConnectPtr conn,
-                               virDomainPtr **domains,
-                               unsigned int flags)
+                        virDomainPtr **domains,
+                        unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
@@ -629,7 +629,7 @@ vzDomainIsPersistent(virDomainPtr domain)
 
 static int
 vzDomainGetState(virDomainPtr domain,
-                  int *state, int *reason, unsigned int flags)
+                 int *state, int *reason, unsigned int flags)
 {
     virDomainObjPtr privdom;
     int ret = -1;
@@ -779,7 +779,7 @@ vzDomainDefineXML(virConnectPtr conn, const char *xml)
 
 static int
 vzNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     virNodeInfoPtr nodeinfo)
+              virNodeInfoPtr nodeinfo)
 {
     return nodeGetInfo(nodeinfo);
 }
@@ -804,9 +804,9 @@ static int vzConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 static char *
 vzConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            const char **xmlCPUs,
-                            unsigned int ncpus,
-                            unsigned int flags)
+                     const char **xmlCPUs,
+                     unsigned int ncpus,
+                     unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
 
@@ -816,10 +816,10 @@ vzConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 static int
 vzDomainGetVcpus(virDomainPtr domain,
-                        virVcpuInfoPtr info,
-                        int maxinfo,
-                        unsigned char *cpumaps,
-                        int maplen)
+                 virVcpuInfoPtr info,
+                 int maxinfo,
+                 unsigned char *cpumaps,
+                 int maplen)
 {
     virDomainObjPtr privdom = NULL;
     size_t i;
@@ -878,20 +878,20 @@ vzDomainGetVcpus(virDomainPtr domain,
 
 static int
 vzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       unsigned char **cpumap,
-                       unsigned int *online,
-                       unsigned int flags)
+                unsigned char **cpumap,
+                unsigned int *online,
+                unsigned int flags)
 {
     return nodeGetCPUMap(cpumap, online, flags);
 }
 
 static int
 vzConnectDomainEventRegisterAny(virConnectPtr conn,
-                                       virDomainPtr domain,
-                                       int eventID,
-                                       virConnectDomainEventGenericCallback callback,
-                                       void *opaque,
-                                       virFreeCallback freecb)
+                                virDomainPtr domain,
+                                int eventID,
+                                virConnectDomainEventGenericCallback callback,
+                                void *opaque,
+                                virFreeCallback freecb)
 {
     int ret = -1;
     vzConnPtr privconn = conn->privateData;
@@ -905,7 +905,7 @@ vzConnectDomainEventRegisterAny(virConnectPtr conn,
 
 static int
 vzConnectDomainEventDeregisterAny(virConnectPtr conn,
-                                         int callbackID)
+                                  int callbackID)
 {
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
@@ -971,7 +971,7 @@ vzDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 
 static int
 vzDomainUndefineFlags(virDomainPtr domain,
-                             unsigned int flags)
+                      unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom = NULL;
@@ -984,7 +984,7 @@ vzDomainUndefineFlags(virDomainPtr domain,
 
     ret = prlsdkUnregisterDomain(privconn, dom);
     if (ret)
-         virObjectUnlock(dom);
+        virObjectUnlock(dom);
 
     return ret;
 }
@@ -1069,7 +1069,7 @@ vzDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 }
 
 static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                                            unsigned int flags)
+                                     unsigned int flags)
 {
     int ret = -1;
     vzConnPtr privconn = dom->conn->privateData;
@@ -1141,11 +1141,11 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 static int vzDomainAttachDevice(virDomainPtr dom, const char *xml)
 {
     return vzDomainAttachDeviceFlags(dom, xml,
-                                            VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
+                                     VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
-                                            unsigned int flags)
+                                     unsigned int flags)
 {
     int ret = -1;
     vzConnPtr privconn = dom->conn->privateData;
@@ -1218,7 +1218,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 static int vzDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     return vzDomainDetachDeviceFlags(dom, xml,
-                                            VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
+                                     VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static unsigned long long
@@ -1237,7 +1237,7 @@ vzDomainGetMaxMemory(virDomainPtr domain)
 
 static int
 vzDomainBlockStats(virDomainPtr domain, const char *path,
-                     virDomainBlockStatsPtr stats)
+                   virDomainBlockStatsPtr stats)
 {
     virDomainObjPtr dom = NULL;
     int ret = -1;
@@ -1257,7 +1257,7 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
     } else {
         virDomainBlockStatsStruct s;
 
-#define PARALLELS_ZERO_STATS(VAR, TYPE, NAME)           \
+#define PARALLELS_ZERO_STATS(VAR, TYPE, NAME)      \
         stats->VAR = 0;
 
         PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_ZERO_STATS)
@@ -1269,10 +1269,10 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
                 goto cleanup;
 
 #define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
-        if (s.VAR != -1)                            \
-           stats->VAR += s.VAR;
+    if (s.VAR != -1)                                \
+        stats->VAR += s.VAR;
 
-            PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_SUM_STATS)
+        PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_SUM_STATS)
 
 #undef PARALLELS_SUM_STATS
         }
@@ -1289,10 +1289,10 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
 
 static int
 vzDomainBlockStatsFlags(virDomainPtr domain,
-                          const char *path,
-                          virTypedParameterPtr params,
-                          int *nparams,
-                          unsigned int flags)
+                        const char *path,
+                        virTypedParameterPtr params,
+                        int *nparams,
+                        unsigned int flags)
 {
     virDomainBlockStatsStruct stats;
     int ret = -1;
