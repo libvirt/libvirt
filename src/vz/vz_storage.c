@@ -48,7 +48,7 @@
 
 static virStorageVolDefPtr
 vzStorageVolDefineXML(virStoragePoolObjPtr pool, const char *xmldesc,
-                             const char *xmlfile, bool is_new);
+                      const char *xmlfile, bool is_new);
 static virStorageVolPtr
 vzStorageVolLookupByPath(virConnectPtr conn, const char *path);
 
@@ -245,8 +245,8 @@ vzPoolAddByDomain(virConnectPtr conn, virDomainObjPtr dom)
 }
 
 static int vzDiskDescParseNode(xmlDocPtr xml,
-                                      xmlNodePtr root,
-                                      virStorageVolDefPtr def)
+                               xmlNodePtr root,
+                               virStorageVolDefPtr def)
 {
     xmlXPathContextPtr ctxt = NULL;
     int ret = -1;
@@ -296,10 +296,10 @@ static int vzDiskDescParse(const char *path, virStorageVolDefPtr def)
 }
 
 static int vzAddDiskVolume(virStoragePoolObjPtr pool,
-                                  virDomainObjPtr dom,
-                                  const char *diskName,
-                                  const char *diskPath,
-                                  const char *diskDescPath)
+                           virDomainObjPtr dom,
+                           const char *diskName,
+                           const char *diskPath,
+                           const char *diskDescPath)
 {
     virStorageVolDefPtr def = NULL;
 
@@ -332,7 +332,7 @@ static int vzAddDiskVolume(virStoragePoolObjPtr pool,
 }
 
 static int vzFindVmVolumes(virStoragePoolObjPtr pool,
-                                  virDomainObjPtr dom)
+                           virDomainObjPtr dom)
 {
     vzDomObjPtr pdom = dom->privateData;
     DIR *dir;
@@ -376,7 +376,7 @@ static int vzFindVmVolumes(virStoragePoolObjPtr pool,
         /* here we know, that ent->d_name is a disk image directory */
 
         if (vzAddDiskVolume(pool, dom, ent->d_name,
-                                   diskPath, diskDescPath))
+                            diskPath, diskDescPath))
             goto cleanup;
     }
     if (direrr < 0)
@@ -393,7 +393,7 @@ static int vzFindVmVolumes(virStoragePoolObjPtr pool,
 
 static int
 vzPoolsAdd(virDomainObjPtr dom,
-                  void *opaque)
+           void *opaque)
 {
     virConnectPtr conn = opaque;
     virStoragePoolObjPtr pool;
@@ -464,7 +464,7 @@ static int vzLoadPools(virConnectPtr conn)
 
 virDrvOpenStatus
 vzStorageOpen(virConnectPtr conn,
-                     unsigned int flags)
+              unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
     virStorageDriverStatePtr storageState;
@@ -564,7 +564,7 @@ vzConnectNumOfDefinedStoragePools(virConnectPtr conn)
 
 static int
 vzConnectListDefinedStoragePools(virConnectPtr conn,
-                                        char **const names, int nnames)
+                                 char **const names, int nnames)
 {
     vzConnPtr privconn = conn->privateData;
     int n = 0;
@@ -704,7 +704,7 @@ vzStoragePoolGetAlloc(virStoragePoolDefPtr def)
 
 static virStoragePoolPtr
 vzStoragePoolDefineXML(virConnectPtr conn,
-                              const char *xml, unsigned int flags)
+                       const char *xml, unsigned int flags)
 {
     vzConnPtr privconn = conn->privateData;
     virStoragePoolDefPtr def;
@@ -1040,7 +1040,7 @@ vzStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 
 static int
 vzStoragePoolListVolumes(virStoragePoolPtr pool,
-                                char **const names, int maxnames)
+                         char **const names, int maxnames)
 {
     vzConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
@@ -1061,7 +1061,7 @@ vzStoragePoolListVolumes(virStoragePoolPtr pool,
 
     if (!virStoragePoolObjIsActive(privpool)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
-                 _("storage pool '%s' is not active"), pool->name);
+                       _("storage pool '%s' is not active"), pool->name);
         goto error;
     }
 
@@ -1084,7 +1084,7 @@ vzStoragePoolListVolumes(virStoragePoolPtr pool,
 
 static virStorageVolPtr
 vzStorageVolLookupByName(virStoragePoolPtr pool,
-                                   const char *name)
+                         const char *name)
 {
     vzConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
@@ -1207,8 +1207,8 @@ vzStorageVolLookupByPath(virConnectPtr conn, const char *path)
 
 static virStorageVolDefPtr
 vzStorageVolDefineXML(virStoragePoolObjPtr pool,
-                             const char *xmldesc,
-                             const char *xmlfile, bool is_new)
+                      const char *xmldesc,
+                      const char *xmlfile, bool is_new)
 {
     virStorageVolDefPtr privvol = NULL;
     virStorageVolDefPtr ret = NULL;
@@ -1277,7 +1277,7 @@ vzStorageVolDefineXML(virStoragePoolObjPtr pool,
 
 static virStorageVolPtr
 vzStorageVolCreateXML(virStoragePoolPtr pool,
-                                const char *xmldesc, unsigned int flags)
+                      const char *xmldesc, unsigned int flags)
 {
     vzConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
@@ -1316,9 +1316,9 @@ vzStorageVolCreateXML(virStoragePoolPtr pool,
 
 static virStorageVolPtr
 vzStorageVolCreateXMLFrom(virStoragePoolPtr pool,
-                                    const char *xmldesc,
-                                    virStorageVolPtr clonevol,
-                                    unsigned int flags)
+                          const char *xmldesc,
+                          virStorageVolPtr clonevol,
+                          unsigned int flags)
 {
     vzConnPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
@@ -1399,7 +1399,7 @@ vzStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 }
 
 int vzStorageVolDefRemove(virStoragePoolObjPtr privpool,
-                                    virStorageVolDefPtr privvol)
+                          virStorageVolDefPtr privvol)
 {
     int ret = -1;
     char *xml_path = NULL;
@@ -1486,12 +1486,12 @@ vzStorageVolTypeForPool(int pooltype)
 {
 
     switch (pooltype) {
-        case VIR_STORAGE_POOL_DIR:
-        case VIR_STORAGE_POOL_FS:
-        case VIR_STORAGE_POOL_NETFS:
-            return VIR_STORAGE_VOL_FILE;
- default:
-            return VIR_STORAGE_VOL_BLOCK;
+    case VIR_STORAGE_POOL_DIR:
+    case VIR_STORAGE_POOL_FS:
+    case VIR_STORAGE_POOL_NETFS:
+        return VIR_STORAGE_VOL_FILE;
+    default:
+        return VIR_STORAGE_VOL_BLOCK;
     }
 }
 
