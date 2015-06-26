@@ -2117,6 +2117,9 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     for (i = 0; i < obj->def->nnets; i++)
         qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
 
+    if (obj->def->os.dtb)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_DTB, logFD);
+
     virObjectUnref(cfg);
 }
 
