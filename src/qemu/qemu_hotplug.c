@@ -1749,6 +1749,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    unsigned long long oldmem = virDomainDefGetMemoryActual(vm->def);
     char *devstr = NULL;
     char *objalias = NULL;
     const char *backendType;
@@ -1814,6 +1815,9 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     /* fix the balloon size if it was set to maximum */
     if (fix_balloon)
         vm->def->mem.cur_balloon += mem->size;
+
+    virDomainAuditMemory(vm, oldmem, virDomainDefGetMemoryActual(vm->def),
+                         "update", ret == 0);
 
     /* mem is consumed by vm->def */
     mem = NULL;
@@ -2904,10 +2908,12 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
                              virDomainMemoryDefPtr mem)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned long long oldmem = virDomainDefGetMemoryActual(vm->def);
     virObjectEventPtr event;
     char *backendAlias = NULL;
     int rc;
     int idx;
+    int ret = -1;
 
     VIR_DEBUG("Removing memory device %s from domain %p %s",
               mem->info.alias, vm, vm->def->name);
@@ -2916,12 +2922,12 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
         qemuDomainEventQueue(driver, event);
 
     if (virAsprintf(&backendAlias, "mem%s", mem->info.alias) < 0)
-        goto error;
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorDelObject(priv->mon, backendAlias);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto error;
+        goto cleanup;
 
     vm->def->mem.cur_balloon -= mem->size;
 
@@ -2929,12 +2935,14 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
         virDomainMemoryRemove(vm->def, idx);
 
     virDomainMemoryDefFree(mem);
-    VIR_FREE(backendAlias);
-    return 0;
+    ret = 0;
 
- error:
+ cleanup:
+    virDomainAuditMemory(vm, oldmem, virDomainDefGetMemoryActual(vm->def),
+                         "update", ret == 0);
+
     VIR_FREE(backendAlias);
-    return -1;
+    return ret;
 }
 
 
