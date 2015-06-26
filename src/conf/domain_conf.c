@@ -3893,6 +3893,28 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                 return -1;
             }
         }
+
+        /* Validate LUN configuration
+         * NOTE: virStorageTranslateDiskSourcePool is not run yet, so for
+         *       disk "volume"'s, the closest we can get at config time is
+         *       to ensure mode isn't direct since host/default will allow
+         *       lun/block usage. At run time if it's determined the wrong
+         *       voltype and pooltype values are set, then failure occurs
+         */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
+            !(disk->src->type == VIR_STORAGE_TYPE_BLOCK ||
+              (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+               disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) ||
+              (disk->src->type == VIR_STORAGE_TYPE_VOLUME &&
+               disk->src->srcpool &&
+               disk->src->srcpool->mode !=
+               VIR_STORAGE_SOURCE_POOL_MODE_DIRECT))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk '%s' improperly configured for a "
+                             "device='lun'"),
+                           disk->dst);
+            return -1;
+        }
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
