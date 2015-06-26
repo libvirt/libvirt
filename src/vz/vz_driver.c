@@ -826,7 +826,7 @@ vzDomainGetVcpus(virDomainPtr domain,
     int v, maxcpu, hostcpus;
     int ret = -1;
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(privdom = vzDomObjFromDomainRef(domain)))
         goto cleanup;
 
     if (!virDomainObjIsActive(privdom)) {
@@ -849,6 +849,8 @@ vzDomainGetVcpus(virDomainPtr domain,
             for (i = 0; i < maxinfo; i++) {
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
+                if (prlsdkGetVcpuStats(privdom, i, &info[i].cpuTime) < 0)
+                    goto cleanup;
             }
         }
         if (cpumaps != NULL) {
@@ -871,7 +873,7 @@ vzDomainGetVcpus(virDomainPtr domain,
 
  cleanup:
     if (privdom)
-        virObjectUnlock(privdom);
+        virDomainObjEndAPI(&privdom);
     return ret;
 }
 

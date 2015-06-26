@@ -3862,3 +3862,22 @@ prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
 
     return ret;
 }
+
+int
+prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *vtime)
+{
+    char *name = NULL;
+    long long ptime = 0;
+    int ret = -1;
+
+    if (virAsprintf(&name, "guest.vcpu%u.time", (unsigned int)idx) < 0)
+        goto cleanup;
+    if (prlsdkGetStatsParam(dom, name, &ptime) < 0)
+        goto cleanup;
+    *vtime = ptime == -1 ? 0 : ptime;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    return ret;
+}

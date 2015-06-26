@@ -72,3 +72,5 @@ int
 prlsdkDetachNet(virDomainObjPtr dom, vzConnPtr privconn, virDomainNetDefPtr net);
 int
 prlsdkGetNetStats(virDomainObjPtr dom, const char *path, virDomainInterfaceStatsPtr stats);
+int
+prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *time);
