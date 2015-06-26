@@ -34,9 +34,10 @@ virinc_HEADERS = libvirt.h		\
 		 libvirt-qemu.h		\
 		 virterror.h
 
-virinc_HEADERS += libvirt-admin.h
-
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)
 
 EXTRA_DIST = libvirt.h.in
+
+# Temporarily disabled, but we need it for building
+EXTRA_DIST += libvirt-admin.h

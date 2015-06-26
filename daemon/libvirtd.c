@@ -522,7 +522,8 @@ daemonSetupNetworking(virNetServerPtr srv,
         virNetServerAddService(srv, svcRO, NULL) < 0)
         goto cleanup;
 
-    if (sock_path_adm) {
+    /* Temporarily disabled */
+    if (sock_path_adm && false) {
         VIR_DEBUG("Registering unix socket %s", sock_path_adm);
         if (!(svcAdm = virNetServerServiceNewUNIX(sock_path_adm,
                                                   unix_sock_adm_mask,

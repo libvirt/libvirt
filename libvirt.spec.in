@@ -1560,6 +1560,9 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
 %endif
 
+# Temporarily get rid of not-installed libvirt-admin.so
+rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt-admin.so
+
 %if %{with_network}
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
@@ -2287,7 +2290,6 @@ exit 0
 %{_libdir}/libvirt.so
 %{_libdir}/libvirt-qemu.so
 %{_libdir}/libvirt-lxc.so
-%{_libdir}/libvirt-admin.so
 %dir %{_includedir}/libvirt
 %{_includedir}/libvirt/virterror.h
 %{_includedir}/libvirt/libvirt.h
@@ -2304,17 +2306,14 @@ exit 0
 %{_includedir}/libvirt/libvirt-stream.h
 %{_includedir}/libvirt/libvirt-qemu.h
 %{_includedir}/libvirt/libvirt-lxc.h
-%{_includedir}/libvirt/libvirt-admin.h
 %{_libdir}/pkgconfig/libvirt.pc
 %{_libdir}/pkgconfig/libvirt-qemu.pc
 %{_libdir}/pkgconfig/libvirt-lxc.pc
-%{_libdir}/pkgconfig/libvirt-admin.pc
 
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
-%{_datadir}/libvirt/api/libvirt-admin-api.xml
 
 
 %doc docs/*.html docs/html docs/*.gif
