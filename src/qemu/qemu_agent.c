@@ -1601,9 +1601,13 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
     size_t i;
     int nonline = 0;
     int nofflinable = 0;
+    ssize_t cpu0 = -1;
 
     /* count the active and offlinable cpus */
     for (i = 0; i < ncpuinfo; i++) {
+        if (cpuinfo[i].id == 0)
+            cpu0 = i;
+
         if (cpuinfo[i].online)
             nonline++;
 
@@ -1616,6 +1620,15 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
                            _("Invalid data provided by guest agent"));
             return -1;
         }
+    }
+
+    /* CPU0 was made offlinable in linux a while ago, but certain parts (suspend
+     * to ram) of the kernel still don't cope well with that. Make sure that if
+     * all remaining vCPUs are offlinable, vCPU0 will not be selected to be
+     * offlined automatically */
+    if (nofflinable == nonline && cpu0 >= 0 && cpuinfo[cpu0].online) {
+        cpuinfo[cpu0].offlinable = false;
+        nofflinable--;
     }
 
     /* the guest agent reported less cpus than requested */
