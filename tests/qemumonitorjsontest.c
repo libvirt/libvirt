@@ -1501,7 +1501,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
         "            \"parent\": {"
         "                \"stats\": {"
         "                    \"flush_total_time_ns\": 0,"
-        "                    \"wr_highest_offset\": 0,"
         "                    \"wr_total_time_ns\": 0,"
         "                    \"wr_bytes\": 0,"
         "                    \"rd_total_time_ns\": 0,"
@@ -1579,7 +1578,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
 
     CHECK("virtio-disk0", 1279, 28505088, 640616474, 174, 2845696, 530699221, 0, 0, 5256018944ULL, true)
     CHECK("virtio-disk1", 85, 348160, 8232156, 0, 0, 0, 0, 0, 0ULL, true)
-    CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0, 0ULL, true)
+    CHECK("ide0-1-0", 16, 49250, 1004952, 0, 0, 0, 0, 0, 0ULL, false)
 
     ret = 0;
 
