@@ -342,7 +342,7 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    remain = vol->target.allocation;
+    remain = vol->target.capacity;
 
     if (inputvol) {
         int res = virStorageBackendCopyToFD(vol, inputvol,
@@ -401,6 +401,12 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     int ret = 0;
     unsigned long long pos = 0;
 
+    /* If the new allocation is lower than the capacity of the original file,
+     * the cloned volume will be sparse */
+    if (inputvol &&
+        vol->target.allocation < inputvol->target.capacity)
+        need_alloc = false;
+
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
     if (ftruncate(fd, vol->target.capacity) < 0) {
@@ -420,7 +426,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
      * to writing zeroes block by block in case fallocate isn't
      * available, and since we're going to copy data from another
      * file it doesn't make sense to write the file twice. */
-    if (vol->target.allocation) {
+    if (vol->target.allocation && need_alloc) {
         if (fallocate(fd, 0, 0, vol->target.allocation) == 0) {
             need_alloc = false;
         } else if (errno != ENOSYS && errno != EOPNOTSUPP) {
@@ -433,21 +439,20 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 #endif
 
-
     if (inputvol) {
-        unsigned long long remain = vol->target.allocation;
+        unsigned long long remain = inputvol->target.capacity;
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
-        bool want_sparse = !need_alloc ||
-            (vol->target.allocation < inputvol->target.capacity);
-
         ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
-                                        want_sparse, reflink_copy);
+                                        !need_alloc, reflink_copy);
         if (ret < 0)
             goto cleanup;
 
-        pos = vol->target.allocation - remain;
+        /* If the new allocation is greater than the original capacity,
+         * but fallocate failed, fill the rest with zeroes.
+         */
+        pos = inputvol->target.capacity - remain;
     }
 
     if (need_alloc) {

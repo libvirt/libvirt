@@ -1978,11 +1978,6 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     if (newvol->target.capacity < origvol->target.capacity)
         newvol->target.capacity = origvol->target.capacity;
 
-    /* Make sure allocation is at least as large as the destination cap,
-     * to make absolutely sure we copy all possible contents */
-    if (newvol->target.allocation < origvol->target.capacity)
-        newvol->target.allocation = origvol->target.capacity;
-
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("storage pool does not support"
