@@ -3677,7 +3677,7 @@ prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
 
 #define PARALLELS_STATISTICS_TIMEOUT (60 * 1000)
 
-int
+static int
 prlsdkGetStatsParam(virDomainObjPtr dom, const char *name, long long *val)
 {
     vzDomObjPtr privdom = dom->privateData;
