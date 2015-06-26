@@ -74,3 +74,5 @@ int
 prlsdkGetNetStats(virDomainObjPtr dom, const char *path, virDomainInterfaceStatsPtr stats);
 int
 prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *time);
+int
+prlsdkGetMemoryStats(virDomainObjPtr dom, virDomainMemoryStatPtr stats, unsigned int nr_stats);

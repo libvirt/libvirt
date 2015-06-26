@@ -3881,3 +3881,64 @@ prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *vtime)
     VIR_FREE(name);
     return ret;
 }
+
+int
+prlsdkGetMemoryStats(virDomainObjPtr dom,
+                     virDomainMemoryStatPtr stats,
+                     unsigned int nr_stats)
+{
+    int ret = -1;
+    long long v = 0, t = 0, u = 0;
+    size_t i = 0;
+
+#define PRLSDK_GET_COUNTER(NAME, VALUE)                             \
+    if (prlsdkGetStatsParam(dom, NAME, &VALUE) < 0)                 \
+        goto cleanup;                                               \
+
+#define PRLSDK_MEMORY_STAT_SET(TAG, VALUE)                          \
+    if (i < nr_stats) {                                             \
+        stats[i].tag = (TAG);                                       \
+        stats[i].val = (VALUE);                                     \
+        i++;                                                        \
+    }
+
+    i = 0;
+
+    // count to kb
+    PRLSDK_GET_COUNTER("guest.ram.swap_in", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_SWAP_IN, v << 12)
+
+    PRLSDK_GET_COUNTER("guest.ram.swap_out", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_SWAP_OUT, v << 12)
+
+    PRLSDK_GET_COUNTER("guest.ram.minor_fault", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT, v)
+
+    PRLSDK_GET_COUNTER("guest.ram.major_fault", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT, v)
+
+    PRLSDK_GET_COUNTER("guest.ram.total", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_AVAILABLE, v << 10)
+
+    PRLSDK_GET_COUNTER("guest.ram.balloon_actual", v)
+    if (v != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON, v << 10)
+
+    PRLSDK_GET_COUNTER("guest.ram.usage", u)
+    PRLSDK_GET_COUNTER("guest.ram.total", t)
+    if (u != -1 && t != -1)
+        PRLSDK_MEMORY_STAT_SET(VIR_DOMAIN_MEMORY_STAT_UNUSED, (t - u) << 10)
+
+#undef PRLSDK_GET_COUNTER
+#undef PRLSDK_MEMORY_STAT_SET
+
+    ret = i;
+ cleanup:
+
+    return ret;
+}

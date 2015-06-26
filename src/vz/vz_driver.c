@@ -1356,6 +1356,25 @@ vzDomainInterfaceStats(virDomainPtr domain,
     return ret;
 }
 
+static int
+vzDomainMemoryStats(virDomainPtr domain,
+                    virDomainMemoryStatPtr stats,
+                    unsigned int nr_stats,
+                    unsigned int flags)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    ret = prlsdkGetMemoryStats(dom, stats, nr_stats);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
+}
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -1408,6 +1427,7 @@ static virHypervisorDriver vzDriver = {
     .domainBlockStats = vzDomainBlockStats, /* 1.3.0 */
     .domainBlockStatsFlags = vzDomainBlockStatsFlags, /* 1.3.0 */
     .domainInterfaceStats = vzDomainInterfaceStats, /* 1.3.0 */
+    .domainMemoryStats = vzDomainMemoryStats, /* 1.3.0 */
 };
 
 static virConnectDriver vzConnectDriver = {
