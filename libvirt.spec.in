@@ -1216,15 +1216,6 @@ Includes the Sanlock lock manager plugin for the QEMU
 driver
 %endif
 
-%package admin
-Summary: Client side library and binary for the libvirt admin interface
-Group: Development/Libraries
-Requires: readline
-Requires: %{name}-client = %{version}-%{release}
-
-%description admin
-Shared library and client for admin access to libvirt daemon
-
 
 %prep
 %setup -q
@@ -2219,10 +2210,6 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
 %endif
 
-%files admin
-%defattr(-, root, root)
-%{_libdir}/libvirt-admin.so.*
-
 %files client -f %{name}.lang
 %defattr(-, root, root)
 %doc COPYING COPYING.LESSER
@@ -2239,6 +2226,7 @@ exit 0
 %{_libdir}/libvirt.so.*
 %{_libdir}/libvirt-qemu.so.*
 %{_libdir}/libvirt-lxc.so.*
+%{_libdir}/libvirt-admin.so.*
 
 %if %{with_dtrace}
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
