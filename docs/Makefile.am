@@ -163,7 +163,7 @@ EXTRA_DIST=					\
   sitemap.html.in aclperms.htmlinc \
   todo.pl hvsupport.pl todo.cfg-example
 
-acl.html.tmp: $(srcdir)/aclperms.htmlinc
+acl_generated = aclperms.htmlinc
 
 $(srcdir)/aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
         $(srcdir)/genaclperms.pl Makefile.am
@@ -228,7 +228,7 @@ internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
 	    $(top_srcdir)/docs/subsite.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 
-%.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in
+%.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in $(acl_generated)
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
