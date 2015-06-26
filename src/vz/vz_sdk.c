@@ -2944,10 +2944,9 @@ int prlsdkAttachNet(virDomainObjPtr dom,
     return ret;
 }
 
-static int
-prlsdkGetNetIndex(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
+static PRL_HANDLE
+prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
 {
-    int idx = -1;
     PRL_RESULT pret;
     PRL_UINT32 adaptersCount;
     PRL_UINT32 i;
@@ -2956,12 +2955,12 @@ prlsdkGetNetIndex(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
     char adapterMac[PRL_MAC_STRING_BUFNAME];
     char expectedMac[PRL_MAC_STRING_BUFNAME];
 
-    prlsdkFormatMac(&net->mac, expectedMac);
+    prlsdkFormatMac(mac, expectedMac);
+
     pret = PrlVmCfg_GetNetAdaptersCount(sdkdom, &adaptersCount);
     prlsdkCheckRetGoto(pret, cleanup);
 
     for (i = 0; i < adaptersCount; ++i) {
-
         pret = PrlVmCfg_GetNetAdapter(sdkdom, i, &adapter);
         prlsdkCheckRetGoto(pret, cleanup);
 
@@ -2970,74 +2969,56 @@ prlsdkGetNetIndex(PRL_HANDLE sdkdom, virDomainNetDefPtr net)
         pret = PrlVmDevNet_GetMacAddress(adapter, adapterMac, &len);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        if (memcmp(adapterMac, expectedMac, PRL_MAC_STRING_BUFNAME)) {
+        if (memcmp(adapterMac, expectedMac, PRL_MAC_STRING_BUFNAME) == 0)
+            return adapter;
 
-            PrlHandle_Free(adapter);
-            adapter = PRL_INVALID_HANDLE;
-            continue;
-        }
-
-        idx = i;
-        break;
+        PrlHandle_Free(adapter);
+        adapter = PRL_INVALID_HANDLE;
     }
 
  cleanup:
     PrlHandle_Free(adapter);
-    return idx;
-}
-
-static int prlsdkDelNetAdapter(PRL_HANDLE sdkdom, int idx)
-{
-    int ret = -1;
-    PRL_RESULT pret;
-    PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
-
-    pret = PrlVmCfg_GetNetAdapter(sdkdom, idx, &sdknet);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    pret = PrlVmDev_Remove(sdknet);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    ret = 0;
-
- cleanup:
-    PrlHandle_Free(sdknet);
-    return ret;
+    return adapter;
 }
 
 int prlsdkDetachNet(virDomainObjPtr dom,
                     vzConnPtr privconn,
                     virDomainNetDefPtr net)
 {
-    int ret = -1, idx = -1;
+    int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
+    PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
 
     if (!IS_CT(dom->def)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("network device cannot be detached"));
-        return ret;
+        goto cleanup;
     }
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
-        return ret;
+        goto cleanup;
 
-    idx = prlsdkGetNetIndex(privdom->sdkdom, net);
-    if (idx < 0)
-        return ret;
+    sdknet = prlsdkFindNetByMAC(privdom->sdkdom, &net->mac);
+    if (sdknet == PRL_INVALID_HANDLE)
+        goto cleanup;
 
-    ret = prlsdkDelNet(privconn, net);
-    if (ret != 0)
-        return ret;
+    if (prlsdkDelNet(privconn, net) < 0)
+        goto cleanup;
 
-    ret = prlsdkDelNetAdapter(privdom->sdkdom, idx);
-    if (ret == 0) {
-        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job)))
-            return -1;
-    }
+    pret = PrlVmDev_Remove(sdknet);
+    prlsdkCheckRetGoto(pret, cleanup);
 
+    job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(sdknet);
     return ret;
 }
 
