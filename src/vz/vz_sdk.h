@@ -70,3 +70,5 @@ int
 prlsdkAttachNet(virDomainObjPtr dom, vzConnPtr privconn, virDomainNetDefPtr net);
 int
 prlsdkDetachNet(virDomainObjPtr dom, vzConnPtr privconn, virDomainNetDefPtr net);
+int
+prlsdkGetNetStats(virDomainObjPtr dom, const char *path, virDomainInterfaceStatsPtr stats);

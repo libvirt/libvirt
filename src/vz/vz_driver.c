@@ -1337,6 +1337,22 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
     return ret;
 }
 
+static int
+vzDomainInterfaceStats(virDomainPtr domain,
+                         const char *path,
+                         virDomainInterfaceStatsPtr stats)
+{
+    virDomainObjPtr dom = NULL;
+    int ret;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    ret = prlsdkGetNetStats(dom, path, stats);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
+}
 
 static virHypervisorDriver vzDriver = {
     .name = "vz",
@@ -1389,6 +1405,7 @@ static virHypervisorDriver vzDriver = {
     .domainGetMaxMemory = vzDomainGetMaxMemory, /* 1.2.15 */
     .domainBlockStats = vzDomainBlockStats, /* 1.3.0 */
     .domainBlockStatsFlags = vzDomainBlockStatsFlags, /* 1.3.0 */
+    .domainInterfaceStats = vzDomainInterfaceStats, /* 1.3.0 */
 };
 
 static virConnectDriver vzConnectDriver = {

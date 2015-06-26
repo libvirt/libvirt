@@ -3696,7 +3696,7 @@ prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
 
 #define PARALLELS_STATISTICS_TIMEOUT (60 * 1000)
 
-static int
+int
 prlsdkGetStatsParam(virDomainObjPtr dom, const char *name, long long *val)
 {
     vzDomObjPtr privdom = dom->privateData;
@@ -3790,5 +3790,94 @@ prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBloc
  cleanup:
 
     VIR_FREE(name);
+    return ret;
+}
+
+static PRL_HANDLE
+prlsdkFindNetByPath(virDomainObjPtr dom, const char *path)
+{
+    PRL_UINT32 count = 0;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_UINT32 buflen = 0;
+    PRL_RESULT pret;
+    size_t i;
+    char *name = NULL;
+    PRL_HANDLE net = PRL_INVALID_HANDLE;
+
+    pret = PrlVmCfg_GetNetAdaptersCount(privdom->sdkdom, &count);
+    prlsdkCheckRetGoto(pret, error);
+
+    for (i = 0; i < count; ++i) {
+        pret = PrlVmCfg_GetNetAdapter(privdom->sdkdom, i, &net);
+        prlsdkCheckRetGoto(pret, error);
+
+        pret = PrlVmDevNet_GetHostInterfaceName(net, NULL, &buflen);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (VIR_ALLOC_N(name, buflen) < 0)
+            goto error;
+
+        pret = PrlVmDevNet_GetHostInterfaceName(net, name, &buflen);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (STREQ(name, path))
+            break;
+
+        VIR_FREE(name);
+        PrlHandle_Free(net);
+        net = PRL_INVALID_HANDLE;
+    }
+
+    if (net == PRL_INVALID_HANDLE)
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path, '%s' is not a known interface"), path);
+    return net;
+
+ error:
+    VIR_FREE(name);
+    PrlHandle_Free(net);
+    return PRL_INVALID_HANDLE;
+}
+
+int
+prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
+                  virDomainInterfaceStatsPtr stats)
+{
+    int ret = -1;
+    PRL_UINT32 net_index = -1;
+    char *name = NULL;
+    PRL_RESULT pret;
+    PRL_HANDLE net = PRL_INVALID_HANDLE;
+
+    net = prlsdkFindNetByPath(dom, path);
+    if (net == PRL_INVALID_HANDLE)
+       goto cleanup;
+
+    pret = PrlVmDev_GetIndex(net, &net_index);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+#define PRLSDK_GET_NET_COUNTER(VAL, NAME)                           \
+    if (virAsprintf(&name, "net.nic%d.%s", net_index, NAME) < 0)    \
+        goto cleanup;                                               \
+    if (prlsdkGetStatsParam(dom, name, &stats->VAL) < 0)            \
+        goto cleanup;                                               \
+    VIR_FREE(name);
+
+    PRLSDK_GET_NET_COUNTER(rx_bytes, "bytes_in")
+    PRLSDK_GET_NET_COUNTER(rx_packets, "pkts_in")
+    PRLSDK_GET_NET_COUNTER(tx_bytes, "bytes_out")
+    PRLSDK_GET_NET_COUNTER(tx_packets, "pkts_out")
+    stats->rx_errs = -1;
+    stats->rx_drop = -1;
+    stats->tx_errs = -1;
+    stats->tx_drop = -1;
+
+#undef PRLSDK_GET_NET_COUNTER
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    PrlHandle_Free(net);
+
     return ret;
 }
