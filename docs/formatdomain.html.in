@@ -1972,7 +1972,8 @@
             Using "lun" (<span class="since">since 0.9.10</span>) is only
             valid when the <code>type</code> is "block" or "network" for
             <code>protocol='iscsi'</code> or when the <code>type</code>
-            is "volume" when using an iSCSI source <code>pool</code>.
+            is "volume" when using an iSCSI source <code>pool</code>
+            for <code>mode</code> "host".
             Configured in this manner, the LUN behaves identically to "disk",
             except that generic SCSI commands from the guest are accepted
             and passed through to the physical device. Also note that
