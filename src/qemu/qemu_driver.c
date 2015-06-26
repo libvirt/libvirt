@@ -2386,11 +2386,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
             r = qemuMonitorSetBalloon(priv->mon, newmem);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                goto endjob;
-            virDomainAuditMemory(vm, def->mem.cur_balloon, newmem, "update",
-                                 r == 1);
-            if (r < 0)
+            if (qemuDomainObjExitMonitor(driver, vm) < 0 || r < 0)
                 goto endjob;
 
             /* Lack of balloon support is a fatal error */
