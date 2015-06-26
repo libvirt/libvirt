@@ -715,7 +715,7 @@ LIBVIRT_1.2.16 {
         virDomainSetUserPassword;
 } LIBVIRT_1.2.15;
 
-LIBVIRT_1.3.0 {
+LIBVIRT_1.2.17 {
     global:
         virTypedParamsAddStringList;
 } LIBVIRT_1.2.16;

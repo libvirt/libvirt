@@ -1424,10 +1424,10 @@ static virHypervisorDriver vzDriver = {
     .domainManagedSave = vzDomainManagedSave, /* 1.2.14 */
     .domainManagedSaveRemove = vzDomainManagedSaveRemove, /* 1.2.14 */
     .domainGetMaxMemory = vzDomainGetMaxMemory, /* 1.2.15 */
-    .domainBlockStats = vzDomainBlockStats, /* 1.3.0 */
-    .domainBlockStatsFlags = vzDomainBlockStatsFlags, /* 1.3.0 */
-    .domainInterfaceStats = vzDomainInterfaceStats, /* 1.3.0 */
-    .domainMemoryStats = vzDomainMemoryStats, /* 1.3.0 */
+    .domainBlockStats = vzDomainBlockStats, /* 1.2.17 */
+    .domainBlockStatsFlags = vzDomainBlockStatsFlags, /* 1.2.17 */
+    .domainInterfaceStats = vzDomainInterfaceStats, /* 1.2.17 */
+    .domainMemoryStats = vzDomainMemoryStats, /* 1.2.17 */
 };
 
 static virConnectDriver vzConnectDriver = {

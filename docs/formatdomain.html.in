@@ -4315,7 +4315,7 @@ qemu-kvm -net nic,model=? /dev/null
         element.  Each queue will potentially be handled by a different
         processor, resulting in much higher throughput.
         <span class="since">virtio-net since 1.0.6 (QEMU and KVM only)</span>
-        <span class="since">vhost-user since 1.3.0 (QEMU and KVM only)</span>
+        <span class="since">vhost-user since 1.2.17 (QEMU and KVM only)</span>
       </dd>
       <dt><code>host</code> offloading options</dt>
       <dd>
@@ -5724,7 +5724,7 @@ qemu-kvm -net nic,model=? /dev/null
             emulating a PCI Intel 6300ESB </li>
           <li> 'ib700' &mdash; emulating an ISA iBase IB700 </li>
           <li> 'diag288' &mdash; emulating an S390 DIAG288 device
-            <span class="since">Since 1.3.0</span></li>
+            <span class="since">Since 1.2.17</span></li>
         </ul>
       </dd>
       <dt><code>action</code></dt>
@@ -5748,7 +5748,7 @@ qemu-kvm -net nic,model=? /dev/null
             <span class="since">Since 0.8.7</span></li>
           <li>'inject-nmi' &mdash; inject a non-maskable interrupt
             into the guest
-            <span class="since">Since 1.3.0</span></li>
+            <span class="since">Since 1.2.17</span></li>
         </ul>
         <p>
         Note 1: the 'shutdown' action requires that the guest
