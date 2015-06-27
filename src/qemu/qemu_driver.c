@@ -11805,7 +11805,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int rc;
     virHashTablePtr stats = NULL;
     qemuBlockStats *entry;
-    char *alias;
+    char *alias = NULL;
 
     virCheckFlags(0, -1);
 
@@ -11891,6 +11891,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
  endjob:
     qemuDomainObjEndJob(driver, vm);
  cleanup:
+    VIR_FREE(alias);
     virHashFree(stats);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
