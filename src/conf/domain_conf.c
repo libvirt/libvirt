@@ -2687,15 +2687,25 @@ virDomainObjWait(virDomainObjPtr vm)
 }
 
 
+/**
+ * Waits for domain condition to be triggered for a specific period of time.
+ *
+ * Returns:
+ *  -1 in case of error
+ *  0 on success
+ *  1 on timeout
+ */
 int
 virDomainObjWaitUntil(virDomainObjPtr vm,
                       unsigned long long whenms)
 {
-    if (virCondWaitUntil(&vm->cond, &vm->parent.lock, whenms) < 0 &&
-        errno != ETIMEDOUT) {
-        virReportSystemError(errno, "%s",
-                             _("failed to wait for domain condition"));
-        return -1;
+    if (virCondWaitUntil(&vm->cond, &vm->parent.lock, whenms) < 0) {
+        if (errno != ETIMEDOUT) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to wait for domain condition"));
+            return -1;
+        }
+        return 1;
     }
     return 0;
 }
