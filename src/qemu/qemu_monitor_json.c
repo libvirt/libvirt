@@ -638,40 +638,37 @@ qemuMonitorJSONHandleGraphicsVNC(qemuMonitorPtr mon,
         return;
     }
 
-    authScheme = virJSONValueObjectGetString(server, "auth");
-    if (!authScheme) {
+    if (!(authScheme = virJSONValueObjectGetString(server, "auth"))) {
         /* not all events are required to contain auth scheme */
-        VIR_DEBUG("missing auth scheme in graphics event");
+        VIR_DEBUG("missing auth scheme in VNC event");
         authScheme = "";
     }
 
-    localFamily = virJSONValueObjectGetString(server, "family");
-    if (!localFamily) {
-        VIR_WARN("missing local address family in graphics event");
+    if (!(localFamily = virJSONValueObjectGetString(server, "family"))) {
+        VIR_WARN("missing local address family in VNC event");
         return;
     }
-    localNode = virJSONValueObjectGetString(server, "host");
-    if (!localNode) {
-        VIR_WARN("missing local hostname in graphics event");
+    if (!(localNode = virJSONValueObjectGetString(server, "host"))) {
+        VIR_WARN("missing local hostname in VNC event");
         return;
     }
-    localService = virJSONValueObjectGetString(server, "service");
-    if (!localService)
-        localService = ""; /* Spice has multiple ports, so this isn't provided */
+    if (!(localService = virJSONValueObjectGetString(server, "service"))) {
+        VIR_WARN("missing local service in VNC event");
+        return;
+    }
 
-    remoteFamily = virJSONValueObjectGetString(client, "family");
-    if (!remoteFamily) {
-        VIR_WARN("missing remote address family in graphics event");
+    if (!(remoteFamily = virJSONValueObjectGetString(client, "family"))) {
+        VIR_WARN("missing remote address family in VNC event");
         return;
     }
-    remoteNode = virJSONValueObjectGetString(client, "host");
-    if (!remoteNode) {
-        VIR_WARN("missing remote hostname in graphics event");
+    if (!(remoteNode = virJSONValueObjectGetString(client, "host"))) {
+        VIR_WARN("missing remote hostname in VNC event");
         return;
     }
-    remoteService = virJSONValueObjectGetString(client, "service");
-    if (!remoteService)
-        remoteService = ""; /* Spice has multiple ports, so this isn't provided */
+    if (!(remoteService = virJSONValueObjectGetString(client, "service"))) {
+        VIR_WARN("missing remote service in VNC event");
+        return;
+    }
 
     saslUsername = virJSONValueObjectGetString(client, "sasl_username");
     x509dname = virJSONValueObjectGetString(client, "x509_dname");
