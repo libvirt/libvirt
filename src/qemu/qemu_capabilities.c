@@ -287,7 +287,6 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "aarch64-off",
 
               "vhost-user-multiqueue", /* 190 */
-              "arm-virt-pci",
     );
 
 
@@ -1336,9 +1335,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
     }
-
-    if (version >= 2003000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ARM_VIRT_PCI);
 
     return 0;
 }
