@@ -1013,7 +1013,7 @@ lxcParseConfigString(const char *config)
     virDomainDefSetMemoryInitial(vmdef, 64 * 1024);
 
     vmdef->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
-    vmdef->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    vmdef->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
     vmdef->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
     vmdef->virtType = VIR_DOMAIN_VIRT_LXC;
 

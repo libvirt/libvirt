@@ -1208,7 +1208,7 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
         }
     } else {
-        def->onCrash = VIR_DOMAIN_LIFECYCLE_DESTROY;
+        def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
     }
 
     if (hvm) {
