@@ -59,7 +59,7 @@
 
 VIR_LOG_INIT("qemu.qemu_hotplug");
 
-#define CHANGE_MEDIA_RETRIES 10
+#define CHANGE_MEDIA_TIMEOUT 5000
 
 /* Wait up to 5 seconds for device removal to finish. */
 unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
@@ -166,12 +166,13 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                virStorageSourcePtr newsrc,
                                bool force)
 {
-    int ret = -1;
+    int ret = -1, rc;
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int retries = CHANGE_MEDIA_RETRIES;
     const char *format = NULL;
     char *sourcestr = NULL;
+    bool ejectRetry = false;
+    unsigned long long now;
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -193,36 +194,31 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (!(driveAlias = qemuDeviceDriveHostAlias(disk, priv->qemuCaps)))
         goto error;
 
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    do {
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto cleanup;
 
-    if (ret < 0)
-        goto error;
+        if (rc == -2) {
+            /* we've already tried, error out */
+            if (ejectRetry)
+                goto error;
+            VIR_DEBUG("tray is locked, wait for the guest to unlock "
+                      "the tray and try to eject it again");
+            ejectRetry = true;
+        } else if (rc < 0) {
+            goto error;
+        }
 
-    virObjectRef(vm);
-    /* we don't want to report errors from media tray_open polling */
-    while (retries) {
-        if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)
-            break;
+        if (virTimeMillisNow(&now) < 0)
+            goto error;
 
-        retries--;
-        virObjectUnlock(vm);
-        VIR_DEBUG("Waiting 500ms for tray to open. Retries left %d", retries);
-        usleep(500 * 1000); /* sleep 500ms */
-        virObjectLock(vm);
-    }
-    virObjectUnref(vm);
-
-    if (retries <= 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Unable to eject media"));
-        ret = -1;
-        goto error;
-    }
+        while (disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
+            if (virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT) != 0)
+                goto error;
+        }
+    } while (ejectRetry && rc != 0);
 
     if (!virStorageSourceIsEmpty(newsrc)) {
         if (qemuGetDriveSourceString(newsrc, conn, &sourcestr) < 0)
@@ -237,19 +233,17 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
             }
         }
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorChangeMedia(priv->mon,
-                                     driveAlias,
-                                     sourcestr,
-                                     format);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-            ret = -1;
+        rc = qemuMonitorChangeMedia(priv->mon,
+                                    driveAlias,
+                                    sourcestr,
+                                    format);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
-        }
     }
 
-    virDomainAuditDisk(vm, disk->src, newsrc, "update", ret >= 0);
+    virDomainAuditDisk(vm, disk->src, newsrc, "update", rc >= 0);
 
-    if (ret < 0)
+    if (rc < 0)
         goto error;
 
     /* remove the old source from shared device list */
@@ -259,6 +253,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     virStorageSourceFree(disk->src);
     disk->src = newsrc;
     newsrc = NULL;
+    ret = 0;
 
  cleanup:
     VIR_FREE(driveAlias);

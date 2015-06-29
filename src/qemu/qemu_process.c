@@ -1152,6 +1152,8 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             VIR_WARN("Unable to save status on vm %s after tray moved event",
                      vm->def->name);
         }
+
+        virDomainObjBroadcast(vm);
     }
 
     virObjectUnlock(vm);
