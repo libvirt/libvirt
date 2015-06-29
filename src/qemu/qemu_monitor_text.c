@@ -1169,6 +1169,14 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 }
 
 
+/**
+ * Run HMP command to eject a media from ejectable device.
+ *
+ * Returns:
+ *      -2 on error, when the tray is locked
+ *      -1 on all other errors
+ *      0 on success
+ */
 int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
                               const char *dev_name,
                               bool force)
@@ -1187,6 +1195,8 @@ int qemuMonitorTextEjectMedia(qemuMonitorPtr mon,
      * device not found, device is locked ...
      * No message is printed on success it seems */
     if (c_strcasestr(reply, "device ")) {
+        if (c_strcasestr(reply, "is locked"))
+            ret = -2;
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("could not eject media on %s: %s"), dev_name, reply);
         goto cleanup;

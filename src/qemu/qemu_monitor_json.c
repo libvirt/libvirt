@@ -44,6 +44,7 @@
 #include "virprobe.h"
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
+#include "c-strcasestr.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"
@@ -2180,6 +2181,14 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
 }
 
 
+/**
+ * Run QMP command to eject a media from ejectable device.
+ *
+ * Returns:
+ *      -2 on error, when the tray is locked
+ *      -1 on all other errors
+ *      0 on success
+ */
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
                               const char *dev_name,
                               bool force)
@@ -2197,6 +2206,11 @@ int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
 
     if (ret == 0)
         ret = qemuMonitorJSONCheckError(cmd, reply);
+
+    VIR_DEBUG("%s", virJSONValueToString(reply, false));
+
+    if (ret < 0 && c_strcasestr(virJSONValueToString(reply, false), "is locked"))
+        ret = -2;
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
