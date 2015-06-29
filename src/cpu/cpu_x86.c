@@ -1288,10 +1288,8 @@ x86CPUDataFormat(const virCPUData *data)
 
 
 static virCPUDataPtr
-x86CPUDataParse(const char *xmlStr)
+x86CPUDataParse(xmlXPathContextPtr ctxt)
 {
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
     virCPUx86Data *data = NULL;
@@ -1302,14 +1300,7 @@ x86CPUDataParse(const char *xmlStr)
     if (VIR_ALLOC(data) < 0)
         goto cleanup;
 
-    if (!(xml = virXMLParseStringCtxt(xmlStr, _("CPU data"), &ctxt))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot parse CPU data"));
-        goto cleanup;
-    }
-    ctxt->node = xmlDocGetRootElement(xml);
-
-    n = virXPathNodeSet("/cpudata[@arch='x86']/cpuid", ctxt, &nodes);
+    n = virXPathNodeSet("/cpudata/cpuid", ctxt, &nodes);
     if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
@@ -1331,8 +1322,6 @@ x86CPUDataParse(const char *xmlStr)
 
  cleanup:
     VIR_FREE(nodes);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
     virCPUx86DataFree(data);
     return cpuData;
 }

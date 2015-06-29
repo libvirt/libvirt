@@ -98,7 +98,7 @@ typedef char *
 (*cpuArchDataFormat)(const virCPUData *data);
 
 typedef virCPUDataPtr
-(*cpuArchDataParse) (const char *xmlStr);
+(*cpuArchDataParse) (xmlXPathContextPtr ctxt);
 
 typedef int
 (*cpuArchGetModels) (char ***models);
@@ -207,8 +207,7 @@ cpuGetModels(const char *arch, char ***models)
  */
 char *cpuDataFormat(const virCPUData *data)
     ATTRIBUTE_NONNULL(1);
-virCPUDataPtr cpuDataParse(virArch arch,
-                           const char *xmlStr)
-    ATTRIBUTE_NONNULL(2);
+virCPUDataPtr cpuDataParse(const char *xmlStr)
+    ATTRIBUTE_NONNULL(1);
 
 #endif /* __VIR_CPU_H__ */
