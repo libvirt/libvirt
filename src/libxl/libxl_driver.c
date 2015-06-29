@@ -2101,6 +2101,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                              " with libxenlight"), vm->def->id);
             goto endjob;
         }
+        vm->def->vcpus = nvcpus;
         break;
 
     case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
@@ -2110,14 +2111,25 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                              " with libxenlight"), vm->def->id);
             goto endjob;
         }
+        vm->def->vcpus = nvcpus;
         def->vcpus = nvcpus;
         break;
     }
 
     ret = 0;
 
-    if (flags & VIR_DOMAIN_VCPU_CONFIG)
-        ret = virDomainSaveConfig(cfg->configDir, def);
+    if (flags & VIR_DOMAIN_VCPU_LIVE) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+            VIR_WARN("Unable to save status on vm %s after changing vcpus",
+                     vm->def->name);
+        }
+    }
+    if (flags & VIR_DOMAIN_VCPU_CONFIG) {
+        if (virDomainSaveConfig(cfg->configDir, def) < 0) {
+            VIR_WARN("Unable to save configuration of vm %s after changing vcpus",
+                     vm->def->name);
+        }
+    }
 
  endjob:
     if (!libxlDomainObjEndJob(driver, vm))
