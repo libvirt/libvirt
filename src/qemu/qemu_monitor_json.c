@@ -617,7 +617,10 @@ VIR_ENUM_IMPL(qemuMonitorGraphicsAddressFamily,
               VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST,
               "ipv4", "ipv6", "unix");
 
-static void qemuMonitorJSONHandleGraphics(qemuMonitorPtr mon, virJSONValuePtr data, int phase)
+static void
+qemuMonitorJSONHandleGraphicsVNC(qemuMonitorPtr mon,
+                                 virJSONValuePtr data,
+                                 int phase)
 {
     const char *localNode, *localService, *localFamily;
     const char *remoteNode, *remoteService, *remoteFamily;
@@ -690,37 +693,101 @@ static void qemuMonitorJSONHandleGraphics(qemuMonitorPtr mon, virJSONValuePtr da
 
 static void qemuMonitorJSONHandleVNCConnect(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_CONNECT);
+    qemuMonitorJSONHandleGraphicsVNC(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_CONNECT);
 }
 
 
 static void qemuMonitorJSONHandleVNCInitialize(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE);
+    qemuMonitorJSONHandleGraphicsVNC(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE);
 }
 
 
 static void qemuMonitorJSONHandleVNCDisconnect(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
+    qemuMonitorJSONHandleGraphicsVNC(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
+}
+
+
+static void
+qemuMonitorJSONHandleGraphicsSPICE(qemuMonitorPtr mon,
+                                   virJSONValuePtr data,
+                                   int phase)
+{
+    const char *lhost, *lport, *lfamily;
+    const char *rhost, *rport, *rfamily;
+    const char *auth = "";
+    int lfamilyID, rfamilyID;
+    virJSONValuePtr client;
+    virJSONValuePtr server;
+
+    if (!(client = virJSONValueObjectGetObject(data, "client")) ||
+        !(server = virJSONValueObjectGetObject(data, "server"))) {
+        VIR_WARN("missing server or client info in SPICE event");
+        return;
+    }
+
+    if (phase == VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE &&
+        !(auth = virJSONValueObjectGetString(server, "auth"))) {
+        VIR_DEBUG("missing auth scheme in SPICE event");
+        auth = "";
+    }
+
+    if (!(lfamily = virJSONValueObjectGetString(server, "family"))) {
+        VIR_WARN("missing local address family in SPICE event");
+        return;
+    }
+    if (!(lhost = virJSONValueObjectGetString(server, "host"))) {
+        VIR_WARN("missing local hostname in SPICE event");
+        return;
+    }
+    if (!(lport = virJSONValueObjectGetString(server, "port"))) {
+        VIR_WARN("missing local port in SPICE event");
+        return;
+    }
+
+    if (!(rfamily = virJSONValueObjectGetString(client, "family"))) {
+        VIR_WARN("missing remote address family in SPICE event");
+        return;
+    }
+    if (!(rhost = virJSONValueObjectGetString(client, "host"))) {
+        VIR_WARN("missing remote hostname in SPICE event");
+        return;
+    }
+    if (!(rport = virJSONValueObjectGetString(client, "port"))) {
+        VIR_WARN("missing remote service in SPICE event");
+        return;
+    }
+
+    if ((lfamilyID = qemuMonitorGraphicsAddressFamilyTypeFromString(lfamily)) < 0) {
+        VIR_WARN("unknown address family '%s'", lfamily);
+        lfamilyID = VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4;
+    }
+    if ((rfamilyID = qemuMonitorGraphicsAddressFamilyTypeFromString(rfamily)) < 0) {
+        VIR_WARN("unknown address family '%s'", rfamily);
+        rfamilyID = VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4;
+    }
+
+    qemuMonitorEmitGraphics(mon, phase, lfamilyID, lhost, lport, rfamilyID,
+                            rhost, rport, auth, NULL, NULL);
 }
 
 
 static void qemuMonitorJSONHandleSPICEConnect(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_CONNECT);
+    qemuMonitorJSONHandleGraphicsSPICE(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_CONNECT);
 }
 
 
 static void qemuMonitorJSONHandleSPICEInitialize(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE);
+    qemuMonitorJSONHandleGraphicsSPICE(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE);
 }
 
 
 static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitorPtr mon, virJSONValuePtr data)
 {
-    qemuMonitorJSONHandleGraphics(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
+    qemuMonitorJSONHandleGraphicsSPICE(mon, data, VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT);
 }
 
 static void
