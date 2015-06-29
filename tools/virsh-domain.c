@@ -6497,6 +6497,20 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
+        if (got_vcpu && vcpu >= ncpus) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE ||
+                (flags & VIR_DOMAIN_AFFECT_CURRENT &&
+                 virDomainIsActive(dom) == 1))
+                vshError(ctl,
+                         _("vcpu %d is out of range of live cpu count %d"),
+                         vcpu, ncpus);
+            else
+                vshError(ctl,
+                         _("vcpu %d is out of range of persistent cpu count %d"),
+                         vcpu, ncpus);
+            goto cleanup;
+        }
+
         cpumaplen = VIR_CPU_MAPLEN(maxcpu);
         cpumap = vshMalloc(ctl, ncpus * cpumaplen);
         if ((ncpus = virDomainGetVcpuPinInfo(dom, ncpus, cpumap,
