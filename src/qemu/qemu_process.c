@@ -1004,7 +1004,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         /* We have a SYNC API waiting for this event, dispatch it back */
         diskPriv->blockJobType = type;
         diskPriv->blockJobStatus = status;
-        virDomainObjSignal(vm);
+        virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
         if (VIR_ALLOC(processEvent) < 0)
@@ -1500,7 +1500,7 @@ qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     priv->job.spiceMigrated = true;
-    virDomainObjSignal(vm);
+    virDomainObjBroadcast(vm);
 
  cleanup:
     virObjectUnlock(vm);

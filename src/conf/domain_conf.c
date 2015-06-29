@@ -2662,13 +2662,6 @@ virDomainObjEndAPI(virDomainObjPtr *vm)
 
 
 void
-virDomainObjSignal(virDomainObjPtr vm)
-{
-    virCondSignal(&vm->cond);
-}
-
-
-void
 virDomainObjBroadcast(virDomainObjPtr vm)
 {
     virCondBroadcast(&vm->cond);

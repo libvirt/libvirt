@@ -412,7 +412,6 @@ virDomainObjParseNode;
 virDomainObjSetDefTransient;
 virDomainObjSetMetadata;
 virDomainObjSetState;
-virDomainObjSignal;
 virDomainObjTaint;
 virDomainObjUpdateModificationImpact;
 virDomainObjWait;

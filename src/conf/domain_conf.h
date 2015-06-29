@@ -2443,7 +2443,6 @@ void virDomainObjEndAPI(virDomainObjPtr *vm);
 bool virDomainObjTaint(virDomainObjPtr obj,
                        virDomainTaintFlags taint);
 
-void virDomainObjSignal(virDomainObjPtr vm);
 void virDomainObjBroadcast(virDomainObjPtr vm);
 int virDomainObjWait(virDomainObjPtr vm);
 int virDomainObjWaitUntil(virDomainObjPtr vm,
