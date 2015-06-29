@@ -2,7 +2,6 @@ LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
 -S \
 -M pc-i440fx-2.3 \
--cpu Haswell \
 -m size=1048576k,slots=16,maxmem=1099511627776k \
 -smp 2 \
 -object memory-backend-file,id=ram-node0,prealloc=yes,\

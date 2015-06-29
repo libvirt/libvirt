@@ -17,8 +17,7 @@
     <apic/>
     <pae/>
   </features>
-  <cpu mode='custom' match='exact'>
-    <model fallback='allow'>Haswell</model>
+  <cpu>
     <numa>
       <cell id='0' cpus='0-1' memory='1048576' unit='KiB'/>
     </numa>
