@@ -1051,7 +1051,10 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      virStorageVolDefPtr vol)
 {
 
-    vol->type = VIR_STORAGE_VOL_FILE;
+    if (vol->target.format == VIR_STORAGE_FILE_DIR)
+        vol->type = VIR_STORAGE_VOL_DIR;
+    else
+        vol->type = VIR_STORAGE_VOL_FILE;
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
