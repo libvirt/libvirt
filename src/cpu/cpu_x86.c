@@ -1309,8 +1309,8 @@ x86CPUDataParse(const char *xmlStr)
     }
     ctxt->node = xmlDocGetRootElement(xml);
 
-    n = virXPathNodeSet("/cpudata[@arch='x86']/data", ctxt, &nodes);
-    if (n < 0) {
+    n = virXPathNodeSet("/cpudata[@arch='x86']/cpuid", ctxt, &nodes);
+    if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
         goto cleanup;
