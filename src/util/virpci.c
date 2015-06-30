@@ -204,14 +204,13 @@ static int virPCIOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virPCI)
 
 
-static int
-virPCIDriverDir(char **buffer, const char *driver)
+static char *
+virPCIDriverDir(const char *driver)
 {
-    VIR_FREE(*buffer);
+    char *buffer;
 
-    if (virAsprintf(buffer, PCI_SYSFS "drivers/%s", driver) < 0)
-        return -1;
-    return 0;
+    ignore_value(virAsprintf(&buffer, PCI_SYSFS "drivers/%s", driver));
+    return buffer;
 }
 
 
@@ -998,7 +997,7 @@ virPCIProbeStubDriver(const char *driver)
     bool probed = false;
 
  recheck:
-    if (virPCIDriverDir(&drvpath, driver) == 0 && virFileExists(drvpath)) {
+    if ((drvpath = virPCIDriverDir(driver)) && virFileExists(drvpath)) {
         /* driver already loaded, return */
         VIR_FREE(drvpath);
         return 0;
@@ -1188,7 +1187,7 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
     char *newDriverName = NULL;
     virErrorPtr err = NULL;
 
-    if (virPCIDriverDir(&stubDriverPath, stubDriverName) < 0 ||
+    if (!(stubDriverPath = virPCIDriverDir(stubDriverName))  ||
         !(driverLink = virPCIFile(dev->name, "driver")) ||
         VIR_STRDUP(newDriverName, stubDriverName) < 0)
         goto cleanup;
