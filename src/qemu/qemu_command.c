@@ -6427,7 +6427,9 @@ qemuBuildVirtioSerialPortDevStr(virDomainDefPtr def,
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC))) {
         virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
                           dev->info.alias, dev->info.alias);
-        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL) {
+        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+            (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
+             dev->target.name)) {
             virBufferAsprintf(&buf, ",name=%s", dev->target.name
                               ? dev->target.name : "com.redhat.spice.0");
         }

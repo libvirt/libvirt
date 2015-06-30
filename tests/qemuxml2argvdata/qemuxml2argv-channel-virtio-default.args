@@ -1,0 +1,16 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c \
+-device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x3 \
+-usb \
+-hda /dev/HostVG/QEMUGuest1 \
+-chardev pty,id=charchannel0 \
+-device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0 \
+-chardev spicevmc,id=charchannel1,name=vdagent \
+-device virtserialport,bus=virtio-serial0.0,nr=2,chardev=charchannel1,id=channel1,\
+name=com.redhat.spice.0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

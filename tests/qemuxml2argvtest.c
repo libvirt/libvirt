@@ -1110,6 +1110,9 @@ mymain(void)
     DO_TEST("channel-spicevmc-old",
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_SPICEVMC);
+    DO_TEST("channel-virtio-default",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEVMC);
 
     DO_TEST("smartcard-host",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE,
