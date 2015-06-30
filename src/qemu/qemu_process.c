@@ -2116,6 +2116,38 @@ qemuProcessReconnectRefreshChannelVirtioState(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               int asyncJob)
+{
+    unsigned long long balloon;
+    int rc;
+
+    /* if no ballooning is available, the current size equals to the current
+     * full memory size */
+    if (!vm->def->memballoon ||
+        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+        return 0;
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorGetBalloonInfo(qemuDomainGetMonitor(vm), &balloon);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        rc = -1;
+
+    if (rc < 0)
+        return -1;
+
+    vm->def->mem.cur_balloon = balloon;
+
+    return 0;
+}
+
+
+static int
 qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           int asyncJob,
@@ -3830,6 +3862,9 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessReconnectRefreshChannelVirtioState(driver, obj) < 0)
         goto error;
 
+    if (qemuProcessRefreshBalloonState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
+
     if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
         goto error;
 
@@ -4971,10 +5006,11 @@ int qemuProcessStart(virConnectPtr conn,
             goto cleanup;
     }
 
-    /* Since CPUs were not started yet, the ballon could not return the memory
+    /* Since CPUs were not started yet, the balloon could not return the memory
      * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
      * and friends return the correct size in case they can't grab the job */
-    vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+    if (qemuProcessRefreshBalloonState(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Detecting actual memory size for video device");
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
