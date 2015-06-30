@@ -4169,13 +4169,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 
     rc = qemuDomainWaitForDeviceRemoval(vm);
     if (rc == 0 || rc == 1) {
-        if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
-            qemuDomainReleaseDeviceAddress(vm, &tmpChr->info, NULL);
-        } else if (chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
-            /* XXX */
-        } else {
-            virDomainVirtioSerialAddrRelease(priv->vioserialaddrs, &tmpChr->info);
-        }
+        qemuDomainReleaseDeviceAddress(vm, &tmpChr->info, NULL);
         ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr);
     } else {
         ret = 0;
