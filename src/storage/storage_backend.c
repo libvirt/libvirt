@@ -1075,7 +1075,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.inputPath)
         virCommandAddArg(cmd, info.inputPath);
     virCommandAddArg(cmd, info.path);
-    if (!info.inputPath && info.size_arg)
+    if (!info.inputPath && (info.size_arg || !info.backingPath))
         virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
 
     return cmd;
