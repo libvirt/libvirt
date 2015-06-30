@@ -4448,10 +4448,20 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
     if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED &&
         virDomainObjIsActive(vm) && priv->agent) {
-        /* Close agent monitor early, so that other threads
-         * waiting for the agent to reply can finish and our
-         * job we acquire below can succeed. */
-       qemuAgentNotifyClose(priv->agent);
+        /* peek into the domain definition to find the channel */
+        if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) == 0 &&
+            dev.type == VIR_DOMAIN_DEVICE_CHR &&
+            dev.data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+            dev.data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+            STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0"))
+            /* Close agent monitor early, so that other threads
+             * waiting for the agent to reply can finish and our
+             * job we acquire below can succeed. */
+            qemuAgentNotifyClose(priv->agent);
+
+        /* now discard the data, since it may possibly change once we unlock
+         * while entering the job */
+        memset(&dev, 0, sizeof(dev));
     }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
