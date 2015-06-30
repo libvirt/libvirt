@@ -284,6 +284,9 @@ mymain(void)
     DO_TEST("pool-dir", "vol-qcow2-nocapacity",
             "pool-dir", "vol-file",
             "qcow2-nocapacity-convert-prealloc", flags, FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-qcow2-zerocapacity",
+            NULL, NULL,
+            "qcow2-zerocapacity", 0, FMT_COMPAT);
     DO_TEST_FULL(false, VIR_VOL_XML_PARSE_OPT_CAPACITY,
                  "pool-dir", "vol-qcow2-nocapacity-backing", NULL, NULL,
                  "qcow2-nocapacity", 0, FMT_OPTIONS);

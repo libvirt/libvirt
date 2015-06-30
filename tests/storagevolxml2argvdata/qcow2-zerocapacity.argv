@@ -1,0 +1,1 @@
+qemu-img create -f qcow2 -o compat=0.10  0K

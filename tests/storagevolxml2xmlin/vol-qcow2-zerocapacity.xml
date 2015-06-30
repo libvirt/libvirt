@@ -1,0 +1,7 @@
+<volume>
+  <name>OtherDemo.img</name>
+  <target>
+    <format type="qcow2"/>
+  </target>
+  <capacity>0</capacity>
+</volume>
