@@ -4350,9 +4350,10 @@ int qemuProcessStart(virConnectPtr conn,
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
 
-    VIR_DEBUG("vm=%p name=%s id=%d pid=%llu",
-              vm, vm->def->name, vm->def->id,
-              (unsigned long long)vm->pid);
+    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s stdin_fd=%d "
+              "stdin_path=%s snapshot=%p vmop=%d flags=0x%x",
+              vm, vm->def->name, vm->def->id, asyncJob, NULLSTR(migrateFrom),
+              stdin_fd, NULLSTR(stdin_path), snapshot, vmop, flags);
 
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
