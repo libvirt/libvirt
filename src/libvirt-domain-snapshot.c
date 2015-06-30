@@ -1048,7 +1048,7 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
  * new hypervisor instance rather than reusing the existing hypervisor
  * (since this would terminate all connections to the domain, such as
  * such as VNC or Spice graphics) - this condition arises from active
- * snapshots that are provably ABI incomaptible, as well as from
+ * snapshots that are provably ABI incompatible, as well as from
  * inactive snapshots with a @flags request to start the domain after
  * the revert.
  *
