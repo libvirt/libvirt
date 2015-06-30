@@ -519,6 +519,9 @@ mymain(void)
     driver.config->spiceTLS = 1;
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
+    VIR_FREE(driver.config->channelTargetDir);
+    if (VIR_STRDUP_QUIET(driver.config->channelTargetDir, "/tmp") < 0)
+        return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags, ...)         \
     do {                                                                \
@@ -1113,6 +1116,8 @@ mymain(void)
     DO_TEST("channel-virtio-default",
             QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEVMC);
+    DO_TEST("channel-virtio-unix",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST("smartcard-host",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE,
