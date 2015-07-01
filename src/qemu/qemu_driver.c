@@ -8409,7 +8409,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect, parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -8421,8 +8421,6 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     virNWFilterReadLockFilterUpdates();
 
     cfg = virQEMUDriverGetConfig(driver);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8438,26 +8436,8 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto endjob;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto endjob;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
@@ -8556,7 +8536,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
-    unsigned int affect;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -8569,8 +8548,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virNWFilterReadLockFilterUpdates();
 
     cfg = virQEMUDriverGetConfig(driver);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8586,31 +8563,13 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto endjob;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto endjob;
-    }
-
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
                                              VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
+        goto endjob;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
@@ -8695,7 +8654,7 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect, parse_flags = 0;
+    unsigned int parse_flags = 0;
     virQEMUCapsPtr qemuCaps = NULL;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -8705,8 +8664,6 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -8722,26 +8679,8 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto endjob;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto endjob;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
 
     if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
