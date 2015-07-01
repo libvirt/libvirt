@@ -501,21 +501,18 @@ virTypedParamsFilter(virTypedParameterPtr params,
                      const char *name,
                      virTypedParameterPtr **ret)
 {
-    size_t i, alloc = 0, n = 0;
+    size_t i, n = 0;
 
     virCheckNonNullArgGoto(params, error);
     virCheckNonNullArgGoto(name, error);
     virCheckNonNullArgGoto(ret, error);
 
-    *ret = NULL;
+    if (VIR_ALLOC_N(*ret, nparams) < 0)
+        goto error;
 
     for (i = 0; i < nparams; i++) {
         if (STREQ(params[i].field, name)) {
-            if (VIR_RESIZE_N(*ret, alloc, n, 1) < 0)
-                goto error;
-
             (*ret)[n] = &params[i];
-
             n++;
         }
     }
