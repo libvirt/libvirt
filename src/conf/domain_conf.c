@@ -1551,6 +1551,8 @@ virDomainControllerDefNew(virDomainControllerType type)
         def->opts.vioserial.vectors = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        def->opts.pciopts.chassisNr = -1;
+        break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
@@ -7810,6 +7812,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *max_sectors = NULL;
     bool processedModel = false;
     char *modelName = NULL;
+    bool processedTarget = false;
+    char *chassisNr = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7862,6 +7866,15 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 }
                 modelName = virXMLPropString(cur, "name");
                 processedModel = true;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                if (processedTarget) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("Multiple <target> elements in "
+                                     "controller definition not allowed"));
+                    goto error;
+                }
+                chassisNr = virXMLPropString(cur, "chassisNr");
+                processedTarget = true;
             }
         }
         cur = cur->next;
@@ -7978,6 +7991,23 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                            modelName);
             goto error;
         }
+        if (chassisNr) {
+            if (virStrToLong_i(chassisNr, NULL, 0,
+                               &def->opts.pciopts.chassisNr) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid chassisNr '%s' in PCI controller"),
+                               chassisNr);
+                goto error;
+            }
+            if (def->opts.pciopts.chassisNr < 0 ||
+                def->opts.pciopts.chassisNr > 255) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller chassisNr '%s' out of range "
+                                 "- must be 0-255"),
+                               chassisNr);
+                goto error;
+            }
+        }
         break;
 
     default:
@@ -8004,6 +8034,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(cmd_per_lun);
     VIR_FREE(max_sectors);
     VIR_FREE(modelName);
+    VIR_FREE(chassisNr);
 
     return def;
 
@@ -19016,7 +19047,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
     const char *modelName = NULL;
-    bool pcihole64 = false, pciModel = false;
+    bool pcihole64 = false, pciModel = false, pciTarget = false;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -19058,13 +19089,15 @@ virDomainControllerDefFormat(virBufferPtr buf,
             pcihole64 = true;
         if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
             pciModel = true;
+        if (def->opts.pciopts.chassisNr != -1)
+            pciTarget = true;
         break;
 
     default:
         break;
     }
 
-    if (pciModel ||
+    if (pciModel || pciTarget ||
         def->queues || def->cmd_per_lun || def->max_sectors ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
@@ -19079,6 +19112,14 @@ virDomainControllerDefFormat(virBufferPtr buf,
                 return -1;
             }
             virBufferAsprintf(buf, "<model name='%s'/>\n", modelName);
+        }
+
+        if (pciTarget) {
+            virBufferAddLit(buf, "<target");
+            if (def->opts.pciopts.chassisNr != -1)
+                virBufferAsprintf(buf, " chassisNr='%d'",
+                                  def->opts.pciopts.chassisNr);
+            virBufferAddLit(buf, "/>\n");
         }
 
         if (def->queues || def->cmd_per_lun || def->max_sectors) {

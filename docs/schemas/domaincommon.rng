@@ -1744,6 +1744,16 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="target">
+                <optional>
+                  <attribute name='chassisNr'>
+                    <ref name='uint8range'/>
+                  </attribute>
+                </optional>
+                <empty/>
+              </element>
+            </optional>
             <!-- *-root controllers have an optional element "pcihole64"-->
             <choice>
               <group>

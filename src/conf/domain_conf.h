@@ -812,7 +812,15 @@ struct _virDomainPCIControllerOpts {
      *   ...
      */
     int modelName; /* the exact name of the device in hypervisor */
-};
+
+    /* the following items are attributes of the "target" subelement
+     * of controller type='pci'. They are bits of configuration that
+     * are specified on the qemu commandline and are visible to the
+     * guest OS, so they must be preserved to ensure ABI
+     * compatibility.
+     */
+    int chassisNr; /* used by pci-bridge, -1 == unspecified */
+ };
 
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {

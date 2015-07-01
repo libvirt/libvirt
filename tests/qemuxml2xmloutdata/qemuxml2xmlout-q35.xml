@@ -25,6 +25,7 @@
     </controller>
     <controller type='pci' index='2' model='pci-bridge'>
       <model name='pci-bridge'/>
+      <target chassisNr='56'/>
     </controller>
     <controller type='sata' index='0'/>
     <video>

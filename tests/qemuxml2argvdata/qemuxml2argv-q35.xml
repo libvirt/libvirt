@@ -25,6 +25,7 @@
     </controller>
     <controller type='pci' index='2' model='pci-bridge'>
       <model name='pci-bridge'/>
+      <target chassisNr='56'/>
     </controller>
     <video>
       <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
