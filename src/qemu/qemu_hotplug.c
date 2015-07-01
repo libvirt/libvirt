@@ -1586,7 +1586,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
-    if ((rc = qemuDomainAttachChrDeviceAssignAddr(priv, chr) < 0))
+    if ((rc = qemuDomainAttachChrDeviceAssignAddr(priv, chr)) < 0)
         goto cleanup;
     if (rc == 1)
         need_release = true;
