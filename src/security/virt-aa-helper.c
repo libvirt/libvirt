@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <getopt.h>
 #include <sys/utsname.h>
@@ -542,7 +541,6 @@ array_starts_with(const char *str, const char * const *arr, const long size)
 static int
 valid_path(const char *path, const bool readonly)
 {
-    struct stat sb;
     int npaths, opaths;
     const char * const restricted[] = {
         "/bin/",
@@ -590,20 +588,8 @@ valid_path(const char *path, const bool readonly)
     if (STRNEQLEN(path, "/", 1))
         return 1;
 
-    if (!virFileExists(path)) {
+    if (!virFileExists(path))
         vah_warning(_("path does not exist, skipping file type checks"));
-    } else {
-        if (stat(path, &sb) == -1)
-            return -1;
-
-        switch (sb.st_mode & S_IFMT) {
-            case S_IFSOCK:
-                return 1;
-                break;
-            default:
-                break;
-        }
-    }
 
     opaths = sizeof(override)/sizeof(*(override));
 
@@ -1097,6 +1083,18 @@ get_files(vahControl * ctl)
             virDomainFSDefPtr fs = ctl->def->fss[i];
 
             if (vah_add_path(&buf, fs->src, fs->readonly ? "r" : "rw", true) != 0)
+                goto cleanup;
+        }
+    }
+
+    for (i = 0; i < ctl->def->nnets; i++) {
+        if (ctl->def->nets[i] &&
+                ctl->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+                ctl->def->nets[i]->data.vhostuser) {
+            virDomainChrSourceDefPtr vhu = ctl->def->nets[i]->data.vhostuser;
+
+            if (vah_add_file_chardev(&buf, vhu->data.nix.path, "rw",
+                       vhu->type) != 0)
                 goto cleanup;
         }
     }
