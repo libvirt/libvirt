@@ -1249,9 +1249,8 @@ phypConnectClose(virConnectPtr conn)
     virObjectUnref(phyp_driver->xmlopt);
     phypUUIDTable_Free(phyp_driver->uuid_table);
     VIR_FREE(phyp_driver->managed_system);
-    VIR_FREE(phyp_driver);
-
     VIR_FORCE_CLOSE(phyp_driver->sock);
+    VIR_FREE(phyp_driver);
     return 0;
 }
 
