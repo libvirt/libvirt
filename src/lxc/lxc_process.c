@@ -749,7 +749,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 int *files,
                                 size_t nfiles,
                                 int handshakefd,
-                                int logfd,
+                                int * const logfd,
                                 const char *pidfile)
 {
     size_t i;
@@ -819,8 +819,8 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     virCommandPassFD(cmd, handshakefd, 0);
     virCommandDaemonize(cmd);
     virCommandSetPidFile(cmd, pidfile);
-    virCommandSetOutputFD(cmd, &logfd);
-    virCommandSetErrorFD(cmd, &logfd);
+    virCommandSetOutputFD(cmd, logfd);
+    virCommandSetErrorFD(cmd, logfd);
     /* So we can pause before exec'ing the controller to
      * write the live domain status XML with the PID */
     virCommandRequireHandshake(cmd);
@@ -1207,7 +1207,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                                 ttyFDs, nttyFDs,
                                                 files, nfiles,
                                                 handshakefds[1],
-                                                logfd,
+                                                &logfd,
                                                 pidfile)))
         goto cleanup;
 
