@@ -2328,6 +2328,12 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Thu Jul  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.17-1
+- numerous improvements and refactoring of the parallels driver
+- hardening of vcpu code
+- hardening of migration code
+- a lot of improvement and bug fixes
+
 * Mon Jun  1 2015 Daniel Veillard <veillard@redhat.com> - 1.2.16-1
 - Introduce pci-serial
 - Introduce virDomainSetUserPassword API
