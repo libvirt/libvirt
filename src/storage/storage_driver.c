@@ -142,11 +142,6 @@ storagePoolUpdateAllState(void)
         virStoragePoolObjPtr pool = driver->pools.objs[i];
 
         virStoragePoolObjLock(pool);
-        if (!virStoragePoolObjIsActive(pool)) {
-            virStoragePoolObjUnlock(pool);
-            continue;
-        }
-
         storagePoolUpdateState(pool);
         virStoragePoolObjUnlock(pool);
     }
