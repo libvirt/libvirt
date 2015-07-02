@@ -193,4 +193,11 @@ int qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
                                 qemuDomainAsyncJob asyncJob,
                                 qemuDomainJobInfoPtr jobInfo);
 
+int qemuMigrationErrorInit(virQEMUDriverPtr driver);
+void qemuMigrationErrorSave(virQEMUDriverPtr driver,
+                            const char *name,
+                            virErrorPtr err);
+void qemuMigrationErrorReport(virQEMUDriverPtr driver,
+                              const char *name);
+
 #endif /* __QEMU_MIGRATION_H__ */

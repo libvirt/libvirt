@@ -240,6 +240,8 @@ qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
 
 void qemuMonitorClose(qemuMonitorPtr mon);
 
+virErrorPtr qemuMonitorLastError(qemuMonitorPtr mon);
+
 int qemuMonitorSetCapabilities(qemuMonitorPtr mon);
 
 int qemuMonitorSetLink(qemuMonitorPtr mon,

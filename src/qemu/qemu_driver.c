@@ -775,6 +775,9 @@ qemuStateInitialize(bool privileged,
     if (!(qemu_driver->sharedDevices = virHashCreate(30, qemuSharedDeviceEntryFree)))
         goto error;
 
+    if (qemuMigrationErrorInit(qemu_driver) < 0)
+        goto error;
+
     if (privileged) {
         char *channeldir;
 
@@ -1091,6 +1094,7 @@ qemuStateCleanup(void)
     virObjectUnref(qemu_driver->remotePorts);
     virObjectUnref(qemu_driver->webSocketPorts);
     virObjectUnref(qemu_driver->migrationPorts);
+    virObjectUnref(qemu_driver->migrationErrors);
 
     virObjectUnref(qemu_driver->xmlopt);
 
@@ -12117,6 +12121,7 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), dname);
+        qemuMigrationErrorReport(driver, dname);
         goto cleanup;
     }
 
@@ -12566,11 +12571,16 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
-    if (!dname ||
-        !(vm = virDomainObjListFindByName(driver->domains, dname))) {
+    if (!dname) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s", _("missing domain name"));
+        return NULL;
+    }
+
+    vm = virDomainObjListFindByName(driver->domains, dname);
+    if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"),
-                       NULLSTR(dname));
+                       _("no domain with matching name '%s'"), dname);
+        qemuMigrationErrorReport(driver, dname);
         return NULL;
     }
 
@@ -12609,11 +12619,16 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
                                 &dname) < 0)
         return NULL;
 
-    if (!dname ||
-        !(vm = virDomainObjListFindByName(driver->domains, dname))) {
+    if (!dname) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s", _("missing domain name"));
+        return NULL;
+    }
+
+    vm = virDomainObjListFindByName(driver->domains, dname);
+    if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"),
-                       NULLSTR(dname));
+                       _("no domain with matching name '%s'"), dname);
+        qemuMigrationErrorReport(driver, dname);
         return NULL;
     }
 

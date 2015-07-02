@@ -5543,8 +5543,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
+    if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN)) {
+        qemuMigrationErrorReport(driver, vm->def->name);
         goto cleanup;
+    }
 
     qemuMigrationJobStartPhase(driver, vm,
                                v3proto ? QEMU_MIGRATION_PHASE_FINISH3
@@ -5570,6 +5572,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest unexpectedly quit"));
+            qemuMigrationErrorReport(driver, vm->def->name);
             goto endjob;
         }
 
@@ -6093,4 +6096,58 @@ void
 qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr vm)
 {
     qemuDomainObjEndAsyncJob(driver, vm);
+}
+
+
+static void
+qemuMigrationErrorFree(void *data,
+                       const void *name ATTRIBUTE_UNUSED)
+{
+    virErrorPtr err = data;
+    virFreeError(err);
+}
+
+int
+qemuMigrationErrorInit(virQEMUDriverPtr driver)
+{
+    driver->migrationErrors = virHashAtomicNew(64, qemuMigrationErrorFree);
+    if (driver->migrationErrors)
+        return 0;
+    else
+        return -1;
+}
+
+/**
+ * This function consumes @err; the caller should consider the @err pointer
+ * invalid after calling this function.
+ */
+void
+qemuMigrationErrorSave(virQEMUDriverPtr driver,
+                       const char *name,
+                       virErrorPtr err)
+{
+    if (!err)
+        return;
+
+    VIR_DEBUG("Saving incoming migration error for domain %s: %s",
+              name, err->message);
+    if (virHashAtomicUpdate(driver->migrationErrors, name, err) < 0) {
+        VIR_WARN("Failed to save migration error for domain '%s'", name);
+        virFreeError(err);
+    }
+}
+
+void
+qemuMigrationErrorReport(virQEMUDriverPtr driver,
+                         const char *name)
+{
+    virErrorPtr err;
+
+    if (!(err = virHashAtomicSteal(driver->migrationErrors, name)))
+        return;
+
+    VIR_DEBUG("Restoring saved incoming migration error for domain %s: %s",
+              name, err->message);
+    virSetError(err);
+    virFreeError(err);
 }

@@ -310,6 +310,10 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         auditReason = "failed";
     }
 
+    if (qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
+        qemuMigrationErrorSave(driver, vm->def->name,
+                               qemuMonitorLastError(priv->mon));
+
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      eventReason);

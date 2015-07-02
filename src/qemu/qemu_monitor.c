@@ -1057,6 +1057,20 @@ qemuMonitorSend(qemuMonitorPtr mon,
 }
 
 
+/**
+ * This function returns a new virError object; the caller is responsible
+ * for freeing it.
+ */
+virErrorPtr
+qemuMonitorLastError(qemuMonitorPtr mon)
+{
+    if (mon->lastError.code == VIR_ERR_OK)
+        return NULL;
+
+    return virErrorCopyNew(&mon->lastError);
+}
+
+
 virJSONValuePtr
 qemuMonitorGetOptions(qemuMonitorPtr mon)
 {
