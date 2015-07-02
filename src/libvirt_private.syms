@@ -1476,6 +1476,9 @@ virFirewallStartTransaction;
 
 # util/virhash.h
 virHashAddEntry;
+virHashAtomicNew;
+virHashAtomicSteal;
+virHashAtomicUpdate;
 virHashCreate;
 virHashEqual;
 virHashForEach;

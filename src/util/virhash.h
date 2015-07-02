@@ -21,6 +21,9 @@
 typedef struct _virHashTable virHashTable;
 typedef virHashTable *virHashTablePtr;
 
+typedef struct _virHashAtomic virHashAtomic;
+typedef virHashAtomic *virHashAtomicPtr;
+
 /*
  * function types:
  */
@@ -101,6 +104,8 @@ typedef void (*virHashKeyFree)(void *name);
  */
 virHashTablePtr virHashCreate(ssize_t size,
                               virHashDataFree dataFree);
+virHashAtomicPtr virHashAtomicNew(ssize_t size,
+                                  virHashDataFree dataFree);
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
                                   virHashKeyCode keyCode,
@@ -119,6 +124,9 @@ int virHashAddEntry(virHashTablePtr table,
 int virHashUpdateEntry(virHashTablePtr table,
                        const void *name,
                        void *userdata);
+int virHashAtomicUpdate(virHashAtomicPtr table,
+                        const void *name,
+                        void *userdata);
 
 /*
  * Remove an entry from the hash table.
@@ -140,6 +148,8 @@ void *virHashLookup(const virHashTable *table, const void *name);
  * Retrieve & remove the userdata.
  */
 void *virHashSteal(virHashTablePtr table, const void *name);
+void *virHashAtomicSteal(virHashAtomicPtr table,
+                         const void *name);
 
 /*
  * Get the hash table's key/value pairs and have them optionally sorted.

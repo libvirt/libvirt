@@ -31,6 +31,7 @@
 #include "virhashcode.h"
 #include "virrandom.h"
 #include "virstring.h"
+#include "virobject.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -75,6 +76,28 @@ struct _virHashTable {
     virHashKeyCopy keyCopy;
     virHashKeyFree keyFree;
 };
+
+struct _virHashAtomic {
+    virObjectLockable parent;
+    virHashTablePtr hash;
+};
+
+static virClassPtr virHashAtomicClass;
+static void virHashAtomicDispose(void *obj);
+
+static int virHashAtomicOnceInit(void)
+{
+    virHashAtomicClass = virClassNew(virClassForObjectLockable(),
+                                     "virHashAtomic",
+                                     sizeof(virHashAtomic),
+                                     virHashAtomicDispose);
+    if (!virHashAtomicClass)
+        return -1;
+    else
+        return 0;
+}
+VIR_ONCE_GLOBAL_INIT(virHashAtomic)
+
 
 static uint32_t virHashStrCode(const void *name, uint32_t seed)
 {
@@ -177,6 +200,36 @@ virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
                              virHashStrCopy,
                              virHashStrFree);
 }
+
+
+virHashAtomicPtr
+virHashAtomicNew(ssize_t size,
+                 virHashDataFree dataFree)
+{
+    virHashAtomicPtr hash;
+
+    if (virHashAtomicInitialize() < 0)
+        return NULL;
+
+    if (!(hash = virObjectLockableNew(virHashAtomicClass)))
+        return NULL;
+
+    if (!(hash->hash = virHashCreate(size, dataFree))) {
+        virObjectUnref(hash);
+        return NULL;
+    }
+    return hash;
+}
+
+
+static void
+virHashAtomicDispose(void *obj)
+{
+    virHashAtomicPtr hash = obj;
+
+    virHashFree(hash->hash);
+}
+
 
 /**
  * virHashGrow:
@@ -360,6 +413,21 @@ virHashUpdateEntry(virHashTablePtr table, const void *name,
     return virHashAddOrUpdateEntry(table, name, userdata, true);
 }
 
+int
+virHashAtomicUpdate(virHashAtomicPtr table,
+                    const void *name,
+                    void *userdata)
+{
+    int ret;
+
+    virObjectLock(table);
+    ret = virHashAddOrUpdateEntry(table->hash, name, userdata, true);
+    virObjectUnlock(table);
+
+    return ret;
+}
+
+
 /**
  * virHashLookup:
  * @table: the hash table
@@ -406,6 +474,19 @@ void *virHashSteal(virHashTablePtr table, const void *name)
         virHashRemoveEntry(table, name);
         table->dataFree = dataFree;
     }
+    return data;
+}
+
+void *
+virHashAtomicSteal(virHashAtomicPtr table,
+                   const void *name)
+{
+    void *data;
+
+    virObjectLock(table);
+    data = virHashSteal(table->hash, name);
+    virObjectUnlock(table);
+
     return data;
 }
 
