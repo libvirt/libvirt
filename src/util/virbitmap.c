@@ -498,9 +498,12 @@ virBitmapPtr virBitmapNewData(void *data, int len)
  */
 int virBitmapToData(virBitmapPtr bitmap, unsigned char **data, int *dataLen)
 {
-    int len;
+    ssize_t len;
 
-    len = (bitmap->max_bit + CHAR_BIT - 1) / CHAR_BIT;
+    if ((len = virBitmapLastSetBit(bitmap)) < 0)
+        len = 1;
+    else
+        len = (len + CHAR_BIT) / CHAR_BIT;
 
     if (VIR_ALLOC_N(*data, len) < 0)
         return -1;
