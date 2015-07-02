@@ -3175,8 +3175,34 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
             (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
              NULL, uri, destflags, cancelled);
     }
-    if (cancelled && ddomain)
-        VIR_ERROR(_("finish step ignored that migration was cancelled"));
+
+    if (cancelled) {
+        if (ddomain) {
+            VIR_ERROR(_("finish step ignored that migration was cancelled"));
+        } else {
+            /* If Finish reported a useful error, use it instead of the
+             * original "migration unexpectedly failed" error.
+             *
+             * This is ugly but we can't do better with the APIs we have. We
+             * only replace the error if Finish was called with cancelled == 1
+             * and reported a real error (old libvirt would report an error
+             * from RPC instead of MIGRATE_FINISH_OK), which only happens when
+             * the domain died on destination. To further reduce a possibility
+             * of false positives we also check that Perform returned
+             * VIR_ERR_OPERATION_FAILED.
+             */
+            if (orig_err &&
+                orig_err->domain == VIR_FROM_QEMU &&
+                orig_err->code == VIR_ERR_OPERATION_FAILED) {
+                virErrorPtr err = virGetLastError();
+                if (err->domain == VIR_FROM_QEMU &&
+                    err->code != VIR_ERR_MIGRATE_FINISH_OK) {
+                    virFreeError(orig_err);
+                    orig_err = NULL;
+                }
+            }
+        }
+    }
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the

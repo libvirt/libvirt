@@ -4982,8 +4982,34 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
              dconnuri, uri, destflags, cancelled);
         qemuDomainObjExitRemote(vm);
     }
-    if (cancelled && ddomain)
-        VIR_ERROR(_("finish step ignored that migration was cancelled"));
+
+    if (cancelled) {
+        if (ddomain) {
+            VIR_ERROR(_("finish step ignored that migration was cancelled"));
+        } else {
+            /* If Finish reported a useful error, use it instead of the
+             * original "migration unexpectedly failed" error.
+             *
+             * This is ugly but we can't do better with the APIs we have. We
+             * only replace the error if Finish was called with cancelled == 1
+             * and reported a real error (old libvirt would report an error
+             * from RPC instead of MIGRATE_FINISH_OK), which only happens when
+             * the domain died on destination. To further reduce a possibility
+             * of false positives we also check that Perform returned
+             * VIR_ERR_OPERATION_FAILED.
+             */
+            if (orig_err &&
+                orig_err->domain == VIR_FROM_QEMU &&
+                orig_err->code == VIR_ERR_OPERATION_FAILED) {
+                virErrorPtr err = virGetLastError();
+                if (err->domain == VIR_FROM_QEMU &&
+                    err->code != VIR_ERR_MIGRATE_FINISH_OK) {
+                    virFreeError(orig_err);
+                    orig_err = NULL;
+                }
+            }
+        }
+    }
 
     /* If ddomain is NULL, then we were unable to start
      * the guest on the target, and must restart on the
@@ -5719,6 +5745,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         /* Guest is successfully running, so cancel previous auto destroy */
         qemuProcessAutoDestroyRemove(driver, vm);
     } else if (!(flags & VIR_MIGRATE_OFFLINE)) {
+        qemuDomainJobInfo info;
+
+        /* Check for a possible error on the monitor in case Finish was called
+         * earlier than monitor EOF handler got a chance to process the error
+         */
+        qemuMigrationFetchJobStatus(driver, vm,
+                                    QEMU_ASYNC_JOB_MIGRATION_IN,
+                                    &info);
+
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "failed");
