@@ -807,7 +807,6 @@ vzDomainGetVcpus(virDomainPtr domain,
 {
     virDomainObjPtr privdom = NULL;
     size_t i;
-    int v;
     int ret = -1;
 
     if (!(privdom = vzDomObjFromDomainRef(domain)))
@@ -831,19 +830,11 @@ vzDomainGetVcpus(virDomainPtr domain,
             }
         }
         if (cpumaps != NULL) {
-            unsigned char *tmpmap = NULL;
-            int tmpmapLen = 0;
-
             memset(cpumaps, 0, maplen * maxinfo);
-            virBitmapToData(privdom->def->cpumask, &tmpmap, &tmpmapLen);
-            if (tmpmapLen > maplen)
-                tmpmapLen = maplen;
-
-            for (v = 0; v < maxinfo; v++) {
-                unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
-                memcpy(cpumap, tmpmap, tmpmapLen);
-            }
-            VIR_FREE(tmpmap);
+            for (i = 0; i < maxinfo; i++)
+                virBitmapToDataBuf(privdom->def->cpumask,
+                                   VIR_GET_CPUMAP(cpumaps, maplen, i),
+                                   maplen);
         }
     }
     ret = maxinfo;
