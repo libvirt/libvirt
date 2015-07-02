@@ -807,7 +807,7 @@ vzDomainGetVcpus(virDomainPtr domain,
 {
     virDomainObjPtr privdom = NULL;
     size_t i;
-    int v, maxcpu, hostcpus;
+    int v;
     int ret = -1;
 
     if (!(privdom = vzDomObjFromDomainRef(domain)))
@@ -819,13 +819,6 @@ vzDomainGetVcpus(virDomainPtr domain,
                        _("cannot list vcpu pinning for an inactive domain"));
         goto cleanup;
     }
-
-    if ((hostcpus = nodeGetCPUCount()) < 0)
-        goto cleanup;
-
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
 
     if (maxinfo >= 1) {
         if (info != NULL) {
