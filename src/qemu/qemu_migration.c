@@ -5751,6 +5751,12 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
     virObjectUnref(caps);
     virObjectUnref(cfg);
+
+    /* Set a special error if Finish is expected to return NULL as a result of
+     * successful call with retcode != 0
+     */
+    if (retcode != 0 && !dom && !virGetLastError())
+        virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
     return dom;
 }
 

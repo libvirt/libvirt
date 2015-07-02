@@ -1369,6 +1369,9 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("XML document failed to validate against schema: %s");
             break;
+        case VIR_ERR_MIGRATE_FINISH_OK:
+            errmsg = _("migration successfully aborted");
+            break;
     }
     return errmsg;
 }

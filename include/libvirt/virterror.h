@@ -307,6 +307,7 @@ typedef enum {
     VIR_ERR_CPU_INCOMPATIBLE = 91,      /* given CPU is incompatible with host
                                            CPU*/
     VIR_ERR_XML_INVALID_SCHEMA = 92,    /* XML document doesn't validate against schema */
+    VIR_ERR_MIGRATE_FINISH_OK = 93,     /* Finish API succeeded but it is expected to return NULL */
 } virErrorNumber;
 
 /**
