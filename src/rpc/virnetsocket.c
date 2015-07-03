@@ -681,7 +681,8 @@ int virNetSocketNewConnectUNIX(const char *path,
 
     while (retries &&
            connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-        if (!(spawnDaemon && errno == ENOENT)) {
+        if (!(spawnDaemon && (errno == ENOENT ||
+                              errno == ECONNREFUSED))) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
             goto cleanup;
