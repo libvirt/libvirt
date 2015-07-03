@@ -1418,12 +1418,8 @@ static int
 qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                          unsigned char *cpumaps, int maplen)
 {
-    int hostcpus;
     size_t i, v;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if ((hostcpus = nodeGetCPUCount()) < 0)
-        return -1;
 
     if (priv->vcpupids == NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -5579,7 +5575,6 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
     qemuMonitorIOThreadInfoPtr *iothreads = NULL;
     virDomainIOThreadInfoPtr *info_ret = NULL;
     int niothreads = 0;
-    int hostcpus;
     size_t i;
     int ret = -1;
 
@@ -5611,9 +5606,6 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
         ret = 0;
         goto endjob;
     }
-
-    if ((hostcpus = nodeGetCPUCount()) < 0)
-        goto endjob;
 
     if (VIR_ALLOC_N(info_ret, niothreads) < 0)
         goto endjob;
