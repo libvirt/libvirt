@@ -78,14 +78,45 @@ vzDriverUnlock(vzConnPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
+static int
+vzCapsAddGuestDomain(virCapsPtr caps,
+                     virDomainOSType ostype,
+                     virArch arch,
+                     const char * emulator,
+                     virDomainVirtType virt_type)
+{
+    virCapsGuestPtr guest;
+
+    if ((guest = virCapabilitiesAddGuest(caps, ostype, arch, emulator,
+                                         NULL, 0, NULL)) == NULL)
+        return -1;
+
+
+    if (virCapabilitiesAddGuestDomain(guest, virt_type,
+                                      NULL, NULL, 0, NULL) == NULL)
+        return -1;
+
+    return 0;
+}
+
 static virCapsPtr
 vzBuildCapabilities(void)
 {
     virCapsPtr caps = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUDataPtr data = NULL;
-    virCapsGuestPtr guest;
     virNodeInfo nodeinfo;
+    virDomainOSType ostypes[] = {
+        VIR_DOMAIN_OSTYPE_HVM,
+        VIR_DOMAIN_OSTYPE_EXE
+    };
+    virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
+    const char *const emulators[] = { "parallels", "vz" };
+    virDomainVirtType virt_types[] = {
+        VIR_DOMAIN_VIRT_PARALLELS,
+        VIR_DOMAIN_VIRT_VZ
+    };
+    size_t i, j, k;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -94,59 +125,12 @@ vzBuildCapabilities(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto error;
 
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                         VIR_ARCH_X86_64,
-                                         "parallels",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                         VIR_ARCH_I686,
-                                         "parallels",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_PARALLELS,
-                                      NULL, NULL, 0, NULL) == NULL)
-        goto error;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
-                                         VIR_ARCH_X86_64,
-                                         "parallels",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_PARALLELS,
-                                      NULL, NULL, 0, NULL) == NULL)
-        goto error;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                         VIR_ARCH_X86_64,
-                                         "vz",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                         VIR_ARCH_I686,
-                                         "vz",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VZ,
-                                      NULL, NULL, 0, NULL) == NULL)
-        goto error;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
-                                         VIR_ARCH_X86_64,
-                                         "vz",
-                                         NULL, 0, NULL)) == NULL)
-        goto error;
-
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VZ,
-                                      NULL, NULL, 0, NULL) == NULL)
-        goto error;
+    for (i = 0; i < 2; i++)
+        for (j = 0; j < 2; j++)
+            for (k = 0; k < 2; k++)
+                if (vzCapsAddGuestDomain(caps, ostypes[i], archs[j],
+                                         emulators[k], virt_types[k]) < 0)
+                    goto error;
 
     if (nodeGetInfo(&nodeinfo))
         goto error;
