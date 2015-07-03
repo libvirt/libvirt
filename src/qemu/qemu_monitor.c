@@ -407,6 +407,9 @@ qemuMonitorGetErrorFromLog(qemuMonitorPtr mon)
     if ((len = qemuProcessReadLog(mon->logfd, logbuf, 4096 - 1, 0, true)) <= 0)
         goto error;
 
+    while (len > 0 && logbuf[len - 1] == '\n')
+        logbuf[--len] = '\0';
+
  cleanup:
     errno = orig_errno;
     VIR_FORCE_CLOSE(mon->logfd);
