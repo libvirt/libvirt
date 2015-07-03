@@ -951,8 +951,10 @@ get_files(vahControl * ctl)
             (ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
              ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
              ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
              ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->serials[i]->source.data.file.path)
+            ctl->def->serials[i]->source.data.file.path &&
+            ctl->def->serials[i]->source.data.file.path[0] != '\0')
             if (vah_add_file_chardev(&buf,
                                      ctl->def->serials[i]->source.data.file.path,
                                      "rw",
@@ -964,8 +966,10 @@ get_files(vahControl * ctl)
             (ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
              ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
              ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
              ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->consoles[i]->source.data.file.path)
+            ctl->def->consoles[i]->source.data.file.path &&
+            ctl->def->consoles[i]->source.data.file.path[0] != '\0')
             if (vah_add_file(&buf,
                              ctl->def->consoles[i]->source.data.file.path, "rw") != 0)
                 goto cleanup;
@@ -975,8 +979,10 @@ get_files(vahControl * ctl)
             (ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
              ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
              ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
              ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->parallels[i]->source.data.file.path)
+            ctl->def->parallels[i]->source.data.file.path &&
+            ctl->def->parallels[i]->source.data.file.path[0] != '\0')
             if (vah_add_file_chardev(&buf,
                                      ctl->def->parallels[i]->source.data.file.path,
                                      "rw",
