@@ -3076,6 +3076,13 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        if (reportError) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+        }
+        return false;
+    }
     if (priv->agentError) {
         if (reportError) {
             virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
@@ -3098,13 +3105,6 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
             }
             return false;
         }
-    }
-    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
-        if (reportError) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
-        }
-        return false;
     }
     return true;
 }
