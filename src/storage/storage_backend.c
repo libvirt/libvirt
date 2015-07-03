@@ -399,7 +399,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
 {
     bool need_alloc = true;
     int ret = 0;
-    unsigned long long remain;
+    unsigned long long pos = 0;
 
     /* Seek to the final size, so the capacity is available upfront
      * for progress reporting */
@@ -433,9 +433,9 @@ createRawFile(int fd, virStorageVolDefPtr vol,
     }
 #endif
 
-    remain = vol->target.allocation;
 
     if (inputvol) {
+        unsigned long long remain = vol->target.allocation;
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
@@ -446,10 +446,12 @@ createRawFile(int fd, virStorageVolDefPtr vol,
                                         want_sparse, reflink_copy);
         if (ret < 0)
             goto cleanup;
+
+        pos = vol->target.allocation - remain;
     }
 
-    if (remain && need_alloc) {
-        if (safezero(fd, vol->target.allocation - remain, remain) < 0) {
+    if (need_alloc) {
+        if (safezero(fd, pos, vol->target.allocation - pos) < 0) {
             ret = -errno;
             virReportSystemError(errno, _("cannot fill file '%s'"),
                                  vol->target.path);
