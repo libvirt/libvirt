@@ -1433,7 +1433,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
     virDomainHostdevDefPtr hostdev = NULL;
     char *sysfs_path = NULL;
     const char *path = NULL;
-    int val = -1;
+    bool val;
     int ret = -1;
 
     /* "sgio" is only valid for block disk; cdrom
@@ -1475,8 +1475,12 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
      * whitelist is enabled.  But if requesting unfiltered access, always call
      * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
      */
-    if ((virFileExists(sysfs_path) || val == 1) &&
-        virSetDeviceUnprivSGIO(path, NULL, val) < 0)
+    if (!val || !virFileExists(sysfs_path)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virSetDeviceUnprivSGIO(path, NULL, 1) < 0)
         goto cleanup;
 
     ret = 0;
