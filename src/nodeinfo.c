@@ -1,7 +1,7 @@
 /*
  * nodeinfo.c: Helper routines for OS specific node information
  *
- * Copyright (C) 2006-2008, 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -944,6 +944,16 @@ linuxNodeGetMemoryStats(FILE *meminfo,
     return ret;
 }
 
+static char *
+linuxGetCPUPresentPath(const char *sysfs_prefix)
+{
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
+    char *path = NULL;
+
+    if (virAsprintf(&path, "%s/cpu/present", prefix) < 0)
+        return NULL;
+    return path;
+}
 
 /* Determine the maximum cpu id from a Linux sysfs cpu/present file. */
 static int
@@ -1193,27 +1203,34 @@ nodeGetCPUCount(void)
      * that such kernels also lack hotplug, and therefore cpu/cpuNN
      * will be consecutive.
      */
+    char *present_path = NULL;
     char *cpupath = NULL;
-    int ncpu;
+    int ncpu = -1;
 
-    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/present")) {
-        ncpu = linuxParseCPUmax(SYSFS_SYSTEM_PATH "/cpu/present");
+    if (!(present_path = linuxGetCPUPresentPath(NULL)))
+        return -1;
+
+    if (virFileExists(present_path)) {
+        ncpu = linuxParseCPUmax(present_path);
     } else if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/cpu0")) {
         ncpu = 0;
         do {
             ncpu++;
             VIR_FREE(cpupath);
             if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
-                            SYSFS_SYSTEM_PATH, ncpu) < 0)
-                return -1;
+                            SYSFS_SYSTEM_PATH, ncpu) < 0) {
+                ncpu = -1;
+                goto cleanup;
+            }
         } while (virFileExists(cpupath));
     } else {
         /* no cpu/cpu0: we give up */
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("host cpu counting not supported on this node"));
-        return -1;
     }
 
+ cleanup:
+    VIR_FREE(present_path);
     VIR_FREE(cpupath);
     return ncpu;
 #elif defined(__FreeBSD__) || defined(__APPLE__)
@@ -1229,13 +1246,21 @@ virBitmapPtr
 nodeGetPresentCPUBitmap(void)
 {
     int max_present;
+#ifdef __linux__
+    char *present_path = NULL;
+    virBitmapPtr bitmap = NULL;
+#endif
 
     if ((max_present = nodeGetCPUCount()) < 0)
         return NULL;
 
 #ifdef __linux__
-    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/present"))
-        return linuxParseCPUmap(max_present, SYSFS_SYSTEM_PATH "/cpu/present");
+    if (!(present_path = linuxGetCPUPresentPath(NULL)))
+        return NULL;
+    if (virFileExists(present_path))
+        bitmap = linuxParseCPUmap(max_present, present_path);
+    VIR_FREE(present_path);
+    return bitmap;
 #endif
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("non-continuous host cpu numbers not implemented on this platform"));
