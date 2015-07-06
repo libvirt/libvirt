@@ -2207,7 +2207,7 @@ openvzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
                     unsigned int *online,
                     unsigned int flags)
 {
-    return nodeGetCPUMap(cpumap, online, flags);
+    return nodeGetCPUMap(NULL, cpumap, online, flags);
 }
 
 

@@ -1624,10 +1624,12 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetCPUMap(unsigned char **cpumap,
+nodeGetCPUMap(const char *sysfs_prefix,
+              unsigned char **cpumap,
               unsigned int *online,
               unsigned int flags)
 {
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     virBitmapPtr cpus = NULL;
     int maxpresent;
     int ret = -1;
@@ -1636,9 +1638,9 @@ nodeGetCPUMap(unsigned char **cpumap,
     virCheckFlags(0, -1);
 
     if (!cpumap && !online)
-        return nodeGetCPUCount(NULL);
+        return nodeGetCPUCount(prefix);
 
-    if (!(cpus = nodeGetCPUBitmap(NULL, &maxpresent)))
+    if (!(cpus = nodeGetCPUBitmap(prefix, &maxpresent)))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)

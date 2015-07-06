@@ -55,7 +55,8 @@ int nodeSetMemoryParameters(virTypedParameterPtr params,
                             int nparams,
                             unsigned int flags);
 
-int nodeGetCPUMap(unsigned char **cpumap,
+int nodeGetCPUMap(const char *sysfs_prefix,
+                  unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags);
 
