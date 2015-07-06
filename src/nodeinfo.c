@@ -1249,19 +1249,20 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 }
 
 virBitmapPtr
-nodeGetPresentCPUBitmap(void)
+nodeGetPresentCPUBitmap(const char *sysfs_prefix)
 {
     int max_present;
 #ifdef __linux__
     char *present_path = NULL;
     virBitmapPtr bitmap = NULL;
 #endif
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
 
-    if ((max_present = nodeGetCPUCount(NULL)) < 0)
+    if ((max_present = nodeGetCPUCount(prefix)) < 0)
         return NULL;
 
 #ifdef __linux__
-    if (!(present_path = linuxGetCPUPresentPath(NULL)))
+    if (!(present_path = linuxGetCPUPresentPath(prefix)))
         return NULL;
     if (virFileExists(present_path))
         bitmap = linuxParseCPUmap(max_present, present_path);
