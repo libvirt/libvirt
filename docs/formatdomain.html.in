@@ -2002,10 +2002,10 @@
           <dt><code>sgio</code> attribute
           <span class="since">since 1.0.2</span></dt>
             <dd>
-            Indicates whether the kernel will filter unprivileged
-            SG_IO commands for the disk, valid settings are "filtered" or
-            "unfiltered". Defaults to "filtered". Similar to <code>rawio</code>,
-            <code>sgio</code> is only valid for device 'lun'.
+            If supported by the hypervisor and OS, indicates whether
+            unprivileged SG_IO commands are filtered for the disk. Valid
+            settings are "filtered" or "unfiltered" where the default is
+            "filtered". Only available when the <code>device</code> is 'lun'.
             </dd>
           <dt><code>snapshot</code> attribute
           <span class="since">since 0.9.5</span></dt>
@@ -3232,11 +3232,12 @@
           </dd>
           <dt>scsi</dt>
           <dd>For SCSI devices, user is responsible to make sure the device
-            is not used by host. The optional <code>sgio</code>
-            (<span class="since">since 1.0.6</span>) attribute indicates
-            whether the kernel will filter unprivileged SG_IO commands for
-            the disk, valid settings are "filtered" or "unfiltered".
-            The default is "filtered". The optional <code>rawio</code>
+            is not used by host. If supported by the hypervisor and OS, the
+            optional <code>sgio</code> (<span class="since">since 1.0.6</span>)
+            attribute indicates whether unprivileged SG_IO commands are
+            filtered for the disk. Valid settings are "filtered" or
+            "unfiltered", where the default is "filtered".
+            The optional <code>rawio</code>
             (<span class="since">since 1.2.9</span>) attribute indicates
             whether the lun needs the rawio capability. Valid settings are
             "yes" or "no". See the rawio description within the
