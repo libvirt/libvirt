@@ -1434,7 +1434,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
     char *sysfs_path = NULL;
     const char *path = NULL;
     int val = -1;
-    int ret = 0;
+    int ret = -1;
 
     /* "sgio" is only valid for block disk; cdrom
      * and floopy disk can have empty source.
@@ -1457,7 +1457,6 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'sgio' is not supported for SCSI "
                              "generic device yet "));
-            ret = -1;
             goto cleanup;
         }
 
@@ -1466,11 +1465,8 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
         return 0;
     }
 
-    sysfs_path = virGetUnprivSGIOSysfsPath(path, NULL);
-    if (sysfs_path == NULL) {
-        ret = -1;
+    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(path, NULL)))
         goto cleanup;
-    }
 
     /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
     val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
@@ -1481,7 +1477,9 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
      */
     if ((virFileExists(sysfs_path) || val == 1) &&
         virSetDeviceUnprivSGIO(path, NULL, val) < 0)
-        ret = -1;
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(sysfs_path);
