@@ -1018,6 +1018,69 @@ qemuGetSharedDeviceKey(const char *device_path)
     return key;
 }
 
+/*
+ * Make necessary checks for the need to check and for the current setting
+ * of the 'unpriv_sgio' value for the device_path passed.
+ *
+ * Returns:
+ *  0 - Success
+ * -1 - Some failure which would already have been messaged
+ * -2 - Mismatch with the "shared" sgio setting - needs to be messaged
+ *      by caller since it has context of which type of disk resource is
+ *      being used and in the future the hostdev information.
+ */
+static int
+qemuCheckUnprivSGIO(virHashTablePtr sharedDevices,
+                    const char *device_path,
+                    int sgio)
+{
+    char *sysfs_path = NULL;
+    char *key = NULL;
+    int val;
+    int ret = -1;
+
+    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(device_path, NULL)))
+        goto cleanup;
+
+    /* It can't be conflict if unpriv_sgio is not supported by kernel. */
+    if (!virFileExists(sysfs_path)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(key = qemuGetSharedDeviceKey(device_path)))
+        goto cleanup;
+
+    /* It can't be conflict if no other domain is sharing it. */
+    if (!(virHashLookup(sharedDevices, key))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virGetDeviceUnprivSGIO(device_path, NULL, &val) < 0)
+        goto cleanup;
+
+    /* Error message on failure needs to be handled in caller
+     * since there is more specific knowledge of device
+     */
+    if (!((val == 0 &&
+           (sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
+            sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
+          (val == 1 &&
+           sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(sysfs_path);
+    VIR_FREE(key);
+    return ret;
+}
+
+
 /* Check if a shared device's setting conflicts with the conf
  * used by other domain(s). Currently only checks the sgio
  * setting. Note that this should only be called for disk with
@@ -1029,62 +1092,31 @@ static int
 qemuCheckSharedDisk(virHashTablePtr sharedDevices,
                     virDomainDiskDefPtr disk)
 {
-    char *sysfs_path = NULL;
-    char *key = NULL;
-    int val;
-    int ret = -1;
+    int ret;
 
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
         return 0;
 
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(disk->src->path, NULL)))
-        goto cleanup;
-
-    /* It can't be conflict if unpriv_sgio is not supported by kernel. */
-    if (!virFileExists(sysfs_path)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (!(key = qemuGetSharedDeviceKey(disk->src->path)))
-        goto cleanup;
-
-    /* It can't be conflict if no other domain is sharing it. */
-    if (!(virHashLookup(sharedDevices, key))) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (virGetDeviceUnprivSGIO(disk->src->path, NULL, &val) < 0)
-        goto cleanup;
-
-    if (!((val == 0 &&
-           (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
-            disk->sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
-          (val == 1 &&
-           disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))) {
-
-        if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("sgio of shared disk 'pool=%s' 'volume=%s' conflicts "
-                             "with other active domains"),
-                           disk->src->srcpool->pool,
-                           disk->src->srcpool->volume);
-        } else {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("sgio of shared disk '%s' conflicts with other "
-                             "active domains"), disk->src->path);
+    if ((ret = qemuCheckUnprivSGIO(sharedDevices, disk->src->path,
+                                   disk->sgio)) < 0) {
+        if (ret == -2) {
+            if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("sgio of shared disk 'pool=%s' 'volume=%s' "
+                                 "conflicts with other active domains"),
+                               disk->src->srcpool->pool,
+                               disk->src->srcpool->volume);
+            } else {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("sgio of shared disk '%s' conflicts with "
+                                 "other active domains"),
+                               disk->src->path);
+            }
         }
-
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(key);
-    return ret;
+    return 0;
 }
 
 
