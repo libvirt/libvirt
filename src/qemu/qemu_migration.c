@@ -5624,7 +5624,6 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned short port;
-    bool keep = false;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -5700,17 +5699,14 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                  * other hand, if we report failure, then the management tools
                  * might try to restart the domain on the source side, even
                  * though the domain is actually running on the destination.
-                 * Return a NULL dom pointer, and hope that this is a rare
-                 * situation and management tools are smart.
-                 */
-
-                /*
+                 * Pretend success and hope that this is a rare situation and
+                 * management tools are smart.
+                 *
                  * However, in v3 protocol, the source VM is still available
                  * to restart during confirm() step, so we kill it off now.
                  */
-                if (!v3proto)
-                    keep = true;
-                goto endjob;
+                if (v3proto)
+                    goto endjob;
             }
         }
 
@@ -5738,9 +5734,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                  * target in paused state, in case admin can fix
                  * things up
                  */
-                if (!v3proto)
-                    keep = true;
-                goto endjob;
+                if (v3proto)
+                    goto endjob;
             }
             if (priv->job.completed) {
                 qemuDomainJobInfoUpdateTime(priv->job.completed);
@@ -5781,7 +5776,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
  endjob:
-    if (!dom && !keep &&
+    if (!dom &&
         !(flags & VIR_MIGRATE_OFFLINE) &&
         virDomainObjIsActive(vm)) {
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
