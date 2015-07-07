@@ -122,7 +122,7 @@ vzBuildCapabilities(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(NULL, caps) < 0)
         goto error;
 
     for (i = 0; i < 2; i++)

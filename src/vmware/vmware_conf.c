@@ -68,7 +68,7 @@ vmwareCapsInit(void)
                                    false, false)) == NULL)
         goto error;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (nodeCapsInitNUMA(NULL, caps) < 0)
         goto error;
 
     /* i686 guests are always supported */

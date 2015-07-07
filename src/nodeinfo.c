@@ -283,7 +283,6 @@ freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define SYSFS_SYSTEM_PATH "/sys/devices/system"
-# define SYSFS_CPU_PATH SYSFS_SYSTEM_PATH"/cpu"
 # define PROCSTAT_PATH "/proc/stat"
 # define MEMINFO_PATH "/proc/meminfo"
 # define SYSFS_MEMORY_SHARED_PATH "/sys/kernel/mm/ksm"
@@ -1660,7 +1659,9 @@ nodeGetCPUMap(const char *sysfs_prefix,
 }
 
 static int
-nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
+nodeCapsInitNUMAFake(const char *prefix,
+                     const char *cpupath ATTRIBUTE_UNUSED,
+                     virCapsPtr caps ATTRIBUTE_UNUSED)
 {
     virNodeInfo nodeinfo;
     virCapsHostNUMACellCPUPtr cpus;
@@ -1669,7 +1670,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     int id, cid;
     int onlinecpus ATTRIBUTE_UNUSED;
 
-    if (nodeGetInfo(NULL, &nodeinfo) < 0)
+    if (nodeGetInfo(prefix, &nodeinfo) < 0)
         return -1;
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
@@ -1683,7 +1684,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
         for (c = 0; c < nodeinfo.cores; c++) {
             for (t = 0; t < nodeinfo.threads; t++) {
 #ifdef __linux__
-                if (virNodeGetCpuValue(SYSFS_CPU_PATH, id, "online", 1)) {
+                if (virNodeGetCpuValue(cpupath, id, "online", 1)) {
 #endif
                     cpus[cid].id = id;
                     cpus[cid].socket_id = s;
@@ -1810,26 +1811,27 @@ nodeGetMemoryFake(unsigned long long *mem,
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
 static int
-virNodeCapsFillCPUInfo(int cpu_id ATTRIBUTE_UNUSED,
+virNodeCapsFillCPUInfo(const char *cpupath ATTRIBUTE_UNUSED,
+                       int cpu_id ATTRIBUTE_UNUSED,
                        virCapsHostNUMACellCPUPtr cpu ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
     int tmp;
     cpu->id = cpu_id;
 
-    if ((tmp = virNodeGetCpuValue(SYSFS_CPU_PATH, cpu_id,
+    if ((tmp = virNodeGetCpuValue(cpupath, cpu_id,
                                   "topology/physical_package_id", -1)) < 0)
         return 0;
 
     cpu->socket_id = tmp;
 
-    if ((tmp = virNodeGetCpuValue(SYSFS_CPU_PATH, cpu_id,
+    if ((tmp = virNodeGetCpuValue(cpupath, cpu_id,
                                   "topology/core_id", -1)) < 0)
         return 0;
 
     cpu->core_id = tmp;
 
-    if (!(cpu->siblings = virNodeGetSiblingsList(SYSFS_CPU_PATH, cpu_id)))
+    if (!(cpu->siblings = virNodeGetSiblingsList(cpupath, cpu_id)))
         return -1;
 
     return 0;
@@ -1917,8 +1919,11 @@ virNodeCapsGetPagesInfo(int node,
 }
 
 int
-nodeCapsInitNUMA(virCapsPtr caps)
+nodeCapsInitNUMA(const char *sysfs_prefix,
+                 virCapsPtr caps)
 {
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
+    char *cpupath;
     int n;
     unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
@@ -1933,8 +1938,13 @@ nodeCapsInitNUMA(virCapsPtr caps)
     bool topology_failed = false;
     int max_node;
 
-    if (!virNumaIsAvailable())
-        return nodeCapsInitNUMAFake(caps);
+    if (virAsprintf(&cpupath, "%s/cpu", prefix) < 0)
+        return -1;
+
+    if (!virNumaIsAvailable()) {
+        ret = nodeCapsInitNUMAFake(prefix, cpupath, caps);
+        goto cleanup;
+    }
 
     if ((max_node = virNumaGetMaxNode()) < 0)
         goto cleanup;
@@ -1955,7 +1965,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 
         for (i = 0; i < virBitmapSize(cpumap); i++) {
             if (virBitmapIsBitSet(cpumap, i)) {
-                if (virNodeCapsFillCPUInfo(i, cpus + cpu++) < 0) {
+                if (virNodeCapsFillCPUInfo(cpupath, i, cpus + cpu++) < 0) {
                     topology_failed = true;
                     virResetLastError();
                 }
@@ -1995,6 +2005,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
     VIR_FREE(cpus);
     VIR_FREE(siblings);
     VIR_FREE(pageinfo);
+    VIR_FREE(cpupath);
     return ret;
 }
 

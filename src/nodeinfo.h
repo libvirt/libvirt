@@ -27,7 +27,7 @@
 # include "capabilities.h"
 
 int nodeGetInfo(const char *sysfs_prefix, virNodeInfoPtr nodeinfo);
-int nodeCapsInitNUMA(virCapsPtr caps);
+int nodeCapsInitNUMA(const char *sysfs_prefix, virCapsPtr caps);
 
 int nodeGetCPUStats(int cpuNum,
                     virNodeCPUStatsPtr params,
