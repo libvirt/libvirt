@@ -132,7 +132,7 @@ vzBuildCapabilities(void)
                                          emulators[k], virt_types[k]) < 0)
                     goto error;
 
-    if (nodeGetInfo(&nodeinfo))
+    if (nodeGetInfo(NULL, &nodeinfo))
         goto error;
 
     if (VIR_ALLOC(cpu) < 0)
@@ -765,7 +765,7 @@ static int
 vzNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
               virNodeInfoPtr nodeinfo)
 {
-    return nodeGetInfo(nodeinfo);
+    return nodeGetInfo(NULL, nodeinfo);
 }
 
 static int vzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)

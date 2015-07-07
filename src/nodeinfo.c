@@ -1034,7 +1034,8 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
 }
 #endif
 
-int nodeGetInfo(virNodeInfoPtr nodeinfo)
+int nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                virNodeInfoPtr nodeinfo)
 {
     virArch hostarch = virArchFromHost();
 
@@ -1046,14 +1047,16 @@ int nodeGetInfo(virNodeInfoPtr nodeinfo)
 #ifdef __linux__
     {
     int ret = -1;
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
+
     if (!cpuinfo) {
         virReportSystemError(errno,
                              _("cannot open %s"), CPUINFO_PATH);
         return -1;
     }
 
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, SYSFS_SYSTEM_PATH,
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, prefix,
                                    hostarch, nodeinfo);
     if (ret < 0)
         goto cleanup;
@@ -1666,7 +1669,7 @@ nodeCapsInitNUMAFake(virCapsPtr caps ATTRIBUTE_UNUSED)
     int id, cid;
     int onlinecpus ATTRIBUTE_UNUSED;
 
-    if (nodeGetInfo(&nodeinfo) < 0)
+    if (nodeGetInfo(NULL, &nodeinfo) < 0)
         return -1;
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);

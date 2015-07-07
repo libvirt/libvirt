@@ -637,7 +637,7 @@ openvzGetNodeCPUs(void)
 {
     virNodeInfo nodeinfo;
 
-    if (nodeGetInfo(&nodeinfo) < 0)
+    if (nodeGetInfo(NULL, &nodeinfo) < 0)
         return 0;
 
     return nodeinfo.cpus;
