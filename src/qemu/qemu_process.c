@@ -2373,7 +2373,7 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 
             /* setaffinity fails if you set bits for CPUs which
              * aren't present, so we have to limit ourselves */
-            if ((hostcpus = nodeGetCPUCount()) < 0)
+            if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
                 goto cleanup;
 
             if (hostcpus > QEMUD_CPUMASK_LEN)

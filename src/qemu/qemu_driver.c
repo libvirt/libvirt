@@ -5237,7 +5237,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
         goto cleanup;
 
     if (!(allcpumap = virBitmapNew(hostcpus)))
@@ -5425,7 +5425,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
         goto cleanup;
 
     if (def->cputune.emulatorpin) {
@@ -5668,7 +5668,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     if (targetDef->iothreads == 0)
         return 0;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(info_ret, targetDef->iothreads) < 0)
