@@ -1548,7 +1548,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                                                vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
                   vm->def->name);
-        goto error;
+        return -1;
     }
 
     /* Hold an extra reference because we can't allow 'vm' to be
@@ -1580,26 +1580,38 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to clear security context for monitor for %s"),
                   vm->def->name);
-        goto error;
+        return -1;
     }
 
     if (priv->mon == NULL) {
         VIR_INFO("Failed to connect monitor for %s", vm->def->name);
-        goto error;
+        return -1;
     }
 
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto error;
-    ret = qemuMonitorSetCapabilities(priv->mon);
-    if (ret == 0 &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON))
-        ret = virQEMUCapsProbeQMP(priv->qemuCaps, priv->mon);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
 
- error:
+    if (qemuMonitorSetCapabilities(priv->mon) < 0)
+        goto cleanup;
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON) &&
+        virQEMUCapsProbeQMP(priv->qemuCaps, priv->mon) < 0)
+        goto cleanup;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT) &&
+        qemuMonitorSetMigrationCapability(priv->mon,
+                                          QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
+                                          true) < 0) {
+        VIR_DEBUG("Cannot enable migration events; clearing capability");
+        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
     return ret;
 }
 
