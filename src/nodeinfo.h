@@ -33,7 +33,8 @@ int nodeGetCPUStats(int cpuNum,
                     virNodeCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags);
-int nodeGetMemoryStats(int cellNum,
+int nodeGetMemoryStats(const char *sysfs_prefix,
+                       int cellNum,
                        virNodeMemoryStatsPtr params,
                        int *nparams,
                        unsigned int flags);

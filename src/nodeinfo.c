@@ -1141,7 +1141,8 @@ int nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
 #endif
 }
 
-int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
+int nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                       int cellNum ATTRIBUTE_UNUSED,
                        virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
                        int *nparams ATTRIBUTE_UNUSED,
                        unsigned int flags)
@@ -1151,6 +1152,7 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
 #ifdef __linux__
     {
         int ret;
+        const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
         char *meminfo_path = NULL;
         FILE *meminfo;
         int max_node;
@@ -1170,7 +1172,7 @@ int nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
             }
 
             if (virAsprintf(&meminfo_path, "%s/node/node%d/meminfo",
-                            SYSFS_SYSTEM_PATH, cellNum) < 0)
+                            prefix, cellNum) < 0)
                 return -1;
         }
         meminfo = fopen(meminfo_path, "r");
