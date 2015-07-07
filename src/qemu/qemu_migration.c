@@ -5660,8 +5660,14 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     /* Did the migration go as planned?  If yes, return the domain
      * object, but if no, clean up the empty qemu process.
      */
-    if (retcode == 0) {
-        if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (retcode != 0 ||
+            qemuMigrationPersist(driver, vm, mig) < 0)
+            goto endjob;
+
+        dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
+    } else if (retcode == 0) {
+        if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest unexpectedly quit"));
             qemuMigrationErrorReport(driver, vm->def->name);
@@ -5678,20 +5684,17 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             }
         }
 
-        if (!(flags & VIR_MIGRATE_OFFLINE)) {
-            if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0) {
-                qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                                VIR_QEMU_PROCESS_STOP_MIGRATED);
-                virDomainAuditStop(vm, "failed");
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_STOPPED,
-                                                 VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                goto endjob;
-            }
-            if (mig->network)
-                if (qemuDomainMigrateOPDRelocate(driver, vm, mig) < 0)
-                    VIR_WARN("unable to provide network data for relocation");
+        if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0) {
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                            VIR_QEMU_PROCESS_STOP_MIGRATED);
+            virDomainAuditStop(vm, "failed");
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_STOPPED,
+                                             VIR_DOMAIN_EVENT_STOPPED_FAILED);
+            goto endjob;
         }
+        if (mig->network && qemuDomainMigrateOPDRelocate(driver, vm, mig) < 0)
+            VIR_WARN("unable to provide network data for relocation");
 
         if (qemuMigrationStopNBDServer(driver, vm, mig) < 0)
             goto endjob;
@@ -5713,17 +5716,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                  * to restart during confirm() step, so we kill it off now.
                  */
                 if (v3proto) {
-                    if (!(flags & VIR_MIGRATE_OFFLINE)) {
-                        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                                        VIR_QEMU_PROCESS_STOP_MIGRATED);
-                        virDomainAuditStop(vm, "failed");
-                    }
+                    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                                    VIR_QEMU_PROCESS_STOP_MIGRATED);
+                    virDomainAuditStop(vm, "failed");
                 }
                 goto endjob;
             }
         }
 
-        if (!(flags & VIR_MIGRATE_PAUSED) && !(flags & VIR_MIGRATE_OFFLINE)) {
+        if (!(flags & VIR_MIGRATE_PAUSED)) {
             /* run 'cont' on the destination, which allows migration on qemu
              * >= 0.10.6 to work properly.  This isn't strictly necessary on
              * older qemu's, but it also doesn't hurt anything there
@@ -5765,19 +5766,17 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 
         dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
 
-        if (!(flags & VIR_MIGRATE_OFFLINE)) {
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_RESUMED,
+                                         VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                                 VIR_DOMAIN_PAUSED_USER);
+            if (event)
+                qemuDomainEventQueue(driver, event);
             event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_RESUMED,
-                                             VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-            if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-                virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                                     VIR_DOMAIN_PAUSED_USER);
-                if (event)
-                    qemuDomainEventQueue(driver, event);
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_SUSPENDED,
-                                                 VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
-            }
+                                             VIR_DOMAIN_EVENT_SUSPENDED,
+                                             VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
         }
 
         if (virDomainObjIsActive(vm) &&
@@ -5788,7 +5787,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 
         /* Guest is successfully running, so cancel previous auto destroy */
         qemuProcessAutoDestroyRemove(driver, vm);
-    } else if (!(flags & VIR_MIGRATE_OFFLINE)) {
+    } else {
         qemuDomainJobInfo info;
 
         /* Check for a possible error on the monitor in case Finish was called
@@ -5806,11 +5805,12 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
     }
 
-    if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
+ endjob:
+    if (dom &&
+        qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
                                 QEMU_MIGRATION_COOKIE_STATS) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
- endjob:
     qemuMigrationJobFinish(driver, vm);
     if (!vm->persistent && !virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
