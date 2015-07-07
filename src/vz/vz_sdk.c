@@ -2958,7 +2958,9 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
         pret = PrlVirtNet_SetNetworkType(vnet, PVN_BRIDGED_ETHERNET);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        job = PrlSrv_AddVirtualNetwork(privconn->server, vnet, 0);
+        job = PrlSrv_AddVirtualNetwork(privconn->server,
+                                       vnet,
+                                       PRL_USE_VNET_NAME_FOR_BRIDGE_NAME);
         if (PRL_FAILED(pret = waitJob(job)))
             goto cleanup;
 
