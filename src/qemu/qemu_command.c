@@ -4397,7 +4397,11 @@ qemuBuildFSDevStr(virDomainDefPtr def,
         goto error;
     }
 
-    virBufferAddLit(&opt, "virtio-9p-pci");
+    if (fs->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+        virBufferAddLit(&opt, "virtio-9p-ccw");
+    else
+        virBufferAddLit(&opt, "virtio-9p-pci");
+
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",fsdev=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",mount_tag=%s", fs->dst);
