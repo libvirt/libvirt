@@ -1275,29 +1275,35 @@ nodeGetPresentCPUBitmap(const char *sysfs_prefix)
 }
 
 virBitmapPtr
-nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
+nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                 int *max_id ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
+    char *online_path = NULL;
     virBitmapPtr cpumap;
     int present;
 
-    present = nodeGetCPUCount(NULL);
+    present = nodeGetCPUCount(prefix);
     if (present < 0)
         return NULL;
 
-    if (virFileExists(SYSFS_SYSTEM_PATH "/cpu/online")) {
-        cpumap = linuxParseCPUmap(present, SYSFS_SYSTEM_PATH "/cpu/online");
+    if (virAsprintf(&online_path, "%s/cpu/online", prefix) < 0)
+        return NULL;
+    if (virFileExists(online_path)) {
+        cpumap = linuxParseCPUmap(present, online_path);
     } else {
         size_t i;
 
         cpumap = virBitmapNew(present);
         if (!cpumap)
-            return NULL;
+            goto cleanup;
         for (i = 0; i < present; i++) {
-            int online = virNodeGetCpuValue(SYSFS_SYSTEM_PATH, i, "online", 1);
+            int online = virNodeGetCpuValue(prefix, i, "online", 1);
             if (online < 0) {
                 virBitmapFree(cpumap);
-                return NULL;
+                cpumap = NULL;
+                goto cleanup;
             }
             if (online)
                 ignore_value(virBitmapSetBit(cpumap, i));
@@ -1305,6 +1311,8 @@ nodeGetCPUBitmap(int *max_id ATTRIBUTE_UNUSED)
     }
     if (max_id && cpumap)
         *max_id = present;
+ cleanup:
+    VIR_FREE(online_path);
     return cpumap;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
@@ -1630,7 +1638,7 @@ nodeGetCPUMap(unsigned char **cpumap,
     if (!cpumap && !online)
         return nodeGetCPUCount(NULL);
 
-    if (!(cpus = nodeGetCPUBitmap(&maxpresent)))
+    if (!(cpus = nodeGetCPUBitmap(NULL, &maxpresent)))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)

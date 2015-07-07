@@ -44,7 +44,7 @@ int nodeGetMemory(unsigned long long *mem,
                   unsigned long long *freeMem);
 
 virBitmapPtr nodeGetPresentCPUBitmap(const char *sysfs_prefix);
-virBitmapPtr nodeGetCPUBitmap(int *max_id);
+virBitmapPtr nodeGetCPUBitmap(const char *sysfs_prefix, int *max_id);
 int nodeGetCPUCount(const char *sysfs_prefix);
 
 int nodeGetMemoryParameters(virTypedParameterPtr params,
