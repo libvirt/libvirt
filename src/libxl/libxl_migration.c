@@ -585,7 +585,9 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
  cleanup:
     if (dom == NULL) {
         libxlDomainDestroyInternal(driver, vm);
-        libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        libxlDomainCleanup(driver, vm);
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
         if (!vm->persistent)
@@ -624,7 +626,9 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
     }
 
     libxlDomainDestroyInternal(driver, vm);
-    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED);
+    libxlDomainCleanup(driver, vm);
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                         VIR_DOMAIN_SHUTOFF_MIGRATED);
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
 

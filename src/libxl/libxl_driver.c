@@ -392,7 +392,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     return 0;
 
  out:
-    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN);
+    libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
         virDomainObjListRemoveLocked(driver->domains, vm);
     else
@@ -1346,16 +1346,19 @@ libxlDomainDestroyFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
-                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
-
     if (libxlDomainDestroyInternal(driver, vm) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to destroy domain '%d'"), vm->def->id);
         goto endjob;
     }
 
-    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                         VIR_DOMAIN_SHUTOFF_DESTROYED);
+
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                     VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
+
+    libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
 
@@ -1689,6 +1692,9 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
+    virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                         VIR_DOMAIN_SHUTOFF_SAVED);
+
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
@@ -1698,7 +1704,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED);
+    libxlDomainCleanup(driver, vm);
     vm->hasManagedSave = true;
     ret = 0;
 
@@ -1909,7 +1915,9 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
             goto unpause;
         }
 
-        libxlDomainCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED);
+        libxlDomainCleanup(driver, vm);
+        virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_CRASHED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
         if (!vm->persistent)

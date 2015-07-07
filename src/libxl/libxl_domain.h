@@ -110,8 +110,7 @@ libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
 
 void
 libxlDomainCleanup(libxlDriverPrivatePtr driver,
-                   virDomainObjPtr vm,
-                   virDomainShutoffReason reason);
+                   virDomainObjPtr vm);
 
 /*
  * Note: Xen 4.3 removed the const from the event handler signature.
