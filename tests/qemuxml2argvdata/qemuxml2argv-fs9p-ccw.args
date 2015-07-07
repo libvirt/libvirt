@@ -1,0 +1,16 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/qemu -S -M s390-ccw-virtio -m 214 -smp 1 \
+-nographic -nodefconfig -nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
+-drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0 -device \
+virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0 \
+-fsdev local,security_model=passthrough,id=fsdev-fs0,\
+path=/export/to/guest -device virtio-9p-ccw,id=fs0,fsdev=fsdev-fs0,\
+mount_tag=/import/from/host,devno=fe.0.0001 \
+-fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,\
+path=/export/to/guest2 -device virtio-9p-ccw,id=fs1,fsdev=fsdev-fs1,\
+mount_tag=/import/from/host2,devno=fe.0.0002 \
+-fsdev handle,writeout=immediate,id=fsdev-fs2,\
+path=/export/to/guest3 -device virtio-9p-ccw,id=fs2,fsdev=fsdev-fs2,\
+mount_tag=/import/from/host3,devno=fe.0.0003 \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0004
