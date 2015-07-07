@@ -706,8 +706,7 @@ qemuSetupCpuCgroup(virQEMUDriverPtr driver,
             event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
         }
 
-        if (event)
-            qemuDomainEventQueue(driver, event);
+        qemuDomainEventQueue(driver, event);
     }
 
     return 0;

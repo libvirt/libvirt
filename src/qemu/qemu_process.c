@@ -328,8 +328,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
  cleanup:
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 }
 
 
@@ -353,8 +352,7 @@ qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     ((qemuDomainObjPrivatePtr) vm->privateData)->monError = true;
     event = virDomainEventControlErrorNewFromObj(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
     virObjectUnlock(vm);
 }
@@ -517,8 +515,7 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
     virObjectUnref(cfg);
     return 0;
@@ -594,8 +591,7 @@ qemuProcessFakeReboot(void *opaque)
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
 }
 
@@ -644,8 +640,7 @@ qemuProcessHandleEvent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                          seconds, micros, details);
 
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
     return 0;
 }
@@ -698,8 +693,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
  unlock:
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
 
     return 0;
@@ -748,8 +742,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
  unlock:
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
 
     return 0;
@@ -802,8 +795,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
  unlock:
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return 0;
 }
@@ -847,8 +839,7 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return 0;
 }
@@ -909,10 +900,8 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (vm)
         virObjectUnlock(vm);
-    if (watchdogEvent)
-        qemuDomainEventQueue(driver, watchdogEvent);
-    if (lifecycleEvent)
-        qemuDomainEventQueue(driver, lifecycleEvent);
+    qemuDomainEventQueue(driver, watchdogEvent);
+    qemuDomainEventQueue(driver, lifecycleEvent);
 
     virObjectUnref(cfg);
     return 0;
@@ -973,12 +962,9 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
     virObjectUnlock(vm);
 
-    if (ioErrorEvent)
-        qemuDomainEventQueue(driver, ioErrorEvent);
-    if (ioErrorEvent2)
-        qemuDomainEventQueue(driver, ioErrorEvent2);
-    if (lifecycleEvent)
-        qemuDomainEventQueue(driver, lifecycleEvent);
+    qemuDomainEventQueue(driver, ioErrorEvent);
+    qemuDomainEventQueue(driver, ioErrorEvent2);
+    qemuDomainEventQueue(driver, lifecycleEvent);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1101,8 +1087,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     event = virDomainEventGraphicsNewFromObj(vm, phase, localAddr, remoteAddr, authScheme, subject);
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
     return 0;
 
@@ -1163,8 +1148,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1202,10 +1186,8 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
     virObjectUnlock(vm);
-    if (event)
-        qemuDomainEventQueue(driver, event);
-    if (lifecycleEvent)
-        qemuDomainEventQueue(driver, lifecycleEvent);
+    qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, lifecycleEvent);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1246,10 +1228,8 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
-    if (lifecycleEvent)
-        qemuDomainEventQueue(driver, lifecycleEvent);
+    qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, lifecycleEvent);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1276,8 +1256,7 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return 0;
 }
@@ -1318,10 +1297,8 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     virObjectUnlock(vm);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
-    if (lifecycleEvent)
-        qemuDomainEventQueue(driver, lifecycleEvent);
+    qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, lifecycleEvent);
     virObjectUnref(cfg);
 
     return 0;
@@ -5775,8 +5752,7 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
     if (!dom->persistent)
         qemuDomainRemoveInactive(driver, dom);
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
  cleanup:
     virDomainObjEndAPI(&dom);

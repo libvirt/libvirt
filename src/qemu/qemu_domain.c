@@ -126,7 +126,8 @@ qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virObjectEventPtr event)
 {
-    virObjectEventStateQueue(driver->domainEventState, event);
+    if (event)
+        virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 
@@ -2732,8 +2733,7 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
         virDomainDiskDefFree(disk);
     }
 
-    if (event)
-        qemuDomainEventQueue(driver, event);
+    qemuDomainEventQueue(driver, event);
 
     return 0;
 }
