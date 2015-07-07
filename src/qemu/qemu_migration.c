@@ -5624,6 +5624,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned short port;
+    bool keep = false;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -5682,15 +5683,9 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             }
         }
 
-        if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0) {
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                            VIR_QEMU_PROCESS_STOP_MIGRATED);
-            virDomainAuditStop(vm, "failed");
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_STOPPED,
-                                             VIR_DOMAIN_EVENT_STOPPED_FAILED);
+        if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0)
             goto endjob;
-        }
+
         if (mig->network && qemuDomainMigrateOPDRelocate(driver, vm, mig) < 0)
             VIR_WARN("unable to provide network data for relocation");
 
@@ -5713,11 +5708,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                  * However, in v3 protocol, the source VM is still available
                  * to restart during confirm() step, so we kill it off now.
                  */
-                if (v3proto) {
-                    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                                    VIR_QEMU_PROCESS_STOP_MIGRATED);
-                    virDomainAuditStop(vm, "failed");
-                }
+                if (!v3proto)
+                    keep = true;
                 goto endjob;
             }
         }
@@ -5746,14 +5738,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                  * target in paused state, in case admin can fix
                  * things up
                  */
-                if (v3proto) {
-                    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                                    VIR_QEMU_PROCESS_STOP_MIGRATED);
-                    virDomainAuditStop(vm, "failed");
-                    event = virDomainEventLifecycleNewFromObj(vm,
-                                                     VIR_DOMAIN_EVENT_STOPPED,
-                                                     VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                }
+                if (!v3proto)
+                    keep = true;
                 goto endjob;
             }
             if (priv->job.completed) {
@@ -5792,7 +5778,12 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         qemuMigrationFetchJobStatus(driver, vm,
                                     QEMU_ASYNC_JOB_MIGRATION_IN,
                                     &info);
+    }
 
+ endjob:
+    if (!dom && !keep &&
+        !(flags & VIR_MIGRATE_OFFLINE) &&
+        virDomainObjIsActive(vm)) {
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "failed");
@@ -5801,7 +5792,6 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
     }
 
- endjob:
     if (dom &&
         qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
                                 QEMU_MIGRATION_COOKIE_STATS) < 0)
