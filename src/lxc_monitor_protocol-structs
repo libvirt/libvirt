@@ -5,7 +5,7 @@ enum virLXCMonitorExitStatus {
         VIR_LXC_MONITOR_EXIT_STATUS_REBOOT = 2,
 };
 struct virLXCMonitorExitEventMsg {
-        enum virLXCMonitorExitStatus status;
+        virLXCMonitorExitStatus    status;
 };
 struct virLXCMonitorInitEventMsg {
         uint64_t                   initpid;

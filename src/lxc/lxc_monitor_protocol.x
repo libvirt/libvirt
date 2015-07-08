@@ -30,7 +30,7 @@ enum virLXCMonitorExitStatus {
 };
 
 struct virLXCMonitorExitEventMsg {
-    enum virLXCMonitorExitStatus status;
+    virLXCMonitorExitStatus status;
 };
 
 struct virLXCMonitorInitEventMsg {
