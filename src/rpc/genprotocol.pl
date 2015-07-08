@@ -38,7 +38,10 @@ my $target = shift;
 
 unlink $target;
 
-open RPCGEN, "-|", $rpcgen, $mode, $xdrdef
+if ($rpcgen =~ /portable-rpcgen/) {
+    $rpcgen = "$rpcgen -o -";
+}
+open RPCGEN, "-|", "$rpcgen $mode $xdrdef"
     or die "cannot run $rpcgen $mode $xdrdef: $!";
 open TARGET, ">$target"
     or die "cannot create $target: $!";

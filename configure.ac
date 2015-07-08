@@ -401,7 +401,7 @@ AM_CONDITIONAL([HAVE_LIBTASN1], [test "x$ac_cv_header_libtasn1_h" = "xyes"])
 AC_CHECK_LIB([intl],[gettext],[])
 
 dnl Do we have rpcgen?
-AC_PATH_PROG([RPCGEN], [rpcgen], [no])
+AC_PATH_PROGS([RPCGEN], [rpcgen portable-rpcgen], [no])
 AM_CONDITIONAL([HAVE_RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
 dnl Is this GLIBC's buggy rpcgen?
 AM_CONDITIONAL([HAVE_GLIBC_RPCGEN],
