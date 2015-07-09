@@ -69,6 +69,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
         char iface[17], dest[128], mask[128];
         unsigned int addr_val, mask_val;
         virNetworkIpDefPtr ipdef;
+        virNetworkRouteDefPtr routedef;
         int num;
         size_t i;
 
@@ -119,6 +120,34 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Network is already in use by interface %s"),
                                iface);
+                ret = -1;
+                goto out;
+            }
+        }
+
+        for (i = 0;
+             (routedef = virNetworkDefGetRouteByIndex(def, AF_INET, i));
+             i++) {
+
+            virSocketAddr r_mask, r_addr;
+            virSocketAddrPtr tmp_addr = virNetworkRouteDefGetAddress(routedef);
+            int r_prefix = virNetworkRouteDefGetPrefix(routedef);
+
+            if (!tmp_addr ||
+                virSocketAddrMaskByPrefix(tmp_addr, r_prefix, &r_addr) < 0 ||
+                virSocketAddrPrefixToNetmask(r_prefix, &r_mask, AF_INET) < 0)
+                continue;
+
+            if ((r_addr.data.inet4.sin_addr.s_addr == addr_val) &&
+                (r_mask.data.inet4.sin_addr.s_addr == mask_val)) {
+                char *addr_str = virSocketAddrFormat(&r_addr);
+                if (!addr_str)
+                    virResetLastError();
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Route address '%s' conflicts "
+                                 "with IP address for '%s'"),
+                               NULLSTR(addr_str), iface);
+                VIR_FREE(addr_str);
                 ret = -1;
                 goto out;
             }
