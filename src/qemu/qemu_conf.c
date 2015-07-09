@@ -1381,7 +1381,7 @@ qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
 {
     char *dev_path = NULL;
     char *key = NULL;
-    int ret;
+    int ret = -1;
 
     if (!qemuIsSharedHostdev(hostdev))
         return 0;
