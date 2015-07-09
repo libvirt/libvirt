@@ -360,6 +360,9 @@ virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
 virNetworkIpDefPtr
 virNetworkDefGetIpByIndex(const virNetworkDef *def,
                           int family, size_t n);
+virNetworkRouteDefPtr
+virNetworkDefGetRouteByIndex(const virNetworkDef *def,
+                             int family, size_t n);
 int virNetworkIpDefPrefix(const virNetworkIpDef *def);
 int virNetworkIpDefNetmask(const virNetworkIpDef *def,
                            virSocketAddrPtr netmask);

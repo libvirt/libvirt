@@ -803,6 +803,32 @@ virNetworkDefGetIpByIndex(const virNetworkDef *def,
     return NULL;
 }
 
+/* return routes[index], or NULL if there aren't enough routes */
+virNetworkRouteDefPtr
+virNetworkDefGetRouteByIndex(const virNetworkDef *def,
+                             int family, size_t n)
+{
+    size_t i;
+
+    if (!def->routes || n >= def->nroutes)
+        return NULL;
+
+    if (family == AF_UNSPEC)
+        return def->routes[n];
+
+    /* find the nth route of type "family" */
+    for (i = 0; i < def->nroutes; i++) {
+        virSocketAddrPtr addr = virNetworkRouteDefGetAddress(def->routes[i]);
+        if (VIR_SOCKET_ADDR_IS_FAMILY(addr, family)
+            && (n-- <= 0)) {
+            return def->routes[i];
+        }
+    }
+
+    /* failed to find enough of the right family */
+    return NULL;
+}
+
 /* return number of 1 bits in netmask for the network's ipAddress,
  * or -1 on error
  */

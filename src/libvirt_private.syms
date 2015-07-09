@@ -597,6 +597,7 @@ virNetworkDefFormat;
 virNetworkDefFormatBuf;
 virNetworkDefFree;
 virNetworkDefGetIpByIndex;
+virNetworkDefGetRouteByIndex;
 virNetworkDefParseFile;
 virNetworkDefParseNode;
 virNetworkDefParseString;
