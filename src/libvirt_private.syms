@@ -249,6 +249,7 @@ virDomainDiskDefFree;
 virDomainDiskDefNew;
 virDomainDiskDefSourceParse;
 virDomainDiskDeviceTypeToString;
+virDomainDiskDiffersSourceOnly;
 virDomainDiskDiscardTypeToString;
 virDomainDiskErrorPolicyTypeFromString;
 virDomainDiskErrorPolicyTypeToString;

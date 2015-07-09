@@ -7920,6 +7920,9 @@ qemuDomainChangeDiskMediaLive(virConnectPtr conn,
             goto end;
         }
 
+        if (!virDomainDiskDiffersSourceOnly(disk, orig_disk))
+            goto end;
+
         /* Add the new disk src into shared disk hash table */
         if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
             goto end;

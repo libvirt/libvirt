@@ -5690,6 +5690,134 @@ virDomainDiskFindByBusAndDst(virDomainDefPtr def,
     return NULL;
 }
 
+
+/*
+ * Makes sure the @disk differs from @orig_disk only by the source
+ * path and nothing else.  Fields that are being checked and the
+ * information whether they are nullable (may not be specified) or is
+ * taken from the virDomainDiskDefFormat() code.
+ */
+bool
+virDomainDiskDiffersSourceOnly(virDomainDiskDefPtr disk,
+                               virDomainDiskDefPtr orig_disk)
+{
+#define CHECK_EQ(field, field_name, nullable)                           \
+    do {                                                                \
+        if (nullable && !disk->field)                                   \
+            break;                                                      \
+        if (disk->field != orig_disk->field) {                          \
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,               \
+                           _("cannot modify field '%s' of the disk"),   \
+                           field_name);                                 \
+            return false;                                               \
+        }                                                               \
+    } while (0)
+
+    CHECK_EQ(device, "device", false);
+    CHECK_EQ(cachemode, "cache", true);
+    CHECK_EQ(error_policy, "error_policy", true);
+    CHECK_EQ(rerror_policy, "rerror_policy", true);
+    CHECK_EQ(iomode, "io", true);
+    CHECK_EQ(ioeventfd, "ioeventfd", true);
+    CHECK_EQ(event_idx, "event_idx", true);
+    CHECK_EQ(copy_on_read, "copy_on_read", true);
+    CHECK_EQ(discard, "discard", true);
+    CHECK_EQ(iothread, "iothread", true);
+
+    if (disk->geometry.cylinders &&
+        disk->geometry.heads &&
+        disk->geometry.sectors) {
+        CHECK_EQ(geometry.cylinders, "geometry cylinders", false);
+        CHECK_EQ(geometry.heads, "geometry heads", false);
+        CHECK_EQ(geometry.sectors, "geometry sectors", false);
+        CHECK_EQ(geometry.trans, "BIOS-translation-modus", true);
+    }
+
+    CHECK_EQ(blockio.logical_block_size,
+             "blockio logical_block_size", false);
+    CHECK_EQ(blockio.physical_block_size,
+             "blockio physical_block_size", false);
+
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_USB)
+        CHECK_EQ(removable, "removable", true);
+
+    CHECK_EQ(blkdeviotune.total_bytes_sec,
+             "blkdeviotune total_bytes_sec",
+             true);
+    CHECK_EQ(blkdeviotune.read_bytes_sec,
+             "blkdeviotune read_bytes_sec",
+             true);
+    CHECK_EQ(blkdeviotune.write_bytes_sec,
+             "blkdeviotune write_bytes_sec",
+             true);
+    CHECK_EQ(blkdeviotune.total_iops_sec,
+             "blkdeviotune total_iops_sec",
+             true);
+    CHECK_EQ(blkdeviotune.read_iops_sec,
+             "blkdeviotune read_iops_sec",
+             true);
+    CHECK_EQ(blkdeviotune.write_iops_sec,
+             "blkdeviotune write_iops_sec",
+             true);
+    CHECK_EQ(blkdeviotune.total_bytes_sec_max,
+             "blkdeviotune total_bytes_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.read_bytes_sec_max,
+             "blkdeviotune read_bytes_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.write_bytes_sec_max,
+             "blkdeviotune write_bytes_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.total_iops_sec_max,
+             "blkdeviotune total_iops_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.read_iops_sec_max,
+             "blkdeviotune read_iops_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.write_iops_sec_max,
+             "blkdeviotune write_iops_sec_max",
+             true);
+    CHECK_EQ(blkdeviotune.size_iops_sec,
+             "blkdeviotune size_iops_sec",
+             true);
+
+    CHECK_EQ(transient, "transient", true);
+
+    if (disk->serial && STRNEQ(disk->serial, orig_disk->serial)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "serial");
+        return false;
+    }
+
+    if (disk->wwn && STRNEQ(disk->wwn, orig_disk->wwn)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "wwn");
+        return false;
+    }
+
+    if (disk->vendor && STRNEQ(disk->vendor, orig_disk->vendor)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "vendor");
+        return false;
+    }
+
+    if (disk->product && STRNEQ(disk->product, orig_disk->product)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "product");
+        return false;
+    }
+
+    CHECK_EQ(info.bootIndex, "boot order", true);
+
+#undef CHECK_EQ
+
+    return true;
+}
+
 int
 virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
                               virDomainDiskDefPtr def)
