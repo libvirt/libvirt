@@ -16414,8 +16414,11 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     if (qemuDomainSupportsBlockJobs(vm, NULL) < 0)
         goto endjob;
 
-    if (!(disk = virDomainDiskByName(vm->def, path, true)))
+    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk %s not found in the domain"), path);
         goto endjob;
+    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorGetBlockJobInfo(qemuDomainGetMonitor(vm),
