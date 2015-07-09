@@ -317,6 +317,12 @@
     <feature name='rtm'>
       <cpuid function='0x00000007' ebx='0x00000800'/>
     </feature>
+    <feature name='mpx'>
+      <cpuid function='0x00000007' ebx='0x00004000'/>
+    </feature>
+    <feature name='avx512f'> <!-- AVX-512 Foundation -->
+      <cpuid function='0x00000007' ebx='0x00010000'/>
+    </feature>
     <feature name='rdseed'>
       <cpuid function='0x00000007' ebx='0x00040000'/>
     </feature>
@@ -325,6 +331,15 @@
     </feature>
     <feature name='smap'>
       <cpuid function='0x00000007' ebx='0x00100000'/>
+    </feature>
+    <feature name='avx512pf'> <!-- AVX-512 Prefetch -->
+      <cpuid function='0x00000007' ebx='0x04000000'/>
+    </feature>
+    <feature name='avx512er'> <!-- AVX-512 Exponential and Reciprocal -->
+      <cpuid function='0x00000007' ebx='0x08000000'/>
+    </feature>
+    <feature name='avx512cd'> <!-- AVX-512 Conflict Detection -->
+      <cpuid function='0x00000007' ebx='0x10000000'/>
     </feature>
 
     <!-- Advanced Power Management edx features -->
