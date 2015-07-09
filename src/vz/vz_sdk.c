@@ -2986,20 +2986,15 @@ static int prlsdkAddNet(PRL_HANDLE sdkdom,
     return ret;
 }
 
-static int
-prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
+static void
+prlsdkCleanupBridgedNet(vzConnPtr privconn, virDomainNetDefPtr net)
 {
-    int ret = -1;
     PRL_RESULT pret;
     PRL_HANDLE vnet = PRL_INVALID_HANDLE;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
-    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("unplugging network device of type %s is not supported"),
-                       virDomainNetTypeToString(net->type));
-        return ret;
-    }
+    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE)
+        return;
 
     pret = PrlVirtNet_Create(&vnet);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -3011,11 +3006,8 @@ prlsdkDelNet(vzConnPtr privconn, virDomainNetDefPtr net)
     if (PRL_FAILED(pret = waitJob(job)))
         goto cleanup;
 
-    ret = 0;
-
  cleanup:
     PrlHandle_Free(vnet);
-    return ret;
 }
 
 int prlsdkAttachNet(virDomainObjPtr dom,
@@ -3107,8 +3099,7 @@ int prlsdkDetachNet(virDomainObjPtr dom,
     if (sdknet == PRL_INVALID_HANDLE)
         goto cleanup;
 
-    if (prlsdkDelNet(privconn, net) < 0)
-        goto cleanup;
+    prlsdkCleanupBridgedNet(privconn, net);
 
     pret = PrlVmDev_Remove(sdknet);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -3530,7 +3521,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
 
     if (olddef) {
         for (i = 0; i < olddef->nnets; i++)
-            prlsdkDelNet(conn->privateData, olddef->nets[i]);
+            prlsdkCleanupBridgedNet(conn->privateData, olddef->nets[i]);
     }
 
     for (i = 0; i < def->nnets; i++) {
@@ -3575,7 +3566,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     VIR_FREE(mask);
 
     for (i = 0; i < def->nnets; i++)
-        prlsdkDelNet(conn->privateData, def->nets[i]);
+        prlsdkCleanupBridgedNet(conn->privateData, def->nets[i]);
 
     return -1;
 }
@@ -3722,7 +3713,7 @@ prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
     size_t i;
 
     for (i = 0; i < dom->def->nnets; i++)
-        prlsdkDelNet(privconn, dom->def->nets[i]);
+        prlsdkCleanupBridgedNet(privconn, dom->def->nets[i]);
 
     job = PrlVm_Unreg(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
