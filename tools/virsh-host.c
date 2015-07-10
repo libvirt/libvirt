@@ -637,7 +637,8 @@ cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     }
     vshPrint(ctl, "%-20s %s\n", _("CPU model:"), info.model);
     vshPrint(ctl, "%-20s %d\n", _("CPU(s):"), info.cpus);
-    vshPrint(ctl, "%-20s %d MHz\n", _("CPU frequency:"), info.mhz);
+    if (info.mhz)
+        vshPrint(ctl, "%-20s %d MHz\n", _("CPU frequency:"), info.mhz);
     vshPrint(ctl, "%-20s %d\n", _("CPU socket(s):"), info.sockets);
     vshPrint(ctl, "%-20s %d\n", _("Core(s) per socket:"), info.cores);
     vshPrint(ctl, "%-20s %d\n", _("Thread(s) per core:"), info.threads);
