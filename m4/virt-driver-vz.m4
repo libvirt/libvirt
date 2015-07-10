@@ -25,7 +25,7 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
 
     if test "$with_vz" = "yes" ||
        test "$with_vz" = "check"; then
-        PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk],
+        PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk >= $PARALLELS_SDK_REQUIRED],
                           [PARALLELS_SDK_FOUND=yes], [PARALLELS_SDK_FOUND=no])
 
         if test "$with_vz" = "yes" && test "$PARALLELS_SDK_FOUND" = "no"; then
