@@ -214,6 +214,22 @@ virCopyError(virErrorPtr from,
     return ret;
 }
 
+
+virErrorPtr
+virErrorCopyNew(virErrorPtr err)
+{
+    virErrorPtr ret;
+
+    if (VIR_ALLOC_QUIET(ret) < 0)
+        return NULL;
+
+    if (virCopyError(err, ret) < 0)
+        VIR_FREE(ret);
+
+    return ret;
+}
+
+
 static virErrorPtr
 virLastErrorObject(void)
 {

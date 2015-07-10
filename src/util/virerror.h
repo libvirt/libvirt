@@ -185,6 +185,7 @@ void virReportOOMErrorFull(int domcode,
     virRaiseErrorObject(__FILE__, __FUNCTION__, __LINE__, obj)
 
 int virSetError(virErrorPtr newerr);
+virErrorPtr virErrorCopyNew(virErrorPtr err);
 void virDispatchError(virConnectPtr conn);
 const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen);
 

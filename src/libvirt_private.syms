@@ -1365,6 +1365,7 @@ ebtablesRemoveForwardAllowIn;
 
 # util/virerror.h
 virDispatchError;
+virErrorCopyNew;
 virErrorInitialize;
 virErrorSetErrnoFromLastError;
 virLastErrorIsSystemErrno;
