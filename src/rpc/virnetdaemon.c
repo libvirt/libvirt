@@ -747,3 +747,16 @@ virNetDaemonClose(virNetDaemonPtr dmn)
 
     virObjectUnlock(dmn);
 }
+
+bool
+virNetDaemonHasClients(virNetDaemonPtr dmn)
+{
+    size_t i = 0;
+
+    for (i = 0; i < dmn->nservers; i++) {
+        if (virNetServerHasClients(dmn->servers[i]))
+            return true;
+    }
+
+    return false;
+}

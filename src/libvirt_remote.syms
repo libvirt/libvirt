@@ -65,6 +65,7 @@ virNetDaemonAddSignalHandler;
 virNetDaemonAutoShutdown;
 virNetDaemonClose;
 virNetDaemonGetServer;
+virNetDaemonHasClients;
 virNetDaemonIsPrivileged;
 virNetDaemonNew;
 virNetDaemonNewPostExecRestart;
