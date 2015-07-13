@@ -9954,7 +9954,7 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
     size_t i = 0;
     int ret = -1;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) < 0 ||
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) == 0 &&
         mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("change of nodeset for running domain "
