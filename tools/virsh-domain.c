@@ -1802,7 +1802,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     bool pivot = vshCommandOptBool(cmd, "pivot");
     bool finish = vshCommandOptBool(cmd, "keep-overlay");
     bool active = vshCommandOptBool(cmd, "active") || pivot || finish;
-    bool blocking = vshCommandOptBool(cmd, "wait");
+    bool blocking = vshCommandOptBool(cmd, "wait") || pivot || finish;
+    bool async = vshCommandOptBool(cmd, "async");
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
@@ -1818,6 +1819,8 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     int cb_id = -1;
     unsigned int flags = 0;
     unsigned long bandwidth = 0;
+
+    VSH_EXCLUSIVE_OPTIONS("pivot", "keep-overlay");
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
@@ -1843,17 +1846,30 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
    if (vshCommandOptBool(cmd, "keep-relative"))
         flags |= VIR_DOMAIN_BLOCK_COMMIT_RELATIVE;
 
-    blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
-    if (blocking) {
-        if (pivot && finish) {
-            vshError(ctl, "%s", _("cannot mix --pivot and --keep-overlay"));
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
+    if (timeout)
+        blocking = true;
+
+    if (!blocking) {
+        if (verbose) {
+            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, "
+                                  "--wait, --pivot, or --keep-overlay"));
             return false;
         }
-        if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptBool(cmd, "async"))
-            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
 
+        if (async) {
+            vshError(ctl, "%s", _("--async requires at least one of --timeout, "
+                                  "--wait, --pivot, or --keep-overlay"));
+            return false;
+        }
+    }
+
+    if (async)
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+
+    if (blocking) {
         sigemptyset(&sigmask);
         sigaddset(&sigmask, SIGINT);
 
@@ -1864,9 +1880,6 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
         GETTIMEOFDAY(&start);
-    } else if (verbose || vshCommandOptBool(cmd, "async")) {
-        vshError(ctl, "%s", _("missing --wait option"));
-        return false;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
