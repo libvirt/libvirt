@@ -53,6 +53,7 @@
 #include "virsh-console.h"
 #include "virsh-domain-monitor.h"
 #include "virerror.h"
+#include "virtime.h"
 #include "virtypedparam.h"
 #include "virxml.h"
 
@@ -1702,16 +1703,236 @@ static void vshCatchInt(int sig ATTRIBUTE_UNUSED,
     intCaught = 1;
 }
 
+
+typedef struct _vshBlockJobWaitData vshBlockJobWaitData;
+typedef vshBlockJobWaitData *vshBlockJobWaitDataPtr;
+struct _vshBlockJobWaitData {
+    vshControl *ctl;
+    virDomainPtr dom;
+    const char *dev;
+    const char *job_name;
+
+    bool verbose;
+    unsigned int timeout;
+    bool async_abort;
+
+    int cb_id;
+    int cb_id2;
+    int status;
+};
+
+
 static void
 vshBlockJobStatusHandler(virConnectPtr conn ATTRIBUTE_UNUSED,
                          virDomainPtr dom ATTRIBUTE_UNUSED,
-                         const char *disk ATTRIBUTE_UNUSED,
+                         const char *disk,
                          int type ATTRIBUTE_UNUSED,
                          int status,
                          void *opaque)
 {
-    *(int *) opaque = status;
+    vshBlockJobWaitDataPtr data = opaque;
+
+    if (STREQ_NULLABLE(disk, data->dev))
+        data->status = status;
 }
+
+
+/**
+ * vshBlockJobWaitInit:
+ * @ctl: vsh control structure
+ * @dom: domain object
+ * @dev: block device name to wait for
+ * @job_name: block job name to display in user-facing messages
+ * @verbose: enable progress reporting
+ * @timeout: number of milliseconds to wait before aborting the job
+ * @async_abort: abort the job asynchronously
+ *
+ * Prepares virsh for waiting for completion of a block job. This function
+ * registers event handlers for block job events and prepares the data structures
+ * for them. A call to vshBlockJobWait then waits for completion of the given
+ * block job. This function should be tolerant to different versions of daemon
+ * and the reporting capabilities of those.
+ *
+ * Returns the data structure that holds data needed for block job waiting or
+ * NULL in case of error.
+ */
+static vshBlockJobWaitDataPtr
+vshBlockJobWaitInit(vshControl *ctl,
+                    virDomainPtr dom,
+                    const char *dev,
+                    const char *job_name,
+                    bool verbose,
+                    unsigned int timeout,
+                    bool async_abort)
+{
+    vshBlockJobWaitDataPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->ctl = ctl;
+    ret->dom = dom;
+    ret->dev = dev;
+    ret->job_name = job_name;
+
+    ret->async_abort = async_abort;
+    ret->timeout = timeout;
+    ret->verbose = verbose;
+
+    ret->status = -1;
+
+    virConnectDomainEventGenericCallback cb =
+        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
+
+    if ((ret->cb_id = virConnectDomainEventRegisterAny(ctl->conn, dom,
+                                                       VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
+                                                       cb, ret, NULL)) < 0)
+        vshResetLibvirtError();
+
+    if ((ret->cb_id2 = virConnectDomainEventRegisterAny(ctl->conn, dom,
+                                                        VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2,
+                                                        cb, ret, NULL)) < 0)
+        vshResetLibvirtError();
+
+    return ret;
+}
+
+
+static void
+vshBlockJobWaitFree(vshBlockJobWaitDataPtr data)
+{
+    if (!data)
+        return;
+
+    if (data->cb_id >= 0)
+        virConnectDomainEventDeregisterAny(data->ctl->conn, data->cb_id);
+    if (data->cb_id2 >= 0)
+        virConnectDomainEventDeregisterAny(data->ctl->conn, data->cb_id2);
+
+    VIR_FREE(data);
+}
+
+
+/**
+ * vshBlockJobWait:
+ * @data: private data initialized by vshBlockJobWaitInit
+ *
+ * Waits for the block job to complete. This function prefers to get an event
+ * from libvirt but still has fallback means if the device name can't be matched
+ *
+ * This function returns values from the virConnectDomainEventBlockJobStatus enum
+ * or -1 in case of a internal error. Fallback states if a block job vanishes
+ * without triggering the event is VIR_DOMAIN_BLOCK_JOB_COMPLETED. For two phase
+ * jobs after the retry count for waiting for the event expires is
+ * VIR_DOMAIN_BLOCK_JOB_READY.
+ */
+static int
+vshBlockJobWait(vshBlockJobWaitDataPtr data)
+{
+    /* For two phase jobs like active commit or block copy, the marker reaches
+     * 100% and an event fires. In case where virsh would not be able to match
+     * the event to the given block job we will wait for the number of retries
+     * before claiming that we entered synchronised phase */
+    unsigned int retries = 5;
+
+    struct sigaction sig_action;
+    struct sigaction old_sig_action;
+    sigset_t sigmask, oldsigmask;
+
+    unsigned long long start = 0;
+    unsigned long long curr = 0;
+
+    unsigned int abort_flags = 0;
+    int ret = -1;
+    virDomainBlockJobInfo info;
+    int result;
+
+    if (!data)
+        return 0;
+
+    if (data->async_abort)
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+
+    intCaught = 0;
+    sig_action.sa_sigaction = vshCatchInt;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigemptyset(&sig_action.sa_mask);
+    sigaction(SIGINT, &sig_action, &old_sig_action);
+
+    if (data->timeout && virTimeMillisNow(&start) < 0) {
+        vshSaveLibvirtError();
+        return -1;
+    }
+
+    while (true) {
+        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+        result = virDomainGetBlockJobInfo(data->dom, data->dev, &info, 0);
+        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+
+        if (result < 0) {
+            vshError(data->ctl, _("failed to query job for disk %s"), data->dev);
+            goto cleanup;
+        }
+
+        /* if we've got an event for the device we are waiting for we can end
+         * the waiting loop */
+        if ((data->cb_id >= 0 || data->cb_id2 >= 0) && data->status != -1) {
+            ret = data->status;
+            goto cleanup;
+        }
+
+        /* since virsh can't guarantee that the path provided by the user will
+         * later be matched in the event we will need to keep the fallback
+         * approach and claim success if the block job finishes or vanishes. */
+        if (result == 0)
+            break;
+
+        /* for two-phase jobs we will try to wait in the synchronized phase
+         * for event arrival since 100% completion doesn't necessarily mean that
+         * the block job has finished and can be terminated with success */
+        if (info.end == info.cur && --retries == 0) {
+            ret = VIR_DOMAIN_BLOCK_JOB_READY;
+            goto cleanup;
+        }
+
+        if (data->verbose)
+            vshPrintJobProgress(data->job_name, info.end - info.cur, info.end);
+
+        if (data->timeout && virTimeMillisNow(&curr) < 0) {
+            vshSaveLibvirtError();
+            goto cleanup;
+        }
+
+        if (intCaught || (data->timeout && (curr - start > data->timeout))) {
+            if (virDomainBlockJobAbort(data->dom, data->dev, abort_flags) < 0) {
+                vshError(data->ctl, _("failed to abort job for disk '%s'"),
+                         data->dev);
+                goto cleanup;
+            }
+
+            ret = VIR_DOMAIN_BLOCK_JOB_CANCELED;
+            goto cleanup;
+        }
+
+        usleep(500 * 1000);
+    }
+
+    ret = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
+
+ cleanup:
+    /* print 100% completed */
+    if (data->verbose &&
+        (ret == VIR_DOMAIN_BLOCK_JOB_COMPLETED ||
+         ret == VIR_DOMAIN_BLOCK_JOB_READY))
+        vshPrintJobProgress(data->job_name, 0, 1);
+
+    sigaction(SIGINT, &old_sig_action, NULL);
+    return ret;
+}
+
 
 /*
  * "blockcommit" command
@@ -2656,19 +2877,11 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     bool verbose = vshCommandOptBool(cmd, "verbose");
     bool async = vshCommandOptBool(cmd, "async");
     int timeout = 0;
-    struct sigaction sig_action;
-    struct sigaction old_sig_action;
-    sigset_t sigmask, oldsigmask;
-    struct timeval start;
-    struct timeval curr;
     const char *path = NULL;
     const char *base = NULL;
     unsigned long bandwidth = 0;
-    bool quit = false;
-    int abort_flags = 0;
-    int status = -1;
-    int cb_id = -1;
     unsigned int flags = 0;
+    vshBlockJobWaitDataPtr bjWait = NULL;
 
     VSH_REQUIRE_OPTION("verbose", "wait");
     VSH_REQUIRE_OPTION("async", "wait");
@@ -2688,35 +2901,13 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "keep-relative"))
         flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
 
-    if (async)
-        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
-
-    if (blocking) {
-        sigemptyset(&sigmask);
-        sigaddset(&sigmask, SIGINT);
-
-        intCaught = 0;
-        sig_action.sa_sigaction = vshCatchInt;
-        sig_action.sa_flags = SA_SIGINFO;
-        sigemptyset(&sig_action.sa_mask);
-        sigaction(SIGINT, &sig_action, &old_sig_action);
-
-        GETTIMEOFDAY(&start);
-    }
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    virConnectDomainEventGenericCallback cb =
-        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
-
-    if ((cb_id = virConnectDomainEventRegisterAny(ctl->conn,
-                                                  dom,
-                                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
-                                                  cb,
-                                                  &status,
-                                                  NULL)) < 0)
-        vshResetLibvirtError();
+    if (blocking &&
+        !(bjWait = vshBlockJobWaitInit(ctl, dom, path, _("Block Pull"), verbose,
+                                       timeout, async)))
+        goto cleanup;
 
     if (base || flags) {
         if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
@@ -2732,61 +2923,32 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    while (blocking) {
-        virDomainBlockJobInfo info;
-        int result;
-
-        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
-        result = virDomainGetBlockJobInfo(dom, path, &info, 0);
-        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-
-        if (result < 0) {
-            vshError(ctl, _("failed to query job for disk %s"), path);
+    /* Execution continues here only if --wait or friends were specified */
+    switch (vshBlockJobWait(bjWait)) {
+        case -1:
             goto cleanup;
-        }
-        if (result == 0)
+
+        case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+            vshPrint(ctl, "\n%s", _("Pull aborted"));
+            goto cleanup;
             break;
 
-        if (verbose)
-            vshPrintJobProgress(_("Block Pull"), info.end - info.cur, info.end);
+        case VIR_DOMAIN_BLOCK_JOB_FAILED:
+            vshPrint(ctl, "\n%s", _("Pull failed"));
+            goto cleanup;
+            break;
 
-        GETTIMEOFDAY(&curr);
-        if (intCaught || (timeout &&
-                          (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
-                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                           timeout))) {
-            vshDebug(ctl, VSH_ERR_DEBUG,
-                     intCaught ? "interrupted" : "timeout");
-            intCaught = 0;
-            timeout = 0;
-            status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
-            if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-                vshError(ctl, _("failed to abort job for disk %s"), path);
-                goto cleanup;
-            }
-            if (abort_flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)
-                break;
-        } else {
-            usleep(500 * 1000);
-        }
+        case VIR_DOMAIN_BLOCK_JOB_READY:
+        case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+            vshPrint(ctl, "\n%s", _("Pull complete"));
+            break;
     }
-
-    if (status == VIR_DOMAIN_BLOCK_JOB_CANCELED)
-        quit = true;
-
-    if (verbose && !quit) {
-        /* printf [100 %] */
-        vshPrintJobProgress(_("Block Pull"), 0, 1);
-    }
-    vshPrint(ctl, "\n%s", quit ? _("Pull aborted") : _("Pull complete"));
 
     ret = true;
+
  cleanup:
     virDomainFree(dom);
-    if (blocking)
-        sigaction(SIGINT, &old_sig_action, NULL);
-    if (cb_id >= 0)
-        virConnectDomainEventDeregisterAny(ctl->conn, cb_id);
+    vshBlockJobWaitFree(bjWait);
     return ret;
 }
 
