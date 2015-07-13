@@ -3005,6 +3005,11 @@
       relationship of the companion to its master controller.
       A companion controller is on the same bus as its master, so
       the companion <code>index</code> value should be equal.
+      Not all controller models can be used as companion controllers
+      and libvirt might provide some sensible defaults (settings
+      of <code>master startport</code> and <code>function</code> of an
+      address) for some particular models.
+      Preferred companion controllers are <code>ich-uhci[123]</code>.
     </p>
 
 <pre>
