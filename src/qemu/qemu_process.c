@@ -1532,8 +1532,7 @@ qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
               qemuMonitorMigrationStatusTypeToString(status));
 
     priv = vm->privateData;
-    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT &&
-        priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_IN) {
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_NONE) {
         VIR_DEBUG("got MIGRATION event without a migration job");
         goto cleanup;
     }
