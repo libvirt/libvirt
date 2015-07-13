@@ -2263,20 +2263,13 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     bool blocking = vshCommandOptBool(cmd, "wait") || finish || pivot;
     bool async = vshCommandOptBool(cmd, "async");
     int timeout = 0;
-    struct sigaction sig_action;
-    struct sigaction old_sig_action;
-    sigset_t sigmask, oldsigmask;
-    struct timeval start;
-    struct timeval curr;
     const char *path = NULL;
-    bool quit = false;
     int abort_flags = 0;
     const char *xml = NULL;
     char *xmlstr = NULL;
     virTypedParameterPtr params = NULL;
+    vshBlockJobWaitDataPtr bjWait = NULL;
     int nparams = 0;
-    int status = -1;
-    int cb_id = -1;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
@@ -2335,31 +2328,12 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (blocking) {
-        sigemptyset(&sigmask);
-        sigaddset(&sigmask, SIGINT);
-
-        intCaught = 0;
-        sig_action.sa_sigaction = vshCatchInt;
-        sig_action.sa_flags = SA_SIGINFO;
-        sigemptyset(&sig_action.sa_mask);
-        sigaction(SIGINT, &sig_action, &old_sig_action);
-
-        GETTIMEOFDAY(&start);
-    }
-
-    virConnectDomainEventGenericCallback cb =
-        VIR_DOMAIN_EVENT_CALLBACK(vshBlockJobStatusHandler);
-
-    if ((cb_id = virConnectDomainEventRegisterAny(ctl->conn,
-                                                  dom,
-                                                  VIR_DOMAIN_EVENT_ID_BLOCK_JOB,
-                                                  cb,
-                                                  &status,
-                                                  NULL)) < 0)
-        vshResetLibvirtError();
-
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (blocking &&
+        !(bjWait = vshBlockJobWaitInit(ctl, dom, path, _("Block Copy"), verbose,
+                                       timeout, async)))
         goto cleanup;
 
     if (xml) {
@@ -2436,83 +2410,52 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    while (blocking) {
-        virDomainBlockJobInfo info;
-        int result;
-
-        pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
-        result = virDomainGetBlockJobInfo(dom, path, &info, 0);
-        pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
-
-        if (result < 0) {
-            vshError(ctl, _("failed to query job for disk %s"), path);
+    /* Execution continues here only if --wait or friends were specified */
+    switch (vshBlockJobWait(bjWait)) {
+        case -1:
             goto cleanup;
-        }
 
-        if (result == 0) {
-            vshError(ctl, _("Block Copy unexpectedly failed"));
+        case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+            vshPrint(ctl, "\n%s", _("Copy aborted"));
             goto cleanup;
-        }
-
-        if (verbose)
-            vshPrintJobProgress(_("Block Copy"), info.end - info.cur, info.end);
-        if (info.cur == info.end)
             break;
 
-        GETTIMEOFDAY(&curr);
-        if (intCaught || (timeout &&
-                          (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
-                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                           timeout))) {
-            vshDebug(ctl, VSH_ERR_DEBUG,
-                     intCaught ? "interrupted" : "timeout");
-            intCaught = 0;
-            timeout = 0;
-            status = VIR_DOMAIN_BLOCK_JOB_CANCELED;
-            if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-                vshError(ctl, _("failed to abort job for disk %s"), path);
-                goto cleanup;
-            }
-            if (abort_flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC)
-                break;
-        } else {
-            usleep(500 * 1000);
-        }
+        case VIR_DOMAIN_BLOCK_JOB_FAILED:
+            vshPrint(ctl, "\n%s", _("Copy failed"));
+            goto cleanup;
+            break;
+
+        case VIR_DOMAIN_BLOCK_JOB_READY:
+        case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+            break;
     }
 
-    if (status == VIR_DOMAIN_BLOCK_JOB_CANCELED)
-        quit = true;
-
-    if (!quit && pivot) {
+    if (pivot) {
         abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT;
         if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
             vshError(ctl, _("failed to pivot job for disk %s"), path);
             goto cleanup;
         }
-    } else if (finish && !quit &&
-               virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
-        vshError(ctl, _("failed to finish job for disk %s"), path);
-        goto cleanup;
-    }
-    if (quit)
-        vshPrint(ctl, "\n%s", _("Copy aborted"));
-    else if (pivot)
+
         vshPrint(ctl, "\n%s", _("Successfully pivoted"));
-    else if (finish)
+    } else if (finish) {
+        if (virDomainBlockJobAbort(dom, path, abort_flags) < 0) {
+            vshError(ctl, _("failed to finish job for disk %s"), path);
+            goto cleanup;
+        }
+
         vshPrint(ctl, "\n%s", _("Successfully copied"));
-    else
+    } else {
         vshPrint(ctl, "\n%s", _("Now in mirroring phase"));
+    }
 
     ret = true;
+
  cleanup:
     VIR_FREE(xmlstr);
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
-    if (blocking)
-        sigaction(SIGINT, &old_sig_action, NULL);
-    if (cb_id >= 0)
-        virConnectDomainEventDeregisterAny(ctl->conn, cb_id);
+    virDomainFree(dom);
+    vshBlockJobWaitFree(bjWait);
     return ret;
 }
 
