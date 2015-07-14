@@ -208,7 +208,7 @@ freebsdNodeGetCPUStats(int cpuNum,
 
 static int
 freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
-                               int *nparams)
+                          int *nparams)
 {
     size_t i, j = 0;
     unsigned long pagesize = getpagesize() >> 10;
@@ -552,10 +552,11 @@ virNodeParseNode(const char *sysfs_prefix,
     return ret;
 }
 
-int linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
-                             FILE *cpuinfo,
-                             virArch arch,
-                             virNodeInfoPtr nodeinfo)
+int
+linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
+                         FILE *cpuinfo,
+                         virArch arch,
+                         virNodeInfoPtr nodeinfo)
 {
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char line[1024];
@@ -1046,8 +1047,9 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
 }
 #endif
 
-int nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                virNodeInfoPtr nodeinfo)
+int
+nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+            virNodeInfoPtr nodeinfo)
 {
     virArch hostarch = virArchFromHost();
 
@@ -1123,10 +1125,11 @@ int nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 #endif
 }
 
-int nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
-                    virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
-                    int *nparams ATTRIBUTE_UNUSED,
-                    unsigned int flags)
+int
+nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
+                virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
+                int *nparams ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     virCheckFlags(0, -1);
 
@@ -1153,11 +1156,12 @@ int nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
 #endif
 }
 
-int nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                       int cellNum ATTRIBUTE_UNUSED,
-                       virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
-                       int *nparams ATTRIBUTE_UNUSED,
-                       unsigned int flags)
+int
+nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                   int cellNum ATTRIBUTE_UNUSED,
+                   virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
+                   int *nparams ATTRIBUTE_UNUSED,
+                   unsigned int flags)
 {
     virCheckFlags(0, -1);
 
