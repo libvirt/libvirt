@@ -54,22 +54,34 @@ static virClassPtr virHostdevManagerClass;
 static void virHostdevManagerDispose(void *obj);
 static virHostdevManagerPtr virHostdevManagerNew(void);
 
+struct virHostdevIsPCINodeDeviceUsedData {
+    virHostdevManagerPtr hostdev_mgr;
+    const char *domainName;
+    const bool usesVfio;
+};
+
 static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
 {
     virPCIDevicePtr other;
     int ret = -1;
     virPCIDevicePtr pci = NULL;
-    virHostdevManagerPtr hostdev_mgr = opaque;
+    struct virHostdevIsPCINodeDeviceUsedData *helperData = opaque;
 
     if (!(pci = virPCIDeviceNew(devAddr->domain, devAddr->bus,
                                 devAddr->slot, devAddr->function)))
         goto cleanup;
 
-    other = virPCIDeviceListFind(hostdev_mgr->activePCIHostdevs, pci);
+    other = virPCIDeviceListFind(helperData->hostdev_mgr->activePCIHostdevs,
+                                 pci);
     if (other) {
         const char *other_drvname = NULL;
         const char *other_domname = NULL;
         virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
+
+        if (helperData->usesVfio &&
+            (other_domname && helperData->domainName) &&
+            (STREQ(other_domname, helperData->domainName)))
+            goto iommu_owner;
 
         if (other_drvname && other_domname)
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -83,6 +95,7 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
                            virPCIDeviceGetName(pci));
         goto cleanup;
     }
+ iommu_owner:
     ret = 0;
  cleanup:
     virPCIDeviceFree(pci);
@@ -562,6 +575,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
+        bool usesVfio = STREQ(virPCIDeviceGetStubDriver(dev), "vfio-pci");
+        struct virHostdevIsPCINodeDeviceUsedData data = {hostdev_mgr, dom_name,
+                                                         usesVfio};
 
         if (!virPCIDeviceIsAssignable(dev, strict_acs_check)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -579,12 +595,12 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
          * belonging to same iommu group can't be shared
          * across guests.
          */
-        if (STREQ(virPCIDeviceGetStubDriver(dev), "vfio-pci")) {
+        if (usesVfio) {
             if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
                                                      virHostdevIsPCINodeDeviceUsed,
-                                                     hostdev_mgr) < 0)
+                                                     &data) < 0)
                 goto cleanup;
-        } else if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr)) {
+        } else if (virHostdevIsPCINodeDeviceUsed(devAddr, &data)) {
             goto cleanup;
         }
     }
@@ -1544,6 +1560,8 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
                               virPCIDevicePtr pci)
 {
     virPCIDeviceAddressPtr devAddr = NULL;
+    struct virHostdevIsPCINodeDeviceUsedData data = { hostdev_mgr, NULL,
+                                                     false };
     int ret = -1;
 
     virObjectLock(hostdev_mgr->activePCIHostdevs);
@@ -1552,7 +1570,7 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
     if (!(devAddr = virPCIDeviceGetAddress(pci)))
         goto out;
 
-    if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr))
+    if (virHostdevIsPCINodeDeviceUsed(devAddr, &data))
         goto out;
 
     if (virPCIDeviceDetach(pci, hostdev_mgr->activePCIHostdevs,
@@ -1573,6 +1591,8 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
                                 virPCIDevicePtr pci)
 {
     virPCIDeviceAddressPtr devAddr = NULL;
+    struct virHostdevIsPCINodeDeviceUsedData data = {hostdev_mgr, NULL,
+                                                     false};
     int ret = -1;
 
     virObjectLock(hostdev_mgr->activePCIHostdevs);
@@ -1581,7 +1601,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
     if (!(devAddr = virPCIDeviceGetAddress(pci)))
         goto out;
 
-    if (virHostdevIsPCINodeDeviceUsed(devAddr, hostdev_mgr))
+    if (virHostdevIsPCINodeDeviceUsed(devAddr, &data))
         goto out;
 
     virPCIDeviceReattachInit(pci);
