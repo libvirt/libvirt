@@ -531,6 +531,8 @@ BuildRequires: cyrus-sasl-devel
 %endif
 %if %{with_polkit}
     %if 0%{?fedora} >= 20 || 0%{?rhel} >= 7
+# F22 polkit-devel doesn't pull in polkit anymore, which we need for pkcheck
+BuildRequires: polkit >= 0.112
 BuildRequires: polkit-devel >= 0.112
     %else
         %if 0%{?fedora} || 0%{?rhel} >= 6
