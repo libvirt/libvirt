@@ -2654,6 +2654,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
+    bool async = vshCommandOptBool(cmd, "async");
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
@@ -2669,6 +2670,9 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     int cb_id = -1;
     unsigned int flags = 0;
 
+    VSH_REQUIRE_OPTION("verbose", "wait");
+    VSH_REQUIRE_OPTION("async", "wait");
+
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
 
@@ -2678,15 +2682,16 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
         return false;
 
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
     if (vshCommandOptBool(cmd, "keep-relative"))
         flags |= VIR_DOMAIN_BLOCK_REBASE_RELATIVE;
 
-    if (blocking) {
-        if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptBool(cmd, "async"))
-            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
+    if (async)
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
 
+    if (blocking) {
         sigemptyset(&sigmask);
         sigaddset(&sigmask, SIGINT);
 
@@ -2697,10 +2702,6 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
         GETTIMEOFDAY(&start);
-    } else if (verbose || vshCommandOptBool(cmd, "timeout") ||
-               vshCommandOptBool(cmd, "async")) {
-        vshError(ctl, "%s", _("missing --wait option"));
-        return false;
     }
 
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
