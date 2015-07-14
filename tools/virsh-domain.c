@@ -6499,7 +6499,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
         if (got_vcpu && vcpu >= ncpus) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE ||
-                (flags & VIR_DOMAIN_AFFECT_CURRENT &&
+                (!(flags & VIR_DOMAIN_AFFECT_CONFIG) &&
                  virDomainIsActive(dom) == 1))
                 vshError(ctl,
                          _("vcpu %d is out of range of live cpu count %d"),
