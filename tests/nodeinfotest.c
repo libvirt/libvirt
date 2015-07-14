@@ -24,8 +24,8 @@ main(void)
 #else
 
 static int
-linuxTestCompareFiles(const char *cpuinfofile,
-                      char *sysfs_dir,
+linuxTestCompareFiles(char *sysfs_prefix,
+                      const char *cpuinfofile,
                       virArch arch,
                       const char *outputfile)
 {
@@ -42,7 +42,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
     }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(cpuinfo, sysfs_dir, arch, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(sysfs_prefix, cpuinfo, arch, &nodeinfo) < 0) {
         if (virTestGetDebug()) {
             virErrorPtr error = virSaveLastError();
             if (error && error->code != VIR_ERR_OK)
@@ -163,12 +163,12 @@ linuxTestNodeInfo(const void *opaque)
 {
     int result = -1;
     char *cpuinfo = NULL;
-    char *sysfs_dir = NULL;
+    char *sysfs_prefix = NULL;
     char *output = NULL;
     struct linuxTestNodeInfoData *data = (struct linuxTestNodeInfoData *) opaque;
     const char *archStr = virArchToString(data->arch);
 
-    if (virAsprintf(&sysfs_dir, "%s/nodeinfodata/linux-%s",
+    if (virAsprintf(&sysfs_prefix, "%s/nodeinfodata/linux-%s",
                     abs_srcdir, data->testName) < 0 ||
         virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-%s.cpuinfo",
                     abs_srcdir, archStr, data->testName) < 0 ||
@@ -177,12 +177,12 @@ linuxTestNodeInfo(const void *opaque)
         goto cleanup;
     }
 
-    result = linuxTestCompareFiles(cpuinfo, sysfs_dir, data->arch, output);
+    result = linuxTestCompareFiles(sysfs_prefix, cpuinfo, data->arch, output);
 
  cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(output);
-    VIR_FREE(sysfs_dir);
+    VIR_FREE(sysfs_prefix);
 
     return result;
 }

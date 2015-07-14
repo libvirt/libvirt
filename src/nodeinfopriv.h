@@ -25,8 +25,8 @@
 # include "nodeinfo.h"
 
 # ifdef __linux__
-int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             const char *sysfs_dir,
+int linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
+                             FILE *cpuinfo,
                              virArch arch,
                              virNodeInfoPtr nodeinfo);
 
