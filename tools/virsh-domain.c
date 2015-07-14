@@ -2088,11 +2088,12 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     unsigned long long buf_size = 0;
     unsigned int flags = 0;
     bool ret = false;
-    bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
     bool pivot = vshCommandOptBool(cmd, "pivot");
     bool finish = vshCommandOptBool(cmd, "finish");
     bool blockdev = vshCommandOptBool(cmd, "blockdev");
+    bool blocking = vshCommandOptBool(cmd, "wait") || finish || pivot;
+    bool async = vshCommandOptBool(cmd, "async");
     int timeout = 0;
     struct sigaction sig_action;
     struct sigaction old_sig_action;
@@ -2117,22 +2118,56 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         return false;
     if (vshCommandOptString(ctl, cmd, "format", &format) < 0)
         return false;
+    /* XXX: Parse bandwidth as scaled input, rather than forcing
+     * MiB/s, and either reject negative input or treat it as 0 rather
+     * than trying to guess which value will work well across both
+     * APIs with their different sizes and scales.  */
+    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+        return false;
+    if (vshCommandOptUInt(ctl, cmd, "granularity", &granularity) < 0)
+        return false;
+    if (vshCommandOptULongLong(ctl, cmd, "buf-size", &buf_size) < 0)
+        return false;
+    /* Exploit that some VIR_DOMAIN_BLOCK_REBASE_* and
+     * VIR_DOMAIN_BLOCK_COPY_* flags have the same values.  */
+    if (vshCommandOptBool(cmd, "shallow"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
+    if (vshCommandOptBool(cmd, "reuse-external"))
+        flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
+    if (timeout)
+        blocking = true;
+
+    if (async)
+        abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(dest, xml);
     VSH_EXCLUSIVE_OPTIONS_VAR(format, xml);
     VSH_EXCLUSIVE_OPTIONS_VAR(blockdev, xml);
+    VSH_EXCLUSIVE_OPTIONS_VAR(pivot, finish);
 
-    blocking |= vshCommandOptBool(cmd, "timeout") || pivot || finish;
-    if (blocking) {
-        if (pivot && finish) {
-            vshError(ctl, "%s", _("cannot mix --pivot and --finish"));
+    if (!dest && !xml) {
+        vshError(ctl, "%s", _("need either --dest or --xml"));
+        return false;
+    }
+
+    if (!blocking) {
+        if (verbose) {
+            vshError(ctl, "%s", _("--verbose requires at least one of --timeout, "
+                                  "--wait, --pivot, or --finish"));
             return false;
         }
-        if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
-            return false;
-        if (vshCommandOptBool(cmd, "async"))
-            abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
 
+        if (async) {
+            vshError(ctl, "%s", _("--async requires at least one of --timeout, "
+                                  "--wait, --pivot, or --finish"));
+            return false;
+        }
+    }
+
+    if (blocking) {
         sigemptyset(&sigmask);
         sigaddset(&sigmask, SIGINT);
 
@@ -2143,9 +2178,6 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         sigaction(SIGINT, &sig_action, &old_sig_action);
 
         GETTIMEOFDAY(&start);
-    } else if (verbose || vshCommandOptBool(cmd, "async")) {
-        vshError(ctl, "%s", _("missing --wait option"));
-        return false;
     }
 
     virConnectDomainEventGenericCallback cb =
@@ -2162,33 +2194,12 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
 
-    /* XXX: Parse bandwidth as scaled input, rather than forcing
-     * MiB/s, and either reject negative input or treat it as 0 rather
-     * than trying to guess which value will work well across both
-     * APIs with their different sizes and scales.  */
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
-        goto cleanup;
-    if (vshCommandOptUInt(ctl, cmd, "granularity", &granularity) < 0)
-        goto cleanup;
-    if (vshCommandOptULongLong(ctl, cmd, "buf-size", &buf_size) < 0)
-        goto cleanup;
-
     if (xml) {
         if (virFileReadAll(xml, VSH_MAX_XML_FILE, &xmlstr) < 0) {
             vshReportError(ctl);
             goto cleanup;
         }
-    } else if (!dest) {
-        vshError(ctl, "%s", _("need either --dest or --xml"));
-        goto cleanup;
     }
-
-    /* Exploit that some VIR_DOMAIN_BLOCK_REBASE_* and
-     * VIR_DOMAIN_BLOCK_COPY_* flags have the same values.  */
-    if (vshCommandOptBool(cmd, "shallow"))
-        flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
-    if (vshCommandOptBool(cmd, "reuse-external"))
-        flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
 
     if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml) {
         /* New API */
@@ -2242,7 +2253,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     } else {
         /* Old API */
         flags |= VIR_DOMAIN_BLOCK_REBASE_COPY;
-        if (vshCommandOptBool(cmd, "blockdev"))
+        if (blockdev)
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
         if (STREQ_NULLABLE(format, "raw"))
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
