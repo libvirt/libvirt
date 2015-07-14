@@ -66,6 +66,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     const char *client_mount_timeout = "30";
     const char *mon_op_timeout = "30";
     const char *osd_op_timeout = "30";
+    const char *rbd_default_format = "2";
 
     if (authdef) {
         VIR_DEBUG("Using cephx authorization, username: %s", authdef->username);
@@ -210,6 +211,14 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
 
     VIR_DEBUG("Setting RADOS option rados_osd_op_timeout to %s", osd_op_timeout);
     rados_conf_set(ptr->cluster, "rados_osd_op_timeout", osd_op_timeout);
+
+    /*
+     * Librbd supports creating RBD format 2 images. We no longer have to invoke
+     * rbd_create3(), we can tell librbd to default to format 2.
+     * This leaves us to simply use rbd_create() and use the default behavior of librbd
+     */
+    VIR_DEBUG("Setting RADOS option rbd_default_format to %s", rbd_default_format);
+    rados_conf_set(ptr->cluster, "rbd_default_format", rbd_default_format);
 
     ptr->starttime = time(0);
     r = rados_connect(ptr->cluster);
@@ -475,18 +484,8 @@ static int virStorageBackendRBDCreateImage(rados_ioctx_t io,
                                            char *name, long capacity)
 {
     int order = 0;
-#if LIBRBD_VERSION_CODE > 260
-    uint64_t features = 3;
-    uint64_t stripe_count = 1;
-    uint64_t stripe_unit = 4194304;
-
-    if (rbd_create3(io, name, capacity, features, &order,
-                    stripe_unit, stripe_count) < 0) {
-#else
-    if (rbd_create(io, name, capacity, &order) < 0) {
-#endif
+    if (rbd_create(io, name, capacity, &order) < 0)
         return -1;
-    }
 
     return 0;
 }
