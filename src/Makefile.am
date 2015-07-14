@@ -451,7 +451,7 @@ PDWTAGS = \
 	    $(PERL) -0777 -n						\
 		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
 		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||'	\
-		-e '      $$p =~ /^enum {/) {'				\
+		-e '      $$p =~ /^enum \{/) {'				\
 		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
 		-e '    $$p =~ s!\s+\n!\n!sg;'				\
 		-e '    $$p =~ s!\s+$$!!;'				\
