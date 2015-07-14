@@ -2518,6 +2518,60 @@ static int testDomainPinVcpu(virDomainPtr domain,
     return ret;
 }
 
+static int
+testDomainGetVcpuPinInfo(virDomainPtr dom,
+                        int ncpumaps,
+                        unsigned char *cpumaps,
+                        int maplen,
+                        unsigned int flags)
+{
+    testDriverPtr privconn = dom->conn->privateData;
+    virDomainObjPtr privdom;
+    virDomainDefPtr def;
+    int ret = -1, hostcpus, vcpu;
+    virBitmapPtr allcpumap = NULL;
+
+    if (!(privdom = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(privdom, flags)))
+        goto cleanup;
+
+    hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
+
+    if (!(allcpumap = virBitmapNew(hostcpus)))
+        goto cleanup;
+
+    virBitmapSetAll(allcpumap);
+
+    /* Clamp to actual number of vcpus */
+    if (ncpumaps > def->vcpus)
+        ncpumaps = def->vcpus;
+
+    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
+        virDomainPinDefPtr pininfo;
+        virBitmapPtr bitmap = NULL;
+
+        pininfo = virDomainPinFind(def->cputune.vcpupin,
+                                   def->cputune.nvcpupin,
+                                   vcpu);
+
+        if (pininfo && pininfo->cpumask)
+            bitmap = pininfo->cpumask;
+        else
+            bitmap = allcpumap;
+
+        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
+    }
+
+    ret = ncpumaps;
+
+ cleanup:
+    virBitmapFree(allcpumap);
+    virDomainObjEndAPI(&privdom);
+    return ret;
+}
+
 static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     virDomainDefPtr def;
@@ -6598,6 +6652,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpusFlags = testDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = testDomainPinVcpu, /* 0.7.3 */
     .domainGetVcpus = testDomainGetVcpus, /* 0.7.3 */
+    .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
