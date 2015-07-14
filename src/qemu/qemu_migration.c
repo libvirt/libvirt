@@ -4375,8 +4375,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (iothread && qemuMigrationStopTunnel(iothread, ret < 0) < 0)
             ret = -1;
-        VIR_FORCE_CLOSE(fd);
     }
+    VIR_FORCE_CLOSE(fd);
 
     if (priv->job.completed) {
         qemuDomainJobInfoUpdateTime(priv->job.completed);
