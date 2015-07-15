@@ -537,11 +537,26 @@ static int virLXCControllerAppendNBDPids(virLXCControllerPtr ctrl,
     size_t npids = 0;
     size_t i;
     int ret = -1;
+    size_t loops = 0;
     pid_t pid;
 
     if (!STRPREFIX(dev, "/dev/") ||
         virAsprintf(&pidpath, "/sys/devices/virtual/block/%s/pid", dev + 5) < 0)
         goto cleanup;
+
+    /* Wait for the pid file to appear */
+    while (!virFileExists(pidpath)) {
+        /* wait for 100ms before checking again, but don't do it for ever */
+        if (errno == ENOENT && loops < 10) {
+            usleep(100 * 1000);
+            loops++;
+        } else {
+            virReportSystemError(errno,
+                                 _("Cannot check NBD device %s pid"),
+                                 dev + 5);
+            goto cleanup;
+        }
+    }
 
     if (virPidFileReadPath(pidpath, &pid) < 0)
         goto cleanup;
