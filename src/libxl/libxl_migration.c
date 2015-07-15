@@ -178,7 +178,6 @@ libxlDoMigrateSend(libxlDriverPrivatePtr driver,
                    int sockfd)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    virObjectEventPtr event = NULL;
     int xl_flags = 0;
     int ret;
 
@@ -188,24 +187,11 @@ libxlDoMigrateSend(libxlDriverPrivatePtr driver,
     ret = libxl_domain_suspend(cfg->ctx, vm->def->id, sockfd,
                                xl_flags, NULL);
     if (ret != 0) {
-        /* attempt to resume the domain on failure */
-        if (libxl_domain_resume(cfg->ctx, vm->def->id, 1, 0) != 0) {
-            VIR_DEBUG("Failed to resume domain following failed migration");
-            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                                 VIR_DOMAIN_PAUSED_MIGRATION);
-            event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
-                                             VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
-            ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm));
-        }
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to send migration data to destination host"));
         ret = -1;
-        goto cleanup;
     }
 
- cleanup:
-    if (event)
-        libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return ret;
 }
