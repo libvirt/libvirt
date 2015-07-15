@@ -109,7 +109,6 @@ libxlDoMigrateReceive(void *opaque)
 
     /* Remove all listen socks from event handler, and close them. */
     for (i = 0; i < nsocks; i++) {
-        virNetSocketUpdateIOCallback(socks[i], 0);
         virNetSocketRemoveIOCallback(socks[i]);
         virNetSocketClose(socks[i]);
         virObjectUnref(socks[i]);
@@ -117,6 +116,7 @@ libxlDoMigrateReceive(void *opaque)
     }
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);
+    virObjectUnref(args);
 }
 
 
@@ -164,11 +164,11 @@ libxlMigrateReceive(virNetSocketPtr sock,
         virNetSocketUpdateIOCallback(socks[i], 0);
         virNetSocketRemoveIOCallback(socks[i]);
         virNetSocketClose(socks[i]);
-        virObjectUnref(socks[i]);
         socks[i] = NULL;
     }
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);
+    virObjectUnref(args);
 }
 
 static int
@@ -318,7 +318,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     virNetSocketPtr *socks = NULL;
     size_t nsocks = 0;
     int nsocks_listen = 0;
-    libxlMigrationDstArgs *args;
+    libxlMigrationDstArgs *args = NULL;
     size_t i;
     int ret = -1;
 
@@ -420,21 +420,11 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                                       VIR_EVENT_HANDLE_READABLE,
                                       libxlMigrateReceive,
                                       args,
-                                      virObjectFreeCallback) < 0)
+                                      NULL) < 0)
             continue;
 
-        /*
-         * Successfully added sock to event loop.  Take a ref on args to
-         * ensure it is not freed until sock is removed from the event loop.
-         * Ref is dropped in virObjectFreeCallback after being removed
-         * from the event loop.
-         */
-        virObjectRef(args);
         nsocks_listen++;
     }
-
-    /* Done with args in this function, drop reference */
-    virObjectUnref(args);
 
     if (!nsocks_listen)
         goto error;
@@ -448,6 +438,8 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         virObjectUnref(socks[i]);
     }
     VIR_FREE(socks);
+    virObjectUnref(args);
+
     /* Remove virDomainObj from domain list */
     if (vm) {
         virDomainObjListRemove(driver->domains, vm);
