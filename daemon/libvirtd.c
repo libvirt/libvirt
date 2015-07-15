@@ -956,7 +956,7 @@ static void daemonRunStateInit(void *opaque)
     driversInitialized = true;
 
 #ifdef HAVE_DBUS
-    /* Tie the non-priviledged libvirtd to the session/shutdown lifecycle */
+    /* Tie the non-privileged libvirtd to the session/shutdown lifecycle */
     if (!virNetDaemonIsPrivileged(dmn)) {
 
         sessionBus = virDBusGetSessionBus();
