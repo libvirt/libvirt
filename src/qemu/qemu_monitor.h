@@ -797,6 +797,7 @@ struct _qemuMonitorBlockJobInfo {
     unsigned long long bandwidth; /* in bytes/s */
     virDomainBlockJobCursor cur;
     virDomainBlockJobCursor end;
+    int ready; /* -1 if unknown, 0 if not ready, 1 if ready */
 };
 
 virHashTablePtr qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon);

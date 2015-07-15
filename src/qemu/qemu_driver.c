@@ -16091,8 +16091,12 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
             goto cleanup;
         if (rc < 0)
             goto cleanup;
-        if (rc == 1 && info.cur == info.end &&
-            info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY)
+        if (rc == 1 &&
+            (info.ready == 1 ||
+             (info.ready == -1 &&
+              info.end == info.cur &&
+              (info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY ||
+               info.type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT))))
             disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
     }
 
@@ -16490,6 +16494,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
      * hold the vm lock, so modifying the in-memory representation is
      * safe, even if we are a query rather than a modify job. */
     if (ret == 1 && disk->mirror &&
+        rawInfo.ready != 0 &&
         info->cur == info->end && !disk->mirrorState) {
         virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -17120,6 +17125,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * thing if the user specified a relative name).  Be prepared for
      * a ready event to occur while locks are dropped.  */
     if (mirror) {
+        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirror = mirror;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }

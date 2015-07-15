@@ -4027,6 +4027,7 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
     qemuMonitorBlockJobInfoPtr info = NULL;
     const char *device;
     const char *type;
+    bool ready;
 
     if (!(device = virJSONValueObjectGetString(entry, "device"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4041,6 +4042,9 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
         VIR_FREE(info);
         return -1;
     }
+
+    /* assume we don't know the state */
+    info->ready = -1;
 
     if (!(type = virJSONValueObjectGetString(entry, "type"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4073,6 +4077,9 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
                        _("entry was missing 'len'"));
         return -1;
     }
+
+    if (virJSONValueObjectGetBoolean(entry, "ready", &ready) == 0)
+        info->ready = ready;
 
     return 0;
 }
