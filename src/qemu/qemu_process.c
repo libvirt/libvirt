@@ -295,12 +295,12 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     if (priv->beingDestroyed) {
         VIR_DEBUG("Domain is being destroyed, EOF is expected");
-        goto unlock;
+        goto cleanup;
     }
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
-        goto unlock;
+        goto cleanup;
     }
 
     if (priv->monJSON && !priv->gotShutdown) {
@@ -323,15 +323,11 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuProcessStop(driver, vm, stopReason, stopFlags);
     virDomainAuditStop(vm, auditReason);
 
-    if (!vm->persistent) {
+    if (!vm->persistent)
         qemuDomainRemoveInactive(driver, vm);
-        goto cleanup;
-    }
-
- unlock:
-    virObjectUnlock(vm);
 
  cleanup:
+    virObjectUnlock(vm);
     if (event)
         qemuDomainEventQueue(driver, event);
 }
@@ -5703,6 +5699,8 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 
     VIR_DEBUG("vm=%s, conn=%p", dom->def->name, conn);
 
+    virObjectRef(dom);
+
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
@@ -5727,15 +5725,14 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 
     qemuDomainObjEndJob(driver, dom);
 
-    if (!dom->persistent) {
+    if (!dom->persistent)
         qemuDomainRemoveInactive(driver, dom);
-        dom = NULL;
-    }
 
     if (event)
         qemuDomainEventQueue(driver, event);
 
  cleanup:
+    virDomainObjEndAPI(&dom);
     return dom;
 }
 
