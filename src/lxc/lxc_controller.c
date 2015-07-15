@@ -533,8 +533,8 @@ static int virLXCControllerAppendNBDPids(virLXCControllerPtr ctrl,
                                          const char *dev)
 {
     char *pidpath = NULL;
-    pid_t *pids;
-    size_t npids;
+    pid_t *pids = NULL;
+    size_t npids = 0;
     size_t i;
     int ret = -1;
     pid_t pid;
