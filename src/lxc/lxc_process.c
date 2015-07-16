@@ -1318,9 +1318,6 @@ int virLXCProcessStart(virConnectPtr conn,
      * more reliable way to kill everything off if something
      * goes wrong from here onwards ... */
     if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                  vm->def->resource ?
-                                  vm->def->resource->partition :
-                                  NULL,
                                   -1, &priv->cgroup) < 0)
         goto cleanup;
 
@@ -1504,9 +1501,6 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
             goto error;
 
         if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                      vm->def->resource ?
-                                      vm->def->resource->partition :
-                                      NULL,
                                       -1, &priv->cgroup) < 0)
             goto error;
 
