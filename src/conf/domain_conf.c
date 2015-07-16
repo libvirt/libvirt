@@ -5940,7 +5940,10 @@ virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
     }
 
     switch (def->bus) {
-    case VIR_DOMAIN_DISK_BUS_SCSI:
+    case VIR_DOMAIN_DISK_BUS_SCSI: {
+        unsigned int controller;
+        unsigned int unit;
+
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
         if (xmlopt->config.hasWideSCSIBus) {
@@ -5949,22 +5952,25 @@ virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
              * Unit 7 is the SCSI controller itself. Therefore unit 7
              * cannot be assigned to disks and is skipped.
              */
-            def->info.addr.drive.controller = idx / 15;
-            def->info.addr.drive.bus = 0;
-            def->info.addr.drive.unit = idx % 15;
+            controller = idx / 15;
+            unit = idx % 15;
 
             /* Skip the SCSI controller at unit 7 */
-            if (def->info.addr.drive.unit >= 7)
-                ++def->info.addr.drive.unit;
+            if (unit >= 7)
+                ++unit;
         } else {
             /* For a narrow SCSI bus we define the default mapping to be
              * 7 units per bus, 1 bus per controller, many controllers */
-            def->info.addr.drive.controller = idx / 7;
-            def->info.addr.drive.bus = 0;
-            def->info.addr.drive.unit = idx % 7;
+            controller = idx / 7;
+            unit = idx % 7;
         }
 
+        def->info.addr.drive.controller = controller;
+        def->info.addr.drive.bus = 0;
+        def->info.addr.drive.target = 0;
+        def->info.addr.drive.unit = unit;
         break;
+    }
 
     case VIR_DOMAIN_DISK_BUS_IDE:
         /* For IDE we define the default mapping to be 2 units
