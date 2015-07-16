@@ -5342,9 +5342,6 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
     size_t i;
     int ret;
 
-    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
-        return -1;
-
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             continue;
