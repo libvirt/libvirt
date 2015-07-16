@@ -95,17 +95,20 @@ libxlDoMigrateReceive(void *opaque)
     int recvfd = args->recvfd;
     size_t i;
     int ret;
+    bool remove_dom = 0;
+
+    virObjectLock(vm);
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
 
     /*
      * Always start the domain paused.  If needed, unpause in the
      * finish phase, after transfer of the domain is complete.
      */
-    virObjectLock(vm);
     ret = libxlDomainStart(driver, vm, true, recvfd);
-    virObjectUnlock(vm);
 
     if (ret < 0 && !vm->persistent)
-        virDomainObjListRemove(driver->domains, vm);
+        remove_dom = true;
 
     /* Remove all listen socks from event handler, and close them. */
     for (i = 0; i < nsocks; i++) {
@@ -117,6 +120,17 @@ libxlDoMigrateReceive(void *opaque)
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);
     virObjectUnref(args);
+
+    if (!libxlDomainObjEndJob(driver, vm))
+        vm = NULL;
+
+ cleanup:
+    if (remove_dom && vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
+    if (vm)
+        virObjectUnlock(vm);
 }
 
 
