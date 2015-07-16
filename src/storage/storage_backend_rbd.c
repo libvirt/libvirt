@@ -484,10 +484,7 @@ static int virStorageBackendRBDCreateImage(rados_ioctx_t io,
                                            char *name, long capacity)
 {
     int order = 0;
-    if (rbd_create(io, name, capacity, &order) < 0)
-        return -1;
-
-    return 0;
+    return rbd_create(io, name, capacity, &order);
 }
 
 static int
