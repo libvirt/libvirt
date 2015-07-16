@@ -80,16 +80,11 @@ static void virSystemdEscapeName(virBufferPtr buf,
 
 
 char *virSystemdMakeScopeName(const char *name,
-                              const char *drivername,
-                              const char *partition)
+                              const char *drivername)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (*partition == '/')
-        partition++;
-
-    virSystemdEscapeName(&buf, partition);
-    virBufferAddChar(&buf, '-');
+    virBufferAddLit(&buf, "machine-");
     virSystemdEscapeName(&buf, drivername);
     virBufferAddLit(&buf, "\\x2d");
     virSystemdEscapeName(&buf, name);

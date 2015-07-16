@@ -340,7 +340,6 @@ static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
 
 struct testScopeData {
     const char *name;
-    const char *partition;
     const char *expected;
 };
 
@@ -351,9 +350,7 @@ testScopeName(const void *opaque)
     int ret = -1;
     char *actual = NULL;
 
-    if (!(actual = virSystemdMakeScopeName(data->name,
-                                           "lxc",
-                                           data->partition)))
+    if (!(actual = virSystemdMakeScopeName(data->name, "lxc")))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {
@@ -472,22 +469,19 @@ mymain(void)
     if (virtTestRun("Test create with network ", testCreateNetwork, NULL) < 0)
         ret = -1;
 
-# define TEST_SCOPE(name, partition, unitname)                          \
+# define TEST_SCOPE(name, unitname)                                     \
     do {                                                                \
         struct testScopeData data = {                                   \
-            name, partition, unitname                                   \
+            name, unitname                                              \
         };                                                              \
         if (virtTestRun("Test scopename", testScopeName, &data) < 0)    \
             ret = -1;                                                   \
     } while (0)
 
-    TEST_SCOPE("demo", "/machine", "machine-lxc\\x2ddemo.scope");
-    TEST_SCOPE("demo-name", "/machine", "machine-lxc\\x2ddemo\\x2dname.scope");
-    TEST_SCOPE("demo!name", "/machine", "machine-lxc\\x2ddemo\\x21name.scope");
-    TEST_SCOPE(".demo", "/machine", "machine-lxc\\x2d\\x2edemo.scope");
-    TEST_SCOPE("demo", "/machine/eng-dept", "machine-eng\\x2ddept-lxc\\x2ddemo.scope");
-    TEST_SCOPE("demo", "/machine/eng-dept/testing!stuff",
-               "machine-eng\\x2ddept-testing\\x21stuff-lxc\\x2ddemo.scope");
+    TEST_SCOPE("demo", "machine-lxc\\x2ddemo.scope");
+    TEST_SCOPE("demo-name", "machine-lxc\\x2ddemo\\x2dname.scope");
+    TEST_SCOPE("demo!name", "machine-lxc\\x2ddemo\\x21name.scope");
+    TEST_SCOPE(".demo", "machine-lxc\\x2d\\x2edemo.scope");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function)                        \
     do {                                                                \

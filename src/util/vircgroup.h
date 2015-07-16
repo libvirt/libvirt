@@ -92,7 +92,6 @@ int virCgroupNewDetect(pid_t pid,
 int virCgroupNewDetectMachine(const char *name,
                               const char *drivername,
                               pid_t pid,
-                              const char *partition,
                               int controllers,
                               virCgroupPtr *group);
 

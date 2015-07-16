@@ -243,7 +243,6 @@ static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
-                              const char *partition,
                               bool stripEmulatorSuffix)
 {
     size_t i;
@@ -258,10 +257,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     if (virCgroupPartitionEscape(&partname) < 0)
         goto cleanup;
 
-    if (!partition)
-        partition = "/machine";
-
-    if (!(scopename = virSystemdMakeScopeName(name, drivername, partition)))
+    if (!(scopename = virSystemdMakeScopeName(name, drivername)))
         goto cleanup;
 
     if (virCgroupPartitionEscape(&scopename) < 0)
@@ -1498,7 +1494,6 @@ int
 virCgroupNewDetectMachine(const char *name,
                           const char *drivername,
                           pid_t pid,
-                          const char *partition,
                           int controllers,
                           virCgroupPtr *group)
 {
@@ -1508,8 +1503,7 @@ virCgroupNewDetectMachine(const char *name,
         return -1;
     }
 
-    if (!virCgroupValidateMachineGroup(*group, name, drivername, partition,
-                                       true)) {
+    if (!virCgroupValidateMachineGroup(*group, name, drivername, true)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
         virCgroupFree(group);
@@ -4047,7 +4041,6 @@ int
 virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
                           const char *drivername ATTRIBUTE_UNUSED,
                           pid_t pid ATTRIBUTE_UNUSED,
-                          const char *partition ATTRIBUTE_UNUSED,
                           int controllers ATTRIBUTE_UNUSED,
                           virCgroupPtr *group ATTRIBUTE_UNUSED)
 {

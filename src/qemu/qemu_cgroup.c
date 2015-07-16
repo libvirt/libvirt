@@ -855,9 +855,6 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
     if (virCgroupNewDetectMachine(vm->def->name,
                                   "qemu",
                                   vm->pid,
-                                  vm->def->resource ?
-                                  vm->def->resource->partition :
-                                  NULL,
                                   cfg->cgroupControllers,
                                   &priv->cgroup) < 0)
         goto cleanup;
