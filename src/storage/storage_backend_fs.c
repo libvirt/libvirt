@@ -784,7 +784,8 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *parent = NULL;
     char *p = NULL;
     mode_t mode;
-    bool needs_create_as_uid, dir_create_flags;
+    bool needs_create_as_uid;
+    unsigned int dir_create_flags;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
