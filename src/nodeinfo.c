@@ -1301,6 +1301,7 @@ nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 #ifdef __linux__
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char *online_path = NULL;
+    char *cpudir = NULL;
     virBitmapPtr cpumap;
     int present;
 
@@ -1318,8 +1319,12 @@ nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED,
         cpumap = virBitmapNew(present);
         if (!cpumap)
             goto cleanup;
+
+        if (virAsprintf(&cpudir, "%s/cpu", prefix) < 0)
+            goto cleanup;
+
         for (i = 0; i < present; i++) {
-            int online = virNodeGetCpuValue(prefix, i, "online", 1);
+            int online = virNodeGetCpuValue(cpudir, i, "online", 1);
             if (online < 0) {
                 virBitmapFree(cpumap);
                 cpumap = NULL;
@@ -1333,6 +1338,7 @@ nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED,
         *max_id = present;
  cleanup:
     VIR_FREE(online_path);
+    VIR_FREE(cpudir);
     return cpumap;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
