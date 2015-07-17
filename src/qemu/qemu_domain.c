@@ -981,8 +981,10 @@ virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       void *opaque)
 {
+    virQEMUDriverPtr driver = opaque;
+    virQEMUCapsPtr qemuCaps = NULL;
     bool addDefaultUSB = true;
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
@@ -991,17 +993,24 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
+    int ret = -1;
 
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
-        return -1;
+        return ret;
     }
 
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        return -1;
+        return ret;
+
+
+    /* This condition is actually a (temporary) hack for test suite which
+     * does not create capabilities cache */
+    if (driver && driver->qemuCapsCache)
+        qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {
@@ -1030,13 +1039,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         break;
 
     case VIR_ARCH_ARMV7L:
-       addDefaultUSB = false;
-       addDefaultMemballoon = false;
-       break;
     case VIR_ARCH_AARCH64:
-       addDefaultUSB = false;
-       addDefaultMemballoon = false;
-       break;
+        addDefaultUSB = false;
+        addDefaultMemballoon = false;
+        if (STREQ(def->os.machine, "virt") ||
+            STRPREFIX(def->os.machine, "virt-")) {
+            addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
+        }
+        break;
 
     case VIR_ARCH_PPC64:
     case VIR_ARCH_PPC64LE:
@@ -1076,18 +1086,18 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (addDefaultUSB &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
-        return -1;
+        goto cleanup;
 
     if (addImplicitSATA &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
-        return -1;
+        goto cleanup;
 
     if (addPCIRoot &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
             VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
-        return -1;
+        goto cleanup;
 
     /* When a machine has a pcie-root, make sure that there is always
      * a dmi-to-pci-bridge controller added as bus 1, and a pci-bridge
@@ -1103,14 +1113,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             virDomainDefMaybeAddController(
                 def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
                 VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE) < 0) {
-        return -1;
+            goto cleanup;
         }
     }
 
     if (addDefaultMemballoon && !def->memballoon) {
         virDomainMemballoonDefPtr memballoon;
         if (VIR_ALLOC(memballoon) < 0)
-            return -1;
+            goto cleanup;
 
         memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
         def->memballoon = memballoon;
@@ -1121,24 +1131,27 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         virDomainDefMaybeAddInput(def,
                                   VIR_DOMAIN_INPUT_TYPE_KBD,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        return -1;
+        goto cleanup;
 
     if (addDefaultUSBMouse &&
         def->ngraphics > 0 &&
         virDomainDefMaybeAddInput(def,
                                   VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        return -1;
+        goto cleanup;
 
     if (addPanicDevice && !def->panic) {
         virDomainPanicDefPtr panic;
         if (VIR_ALLOC(panic) < 0)
-            return -1;
+            goto cleanup;
 
         def->panic = panic;
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virObjectUnref(qemuCaps);
+    return ret;
 }
 
 static const char *
