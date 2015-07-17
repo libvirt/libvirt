@@ -24,8 +24,8 @@
 
 # include "driver.h"
 # include "domain_event.h"
-# include "domain_conf.h"
 # include "configmake.h"
+# include "virdomainobjlist.h"
 # include "virthread.h"
 # include "virclosecallbacks.h"
 

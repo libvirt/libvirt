@@ -26,7 +26,7 @@
 # define NOGUI "nogui"
 
 # include "internal.h"
-# include "domain_conf.h"
+# include "virdomainobjlist.h"
 # include "virthread.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE

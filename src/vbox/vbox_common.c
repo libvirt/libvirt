@@ -25,7 +25,7 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "domain_conf.h"
+#include "virdomainobjlist.h"
 #include "domain_event.h"
 #include "virlog.h"
 #include "viralloc.h"

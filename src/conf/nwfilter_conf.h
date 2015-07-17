@@ -33,7 +33,7 @@
 # include "virbuffer.h"
 # include "virsocketaddr.h"
 # include "virmacaddr.h"
-# include "domain_conf.h"
+# include "virdomainobjlist.h"
 
 /* XXX
  * The config parser/structs should not be using platform specific

@@ -27,6 +27,7 @@
 
 # include "driver.h"
 # include "conf/domain_conf.h"
+# include "conf/virdomainobjlist.h"
 # include "conf/domain_event.h"
 # include "virthread.h"
 

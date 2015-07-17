@@ -37,6 +37,7 @@ src/conf/secret_conf.c
 src/conf/snapshot_conf.c
 src/conf/storage_conf.c
 src/conf/virchrdev.c
+src/conf/virdomainobjlist.c
 src/cpu/cpu.c
 src/cpu/cpu_generic.c
 src/cpu/cpu_map.c

@@ -2406,9 +2406,6 @@ struct _virDomainObj {
     int taint;
 };
 
-typedef struct _virDomainObjList virDomainObjList;
-typedef virDomainObjList *virDomainObjListPtr;
-
 typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
                                           virDomainDefPtr def);
 
@@ -2489,17 +2486,6 @@ virDomainObjIsActive(virDomainObjPtr dom)
 
 virDomainObjPtr virDomainObjNew(virDomainXMLOptionPtr caps)
     ATTRIBUTE_NONNULL(1);
-
-virDomainObjListPtr virDomainObjListNew(void);
-
-virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
-                                         int id);
-virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
-                                           const unsigned char *uuid);
-virDomainObjPtr virDomainObjListFindByUUIDRef(virDomainObjListPtr doms,
-                                              const unsigned char *uuid);
-virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
-                                           const char *name);
 
 void virDomainObjEndAPI(virDomainObjPtr *vm);
 
@@ -2597,20 +2583,6 @@ virDomainDefPtr virDomainDefNewFull(const char *name,
                                     const unsigned char *uuid,
                                     int id);
 
-enum {
-    VIR_DOMAIN_OBJ_LIST_ADD_LIVE = (1 << 0),
-    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
-};
-virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
-                                    virDomainDefPtr def,
-                                    virDomainXMLOptionPtr xmlopt,
-                                    unsigned int flags,
-                                    virDomainDefPtr *oldDef);
-int virDomainObjListRenameAddNew(virDomainObjListPtr doms,
-                                 virDomainObjPtr vm,
-                                 const char *name);
-int virDomainObjListRenameRemove(virDomainObjListPtr doms,
-                                 const char *name);
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr def,
                            bool live,
@@ -2647,11 +2619,6 @@ virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
 virDomainDefPtr virDomainObjCopyPersistentDef(virDomainObjPtr dom,
                                               virCapsPtr caps,
                                               virDomainXMLOptionPtr xmlopt);
-
-void virDomainObjListRemove(virDomainObjListPtr doms,
-                            virDomainObjPtr dom);
-void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
-                                  virDomainObjPtr dom);
 
 typedef enum {
     /* parse internal domain status information */
@@ -2923,15 +2890,6 @@ typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
                                           void *opaque);
 
-int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
-                                   const char *configDir,
-                                   const char *autostartDir,
-                                   int liveStatus,
-                                   virCapsPtr caps,
-                                   virDomainXMLOptionPtr xmlopt,
-                                   virDomainLoadConfigNotify notify,
-                                   void *opaque);
-
 int virDomainDeleteConfig(const char *configDir,
                           const char *autostartDir,
                           virDomainObjPtr dom);
@@ -2952,29 +2910,6 @@ virDomainFSDefPtr virDomainFSRemove(virDomainDefPtr def, size_t i);
 int virDomainVideoDefaultType(const virDomainDef *def);
 unsigned int virDomainVideoDefaultRAM(const virDomainDef *def,
                                       const virDomainVideoType type);
-
-int virDomainObjListNumOfDomains(virDomainObjListPtr doms,
-                                 bool active,
-                                 virDomainObjListACLFilter filter,
-                                 virConnectPtr conn);
-
-int virDomainObjListGetActiveIDs(virDomainObjListPtr doms,
-                                 int *ids,
-                                 int maxids,
-                                 virDomainObjListACLFilter filter,
-                                 virConnectPtr conn);
-int virDomainObjListGetInactiveNames(virDomainObjListPtr doms,
-                                     char **const names,
-                                     int maxnames,
-                                     virDomainObjListACLFilter filter,
-                                     virConnectPtr conn);
-
-typedef int (*virDomainObjListIterator)(virDomainObjPtr dom,
-                                        void *opaque);
-
-int virDomainObjListForEach(virDomainObjListPtr doms,
-                            virDomainObjListIterator callback,
-                            void *opaque);
 
 typedef int (*virDomainSmartcardDefIterator)(virDomainDefPtr def,
                                              virDomainSmartcardDefPtr dev,
@@ -3131,61 +3066,6 @@ VIR_ENUM_DECL(virDomainTimerMode)
 VIR_ENUM_DECL(virDomainCpuPlacementMode)
 
 VIR_ENUM_DECL(virDomainStartupPolicy)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE   \
-                (VIR_CONNECT_LIST_DOMAINS_ACTIVE | \
-                 VIR_CONNECT_LIST_DOMAINS_INACTIVE)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT   \
-                (VIR_CONNECT_LIST_DOMAINS_PERSISTENT | \
-                 VIR_CONNECT_LIST_DOMAINS_TRANSIENT)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE     \
-                (VIR_CONNECT_LIST_DOMAINS_RUNNING | \
-                 VIR_CONNECT_LIST_DOMAINS_PAUSED  | \
-                 VIR_CONNECT_LIST_DOMAINS_SHUTOFF | \
-                 VIR_CONNECT_LIST_DOMAINS_OTHER)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE   \
-                (VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE | \
-                 VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   \
-                (VIR_CONNECT_LIST_DOMAINS_AUTOSTART | \
-                 VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT       \
-                (VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT | \
-                 VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT)
-
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL                   \
-                (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE      | \
-                 VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT  | \
-                 VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE       | \
-                 VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE | \
-                 VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART   | \
-                 VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)
-
-int virDomainObjListCollect(virDomainObjListPtr doms,
-                            virConnectPtr conn,
-                            virDomainObjPtr **vms,
-                            size_t *nvms,
-                            virDomainObjListACLFilter filter,
-                            unsigned int flags);
-int virDomainObjListExport(virDomainObjListPtr doms,
-                           virConnectPtr conn,
-                           virDomainPtr **domains,
-                           virDomainObjListACLFilter filter,
-                           unsigned int flags);
-int virDomainObjListConvert(virDomainObjListPtr domlist,
-                            virConnectPtr conn,
-                            virDomainPtr *doms,
-                            size_t ndoms,
-                            virDomainObjPtr **vms,
-                            size_t *nvms,
-                            virDomainObjListACLFilter filter,
-                            unsigned int flags,
-                            bool skip_missing);
 
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,

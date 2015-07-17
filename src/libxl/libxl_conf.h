@@ -30,7 +30,7 @@
 
 # include "internal.h"
 # include "libvirt_internal.h"
-# include "domain_conf.h"
+# include "virdomainobjlist.h"
 # include "domain_event.h"
 # include "capabilities.h"
 # include "configmake.h"

@@ -24,7 +24,7 @@
 #include <config.h>
 
 #include "internal.h"
-#include "domain_conf.h"
+#include "virdomainobjlist.h"
 #include "snapshot_conf.h"
 #include "virauth.h"
 #include "viralloc.h"

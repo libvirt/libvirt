@@ -60,6 +60,7 @@
 #include "cpu/cpu.h"
 #include "virauth.h"
 #include "viratomic.h"
+#include "virdomainobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 

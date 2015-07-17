@@ -396,24 +396,6 @@ virDomainObjGetMetadata;
 virDomainObjGetOneDef;
 virDomainObjGetPersistentDef;
 virDomainObjGetState;
-virDomainObjListAdd;
-virDomainObjListCollect;
-virDomainObjListConvert;
-virDomainObjListExport;
-virDomainObjListFindByID;
-virDomainObjListFindByName;
-virDomainObjListFindByUUID;
-virDomainObjListFindByUUIDRef;
-virDomainObjListForEach;
-virDomainObjListGetActiveIDs;
-virDomainObjListGetInactiveNames;
-virDomainObjListLoadAllConfigs;
-virDomainObjListNew;
-virDomainObjListNumOfDomains;
-virDomainObjListRemove;
-virDomainObjListRemoveLocked;
-virDomainObjListRenameAddNew;
-virDomainObjListRenameRemove;
 virDomainObjNew;
 virDomainObjParseNode;
 virDomainObjSetDefTransient;
@@ -883,6 +865,27 @@ virStorageVolTypeToString;
 virChrdevAlloc;
 virChrdevFree;
 virChrdevOpen;
+
+
+# conf/virdomainobjlist.h
+virDomainObjListAdd;
+virDomainObjListCollect;
+virDomainObjListConvert;
+virDomainObjListExport;
+virDomainObjListFindByID;
+virDomainObjListFindByName;
+virDomainObjListFindByUUID;
+virDomainObjListFindByUUIDRef;
+virDomainObjListForEach;
+virDomainObjListGetActiveIDs;
+virDomainObjListGetInactiveNames;
+virDomainObjListLoadAllConfigs;
+virDomainObjListNew;
+virDomainObjListNumOfDomains;
+virDomainObjListRemove;
+virDomainObjListRemoveLocked;
+virDomainObjListRenameAddNew;
+virDomainObjListRenameRemove;
 
 
 # cpu/cpu.h

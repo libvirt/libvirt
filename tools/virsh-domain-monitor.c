@@ -32,7 +32,7 @@
 #include <libxml/xmlsave.h>
 
 #include "internal.h"
-#include "conf/domain_conf.h"
+#include "conf/virdomainobjlist.h"
 #include "intprops.h"
 #include "viralloc.h"
 #include "virmacaddr.h"

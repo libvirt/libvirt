@@ -30,7 +30,7 @@
 # define OPENVZ_CONF_H
 
 # include "internal.h"
-# include "domain_conf.h"
+# include "virdomainobjlist.h"
 # include "virthread.h"
 
 
