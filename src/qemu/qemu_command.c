@@ -1662,6 +1662,14 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
          */
         flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
         break;
+
+    case VIR_DOMAIN_DEVICE_NET:
+        if (STREQ(device->data.net->model, "virtio")) {
+            /* virtio-net-pci adapter in qemu has to be plugged into PCIe slot
+             * in order to be able to use irqfds with vhost-net
+             */
+            flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
+        }
     }
 
     /* Ignore implicit controllers on slot 0:0:1.0:
