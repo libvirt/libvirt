@@ -288,6 +288,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "vhost-user-multiqueue", /* 190 */
               "migration-event",
+              "qxl-vga.max_outputs",
     );
 
 
@@ -1651,6 +1652,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
+    { "max_outputs", QEMU_CAPS_QXL_VGA_MAX_OUTPUTS },
 };
 
 struct virQEMUCapsObjectTypeProps {
