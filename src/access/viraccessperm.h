@@ -206,7 +206,7 @@ typedef enum {
 
     /**
      * @desc: Use domain power management
-     * @message: Using domain power management requires authoriation
+     * @message: Using domain power management requires authorization
      */
     VIR_ACCESS_PERM_DOMAIN_PM_CONTROL,  /* S3/S5 suspend/wakeup */
 
@@ -220,7 +220,7 @@ typedef enum {
 
     /**
      * @desc: Inject domain NMI
-     * @message: Injecting interrupt requries authoriation
+     * @message: Injecting interrupt requires authorization
      */
     VIR_ACCESS_PERM_DOMAIN_INJECT_NMI,   /* Trigger interrupts */
 
@@ -376,7 +376,7 @@ typedef enum {
 
     /**
      * @desc: Write network
-     * @message: Writing network configuration requries authorization
+     * @message: Writing network configuration requires authorization
      */
     VIR_ACCESS_PERM_NETWORK_WRITE,
 
