@@ -59,6 +59,8 @@
 
 VIR_LOG_INIT("nodeinfo");
 
+#define SYSFS_SYSTEM_PATH "/sys/devices/system"
+
 #if defined(__FreeBSD__) || defined(__APPLE__)
 static int
 appleFreebsdNodeGetCPUCount(void)
@@ -283,7 +285,6 @@ freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
 
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
-# define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define PROCSTAT_PATH "/proc/stat"
 # define MEMINFO_PATH "/proc/meminfo"
 # define SYSFS_MEMORY_SHARED_PATH "/sys/kernel/mm/ksm"
