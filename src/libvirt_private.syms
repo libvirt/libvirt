@@ -1009,6 +1009,7 @@ nodeGetInfo;
 nodeGetMemory;
 nodeGetMemoryParameters;
 nodeGetMemoryStats;
+nodeGetPresentCPUBitmap;
 nodeSetMemoryParameters;
 
 
