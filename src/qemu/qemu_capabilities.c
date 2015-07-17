@@ -288,6 +288,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "vhost-user-multiqueue", /* 190 */
               "migration-event",
+              "gpex-pcihost",
     );
 
 
@@ -1568,6 +1569,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ivshmem", QEMU_CAPS_DEVICE_IVSHMEM },
     { "pc-dimm", QEMU_CAPS_DEVICE_PC_DIMM },
     { "pci-serial", QEMU_CAPS_DEVICE_PCI_SERIAL },
+    { "gpex-pcihost", QEMU_CAPS_OBJECT_GPEX},
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
