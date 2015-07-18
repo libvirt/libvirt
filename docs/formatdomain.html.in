@@ -1973,7 +1973,9 @@
             valid when the <code>type</code> is "block" or "network" for
             <code>protocol='iscsi'</code> or when the <code>type</code>
             is "volume" when using an iSCSI source <code>pool</code>
-            for <code>mode</code> "host".
+            for <code>mode</code> "host" or as an
+            <a href="http://wiki.libvirt.org/page/NPIV_in_libvirt">NPIV</a>
+            virtual Host Bus Adapter (vHBA) using a Fibre Channel storage pool.
             Configured in this manner, the LUN behaves identically to "disk",
             except that generic SCSI commands from the guest are accepted
             and passed through to the physical device. Also note that
