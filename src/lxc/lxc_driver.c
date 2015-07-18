@@ -4069,11 +4069,9 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
         goto cleanup;
     }
 
-    if (!virDomainDiskSourceIsBlockType(def->src)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Can't setup disk for non-block device"));
+    if (!virDomainDiskSourceIsBlockType(def->src, true))
         goto cleanup;
-    }
+
     src = virDomainDiskGetSource(def);
     if (src == NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

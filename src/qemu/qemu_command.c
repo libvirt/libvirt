@@ -3476,10 +3476,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
                                virStorageNetProtocolTypeToString(disk->src->protocol));
                 goto error;
             }
-        } else if (!virDomainDiskSourceIsBlockType(disk->src)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device='lun' is only valid for block "
-                             "type disk source"));
+        } else if (!virDomainDiskSourceIsBlockType(disk->src, true)) {
             goto error;
         }
         if (disk->wwn) {

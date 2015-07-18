@@ -1210,7 +1210,7 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret = -1;
 
-    if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src))
+    if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src, false))
         return 0;
 
     qemuDriverLock(driver);
@@ -1355,7 +1355,7 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
     char *key = NULL;
     int ret = -1;
 
-    if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src))
+    if (!disk->src->shared || !virDomainDiskSourceIsBlockType(disk->src, false))
         return 0;
 
     qemuDriverLock(driver);
@@ -1443,7 +1443,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
         disk = dev->data.disk;
 
         if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-            !virDomainDiskSourceIsBlockType(disk->src))
+            !virDomainDiskSourceIsBlockType(disk->src, false))
             return 0;
 
         path = virDomainDiskGetSource(disk);
