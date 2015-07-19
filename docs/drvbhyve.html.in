@@ -250,5 +250,33 @@ attempt to boot from the first partition in the disk image.</p>
 <p>Caveat: <code>bootloader_args</code> does not support any quoting.
 Filenames, etc, must not have spaces or they will be tokenized incorrectly.</p>
 
+<h3><a name="clockconfig">Clock configuration</a></h3>
+
+<p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
+<a href="http://svnweb.freebsd.org/changeset/base/284894">r284894</a> for <i>10-STABLE</i> and
+in <a href="http://svnweb.freebsd.org/changeset/base/279225">r279225</a> for <i>-CURRENT</i>.
+It's possible to use this in libvirt <span class="since">since 1.2.18</span>, just place the
+following to domain XML:</p>
+
+<pre>
+&lt;domain type="bhyve"&gt;
+    ...
+    &lt;clock offset='utc'/&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
+<p>Please note that if you run the older bhyve version that doesn't support UTC time, you'll
+fail to start a domain. As UTC is used as a default when you do not specify clock settings,
+you'll need to explicitly specify 'localtime' in this case:</p>
+
+<pre>
+&lt;domain type="bhyve"&gt;
+    ...
+    &lt;clock offset='localtime'/&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
   </body>
 </html>
