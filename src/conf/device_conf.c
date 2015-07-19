@@ -51,7 +51,9 @@ VIR_ENUM_IMPL(virNetDevFeature,
               "rxvlan",
               "txvlan",
               "ntuple",
-              "rxhash")
+              "rxhash",
+              "rdma",
+              "txudptnl")
 
 int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr)
 {

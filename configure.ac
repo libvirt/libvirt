@@ -390,7 +390,7 @@ AC_CHECK_TYPE([struct ifreq],
   ]])
 
 AC_CHECK_DECLS([ETH_FLAG_TXVLAN, ETH_FLAG_NTUPLE, ETH_FLAG_RXHASH, ETH_FLAG_LRO,
-                ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS],
+                ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS, ETHTOOL_GFEATURES],
   [], [], [[#include <linux/ethtool.h>
   ]])
 

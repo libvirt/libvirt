@@ -210,6 +210,7 @@ int virNetDevGetRcvAllMulti(const char *ifname, bool *receive)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 # define SYSFS_NET_DIR "/sys/class/net/"
+# define SYSFS_INFINIBAND_DIR "/sys/class/infiniband/"
 int virNetDevSysfsFile(char **pf_sysfs_device_link,
                        const char *ifname,
                        const char *file)

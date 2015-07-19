@@ -87,6 +87,16 @@ VIR_LOG_INIT("util.netdev");
 # define VIR_IFF_ALLMULTI 0
 #endif
 
+#define RESOURCE_FILE_LEN 4096
+#if HAVE_DECL_ETHTOOL_GFEATURES
+# define TX_UDP_TNL 25
+# define GFEATURES_SIZE 2
+# define FEATURE_WORD(blocks, index, field)  ((blocks)[(index) / 32U].field)
+# define FEATURE_FIELD_FLAG(index)      (1U << (index) % 32U)
+# define FEATURE_BIT_IS_SET(blocks, index, field)        \
+    (FEATURE_WORD(blocks, index, field) & FEATURE_FIELD_FLAG(index))
+#endif
+
 typedef enum {
     VIR_MCAST_TYPE_INDEX_TOKEN,
     VIR_MCAST_TYPE_NAME_TOKEN,
@@ -1868,7 +1878,6 @@ virNetDevReplaceMacAddress(const char *linkdev,
         goto cleanup;
 
     ret = 0;
-
  cleanup:
     VIR_FREE(path);
     return ret;
@@ -2858,9 +2867,9 @@ static int virNetDevGetMulticastTable(const char *ifname,
     }
 
     ret = 0;
+
  cleanup:
     virNetDevMcastListClear(&mcast);
-
     return ret;
 }
 
@@ -2943,11 +2952,73 @@ int virNetDevGetRxFilter(const char *ifname,
     return ret;
 }
 
+
+/**
+ * virNetDevRDMAFeature
+ * This function checks for the availability of RDMA feature
+ * and add it to bitmap
+ *
+ * @ifname: name of the interface
+ * @out: add RDMA feature if exist to bitmap
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
+virNetDevRDMAFeature(const char *ifname,
+                     virBitmapPtr *out)
+{
+    char *eth_devpath = NULL;
+    char *ib_devpath = NULL;
+    char *eth_res_buf = NULL;
+    char *ib_res_buf = NULL;
+    DIR *dirp = NULL;
+    struct dirent *dp;
+    int ret = -1;
+
+    if (!(dirp = opendir(SYSFS_INFINIBAND_DIR))) {
+        virReportSystemError(errno,
+                             _("Failed to opendir path '%s'"),
+                             SYSFS_INFINIBAND_DIR);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&eth_devpath, SYSFS_NET_DIR "%s/device/resource", ifname) < 0)
+        goto cleanup;
+    if (!virFileExists(eth_devpath))
+        goto cleanup;
+    if (virFileReadAll(eth_devpath, RESOURCE_FILE_LEN, &eth_res_buf) < 0)
+        goto cleanup;
+
+    while (virDirRead(dirp, &dp, SYSFS_INFINIBAND_DIR) > 0) {
+        if (dp->d_name[0] == '.')
+            continue;
+        if (virAsprintf(&ib_devpath, SYSFS_INFINIBAND_DIR "%s/device/resource",
+                        dp->d_name) < 0)
+            continue;
+        if (virFileReadAll(ib_devpath, RESOURCE_FILE_LEN, &ib_res_buf) > 0 &&
+            STREQ(eth_res_buf, ib_res_buf)) {
+            ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_RDMA));
+            break;
+        }
+        VIR_FREE(ib_devpath);
+        VIR_FREE(ib_res_buf);
+    }
+    ret = 0;
+
+ cleanup:
+    closedir(dirp);
+    VIR_FREE(eth_devpath);
+    VIR_FREE(ib_devpath);
+    VIR_FREE(eth_res_buf);
+    VIR_FREE(ib_res_buf);
+    return ret;
+}
+
 #if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
 
 /**
- * virNetDevFeatureAvailable
- * This function checks for the availability of a network device feature
+ * virNetDevSendEthtoolIoctl
+ * This function sends ethtool ioctl request
  *
  * @ifname: name of the interface
  * @cmd: reference to an ethtool command structure
@@ -2955,7 +3026,7 @@ int virNetDevGetRxFilter(const char *ifname,
  * Returns 0 on success, -1 on failure.
  */
 static int
-virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
+virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
 {
     int ret = -1;
     int sock = -1;
@@ -2969,9 +3040,9 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 
     memset(&ifr, 0, sizeof(ifr));
     strcpy(ifr.ifr_name, ifname);
-    ifr.ifr_data = (void*) cmd;
-
-    if (ioctl(sock, SIOCETHTOOL, &ifr) != 0) {
+    ifr.ifr_data = cmd;
+    ret = ioctl(sock, SIOCETHTOOL, &ifr);
+    if (ret != 0) {
         switch (errno) {
             case EPERM:
                 VIR_DEBUG("ethtool ioctl: permission denied");
@@ -2988,13 +3059,55 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
         }
     }
 
-    ret = cmd->data > 0 ? 1: 0;
  cleanup:
     if (sock)
         VIR_FORCE_CLOSE(sock);
-
     return ret;
 }
+
+
+/**
+* virNetDevFeatureAvailable
+* This function checks for the availability of a network device feature
+*
+* @ifname: name of the interface
+* @cmd: reference to an ethtool command structure
+*
+* Returns 0 if not found, 1 on success, and -1 on failure.
+*/
+static int
+virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
+{
+    int ret = -1;
+
+    cmd = (void*)cmd;
+    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
+        ret = cmd->data > 0 ? 1 : 0;
+    return ret;
+}
+
+
+# if HAVE_DECL_ETHTOOL_GFEATURES
+/**
+ * virNetDevGFeatureAvailable
+ * This function checks for the availability of a network device gfeature
+ *
+ * @ifname: name of the interface
+ * @cmd: reference to a gfeatures ethtool command structure
+ *
+ * Returns 0 if not found, 1 on success, and -1 on failure.
+ */
+static int
+virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
+{
+    int ret = -1;
+
+    cmd = (void*)cmd;
+    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
+        ret = FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
+    return ret;
+}
+# endif
 
 
 /**
@@ -3013,7 +3126,9 @@ virNetDevGetFeatures(const char *ifname,
 {
     size_t i = -1;
     struct ethtool_value cmd = { 0 };
-
+# if HAVE_DECL_ETHTOOL_GFEATURES
+    struct ethtool_gfeatures g_cmd = { 0 };
+# endif
     struct elem{
         const int cmd;
         const virNetDevFeature feat;
@@ -3069,6 +3184,15 @@ virNetDevGetFeatures(const char *ifname,
     }
 # endif
 
+# if HAVE_DECL_ETHTOOL_GFEATURES
+    g_cmd.cmd = ETHTOOL_GFEATURES;
+    g_cmd.size = GFEATURES_SIZE;
+    if (virNetDevGFeatureAvailable(ifname, &g_cmd))
+        ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_TXUDPTNL));
+# endif
+
+    if (virNetDevRDMAFeature(ifname, out))
+        return -1;
     return 0;
 }
 #else

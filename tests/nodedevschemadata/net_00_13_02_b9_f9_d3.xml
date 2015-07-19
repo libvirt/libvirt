@@ -13,6 +13,8 @@
     <feature name='rxvlan'/>
     <feature name='txvlan'/>
     <feature name='rxhash'/>
+    <feature name='rdma'/>
+    <feature name='txudptnl'/>
     <capability type='80211'/>
   </capability>
 </device>
