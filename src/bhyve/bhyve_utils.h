@@ -46,6 +46,7 @@ struct _bhyveConn {
 
     virCloseCallbacksPtr closeCallbacks;
 
+    unsigned bhyvecaps;
     unsigned grubcaps;
 };
 

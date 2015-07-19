@@ -31,6 +31,11 @@ typedef enum {
     BHYVE_GRUB_CAP_CONSDEV = 1,
 } virBhyveGrubCapsFlags;
 
+typedef enum {
+    BHYVE_CAP_RTC_UTC = 1,
+} virBhyveCapsFlags;
+
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
+int virBhyveProbeCaps(unsigned int *caps);
 
 #endif

@@ -118,6 +118,7 @@ mymain(void)
     } while (0)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
+    driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
 
     DO_TEST("base");
     DO_TEST("acpiapic");
@@ -133,6 +134,7 @@ mymain(void)
     DO_TEST("custom-loader");
     DO_TEST("disk-cdrom-grub");
     DO_TEST("serial-grub");
+    DO_TEST("localtime");
 
     driver.grubcaps = 0;
 

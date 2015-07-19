@@ -1181,6 +1181,9 @@ bhyveStateInitialize(bool privileged,
     if (!(bhyve_driver->caps = virBhyveCapsBuild()))
         goto cleanup;
 
+    if (virBhyveProbeCaps(&bhyve_driver->bhyvecaps) < 0)
+        goto cleanup;
+
     if (virBhyveProbeGrubCaps(&bhyve_driver->grubcaps) < 0)
         goto cleanup;
 
@@ -1237,6 +1240,16 @@ bhyveStateInitialize(bool privileged,
     virObjectUnref(conn);
     bhyveStateCleanup();
     return -1;
+}
+
+unsigned
+bhyveDriverGetCaps(virConnectPtr conn)
+{
+    bhyveConnPtr driver = conn->privateData;
+
+    if (driver != NULL)
+        return driver->bhyvecaps;
+    return 0;
 }
 
 unsigned

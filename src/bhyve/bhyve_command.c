@@ -245,6 +245,27 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     if (def->features[VIR_DOMAIN_FEATURE_APIC] == VIR_TRISTATE_SWITCH_ON)
         virCommandAddArg(cmd, "-I"); /* Present ioapic to the guest */
 
+    switch (def->clock.offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+        /* used by default in bhyve */
+        break;
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_RTC_UTC) != 0) {
+            virCommandAddArg(cmd, "-u");
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Installed bhyve binary does not support "
+                          "UTC clock"));
+            goto error;
+        }
+        break;
+    default:
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                        _("unsupported clock offset '%s'"),
+                        virDomainClockOffsetTypeToString(def->clock.offset));
+         goto error;
+    }
+
     /* Clarification about -H and -P flags from Peter Grehan:
      * -H and -P flags force the guest to exit when it executes IA32 HLT and PAUSE
      * instructions respectively.
