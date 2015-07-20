@@ -442,6 +442,8 @@ virNodeParseNode(const char *sysfs_prefix,
     }
 
     present_cpumap = nodeGetPresentCPUBitmap(sysfs_prefix);
+    if (!present_cpumap)
+        goto cleanup;
 
     /* enumerate sockets in the node */
     CPU_ZERO(&sock_map);
@@ -449,7 +451,7 @@ virNodeParseNode(const char *sysfs_prefix,
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
-        if (present_cpumap && !(virBitmapIsBitSet(present_cpumap, cpu)))
+        if (!virBitmapIsBitSet(present_cpumap, cpu))
             continue;
 
         if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
@@ -485,7 +487,7 @@ virNodeParseNode(const char *sysfs_prefix,
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
 
-        if (present_cpumap && !(virBitmapIsBitSet(present_cpumap, cpu)))
+        if (!virBitmapIsBitSet(present_cpumap, cpu))
             continue;
 
         if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
@@ -1285,27 +1287,40 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 }
 
 virBitmapPtr
-nodeGetPresentCPUBitmap(const char *sysfs_prefix)
+nodeGetPresentCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 {
-    int max_present;
 #ifdef __linux__
+    virBitmapPtr present_cpus = NULL;
     char *present_path = NULL;
-    virBitmapPtr bitmap = NULL;
-#endif
+    int npresent_cpus;
 
-    if ((max_present = nodeGetCPUCount(sysfs_prefix)) < 0)
-        return NULL;
+    if ((npresent_cpus = nodeGetCPUCount(sysfs_prefix)) < 0)
+        goto cleanup;
 
-#ifdef __linux__
     if (!(present_path = linuxGetCPUPresentPath(sysfs_prefix)))
-        return NULL;
-    if (virFileExists(present_path))
-        bitmap = linuxParseCPUmap(max_present, present_path);
+        goto cleanup;
+
+    /* If the cpu/present file is available, parse it and exit */
+    if (virFileExists(present_path)) {
+        present_cpus = linuxParseCPUmap(npresent_cpus, present_path);
+        goto cleanup;
+    }
+
+    /* If the file is not available, we can assume that the kernel is
+     * too old to support non-consecutive CPU ids and just mark all
+     * possible CPUs as present */
+    if (!(present_cpus = virBitmapNew(npresent_cpus)))
+        goto cleanup;
+
+    virBitmapSetAll(present_cpus);
+
+ cleanup:
     VIR_FREE(present_path);
-    return bitmap;
+
+    return present_cpus;
 #endif
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("non-continuous host cpu numbers not implemented on this platform"));
+                   _("node present CPU map not implemented on this platform"));
     return NULL;
 }
 
