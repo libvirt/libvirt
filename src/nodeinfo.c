@@ -977,6 +977,12 @@ linuxGetCPUPresentPath(const char *sysfs_prefix)
     return linuxGetCPUGlobalPath(sysfs_prefix, "present");
 }
 
+static char *
+linuxGetCPUOnlinePath(const char *sysfs_prefix)
+{
+    return linuxGetCPUGlobalPath(sysfs_prefix, "online");
+}
+
 /* Determine the maximum cpu id from a Linux sysfs cpu/present file. */
 static int
 linuxParseCPUmax(const char *path)
@@ -1317,7 +1323,7 @@ nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED,
     if (present < 0)
         return NULL;
 
-    if (virAsprintf(&online_path, "%s/cpu/online", prefix) < 0)
+    if (!(online_path = linuxGetCPUOnlinePath(sysfs_prefix)))
         return NULL;
     if (virFileExists(online_path)) {
         cpumap = linuxParseCPUmap(present, online_path);
