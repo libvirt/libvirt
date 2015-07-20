@@ -410,6 +410,7 @@ virNodeParseNode(const char *sysfs_prefix,
     DIR *cpudir = NULL;
     struct dirent *cpudirent = NULL;
     virBitmapPtr present_cpumap = NULL;
+    virBitmapPtr online_cpus_map = NULL;
     virBitmapPtr sockets_map = NULL;
     virBitmapPtr *cores_maps = NULL;
     int sock_max = 0;
@@ -418,7 +419,6 @@ virNodeParseNode(const char *sysfs_prefix,
     size_t i;
     int siblings;
     unsigned int cpu;
-    int online;
     int direrr;
 
     *threads = 0;
@@ -433,6 +433,9 @@ virNodeParseNode(const char *sysfs_prefix,
     present_cpumap = nodeGetPresentCPUBitmap(sysfs_prefix);
     if (!present_cpumap)
         goto cleanup;
+    online_cpus_map = nodeGetOnlineCPUBitmap(sysfs_prefix);
+    if (!online_cpus_map)
+        goto cleanup;
 
     /* enumerate sockets in the node */
     if (!(sockets_map = virBitmapNew(ID_MAX + 1)))
@@ -445,10 +448,7 @@ virNodeParseNode(const char *sysfs_prefix,
         if (!virBitmapIsBitSet(present_cpumap, cpu))
             continue;
 
-        if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
-            goto cleanup;
-
-        if (!online)
+        if (!virBitmapIsBitSet(online_cpus_map, cpu))
             continue;
 
         /* Parse socket */
@@ -490,10 +490,7 @@ virNodeParseNode(const char *sysfs_prefix,
         if (!virBitmapIsBitSet(present_cpumap, cpu))
             continue;
 
-        if ((online = virNodeGetCpuValue(node, cpu, "online", 1)) < 0)
-            goto cleanup;
-
-        if (!online) {
+        if (!virBitmapIsBitSet(online_cpus_map, cpu)) {
             (*offline)++;
             continue;
         }
@@ -561,6 +558,7 @@ virNodeParseNode(const char *sysfs_prefix,
             virBitmapFree(cores_maps[i]);
     VIR_FREE(cores_maps);
     virBitmapFree(sockets_map);
+    virBitmapFree(online_cpus_map);
     virBitmapFree(present_cpumap);
 
     return ret;
