@@ -1000,7 +1000,6 @@ virLockManagerRelease;
 nodeAllocPages;
 nodeCapsInitNUMA;
 nodeGetCellsFreeMemory;
-nodeGetCPUBitmap;
 nodeGetCPUCount;
 nodeGetCPUMap;
 nodeGetCPUStats;
@@ -1009,6 +1008,7 @@ nodeGetInfo;
 nodeGetMemory;
 nodeGetMemoryParameters;
 nodeGetMemoryStats;
+nodeGetOnlineCPUBitmap;
 nodeGetPresentCPUBitmap;
 nodeSetMemoryParameters;
 

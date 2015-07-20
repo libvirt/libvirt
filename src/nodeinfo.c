@@ -1325,7 +1325,7 @@ nodeGetPresentCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 }
 
 virBitmapPtr
-nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
+nodeGetOnlineCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
@@ -1370,7 +1370,7 @@ nodeGetCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
     return cpumap;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("node cpumap not implemented on this platform"));
+                   _("node online CPU map not implemented on this platform"));
     return NULL;
 #endif
 }
@@ -1692,7 +1692,7 @@ nodeGetCPUMap(const char *sysfs_prefix,
     if (!cpumap && !online)
         return nodeGetCPUCount(sysfs_prefix);
 
-    if (!(cpus = nodeGetCPUBitmap(sysfs_prefix)))
+    if (!(cpus = nodeGetOnlineCPUBitmap(sysfs_prefix)))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)
