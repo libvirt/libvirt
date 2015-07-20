@@ -63,6 +63,7 @@
 #include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virkmod.h"
 #include "virlog.h"
 #include "virprocess.h"
 #include "virstring.h"
@@ -745,6 +746,7 @@ int virFileLoopDeviceAssociate(const char *file,
 
 
 # define SYSFS_BLOCK_DIR "/sys/block"
+# define NBD_DRIVER "nbd"
 
 
 static int
@@ -811,17 +813,41 @@ virFileNBDDeviceFindUnused(void)
     return ret;
 }
 
+static bool
+virFileNBDLoadDriver(void)
+{
+    if (virKModIsBlacklisted(NBD_DRIVER)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load nbd module: "
+                         "administratively prohibited"));
+        return false;
+    } else {
+        char *errbuf = NULL;
+
+        if ((errbuf = virKModLoad(NBD_DRIVER, true))) {
+            VIR_FREE(errbuf);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to load nbd module"));
+            return false;
+        }
+        VIR_FREE(errbuf);
+    }
+    return true;
+}
 
 int virFileNBDDeviceAssociate(const char *file,
                               virStorageFileFormat fmt,
                               bool readonly,
                               char **dev)
 {
-    char *nbddev;
+    char *nbddev = NULL;
     char *qemunbd = NULL;
     virCommandPtr cmd = NULL;
     int ret = -1;
     const char *fmtstr = NULL;
+
+    if (!virFileNBDLoadDriver())
+        goto cleanup;
 
     if (!(nbddev = virFileNBDDeviceFindUnused()))
         goto cleanup;
