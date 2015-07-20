@@ -959,14 +959,22 @@ linuxNodeGetMemoryStats(FILE *meminfo,
 }
 
 static char *
-linuxGetCPUPresentPath(const char *sysfs_prefix)
+linuxGetCPUGlobalPath(const char *sysfs_prefix,
+                      const char *file)
 {
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char *path = NULL;
 
-    if (virAsprintf(&path, "%s/cpu/present", prefix) < 0)
+    if (virAsprintf(&path, "%s/cpu/%s", prefix, file) < 0)
         return NULL;
+
     return path;
+}
+
+static char *
+linuxGetCPUPresentPath(const char *sysfs_prefix)
+{
+    return linuxGetCPUGlobalPath(sysfs_prefix, "present");
 }
 
 /* Determine the maximum cpu id from a Linux sysfs cpu/present file. */
