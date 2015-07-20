@@ -81,7 +81,6 @@ struct daemonConfig {
 
     int keepalive_interval;
     unsigned int keepalive_count;
-    int keepalive_required;
 
     int admin_min_workers;
     int admin_max_workers;
@@ -91,7 +90,6 @@ struct daemonConfig {
 
     int admin_keepalive_interval;
     unsigned int admin_keepalive_count;
-    int admin_keepalive_required;
 };
 
 

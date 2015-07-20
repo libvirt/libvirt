@@ -69,7 +69,6 @@ struct _virNetServer {
 
     int keepaliveInterval;
     unsigned int keepaliveCount;
-    bool keepaliveRequired;
 
 #ifdef WITH_GNUTLS
     virNetTLSContextPtr tls;
@@ -312,7 +311,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 size_t max_anonymous_clients,
                                 int keepaliveInterval,
                                 unsigned int keepaliveCount,
-                                bool keepaliveRequired,
                                 const char *mdnsGroupName,
                                 virNetServerClientPrivNew clientPrivNew,
                                 virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
@@ -338,7 +336,6 @@ virNetServerPtr virNetServerNew(size_t min_workers,
     srv->nclients_unauth_max = max_anonymous_clients;
     srv->keepaliveInterval = keepaliveInterval;
     srv->keepaliveCount = keepaliveCount;
-    srv->keepaliveRequired = keepaliveRequired;
     srv->clientPrivNew = clientPrivNew;
     srv->clientPrivPreExecRestart = clientPrivPreExecRestart;
     srv->clientPrivFree = clientPrivFree;
@@ -380,7 +377,6 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     unsigned int max_anonymous_clients;
     unsigned int keepaliveInterval;
     unsigned int keepaliveCount;
-    bool keepaliveRequired;
     const char *mdnsGroupName = NULL;
 
     if (virJSONValueObjectGetNumberUint(object, "min_workers", &min_workers) < 0) {
@@ -423,11 +419,6 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                        _("Missing keepaliveCount data in JSON document"));
         goto error;
     }
-    if (virJSONValueObjectGetBoolean(object, "keepaliveRequired", &keepaliveRequired) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing keepaliveRequired data in JSON document"));
-        goto error;
-    }
 
     if (virJSONValueObjectHasKey(object, "mdnsGroupName") &&
         (!(mdnsGroupName = virJSONValueObjectGetString(object, "mdnsGroupName")))) {
@@ -440,7 +431,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                                 priority_workers, max_clients,
                                 max_anonymous_clients,
                                 keepaliveInterval, keepaliveCount,
-                                keepaliveRequired, mdnsGroupName,
+                                mdnsGroupName,
                                 clientPrivNew, clientPrivPreExecRestart,
                                 clientPrivFree, clientPrivOpaque)))
         goto error;
@@ -571,11 +562,6 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv)
     if (virJSONValueObjectAppendNumberUint(object, "keepaliveCount", srv->keepaliveCount) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot set keepaliveCount data in JSON document"));
-        goto error;
-    }
-    if (virJSONValueObjectAppendBoolean(object, "keepaliveRequired", srv->keepaliveRequired) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set keepaliveRequired data in JSON document"));
         goto error;
     }
 
@@ -784,15 +770,6 @@ void virNetServerClose(virNetServerPtr srv)
         virNetServerServiceClose(srv->services[i]);
 
     virObjectUnlock(srv);
-}
-
-bool virNetServerKeepAliveRequired(virNetServerPtr srv)
-{
-    bool required;
-    virObjectLock(srv);
-    required = srv->keepaliveRequired;
-    virObjectUnlock(srv);
-    return required;
 }
 
 static inline size_t

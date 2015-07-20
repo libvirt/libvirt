@@ -8,7 +8,6 @@
             "max_anonymous_clients": 10,
             "keepaliveInterval": 120,
             "keepaliveCount": 5,
-            "keepaliveRequired": true,
             "services": [
                 {
                     "auth": 0,

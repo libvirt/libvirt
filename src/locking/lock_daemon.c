@@ -151,7 +151,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 
     if (!(lockd->srv = virNetServerNew(1, 1, 0, config->max_clients,
                                        config->max_clients, -1, 0,
-                                       false, NULL,
+                                       NULL,
                                        virLockDaemonClientNew,
                                        virLockDaemonClientPreExecRestart,
                                        virLockDaemonClientFree,

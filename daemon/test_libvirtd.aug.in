@@ -58,6 +58,6 @@ module Test_libvirtd =
         { "keepalive_interval" = "5" }
         { "keepalive_count" = "5" }
         { "keepalive_required" = "1" }
+        { "admin_keepalive_required" = "1" }
         { "admin_keepalive_interval" = "5" }
         { "admin_keepalive_count" = "5" }
-        { "admin_keepalive_required" = "1" }

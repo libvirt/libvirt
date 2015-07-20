@@ -101,7 +101,6 @@ virNetServerAddProgram;
 virNetServerAddService;
 virNetServerClose;
 virNetServerHasClients;
-virNetServerKeepAliveRequired;
 virNetServerNew;
 virNetServerNewPostExecRestart;
 virNetServerPreExecRestart;

@@ -1290,7 +1290,7 @@ void *remoteClientInitHook(virNetServerClientPtr client,
 /*----- Functions. -----*/
 
 static int
-remoteDispatchConnectOpen(virNetServerPtr server,
+remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
                           virNetServerClientPtr client,
                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
                           virNetMessageErrorPtr rerr,
@@ -1306,12 +1306,6 @@ remoteDispatchConnectOpen(virNetServerPtr server,
     /* Already opened? */
     if (priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection already open"));
-        goto cleanup;
-    }
-
-    if (virNetServerKeepAliveRequired(server) && !priv->keepalive_supported) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("keepalive support is required to connect"));
         goto cleanup;
     }
 

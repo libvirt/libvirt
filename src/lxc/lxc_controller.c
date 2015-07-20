@@ -925,7 +925,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
         return -1;
 
     if (!(srv = virNetServerNew(0, 0, 0, 1,
-                                0, -1, 0, false,
+                                0, -1, 0,
                                 NULL,
                                 virLXCControllerClientPrivateNew,
                                 NULL,

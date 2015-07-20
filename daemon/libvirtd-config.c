@@ -292,7 +292,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     data->keepalive_interval = 5;
     data->keepalive_count = 5;
-    data->keepalive_required = 0;
 
     data->admin_min_workers = 5;
     data->admin_max_workers = 20;
@@ -302,7 +301,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     data->admin_keepalive_interval = 5;
     data->admin_keepalive_count = 5;
-    data->admin_keepalive_required = 0;
 
     localhost = virGetHostname();
     if (localhost == NULL) {
@@ -471,11 +469,9 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 
     GET_CONF_INT(conf, filename, keepalive_interval);
     GET_CONF_UINT(conf, filename, keepalive_count);
-    GET_CONF_UINT(conf, filename, keepalive_required);
 
     GET_CONF_INT(conf, filename, admin_keepalive_interval);
     GET_CONF_UINT(conf, filename, admin_keepalive_count);
-    GET_CONF_UINT(conf, filename, admin_keepalive_required);
 
     return 0;
 

@@ -50,7 +50,7 @@ testCreateServer(const char *host, int family)
     }
 
     if (!(srv = virNetServerNew(10, 50, 5, 100, 10,
-                                120, 5, true,
+                                120, 5,
                                 mdns_group,
                                 NULL,
                                 NULL,

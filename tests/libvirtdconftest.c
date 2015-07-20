@@ -227,7 +227,9 @@ mymain(void)
     for (i = 0; params[i] != 0; i++) {
         const struct testCorruptData data = { params, filedata, filename, i };
         /* Skip now ignored config param */
-        if (STRPREFIX(filedata + params[i], "log_buffer_size"))
+        if (STRPREFIX(filedata + params[i], "log_buffer_size") ||
+            STRPREFIX(filedata + params[i], "keepalive_required") ||
+            STRPREFIX(filedata + params[i], "admin_keepalive_required"))
             continue;
         if (virtTestRun("Test corruption", testCorrupt, &data) < 0)
             ret = -1;

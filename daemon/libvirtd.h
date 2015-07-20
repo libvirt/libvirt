@@ -72,7 +72,6 @@ struct daemonClientPrivate {
     virConnectPtr conn;
 
     daemonClientStreamPtr streams;
-    bool keepalive_supported;
 };
 
 /* Separate private data for admin connection */
