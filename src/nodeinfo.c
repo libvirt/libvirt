@@ -411,8 +411,10 @@ virNodeParseNode(const char *sysfs_prefix,
     struct dirent *cpudirent = NULL;
     virBitmapPtr present_cpumap = NULL;
     virBitmapPtr online_cpus_map = NULL;
+    virBitmapPtr node_cpus_map = NULL;
     virBitmapPtr sockets_map = NULL;
     virBitmapPtr *cores_maps = NULL;
+    int npresent_cpus;
     int sock_max = 0;
     int sock;
     int core;
@@ -437,6 +439,12 @@ virNodeParseNode(const char *sysfs_prefix,
     if (!online_cpus_map)
         goto cleanup;
 
+    npresent_cpus = virBitmapSize(present_cpumap);
+
+    /* Keep track of the CPUs that belong to the current node */
+    if (!(node_cpus_map = virBitmapNew(npresent_cpus)))
+        goto cleanup;
+
     /* enumerate sockets in the node */
     if (!(sockets_map = virBitmapNew(ID_MAX + 1)))
         goto cleanup;
@@ -447,6 +455,10 @@ virNodeParseNode(const char *sysfs_prefix,
 
         if (!virBitmapIsBitSet(present_cpumap, cpu))
             continue;
+
+        /* Mark this CPU as part of the current node */
+        if (virBitmapSetBit(node_cpus_map, cpu) < 0)
+            goto cleanup;
 
         if (!virBitmapIsBitSet(online_cpus_map, cpu))
             continue;
@@ -481,13 +493,11 @@ virNodeParseNode(const char *sysfs_prefix,
         if (!(cores_maps[i] = virBitmapNew(ID_MAX + 1)))
             goto cleanup;
 
-    /* iterate over all CPU's in the node */
-    rewinddir(cpudir);
-    while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
-        if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
-            continue;
+    /* Iterate over all CPUs in the node, in ascending order */
+    for (cpu = 0; cpu < npresent_cpus; cpu++) {
 
-        if (!virBitmapIsBitSet(present_cpumap, cpu))
+        /* Skip CPUs that are not part of the current node */
+        if (!virBitmapIsBitSet(node_cpus_map, cpu))
             continue;
 
         if (!virBitmapIsBitSet(online_cpus_map, cpu)) {
@@ -530,9 +540,6 @@ virNodeParseNode(const char *sysfs_prefix,
             *threads = siblings;
     }
 
-    if (direrr < 0)
-        goto cleanup;
-
     /* finalize the returned data */
     *sockets = virBitmapCountBits(sockets_map);
 
@@ -558,6 +565,7 @@ virNodeParseNode(const char *sysfs_prefix,
             virBitmapFree(cores_maps[i]);
     VIR_FREE(cores_maps);
     virBitmapFree(sockets_map);
+    virBitmapFree(node_cpus_map);
     virBitmapFree(online_cpus_map);
     virBitmapFree(present_cpumap);
 
