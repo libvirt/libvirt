@@ -4597,7 +4597,9 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
     if (virCgroupNewThread(cgroup, nameval, idx, true, &new_cgroup) < 0)
         return NULL;
 
-    if (mem_mask && virCgroupSetCpusetMems(new_cgroup, mem_mask) < 0)
+    if (mem_mask &&
+        virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
+        virCgroupSetCpusetMems(new_cgroup, mem_mask) < 0)
         goto error;
 
     /* Add pid/thread to the cgroup */
@@ -4653,7 +4655,8 @@ qemuDomainHotplugPinThread(virBitmapPtr cpumask,
 {
     int ret = -1;
 
-    if (cgroup) {
+    if (cgroup &&
+        virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
         if (qemuSetupCgroupCpusetCpus(cgroup, cpumask) < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("failed to set cpuset.cpus in cgroup for id %d"),
@@ -4896,7 +4899,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (def && !(flags & VIR_DOMAIN_VCPU_GUEST) && virNumaIsAvailable()) {
+    if (def && !(flags & VIR_DOMAIN_VCPU_GUEST) && virNumaIsAvailable() &&
+        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                                false, &cgroup_temp) < 0)
             goto endjob;
