@@ -40,26 +40,26 @@ VIR_LOG_INIT("cpu.cpu_ppc64");
 
 static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
-struct ppc_vendor {
+struct ppc64_vendor {
     char *name;
-    struct ppc_vendor *next;
+    struct ppc64_vendor *next;
 };
 
-struct ppc_model {
+struct ppc64_model {
     char *name;
-    const struct ppc_vendor *vendor;
+    const struct ppc64_vendor *vendor;
     struct cpuPPC64Data data;
-    struct ppc_model *next;
+    struct ppc64_model *next;
 };
 
-struct ppc_map {
-    struct ppc_vendor *vendors;
-    struct ppc_model *models;
+struct ppc64_map {
+    struct ppc64_vendor *vendors;
+    struct ppc64_model *models;
 };
 
 
 static void
-ppcModelFree(struct ppc_model *model)
+ppc64ModelFree(struct ppc64_model *model)
 {
     if (model == NULL)
         return;
@@ -68,11 +68,11 @@ ppcModelFree(struct ppc_model *model)
     VIR_FREE(model);
 }
 
-static struct ppc_model *
-ppcModelFind(const struct ppc_map *map,
-             const char *name)
+static struct ppc64_model *
+ppc64ModelFind(const struct ppc64_map *map,
+               const char *name)
 {
-    struct ppc_model *model;
+    struct ppc64_model *model;
 
     model = map->models;
     while (model != NULL) {
@@ -85,11 +85,11 @@ ppcModelFind(const struct ppc_map *map,
     return NULL;
 }
 
-static struct ppc_model *
-ppcModelFindPVR(const struct ppc_map *map,
-                uint32_t pvr)
+static struct ppc64_model *
+ppc64ModelFindPVR(const struct ppc64_map *map,
+                  uint32_t pvr)
 {
-    struct ppc_model *model;
+    struct ppc64_model *model;
 
     model = map->models;
     while (model != NULL) {
@@ -105,19 +105,19 @@ ppcModelFindPVR(const struct ppc_map *map,
      * If the exact CPU isn't found, return the nearest matching CPU generation
      */
     if (pvr & 0x0000FFFFul)
-        return ppcModelFindPVR(map, (pvr & 0xFFFF0000ul));
+        return ppc64ModelFindPVR(map, (pvr & 0xFFFF0000ul));
 
     return NULL;
 }
 
-static struct ppc_model *
-ppcModelCopy(const struct ppc_model *model)
+static struct ppc64_model *
+ppc64ModelCopy(const struct ppc64_model *model)
 {
-    struct ppc_model *copy;
+    struct ppc64_model *copy;
 
     if (VIR_ALLOC(copy) < 0 ||
         VIR_STRDUP(copy->name, model->name) < 0) {
-        ppcModelFree(copy);
+        ppc64ModelFree(copy);
         return NULL;
     }
 
@@ -127,11 +127,11 @@ ppcModelCopy(const struct ppc_model *model)
     return copy;
 }
 
-static struct ppc_vendor *
-ppcVendorFind(const struct ppc_map *map,
-              const char *name)
+static struct ppc64_vendor *
+ppc64VendorFind(const struct ppc64_map *map,
+                const char *name)
 {
-    struct ppc_vendor *vendor;
+    struct ppc64_vendor *vendor;
 
     vendor = map->vendors;
     while (vendor) {
@@ -145,7 +145,7 @@ ppcVendorFind(const struct ppc_map *map,
 }
 
 static void
-ppcVendorFree(struct ppc_vendor *vendor)
+ppc64VendorFree(struct ppc64_vendor *vendor)
 {
     if (!vendor)
         return;
@@ -154,34 +154,34 @@ ppcVendorFree(struct ppc_vendor *vendor)
     VIR_FREE(vendor);
 }
 
-static struct ppc_model *
-ppcModelFromCPU(const virCPUDef *cpu,
-                const struct ppc_map *map)
+static struct ppc64_model *
+ppc64ModelFromCPU(const virCPUDef *cpu,
+                  const struct ppc64_map *map)
 {
-    struct ppc_model *model = NULL;
+    struct ppc64_model *model = NULL;
 
-    if ((model = ppcModelFind(map, cpu->model)) == NULL) {
+    if ((model = ppc64ModelFind(map, cpu->model)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown CPU model %s"), cpu->model);
         goto error;
     }
 
-    if ((model = ppcModelCopy(model)) == NULL)
+    if ((model = ppc64ModelCopy(model)) == NULL)
         goto error;
 
     return model;
 
  error:
-    ppcModelFree(model);
+    ppc64ModelFree(model);
     return NULL;
 }
 
 
 static int
-ppcVendorLoad(xmlXPathContextPtr ctxt,
-              struct ppc_map *map)
+ppc64VendorLoad(xmlXPathContextPtr ctxt,
+                struct ppc64_map *map)
 {
-    struct ppc_vendor *vendor = NULL;
+    struct ppc64_vendor *vendor = NULL;
 
     if (VIR_ALLOC(vendor) < 0)
         return -1;
@@ -193,7 +193,7 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
-    if (ppcVendorFind(map, vendor->name)) {
+    if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
         goto ignore;
@@ -210,15 +210,15 @@ ppcVendorLoad(xmlXPathContextPtr ctxt,
     return 0;
 
  ignore:
-    ppcVendorFree(vendor);
+    ppc64VendorFree(vendor);
     goto cleanup;
 }
 
 static int
-ppcModelLoad(xmlXPathContextPtr ctxt,
-             struct ppc_map *map)
+ppc64ModelLoad(xmlXPathContextPtr ctxt,
+               struct ppc64_map *map)
 {
-    struct ppc_model *model;
+    struct ppc64_model *model;
     char *vendor = NULL;
     unsigned long pvr;
 
@@ -232,7 +232,7 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
-    if (ppcModelFind(map, model->name)) {
+    if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s already defined"), model->name);
         goto ignore;
@@ -247,7 +247,7 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
             goto ignore;
         }
 
-        if (!(model->vendor = ppcVendorFind(map, vendor))) {
+        if (!(model->vendor = ppc64VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown vendor %s referenced by CPU model %s"),
                            vendor, model->name);
@@ -276,22 +276,22 @@ ppcModelLoad(xmlXPathContextPtr ctxt,
     return 0;
 
  ignore:
-    ppcModelFree(model);
+    ppc64ModelFree(model);
     goto cleanup;
 }
 
 static int
-ppcMapLoadCallback(cpuMapElement element,
-                   xmlXPathContextPtr ctxt,
-                   void *data)
+ppc64MapLoadCallback(cpuMapElement element,
+                     xmlXPathContextPtr ctxt,
+                     void *data)
 {
-    struct ppc_map *map = data;
+    struct ppc64_map *map = data;
 
     switch (element) {
     case CPU_MAP_ELEMENT_VENDOR:
-        return ppcVendorLoad(ctxt, map);
+        return ppc64VendorLoad(ctxt, map);
     case CPU_MAP_ELEMENT_MODEL:
-        return ppcModelLoad(ctxt, map);
+        return ppc64ModelLoad(ctxt, map);
     case CPU_MAP_ELEMENT_FEATURE:
     case CPU_MAP_ELEMENT_LAST:
         break;
@@ -301,46 +301,46 @@ ppcMapLoadCallback(cpuMapElement element,
 }
 
 static void
-ppcMapFree(struct ppc_map *map)
+ppc64MapFree(struct ppc64_map *map)
 {
     if (map == NULL)
         return;
 
     while (map->models != NULL) {
-        struct ppc_model *model = map->models;
+        struct ppc64_model *model = map->models;
         map->models = model->next;
-        ppcModelFree(model);
+        ppc64ModelFree(model);
     }
 
     while (map->vendors != NULL) {
-        struct ppc_vendor *vendor = map->vendors;
+        struct ppc64_vendor *vendor = map->vendors;
         map->vendors = vendor->next;
-        ppcVendorFree(vendor);
+        ppc64VendorFree(vendor);
     }
 
     VIR_FREE(map);
 }
 
-static struct ppc_map *
-ppcLoadMap(void)
+static struct ppc64_map *
+ppc64LoadMap(void)
 {
-    struct ppc_map *map;
+    struct ppc64_map *map;
 
     if (VIR_ALLOC(map) < 0)
         return NULL;
 
-    if (cpuMapLoad("ppc64", ppcMapLoadCallback, map) < 0)
+    if (cpuMapLoad("ppc64", ppc64MapLoadCallback, map) < 0)
         goto error;
 
     return map;
 
  error:
-    ppcMapFree(map);
+    ppc64MapFree(map);
     return NULL;
 }
 
 static virCPUDataPtr
-ppcMakeCPUData(virArch arch, struct cpuPPC64Data *data)
+ppc64MakeCPUData(virArch arch, struct cpuPPC64Data *data)
 {
     virCPUDataPtr cpuData;
 
@@ -355,15 +355,15 @@ ppcMakeCPUData(virArch arch, struct cpuPPC64Data *data)
 }
 
 static virCPUCompareResult
-ppcCompute(virCPUDefPtr host,
-           const virCPUDef *cpu,
-           virCPUDataPtr *guestData,
-           char **message)
+ppc64Compute(virCPUDefPtr host,
+             const virCPUDef *cpu,
+             virCPUDataPtr *guestData,
+             char **message)
 
 {
-    struct ppc_map *map = NULL;
-    struct ppc_model *host_model = NULL;
-    struct ppc_model *guest_model = NULL;
+    struct ppc64_map *map = NULL;
+    struct ppc64_model *host_model = NULL;
+    struct ppc64_model *guest_model = NULL;
 
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
     virArch arch;
@@ -411,9 +411,9 @@ ppcCompute(virCPUDefPtr host,
         goto cleanup;
     }
 
-    if (!(map = ppcLoadMap()) ||
-        !(host_model = ppcModelFromCPU(host, map)) ||
-        !(guest_model = ppcModelFromCPU(cpu, map)))
+    if (!(map = ppc64LoadMap()) ||
+        !(host_model = ppc64ModelFromCPU(host, map)) ||
+        !(guest_model = ppc64ModelFromCPU(cpu, map)))
         goto cleanup;
 
     if (guestData != NULL) {
@@ -433,23 +433,23 @@ ppcCompute(virCPUDefPtr host,
             goto cleanup;
         }
 
-        if (!(*guestData = ppcMakeCPUData(arch, &guest_model->data)))
+        if (!(*guestData = ppc64MakeCPUData(arch, &guest_model->data)))
             goto cleanup;
     }
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
  cleanup:
-    ppcMapFree(map);
-    ppcModelFree(host_model);
-    ppcModelFree(guest_model);
+    ppc64MapFree(map);
+    ppc64ModelFree(host_model);
+    ppc64ModelFree(guest_model);
     return ret;
 }
 
 static virCPUCompareResult
-ppcCompare(virCPUDefPtr host,
-           virCPUDefPtr cpu,
-           bool failIncompatible)
+ppc64Compare(virCPUDefPtr host,
+             virCPUDefPtr cpu,
+             bool failIncompatible)
 {
     if ((cpu->arch == VIR_ARCH_NONE || host->arch == cpu->arch) &&
         STREQ(host->model, cpu->model))
@@ -464,23 +464,23 @@ ppcCompare(virCPUDefPtr host,
 }
 
 static int
-ppcDecode(virCPUDefPtr cpu,
-          const virCPUData *data,
-          const char **models,
-          unsigned int nmodels,
-          const char *preferred ATTRIBUTE_UNUSED,
-          unsigned int flags)
+ppc64Decode(virCPUDefPtr cpu,
+            const virCPUData *data,
+            const char **models,
+            unsigned int nmodels,
+            const char *preferred ATTRIBUTE_UNUSED,
+            unsigned int flags)
 {
     int ret = -1;
-    struct ppc_map *map;
-    const struct ppc_model *model;
+    struct ppc64_map *map;
+    const struct ppc64_model *model;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
-    if (data == NULL || (map = ppcLoadMap()) == NULL)
+    if (data == NULL || (map = ppc64LoadMap()) == NULL)
         return -1;
 
-    if (!(model = ppcModelFindPVR(map, data->data.ppc64.pvr))) {
+    if (!(model = ppc64ModelFindPVR(map, data->data.ppc64.pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Cannot find CPU model with PVR 0x%08x"),
                        data->data.ppc64.pvr);
@@ -502,14 +502,14 @@ ppcDecode(virCPUDefPtr cpu,
     ret = 0;
 
  cleanup:
-    ppcMapFree(map);
+    ppc64MapFree(map);
 
     return ret;
 }
 
 
 static void
-ppcDataFree(virCPUDataPtr data)
+ppc64DataFree(virCPUDataPtr data)
 {
     if (data == NULL)
         return;
@@ -518,7 +518,7 @@ ppcDataFree(virCPUDataPtr data)
 }
 
 static virCPUDataPtr
-ppcNodeData(virArch arch)
+ppc64NodeData(virArch arch)
 {
     virCPUDataPtr cpuData;
 
@@ -536,17 +536,17 @@ ppcNodeData(virArch arch)
 }
 
 static virCPUCompareResult
-ppcGuestData(virCPUDefPtr host,
-             virCPUDefPtr guest,
-             virCPUDataPtr *data,
-             char **message)
+ppc64GuestData(virCPUDefPtr host,
+               virCPUDefPtr guest,
+               virCPUDataPtr *data,
+               char **message)
 {
-    return ppcCompute(host, guest, data, message);
+    return ppc64Compute(host, guest, data, message);
 }
 
 static int
-ppcUpdate(virCPUDefPtr guest,
-          const virCPUDef *host)
+ppc64Update(virCPUDefPtr guest,
+            const virCPUDef *host)
 {
     switch ((virCPUMode) guest->mode) {
     case VIR_CPU_MODE_HOST_MODEL:
@@ -568,32 +568,32 @@ ppcUpdate(virCPUDefPtr guest,
 }
 
 static virCPUDefPtr
-ppcBaseline(virCPUDefPtr *cpus,
-            unsigned int ncpus,
-            const char **models ATTRIBUTE_UNUSED,
-            unsigned int nmodels ATTRIBUTE_UNUSED,
-            unsigned int flags)
+ppc64Baseline(virCPUDefPtr *cpus,
+              unsigned int ncpus,
+              const char **models ATTRIBUTE_UNUSED,
+              unsigned int nmodels ATTRIBUTE_UNUSED,
+              unsigned int flags)
 {
-    struct ppc_map *map = NULL;
-    const struct ppc_model *model;
-    const struct ppc_vendor *vendor = NULL;
+    struct ppc64_map *map = NULL;
+    const struct ppc64_model *model;
+    const struct ppc64_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
-    if (!(map = ppcLoadMap()))
+    if (!(map = ppc64LoadMap()))
         goto error;
 
-    if (!(model = ppcModelFind(map, cpus[0]->model))) {
+    if (!(model = ppc64ModelFind(map, cpus[0]->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown CPU model %s"), cpus[0]->model);
         goto error;
     }
 
     for (i = 0; i < ncpus; i++) {
-        const struct ppc_vendor *vnd;
+        const struct ppc64_vendor *vnd;
 
         if (STRNEQ(cpus[i]->model, model->name)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -604,7 +604,7 @@ ppcBaseline(virCPUDefPtr *cpus,
         if (!cpus[i]->vendor)
             continue;
 
-        if (!(vnd = ppcVendorFind(map, cpus[i]->vendor))) {
+        if (!(vnd = ppc64VendorFind(map, cpus[i]->vendor))) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("Unknown CPU vendor %s"), cpus[i]->vendor);
             goto error;
@@ -641,7 +641,7 @@ ppcBaseline(virCPUDefPtr *cpus,
     cpu->match = VIR_CPU_MATCH_EXACT;
 
  cleanup:
-    ppcMapFree(map);
+    ppc64MapFree(map);
 
     return cpu;
 
@@ -652,14 +652,14 @@ ppcBaseline(virCPUDefPtr *cpus,
 }
 
 static int
-ppcGetModels(char ***models)
+ppc64GetModels(char ***models)
 {
-    struct ppc_map *map;
-    struct ppc_model *model;
+    struct ppc64_map *map;
+    struct ppc64_model *model;
     char *name;
     size_t nmodels = 0;
 
-    if (!(map = ppcLoadMap()))
+    if (!(map = ppc64LoadMap()))
         goto error;
 
     if (models && VIR_ALLOC_N(*models, 0) < 0)
@@ -681,7 +681,7 @@ ppcGetModels(char ***models)
     }
 
  cleanup:
-    ppcMapFree(map);
+    ppc64MapFree(map);
 
     return nmodels;
 
@@ -698,14 +698,14 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .name = "ppc64",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare    = ppcCompare,
-    .decode     = ppcDecode,
+    .compare    = ppc64Compare,
+    .decode     = ppc64Decode,
     .encode     = NULL,
-    .free       = ppcDataFree,
-    .nodeData   = ppcNodeData,
-    .guestData  = ppcGuestData,
-    .baseline   = ppcBaseline,
-    .update     = ppcUpdate,
+    .free       = ppc64DataFree,
+    .nodeData   = ppc64NodeData,
+    .guestData  = ppc64GuestData,
+    .baseline   = ppc64Baseline,
+    .update     = ppc64Update,
     .hasFeature = NULL,
-    .getModels  = ppcGetModels,
+    .getModels  = ppc64GetModels,
 };
