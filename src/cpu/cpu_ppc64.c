@@ -340,7 +340,8 @@ ppc64LoadMap(void)
 }
 
 static virCPUDataPtr
-ppc64MakeCPUData(virArch arch, struct cpuPPC64Data *data)
+ppc64MakeCPUData(virArch arch,
+                 struct cpuPPC64Data *data)
 {
     virCPUDataPtr cpuData;
 
@@ -695,9 +696,9 @@ ppc64GetModels(char ***models)
 }
 
 struct cpuArchDriver cpuDriverPPC64 = {
-    .name = "ppc64",
-    .arch = archs,
-    .narch = ARRAY_CARDINALITY(archs),
+    .name       = "ppc64",
+    .arch       = archs,
+    .narch      = ARRAY_CARDINALITY(archs),
     .compare    = ppc64Compare,
     .decode     = ppc64Decode,
     .encode     = NULL,
