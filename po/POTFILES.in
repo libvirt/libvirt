@@ -39,7 +39,7 @@ src/conf/virchrdev.c
 src/cpu/cpu.c
 src/cpu/cpu_generic.c
 src/cpu/cpu_map.c
-src/cpu/cpu_powerpc.c
+src/cpu/cpu_ppc64.c
 src/cpu/cpu_x86.c
 src/driver.c
 src/esx/esx_driver.c

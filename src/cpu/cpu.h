@@ -29,7 +29,7 @@
 # include "virarch.h"
 # include "conf/cpu_conf.h"
 # include "cpu_x86_data.h"
-# include "cpu_ppc_data.h"
+# include "cpu_ppc64_data.h"
 
 
 typedef struct _virCPUData virCPUData;

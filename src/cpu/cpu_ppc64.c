@@ -1,5 +1,5 @@
 /*
- * cpu_powerpc.c: CPU driver for PowerPC CPUs
+ * cpu_ppc64.c: CPU driver for PowerPC CPUs
  *
  * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) IBM Corporation, 2010

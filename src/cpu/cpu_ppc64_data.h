@@ -1,7 +1,7 @@
 /*
- * cpu_powerpc.h: CPU driver for PowerPC CPUs
+ * cpu_ppc64_data.h: PowerPC specific CPU data
  *
- * Copyright (C) Copyright (C) IBM Corporation, 2010
+ * Copyright (C) 2012 IBM Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,19 +14,20 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see
+ * License along with this library;  If not, see
  * <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *      Anton Blanchard <anton@au.ibm.com>
- *      Prerna Saxena <prerna@linux.vnet.ibm.com>
+ *      Li Zhang <zhlcindy@linux.vnet.ibm.com>
  */
 
-#ifndef __VIR_CPU_POWERPC_H__
-# define __VIR_CPU_POWERPC_H__
+#ifndef __VIR_CPU_PPC_DATA_H__
+# define __VIR_CPU_PPC_DATA_H__
 
-# include "cpu.h"
+# include <stdint.h>
 
-extern struct cpuArchDriver cpuDriverPowerPC;
+struct cpuPPCData {
+    uint32_t pvr;
+};
 
-#endif /* __VIR_CPU_POWERPC_H__ */
+#endif /* __VIR_CPU_PPC_DATA_H__ */

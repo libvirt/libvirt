@@ -29,7 +29,7 @@
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
-#include "cpu_powerpc.h"
+#include "cpu_ppc64.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
 #include "cpu_aarch64.h"
