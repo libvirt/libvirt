@@ -1,5 +1,5 @@
 /*
- * cpu_ppc64_data.h: PowerPC specific CPU data
+ * cpu_ppc64_data.h: 64-bit PowerPC CPU specific data
  *
  * Copyright (C) 2012 IBM Corporation.
  *
@@ -21,13 +21,13 @@
  *      Li Zhang <zhlcindy@linux.vnet.ibm.com>
  */
 
-#ifndef __VIR_CPU_PPC_DATA_H__
-# define __VIR_CPU_PPC_DATA_H__
+#ifndef __VIR_CPU_PPC64_DATA_H__
+# define __VIR_CPU_PPC64_DATA_H__
 
 # include <stdint.h>
 
-struct cpuPPCData {
+struct cpuPPC64Data {
     uint32_t pvr;
 };
 
-#endif /* __VIR_CPU_PPC_DATA_H__ */
+#endif /* __VIR_CPU_PPC64_DATA_H__ */

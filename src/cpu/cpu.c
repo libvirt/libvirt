@@ -44,7 +44,7 @@ VIR_LOG_INIT("cpu.cpu");
 
 static struct cpuArchDriver *drivers[] = {
     &cpuDriverX86,
-    &cpuDriverPowerPC,
+    &cpuDriverPPC64,
     &cpuDriverS390,
     &cpuDriverArm,
     &cpuDriverAARCH64,

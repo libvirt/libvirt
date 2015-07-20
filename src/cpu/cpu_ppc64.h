@@ -1,5 +1,5 @@
 /*
- * cpu_ppc64.h: CPU driver for PowerPC CPUs
+ * cpu_ppc64.h: CPU driver for 64-bit PowerPC CPUs
  *
  * Copyright (C) Copyright (C) IBM Corporation, 2010
  *
@@ -22,11 +22,11 @@
  *      Prerna Saxena <prerna@linux.vnet.ibm.com>
  */
 
-#ifndef __VIR_CPU_POWERPC_H__
-# define __VIR_CPU_POWERPC_H__
+#ifndef __VIR_CPU_PPC64_H__
+# define __VIR_CPU_PPC64_H__
 
 # include "cpu.h"
 
-extern struct cpuArchDriver cpuDriverPowerPC;
+extern struct cpuArchDriver cpuDriverPPC64;
 
-#endif /* __VIR_CPU_POWERPC_H__ */
+#endif /* __VIR_CPU_PPC64_H__ */

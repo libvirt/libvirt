@@ -1,5 +1,5 @@
 /*
- * cpu_ppc64.c: CPU driver for PowerPC CPUs
+ * cpu_ppc64.c: CPU driver for 64-bit PowerPC CPUs
  *
  * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) IBM Corporation, 2010
@@ -36,7 +36,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-VIR_LOG_INIT("cpu.cpu_powerpc");
+VIR_LOG_INIT("cpu.cpu_ppc64");
 
 static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
@@ -48,7 +48,7 @@ struct ppc_vendor {
 struct ppc_model {
     char *name;
     const struct ppc_vendor *vendor;
-    struct cpuPPCData data;
+    struct cpuPPC64Data data;
     struct ppc_model *next;
 };
 
@@ -340,7 +340,7 @@ ppcLoadMap(void)
 }
 
 static virCPUDataPtr
-ppcMakeCPUData(virArch arch, struct cpuPPCData *data)
+ppcMakeCPUData(virArch arch, struct cpuPPC64Data *data)
 {
     virCPUDataPtr cpuData;
 
@@ -348,7 +348,7 @@ ppcMakeCPUData(virArch arch, struct cpuPPCData *data)
         return NULL;
 
     cpuData->arch = arch;
-    cpuData->data.ppc = *data;
+    cpuData->data.ppc64 = *data;
     data = NULL;
 
     return cpuData;
@@ -480,10 +480,10 @@ ppcDecode(virCPUDefPtr cpu,
     if (data == NULL || (map = ppcLoadMap()) == NULL)
         return -1;
 
-    if (!(model = ppcModelFindPVR(map, data->data.ppc.pvr))) {
+    if (!(model = ppcModelFindPVR(map, data->data.ppc64.pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Cannot find CPU model with PVR 0x%08x"),
-                       data->data.ppc.pvr);
+                       data->data.ppc64.pvr);
         goto cleanup;
     }
 
@@ -529,7 +529,7 @@ ppcNodeData(virArch arch)
 
 #if defined(__powerpc__) || defined(__powerpc64__)
     asm("mfpvr %0"
-        : "=r" (cpuData->data.ppc.pvr));
+        : "=r" (cpuData->data.ppc64.pvr));
 #endif
 
     return cpuData;
@@ -694,7 +694,7 @@ ppcGetModels(char ***models)
     goto cleanup;
 }
 
-struct cpuArchDriver cpuDriverPowerPC = {
+struct cpuArchDriver cpuDriverPPC64 = {
     .name = "ppc64",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
