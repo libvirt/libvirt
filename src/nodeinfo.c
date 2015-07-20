@@ -30,7 +30,6 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/utsname.h>
-#include <sched.h>
 #include "conf/domain_conf.h"
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
@@ -389,19 +388,6 @@ virNodeParseSocket(const char *dir,
     return ret;
 }
 
-# ifndef CPU_COUNT
-static int
-CPU_COUNT(cpu_set_t *set)
-{
-    size_t i, count = 0;
-
-    for (i = 0; i < CPU_SETSIZE; i++)
-        if (CPU_ISSET(i, set))
-            count++;
-    return count;
-}
-# endif /* !CPU_COUNT */
-
 /* parses a node entry, returning number of processors in the node and
  * filling arguments */
 static int
@@ -416,15 +402,18 @@ virNodeParseNode(const char *sysfs_prefix,
                  int *threads,
                  int *offline)
 {
+    /* Biggest value we can expect to be used as either socket id
+     * or core id. Bitmaps will need to be sized accordingly */
+    const int ID_MAX = 4095;
     int ret = -1;
     int processors = 0;
     DIR *cpudir = NULL;
     struct dirent *cpudirent = NULL;
     virBitmapPtr present_cpumap = NULL;
+    virBitmapPtr sockets_map = NULL;
+    virBitmapPtr *cores_maps = NULL;
     int sock_max = 0;
-    cpu_set_t sock_map;
     int sock;
-    cpu_set_t *core_maps = NULL;
     int core;
     size_t i;
     int siblings;
@@ -446,7 +435,9 @@ virNodeParseNode(const char *sysfs_prefix,
         goto cleanup;
 
     /* enumerate sockets in the node */
-    CPU_ZERO(&sock_map);
+    if (!(sockets_map = virBitmapNew(ID_MAX + 1)))
+        goto cleanup;
+
     while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
             continue;
@@ -463,7 +454,15 @@ virNodeParseNode(const char *sysfs_prefix,
         /* Parse socket */
         if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
-        CPU_SET(sock, &sock_map);
+        if (sock > ID_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Socket %d can't be handled (max socket is %d)"),
+                           sock, ID_MAX);
+            goto cleanup;
+        }
+
+        if (virBitmapSetBit(sockets_map, sock) < 0)
+            goto cleanup;
 
         if (sock > sock_max)
             sock_max = sock;
@@ -474,12 +473,13 @@ virNodeParseNode(const char *sysfs_prefix,
 
     sock_max++;
 
-    /* allocate cpu maps for each socket */
-    if (VIR_ALLOC_N(core_maps, sock_max) < 0)
+    /* allocate cores maps for each socket */
+    if (VIR_ALLOC_N(cores_maps, sock_max) < 0)
         goto cleanup;
 
     for (i = 0; i < sock_max; i++)
-        CPU_ZERO(&core_maps[i]);
+        if (!(cores_maps[i] = virBitmapNew(ID_MAX + 1)))
+            goto cleanup;
 
     /* iterate over all CPU's in the node */
     rewinddir(cpudir);
@@ -503,7 +503,7 @@ virNodeParseNode(const char *sysfs_prefix,
         /* Parse socket */
         if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
-        if (!CPU_ISSET(sock, &sock_map)) {
+        if (!virBitmapIsBitSet(sockets_map, sock)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("CPU socket topology has changed"));
             goto cleanup;
@@ -516,8 +516,15 @@ virNodeParseNode(const char *sysfs_prefix,
         } else {
             core = virNodeGetCpuValue(node, cpu, "topology/core_id", 0);
         }
+        if (core > ID_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Core %d can't be handled (max core is %d)"),
+                           core, ID_MAX);
+            goto cleanup;
+        }
 
-        CPU_SET(core, &core_maps[sock]);
+        if (virBitmapSetBit(cores_maps[sock], core) < 0)
+            goto cleanup;
 
         if (!(siblings = virNodeCountThreadSiblings(node, cpu)))
             goto cleanup;
@@ -530,13 +537,13 @@ virNodeParseNode(const char *sysfs_prefix,
         goto cleanup;
 
     /* finalize the returned data */
-    *sockets = CPU_COUNT(&sock_map);
+    *sockets = virBitmapCountBits(sockets_map);
 
     for (i = 0; i < sock_max; i++) {
-        if (!CPU_ISSET(i, &sock_map))
+        if (!virBitmapIsBitSet(sockets_map, i))
             continue;
 
-        core = CPU_COUNT(&core_maps[i]);
+        core = virBitmapCountBits(cores_maps[i]);
         if (core > *cores)
             *cores = core;
     }
@@ -549,7 +556,11 @@ virNodeParseNode(const char *sysfs_prefix,
         virReportSystemError(errno, _("problem closing %s"), node);
         ret = -1;
     }
-    VIR_FREE(core_maps);
+    if (cores_maps)
+        for (i = 0; i < sock_max; i++)
+            virBitmapFree(cores_maps[i]);
+    VIR_FREE(cores_maps);
+    virBitmapFree(sockets_map);
     virBitmapFree(present_cpumap);
 
     return ret;
