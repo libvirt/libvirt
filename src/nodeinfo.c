@@ -983,9 +983,10 @@ linuxGetCPUOnlinePath(const char *sysfs_prefix)
     return linuxGetCPUGlobalPath(sysfs_prefix, "online");
 }
 
-/* Determine the maximum cpu id from a Linux sysfs cpu/present file. */
+/* Determine the number of CPUs (maximum CPU id + 1) from a file containing
+ * a list of CPU ids, like the Linux sysfs cpu/present file */
 static int
-linuxParseCPUmax(const char *path)
+linuxParseCPUCount(const char *path)
 {
     char *str = NULL;
     char *tmp;
@@ -1247,7 +1248,7 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
         return -1;
 
     if (virFileExists(present_path)) {
-        ncpu = linuxParseCPUmax(present_path);
+        ncpu = linuxParseCPUCount(present_path);
         goto cleanup;
     }
 
