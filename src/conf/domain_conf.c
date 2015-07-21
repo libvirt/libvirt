@@ -3917,7 +3917,8 @@ virDomainDriveAddressIsUsedByHostdev(const virDomainDef *def,
     for (i = 0; i < def->nhostdevs; i++) {
         hostdev = def->hostdevs[i];
 
-        if (hostdev->source.subsys.type != type)
+        if (hostdev->source.subsys.type != type ||
+            hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
             continue;
 
         if (hostdev->info->addr.drive.controller == controller &&
