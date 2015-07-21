@@ -1339,15 +1339,28 @@ AC_ARG_WITH([polkit],
 with_polkit0=no
 with_polkit1=no
 if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
-  dnl Check for new polkit first - just a binary
+  dnl Check for new polkit first. We directly talk over DBus
+  dnl but we use existence of pkcheck binary as a sign that
+  dnl we should prefer polkit-1 over polkit-0, so we check
+  dnl for it even though we don't ultimately use it
   AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
   if test "x$PKCHECK_PATH" != "x" ; then
-    AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
-        [use PolicyKit for UNIX socket access checks])
-    AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
-        [use PolicyKit for UNIX socket access checks])
-    with_polkit="yes"
-    with_polkit1="yes"
+    dnl Found pkcheck, so ensure dbus-devel is present
+    if test "x$with_dbus" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
+          [use PolicyKit for UNIX socket access checks])
+      AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
+          [use PolicyKit for UNIX socket access checks])
+      with_polkit="yes"
+      with_polkit1="yes"
+    else
+      if test "x$with_polkit" = "xcheck" ; then
+        with_polkit=no
+      else
+         AC_MSG_ERROR(
+           [You must install dbus to compile libvirt with polkit-1])
+      fi
+    fi
   else
     dnl Check for old polkit second - library + binary
     PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED,
