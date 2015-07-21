@@ -4016,7 +4016,8 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
 static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
-                                    virCapsPtr caps ATTRIBUTE_UNUSED)
+                                    virCapsPtr caps ATTRIBUTE_UNUSED,
+                                    virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
         virDomainChrDefPtr chr = dev->data.chr;
@@ -4123,7 +4124,7 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             return ret;
     }
 
-    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps)) < 0)
+    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps, xmlopt)) < 0)
         return ret;
 
     return 0;
