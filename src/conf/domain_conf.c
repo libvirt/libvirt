@@ -3868,6 +3868,151 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 }
 
 
+/* Check if a drive type address $controller:$bus:$target:$unit is already
+ * taken by a disk or not.
+ */
+static bool
+virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
+                                  virDomainDiskBus type,
+                                  unsigned int controller,
+                                  unsigned int bus,
+                                  unsigned int target,
+                                  unsigned int unit)
+{
+    virDomainDiskDefPtr disk;
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        disk = def->disks[i];
+
+        if (disk->bus != type ||
+            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+            continue;
+
+        if (disk->info.addr.drive.controller == controller &&
+            disk->info.addr.drive.unit == unit &&
+            disk->info.addr.drive.bus == bus &&
+            disk->info.addr.drive.target == target)
+            return true;
+    }
+
+    return false;
+}
+
+
+/* Check if a drive type address $controller:$target:$bus:$unit is already
+ * taken by a host device or not.
+ */
+static bool
+virDomainDriveAddressIsUsedByHostdev(const virDomainDef *def,
+                                     virDomainHostdevSubsysType type,
+                                     unsigned int controller,
+                                     unsigned int bus,
+                                     unsigned int target,
+                                     unsigned int unit)
+{
+    virDomainHostdevDefPtr hostdev;
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        hostdev = def->hostdevs[i];
+
+        if (hostdev->source.subsys.type != type)
+            continue;
+
+        if (hostdev->info->addr.drive.controller == controller &&
+            hostdev->info->addr.drive.unit == unit &&
+            hostdev->info->addr.drive.bus == bus &&
+            hostdev->info->addr.drive.target == target)
+            return true;
+    }
+
+    return false;
+}
+
+
+static bool
+virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
+                                unsigned int controller,
+                                unsigned int bus,
+                                unsigned int target,
+                                unsigned int unit)
+{
+    /* In current implementation, the maximum unit number of a controller
+     * is either 16 or 7 (narrow SCSI bus), and if the maximum unit number
+     * is 16, the controller itself is on unit 7 */
+    if (unit == 7)
+        return true;
+
+    if (virDomainDriveAddressIsUsedByDisk(def, VIR_DOMAIN_DISK_BUS_SCSI,
+                                          controller, bus, target, unit) ||
+        virDomainDriveAddressIsUsedByHostdev(def,
+                                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
+                                             controller, bus, target, unit))
+        return true;
+
+    return false;
+}
+
+
+/* Find out the next usable "unit" of a specific controller */
+static int
+virDomainControllerSCSINextUnit(const virDomainDef *def,
+                                unsigned int max_unit,
+                                unsigned int controller)
+{
+    size_t i;
+
+    for (i = 0; i < max_unit; i++) {
+        /* Default to assigning addresses using bus = target = 0 */
+        if (!virDomainSCSIDriveAddressIsUsed(def, controller, 0, 0, i))
+            return i;
+    }
+
+    return -1;
+}
+
+
+#define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
+#define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
+
+static int
+virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
+                              const virDomainDef *def,
+                              virDomainHostdevDefPtr hostdev)
+{
+    int next_unit = 0;
+    unsigned controller = 0;
+    size_t i;
+    int ret;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            continue;
+
+        controller++;
+        ret = virDomainControllerSCSINextUnit(def,
+                                              xmlopt->config.hasWideSCSIBus ?
+                                              SCSI_WIDE_BUS_MAX_CONT_UNIT :
+                                              SCSI_NARROW_BUS_MAX_CONT_UNIT,
+                                              def->controllers[i]->idx);
+        if (ret >= 0) {
+            next_unit = ret;
+            controller = def->controllers[i]->idx;
+            break;
+        }
+    }
+
+    hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+    hostdev->info->addr.drive.controller = controller;
+    hostdev->info->addr.drive.bus = 0;
+    hostdev->info->addr.drive.target = 0;
+    hostdev->info->addr.drive.unit = next_unit;
+
+    return 0;
+}
+
+
 static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
@@ -5236,145 +5381,6 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
     return ret;
 }
 
-/* Check if a drive type address $controller:$bus:$target:$unit is already
- * taken by a disk or not.
- */
-static bool
-virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
-                                  virDomainDiskBus type,
-                                  unsigned int controller,
-                                  unsigned int bus,
-                                  unsigned int target,
-                                  unsigned int unit)
-{
-    virDomainDiskDefPtr disk;
-    size_t i;
-
-    for (i = 0; i < def->ndisks; i++) {
-        disk = def->disks[i];
-
-        if (disk->bus != type ||
-            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
-            continue;
-
-        if (disk->info.addr.drive.controller == controller &&
-            disk->info.addr.drive.unit == unit &&
-            disk->info.addr.drive.bus == bus &&
-            disk->info.addr.drive.target == target)
-            return true;
-    }
-
-    return false;
-}
-
-/* Check if a drive type address $controller:$target:$bus:$unit is already
- * taken by a host device or not.
- */
-static bool
-virDomainDriveAddressIsUsedByHostdev(const virDomainDef *def,
-                                     virDomainHostdevSubsysType type,
-                                     unsigned int controller,
-                                     unsigned int bus,
-                                     unsigned int target,
-                                     unsigned int unit)
-{
-    virDomainHostdevDefPtr hostdev;
-    size_t i;
-
-    for (i = 0; i < def->nhostdevs; i++) {
-        hostdev = def->hostdevs[i];
-
-        if (hostdev->source.subsys.type != type)
-            continue;
-
-        if (hostdev->info->addr.drive.controller == controller &&
-            hostdev->info->addr.drive.unit == unit &&
-            hostdev->info->addr.drive.bus == bus &&
-            hostdev->info->addr.drive.target == target)
-            return true;
-    }
-
-    return false;
-}
-
-static bool
-virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
-                                unsigned int controller,
-                                unsigned int bus,
-                                unsigned int target,
-                                unsigned int unit)
-{
-    /* In current implementation, the maximum unit number of a controller
-     * is either 16 or 7 (narrow SCSI bus), and if the maximum unit number
-     * is 16, the controller itself is on unit 7 */
-    if (unit == 7)
-        return true;
-
-    if (virDomainDriveAddressIsUsedByDisk(def, VIR_DOMAIN_DISK_BUS_SCSI,
-                                          controller, bus, target, unit) ||
-        virDomainDriveAddressIsUsedByHostdev(def,
-                                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
-                                             controller, bus, target, unit))
-        return true;
-
-    return false;
-}
-
-/* Find out the next usable "unit" of a specific controller */
-static int
-virDomainControllerSCSINextUnit(const virDomainDef *def,
-                                unsigned int max_unit,
-                                unsigned int controller)
-{
-    size_t i;
-
-    for (i = 0; i < max_unit; i++) {
-        /* Default to assigning addresses using bus = target = 0 */
-        if (!virDomainSCSIDriveAddressIsUsed(def, controller, 0, 0, i))
-            return i;
-    }
-
-    return -1;
-}
-
-#define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
-#define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
-
-static int
-virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
-                              const virDomainDef *def,
-                              virDomainHostdevDefPtr hostdev)
-{
-    int next_unit = 0;
-    unsigned controller = 0;
-    size_t i;
-    int ret;
-
-    for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
-            continue;
-
-        controller++;
-        ret = virDomainControllerSCSINextUnit(def,
-                                              xmlopt->config.hasWideSCSIBus ?
-                                              SCSI_WIDE_BUS_MAX_CONT_UNIT :
-                                              SCSI_NARROW_BUS_MAX_CONT_UNIT,
-                                              def->controllers[i]->idx);
-        if (ret >= 0) {
-            next_unit = ret;
-            controller = def->controllers[i]->idx;
-            break;
-        }
-    }
-
-    hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-    hostdev->info->addr.drive.controller = controller;
-    hostdev->info->addr.drive.bus = 0;
-    hostdev->info->addr.drive.target = 0;
-    hostdev->info->addr.drive.unit = next_unit;
-
-    return 0;
-}
 
 static int
 virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
