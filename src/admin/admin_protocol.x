@@ -22,18 +22,16 @@
  * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
-%#include "remote_protocol.h"
-
 /*----- Data types. -----*/
 
 /* Length of long, but not unbounded, strings.
  * This is an arbitrary limit designed to stop the decoder from trying
  * to allocate unbounded amounts of memory when fed with a bad message.
  */
-const REMOTE_STRING_MAX = 4194304;
+const ADMIN_STRING_MAX = 4194304;
 
 /* A long string, which may NOT be NULL. */
-typedef string admin_nonnull_string<REMOTE_STRING_MAX>;
+typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 
 /* A long string, which may be NULL. */
 typedef admin_nonnull_string *admin_string;

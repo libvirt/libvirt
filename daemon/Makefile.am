@@ -101,9 +101,9 @@ qemu_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/qemu_dispatch.h
 
-admin_dispatch.h: $(srcdir)/../src/rpc/gendispatch.pl \
+admin_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
 		$(ADMIN_PROTOCOL)
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/../src/rpc/gendispatch.pl \
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server admin ADMIN $(ADMIN_PROTOCOL) \
 	  > $(srcdir)/admin_dispatch.h
 
