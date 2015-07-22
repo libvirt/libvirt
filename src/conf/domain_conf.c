@@ -11899,8 +11899,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 }
 
 static virDomainHostdevDefPtr
-virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
-                            const virDomainDef *vmdef ATTRIBUTE_UNUSED,
+virDomainHostdevDefParseXML(const virDomainDef *vmdef ATTRIBUTE_UNUSED,
                             xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             virHashTablePtr bootHash,
@@ -12472,8 +12471,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(xmlopt, def, node,
-                                                              ctxt, NULL, flags)))
+        if (!(dev->data.hostdev = virDomainHostdevDefParseXML(def, node, ctxt,
+                                                              NULL, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
@@ -15992,8 +15991,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainHostdevDefPtr hostdev;
 
-        hostdev = virDomainHostdevDefParseXML(xmlopt, def, nodes[i],
-                                              ctxt, bootHash, flags);
+        hostdev = virDomainHostdevDefParseXML(def, nodes[i], ctxt,
+                                              bootHash, flags);
         if (!hostdev)
             goto error;
 
