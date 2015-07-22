@@ -9809,12 +9809,8 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 #define QEMU_SET_MEM_PARAMETER(FUNC, VALUE)                                     \
     if (set_ ## VALUE) {                                                        \
         if (flags & VIR_DOMAIN_AFFECT_LIVE) {                                   \
-            if ((rc = FUNC(priv->cgroup, VALUE)) < 0) {                         \
-                virReportSystemError(-rc, _("unable to set memory %s tunable"), \
-                                     #VALUE);                                   \
-                                                                                \
-                goto endjob;                                                   \
-            }                                                                   \
+            if ((rc = FUNC(priv->cgroup, VALUE)) < 0)                           \
+                goto endjob;                                                    \
             vm->def->mem.VALUE = VALUE;                                         \
         }                                                                       \
                                                                                 \
