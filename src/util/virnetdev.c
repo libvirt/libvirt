@@ -2952,6 +2952,7 @@ int virNetDevGetRxFilter(const char *ifname,
     return ret;
 }
 
+#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
 
 /**
  * virNetDevRDMAFeature
@@ -3014,7 +3015,6 @@ virNetDevRDMAFeature(const char *ifname,
     return ret;
 }
 
-#if defined(SIOCETHTOOL) && defined(HAVE_STRUCT_IFREQ)
 
 /**
  * virNetDevSendEthtoolIoctl
