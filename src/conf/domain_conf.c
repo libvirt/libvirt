@@ -4109,6 +4109,10 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                            disk->dst);
             return -1;
         }
+
+        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            virDomainDiskDefAssignAddress(xmlopt, disk) < 0)
+            return -1;
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
@@ -7471,10 +7475,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
-        if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE
-            && virDomainDiskDefAssignAddress(xmlopt, def) < 0)
-            goto error;
-
         if (virDomainDiskBackingStoreParse(ctxt, def->src) < 0)
             goto error;
     }
