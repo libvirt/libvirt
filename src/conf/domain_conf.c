@@ -3985,7 +3985,7 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
     int next_unit = 0;
     unsigned controller = 0;
     size_t i;
-    int ret;
+    int ret = -1;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
@@ -4003,6 +4003,17 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
             break;
         }
     }
+
+    /* If failed to find any VIR_DOMAIN_CONTROLLER_TYPE_SCSI or any space
+     * on existing VIR_DOMAIN_CONTROLLER_TYPE_SCSI controller(s), then
+     * try to add a new controller resulting in placement of this entry
+     * as unit=0
+     */
+    if (ret == -1 &&
+        virDomainDefMaybeAddController((virDomainDefPtr) def,
+                                           VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                           controller, -1) < 0)
+        return -1;
 
     hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
     hostdev->info->addr.drive.controller = controller;
