@@ -1,7 +1,7 @@
 /*
  * device_conf.c: device XML handling
  *
- * Copyright (C) 2006-2012 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,12 +55,49 @@ VIR_ENUM_IMPL(virNetDevFeature,
               "rdma",
               "txudptnl")
 
-int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr)
+int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr,
+                               bool report)
 {
-    /* PCI bus has 32 slots and 8 functions per slot */
-    if (addr->slot >= 32 || addr->function >= 8)
+    if (addr->domain > 0xFFFF) {
+        if (report)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid PCI address domain='0x%x', "
+                             "must be <= 0xFFFF"),
+                           addr->domain);
         return 0;
-    return addr->domain || addr->bus || addr->slot;
+    }
+    if (addr->bus > 0xFF) {
+        if (report)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid PCI address bus='0x%x', "
+                             "must be <= 0xFF"),
+                           addr->bus);
+        return 0;
+    }
+    if (addr->slot > 0x1F) {
+        if (report)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid PCI address slot='0x%x', "
+                             "must be <= 0x1F"),
+                           addr->slot);
+        return 0;
+    }
+    if (addr->function > 7) {
+        if (report)
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid PCI address function=0x%x, "
+                             "must be <= 7"),
+                           addr->function);
+        return 0;
+    }
+    if (!(addr->domain || addr->bus || addr->slot)) {
+        if (report)
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Invalid PCI address 0000:00:00, at least "
+                             "one of domain, bus, or slot must be > 0"));
+        return 0;
+    }
+    return 1;
 }
 
 
@@ -115,11 +152,8 @@ virDevicePCIAddressParseXML(xmlNodePtr node,
         goto cleanup;
 
     }
-    if (!virDevicePCIAddressIsValid(addr)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Insufficient specification for PCI address"));
+    if (!virDevicePCIAddressIsValid(addr, true))
         goto cleanup;
-    }
 
     ret = 0;
 

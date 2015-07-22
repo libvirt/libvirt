@@ -1485,6 +1485,12 @@ mymain(void)
     DO_TEST_PARSE_ERROR("tpm-no-backend-invalid", QEMU_CAPS_DEVICE,
                         QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
 
+
+    DO_TEST_PARSE_ERROR("pci-domain-invalid", QEMU_CAPS_DEVICE);
+    DO_TEST_PARSE_ERROR("pci-bus-invalid", QEMU_CAPS_DEVICE);
+    DO_TEST_PARSE_ERROR("pci-slot-invalid", QEMU_CAPS_DEVICE);
+    DO_TEST_PARSE_ERROR("pci-function-invalid", QEMU_CAPS_DEVICE);
+
     DO_TEST("pci-autoadd-addr", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-autoadd-idx", QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-many",
