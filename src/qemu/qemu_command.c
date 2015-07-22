@@ -5684,11 +5684,6 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
             /* QEMU accepts mebibytes for vgamem_mb. */
             virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vgamem / 1024);
         }
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_MAX_OUTPUTS) &&
-            video->heads > 0) {
-            virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
-        }
     } else if (video->vram &&
         ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
