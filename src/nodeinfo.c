@@ -512,7 +512,9 @@ virNodeParseNode(const char *node,
             /* logical cpu is equivalent to a core on s390 */
             core = cpu;
         } else {
-            core = virNodeGetCpuValue(node, cpu, "topology/core_id", 0);
+            if ((core = virNodeGetCpuValue(node, cpu,
+                                           "topology/core_id", 0)) < 0)
+                goto cleanup;
         }
         if (core > ID_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
