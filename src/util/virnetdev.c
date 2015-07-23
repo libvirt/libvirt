@@ -2976,6 +2976,9 @@ virNetDevRDMAFeature(const char *ifname,
     struct dirent *dp;
     int ret = -1;
 
+    if (!virFileExists(SYSFS_INFINIBAND_DIR))
+        return 0;
+
     if (!(dirp = opendir(SYSFS_INFINIBAND_DIR))) {
         virReportSystemError(errno,
                              _("Failed to opendir path '%s'"),
@@ -3191,7 +3194,7 @@ virNetDevGetFeatures(const char *ifname,
         ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_TXUDPTNL));
 # endif
 
-    if (virNetDevRDMAFeature(ifname, out))
+    if (virNetDevRDMAFeature(ifname, out) < 0)
         return -1;
     return 0;
 }
