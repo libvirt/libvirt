@@ -259,7 +259,7 @@ void qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
     ATTRIBUTE_NONNULL(1);
 int qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
                                      virDomainVideoDefPtr video,
-                                     const char *videName)
+                                     const char *videoName)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 const char *cmd,
