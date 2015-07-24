@@ -130,7 +130,8 @@ static const char testStatusXMLPrefix[] =
 "    <device alias='serial0'/>\n"
 "    <device alias='net0'/>\n"
 "    <device alias='usb'/>\n"
-"  </devices>\n";
+"  </devices>\n"
+"  <numad nodeset='0-2'/>\n";
 
 static const char testStatusXMLSuffix[] =
 "</domstatus>\n";

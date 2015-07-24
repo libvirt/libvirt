@@ -618,21 +618,33 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</devices>\n");
     }
 
+    if (priv->autoNodeset) {
+        char *nodeset = virBitmapFormat(priv->autoNodeset);
+
+        if (!nodeset)
+            return -1;
+
+        virBufferAsprintf(buf, "<numad nodeset='%s'/>\n", nodeset);
+        VIR_FREE(nodeset);
+    }
+
     return 0;
 }
 
 static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                              virDomainObjPtr vm,
-                             virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
+                             virDomainDefParserConfigPtr config)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = config->priv;
     char *monitorpath;
     char *tmp = NULL;
     int n;
     size_t i;
     xmlNodePtr *nodes = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
+    virCapsPtr caps = NULL;
 
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto error;
@@ -805,15 +817,33 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto error;
+
+    if ((tmp = virXPathString("string(./numad/@nodeset)", ctxt))) {
+        if (virBitmapParse(tmp, 0, &priv->autoNodeset,
+                           caps->host.nnumaCell_max) < 0)
+            goto error;
+
+        if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                                   priv->autoNodeset)))
+            goto error;
+    }
+    virObjectUnref(caps);
+    caps = NULL;
+    VIR_FREE(tmp);
+
     return 0;
 
  error:
     virDomainChrSourceDefFree(priv->monConfig);
     priv->monConfig = NULL;
     VIR_FREE(nodes);
+    VIR_FREE(tmp);
     virStringFreeList(priv->qemuDevices);
     priv->qemuDevices = NULL;
     virObjectUnref(qemuCaps);
+    virObjectUnref(caps);
     return -1;
 }
 
