@@ -623,7 +623,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
 
 static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
-                             virDomainObjPtr vm)
+                             virDomainObjPtr vm,
+                             virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *monitorpath;

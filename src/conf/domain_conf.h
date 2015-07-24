@@ -2391,14 +2391,6 @@ typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
 typedef struct _virDomainXMLOption virDomainXMLOption;
 typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
-typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
-typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
-typedef virObjectPtr (*virDomainXMLPrivateDataNewFunc)(void);
-typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr,
-                                                 virDomainObjPtr);
-typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr,
-                                                virDomainObjPtr);
-
 /* Called once after everything else has been parsed, for adjusting
  * overall domain defaults.  */
 typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
@@ -2426,6 +2418,15 @@ struct _virDomainDefParserConfig {
     bool hasWideSCSIBus;
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
+
+typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
+typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
+typedef virObjectPtr (*virDomainXMLPrivateDataNewFunc)(void);
+typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr,
+                                                 virDomainObjPtr);
+typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr,
+                                                virDomainObjPtr,
+                                                virDomainDefParserConfigPtr);
 
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
 typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;

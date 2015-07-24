@@ -65,7 +65,8 @@ virLXCDomainObjPrivateXMLFormat(virBufferPtr buf,
 
 static int
 virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
-                               virDomainObjPtr vm)
+                               virDomainObjPtr vm,
+                               virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long thepid;
