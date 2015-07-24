@@ -16366,7 +16366,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     if (xmlopt->privateData.parse &&
-        xmlopt->privateData.parse(ctxt, obj) < 0)
+        xmlopt->privateData.parse(ctxt, obj, &xmlopt->config) < 0)
         goto error;
 
     return obj;

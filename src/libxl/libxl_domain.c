@@ -224,7 +224,8 @@ libxlDomainObjPrivateFree(void *data)
 
 static int
 libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
-                              virDomainObjPtr vm)
+                              virDomainObjPtr vm,
+                              virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
