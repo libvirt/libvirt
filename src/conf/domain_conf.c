@@ -7824,6 +7824,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *chassisNr = NULL;
     char *chassis = NULL;
     char *port = NULL;
+    char *ioeventfd = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7867,6 +7868,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 queues = virXMLPropString(cur, "queues");
                 cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
                 max_sectors = virXMLPropString(cur, "max_sectors");
+                ioeventfd = virXMLPropString(cur, "ioeventfd");
             } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
                 if (processedModel) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -7907,6 +7909,13 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (max_sectors && virStrToLong_ui(max_sectors, NULL, 10, &def->max_sectors) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Malformed 'max_sectors' value %s'"), max_sectors);
+        goto error;
+    }
+
+    if (ioeventfd &&
+        (def->ioeventfd = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Malformed 'ioeventfd' value %s'"), max_sectors);
         goto error;
     }
 
@@ -8083,6 +8092,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(chassisNr);
     VIR_FREE(chassis);
     VIR_FREE(port);
+    VIR_FREE(ioeventfd);
 
     return def;
 
@@ -19148,7 +19158,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (pciModel || pciTarget ||
-        def->queues || def->cmd_per_lun || def->max_sectors ||
+        def->queues || def->cmd_per_lun || def->max_sectors || def->ioeventfd ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
@@ -19178,7 +19188,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
             virBufferAddLit(buf, "/>\n");
         }
 
-        if (def->queues || def->cmd_per_lun || def->max_sectors) {
+        if (def->queues || def->cmd_per_lun ||
+            def->max_sectors || def->ioeventfd) {
             virBufferAddLit(buf, "<driver");
             if (def->queues)
                 virBufferAsprintf(buf, " queues='%u'", def->queues);
@@ -19188,6 +19199,11 @@ virDomainControllerDefFormat(virBufferPtr buf,
 
             if (def->max_sectors)
                 virBufferAsprintf(buf, " max_sectors='%u'", def->max_sectors);
+
+            if (def->ioeventfd) {
+                virBufferAsprintf(buf, " ioeventfd='%s'",
+                                  virTristateSwitchTypeToString(def->ioeventfd));
+            }
             virBufferAddLit(buf, "/>\n");
         }
 

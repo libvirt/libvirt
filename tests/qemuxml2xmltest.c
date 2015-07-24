@@ -420,6 +420,7 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-num_queues");
     DO_TEST("disk-virtio-scsi-cmd_per_lun");
     DO_TEST("disk-virtio-scsi-max_sectors");
+    DO_TEST("disk-virtio-scsi-ioeventfd");
     DO_TEST("disk-scsi-megasas");
     DO_TEST_DIFFERENT("disk-mirror-old");
     DO_TEST_FULL("disk-mirror", false, WHEN_ACTIVE);

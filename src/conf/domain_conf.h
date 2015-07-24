@@ -840,6 +840,7 @@ struct _virDomainControllerDef {
     unsigned int queues;
     unsigned int cmd_per_lun;
     unsigned int max_sectors;
+    int ioeventfd; /* enum virTristateSwitch */
     union {
         virDomainVirtioSerialOpts vioserial;
         virDomainPCIControllerOpts pciopts;

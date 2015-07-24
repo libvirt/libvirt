@@ -3000,6 +3000,14 @@
         a sector is 512 bytes.
         <span class="since">Since 1.2.7 (QEMU and KVM only)</span>
       </dd>
+      <dt><code>ioeventfd</code></dt>
+      <dd>
+        The optional <code>ioeventfd</code> attribute specifies
+        whether the controller should use
+        <a href='https://patchwork.kernel.org/patch/43390/'>
+        I/O asynchronous handling</a> or not.  Accepted values are
+        "on" and "off". <span class="since">Since 1.2.18</span>
+      </dd>
     </dl>
     <p>
       USB companion controllers have an optional

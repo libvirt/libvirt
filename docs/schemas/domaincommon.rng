@@ -1832,6 +1832,9 @@
                 <ref name="unsignedInt"/>
               </attribute>
             </optional>
+            <optional>
+              <ref name="ioeventfd"/>
+            </optional>
           </element>
         </optional>
       </interleave>
