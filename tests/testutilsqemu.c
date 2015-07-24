@@ -336,6 +336,8 @@ virCapsPtr testQemuCapsInit(void)
 
     caps->host.cpu = cpuDefault;
 
+    caps->host.nnumaCell_max = 4;
+
     if ((machines = testQemuAllocMachines(&nmachines)) == NULL)
         goto cleanup;
 
