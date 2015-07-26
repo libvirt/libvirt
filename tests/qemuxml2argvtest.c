@@ -878,6 +878,9 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-max_sectors",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST("disk-virtio-scsi-ioeventfd",
+            QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_VIRTIO_IOEVENTFD, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-scsi-megasas",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_MEGASAS);

@@ -4611,6 +4611,11 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
                            _("'max_sectors' is only supported by virtio-scsi controller"));
             return NULL;
         }
+        if (def->ioeventfd) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'ioeventfd' is only supported by virtio-scsi controller"));
+            return NULL;
+        }
     }
 
     switch (def->type) {
@@ -4908,6 +4913,8 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
 
     if (def->max_sectors)
         virBufferAsprintf(&buf, ",max_sectors=%u", def->max_sectors);
+
+    qemuBuildIoEventFdStr(&buf, def->ioeventfd, qemuCaps);
 
     if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info, qemuCaps) < 0)
         goto error;
