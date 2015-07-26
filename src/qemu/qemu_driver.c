@@ -5228,6 +5228,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     int ret = -1;
     int hostcpus, vcpu;
     virBitmapPtr allcpumap = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5248,6 +5249,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         goto cleanup;
 
     virBitmapSetAll(allcpumap);
+    priv = vm->privateData;
 
     /* Clamp to actual number of vcpus */
     if (ncpumaps > def->vcpus)
@@ -5266,6 +5268,9 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
 
         if (pininfo && pininfo->cpumask)
             bitmap = pininfo->cpumask;
+        else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
+                 priv->autoCpuset)
+            bitmap = priv->autoCpuset;
         else
             bitmap = allcpumap;
 
@@ -5416,6 +5421,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     int hostcpus;
     virBitmapPtr cpumask = NULL;
     virBitmapPtr bitmap = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5432,10 +5438,15 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
         goto cleanup;
 
+    priv = vm->privateData;
+
     if (def->cputune.emulatorpin) {
         cpumask = def->cputune.emulatorpin;
     } else if (def->cpumask) {
         cpumask = def->cpumask;
+    } else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
+               priv->autoCpuset) {
+        cpumask = priv->autoCpuset;
     } else {
         if (!(bitmap = virBitmapNew(hostcpus)))
             goto cleanup;
