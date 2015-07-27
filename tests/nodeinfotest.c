@@ -234,7 +234,7 @@ mymain(void)
         {"raspberrypi", VIR_ARCH_ARMV6L},
         {"f21-mustang", VIR_ARCH_AARCH64},
         {"rhelsa-3.19.0-mustang", VIR_ARCH_AARCH64},
-        {"deconfigured-cpus", VIR_ARCH_PPC64},
+        {"deconf-cpus", VIR_ARCH_PPC64},
     };
 
     if (virInitialize() < 0)
