@@ -1,0 +1,29 @@
+Node 17 MemTotal:       67108864 kB
+Node 17 MemFree:        66329280 kB
+Node 17 MemUsed:          779584 kB
+Node 17 Active:             5568 kB
+Node 17 Inactive:           2688 kB
+Node 17 Active(anon):       4800 kB
+Node 17 Inactive(anon):      256 kB
+Node 17 Active(file):        768 kB
+Node 17 Inactive(file):     2432 kB
+Node 17 Unevictable:           0 kB
+Node 17 Mlocked:               0 kB
+Node 17 Dirty:                 0 kB
+Node 17 Writeback:             0 kB
+Node 17 FilePages:          3584 kB
+Node 17 Mapped:              192 kB
+Node 17 AnonPages:          4672 kB
+Node 17 Shmem:               384 kB
+Node 17 KernelStack:        5536 kB
+Node 17 PageTables:          128 kB
+Node 17 NFS_Unstable:          0 kB
+Node 17 Bounce:                0 kB
+Node 17 WritebackTmp:          0 kB
+Node 17 Slab:              41472 kB
+Node 17 SReclaimable:       2496 kB
+Node 17 SUnreclaim:        38976 kB
+Node 17 AnonHugePages:         0 kB
+Node 17 HugePages_Total:     0
+Node 17 HugePages_Free:      0
+Node 17 HugePages_Surp:      0
