@@ -237,6 +237,8 @@ mymain(void)
         {"deconf-cpus", VIR_ARCH_PPC64},
         /* subcores, default configuration */
         {"subcores1", VIR_ARCH_PPC64},
+        /* subcores, some of the cores are offline */
+        {"subcores2", VIR_ARCH_PPC64},
     };
 
     if (virInitialize() < 0)
