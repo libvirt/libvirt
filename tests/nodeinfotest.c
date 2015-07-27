@@ -235,6 +235,8 @@ mymain(void)
         {"f21-mustang", VIR_ARCH_AARCH64},
         {"rhelsa-3.19.0-mustang", VIR_ARCH_AARCH64},
         {"deconf-cpus", VIR_ARCH_PPC64},
+        /* subcores, default configuration */
+        {"subcores1", VIR_ARCH_PPC64},
     };
 
     if (virInitialize() < 0)
