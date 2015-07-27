@@ -17580,7 +17580,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        supportMaxOptions = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
+        supportMaxOptions = virQEMUCapsGet(priv->qemuCaps,
+                                           QEMU_CAPS_DRIVE_IOTUNE_MAX);
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block I/O throttling not supported with this "
@@ -17588,12 +17589,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!supportMaxOptions && (set_iops_max || set_bytes_max)) {
+        if (!supportMaxOptions &&
+            (set_iops_max || set_bytes_max || set_size_iops)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("a block I/O throttling parameter is not "
                              "supported with this QEMU binary"));
              goto endjob;
-         }
+        }
 
         if (!(device = qemuDiskPathToAlias(vm, disk, &idx)))
             goto endjob;
