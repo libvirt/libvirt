@@ -256,6 +256,6 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/nodeinfomock.so")
 
 #endif /* __linux__ */
