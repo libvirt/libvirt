@@ -6456,7 +6456,7 @@ remoteDomainOpenGraphicsFD(virDomainPtr dom,
                            unsigned int flags)
 {
     int rv = -1;
-    remote_domain_open_graphics_args args;
+    remote_domain_open_graphics_fd_args args;
     struct private_data *priv = dom->conn->privateData;
     int *fdout = NULL;
     size_t fdoutlen = 0;
