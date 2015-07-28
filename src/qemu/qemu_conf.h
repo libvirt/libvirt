@@ -192,7 +192,7 @@ struct _virQEMUDriver {
     virThreadPoolPtr workerPool;
 
     /* Atomic increment only */
-    int nextvmid;
+    int lastvmid;
 
     /* Atomic inc/dec only */
     unsigned int nactive;

@@ -611,8 +611,8 @@ qemuDomainFindMaxID(virDomainObjPtr vm,
 {
     int *driver_maxid = data;
 
-    if (vm->def->id >= *driver_maxid)
-        *driver_maxid = vm->def->id + 1;
+    if (vm->def->id > *driver_maxid)
+        *driver_maxid = vm->def->id;
 
     return 0;
 }
@@ -648,9 +648,6 @@ qemuStateInitialize(bool privileged,
 
     qemu_driver->inhibitCallback = callback;
     qemu_driver->inhibitOpaque = opaque;
-
-    /* Don't have a dom0 so start from 1 */
-    qemu_driver->nextvmid = 1;
 
     qemu_driver->privileged = privileged;
 
@@ -909,7 +906,7 @@ qemuStateInitialize(bool privileged,
      * threads */
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainFindMaxID,
-                            &qemu_driver->nextvmid);
+                            &qemu_driver->lastvmid);
 
     virDomainObjListForEach(qemu_driver->domains,
                             qemuDomainNetsRestart,

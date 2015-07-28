@@ -1492,7 +1492,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver)
 {
-    return virAtomicIntInc(&driver->nextvmid);
+    return virAtomicIntInc(&driver->lastvmid);
 }
 
 
