@@ -11054,6 +11054,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 {
     xmlNodePtr tmp = NULL;
     xmlNodePtr source = NULL;
+    xmlNodePtr backingStore = NULL;
     xmlNodePtr target_node = NULL;
     xmlNodePtr text_node = NULL;
     char *device_type = NULL;
@@ -11094,11 +11095,20 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         if (xmlStrEqual(tmp->name, BAD_CAST "target"))
             target_node = tmp;
 
+        if (xmlStrEqual(tmp->name, BAD_CAST "backingStore"))
+            backingStore = tmp;
+
         /*
          * We've found all we needed.
          */
-        if (source && target_node)
+        if (source && target_node && backingStore)
             break;
+    }
+
+    /* drop the <backingStore> subtree since it would become invalid */
+    if (backingStore) {
+        xmlUnlinkNode(backingStore);
+        xmlFreeNode(backingStore);
     }
 
     if (type == VIRSH_UPDATE_DISK_XML_EJECT) {
