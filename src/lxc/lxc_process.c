@@ -137,6 +137,23 @@ virLXCProcessReboot(virLXCDriverPtr driver,
 }
 
 
+static void
+lxcProcessRemoveDomainStatus(virLXCDriverConfigPtr cfg,
+                              virDomainObjPtr vm)
+{
+    char ebuf[1024];
+    char *file = NULL;
+
+    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) < 0)
+        return;
+
+    if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
+        VIR_WARN("Failed to remove domain XML for %s: %s",
+                 vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
+    VIR_FREE(file);
+}
+
+
 /**
  * virLXCProcessCleanup:
  * @driver: pointer to driver structure
@@ -180,7 +197,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
     }
 
     virPidFileDelete(cfg->stateDir, vm->def->name);
-    virDomainDeleteConfig(cfg->stateDir, NULL, vm);
+    lxcProcessRemoveDomainStatus(cfg, vm);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     vm->pid = -1;
