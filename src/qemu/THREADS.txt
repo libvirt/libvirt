@@ -25,7 +25,7 @@ There are a number of locks on various objects
 
   * virDomainObjPtr
 
-    Will be locked after calling any of the virDomainFindBy{ID,Name,UUID}
+    Will be locked after calling any of the virDomainObjListFindBy{ID,Name,UUID}
     methods.  However, preferred method is qemuDomObjFromDomain() that uses
     virDomainFindByUUIDRef() which also increases the reference counter and
     finds the domain in the domain list without blocking all other lookups.
