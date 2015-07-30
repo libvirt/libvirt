@@ -31,6 +31,12 @@
 #include <dirent.h>
 #include <sys/utsname.h>
 #include "conf/domain_conf.h"
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
+#if HAVE_LINUX_KVM_H
+# include <linux/kvm.h>
+#endif
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
 # include <sys/time.h>
@@ -392,13 +398,14 @@ virNodeParseSocket(const char *dir,
  * filling arguments */
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5)
-ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7)
-ATTRIBUTE_NONNULL(8)
+ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
+ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(8)
+ATTRIBUTE_NONNULL(9)
 virNodeParseNode(const char *node,
                  virArch arch,
                  virBitmapPtr present_cpus_map,
                  virBitmapPtr online_cpus_map,
+                 int threads_per_subcore,
                  int *sockets,
                  int *cores,
                  int *threads,
@@ -492,7 +499,18 @@ virNodeParseNode(const char *node,
             continue;
 
         if (!virBitmapIsBitSet(online_cpus_map, cpu)) {
-            (*offline)++;
+            if (threads_per_subcore > 0 &&
+                cpu % threads_per_subcore != 0 &&
+                virBitmapIsBitSet(online_cpus_map,
+                                  cpu - (cpu % threads_per_subcore))) {
+                /* Secondary offline threads are counted as online when
+                 * subcores are in use and the corresponding primary
+                 * thread is online */
+                processors++;
+            } else {
+                /* But they are counted as offline otherwise */
+                (*offline)++;
+            }
             continue;
         }
 
@@ -545,6 +563,12 @@ virNodeParseNode(const char *node,
             *cores = core;
     }
 
+    if (threads_per_subcore > 0) {
+        /* The thread count ignores offline threads, which means that only
+         * only primary threads have been considered so far. If subcores
+         * are in use, we need to also account for secondary threads */
+        *threads *= threads_per_subcore;
+    }
     ret = processors;
 
  cleanup:
@@ -563,6 +587,41 @@ virNodeParseNode(const char *node,
     return ret;
 }
 
+/* Check whether the host subcore configuration is valid.
+ *
+ * A valid configuration is one where no secondary thread is online;
+ * the primary thread in a subcore is always the first one */
+static bool
+nodeHasValidSubcoreConfiguration(const char *sysfs_prefix,
+                                 int threads_per_subcore)
+{
+    virBitmapPtr online_cpus = NULL;
+    int cpu = -1;
+    bool ret = false;
+
+    /* No point in checking if subcores are not in use */
+    if (threads_per_subcore <= 0)
+        goto cleanup;
+
+    if (!(online_cpus = nodeGetOnlineCPUBitmap(sysfs_prefix)))
+        goto cleanup;
+
+    while ((cpu = virBitmapNextSetBit(online_cpus, cpu)) >= 0) {
+
+        /* A single online secondary thread is enough to
+         * make the configuration invalid */
+        if (cpu % threads_per_subcore != 0)
+            goto cleanup;
+    }
+
+    ret = true;
+
+ cleanup:
+    virBitmapFree(online_cpus);
+
+    return ret;
+}
+
 int
 linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
                          FILE *cpuinfo,
@@ -576,6 +635,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
     DIR *nodedir = NULL;
     struct dirent *nodedirent = NULL;
     int cpus, cores, socks, threads, offline = 0;
+    int threads_per_subcore = 0;
     unsigned int node;
     int ret = -1;
     char *sysfs_nodedir = NULL;
@@ -683,6 +743,36 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
         goto fallback;
     }
 
+    /* PPC-KVM needs the secondary threads of a core to be offline on the
+     * host. The kvm scheduler brings the secondary threads online in the
+     * guest context. Moreover, P8 processor has split-core capability
+     * where, there can be 1,2 or 4 subcores per core. The primaries of the
+     * subcores alone will be online on the host for a subcore in the
+     * host. Even though the actual threads per core for P8 processor is 8,
+     * depending on the subcores_per_core = 1, 2 or 4, the threads per
+     * subcore will vary accordingly to 8, 4 and 2 repectively.
+     * So, On host threads_per_core what is arrived at from sysfs in the
+     * current logic is actually the subcores_per_core. Threads per subcore
+     * can only be obtained from the kvm device. For example, on P8 wih 1
+     * core having 8 threads, sub_cores_percore=4, the threads 0,2,4 & 6
+     * will be online. The sysfs reflects this and in the current logic
+     * variable 'threads' will be 4 which is nothing but subcores_per_core.
+     * If the user tampers the cpu online/offline states using chcpu or other
+     * means, then it is an unsupported configuration for kvm.
+     * The code below tries to keep in mind
+     *  - when the libvirtd is run inside a KVM guest or Phyp based guest.
+     *  - Or on the kvm host where user manually tampers the cpu states to
+     *    offline/online randomly.
+     * On hosts other than POWER this will be 0, in which case a simpler
+     * thread-counting logic will be used  */
+    if ((threads_per_subcore = nodeGetThreadsPerSubcore(arch)) < 0)
+        goto cleanup;
+
+    /* If the subcore configuration is not valid, just pretend subcores
+     * are not in use and count threads one by one */
+    if (!nodeHasValidSubcoreConfiguration(sysfs_prefix, threads_per_subcore))
+        threads_per_subcore = 0;
+
     while ((direrr = virDirRead(nodedir, &nodedirent, sysfs_nodedir)) > 0) {
         if (sscanf(nodedirent->d_name, "node%u", &node) != 1)
             continue;
@@ -696,6 +786,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
         if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
                                      present_cpus_map,
                                      online_cpus_map,
+                                     threads_per_subcore,
                                      &socks, &cores,
                                      &threads, &offline)) < 0)
             goto cleanup;
@@ -729,6 +820,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
     if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
                                  present_cpus_map,
                                  online_cpus_map,
+                                 threads_per_subcore,
                                  &socks, &cores,
                                  &threads, &offline)) < 0)
         goto cleanup;
@@ -2247,4 +2339,57 @@ nodeAllocPages(unsigned int npages,
     ret = ncounts;
  cleanup:
     return ret;
+}
+
+/* Get the number of threads per subcore.
+ *
+ * This will be 2, 4 or 8 on POWER hosts, depending on the current
+ * micro-threading configuration, and 0 everywhere else.
+ *
+ * Returns the number of threads per subcore if subcores are in use, zero
+ * if subcores are not in use, and a negative value on error */
+int
+nodeGetThreadsPerSubcore(virArch arch)
+{
+    int threads_per_subcore = 0;
+
+#if HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
+    const char *kvmpath = "/dev/kvm";
+    int kvmfd;
+
+    if (ARCH_IS_PPC64(arch)) {
+
+        /* It's okay if /dev/kvm doesn't exist, because
+         *   a. we might be running in a guest
+         *   b. the kvm module might not be installed or enabled
+         * In either case, falling back to the subcore-unaware thread
+         * counting logic is the right thing to do */
+        if (!virFileExists(kvmpath))
+            goto out;
+
+        if ((kvmfd = open(kvmpath, O_RDONLY)) < 0) {
+            /* This can happen when running as a regular user if
+             * permissions are tight enough, in which case erroring out
+             * is better than silently falling back and reporting
+             * different nodeinfo depending on the user */
+            virReportSystemError(errno,
+                                 _("Failed to open '%s'"),
+                                 kvmpath);
+            threads_per_subcore = -1;
+            goto out;
+        }
+
+        /* For Phyp and KVM based guests the ioctl for KVM_CAP_PPC_SMT
+         * returns zero and both primary and secondary threads will be
+         * online */
+        threads_per_subcore = ioctl(kvmfd,
+                                    KVM_CHECK_EXTENSION,
+                                    KVM_CAP_PPC_SMT);
+
+        VIR_FORCE_CLOSE(kvmfd);
+    }
+#endif /* HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
+
+ out:
+    return threads_per_subcore;
 }

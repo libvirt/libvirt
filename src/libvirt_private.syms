@@ -1010,6 +1010,7 @@ nodeGetMemoryParameters;
 nodeGetMemoryStats;
 nodeGetOnlineCPUBitmap;
 nodeGetPresentCPUBitmap;
+nodeGetThreadsPerSubcore;
 nodeSetMemoryParameters;
 
 

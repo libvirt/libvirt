@@ -47,6 +47,7 @@ int nodeGetMemory(unsigned long long *mem,
 virBitmapPtr nodeGetPresentCPUBitmap(const char *sysfs_prefix);
 virBitmapPtr nodeGetOnlineCPUBitmap(const char *sysfs_prefix);
 int nodeGetCPUCount(const char *sysfs_prefix);
+int nodeGetThreadsPerSubcore(virArch arch);
 
 int nodeGetMemoryParameters(virTypedParameterPtr params,
                             int *nparams,
