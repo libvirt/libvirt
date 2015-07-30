@@ -310,7 +310,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         auditReason = "failed";
     }
 
-    if (qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_IN))
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         qemuMigrationErrorSave(driver, vm->def->name,
                                qemuMonitorLastError(priv->mon));
 
