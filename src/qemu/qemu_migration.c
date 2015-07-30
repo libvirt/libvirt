@@ -3474,7 +3474,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
 
  stop:
     virDomainAuditStart(vm, "migrated", false);
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                    VIR_QEMU_PROCESS_STOP_MIGRATED);
 
  endjob:
     qemuMigrationJobFinish(driver, vm);
