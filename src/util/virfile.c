@@ -817,7 +817,7 @@ static bool
 virFileNBDLoadDriver(void)
 {
     if (virKModIsBlacklisted(NBD_DRIVER)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to load nbd module: "
                          "administratively prohibited"));
         return false;
@@ -826,7 +826,7 @@ virFileNBDLoadDriver(void)
 
         if ((errbuf = virKModLoad(NBD_DRIVER, true))) {
             VIR_FREE(errbuf);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to load nbd module"));
             return false;
         }
