@@ -86,6 +86,7 @@ enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_NETWORK,
     QEMU_MIGRATION_COOKIE_FLAG_NBD,
     QEMU_MIGRATION_COOKIE_FLAG_STATS,
+    QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -98,7 +99,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "persistent",
               "network",
               "nbd",
-              "statistics");
+              "statistics",
+              "memory-hotplug");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
@@ -107,6 +109,7 @@ enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_NETWORK = (1 << QEMU_MIGRATION_COOKIE_FLAG_NETWORK),
     QEMU_MIGRATION_COOKIE_NBD = (1 << QEMU_MIGRATION_COOKIE_FLAG_NBD),
     QEMU_MIGRATION_COOKIE_STATS = (1 << QEMU_MIGRATION_COOKIE_FLAG_STATS),
+    QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -1351,6 +1354,9 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
     if (flags & QEMU_MIGRATION_COOKIE_STATS &&
         qemuMigrationCookieAddStatistics(mig, dom) < 0)
         return -1;
+
+    if (flags & QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG)
+        mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;
@@ -2973,6 +2979,11 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
             }
         }
     }
+
+    if (vm->def->mem.max_memory ||
+        (vm->newDef &&
+         vm->newDef->mem.max_memory))
+        cookieFlags |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
