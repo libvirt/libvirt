@@ -737,6 +737,7 @@ mymain(void)
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST("disk-cdrom-tray-no-device-cap", NONE);
     DO_TEST("disk-floppy", NONE);
+    DO_TEST_FAILURE("disk-floppy-pseries", QEMU_CAPS_DRIVE);
     DO_TEST("disk-floppy-tray-no-device-cap", NONE);
     DO_TEST("disk-floppy-tray",
             QEMU_CAPS_DRIVE, QEMU_CAPS_DEVICE);

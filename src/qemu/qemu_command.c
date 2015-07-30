@@ -9767,6 +9767,14 @@ qemuBuildCommandLine(virConnectPtr conn,
                 continue;
             }
 
+            /* PowerPC pseries based VMs do not support floppy device */
+            if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
+                ARCH_IS_PPC64(def->os.arch) && STRPREFIX(def->os.machine, "pseries")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("PowerPC pseries machines do not support floppy device"));
+                goto error;
+            }
+
             switch (disk->device) {
             case VIR_DOMAIN_DISK_DEVICE_CDROM:
                 bootindex = bootCD;
