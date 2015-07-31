@@ -68,11 +68,10 @@ int virNetDevBandwidthUnplug(const char *brname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevBandwidthUpdateRate(const char *ifname,
-                                 const char *class_id,
+                                 unsigned int id,
                                  virNetDevBandwidthPtr bandwidth,
                                  unsigned long long new_rate)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevBandwidthUpdateFilter(const char *ifname,
                                    const virMacAddr *ifmac_ptr,

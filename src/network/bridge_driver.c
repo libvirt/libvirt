@@ -4840,7 +4840,7 @@ networkPlugBandwidth(virNetworkObjPtr net,
     }
     /* update rate for non guaranteed NICs */
     new_rate -= net->floor_sum;
-    if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
+    if (virNetDevBandwidthUpdateRate(net->def->bridge, 2,
                                      net->def->bandwidth, new_rate) < 0)
         VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
                  net->def->bridge);
@@ -4891,7 +4891,7 @@ networkUnplugBandwidth(virNetworkObjPtr net,
         }
         /* update rate for non guaranteed NICs */
         new_rate -= net->floor_sum;
-        if (virNetDevBandwidthUpdateRate(net->def->bridge, "1:2",
+        if (virNetDevBandwidthUpdateRate(net->def->bridge, 2,
                                          net->def->bandwidth, new_rate) < 0)
             VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
                      net->def->bridge);

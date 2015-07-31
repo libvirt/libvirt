@@ -638,7 +638,8 @@ virNetDevBandwidthUnplug(const char *brname,
 /**
  * virNetDevBandwidthUpdateRate:
  * @ifname: interface name
- * @classid: ID of class to update
+ * @id: unique identifier
+ * @bandwidth: used to derive 'ceil' of class with @id
  * @new_rate: new rate
  *
  * This function updates the 'rate' attribute of HTB class.
@@ -650,16 +651,18 @@ virNetDevBandwidthUnplug(const char *brname,
  */
 int
 virNetDevBandwidthUpdateRate(const char *ifname,
-                             const char *class_id,
+                             unsigned int id,
                              virNetDevBandwidthPtr bandwidth,
                              unsigned long long new_rate)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
+    char *class_id = NULL;
     char *rate = NULL;
     char *ceil = NULL;
 
-    if (virAsprintf(&rate, "%llukbps", new_rate) < 0 ||
+    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
+        virAsprintf(&rate, "%llukbps", new_rate) < 0 ||
         virAsprintf(&ceil, "%llukbps", bandwidth->in->peak ?
                     bandwidth->in->peak :
                     bandwidth->in->average) < 0)
@@ -677,6 +680,7 @@ virNetDevBandwidthUpdateRate(const char *ifname,
 
  cleanup:
     virCommandFree(cmd);
+    VIR_FREE(class_id);
     VIR_FREE(rate);
     VIR_FREE(ceil);
     return ret;
