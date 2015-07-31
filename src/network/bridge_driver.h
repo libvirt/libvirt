@@ -57,6 +57,10 @@ bool networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
                                    virNetDevBandwidthPtr newBandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int networkBandwidthUpdate(virDomainNetDefPtr iface,
+                           virNetDevBandwidthPtr newBandwidth)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
 #  define networkAllocateActualDevice(dom, iface) 0
@@ -83,6 +87,13 @@ networkBandwidthChangeAllowed(virDomainNetDefPtr iface ATTRIBUTE_UNUSED,
                               virNetDevBandwidthPtr newBandwidth ATTRIBUTE_UNUSED)
 {
     return true;
+}
+
+static inline int
+networkBandwidthUpdate(virDomainNetDefPtr iface ATTRIBUTE_UNUSED,
+                       virNetDevBandwidthPtr newBandwidth ATTRIBUTE_UNUSED)
+{
+    return 0;
 }
 
 # endif
