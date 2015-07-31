@@ -3361,30 +3361,39 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
 }
 
 
+static unsigned long long
+qemuDomainGetMemorySizeAlignment(virDomainDefPtr def ATTRIBUTE_UNUSED)
+{
+    /* Align memory size. QEMU requires rounding to next 4KiB block.
+     * We'll take the "traditional" path and round it to 1MiB*/
+
+    return 1024;
+}
+
+
 int
 qemuDomainAlignMemorySizes(virDomainDefPtr def)
 {
     unsigned long long mem;
+    unsigned long long align = qemuDomainGetMemorySizeAlignment(def);
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
     size_t i;
 
     /* align NUMA cell sizes if relevant */
     for (i = 0; i < ncells; i++) {
         mem = virDomainNumaGetNodeMemorySize(def->numa, i);
-        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(mem, 1024));
+        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(mem, align));
     }
 
     /* align initial memory size */
     mem = virDomainDefGetMemoryInitial(def);
-    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(mem, 1024));
+    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(mem, align));
 
-    /* Align maximum memory size. QEMU requires rounding to next 4KiB block.
-     * We'll take the "traditional" path and round it to 1MiB*/
-    def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, 1024);
+    def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, align);
 
     /* Align memory module sizes */
     for (i = 0; i < def->nmems; i++)
-        qemuDomainMemoryDeviceAlignSize(def->mems[i]);
+        def->mems[i]->size = VIR_ROUND_UP(def->mems[i]->size, align);
 
     return 0;
 }
@@ -3399,9 +3408,10 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
  * size so this should be safe).
  */
 void
-qemuDomainMemoryDeviceAlignSize(virDomainMemoryDefPtr mem)
+qemuDomainMemoryDeviceAlignSize(virDomainDefPtr def,
+                                virDomainMemoryDefPtr mem)
 {
-    mem->size = VIR_ROUND_UP(mem->size, 1024);
+    mem->size = VIR_ROUND_UP(mem->size, qemuDomainGetMemorySizeAlignment(def));
 }
 
 

@@ -1802,7 +1802,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildMemoryDeviceStr(mem, vm->def, priv->qemuCaps)))
         goto cleanup;
 
-    qemuDomainMemoryDeviceAlignSize(mem);
+    qemuDomainMemoryDeviceAlignSize(vm->def, mem);
 
     if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,
                                   mem->targetNode, mem->sourceNodes, NULL,
@@ -4273,7 +4273,7 @@ qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMemoryDeviceAlignSize(memdef);
+    qemuDomainMemoryDeviceAlignSize(vm->def, memdef);
 
     if ((idx = virDomainMemoryFindByDef(vm->def, memdef)) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
