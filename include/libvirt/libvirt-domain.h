@@ -1335,6 +1335,13 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
 # define VIR_DOMAIN_BANDWIDTH_IN_BURST "inbound.burst"
 
 /**
+ * VIR_DOMAIN_BANDWIDTH_IN_FLOOR:
+ *
+ * Macro represents the inbound floor of NIC bandwidth, as a uint.
+ */
+# define VIR_DOMAIN_BANDWIDTH_IN_FLOOR "inbound.floor"
+
+/**
  * VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE:
  *
  * Macro represents the outbound average of NIC bandwidth, as a uint.
