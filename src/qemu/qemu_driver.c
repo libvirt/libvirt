@@ -138,7 +138,7 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_NB_BLKIO_PARAM  6
 
-#define QEMU_NB_BANDWIDTH_PARAM 6
+#define QEMU_NB_BANDWIDTH_PARAM 7
 
 static void processWatchdogEvent(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
@@ -11130,6 +11130,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                                VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_BANDWIDTH_IN_BURST,
                                VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                               VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
                                VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
@@ -11182,6 +11184,9 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             bandwidth->in->peak = params[i].value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
             bandwidth->in->burst = params[i].value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_FLOOR)) {
+            bandwidth->in->floor = params[i].value.ui;
+            inboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
             bandwidth->out->average = params[i].value.ui;
             outboundSpecified = true;
@@ -11192,10 +11197,10 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         }
     }
 
-    /* average is mandatory, peak and burst are optional. So if no
-     * average is given, we free inbound/outbound here which causes
-     * inbound/outbound to not be set. */
-    if (!bandwidth->in->average)
+    /* average or floor are mandatory, peak and burst are optional.
+     * So if no average or floor is given, we free inbound/outbound
+     * here which causes inbound/outbound to not be set. */
+    if (!bandwidth->in->average && !bandwidth->in->floor)
         VIR_FREE(bandwidth->in);
     if (!bandwidth->out->average)
         VIR_FREE(bandwidth->out);
@@ -11359,7 +11364,15 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
             if (net->bandwidth && net->bandwidth->in)
                 params[i].value.ui = net->bandwidth->in->burst;
             break;
-        case 3: /* outbound.average */
+        case 3: /* inbound.floor */
+            if (virTypedParameterAssign(&params[i],
+                                        VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                                        VIR_TYPED_PARAM_UINT, 0) < 0)
+                goto cleanup;
+            if (net->bandwidth && net->bandwidth->in)
+                params[i].value.ui = net->bandwidth->in->floor;
+            break;
+        case 4: /* outbound.average */
             if (virTypedParameterAssign(&params[i],
                                         VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
                                         VIR_TYPED_PARAM_UINT, 0) < 0)
@@ -11367,7 +11380,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
             if (net->bandwidth && net->bandwidth->out)
                 params[i].value.ui = net->bandwidth->out->average;
             break;
-        case 4: /* outbound.peak */
+        case 5: /* outbound.peak */
             if (virTypedParameterAssign(&params[i],
                                         VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
                                         VIR_TYPED_PARAM_UINT, 0) < 0)
@@ -11375,7 +11388,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
             if (net->bandwidth && net->bandwidth->out)
                 params[i].value.ui = net->bandwidth->out->peak;
             break;
-        case 5: /* outbound.burst */
+        case 6: /* outbound.burst */
             if (virTypedParameterAssign(&params[i],
                                         VIR_DOMAIN_BANDWIDTH_OUT_BURST,
                                         VIR_TYPED_PARAM_UINT, 0) < 0)
