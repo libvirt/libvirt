@@ -2708,7 +2708,7 @@ static int virNetDevParseMcast(char *buf, virNetDevMcastEntryPtr mcast)
     char *saveptr;
     char *endptr;
 
-    for (ifindex = 0, next = buf; ifindex < VIR_MCAST_TYPE_LAST; ifindex++,
+    for (ifindex = VIR_MCAST_TYPE_INDEX_TOKEN, next = buf; ifindex < VIR_MCAST_TYPE_LAST; ifindex++,
          next = NULL) {
         token = strtok_r(next, VIR_MCAST_TOKEN_DELIMS, &saveptr);
 
