@@ -873,7 +873,7 @@ static int parseRateStr(vshControl *ctl,
     char *next;
     char *saveptr = NULL;
     enum {
-        AVERAGE, PEAK, BURST
+        AVERAGE, PEAK, BURST, FLOOR
     } state;
     int ret = -1;
 
@@ -882,7 +882,7 @@ static int parseRateStr(vshControl *ctl,
 
     next = vshStrdup(ctl, rateStr);
 
-    for (state = AVERAGE; state <= BURST; state++) {
+    for (state = AVERAGE; state <= FLOOR; state++) {
         unsigned long long *tmp;
         const char *field_name;
 
@@ -904,6 +904,11 @@ static int parseRateStr(vshControl *ctl,
         case BURST:
             tmp = &rate->burst;
             field_name = "burst";
+            break;
+
+        case FLOOR:
+            tmp = &rate->floor;
+            field_name = "floor";
             break;
         }
 
@@ -976,8 +981,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         memset(&inbound, 0, sizeof(inbound));
         if (parseRateStr(ctl, inboundStr, &inbound) < 0)
             goto cleanup;
-        if (inbound.average == 0) {
-            vshError(ctl, _("inbound average is mandatory"));
+        if (!inbound.average && !inbound.floor) {
+            vshError(ctl, _("either inbound average or floor is mandatory"));
             goto cleanup;
         }
     }
@@ -987,6 +992,10 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         if (outbound.average == 0) {
             vshError(ctl, _("outbound average is mandatory"));
+            goto cleanup;
+        }
+        if (outbound.floor) {
+            vshError(ctl, _("outbound floor is unsupported yet"));
             goto cleanup;
         }
     }
@@ -3308,8 +3317,10 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
                      UINT_MAX);
             goto cleanup;
         }
-        if (inbound.average == 0 && (inbound.burst || inbound.peak)) {
-            vshError(ctl, _("inbound average is mandatory"));
+
+        if ((!inbound.average && (inbound.burst || inbound.peak)) &&
+            !inbound.floor) {
+            vshError(ctl, _("either inbound average or floor is mandatory"));
             goto cleanup;
         }
 
@@ -3329,6 +3340,12 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
                                   VIR_DOMAIN_BANDWIDTH_IN_BURST,
                                   inbound.burst) < 0)
             goto save_error;
+
+        if (inbound.floor &&
+            virTypedParamsAddUInt(&params, &nparams, &maxparams,
+                                  VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                                  inbound.floor) < 0)
+            goto save_error;
     }
 
     if (outboundStr) {
@@ -3342,6 +3359,11 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
         }
         if (outbound.average == 0 && (outbound.burst || outbound.peak)) {
             vshError(ctl, _("outbound average is mandatory"));
+            goto cleanup;
+        }
+
+        if (outbound.floor) {
+            vshError(ctl, _("outbound floor is unsupported yet"));
             goto cleanup;
         }
 

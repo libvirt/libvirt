@@ -770,7 +770,7 @@ I<interface-device> can be the interface's target name or the MAC address.
 
 =item B<domiftune> I<domain> I<interface-device>
 [[I<--config>] [I<--live>] | [I<--current>]]
-[I<--inbound average,peak,burst>]
+[I<--inbound average,peak,burst,floor>]
 [I<--outbound average,peak,burst>]
 
 Set or query the domain's network interface's bandwidth parameters.
@@ -779,10 +779,10 @@ or the MAC address.
 
 If no I<--inbound> or I<--outbound> is specified, this command will
 query and show the bandwidth settings. Otherwise, it will set the
-inbound or outbound bandwidth. I<average,peak,burst> is the same as
-in command I<attach-interface>.  Values for I<average> and I<peak> are
-expressed in kilobytes per second, while I<burst> is expressed in kilobytes
-in a single burst at -I<peak> speed as described in the Network XML
+inbound or outbound bandwidth. I<average,peak,burst,floor> is the same as
+in command I<attach-interface>.  Values for I<average>, I<peak> and I<floor>
+are expressed in kilobytes per second, while I<burst> is expressed in kilobytes
+in a single burst at I<peak> speed as described in the Network XML
 documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
 To clear inbound or outbound settings, use I<--inbound> or I<--outbound>
@@ -2499,7 +2499,7 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 =item B<attach-interface> I<domain> I<type> I<source>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
-[I<--inbound average,peak,burst>] [I<--outbound average,peak,burst>]
+[I<--inbound average,peak,burst,floor>] [I<--outbound average,peak,burst>]
 
 Attach a new network interface to the domain.  I<type> can be
 I<network> to indicate connection via a libvirt virtual network, or
@@ -2520,11 +2520,13 @@ instead of the default script not in addition to it; --script is valid
 only for interfaces of type I<bridge> and only for Xen domains.
 I<model> specifies the network device model to be presented to the
 domain.  I<inbound> and I<outbound> control the bandwidth of the
-interface.  I<peak> and I<burst> are optional, so "average,peak",
-"average,,burst" and "average" are also legal. Values for I<average>
-and I<peak> are expressed in kilobytes per second, while I<burst> is
-expressed in kilobytes in a single burst at -I<peak> speed as
-described in the Network XML documentation at
+interface. At least one from the I<average>, I<floor> pair must be
+specified. The other two I<peak> and I<burst> are optional, so
+"average,peak", "average,,burst", "average,,,floor", "average" and
+",,,floor" are also legal. Values for I<average>, I<floor> and I<peak>
+are expressed in kilobytes per second, while I<burst> is expressed in
+kilobytes in a single burst at I<peak> speed as described in the
+Network XML documentation at
 L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
 If I<--live> is specified, affect a running domain.
