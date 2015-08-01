@@ -865,36 +865,58 @@ static const vshCmdOptDef opts_attach_interface[] = {
 /* parse inbound and outbound which are in the format of
  * 'average,peak,burst', in which peak and burst are optional,
  * thus 'average,,burst' and 'average,peak' are also legal. */
-static int parseRateStr(const char *rateStr, virNetDevBandwidthRatePtr rate)
+static int parseRateStr(vshControl *ctl,
+                        const char *rateStr,
+                        virNetDevBandwidthRatePtr rate)
 {
-    const char *average = NULL;
-    char *peak = NULL, *burst = NULL;
+    char *token;
+    char *next;
+    char *saveptr = NULL;
+    enum {
+        AVERAGE, PEAK, BURST
+    } state;
+    int ret = -1;
 
-    average = rateStr;
-    if (!average)
-        return -1;
-    if (virStrToLong_ull(average, &peak, 10, &rate->average) < 0)
+    if (!rateStr)
         return -1;
 
-    /* peak will be updated to point to the end of rateStr in case
-     * of 'average' */
-    if (peak && *peak != '\0') {
-        burst = strchr(peak + 1, ',');
-        if (!(burst && (burst - peak == 1))) {
-            if (virStrToLong_ull(peak + 1, &burst, 10, &rate->peak) < 0)
-                return -1;
+    next = vshStrdup(ctl, rateStr);
+
+    for (state = AVERAGE; state <= BURST; state++) {
+        unsigned long long *tmp;
+        const char *field_name;
+
+        if (!(token = strtok_r(next, ",", &saveptr)))
+            break;
+        next = NULL;
+
+        switch (state) {
+        case AVERAGE:
+            tmp = &rate->average;
+            field_name = "average";
+            break;
+
+        case PEAK:
+            tmp = &rate->peak;
+            field_name = "peak";
+            break;
+
+        case BURST:
+            tmp = &rate->burst;
+            field_name = "burst";
+            break;
         }
 
-        /* burst will be updated to point to the end of rateStr in case
-         * of 'average,peak' */
-        if (burst && *burst != '\0') {
-            if (virStrToLong_ull(burst + 1, NULL, 10, &rate->burst) < 0)
-                return -1;
+        if (virStrToLong_ullp(token, NULL, 10, tmp) < 0) {
+            vshError(ctl, _("malformed %s field"), field_name);
+            goto cleanup;
         }
     }
 
-
-    return 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(next);
+    return ret;
 }
 
 static bool
@@ -952,10 +974,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     if (inboundStr) {
         memset(&inbound, 0, sizeof(inbound));
-        if (parseRateStr(inboundStr, &inbound) < 0) {
-            vshError(ctl, _("inbound format is incorrect"));
+        if (parseRateStr(ctl, inboundStr, &inbound) < 0)
             goto cleanup;
-        }
         if (inbound.average == 0) {
             vshError(ctl, _("inbound average is mandatory"));
             goto cleanup;
@@ -963,10 +983,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
     if (outboundStr) {
         memset(&outbound, 0, sizeof(outbound));
-        if (parseRateStr(outboundStr, &outbound) < 0) {
-            vshError(ctl, _("outbound format is incorrect"));
+        if (parseRateStr(ctl, outboundStr, &outbound) < 0)
             goto cleanup;
-        }
         if (outbound.average == 0) {
             vshError(ctl, _("outbound average is mandatory"));
             goto cleanup;
@@ -3280,10 +3298,8 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     memset(&outbound, 0, sizeof(outbound));
 
     if (inboundStr) {
-        if (parseRateStr(inboundStr, &inbound) < 0) {
-            vshError(ctl, _("inbound format is incorrect"));
+        if (parseRateStr(ctl, inboundStr, &inbound) < 0)
             goto cleanup;
-        }
         /* we parse the rate as unsigned long long, but the API
          * only accepts UINT */
         if (inbound.average > UINT_MAX || inbound.peak > UINT_MAX ||
@@ -3316,10 +3332,8 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (outboundStr) {
-        if (parseRateStr(outboundStr, &outbound) < 0) {
-            vshError(ctl, _("outbound format is incorrect"));
+        if (parseRateStr(ctl, outboundStr, &outbound) < 0)
             goto cleanup;
-        }
         if (outbound.average > UINT_MAX || outbound.peak > UINT_MAX ||
             outbound.burst > UINT_MAX) {
             vshError(ctl, _("outbound rate larger than maximum %u"),
