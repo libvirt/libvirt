@@ -2341,6 +2341,8 @@ nodeAllocPages(unsigned int npages,
     return ret;
 }
 
+#if HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
+
 /* Get the number of threads per subcore.
  *
  * This will be 2, 4 or 8 on POWER hosts, depending on the current
@@ -2352,8 +2354,6 @@ int
 nodeGetThreadsPerSubcore(virArch arch)
 {
     int threads_per_subcore = 0;
-
-#if HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT)
     const char *kvmpath = "/dev/kvm";
     int kvmfd;
 
@@ -2388,8 +2388,19 @@ nodeGetThreadsPerSubcore(virArch arch)
 
         VIR_FORCE_CLOSE(kvmfd);
     }
-#endif /* HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
 
  out:
     return threads_per_subcore;
 }
+
+#else
+
+/* Fallback for nodeGetThreadsPerSubcore() used when KVM headers
+ * are not available on the system */
+int
+nodeGetThreadsPerSubcore(virArch arch ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+#endif /* HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
