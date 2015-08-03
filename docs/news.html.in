@@ -9,6 +9,212 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+   <h3>v1.2.18: Aug 03 2015</h3>
+    <ul>
+      <li>Features:<br/>
+      libxl: support dom0 (Jim Fehlig),<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      fix typo in qemu_monitor (Cao jin),<br/>
+      docs: bhyve: document clock configuration (Roman Bogorodskiy),<br/>
+      viraccessperm.h: Fix some typos (Michal Privoznik),<br/>
+      docs: Document how libvirt handles companion controllers (Martin Kletzander),<br/>
+      daemonRunStateInit: Fix a typo on a comment (Michal Privoznik)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      netdev: fix build on FreeBSD (Roman Bogorodskiy),<br/>
+      spec: Fix polkit dep on F23 (Cole Robinson),<br/>
+      nodeinfo: fix build on FreeBSD (Roman Bogorodskiy),<br/>
+      Escape left brace as new perl suggests (Martin Kletzander)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      qemu: Do not reset labels when migration fails (Jiri Denemark),<br/>
+      qemu: Reject migration with memory-hotplug if destination doesn't support it (Peter Krempa),<br/>
+      Load nbd module before running qemu-nbd (Cédric Bosdonnat),<br/>
+      lxc: Don't accidentaly reset autostart flag in virLXCProcessCleanup (Peter Krempa),<br/>
+      remote: fix typo in remoteDomainOpenGraphicsFD (Daniel P. Berrange),<br/>
+      qemu: Check for iotune_max support properly (Martin Kletzander),<br/>
+      Renamed deconfigured-cpus to allow make dist (Daniel Veillard),<br/>
+      storage: allow zero capacity with non-backing file to be created (Chris J Arges),<br/>
+      nodeinfo: Check for SYSFS_INFINIBAND_DIR before open (John Ferlan),<br/>
+      qemu: fix the error cover issue in SetMemoryParameters (Luyao Huang),<br/>
+      nodeinfo: Fix nodeGetCPUBitmap()'s fallback code path (Andrea Bolognani),<br/>
+      tests: Restore links in deconfigured-cpus nodeinfo test (Andrea Bolognani),<br/>
+      cgroup: Drop resource partition from virSystemdMakeScopeName (Peter Krempa),<br/>
+      qemu: Reject updating unsupported disk information (Martin Kletzander),<br/>
+      storage: Fix pool building when directory already exists (Christophe Fergeau),<br/>
+      rpc: ensure daemon is spawn even if dead socket exists (Daniel P. Berrange),<br/>
+      rbd: Return error from rbd_create for message processing (John Ferlan),<br/>
+      qemuMigrationRun: Don't leak @fd (Michal Privoznik),<br/>
+      Fix qemu-nbd cleanup crashes (Cédric Bosdonnat),<br/>
+      network: Add another collision check into networkCheckRouteCollision (Martin Kletzander),<br/>
+      nodeinfo: fix to parse present cpus rather than possible cpus (Kothapally Madhu Pavan),<br/>
+      libxl: set dom0 state to running (Jim Fehlig),<br/>
+      rpc: Rework timerActive logic in daemon (Martin Kletzander),<br/>
+      qemu: Check duplicate WWNs also for hotplugged disks (Peter Krempa),<br/>
+      Fix cloning of raw, sparse volumes (Prerna Saxena),<br/>
+      qemu: don't use initialized ret in qemuRemoveSharedDevice (Guido Günther),<br/>
+      qemu: report error for non-existing disk in blockjobinfo (Luyao Huang),<br/>
+      conf: Don't allow duplicated target names regardless of bus (John Ferlan),<br/>
+      storage: Revert volume obj list updating after volume creation (4749d82a) (Erik Skultety),<br/>
+      qemu: Fix integer/boolean logic in qemuSetUnprivSGIO (John Ferlan),<br/>
+      qemu: report error when shmem has an invalid address (Luyao Huang),<br/>
+      qemu: Auto assign pci addresses for shared memory devices (Luyao Huang),<br/>
+      vz: use PRL_USE_VNET_NAME_FOR_BRIDGE_NAME (Maxim Nestratov),<br/>
+      Explicitly format the isa-fdc controller for newer q35 machines (Ján Tomko),<br/>
+      virt-aa-helper: add unix channels for nserials as well (Serge Hallyn),<br/>
+      storage: Fix regression in storagePoolUpdateAllState (Erik Skultety),<br/>
+      better patch for the XSS search issue (Daniel Veillard),<br/>
+      Avoid XSS vulnerability on the search engine (Daniel Veillard),<br/>
+      vz: fix SDK event dispatching (Nikolay Shirokovskiy),<br/>
+      util: Avoid Coverity FORWARD_NULL (John Ferlan),<br/>
+      virsh: report error if vcpu number exceed the guest maxvcpu number (Luyao Huang),<br/>
+      virt-aa-helper: Fix permissions for vhost-user socket files (Michal Dubiel)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      qemu: Properly check for incoming migration job (Jiri Denemark),<br/>
+      Fix syntax-check: missing "%s" (Cédric Bosdonnat),<br/>
+      qemu: Adjust VM id allocation (Erik Skultety),<br/>
+      admin: Tiny cleanups (Martin Kletzander),<br/>
+      tests: Finish rename of the long nodeinfo test case (Martin Kletzander),<br/>
+      conf: add virDomainControllerDefNew() (Laine Stump),<br/>
+      qemu: reorganize loop in qemuDomainAssignPCIAddresses (Laine Stump),<br/>
+      conf: pay attention to bus minSlot/maxSlot when autoassigning PCI addresses (Laine Stump),<br/>
+      tests: add vol-qcow2-zerocapacity test to storagevolxml2argvtest (Chris J Arges),<br/>
+      Revert "qemu: Use heads parameter for QXL driver" (Martin Kletzander),<br/>
+      test: introduce a function in test driver to check get vcpupin info (Luyao Huang),<br/>
+      conf: reorganize virNetworkDHCPDefParseXML (Laine Stump),<br/>
+      nodeinfo: Check for errors when reading core_id (Andrea Bolognani),<br/>
+      bhyve: add UTC clock support (Roman Bogorodskiy),<br/>
+      configure: clarify rationale for checking pkcheck (Daniel P. Berrange),<br/>
+      nodeinfo: Calculate present and online CPUs only once (Andrea Bolognani),<br/>
+      nodeinfo: Use a bitmap to keep track of node CPUs (Andrea Bolognani),<br/>
+      nodeinfo: Use nodeGetOnlineCPUBitmap() when parsing node (Andrea Bolognani),<br/>
+      nodeinfo: Phase out cpu_set_t usage (Andrea Bolognani),<br/>
+      nodeinfo: Rename nodeGetCPUBitmap() to nodeGetOnlineCPUBitmap() (Andrea Bolognani),<br/>
+      nodeinfo: Remove out parameter from nodeGetCPUBitmap() (Andrea Bolognani),<br/>
+      nodeinfo: Add old kernel compatibility to nodeGetPresentCPUBitmap() (Andrea Bolognani),<br/>
+      nodeinfo: Rename linuxParseCPUmax() to linuxParseCPUCount() (Andrea Bolognani),<br/>
+      nodeinfo: Introduce linuxGetCPUOnlinePath() (Andrea Bolognani),<br/>
+      nodeinfo: Introduce linuxGetCPUGlobalPath() (Andrea Bolognani),<br/>
+      nodeinfo: Add nodeGetPresentCPUBitmap() to libvirt_private.syms (Andrea Bolognani),<br/>
+      virsh: Refactor block job waiting in cmdBlockCopy (Peter Krempa),<br/>
+      virsh: Refactor block job waiting in cmdBlockCommit (Peter Krempa),<br/>
+      virsh: Refactor block job waiting in cmdBlockPull (Peter Krempa),<br/>
+      qemu: Update state of block job to READY only if it actually is ready (Peter Krempa),<br/>
+      virsh: Refactor argument handling in cmdBlockPull (Peter Krempa),<br/>
+      virsh: Refactor argument handling in cmdBlockCopy (Peter Krempa),<br/>
+      virsh: Refactor argument checking in cmdBlockCommit (Peter Krempa),<br/>
+      virsh: Kill blockJobImpl by moving the final impl into cmdBlockCommit (Peter Krempa),<br/>
+      virsh: Split out block pull implementation from blockJobImpl (Peter Krempa),<br/>
+      virsh: block job: separate abort from blockJobImpl (Peter Krempa),<br/>
+      virsh: blockjob: Split out vshBlockJobSetSpeed from blockJobImpl (Peter Krempa),<br/>
+      virsh: cmdBlockJob: Switch to declarative flag interlocking (Peter Krempa),<br/>
+      virsh: blockjob: Extract block job info code into a separate function (Peter Krempa),<br/>
+      nodedev: add RDMA and tx-udp_tnl-segmentation NIC capabilities (Moshe Levi),<br/>
+      qemu: Use heads parameter for QXL driver (Frediano Ziglio),<br/>
+      rbd: Use RBD format 2 by default when creating images. (Wido den Hollander),<br/>
+      virsh: Don't output node frequency if unknown (Martin Kletzander),<br/>
+      qemu: Test for virtio-9p-ccw support (Boris Fiuczynski),<br/>
+      qemu: Make virtio-9p-ccw the default for s390-ccw-virtio machines (Boris Fiuczynski),<br/>
+      qemu: Support for virtio-9p-ccw (Boris Fiuczynski),<br/>
+      virsh: Teach cmdFreepages to work with lxc driver (Michal Privoznik),<br/>
+      cmdVcpuPin: Remove dead code (Michal Privoznik),<br/>
+      lxc: wait for nbd device to be up to get its PIDs (Cédric Bosdonnat),<br/>
+      nodeinfo: Formatting changes (Andrea Bolognani),<br/>
+      nodeinfo: Make sysfs_prefix usage more consistent (Andrea Bolognani),<br/>
+      qemu: process: Improve update of maximum balloon state at startup (Peter Krempa),<br/>
+      qemuDomainSetNumaParamsLive: Check for NUMA mode more wisely (Michal Privoznik),<br/>
+      conf: Add getter for network routes (Martin Kletzander),<br/>
+      tests: Add nodeinfo test for non-present CPUs (Andrea Bolognani),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetMemoryStats (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeCapsInitNUMA (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetInfo (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetCPUMap (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetCPUBitmap (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetPresentCPUBitmap (John Ferlan),<br/>
+      nodeinfo: Add sysfs_prefix to nodeGetCPUCount (John Ferlan),<br/>
+      nodeinfo: Introduce local linuxGetCPUPresentPath (John Ferlan),<br/>
+      virt-driver-vz: Require parallels-7.0.22 at least (Michal Privoznik),<br/>
+      configure: Move Virtuozzo checks to a specific module (Michal Privoznik),<br/>
+      qemuProcessHandleMigrationStatus: Update migration status more frequently (Michal Privoznik),<br/>
+      vz: fix cleanup of nets of bridged type (Dmitry Guryanov),<br/>
+      qemu: Use error from Finish instead of "unexpectedly failed" (Jiri Denemark),<br/>
+      qemu: Don't report false error from MigrateFinish (Jiri Denemark),<br/>
+      qemu: Remember incoming migration errors (Jiri Denemark),<br/>
+      Introduce virErrorCopyNew (Jiri Denemark),<br/>
+      Introduce virHashAtomic (Jiri Denemark),<br/>
+      cpu: Add support for MPX and AVX512 Intel features (Jiri Denemark),<br/>
+      virt-aa-helper: add DomainGuest to mockup caps (Cédric Bosdonnat),<br/>
+      virt-aa-helper: rename ctl-&gt;hvm to ctl-&gt;os (Cédric Bosdonnat),<br/>
+      Get more libvirt errors from virt-aa-helper (Cédric Bosdonnat),<br/>
+      virt-aa-helper: fix rules for paths with trailing slash (Cédric Bosdonnat),<br/>
+      rpc: Add virNetDaemonHasClients (Martin Kletzander),<br/>
+      Rewrite allocation tracking when cloning volumes (Ján Tomko),<br/>
+      qemu: Drop LFs at the end of error from QEMU log (Jiri Denemark),<br/>
+      qemu: Log all arguments of qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Wait for migration events on domain condition (Jiri Denemark),<br/>
+      qemu: Update migration state according to MIGRATION event (Jiri Denemark),<br/>
+      qemuDomainGetJobStatsInternal: Support migration events (Jiri Denemark),<br/>
+      qemu: Enable migration events on QMP monitor (Jiri Denemark),<br/>
+      qemu_monitor: Wire up MIGRATION event (Jiri Denemark),<br/>
+      qemu_hotplug: try harder to eject media (Pavel Hrdina),<br/>
+      monitor: detect that eject fails because the tray is locked (Pavel Hrdina),<br/>
+      virDomainObjSignal: drop this function (Pavel Hrdina),<br/>
+      virCondWaitUntil: add another return value (Pavel Hrdina),<br/>
+      qemu: Refactor qemuSetUnprivSGIO return values (John Ferlan),<br/>
+      qemu: Inline qemuGetHostdevPath (John Ferlan),<br/>
+      qemu: Refactor qemuCheckSharedDisk to create qemuCheckUnprivSGIO (John Ferlan),<br/>
+      libxl: rework setting the state of virDomainObj (Jim Fehlig),<br/>
+      libxl: support dom0 (Jim Fehlig),<br/>
+      qemu: Introduce qemuGetHostdevPath (John Ferlan),<br/>
+      qemu: Introduce qemuIsSharedHostdev (John Ferlan),<br/>
+      docs: Clarify unprivileged sgio feature (John Ferlan),<br/>
+      conf: use virDomainChrSourceDef to save server path (Luyao Huang),<br/>
+      qemu: Refactor creation of shared memory device commandline (Luyao Huang),<br/>
+      qemu: Assign IDs for shared memory devices (Luyao Huang),<br/>
+      Separate isa-fdc options generation (Ján Tomko),<br/>
+      Add support for portable-rpcgen from portablexdr library (Pavel Fedin),<br/>
+      Remove explicit enum from protocol structures (Pavel Fedin),<br/>
+      util: bitmap: Don't alloc overly large binary bitmaps (Peter Krempa),<br/>
+      vz: Use virBitmapToDataBuf instead of virBitmapToData in vzDomainGetVcpus (Peter Krempa),<br/>
+      vz: Remove dead code from vzDomainGetVcpus (Peter Krempa),<br/>
+      qemu: move the guest status check before agent config and status check (Luyao Huang),<br/>
+      qemu: remove deadcode in qemuDomain{HelperGetVcpus|GetIOThreadsLive} (Luyao Huang),<br/>
+      vz: assign static IPs and default gateways for network adapter (Mikhail Feoktistov),<br/>
+      vz: fix building capabilities (Dmitry Guryanov),<br/>
+      qemu_driver: live/config checks cleanup (Pavel Hrdina),<br/>
+      Post-release version bump to 1.2.18 (Michal Privoznik),<br/>
+      cpu_map.xml: Expand Opteron_G4 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Opteron_G2 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Opteron_G1 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Broadwell-noTSX CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Haswell-noTSX CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand SandyBridge CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Westmere CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Nehalem CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Penryn CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand Conroe CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand kvm64 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand cpu64-rhel5 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand kvm32 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand qemu32 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand n270 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand coreduo CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand pentiumpro CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand pentium2 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand pentium CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Expand 486 CPU model (Jiri Denemark),<br/>
+      cpu_map.xml: Sort features in x86 CPU models (Jiri Denemark)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      </li>
+    </ul>
    <h3>1.2.17: Jul 02 2015</h3>
     <ul>
       <li>Features:<br/>

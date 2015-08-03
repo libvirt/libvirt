@@ -2330,6 +2330,10 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Mon Aug  3 2015 Daniel Veillard <veillard@redhat.com> - 1.2.18-1
+- libxl: support dom0 
+- a number of improvements and bug fixes
+
 * Thu Jul  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.17-1
 - numerous improvements and refactoring of the parallels driver
 - hardening of vcpu code
