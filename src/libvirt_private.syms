@@ -2177,6 +2177,7 @@ virStrdup;
 virStringArrayHasString;
 virStringFreeList;
 virStringFreeListCount;
+virStringGetFirstWithPrefix;
 virStringHasControlChars;
 virStringIsEmpty;
 virStringJoin;

@@ -47,6 +47,8 @@ void virStringFreeListCount(char **strings, size_t count);
 size_t virStringListLen(const char **strings);
 
 bool virStringArrayHasString(char **strings, const char *needle);
+char *virStringGetFirstWithPrefix(char **strings, const char *prefix)
+    ATTRIBUTE_NONNULL(2);
 
 char *virArgvToString(const char *const *argv);
 
