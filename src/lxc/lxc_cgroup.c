@@ -117,27 +117,37 @@ static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
 
             if (dev->weight &&
                 (virCgroupSetBlkioDeviceWeight(cgroup, dev->path,
-                                               dev->weight) < 0))
+                                               dev->weight) < 0 ||
+                 virCgroupGetBlkioDeviceWeight(cgroup, dev->path,
+                                               &dev->weight) < 0))
                 return -1;
 
             if (dev->riops &&
                 (virCgroupSetBlkioDeviceReadIops(cgroup, dev->path,
-                                                 dev->riops) < 0))
+                                                 dev->riops) < 0 ||
+                 virCgroupGetBlkioDeviceReadIops(cgroup, dev->path,
+                                                 &dev->riops) < 0))
                 return -1;
 
             if (dev->wiops &&
                 (virCgroupSetBlkioDeviceWriteIops(cgroup, dev->path,
-                                                  dev->wiops) < 0))
+                                                  dev->wiops) < 0 ||
+                 virCgroupGetBlkioDeviceWriteIops(cgroup, dev->path,
+                                                  &dev->wiops) < 0))
                 return -1;
 
             if (dev->rbps &&
                 (virCgroupSetBlkioDeviceReadBps(cgroup, dev->path,
-                                                dev->rbps) < 0))
+                                                dev->rbps) < 0 ||
+                 virCgroupGetBlkioDeviceReadBps(cgroup, dev->path,
+                                                &dev->rbps) < 0))
                 return -1;
 
             if (dev->wbps &&
                 (virCgroupSetBlkioDeviceWriteBps(cgroup, dev->path,
-                                                 dev->wbps) < 0))
+                                                 dev->wbps) < 0 ||
+                 virCgroupGetBlkioDeviceWriteBps(cgroup, dev->path,
+                                                 &dev->wbps) < 0))
                 return -1;
         }
     }
