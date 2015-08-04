@@ -1,0 +1,130 @@
+/*
+ * This example defines two groups of roles any user/group can be assigned to.
+ * An "admin" role which grants full access to all APIs on all objects to its
+ * members, and other roles which allows their members to all APIs defined in
+ * restrictedActions on domains matching a regular expressions assigned to
+ * each role. (Jump below the Role class definition to see them.) Users who
+ * belong to an "operator" role can act on any domain (matching ".*" RE),
+ * while members of "userA", "userB", and "userC" roles are limited by more
+ * specific REs.
+ *
+ * A virtualization host admin would define domains with names prefixed by
+ * customer names and create a separate role for each customer restricting
+ * its members to manage only domains with the corresponding prefix.
+ */
+
+function Role(name) {
+    this.name = name;
+
+    this.users = [];
+    this.groups = [];
+
+    this.check = function(subject, api, domain) {
+        var validUser = false
+
+        if (this.users.indexOf(subject.user) >= 0) {
+            validUser = true;
+        } else {
+            for (var i = 0; i < subject.groups.length; i++) {
+                if (this.groups.indexOf(subject.groups[i]) >= 0) {
+                    validUser = true;
+                    break;
+                }
+            }
+        }
+
+        if (validUser &&
+            (this.name == "admin" ||
+             !domain ||
+             (this.domains && domain.match(this.domains)))) {
+            var msg = "Access granted: " +
+                      "user = " + subject.user +
+                      ", groups = [" + subject.groups + "]" +
+                      ", role = " + this.name +
+                      ", api = " + api;
+            if (domain)
+                msg += ", domain = " + domain;
+            polkit.log(msg);
+            return true
+        }
+
+        return false;
+    };
+}
+
+
+/* Basic operations and monitoring on a limited set of domains. */
+var userA = new Role("userA");
+userA.domains = /^a/;
+userA.users = ["userA1", "userA2", "userA3", "multiUser"];
+userA.groups = ["groupA1", "groupA2"];
+
+var userB = new Role("userB");
+userB.domains = /^b/;
+userB.users = ["userB1", "userB2", "userB3", "multiUser"];
+userB.groups = ["groupB1", "groupB2", "multiGroup"];
+
+var userC = new Role("userC");
+userC.domains = /^c/;
+userC.users = ["userC1", "userC2", "userC3"];
+userC.groups = ["groupC1", "groupC2", "multiGroup"];
+
+/* Same as users but on any domain. */
+var operator = new Role("operator");
+operator.domains = /.*/;
+operator.users = ["powerUser1", "powerUser2"];
+operator.groups = ["powerGroup1", "powerGroup2", "powerGroup3"];
+
+var users = [operator, userA, userB, userC];
+
+/* Full access. */
+var admin = new Role("admin");
+admin.users = ["adminUser1"];
+admin.groups = ["adminGroup1"];
+
+
+restrictedActions = [
+    "domain.core-dump",
+    "domain.fs-freeze",
+    "domain.fs-trim",
+    "domain.getattr",
+    "domain.hibernate",
+    "domain.init-control",
+    "domain.inject-nmi",
+    "domain.open-device",
+    "domain.open-graphics",
+    "domain.pm-control",
+    "domain.read",
+    "domain.reset",
+    "domain.save",
+    "domain.screenshot",
+    "domain.send-input",
+    "domain.send-signal",
+    "domain.set-password",
+    "domain.set-time",
+    "domain.snapshot",
+    "domain.start",
+    "domain.stop",
+    "domain.suspend"
+];
+
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.libvirt.api.") != 0)
+        return polkit.Result.NOT_HANDLED;
+
+    var api = action.id.replace("org.libvirt.api.", "");
+    var domain = action.lookup("domain_name");
+
+    if (admin.check(subject, api, domain))
+        return polkit.Result.YES;
+
+    if (restrictedActions.indexOf(api) < 0)
+        return polkit.Result.NOT_HANDLED;
+
+    for (var i = 0; i < users.length; i++) {
+        if (users[i].check(subject, api, domain))
+            return polkit.Result.YES;
+    }
+
+    return polkit.Result.NO;
+});

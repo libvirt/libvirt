@@ -2809,6 +2809,7 @@ AC_CONFIG_FILES([\
         examples/systemtap/Makefile \
         examples/xml/nwfilter/Makefile \
         examples/lxcconvert/Makefile \
+        examples/polkit/Makefile \
         tools/wireshark/Makefile \
         tools/wireshark/src/Makefile])
 AC_OUTPUT

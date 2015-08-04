@@ -348,6 +348,12 @@
       <code>lookup</code> method.
     </p>
 
+    <p>
+    See
+    <a href="http://libvirt.org/git/?p=libvirt.git;a=tree;f=examples/polkit;hb=HEAD">source code</a>
+    for a more complex example.
+    </p>
+
     <h3><a name="exconnect">Example: restricting ability to connect to drivers</a></h3>
 
     <p>
