@@ -84,7 +84,8 @@ static gnutls_x509_privkey_t testTLSLoadKey(void)
 
     if ((err = gnutls_x509_privkey_import(key, &data,
                                           GNUTLS_X509_FMT_PEM)) < 0) {
-        if (err != GNUTLS_E_BASE64_UNEXPECTED_HEADER_ERROR) {
+        if (err != GNUTLS_E_BASE64_UNEXPECTED_HEADER_ERROR &&
+            err != GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
             VIR_WARN("Failed to import key %s", gnutls_strerror(err));
             abort();
         }
