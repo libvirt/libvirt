@@ -1613,7 +1613,8 @@ qemuMigrationPrecreateStorage(virConnectPtr conn,
                               virDomainObjPtr vm,
                               qemuMigrationCookieNBDPtr nbd,
                               size_t nmigrate_disks,
-                              const char **migrate_disks)
+                              const char **migrate_disks,
+                              bool incremental)
 {
     int ret = -1;
     size_t i = 0;
@@ -1642,6 +1643,13 @@ qemuMigrationPrecreateStorage(virConnectPtr conn,
         if (!qemuMigrateDisk(disk, nmigrate_disks, migrate_disks) ||
             (diskSrcPath && virFileExists(diskSrcPath))) {
             continue;
+        }
+
+        if (incremental) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("pre-creation of storage targets for incremental "
+                             "storage migration is not supported"));
+            goto cleanup;
         }
 
         VIR_DEBUG("Proceeding with disk source %s", NULLSTR(diskSrcPath));
@@ -3339,7 +3347,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (qemuMigrationPrecreateStorage(dconn, driver, vm, mig->nbd,
-                                      nmigrate_disks, migrate_disks) < 0)
+                                      nmigrate_disks, migrate_disks,
+                                      !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
         goto cleanup;
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
