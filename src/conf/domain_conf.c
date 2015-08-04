@@ -4145,7 +4145,7 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 {
     int ret;
 
-    if (xmlopt && xmlopt->config.devicesPostParseCallback) {
+    if (xmlopt->config.devicesPostParseCallback) {
         ret = xmlopt->config.devicesPostParseCallback(dev, def, caps,
                                                       xmlopt->config.priv);
         if (ret < 0)
@@ -4190,7 +4190,7 @@ virDomainDefPostParse(virDomainDefPtr def,
     };
 
     /* call the domain config callback */
-    if (xmlopt && xmlopt->config.domainPostParseCallback) {
+    if (xmlopt->config.domainPostParseCallback) {
         ret = xmlopt->config.domainPostParseCallback(def, caps,
                                                      xmlopt->config.priv);
         if (ret < 0)
