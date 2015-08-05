@@ -12848,10 +12848,10 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
                       _("Mountpoint"), _("Name"), _("Type"), _("Target"));
         vshPrintExtra(ctl, "-------------------------------------------------------------------\n");
         for (i = 0; i < ret; i++) {
-            vshPrintExtra(ctl, "%-36s %-8s %-8s ",
-                          info[i]->mountpoint, info[i]->name, info[i]->fstype);
+            vshPrint(ctl, "%-36s %-8s %-8s ",
+                     info[i]->mountpoint, info[i]->name, info[i]->fstype);
             for (j = 0; j < info[i]->ndevAlias; j++) {
-                vshPrintExtra(ctl, "%s", info[i]->devAlias[j]);
+                vshPrint(ctl, "%s", info[i]->devAlias[j]);
                 if (j != info[i]->ndevAlias - 1)
                     vshPrint(ctl, ",");
             }
