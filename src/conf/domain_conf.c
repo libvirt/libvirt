@@ -17549,6 +17549,35 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
 }
 
 
+static bool
+virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
+                                  virDomainDefPtr dst)
+{
+    size_t i;
+
+    if (src->maxvcpus != dst->maxvcpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain vCPU max %zu does not match source %zu"),
+                       dst->maxvcpus, src->maxvcpus);
+        return false;
+    }
+
+    for (i = 0; i < src->maxvcpus; i++) {
+        virDomainVcpuInfoPtr svcpu = &src->vcpus[i];
+        virDomainVcpuInfoPtr dvcpu = &dst->vcpus[i];
+
+        if (svcpu->online != dvcpu->online) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("State of vCPU '%zu' differs between source and "
+                             "destination definitions"), i);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 /* This compares two configurations and looks for any differences
  * which will affect the guest ABI. This is primarily to allow
  * validation of custom XML config passed in during migration
@@ -17622,18 +17651,8 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
-    if (virDomainDefGetVcpus(src) != virDomainDefGetVcpus(dst)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain vCPU count %d does not match source %d"),
-                       virDomainDefGetVcpus(dst), virDomainDefGetVcpus(src));
+    if (!virDomainDefVcpuCheckAbiStability(src, dst))
         goto error;
-    }
-    if (virDomainDefGetVcpusMax(src) != virDomainDefGetVcpusMax(dst)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain vCPU max %d does not match source %d"),
-                       virDomainDefGetVcpusMax(dst), virDomainDefGetVcpusMax(src));
-        goto error;
-    }
 
     if (src->iothreads != dst->iothreads) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
