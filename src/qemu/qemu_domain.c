@@ -1024,10 +1024,10 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         }
         if (STRPREFIX(def->os.machine, "pc-q35") ||
             STREQ(def->os.machine, "q35")) {
-           addPCIeRoot = true;
-           addDefaultUSB = false;
-           addImplicitSATA = true;
-           break;
+            addPCIeRoot = true;
+            addDefaultUSB = false;
+            addImplicitSATA = true;
+            break;
         }
         if (!STRPREFIX(def->os.machine, "pc-0.") &&
             !STRPREFIX(def->os.machine, "pc-1.") &&
