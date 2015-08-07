@@ -11823,8 +11823,16 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         info->allocation = entry->wr_highest_offset;
     }
 
+    if (entry->physical) {
+        info->physical = entry->physical;
+    } else {
+        if (virStorageSourceUpdateBlockPhysicalSize(disk->src, true) < 0)
+            goto endjob;
+
+        info->physical = disk->src->physical;
+    }
+
     info->capacity = entry->capacity;
-    info->physical = entry->physical;
 
     ret = 0;
 
@@ -19270,9 +19278,15 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
     if (entry->capacity)
         QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                  "capacity", entry->capacity);
-    if (entry->physical)
+    if (entry->physical) {
         QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                  "physical", entry->physical);
+    } else {
+        if (virStorageSourceUpdateBlockPhysicalSize(src, false) == 0) {
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                     "physical", src->physical);
+        }
+    }
 
     ret = 0;
  cleanup:

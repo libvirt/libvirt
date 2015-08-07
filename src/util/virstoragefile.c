@@ -2587,6 +2587,45 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
 }
 
 
+/**
+ * @src: disk source definiton structure
+ * @report: report libvirt errors if set to true
+ *
+ * Updates src->physical for block devices since qemu doesn't report the current
+ * size correctly for them. Returns 0 on success, -1 on error.
+ */
+int
+virStorageSourceUpdateBlockPhysicalSize(virStorageSourcePtr src,
+                                        bool report)
+{
+    int fd = -1;
+    off_t end;
+    int ret = -1;
+
+    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_BLOCK)
+        return 0;
+
+    if ((fd = open(src->path, O_RDONLY)) < 0) {
+        if (report)
+            virReportSystemError(errno, _("failed to open block device '%s'"),
+                                 src->path);
+        return -1;
+    }
+
+    if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1) {
+        if (report)
+            virReportSystemError(errno,
+                                 _("failed to seek to end of '%s'"), src->path);
+    } else {
+        src->physical = end;
+        ret = 0;
+    }
+
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
 static char *
 virStorageFileCanonicalizeFormatPath(char **components,
                                      size_t ncomponents,
