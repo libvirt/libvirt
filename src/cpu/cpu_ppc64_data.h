@@ -26,9 +26,15 @@
 
 # include <stdint.h>
 
+typedef struct _virCPUppc64PVR virCPUppc64PVR;
+struct _virCPUppc64PVR {
+    uint32_t value;
+};
+
 typedef struct _virCPUppc64Data virCPUppc64Data;
 struct _virCPUppc64Data {
-    uint32_t pvr;
+    size_t len;
+    virCPUppc64PVR *pvr;
 };
 
 #endif /* __VIR_CPU_PPC64_DATA_H__ */
