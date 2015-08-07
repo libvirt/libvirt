@@ -448,9 +448,9 @@ ppc64Compute(virCPUDefPtr host,
 }
 
 static virCPUCompareResult
-ppc64Compare(virCPUDefPtr host,
-             virCPUDefPtr cpu,
-             bool failIncompatible)
+ppc64DriverCompare(virCPUDefPtr host,
+                   virCPUDefPtr cpu,
+                   bool failIncompatible)
 {
     if ((cpu->arch == VIR_ARCH_NONE || host->arch == cpu->arch) &&
         STREQ(host->model, cpu->model))
@@ -465,12 +465,12 @@ ppc64Compare(virCPUDefPtr host,
 }
 
 static int
-ppc64Decode(virCPUDefPtr cpu,
-            const virCPUData *data,
-            const char **models,
-            unsigned int nmodels,
-            const char *preferred ATTRIBUTE_UNUSED,
-            unsigned int flags)
+ppc64DriverDecode(virCPUDefPtr cpu,
+                  const virCPUData *data,
+                  const char **models,
+                  unsigned int nmodels,
+                  const char *preferred ATTRIBUTE_UNUSED,
+                  unsigned int flags)
 {
     int ret = -1;
     struct ppc64_map *map;
@@ -510,7 +510,7 @@ ppc64Decode(virCPUDefPtr cpu,
 
 
 static void
-ppc64DataFree(virCPUDataPtr data)
+ppc64DriverFree(virCPUDataPtr data)
 {
     if (data == NULL)
         return;
@@ -519,7 +519,7 @@ ppc64DataFree(virCPUDataPtr data)
 }
 
 static virCPUDataPtr
-ppc64NodeData(virArch arch)
+ppc64DriverNodeData(virArch arch)
 {
     virCPUDataPtr cpuData;
 
@@ -537,17 +537,17 @@ ppc64NodeData(virArch arch)
 }
 
 static virCPUCompareResult
-ppc64GuestData(virCPUDefPtr host,
-               virCPUDefPtr guest,
-               virCPUDataPtr *data,
-               char **message)
+ppc64DriverGuestData(virCPUDefPtr host,
+                     virCPUDefPtr guest,
+                     virCPUDataPtr *data,
+                     char **message)
 {
     return ppc64Compute(host, guest, data, message);
 }
 
 static int
-ppc64Update(virCPUDefPtr guest,
-            const virCPUDef *host)
+ppc64DriverUpdate(virCPUDefPtr guest,
+                  const virCPUDef *host)
 {
     switch ((virCPUMode) guest->mode) {
     case VIR_CPU_MODE_HOST_MODEL:
@@ -569,11 +569,11 @@ ppc64Update(virCPUDefPtr guest,
 }
 
 static virCPUDefPtr
-ppc64Baseline(virCPUDefPtr *cpus,
-              unsigned int ncpus,
-              const char **models ATTRIBUTE_UNUSED,
-              unsigned int nmodels ATTRIBUTE_UNUSED,
-              unsigned int flags)
+ppc64DriverBaseline(virCPUDefPtr *cpus,
+                    unsigned int ncpus,
+                    const char **models ATTRIBUTE_UNUSED,
+                    unsigned int nmodels ATTRIBUTE_UNUSED,
+                    unsigned int flags)
 {
     struct ppc64_map *map = NULL;
     const struct ppc64_model *model;
@@ -653,7 +653,7 @@ ppc64Baseline(virCPUDefPtr *cpus,
 }
 
 static int
-ppc64GetModels(char ***models)
+ppc64DriverGetModels(char ***models)
 {
     struct ppc64_map *map;
     struct ppc64_model *model;
@@ -699,14 +699,14 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .name       = "ppc64",
     .arch       = archs,
     .narch      = ARRAY_CARDINALITY(archs),
-    .compare    = ppc64Compare,
-    .decode     = ppc64Decode,
+    .compare    = ppc64DriverCompare,
+    .decode     = ppc64DriverDecode,
     .encode     = NULL,
-    .free       = ppc64DataFree,
-    .nodeData   = ppc64NodeData,
-    .guestData  = ppc64GuestData,
-    .baseline   = ppc64Baseline,
-    .update     = ppc64Update,
+    .free       = ppc64DriverFree,
+    .nodeData   = ppc64DriverNodeData,
+    .guestData  = ppc64DriverGuestData,
+    .baseline   = ppc64DriverBaseline,
+    .update     = ppc64DriverUpdate,
     .hasFeature = NULL,
-    .getModels  = ppc64GetModels,
+    .getModels  = ppc64DriverGetModels,
 };
