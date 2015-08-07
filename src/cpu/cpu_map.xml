@@ -1360,30 +1360,30 @@
     <!-- IBM-based CPU models -->
     <model name='POWER6'>
       <vendor name='IBM'/>
-      <pvr value='0x003e0000'/>
+      <pvr value='0x003e0000' mask='0xffff0000'/>
     </model>
 
     <model name='POWER7'>
       <vendor name='IBM'/>
-      <pvr value='0x003f0000'/>
-      <pvr value='0x004a0000'/>
+      <pvr value='0x003f0000' mask='0xffff0000'/>
+      <pvr value='0x004a0000' mask='0xffff0000'/>
     </model>
 
     <model name='POWER8'>
       <vendor name='IBM'/>
-      <pvr value='0x004b0000'/>
-      <pvr value='0x004d0000'/>
+      <pvr value='0x004b0000' mask='0xffff0000'/>
+      <pvr value='0x004d0000' mask='0xffff0000'/>
     </model>
 
     <!-- Freescale-based CPU models -->
     <model name='POWERPC_e5500'>
       <vendor name='Freescale'/>
-      <pvr value='0x80240000'/>
+      <pvr value='0x80240000' mask='0xffff0000'/>
     </model>
 
     <model name='POWERPC_e6500'>
       <vendor name='Freescale'/>
-      <pvr value='0x80400000'/>
+      <pvr value='0x80400000' mask='0xffff0000'/>
     </model>
   </arch>
 </cpus>

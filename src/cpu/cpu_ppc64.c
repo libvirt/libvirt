@@ -81,8 +81,10 @@ ppc64DataCopy(const virCPUppc64Data *data)
 
     copy->len = data->len;
 
-    for (i = 0; i < data->len; i++)
+    for (i = 0; i < data->len; i++) {
         copy->pvr[i].value = data->pvr[i].value;
+        copy->pvr[i].mask = data->pvr[i].mask;
+    }
 
     return copy;
 
@@ -179,19 +181,11 @@ ppc64ModelFindPVR(const struct ppc64_map *map,
     model = map->models;
     while (model) {
         for (i = 0; i < model->data->len; i++) {
-            if (model->data->pvr[i].value == pvr)
+            if ((pvr & model->data->pvr[i].mask) == model->data->pvr[i].value)
                 return model;
         }
         model = model->next;
     }
-
-    /* PowerPC Processor Version Register is interpreted as follows :
-     * Higher order 16 bits : Power ISA generation.
-     * Lower order 16 bits : CPU chip version number.
-     * If the exact CPU isn't found, return the nearest matching CPU generation
-     */
-    if (pvr & 0x0000FFFFul)
-        return ppc64ModelFindPVR(map, (pvr & 0xFFFF0000ul));
 
     return NULL;
 }
@@ -345,6 +339,14 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
             goto ignore;
         }
         model->data->pvr[i].value = pvr;
+
+        if (virXPathULongHex("string(./@mask)", ctxt, &pvr) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Missing or invalid PVR mask in CPU model %s"),
+                           model->name);
+            goto ignore;
+        }
+        model->data->pvr[i].mask = pvr;
     }
 
     if (!map->models) {
@@ -608,6 +610,7 @@ ppc64DriverNodeData(virArch arch)
     asm("mfpvr %0"
         : "=r" (data->pvr[0].value));
 #endif
+    data->pvr[0].mask = 0xfffffffful;
 
     nodeData->arch = arch;
 

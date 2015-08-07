@@ -29,6 +29,7 @@
 typedef struct _virCPUppc64PVR virCPUppc64PVR;
 struct _virCPUppc64PVR {
     uint32_t value;
+    uint32_t mask;
 };
 
 typedef struct _virCPUppc64Data virCPUppc64Data;
