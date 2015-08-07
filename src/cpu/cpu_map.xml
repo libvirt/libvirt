@@ -1358,53 +1358,20 @@
     <vendor name='Freescale'/>
 
     <!-- IBM-based CPU models -->
-    <model name='POWER7'>
-      <vendor name='IBM'/>
-      <pvr value='0x003f0200'/>
-    </model>
-
-    <model name='POWER7_v2.1'>
-      <vendor name='IBM'/>
-      <pvr value='0x003f0201'/>
-    </model>
-
-    <model name='POWER7_v2.3'>
-      <vendor name='IBM'/>
-      <pvr value='0x003f0203'/>
-    </model>
-
-    <model name='POWER7+_v2.1'>
-      <vendor name='IBM'/>
-      <pvr value='0x004a0201'/>
-    </model>
-
-    <model name='POWER8_v1.0'>
-      <vendor name='IBM'/>
-      <pvr value='0x004b0100'/>
-    </model>
-
-    <model name='power6'>
+    <model name='POWER6'>
       <vendor name='IBM'/>
       <pvr value='0x003e0000'/>
     </model>
 
-    <model name='power7'>
+    <model name='POWER7'>
       <vendor name='IBM'/>
       <pvr value='0x003f0000'/>
-    </model>
-
-    <model name='power7+'>
-      <vendor name='IBM'/>
       <pvr value='0x004a0000'/>
     </model>
 
-    <model name='power8e'>
+    <model name='POWER8'>
       <vendor name='IBM'/>
       <pvr value='0x004b0000'/>
-    </model>
-
-    <model name='power8'>
-      <vendor name='IBM'/>
       <pvr value='0x004d0000'/>
     </model>
 
