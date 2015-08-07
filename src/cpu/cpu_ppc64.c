@@ -163,17 +163,10 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
     if (!(model = ppc64ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown CPU model %s"), cpu->model);
-        goto error;
+        return NULL;
     }
 
-    if (!(model = ppc64ModelCopy(model)))
-        goto error;
-
-    return model;
-
- error:
-    ppc64ModelFree(model);
-    return NULL;
+    return ppc64ModelCopy(model);
 }
 
 
