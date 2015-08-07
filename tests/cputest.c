@@ -247,7 +247,7 @@ static int
 cpuTestGuestData(const void *arg)
 {
     const struct data *data = arg;
-    int ret = -1;
+    int ret = -2;
     virCPUDefPtr host = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUDefPtr guest = NULL;
@@ -262,8 +262,10 @@ cpuTestGuestData(const void *arg)
 
     cmpResult = cpuGuestData(host, cpu, &guestData, NULL);
     if (cmpResult == VIR_CPU_COMPARE_ERROR ||
-        cmpResult == VIR_CPU_COMPARE_INCOMPATIBLE)
+        cmpResult == VIR_CPU_COMPARE_INCOMPATIBLE) {
+        ret = -1;
         goto cleanup;
+    }
 
     if (VIR_ALLOC(guest) < 0)
         goto cleanup;
@@ -274,10 +276,7 @@ cpuTestGuestData(const void *arg)
     guest->fallback = cpu->fallback;
     if (cpuDecode(guest, guestData, data->models,
                   data->nmodels, data->preferred) < 0) {
-        if (data->result < 0) {
-            virResetLastError();
-            ret = 0;
-        }
+        ret = -1;
         goto cleanup;
     }
 
@@ -294,7 +293,10 @@ cpuTestGuestData(const void *arg)
     }
     result = virBufferContentAndReset(&buf);
 
-    ret = cpuTestCompareXML(data->arch, guest, result, false);
+    if (cpuTestCompareXML(data->arch, guest, result, false) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(result);
@@ -302,6 +304,20 @@ cpuTestGuestData(const void *arg)
     virCPUDefFree(host);
     virCPUDefFree(cpu);
     virCPUDefFree(guest);
+
+    if (ret == data->result) {
+        /* We got the result we expected, whether it was
+         * a success or a failure */
+        virResetLastError();
+        ret = 0;
+    } else {
+        VIR_TEST_VERBOSE("\nExpected result %d, got %d\n",
+                         data->result, ret);
+        /* Pad to line up with test name ... in virTestRun */
+        VIR_TEST_VERBOSE("%74s", "... ");
+        ret = -1;
+    }
+
     return ret;
 }
 
@@ -646,7 +662,7 @@ mymain(void)
                       NULL, "Haswell-noTSX", 0);
 
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
