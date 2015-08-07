@@ -57,6 +57,32 @@ struct ppc64_map {
     struct ppc64_model *models;
 };
 
+static void
+ppc64VendorFree(struct ppc64_vendor *vendor)
+{
+    if (!vendor)
+        return;
+
+    VIR_FREE(vendor->name);
+    VIR_FREE(vendor);
+}
+
+static struct ppc64_vendor *
+ppc64VendorFind(const struct ppc64_map *map,
+                const char *name)
+{
+    struct ppc64_vendor *vendor;
+
+    vendor = map->vendors;
+    while (vendor) {
+        if (STREQ(vendor->name, name))
+            return vendor;
+
+        vendor = vendor->next;
+    }
+
+    return NULL;
+}
 
 static void
 ppc64ModelFree(struct ppc64_model *model)
@@ -66,6 +92,23 @@ ppc64ModelFree(struct ppc64_model *model)
 
     VIR_FREE(model->name);
     VIR_FREE(model);
+}
+
+static struct ppc64_model *
+ppc64ModelCopy(const struct ppc64_model *model)
+{
+    struct ppc64_model *copy;
+
+    if (VIR_ALLOC(copy) < 0 ||
+        VIR_STRDUP(copy->name, model->name) < 0) {
+        ppc64ModelFree(copy);
+        return NULL;
+    }
+
+    copy->data.pvr = model->data.pvr;
+    copy->vendor = model->vendor;
+
+    return copy;
 }
 
 static struct ppc64_model *
@@ -111,50 +154,6 @@ ppc64ModelFindPVR(const struct ppc64_map *map,
 }
 
 static struct ppc64_model *
-ppc64ModelCopy(const struct ppc64_model *model)
-{
-    struct ppc64_model *copy;
-
-    if (VIR_ALLOC(copy) < 0 ||
-        VIR_STRDUP(copy->name, model->name) < 0) {
-        ppc64ModelFree(copy);
-        return NULL;
-    }
-
-    copy->data.pvr = model->data.pvr;
-    copy->vendor = model->vendor;
-
-    return copy;
-}
-
-static struct ppc64_vendor *
-ppc64VendorFind(const struct ppc64_map *map,
-                const char *name)
-{
-    struct ppc64_vendor *vendor;
-
-    vendor = map->vendors;
-    while (vendor) {
-        if (STREQ(vendor->name, name))
-            return vendor;
-
-        vendor = vendor->next;
-    }
-
-    return NULL;
-}
-
-static void
-ppc64VendorFree(struct ppc64_vendor *vendor)
-{
-    if (!vendor)
-        return;
-
-    VIR_FREE(vendor->name);
-    VIR_FREE(vendor);
-}
-
-static struct ppc64_model *
 ppc64ModelFromCPU(const virCPUDef *cpu,
                   const struct ppc64_map *map)
 {
@@ -169,6 +168,26 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
     return ppc64ModelCopy(model);
 }
 
+static void
+ppc64MapFree(struct ppc64_map *map)
+{
+    if (!map)
+        return;
+
+    while (map->models) {
+        struct ppc64_model *model = map->models;
+        map->models = model->next;
+        ppc64ModelFree(model);
+    }
+
+    while (map->vendors) {
+        struct ppc64_vendor *vendor = map->vendors;
+        map->vendors = vendor->next;
+        ppc64VendorFree(vendor);
+    }
+
+    VIR_FREE(map);
+}
 
 static int
 ppc64VendorLoad(xmlXPathContextPtr ctxt,
@@ -291,27 +310,6 @@ ppc64MapLoadCallback(cpuMapElement element,
     }
 
     return 0;
-}
-
-static void
-ppc64MapFree(struct ppc64_map *map)
-{
-    if (!map)
-        return;
-
-    while (map->models) {
-        struct ppc64_model *model = map->models;
-        map->models = model->next;
-        ppc64ModelFree(model);
-    }
-
-    while (map->vendors) {
-        struct ppc64_vendor *vendor = map->vendors;
-        map->vendors = vendor->next;
-        ppc64VendorFree(vendor);
-    }
-
-    VIR_FREE(map);
 }
 
 static struct ppc64_map *
@@ -499,7 +497,6 @@ ppc64DriverDecode(virCPUDefPtr cpu,
 
     return ret;
 }
-
 
 static void
 ppc64DriverFree(virCPUDataPtr data)
