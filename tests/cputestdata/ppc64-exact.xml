@@ -1,3 +1,0 @@
-<cpu match='exact'>
-  <model>POWER8_v1.0</model>
-</cpu>

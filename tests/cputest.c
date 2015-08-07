@@ -501,9 +501,7 @@ static const char *model486[]   = { "486" };
 static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
 static const char *haswell[]    = { "SandyBridge", "Haswell" };
-/* XXX temporarily disabled
-static const char *ppc_models[] = { "POWER7", "POWER7_v2.1", "POWER7_v2.3", "POWER8_v1.0"};
-*/
+static const char *ppc_models[] = { "POWER6", "POWER7", "POWER8" };
 
 static int
 mymain(void)
@@ -597,10 +595,8 @@ mymain(void)
     DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("x86", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
 
-    /* XXX temporarily disabled
-    DO_TEST_COMPARE("ppc64", "host", "strict", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("ppc64", "host", "exact", VIR_CPU_COMPARE_INCOMPATIBLE);
-    */
+    DO_TEST_COMPARE("ppc64", "host", "guest-strict", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "guest-exact", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* guest updates for migration
      * automatically compares host CPU with the result */
@@ -629,10 +625,8 @@ mymain(void)
     DO_TEST_BASELINE("x86", "7", 0, 0);
     DO_TEST_BASELINE("x86", "8", 0, 0);
 
-    /* XXX temporarily disabled
     DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
     DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);
-    */
 
     /* CPU features */
     DO_TEST_HASFEATURE("x86", "host", "vmx", YES);
@@ -668,10 +662,8 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
                       NULL, "Haswell-noTSX", 0);
 
-    /* XXX temporarily disabled
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);
-    */
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER8", -1);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -1,0 +1,3 @@
+<cpu match='strict'>
+  <model>POWER7</model>
+</cpu>

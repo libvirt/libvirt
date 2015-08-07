@@ -1,3 +1,0 @@
-<cpu match='exact'>
-  <model>POWER7_v2.3</model>
-</cpu>
