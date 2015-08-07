@@ -48,7 +48,7 @@ struct ppc64_vendor {
 struct ppc64_model {
     char *name;
     const struct ppc64_vendor *vendor;
-    struct cpuPPC64Data data;
+    virCPUppc64Data *data;
     struct ppc64_model *next;
 };
 
@@ -56,6 +56,25 @@ struct ppc64_map {
     struct ppc64_vendor *vendors;
     struct ppc64_model *models;
 };
+
+static void
+ppc64DataFree(virCPUppc64Data *data)
+{
+    VIR_FREE(data);
+}
+
+static virCPUppc64Data *
+ppc64DataCopy(const virCPUppc64Data *data)
+{
+    virCPUppc64Data *copy;
+
+    if (VIR_ALLOC(copy) < 0)
+        return NULL;
+
+    copy->pvr = data->pvr;
+
+    return copy;
+}
 
 static void
 ppc64VendorFree(struct ppc64_vendor *vendor)
@@ -90,6 +109,7 @@ ppc64ModelFree(struct ppc64_model *model)
     if (!model)
         return;
 
+    ppc64DataFree(model->data);
     VIR_FREE(model->name);
     VIR_FREE(model);
 }
@@ -99,16 +119,22 @@ ppc64ModelCopy(const struct ppc64_model *model)
 {
     struct ppc64_model *copy;
 
-    if (VIR_ALLOC(copy) < 0 ||
-        VIR_STRDUP(copy->name, model->name) < 0) {
-        ppc64ModelFree(copy);
-        return NULL;
-    }
+    if (VIR_ALLOC(copy) < 0)
+        goto error;
 
-    copy->data.pvr = model->data.pvr;
+    if (VIR_STRDUP(copy->name, model->name) < 0)
+        goto error;
+
+    if (!(copy->data = ppc64DataCopy(model->data)))
+        goto error;
+
     copy->vendor = model->vendor;
 
     return copy;
+
+ error:
+    ppc64ModelFree(copy);
+    return NULL;
 }
 
 static struct ppc64_model *
@@ -136,7 +162,7 @@ ppc64ModelFindPVR(const struct ppc64_map *map,
 
     model = map->models;
     while (model) {
-        if (model->data.pvr == pvr)
+        if (model->data->pvr == pvr)
             return model;
 
         model = model->next;
@@ -237,6 +263,11 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(model) < 0)
         return -1;
 
+    if (VIR_ALLOC(model->data) < 0) {
+        ppc64ModelFree(model);
+        return -1;
+    }
+
     model->name = virXPathString("string(@name)", ctxt);
     if (!model->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -274,7 +305,7 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
                        model->name);
         goto ignore;
     }
-    model->data.pvr = pvr;
+    model->data->pvr = pvr;
 
     if (!map->models) {
         map->models = model;
@@ -318,7 +349,7 @@ ppc64LoadMap(void)
     struct ppc64_map *map;
 
     if (VIR_ALLOC(map) < 0)
-        return NULL;
+        goto error;
 
     if (cpuMapLoad("ppc64", ppc64MapLoadCallback, map) < 0)
         goto error;
@@ -332,7 +363,7 @@ ppc64LoadMap(void)
 
 static virCPUDataPtr
 ppc64MakeCPUData(virArch arch,
-                 struct cpuPPC64Data *data)
+                 virCPUppc64Data *data)
 {
     virCPUDataPtr cpuData;
 
@@ -340,7 +371,9 @@ ppc64MakeCPUData(virArch arch,
         return NULL;
 
     cpuData->arch = arch;
-    cpuData->data.ppc64 = *data;
+
+    if (!(cpuData->data.ppc64 = ppc64DataCopy(data)))
+        VIR_FREE(cpuData);
 
     return cpuData;
 }
@@ -421,7 +454,7 @@ ppc64Compute(virCPUDefPtr host,
     }
 
     if (guestData)
-        if (!(*guestData = ppc64MakeCPUData(arch, &guest_model->data)))
+        if (!(*guestData = ppc64MakeCPUData(arch, guest_model->data)))
             goto cleanup;
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
@@ -473,10 +506,10 @@ ppc64DriverDecode(virCPUDefPtr cpu,
     if (!data || !(map = ppc64LoadMap()))
         return -1;
 
-    if (!(model = ppc64ModelFindPVR(map, data->data.ppc64.pvr))) {
+    if (!(model = ppc64ModelFindPVR(map, data->data.ppc64->pvr))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Cannot find CPU model with PVR 0x%08x"),
-                       data->data.ppc64.pvr);
+                       data->data.ppc64->pvr);
         goto cleanup;
     }
 
@@ -506,25 +539,36 @@ ppc64DriverFree(virCPUDataPtr data)
     if (!data)
         return;
 
+    ppc64DataFree(data->data.ppc64);
     VIR_FREE(data);
 }
 
 static virCPUDataPtr
 ppc64DriverNodeData(virArch arch)
 {
-    virCPUDataPtr cpuData;
+    virCPUDataPtr nodeData;
+    virCPUppc64Data *data;
 
-    if (VIR_ALLOC(cpuData) < 0)
-        return NULL;
+    if (VIR_ALLOC(nodeData) < 0)
+        goto error;
 
-    cpuData->arch = arch;
+    if (VIR_ALLOC(data) < 0)
+        goto error;
+
+    data = nodeData->data.ppc64;
 
 #if defined(__powerpc__) || defined(__powerpc64__)
     asm("mfpvr %0"
-        : "=r" (cpuData->data.ppc64.pvr));
+        : "=r" (data->pvr));
 #endif
 
-    return cpuData;
+    nodeData->arch = arch;
+
+    return nodeData;
+
+ error:
+    ppc64DriverFree(nodeData);
+    return NULL;
 }
 
 static virCPUCompareResult

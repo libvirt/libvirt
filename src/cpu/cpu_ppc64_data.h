@@ -26,7 +26,8 @@
 
 # include <stdint.h>
 
-struct cpuPPC64Data {
+typedef struct _virCPUppc64Data virCPUppc64Data;
+struct _virCPUppc64Data {
     uint32_t pvr;
 };
 
