@@ -362,6 +362,8 @@ bool virStorageSourceIsLocalStorage(virStorageSourcePtr src);
 bool virStorageSourceIsEmpty(virStorageSourcePtr src);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
+int virStorageSourceUpdateBlockPhysicalSize(virStorageSourcePtr src,
+                                            bool report);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)

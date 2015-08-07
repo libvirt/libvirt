@@ -2156,6 +2156,7 @@ virStorageSourceParseRBDColonString;
 virStorageSourcePoolDefFree;
 virStorageSourcePoolModeTypeFromString;
 virStorageSourcePoolModeTypeToString;
+virStorageSourceUpdateBlockPhysicalSize;
 virStorageTypeFromString;
 virStorageTypeToString;
 
