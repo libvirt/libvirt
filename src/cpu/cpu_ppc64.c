@@ -670,6 +670,7 @@ ppc64DriverUpdate(virCPUDefPtr guest,
     case VIR_CPU_MODE_HOST_MODEL:
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
         guest->match = VIR_CPU_MATCH_EXACT;
+        guest->fallback = VIR_CPU_FALLBACK_FORBID;
         virCPUDefFreeModel(guest);
         return virCPUDefCopyModel(guest, host, true);
 
@@ -768,6 +769,7 @@ ppc64DriverBaseline(virCPUDefPtr *cpus,
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
+    cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
  cleanup:
     ppc64MapFree(map);
