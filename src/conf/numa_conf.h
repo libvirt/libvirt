@@ -99,6 +99,9 @@ unsigned long long virDomainNumaGetNodeMemorySize(virDomainNumaPtr numa,
 unsigned long long virDomainNumaGetMemorySize(virDomainNumaPtr numa)
     ATTRIBUTE_NONNULL(1);
 
+unsigned int
+virDomainNumaGetMaxCPUID(virDomainNumaPtr numa);
+
 /*
  * Formatters
  */

@@ -679,6 +679,7 @@ virNodeDeviceObjUnlock;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
 virDomainNumaFree;
+virDomainNumaGetMaxCPUID;
 virDomainNumaGetMemorySize;
 virDomainNumaGetNodeCount;
 virDomainNumaGetNodeCpumask;

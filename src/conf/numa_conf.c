@@ -847,6 +847,23 @@ virDomainNumaGetCPUCountTotal(virDomainNumaPtr numa)
     return ret;
 }
 
+unsigned int
+virDomainNumaGetMaxCPUID(virDomainNumaPtr numa)
+{
+    size_t i;
+    unsigned int ret = 0;
+
+    for (i = 0; i < numa->nmem_nodes; i++) {
+        int bit;
+
+        bit = virBitmapLastSetBit(virDomainNumaGetNodeCpumask(numa, i));
+        if (bit > ret)
+            ret = bit;
+    }
+
+    return ret;
+}
+
 
 virDomainNumaPtr
 virDomainNumaNew(void)
