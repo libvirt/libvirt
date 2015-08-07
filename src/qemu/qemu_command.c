@@ -8051,7 +8051,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.vnc.socket || cfg->vncAutoUnixSocket) {
         if (!graphics->data.vnc.socket &&
             virAsprintf(&graphics->data.vnc.socket,
-                        "%s/%s.vnc", cfg->libDir, def->name) == -1)
+                        "%s/domain-%s/vnc.sock", cfg->libDir, def->name) == -1)
             goto error;
 
         virBufferAsprintf(&opt, "unix:%s", graphics->data.vnc.socket);

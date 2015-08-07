@@ -1307,16 +1307,12 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             goto cleanup;
         }
 
-        if (dev->data.chr->target.name) {
-            if (virAsprintf(&dev->data.chr->source.data.nix.path, "%s/%s.%s",
-                            cfg->channelTargetDir,
-                            def->name, dev->data.chr->target.name) < 0)
-                goto cleanup;
-        } else {
-            if (virAsprintf(&dev->data.chr->source.data.nix.path, "%s/%s",
-                            cfg->channelTargetDir, def->name) < 0)
-                goto cleanup;
-        }
+        if (virAsprintf(&dev->data.chr->source.data.nix.path,
+                        "%s/domain-%s/%s",
+                        cfg->channelTargetDir, def->name,
+                        dev->data.chr->target.name ? dev->data.chr->target.name
+                        : "unknown.sock") < 0)
+            goto cleanup;
 
         dev->data.chr->source.data.nix.listen = true;
     }
