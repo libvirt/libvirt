@@ -350,7 +350,6 @@ ppc64Compute(virCPUDefPtr host,
              const virCPUDef *cpu,
              virCPUDataPtr *guestData,
              char **message)
-
 {
     struct ppc64_map *map = NULL;
     struct ppc64_model *host_model = NULL;
@@ -407,9 +406,7 @@ ppc64Compute(virCPUDefPtr host,
         !(guest_model = ppc64ModelFromCPU(cpu, map)))
         goto cleanup;
 
-    if (cpu->type == VIR_CPU_TYPE_GUEST &&
-        cpu->match == VIR_CPU_MATCH_STRICT &&
-        STRNEQ(guest_model->name, host_model->name)) {
+    if (STRNEQ(guest_model->name, host_model->name)) {
         VIR_DEBUG("host CPU model does not match required CPU model %s",
                   guest_model->name);
         if (message &&

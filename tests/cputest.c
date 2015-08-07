@@ -501,7 +501,7 @@ static const char *model486[]   = { "486" };
 static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
 static const char *haswell[]    = { "SandyBridge", "Haswell" };
-static const char *ppc_models[]     = { "POWER7", "POWER7_v2.1", "POWER8_v1.0"};
+static const char *ppc_models[] = { "POWER7", "POWER7_v2.1", "POWER7_v2.3", "POWER8_v1.0"};
 
 static int
 mymain(void)
@@ -662,7 +662,7 @@ mymain(void)
                       NULL, "Haswell-noTSX", 0);
 
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", 0);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER7_v2.1", -1);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
