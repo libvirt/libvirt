@@ -438,16 +438,22 @@ ppc64DriverCompare(virCPUDefPtr host,
                    virCPUDefPtr cpu,
                    bool failIncompatible)
 {
-    if ((cpu->arch == VIR_ARCH_NONE || host->arch == cpu->arch) &&
-        STREQ(host->model, cpu->model))
-        return VIR_CPU_COMPARE_IDENTICAL;
+    virCPUCompareResult ret;
+    char *message = NULL;
 
-    if (failIncompatible) {
-        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
-        return VIR_CPU_COMPARE_ERROR;
-    } else {
-        return VIR_CPU_COMPARE_INCOMPATIBLE;
+    ret = ppc64Compute(host, cpu, NULL, &message);
+
+    if (failIncompatible && ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
+        ret = VIR_CPU_COMPARE_ERROR;
+        if (message) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
+        } else {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+        }
     }
+    VIR_FREE(message);
+
+    return ret;
 }
 
 static int
