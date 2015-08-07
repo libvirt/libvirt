@@ -57,6 +57,33 @@ struct ppc64_map {
     struct ppc64_model *models;
 };
 
+/* Convert a legacy CPU definition by transforming
+ * model names to generation names:
+ *   POWER7_v2.1  => POWER7
+ *   POWER7_v2.3  => POWER7
+ *   POWER7+_v2.1 => POWER7
+ *   POWER8_v1.0  => POWER8 */
+static virCPUDefPtr
+ppc64ConvertLegacyCPUDef(const virCPUDef *legacy)
+{
+    virCPUDefPtr cpu;
+
+    if (!(cpu = virCPUDefCopy(legacy)))
+        goto out;
+
+    if (!(STREQ(cpu->model, "POWER7_v2.1") ||
+          STREQ(cpu->model, "POWER7_v2.3") ||
+          STREQ(cpu->model, "POWER7+_v2.1") ||
+          STREQ(cpu->model, "POWER8_v1.0"))) {
+        goto out;
+    }
+
+    cpu->model[strlen("POWERx")] = 0;
+
+ out:
+    return cpu;
+}
+
 static void
 ppc64DataFree(virCPUppc64Data *data)
 {
@@ -424,17 +451,21 @@ ppc64MakeCPUData(virArch arch,
 
 static virCPUCompareResult
 ppc64Compute(virCPUDefPtr host,
-             const virCPUDef *cpu,
+             const virCPUDef *other,
              virCPUDataPtr *guestData,
              char **message)
 {
     struct ppc64_map *map = NULL;
     struct ppc64_model *host_model = NULL;
     struct ppc64_model *guest_model = NULL;
-
+    virCPUDefPtr cpu = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
     virArch arch;
     size_t i;
+
+    /* Ensure existing configurations are handled correctly */
+    if (!(cpu = ppc64ConvertLegacyCPUDef(other)))
+        goto cleanup;
 
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
@@ -504,6 +535,7 @@ ppc64Compute(virCPUDefPtr host,
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
  cleanup:
+    virCPUDefFree(cpu);
     ppc64MapFree(map);
     ppc64ModelFree(host_model);
     ppc64ModelFree(guest_model);
@@ -681,6 +713,17 @@ ppc64DriverBaseline(virCPUDefPtr *cpus,
     for (i = 0; i < ncpus; i++) {
         const struct ppc64_vendor *vnd;
 
+        /* Hosts running old (<= 1.2.18) versions of libvirt will report
+         * strings like 'power7+' or 'power8e' instead of proper CPU model
+         * names in the capabilities XML; moreover, they lack information
+         * about some proper CPU models like 'POWER8'.
+         * This implies two things:
+         *   1) baseline among such hosts never worked
+         *   2) while a few models, eg. 'POWER8_v1.0', could work on both
+         *      old and new versions of libvirt, the information we have
+         *      here is not enough to pick such a model
+         * Hence we just compare models by name to decide whether or not
+         * two hosts are compatible */
         if (STRNEQ(cpus[i]->model, model->name)) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("CPUs are incompatible"));
