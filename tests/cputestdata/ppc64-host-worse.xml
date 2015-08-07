@@ -1,0 +1,6 @@
+<cpu>
+  <arch>ppc64</arch>
+  <model>POWER6</model>
+  <vendor>IBM</vendor>
+  <topology sockets='1' cores='64' threads='1'/>
+</cpu>

@@ -571,6 +571,13 @@ mymain(void)
     DO_TEST_COMPARE("x86", "host", "host-no-vendor", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("x86", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
 
+    DO_TEST_COMPARE("ppc64", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "host-better", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("ppc64", "host", "host-worse", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("ppc64", "host", "host-incomp-arch", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("ppc64", "host", "host-no-vendor", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
+
     /* guest to host comparison */
     DO_TEST_COMPARE("x86", "host", "bogus-model", VIR_CPU_COMPARE_ERROR);
     DO_TEST_COMPARE("x86", "host", "bogus-feature", VIR_CPU_COMPARE_ERROR);
@@ -597,6 +604,9 @@ mymain(void)
 
     DO_TEST_COMPARE("ppc64", "host", "guest-strict", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("ppc64", "host", "guest-exact", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("ppc64", "host", "guest-legacy", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "guest-legacy-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("ppc64", "host", "guest-legacy-invalid", VIR_CPU_COMPARE_ERROR);
 
     /* guest updates for migration
      * automatically compares host CPU with the result */
@@ -627,6 +637,9 @@ mymain(void)
 
     DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
     DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);
+    DO_TEST_BASELINE("ppc64", "incompatible-models", 0, -1);
+    DO_TEST_BASELINE("ppc64", "same-model", 0, 0);
+    DO_TEST_BASELINE("ppc64", "legacy", 0, -1);
 
     /* CPU features */
     DO_TEST_HASFEATURE("x86", "host", "vmx", YES);
@@ -664,6 +677,9 @@ mymain(void)
 
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER8", -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, NULL, 0);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, NULL, -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, NULL, -1);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
