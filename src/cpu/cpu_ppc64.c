@@ -407,26 +407,25 @@ ppc64Compute(virCPUDefPtr host,
         !(guest_model = ppc64ModelFromCPU(cpu, map)))
         goto cleanup;
 
-    if (guestData) {
-        if (cpu->type == VIR_CPU_TYPE_GUEST &&
-            cpu->match == VIR_CPU_MATCH_STRICT &&
-            STRNEQ(guest_model->name, host_model->name)) {
-            VIR_DEBUG("host CPU model does not match required CPU model %s",
-                      guest_model->name);
-            if (message &&
-                virAsprintf(message,
-                            _("host CPU model does not match required "
-                            "CPU model %s"),
-                            guest_model->name) < 0)
-                goto cleanup;
-
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+    if (cpu->type == VIR_CPU_TYPE_GUEST &&
+        cpu->match == VIR_CPU_MATCH_STRICT &&
+        STRNEQ(guest_model->name, host_model->name)) {
+        VIR_DEBUG("host CPU model does not match required CPU model %s",
+                  guest_model->name);
+        if (message &&
+            virAsprintf(message,
+                        _("host CPU model does not match required "
+                        "CPU model %s"),
+                        guest_model->name) < 0)
             goto cleanup;
-        }
 
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        goto cleanup;
+    }
+
+    if (guestData)
         if (!(*guestData = ppc64MakeCPUData(arch, &guest_model->data)))
             goto cleanup;
-    }
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
