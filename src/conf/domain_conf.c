@@ -15070,6 +15070,12 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
+    if (virDomainNumaGetMaxCPUID(def->numa) >= def->maxvcpus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("CPU IDs in <numa> exceed the <vcpu> count"));
+        goto error;
+    }
+
     if (virDomainNumatuneParseXML(def->numa,
                                   def->placement_mode ==
                                   VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
