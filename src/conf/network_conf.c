@@ -1731,6 +1731,10 @@ virNetworkForwardNatDefParseXML(const char *networkName,
         goto cleanup;
     }
 
+    /* verify that start <= end */
+    if (virSocketAddrGetRange(&def->addr.start, &def->addr.end, NULL, 0) < 0)
+        goto cleanup;
+
     /* ports for SNAT and MASQUERADE */
     nNatPorts = virXPathNodeSet("./port", ctxt, &natPortNodes);
     if (nNatPorts < 0) {

@@ -98,10 +98,11 @@ testRange(const char *saddrstr, const char *eaddrstr,
         return -1;
     if (virSocketAddrParse(&eaddr, eaddrstr, AF_UNSPEC) < 0)
         return -1;
-    if (virSocketAddrParse(&netaddr, netstr, AF_UNSPEC) < 0)
+    if (netstr && virSocketAddrParse(&netaddr, netstr, AF_UNSPEC) < 0)
         return -1;
 
-    int gotsize = virSocketAddrGetRange(&saddr, &eaddr, &netaddr, prefix);
+    int gotsize = virSocketAddrGetRange(&saddr, &eaddr,
+                                        netstr ? &netaddr : NULL, prefix);
     VIR_DEBUG("Size want %d vs got %d", size, gotsize);
     if (pass) {
         /* fail if virSocketAddrGetRange returns failure, or unexpected size */
@@ -311,6 +312,15 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+#define DO_TEST_RANGE_SIMPLE(saddr, eaddr, size, pass)                  \
+    do {                                                                \
+        struct testRangeData data                                       \
+           = { saddr, eaddr, NULL, 0, size, pass };                     \
+        if (virtTestRun("Test range " saddr " -> " eaddr "size " #size, \
+                        testRangeHelper, &data) < 0)                    \
+            ret = -1;                                                   \
+    } while (0)
+
 #define DO_TEST_NETMASK(addr1, addr2, netmask, pass)                    \
     do {                                                                \
         struct testNetmaskData data = { addr1, addr2, netmask, pass };  \
@@ -373,22 +383,54 @@ mymain(void)
     DO_TEST_PARSE_AND_FORMAT("::1", AF_UNIX, false);
     DO_TEST_PARSE_AND_FORMAT("::ffff", AF_UNSPEC, true);
 
+    /* tests that specify a network that should contain the range */
     DO_TEST_RANGE("192.168.122.1", "192.168.122.1", "192.168.122.1", 24, 1, true);
     DO_TEST_RANGE("192.168.122.1", "192.168.122.20", "192.168.122.22", 24, 20, true);
+    /* start of range is "network address" */
     DO_TEST_RANGE("192.168.122.0", "192.168.122.254", "192.168.122.1", 24, -1, false);
+    /* end of range is "broadcast address" */
     DO_TEST_RANGE("192.168.122.1", "192.168.122.255", "192.168.122.1", 24, -1, false);
     DO_TEST_RANGE("192.168.122.0", "192.168.122.255", "192.168.122.1", 16, 256, true);
+    /* range is reversed */
     DO_TEST_RANGE("192.168.122.20", "192.168.122.1", "192.168.122.1", 24, -1, false);
+    /* start address outside network */
     DO_TEST_RANGE("10.0.0.1", "192.168.122.20", "192.168.122.1", 24, -1, false);
+    /* end address outside network and range reversed */
     DO_TEST_RANGE("192.168.122.20", "10.0.0.1", "192.168.122.1", 24, -1, false);
+    /* entire range outside network */
     DO_TEST_RANGE("172.16.0.50", "172.16.0.254", "1.2.3.4", 8, -1, false);
+    /* end address outside network */
     DO_TEST_RANGE("192.168.122.1", "192.168.123.20", "192.168.122.22", 24, -1, false);
     DO_TEST_RANGE("192.168.122.1", "192.168.123.20", "192.168.122.22", 23, 276, true);
 
     DO_TEST_RANGE("2000::1", "2000::1", "2000::1", 64, 1, true);
     DO_TEST_RANGE("2000::1", "2000::2", "2000::1", 64, 2, true);
+    /* range reversed */
     DO_TEST_RANGE("2000::2", "2000::1", "2000::1", 64, -1, false);
+    /* range too large (> 65536) */
     DO_TEST_RANGE("2000::1", "9001::1", "2000::1", 64, -1, false);
+
+    /* tests that *don't* specify a containing network
+     * (so fewer things can be checked)
+     */
+    DO_TEST_RANGE_SIMPLE("192.168.122.1", "192.168.122.1", 1, true);
+    DO_TEST_RANGE_SIMPLE("192.168.122.1", "192.168.122.20", 20, true);
+    DO_TEST_RANGE_SIMPLE("192.168.122.0", "192.168.122.255", 256, true);
+    /* range is reversed */
+    DO_TEST_RANGE_SIMPLE("192.168.122.20", "192.168.122.1", -1, false);
+    /* range too large (> 65536) */
+    DO_TEST_RANGE_SIMPLE("10.0.0.1", "192.168.122.20", -1, false);
+    /* range reversed */
+    DO_TEST_RANGE_SIMPLE("192.168.122.20", "10.0.0.1", -1, false);
+    DO_TEST_RANGE_SIMPLE("172.16.0.50", "172.16.0.254", 205, true);
+    DO_TEST_RANGE_SIMPLE("192.168.122.1", "192.168.123.20", 276, true);
+
+    DO_TEST_RANGE_SIMPLE("2000::1", "2000::1", 1, true);
+    DO_TEST_RANGE_SIMPLE("2000::1", "2000::2", 2, true);
+    /* range reversed */
+    DO_TEST_RANGE_SIMPLE("2000::2", "2000::1", -1, false);
+    /* range too large (> 65536) */
+    DO_TEST_RANGE_SIMPLE("2000::1", "9001::1", -1, false);
 
     DO_TEST_NETMASK("192.168.122.1", "192.168.122.2",
                     "255.255.255.0", true);
