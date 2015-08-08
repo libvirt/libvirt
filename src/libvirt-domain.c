@@ -1281,7 +1281,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, unsigned int flags)
  * virDomainCoreDumpWithFormat:
  * @domain: a domain object
  * @to: path for the core file
- * @dumpformat: format of domain memory's dump
+ * @dumpformat: format of domain memory's dump (one of virDomainCoreDumpFormat enum)
  * @flags: bitwise-OR of virDomainCoreDumpFlags
  *
  * This method will dump the core of a domain on a given file for analysis.
