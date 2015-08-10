@@ -2864,6 +2864,41 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
     return ret;
 }
 
+
+int
+virDomainObjListRenameAddNew(virDomainObjListPtr doms,
+                             virDomainObjPtr vm,
+                             const char *name)
+{
+    int ret = -1;
+    virObjectLock(doms);
+
+    /* Add new name into the hash table of domain names. */
+    if (virHashAddEntry(doms->objsName, name, vm) < 0)
+        goto cleanup;
+
+    /* Okay, this is crazy. virHashAddEntry() does not increment
+     * the refcounter of @vm, but virHashRemoveEntry() does
+     * decrement it. We need to work around it. */
+    virObjectRef(vm);
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(doms);
+    return ret;
+}
+
+
+int
+virDomainObjListRenameRemove(virDomainObjListPtr doms, const char *name)
+{
+    virObjectLock(doms);
+    virHashRemoveEntry(doms->objsName, name);
+    virObjectUnlock(doms);
+    return 0;
+}
+
+
 /*
  * Mark the running VM config as transient. Ensures transient hotplug
  * operations do not persist past shutdown.

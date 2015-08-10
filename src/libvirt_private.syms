@@ -410,6 +410,8 @@ virDomainObjListNew;
 virDomainObjListNumOfDomains;
 virDomainObjListRemove;
 virDomainObjListRemoveLocked;
+virDomainObjListRenameAddNew;
+virDomainObjListRenameRemove;
 virDomainObjNew;
 virDomainObjParseNode;
 virDomainObjSetDefTransient;

@@ -2580,6 +2580,11 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
                                     virDomainXMLOptionPtr xmlopt,
                                     unsigned int flags,
                                     virDomainDefPtr *oldDef);
+int virDomainObjListRenameAddNew(virDomainObjListPtr doms,
+                                 virDomainObjPtr vm,
+                                 const char *name);
+int virDomainObjListRenameRemove(virDomainObjListPtr doms,
+                                 const char *name);
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr def,
                            bool live,
