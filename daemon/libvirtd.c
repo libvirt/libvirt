@@ -1399,7 +1399,7 @@ int main(int argc, char **argv) {
     }
 
     if (!(dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(dmn, srv) < 0) {
+        virNetDaemonAddServer(dmn, "libvirtd", srv) < 0) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
@@ -1472,7 +1472,7 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (virNetDaemonAddServer(dmn, srvAdm) < 0) {
+    if (virNetDaemonAddServer(dmn, "admin", srvAdm) < 0) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }

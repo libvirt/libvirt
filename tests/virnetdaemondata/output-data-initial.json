@@ -1,6 +1,6 @@
 {
-    "servers": [
-        {
+    "servers": {
+        "testServer0": {
             "min_workers": 10,
             "max_workers": 50,
             "priority_workers": 5,
@@ -62,5 +62,5 @@
                 }
             ]
         }
-    ]
+    }
 }

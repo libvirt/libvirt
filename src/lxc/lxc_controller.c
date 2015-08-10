@@ -967,7 +967,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
         goto error;
 
     if (!(ctrl->daemon = virNetDaemonNew()) ||
-        virNetDaemonAddServer(ctrl->daemon, srv) < 0)
+        virNetDaemonAddServer(ctrl->daemon, "LXC", srv) < 0)
         goto error;
 
     virNetDaemonUpdateServices(ctrl->daemon, true);

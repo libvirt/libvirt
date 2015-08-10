@@ -170,7 +170,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
         goto error;
 
     if (!(lockd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(lockd->dmn, srv) < 0)
+        virNetDaemonAddServer(lockd->dmn, "virtlockd", srv) < 0)
         goto error;
 
     if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
@@ -267,6 +267,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
         goto error;
 
     if (!(srv = virNetDaemonAddServerPostExec(lockd->dmn,
+                                              "virtlockd",
                                               virLockDaemonClientNew,
                                               virLockDaemonClientNewPostExecRestart,
                                               virLockDaemonClientPreExecRestart,
@@ -1369,7 +1370,7 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        srv = virNetDaemonGetServer(lockDaemon->dmn, 0);
+        srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
         if ((rv = virLockDaemonSetupNetworkingSystemD(srv) < 0)) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
@@ -1382,7 +1383,7 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
     } else if (rv == 1) {
-        srv = virNetDaemonGetServer(lockDaemon->dmn, 0);
+        srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
     }
 
     if (timeout != -1) {

@@ -37,6 +37,7 @@
 #include "virnetserver.h"
 #include "virnetservermdns.h"
 #include "virdbus.h"
+#include "virhash.h"
 #include "virstring.h"
 #include "virsystemd.h"
 
@@ -69,8 +70,7 @@ struct _virNetDaemon {
     int sigwrite;
     int sigwatch;
 
-    size_t nservers;
-    virNetServerPtr *servers;
+    virHashTablePtr servers;
     virJSONValuePtr srvObject;
 
     bool quit;
@@ -102,9 +102,7 @@ virNetDaemonDispose(void *obj)
     if (dmn->sigwatch > 0)
         virEventRemoveHandle(dmn->sigwatch);
 
-    for (i = 0; i < dmn->nservers; i++)
-        virObjectUnref(dmn->servers[i]);
-    VIR_FREE(dmn->servers);
+    virHashFree(dmn->servers);
 
     virJSONValueFree(dmn->srvObject);
 }
@@ -136,6 +134,9 @@ virNetDaemonNew(void)
     if (!(dmn = virObjectLockableNew(virNetDaemonClass)))
         return NULL;
 
+    if (!(dmn->servers = virHashCreate(5, virObjectFreeHashData)))
+        goto error;
+
     dmn->sigwrite = dmn->sigread = -1;
     dmn->privileged = geteuid() == 0;
     dmn->autoShutdownInhibitFd = -1;
@@ -156,49 +157,34 @@ virNetDaemonNew(void)
 
 
 int
-virNetDaemonAddServer(virNetDaemonPtr dmn, virNetServerPtr srv)
+virNetDaemonAddServer(virNetDaemonPtr dmn,
+                      const char *serverName,
+                      virNetServerPtr srv)
 {
     int ret = -1;
 
     virObjectLock(dmn);
 
-    if (VIR_APPEND_ELEMENT_COPY(dmn->servers, dmn->nservers, srv) < 0)
+    if (virHashAddEntry(dmn->servers, serverName, srv) < 0)
         goto cleanup;
 
     virObjectRef(srv);
-    ret = dmn->nservers - 1;
+
+    ret = 0;
  cleanup:
     virObjectUnlock(dmn);
     return ret;
 }
 
 
-/*
- * Separate function merely for the purpose of unified error
- * reporting.
- */
-static virNetServerPtr
-virNetDaemonGetServerInternal(virNetDaemonPtr dmn,
-                              int subServerID)
-{
-    if (subServerID < 0 || subServerID >= dmn->nservers) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid server ID: %d"),
-                       subServerID);
-        return NULL;
-    }
-
-    return virObjectRef(dmn->servers[subServerID]);
-}
-
 virNetServerPtr
 virNetDaemonGetServer(virNetDaemonPtr dmn,
-                      int subServerID)
+                      const char *serverName)
 {
     virNetServerPtr srv = NULL;
 
     virObjectLock(dmn);
-    srv = virNetDaemonGetServerInternal(dmn, subServerID);
+    srv = virObjectRef(virHashLookup(dmn->servers, serverName));
     virObjectUnlock(dmn);
 
     return srv;
@@ -206,6 +192,7 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
 
 virNetServerPtr
 virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
+                              const char *serverName,
                               virNetServerClientPrivNew clientPrivNew,
                               virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
                               virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
@@ -230,9 +217,23 @@ virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
             virJSONValueFree(dmn->srvObject);
             dmn->srvObject = NULL;
         }
-    } else {
+    } else if (virJSONValueObjectGetByType(dmn->srvObject,
+                                           "min_workers",
+                                           VIR_JSON_TYPE_NUMBER)) {
         object = dmn->srvObject;
         dmn->srvObject = NULL;
+    } else {
+        int ret = virJSONValueObjectRemoveKey(dmn->srvObject,
+                                              serverName,
+                                              &object);
+        if (ret != 1) {
+            if (ret == 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Server '%s' not found in JSON"), serverName);
+            }
+            goto error;
+        }
+
     }
 
     srv = virNetServerNewPostExecRestart(object,
@@ -242,7 +243,10 @@ virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
                                          clientPrivFree,
                                          clientPrivOpaque);
 
-    if (!srv || VIR_APPEND_ELEMENT_COPY(dmn->servers, dmn->nservers, srv) < 0)
+    if (!srv)
+        goto error;
+
+    if (virHashAddEntry(dmn->servers, serverName, srv) < 0)
         goto error;
 
     virJSONValueFree(object);
@@ -283,29 +287,51 @@ virNetDaemonNewPostExecRestart(virJSONValuePtr object)
 }
 
 
+static int
+daemonServerCompare(const virHashKeyValuePair *a, const virHashKeyValuePair *b)
+{
+    const char *as = a->key;
+    const char *bs = b->key;
+
+    return strcmp(as, bs);
+}
+
 virJSONValuePtr
 virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
 {
-    virJSONValuePtr object, srvArray = NULL;
-    size_t i;
+    size_t i = 0;
+    virJSONValuePtr object = NULL;
+    virJSONValuePtr srvObj = NULL;
+    virHashKeyValuePairPtr srvArray = NULL;
 
     virObjectLock(dmn);
 
     if (!(object = virJSONValueNewObject()))
         goto error;
 
-    if (!(srvArray = virJSONValueNewArray()) ||
-        virJSONValueObjectAppend(object, "servers", srvArray) < 0)
+    if (!(srvObj = virJSONValueNewObject()))
         goto error;
 
-    for (i = 0; i < dmn->nservers; i++) {
-        virJSONValuePtr srvJSON = NULL;
-        srvJSON = virNetServerPreExecRestart(dmn->servers[i]);
+    if (virJSONValueObjectAppend(object, "servers", srvObj) < 0) {
+        virJSONValueFree(srvObj);
+        goto error;
+    }
 
+    if (!(srvArray = virHashGetItems(dmn->servers, daemonServerCompare)))
+        goto error;
+
+    for (i = 0; srvArray[i].key; i++) {
+        virNetServerPtr server = virHashLookup(dmn->servers, srvArray[i].key);
+        virJSONValuePtr srvJSON;
+
+        if (!server)
+            goto error;
+
+        srvJSON = virNetServerPreExecRestart(server);
         if (!srvJSON)
             goto error;
 
-        if (virJSONValueArrayAppend(srvArray, srvJSON) < 0) {
+        if (virJSONValueObjectAppend(srvObj, srvArray[i].key, srvJSON) < 0) {
             virJSONValueFree(srvJSON);
             goto error;
         }
@@ -316,8 +342,8 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
     return object;
 
  error:
+    VIR_FREE(srvArray);
     virJSONValueFree(object);
-    virJSONValueFree(srvArray);
     virObjectUnlock(dmn);
     return NULL;
 }
@@ -627,16 +653,46 @@ virNetDaemonAutoShutdownTimer(int timerid ATTRIBUTE_UNUSED,
     virObjectUnlock(dmn);
 }
 
+static int
+daemonServerUpdateServices(void *payload,
+                           const void *key ATTRIBUTE_UNUSED,
+                           void *opaque)
+{
+    bool *enable = opaque;
+    virNetServerPtr srv = payload;
+
+    virNetServerUpdateServices(srv, *enable);
+    return 0;
+}
+
 void
 virNetDaemonUpdateServices(virNetDaemonPtr dmn,
                            bool enabled)
 {
-    size_t i;
-
     virObjectLock(dmn);
-    for (i = 0; i < dmn->nservers; i++)
-        virNetServerUpdateServices(dmn->servers[i], enabled);
+    virHashForEach(dmn->servers, daemonServerUpdateServices, &enabled);
     virObjectUnlock(dmn);
+}
+
+static int
+daemonServerRun(void *payload,
+                const void *key ATTRIBUTE_UNUSED,
+                void *opaque ATTRIBUTE_UNUSED)
+{
+    virNetServerPtr srv = payload;
+
+    return virNetServerStart(srv);
+};
+
+static int
+daemonServerProcessClients(void *payload,
+                           const void *key ATTRIBUTE_UNUSED,
+                           void *opaque ATTRIBUTE_UNUSED)
+{
+    virNetServerPtr srv = payload;
+
+    virNetServerProcessClients(srv);
+    return 0;
 }
 
 void
@@ -644,7 +700,6 @@ virNetDaemonRun(virNetDaemonPtr dmn)
 {
     int timerid = -1;
     bool timerActive = false;
-    size_t i;
 
     virObjectLock(dmn);
 
@@ -654,10 +709,8 @@ virNetDaemonRun(virNetDaemonPtr dmn)
         goto cleanup;
     }
 
-    for (i = 0; i < dmn->nservers; i++) {
-        if (virNetServerStart(dmn->servers[i]) < 0)
-            goto cleanup;
-    }
+    if (virHashForEach(dmn->servers, daemonServerRun, NULL) < 0)
+        goto cleanup;
 
     dmn->quit = false;
 
@@ -705,8 +758,7 @@ virNetDaemonRun(virNetDaemonPtr dmn)
         }
         virObjectLock(dmn);
 
-        for (i = 0; i < dmn->nservers; i++)
-            virNetServerProcessClients(dmn->servers[i]);
+        virHashForEach(dmn->servers, daemonServerProcessClients, NULL);
     }
 
  cleanup:
@@ -725,32 +777,42 @@ virNetDaemonQuit(virNetDaemonPtr dmn)
     virObjectUnlock(dmn);
 }
 
+static int
+daemonServerClose(void *payload,
+                  const void *key ATTRIBUTE_UNUSED,
+                  void *opaque ATTRIBUTE_UNUSED)
+{
+    virNetServerPtr srv = payload;
+
+    virNetServerClose(srv);
+    return 0;
+}
 
 void
 virNetDaemonClose(virNetDaemonPtr dmn)
 {
-    size_t i;
-
     if (!dmn)
         return;
 
     virObjectLock(dmn);
 
-    for (i = 0; i < dmn->nservers; i++)
-        virNetServerClose(dmn->servers[i]);
+    virHashForEach(dmn->servers, daemonServerClose, NULL);
 
     virObjectUnlock(dmn);
+}
+
+static int
+daemonServerHasClients(void *payload,
+                       const void *key ATTRIBUTE_UNUSED,
+                       void *opaque ATTRIBUTE_UNUSED)
+{
+    virNetServerPtr srv = payload;
+
+    return virNetServerHasClients(srv);
 }
 
 bool
 virNetDaemonHasClients(virNetDaemonPtr dmn)
 {
-    size_t i = 0;
-
-    for (i = 0; i < dmn->nservers; i++) {
-        if (virNetServerHasClients(dmn->servers[i]))
-            return true;
-    }
-
-    return false;
+    return virHashForEach(dmn->servers, daemonServerHasClients, NULL) > 0;
 }
