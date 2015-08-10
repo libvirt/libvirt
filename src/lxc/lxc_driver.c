@@ -597,7 +597,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
 
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
-        info->memory = 0;
+        info->memory = vm->def->mem.cur_balloon;
     } else {
         if (virCgroupGetCpuacctUsage(priv->cgroup, &(info->cpuTime)) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
