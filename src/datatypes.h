@@ -383,7 +383,7 @@ struct _virConnect {
 
     /* Per-connection error. */
     virError err;           /* the last error */
-    virErrorFunc handler;   /* associated handlet */
+    virErrorFunc handler;   /* associated handler */
     void *userData;         /* the user data */
 
     /* Per-connection close callback */
