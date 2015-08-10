@@ -1258,6 +1258,13 @@ on both of them).
 
 Convert a domain Id (or UUID) to domain name
 
+=item B<domrename> I<domain> I<new-name>
+
+Rename a domain. This command changes current domain name to the new name
+specified in the second argument.
+
+B<Note>: Domain must be inactive and without snapshots.
+
 =item B<domstate> I<domain> [I<--reason>]
 
 Returns state about a domain.  I<--reason> tells virsh to also print

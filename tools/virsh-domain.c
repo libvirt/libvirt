@@ -9746,6 +9746,57 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "domrename" command
+ */
+static const vshCmdInfo info_domrename[] = {
+    {.name = "help",
+     .data = N_("rename a domain")
+    },
+    {.name = "desc",
+     .data = "Rename an inactive domain."
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domrename[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "new-name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("new domain name")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomrename(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    const char *new_name = NULL;
+    bool ret = false;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, NULL)))
+        return ret;
+
+    if (vshCommandOptStringReq(ctl, cmd, "new-name", &new_name) < 0)
+        goto cleanup;
+
+    if (virDomainRename(dom, new_name, 0) < 0)
+        goto cleanup;
+
+    vshPrint(ctl, "Domain successfully renamed\n");
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return false;
+}
+
+/*
  * "domid" command
  */
 static const vshCmdInfo info_domid[] = {
@@ -13100,6 +13151,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomname,
      .opts = opts_domname,
      .info = info_domname,
+     .flags = 0
+    },
+    {.name = "domrename",
+     .handler = cmdDomrename,
+     .opts = opts_domrename,
+     .info = info_domrename,
      .flags = 0
     },
     {.name = "dompmsuspend",
