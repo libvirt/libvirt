@@ -3230,6 +3230,15 @@ struct remote_domain_set_user_password_args {
     unsigned int flags;
 };
 
+struct remote_domain_rename_args {
+    remote_nonnull_domain dom;
+    remote_string new_name;
+    unsigned int flags;
+};
+
+struct remote_domain_rename_ret {
+    int rename;
+};
 
 /*----- Protocol. -----*/
 
@@ -5696,5 +5705,12 @@ enum remote_procedure {
      * @generate:both
      * @acl: domain:set_password
      */
-    REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357
+    REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save
+     */
+    REMOTE_PROC_DOMAIN_RENAME = 358
 };

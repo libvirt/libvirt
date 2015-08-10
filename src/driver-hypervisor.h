@@ -650,6 +650,11 @@ typedef int
 (*virDrvDomainIsActive)(virDomainPtr dom);
 
 typedef int
+(*virDrvDomainRename)(virDomainPtr dom,
+                      const char *new_name,
+                      unsigned int flags);
+
+typedef int
 (*virDrvDomainIsPersistent)(virDomainPtr dom);
 
 typedef int
@@ -1347,6 +1352,7 @@ struct _virHypervisorDriver {
     virDrvConnectIsEncrypted connectIsEncrypted;
     virDrvConnectIsSecure connectIsSecure;
     virDrvDomainIsActive domainIsActive;
+    virDrvDomainRename domainRename;
     virDrvDomainIsPersistent domainIsPersistent;
     virDrvDomainIsUpdated domainIsUpdated;
     virDrvConnectCompareCPU connectCompareCPU;

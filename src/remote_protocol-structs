@@ -2684,6 +2684,14 @@ struct remote_domain_set_user_password_args {
         remote_string              password;
         u_int                      flags;
 };
+struct remote_domain_rename_args {
+        remote_nonnull_domain      dom;
+        remote_string              new_name;
+        u_int                      flags;
+};
+struct remote_domain_rename_ret {
+        int                        rename;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3042,4 +3050,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_ADD_IOTHREAD = 355,
         REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356,
         REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357,
+        REMOTE_PROC_DOMAIN_RENAME = 358,
 };

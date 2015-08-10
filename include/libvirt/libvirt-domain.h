@@ -3844,4 +3844,8 @@ int virDomainSetUserPassword(virDomainPtr dom,
                              const char *password,
                              unsigned int flags);
 
+int virDomainRename(virDomainPtr dom,
+                    const char *new_name,
+                    unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

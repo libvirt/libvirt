@@ -720,4 +720,9 @@ LIBVIRT_1.2.17 {
         virTypedParamsAddStringList;
 } LIBVIRT_1.2.16;
 
+LIBVIRT_1.2.19 {
+    global:
+        virDomainRename;
+} LIBVIRT_1.2.17;
+
 # .... define new API here using predicted next version number ....

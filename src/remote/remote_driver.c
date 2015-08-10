@@ -8391,6 +8391,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetFSInfo = remoteDomainGetFSInfo, /* 1.2.11 */
     .domainInterfaceAddresses = remoteDomainInterfaceAddresses, /* 1.2.14 */
     .domainSetUserPassword = remoteDomainSetUserPassword, /* 1.2.16 */
+    .domainRename = remoteDomainRename, /* 1.2.19 */
 };
 
 static virNetworkDriver network_driver = {

@@ -8774,6 +8774,41 @@ virDomainIsPersistent(virDomainPtr dom)
     return -1;
 }
 
+/**
+ * virDomainRename:
+ * @dom: pointer to the domain object
+ * @new_name: new domain name
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Rename a domain. New domain name is specified in the second
+ * argument. Depending on each driver implementation it may be
+ * required that domain is in a specific state.
+ *
+ * Returns 0 if successfully renamed, -1 on error
+ */
+int
+virDomainRename(virDomainPtr dom,
+                const char *new_name,
+                unsigned int flags)
+{
+    VIR_DEBUG("dom=%p, new_name=%s", dom, NULLSTR(new_name));
+
+    virResetLastError();
+    virCheckDomainReturn(dom, -1);
+    virCheckNonNullArgGoto(new_name, error);
+
+    if (dom->conn->driver->domainRename) {
+        int ret = dom->conn->driver->domainRename(dom, new_name, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(dom->conn);
+    return -1;
+}
 
 /**
  * virDomainIsUpdated:
