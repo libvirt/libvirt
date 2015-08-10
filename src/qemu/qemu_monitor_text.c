@@ -2586,7 +2586,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
 
     /* (qemu) drive_del wark
      * Device 'wark' not found */
-    } else if (STRPREFIX(reply, "Device '") && (strstr(reply, "not found"))) {
+    } else if (strstr(reply, "Device '") && strstr(reply, "not found")) {
         /* NB: device not found errors mean the drive was auto-deleted and we
          * ignore the error */
     } else if (STRNEQ(reply, "")) {
