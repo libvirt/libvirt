@@ -2329,6 +2329,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file */
     VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1,   /* Changed config file */
+    VIR_DOMAIN_EVENT_DEFINED_RENAMED = 2,   /* Domain was renamed */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_DEFINED_LAST
@@ -2342,6 +2343,7 @@ typedef enum {
  */
 typedef enum {
     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file */
+    VIR_DOMAIN_EVENT_UNDEFINED_RENAMED = 1, /* Domain was renamed */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_UNDEFINED_LAST

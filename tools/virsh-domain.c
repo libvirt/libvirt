@@ -11785,12 +11785,14 @@ VIR_ENUM_DECL(vshDomainEventDefined)
 VIR_ENUM_IMPL(vshDomainEventDefined,
               VIR_DOMAIN_EVENT_DEFINED_LAST,
               N_("Added"),
-              N_("Updated"))
+              N_("Updated"),
+              N_("Renamed"))
 
 VIR_ENUM_DECL(vshDomainEventUndefined)
 VIR_ENUM_IMPL(vshDomainEventUndefined,
               VIR_DOMAIN_EVENT_UNDEFINED_LAST,
-              N_("Removed"))
+              N_("Removed"),
+              N_("Renamed"))
 
 VIR_ENUM_DECL(vshDomainEventStarted)
 VIR_ENUM_IMPL(vshDomainEventStarted,
