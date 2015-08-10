@@ -2642,13 +2642,13 @@ qemuDomainGetInfo(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        if (VIR_ASSIGN_IS_OVERFLOW(info->memory, vm->def->mem.cur_balloon)) {
-            virReportError(VIR_ERR_OVERFLOW, "%s",
-                           _("Current memory size too large"));
-            goto cleanup;
-        }
+    if (VIR_ASSIGN_IS_OVERFLOW(info->memory, vm->def->mem.cur_balloon)) {
+        virReportError(VIR_ERR_OVERFLOW, "%s",
+                       _("Current memory size too large"));
+        goto cleanup;
+    }
 
+    if (virDomainObjIsActive(vm)) {
         if (qemuGetProcessInfo(&(info->cpuTime), NULL, NULL, vm->pid, 0) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("cannot read cputime for domain"));
