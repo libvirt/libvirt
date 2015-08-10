@@ -8588,6 +8588,17 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         return -1;
     }
 
+    /* and only TAP devices support nwfilter rules */
+    if (net->filter &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("filterref is not supported for "
+                         "network interfaces of type %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
     if (net->backend.tap &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
           actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {

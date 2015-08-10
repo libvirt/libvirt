@@ -910,6 +910,17 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         return -1;
     }
 
+    /* and only TAP devices support nwfilter rules */
+    if (net->filter &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("filterref is not supported for "
+                         "network interfaces of type %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
