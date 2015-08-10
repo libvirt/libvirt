@@ -128,7 +128,7 @@ libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
 
 noinst_LTLIBRARIES += libvirtd_admin.la
 libvirtd_admin_la_SOURCES = \
-		admin_server.c admin_server.h
+		admin.c admin.h
 
 libvirtd_admin_la_CFLAGS = \
 		$(AM_CFLAGS)		\
@@ -319,7 +319,8 @@ endif ! WITH_POLKIT
 
 remote.c: $(DAEMON_GENERATED)
 remote.h: $(DAEMON_GENERATED)
-admin_server.c: $(DAEMON_GENERATED)
+admin.c: $(DAEMON_GENERATED)
+admin.h: $(DAEMON_GENERATED)
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \

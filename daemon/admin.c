@@ -1,7 +1,7 @@
 /*
- * admin_server.c:
+ * admin.c: handlers for admin RPC method calls
  *
- * Copyright (C) 2014-2015 Red Hat, Inc.
+ * Copyright (C) 2014-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@
 #include "libvirt_internal.h"
 
 #include "admin_protocol.h"
-#include "admin_server.h"
+#include "admin.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
