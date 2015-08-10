@@ -2712,7 +2712,7 @@ static int qemuDomainGetInfo(virDomainPtr dom,
             info->memory = vm->def->mem.cur_balloon;
         }
     } else {
-        info->memory = 0;
+        info->memory = vm->def->mem.cur_balloon;
     }
 
     info->nrVirtCpu = vm->def->vcpus;
