@@ -26,8 +26,6 @@
 #ifndef __VIR_ADMIN_H__
 # define __VIR_ADMIN_H__
 
-# include "internal.h"
-
 # ifdef __cplusplus
 extern "C" {
 # endif
