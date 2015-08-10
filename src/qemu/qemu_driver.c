@@ -19882,6 +19882,152 @@ qemuDomainSetUserPassword(virDomainPtr dom,
 }
 
 
+static int qemuDomainRename(virDomainPtr dom,
+                            const char *new_name,
+                            unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
+    virDomainObjPtr vm;
+    virObjectEventPtr event_new = NULL;
+    virObjectEventPtr event_old = NULL;
+    int ret = -1;
+    int logfile = -1;
+    char ebuf[1024];
+    char *timestamp;
+    char *rename_log_msg = NULL;
+    char *new_dom_name = NULL;
+    char *old_dom_name = NULL;
+    char *old_dom_cfg_file = NULL;
+
+    virCheckFlags(0, ret);
+
+    if (VIR_STRDUP(new_dom_name, new_name) < 0)
+        goto cleanup;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainRenameEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot rename active domain"));
+        goto endjob;
+    }
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot rename a transient domain"));
+        goto endjob;
+    }
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTOFF) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain has to be shutoff before renaming"));
+        goto endjob;
+    }
+
+    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot rename domain with snapshots"));
+        goto endjob;
+    }
+
+    if (virAsprintf(&rename_log_msg, ": domain %s has been renamed to %s\n",
+                    vm->def->name, new_name) < 0) {
+        goto endjob;
+    }
+
+    if (!(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
+                                                 vm->def->name))) {
+        goto endjob;
+    }
+
+    if (virDomainObjListRenameAddNew(driver->domains, vm, new_name) < 0)
+        goto endjob;
+
+    if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0)
+        goto rollback;
+
+    event_old = virDomainEventLifecycleNewFromObj(vm,
+                                            VIR_DOMAIN_EVENT_UNDEFINED,
+                                            VIR_DOMAIN_EVENT_UNDEFINED_RENAMED);
+
+    /* Switch name in domain definition. */
+    old_dom_name = vm->def->name;
+    vm->def->name = new_dom_name;
+    new_dom_name = NULL;
+
+    if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
+        goto rollback;
+
+    if (virFileExists(old_dom_cfg_file) &&
+        unlink(old_dom_cfg_file) < 0) {
+        virReportSystemError(errno,
+                             _("cannot remove old domain config file %s"),
+                             old_dom_cfg_file);
+        goto rollback;
+    }
+
+    /* Remove old domain name from table. */
+    virDomainObjListRenameRemove(driver->domains, old_dom_name);
+
+    event_new = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_DEFINED,
+                                              VIR_DOMAIN_EVENT_DEFINED_RENAMED);
+
+    /* Write message to the log. */
+    if ((timestamp = virTimeStringNow()) != NULL) {
+        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+            safewrite(logfile, rename_log_msg,
+                      strlen(rename_log_msg)) < 0) {
+            VIR_WARN("Unable to write timestamp to logfile: %s",
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+        }
+        VIR_FREE(timestamp);
+    }
+
+    /* Success, domain has been renamed. */
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    if (VIR_CLOSE(logfile) < 0) {
+        VIR_WARN("Unable to close logfile: %s",
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
+    }
+    virDomainObjEndAPI(&vm);
+    VIR_FREE(old_dom_cfg_file);
+    VIR_FREE(old_dom_name);
+    VIR_FREE(new_dom_name);
+    VIR_FREE(rename_log_msg);
+    if (event_old)
+        qemuDomainEventQueue(driver, event_old);
+    if (event_new)
+        qemuDomainEventQueue(driver, event_new);
+    virObjectUnref(cfg);
+    return ret;
+
+ rollback:
+    if (old_dom_name) {
+        new_dom_name = vm->def->name;
+        vm->def->name = old_dom_name;
+        old_dom_name = NULL;
+    }
+
+    virDomainObjListRenameRemove(driver->domains, new_name);
+    goto endjob;
+}
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -20089,6 +20235,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetFSInfo = qemuDomainGetFSInfo, /* 1.2.11 */
     .domainInterfaceAddresses = qemuDomainInterfaceAddresses, /* 1.2.14 */
     .domainSetUserPassword = qemuDomainSetUserPassword, /* 1.2.16 */
+    .domainRename = qemuDomainRename, /* 1.2.19 */
 };
 
 
