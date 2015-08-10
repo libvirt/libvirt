@@ -5871,28 +5871,28 @@ virDomainDiskDiffersSourceOnly(virDomainDiskDefPtr disk,
 
     CHECK_EQ(transient, "transient", true);
 
-    if (disk->serial && STRNEQ(disk->serial, orig_disk->serial)) {
+    if (disk->serial && STRNEQ_NULLABLE(disk->serial, orig_disk->serial)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
                        "serial");
         return false;
     }
 
-    if (disk->wwn && STRNEQ(disk->wwn, orig_disk->wwn)) {
+    if (disk->wwn && STRNEQ_NULLABLE(disk->wwn, orig_disk->wwn)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
                        "wwn");
         return false;
     }
 
-    if (disk->vendor && STRNEQ(disk->vendor, orig_disk->vendor)) {
+    if (disk->vendor && STRNEQ_NULLABLE(disk->vendor, orig_disk->vendor)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
                        "vendor");
         return false;
     }
 
-    if (disk->product && STRNEQ(disk->product, orig_disk->product)) {
+    if (disk->product && STRNEQ_NULLABLE(disk->product, orig_disk->product)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
                        "product");
