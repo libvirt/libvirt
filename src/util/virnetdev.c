@@ -3130,7 +3130,7 @@ virNetDevGetFeatures(const char *ifname,
     size_t i = -1;
     struct ethtool_value cmd = { 0 };
 # if HAVE_DECL_ETHTOOL_GFEATURES
-    struct ethtool_gfeatures g_cmd = { 0 };
+    struct ethtool_gfeatures *g_cmd;
 # endif
     struct elem{
         const int cmd;
@@ -3188,10 +3188,14 @@ virNetDevGetFeatures(const char *ifname,
 # endif
 
 # if HAVE_DECL_ETHTOOL_GFEATURES
-    g_cmd.cmd = ETHTOOL_GFEATURES;
-    g_cmd.size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(ifname, &g_cmd))
+    if (VIR_ALLOC_VAR(g_cmd,
+                      struct ethtool_get_features_block, GFEATURES_SIZE) < 0)
+        return -1;
+    g_cmd->cmd = ETHTOOL_GFEATURES;
+    g_cmd->size = GFEATURES_SIZE;
+    if (virNetDevGFeatureAvailable(ifname, g_cmd))
         ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_TXUDPTNL));
+    VIR_FREE(g_cmd);
 # endif
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
