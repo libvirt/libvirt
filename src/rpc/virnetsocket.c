@@ -183,7 +183,8 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 
     if ((gaierr = getaddrinfo("::1", NULL, &hints, &ai)) != 0) {
         if (gaierr == EAI_ADDRFAMILY ||
-            gaierr == EAI_FAMILY) {
+            gaierr == EAI_FAMILY ||
+            gaierr == EAI_NONAME) {
             *hasIPv6 = false;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
