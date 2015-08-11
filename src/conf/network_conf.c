@@ -1731,9 +1731,26 @@ virNetworkForwardNatDefParseXML(const char *networkName,
         goto cleanup;
     }
 
-    /* verify that start <= end */
-    if (virSocketAddrGetRange(&def->addr.start, &def->addr.end, NULL, 0) < 0)
-        goto cleanup;
+    if (addrStart && addrEnd) {
+        /* verify that start <= end */
+        if (virSocketAddrGetRange(&def->addr.start, &def->addr.end, NULL, 0) < 0)
+            goto cleanup;
+    } else {
+        if (addrStart) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Only start address '%s' specified in <nat> in "
+                             "<forward> in network '%s'"),
+                           addrStart, networkName);
+            goto cleanup;
+        }
+        if (addrEnd) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Only end address '%s' specified in <nat> in "
+                             "<forward> in network '%s'"),
+                           addrEnd, networkName);
+            goto cleanup;
+        }
+    }
 
     /* ports for SNAT and MASQUERADE */
     nNatPorts = virXPathNodeSet("./port", ctxt, &natPortNodes);
