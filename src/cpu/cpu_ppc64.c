@@ -628,7 +628,7 @@ ppc64DriverNodeData(virArch arch)
     if (VIR_ALLOC(nodeData) < 0)
         goto error;
 
-    if (VIR_ALLOC(data) < 0)
+    if (VIR_ALLOC(nodeData->data.ppc64) < 0)
         goto error;
 
     data = nodeData->data.ppc64;
