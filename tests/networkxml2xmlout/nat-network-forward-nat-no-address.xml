@@ -1,0 +1,26 @@
+<network>
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward dev='eth1' mode='nat'>
+    <nat>
+      <port start='60000' end='65432'/>
+    </nat>
+    <interface dev='eth1'/>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.122.2' end='192.168.122.254'/>
+      <host mac='00:16:3e:77:e2:ed' name='a.example.com' ip='192.168.122.10'/>
+      <host mac='00:16:3e:3e:a9:1a' name='b.example.com' ip='192.168.122.11'/>
+    </dhcp>
+  </ip>
+  <ip family='ipv4' address='192.168.123.1' netmask='255.255.255.0'>
+  </ip>
+  <ip family='ipv6' address='2001:db8:ac10:fe01::1' prefix='64'>
+  </ip>
+  <ip family='ipv6' address='2001:db8:ac10:fd01::1' prefix='64'>
+  </ip>
+  <ip family='ipv4' address='10.24.10.1'>
+  </ip>
+</network>

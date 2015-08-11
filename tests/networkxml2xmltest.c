@@ -99,6 +99,7 @@ mymain(void)
     DO_TEST("nat-network-dns-forward-plain");
     DO_TEST("nat-network-dns-forwarders");
     DO_TEST("nat-network-forward-nat-address");
+    DO_TEST("nat-network-forward-nat-no-address");
     DO_TEST("8021Qbh-net");
     DO_TEST("direct-net");
     DO_TEST("host-bridge-net");
