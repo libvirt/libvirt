@@ -1742,12 +1742,17 @@ qemuCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static bool
-qemuDomainSupportsPCI(virDomainDefPtr def)
+qemuDomainSupportsPCI(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
     if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
     if (STREQ(def->os.machine, "versatilepb"))
+        return true;
+
+    if ((STREQ(def->os.machine, "virt") ||
+         STRPREFIX(def->os.machine, "virt-")) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX))
         return true;
 
     return false;
@@ -2267,7 +2272,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
             goto cleanup;
 
-        if (qemuDomainSupportsPCI(def)) {
+        if (qemuDomainSupportsPCI(def, qemuCaps)) {
             if (qemuValidateDevicePCISlotsChipsets(def, qemuCaps, addrs) < 0)
                 goto cleanup;
 

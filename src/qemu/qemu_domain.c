@@ -1093,6 +1093,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
         goto cleanup;
 
+    /* NB: any machine that sets addPCIRoot to true must also return
+     * true from the function qemuDomainSupportsPCI().
+     */
     if (addPCIRoot &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
@@ -1102,6 +1105,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     /* When a machine has a pcie-root, make sure that there is always
      * a dmi-to-pci-bridge controller added as bus 1, and a pci-bridge
      * as bus 2, so that standard PCI devices can be connected
+     *
+     * NB: any machine that sets addPCIeRoot to true must also return
+     * true from the function qemuDomainSupportsPCI().
      */
     if (addPCIeRoot) {
         if (virDomainDefMaybeAddController(
