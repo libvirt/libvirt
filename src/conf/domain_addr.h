@@ -275,4 +275,8 @@ int virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs);
 
+int
+virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
+                           void *data)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 #endif /* __DOMAIN_ADDR_H__ */

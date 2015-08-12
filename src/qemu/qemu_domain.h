@@ -187,6 +187,7 @@ struct _qemuDomainObjPrivate {
     virDomainPCIAddressSetPtr pciaddrs;
     virDomainCCWAddressSetPtr ccwaddrs;
     virDomainVirtioSerialAddrSetPtr vioserialaddrs;
+    virDomainUSBAddressSetPtr usbaddrs;
 
     virQEMUCapsPtr qemuCaps;
     char *lockState;

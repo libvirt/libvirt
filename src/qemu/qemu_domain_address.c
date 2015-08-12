@@ -1622,11 +1622,44 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 }
 
 
+static int
+qemuDomainAssignUSBAddresses(virDomainDefPtr def,
+                             virDomainObjPtr obj)
+{
+    int ret = -1;
+    virDomainUSBAddressSetPtr addrs = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+
+    if (!(addrs = virDomainUSBAddressSetCreate()))
+        goto cleanup;
+
+    if (virDomainUSBAddressSetAddControllers(addrs, def) < 0)
+        goto cleanup;
+
+    if (virDomainUSBDeviceDefForeach(def, virDomainUSBAddressReserve, addrs,
+                                     true) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Existing USB addresses have been reserved");
+
+    if (obj && obj->privateData) {
+        priv = obj->privateData;
+        priv->usbaddrs = addrs;
+        addrs = NULL;
+    }
+    ret = 0;
+
+ cleanup:
+    virDomainUSBAddressSetFree(addrs);
+    return ret;
+}
+
+
 int
 qemuDomainAssignAddresses(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
                           virDomainObjPtr obj,
-                          bool newDomain ATTRIBUTE_UNUSED)
+                          bool newDomain)
 {
     if (qemuDomainAssignVirtioSerialAddresses(def, obj) < 0)
         return -1;
@@ -1640,6 +1673,9 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
 
     if (qemuDomainAssignPCIAddresses(def, qemuCaps, obj) < 0)
+        return -1;
+
+    if (newDomain && qemuDomainAssignUSBAddresses(def, obj) < 0)
         return -1;
 
     return 0;

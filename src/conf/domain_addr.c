@@ -1562,3 +1562,45 @@ virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
     }
     return 0;
 }
+
+
+int
+virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
+                           void *data)
+{
+    virDomainUSBAddressSetPtr addrs = data;
+    virDomainUSBAddressHubPtr targetHub = NULL;
+    char *portStr = NULL;
+    int ret = -1;
+    int targetPort;
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB)
+        return 0;
+
+    if (!virDomainUSBAddressPortIsValid(info->addr.usb.port))
+        return 0;
+
+    portStr = virDomainUSBAddressPortFormat(info->addr.usb.port);
+    if (!portStr)
+        goto cleanup;
+    VIR_DEBUG("Reserving USB address bus=%u port=%s", info->addr.usb.bus, portStr);
+
+    if (!(targetHub = virDomainUSBAddressFindPort(addrs, info, &targetPort,
+                                                  portStr)))
+        goto cleanup;
+
+    if (virBitmapIsBitSet(targetHub->portmap, targetPort)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Duplicate USB address bus %u port %s"),
+                       info->addr.usb.bus, portStr);
+        goto cleanup;
+    }
+
+    ignore_value(virBitmapSetBit(targetHub->portmap, targetPort));
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(portStr);
+    return ret;
+}
