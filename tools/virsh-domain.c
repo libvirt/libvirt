@@ -1023,12 +1023,16 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (inboundStr || outboundStr) {
         virBufferAddLit(&buf, "<bandwidth>\n");
         virBufferAdjustIndent(&buf, 2);
-        if (inboundStr && inbound.average > 0) {
-            virBufferAsprintf(&buf, "<inbound average='%llu'", inbound.average);
+        if (inboundStr && (inbound.average || inbound.floor)) {
+            virBufferAddLit(&buf, "<inbound");
+            if (inbound.average > 0)
+                virBufferAsprintf(&buf, " average='%llu'", inbound.average);
             if (inbound.peak > 0)
                 virBufferAsprintf(&buf, " peak='%llu'", inbound.peak);
             if (inbound.burst > 0)
                 virBufferAsprintf(&buf, " burst='%llu'", inbound.burst);
+            if (inbound.floor > 0)
+                virBufferAsprintf(&buf, " floor='%llu'", inbound.floor);
             virBufferAddLit(&buf, "/>\n");
         }
         if (outboundStr && outbound.average > 0) {
