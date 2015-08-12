@@ -5048,8 +5048,8 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
 
     /* Okay, there are three possible scenarios: */
 
-    if (ifaceBand->in && ifaceBand->in->floor &&
-        newBandwidth->in && newBandwidth->in->floor) {
+    if (ifaceBand && ifaceBand->in && ifaceBand->in->floor &&
+        newBandwidth && newBandwidth->in && newBandwidth->in->floor) {
         /* Either we just need to update @floor .. */
 
         if (virNetDevBandwidthUpdateRate(network->def->bridge,
