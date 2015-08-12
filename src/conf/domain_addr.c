@@ -884,27 +884,6 @@ virDomainVirtioSerialAddrSetAddControllers(virDomainVirtioSerialAddrSetPtr addrs
     return 0;
 }
 
-/* virDomainVirtioSerialAddrSetRemoveController
- *
- * Removes a virtio serial controller from the address set.
- */
-void
-virDomainVirtioSerialAddrSetRemoveController(virDomainVirtioSerialAddrSetPtr addrs,
-                                             virDomainControllerDefPtr cont)
-{
-    ssize_t pos;
-
-    if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
-        return;
-
-    VIR_DEBUG("Removing virtio serial controller index %u "
-              "from the address set", cont->idx);
-
-    pos = virDomainVirtioSerialAddrFindController(addrs, cont->idx);
-
-    if (pos >= 0)
-        VIR_DELETE_ELEMENT(addrs->controllers, pos, addrs->ncontrollers);
-}
 
 void
 virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)

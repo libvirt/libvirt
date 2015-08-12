@@ -115,7 +115,6 @@ virDomainVirtioSerialAddrSetAddController;
 virDomainVirtioSerialAddrSetAddControllers;
 virDomainVirtioSerialAddrSetCreate;
 virDomainVirtioSerialAddrSetFree;
-virDomainVirtioSerialAddrSetRemoveController;
 
 
 # conf/domain_audit.h

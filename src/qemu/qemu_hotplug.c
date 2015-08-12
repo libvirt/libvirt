@@ -442,7 +442,6 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool releaseaddr = false;
-    bool addedToAddrSet = false;
 
     if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -484,20 +483,6 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
             goto cleanup;
 
-        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-            controller->model == -1 &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("USB controller hotplug unsupported in this QEMU binary"));
-            goto cleanup;
-        }
-
-        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL &&
-            virDomainVirtioSerialAddrSetAddController(priv->vioserialaddrs,
-                                                      controller) < 0)
-            goto cleanup;
-        addedToAddrSet = true;
-
         if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
             goto cleanup;
     }
@@ -526,9 +511,6 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    if (ret != 0 && addedToAddrSet)
-        virDomainVirtioSerialAddrSetRemoveController(priv->vioserialaddrs,
-                                                     controller);
     if (ret != 0 && releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
 

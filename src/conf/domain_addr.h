@@ -209,10 +209,6 @@ int
 virDomainVirtioSerialAddrSetAddController(virDomainVirtioSerialAddrSetPtr addrs,
                                           virDomainControllerDefPtr cont)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void
-virDomainVirtioSerialAddrSetRemoveController(virDomainVirtioSerialAddrSetPtr addrs,
-                                             virDomainControllerDefPtr cont)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int
 virDomainVirtioSerialAddrSetAddControllers(virDomainVirtioSerialAddrSetPtr addrs,
                                            virDomainDefPtr def)
