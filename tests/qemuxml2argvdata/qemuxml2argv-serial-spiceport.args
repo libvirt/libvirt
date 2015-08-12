@@ -23,7 +23,7 @@ server,nowait \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -chardev spiceport,id=charserial0,name=org.qemu.console.serial.0 \
 -device isa-serial,chardev=charserial0,id=serial0 \
--device usb-tablet,id=input0 \
+-device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,bus=pci.0,\
 addr=0x2 \

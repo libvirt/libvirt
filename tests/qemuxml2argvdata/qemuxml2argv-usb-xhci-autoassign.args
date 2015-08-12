@@ -20,8 +20,8 @@ server,nowait \
 -no-acpi \
 -boot c \
 -device nec-usb-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x3 \
--device usb-hub,id=hub0 \
--device usb-hub,id=hub1 \
--device usb-mouse,id=input0 \
--device usb-mouse,id=input1 \
--device usb-mouse,id=input2
+-device usb-hub,id=hub0,bus=usb.0,port=1 \
+-device usb-hub,id=hub1,bus=usb.0,port=2 \
+-device usb-mouse,id=input0,bus=usb.0,port=3 \
+-device usb-mouse,id=input1,bus=usb.0,port=4 \
+-device usb-mouse,id=input2,bus=usb.0,port=5

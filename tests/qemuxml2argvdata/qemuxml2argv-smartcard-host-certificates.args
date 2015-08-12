@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
--device usb-ccid,id=ccid0 \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
 -device ccid-card-emulated,backend=certificates,cert1=cert1,cert2=cert2,\
 cert3=cert3,db=/etc/pki/nssdb,id=smartcard0,bus=ccid0.0 \

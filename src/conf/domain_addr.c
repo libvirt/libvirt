@@ -1489,7 +1489,7 @@ virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
 
 #define VIR_DOMAIN_USB_HUB_PORTS 8
 
-static int
+int
 virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
                              virDomainHubDefPtr hub)
 {
@@ -1564,6 +1564,119 @@ virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
 }
 
 
+static int
+virDomainUSBAddressFindFreePort(virDomainUSBAddressHubPtr hub,
+                                unsigned int *portpath,
+                                unsigned int level)
+{
+    unsigned int port;
+    ssize_t portIdx;
+    size_t i;
+
+    /* Look for free ports on the current hub */
+    if ((portIdx = virBitmapNextClearBit(hub->portmap, -1)) >= 0) {
+        port = portIdx + 1;
+        VIR_DEBUG("Found a free port %u at level %u", port, level);
+        portpath[level] = port;
+        return 0;
+    }
+
+    VIR_DEBUG("No ports found on hub %p, trying the hubs on it", hub);
+
+    if (level >= VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH - 1)
+        return -1;
+
+    /* Recursively search through the ports that contain another hub */
+    for (i = 0; i < hub->nports; i++) {
+        if (!hub->ports[i])
+            continue;
+
+        port = i + 1;
+        VIR_DEBUG("Looking at USB hub at level: %u port: %u", level, port);
+        if (virDomainUSBAddressFindFreePort(hub->ports[i], portpath,
+                                            level + 1) < 0)
+            continue;
+
+        portpath[level] = port;
+        return 0;
+    }
+    return -1;
+}
+
+
+/* Try to find a free port on bus @bus.
+ *
+ * Returns  0 on success
+ *         -1 on fatal error (OOM)
+ *         -2 if there is no bus at @bus or no free port on this bus
+ */
+static int
+virDomainUSBAddressAssignFromBus(virDomainUSBAddressSetPtr addrs,
+                                 virDomainDeviceInfoPtr info,
+                                 size_t bus)
+{
+    unsigned int portpath[VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH] = { 0 };
+    virDomainUSBAddressHubPtr hub = addrs->buses[bus];
+    char *portStr = NULL;
+    int ret = -1;
+
+    if (!hub)
+        return -2;
+
+    if (virDomainUSBAddressFindFreePort(hub, portpath, 0) < 0)
+        return -2;
+
+    /* we found a free port */
+    if (!(portStr = virDomainUSBAddressPortFormat(portpath)))
+        goto cleanup;
+
+    info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB;
+    info->addr.usb.bus = bus;
+    memcpy(info->addr.usb.port, portpath, sizeof(portpath));
+    VIR_DEBUG("Assigning USB addr bus=%u port=%s",
+              info->addr.usb.bus, portStr);
+    if (virDomainUSBAddressReserve(info, addrs) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(portStr);
+    return ret;
+}
+
+
+int
+virDomainUSBAddressAssign(virDomainUSBAddressSetPtr addrs,
+                          virDomainDeviceInfoPtr info)
+{
+    size_t i;
+    int rc;
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        VIR_DEBUG("A USB port on bus %u was requested", info->addr.usb.bus);
+        if (!addrs->buses[info->addr.usb.bus]) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("USB bus %u requested but no controller "
+                             "with that index is present"), info->addr.usb.bus);
+            return -1;
+        }
+        rc = virDomainUSBAddressAssignFromBus(addrs, info, info->addr.usb.bus);
+        if (rc >= -1)
+            return rc;
+    } else {
+        VIR_DEBUG("Looking for a free USB port on all the buses");
+        for (i = 0; i < addrs->nbuses; i++) {
+            rc = virDomainUSBAddressAssignFromBus(addrs, info, i);
+            if (rc >= -1)
+                return rc;
+        }
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("No free USB ports"));
+    return -1;
+}
+
+
 int
 virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
                            void *data)
@@ -1603,4 +1716,22 @@ virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
  cleanup:
     VIR_FREE(portStr);
     return ret;
+}
+
+
+int
+virDomainUSBAddressEnsure(virDomainUSBAddressSetPtr addrs,
+                          virDomainDeviceInfoPtr info)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+        (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+         !virDomainUSBAddressPortIsValid(info->addr.usb.port))) {
+        if (virDomainUSBAddressAssign(addrs, info) < 0)
+            return -1;
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        if (virDomainUSBAddressReserve(info, addrs) < 0)
+            return -1;
+    }
+
+    return 0;
 }

@@ -22,4 +22,4 @@ server,nowait \
 -device pci-ohci,id=usb,bus=pci,addr=0x1 \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,reg=0x30000000 \
--device usb-kbd,id=input0
+-device usb-kbd,id=input0,bus=usb.0,port=1

@@ -1622,6 +1622,63 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 }
 
 
+struct qemuAssignUSBIteratorInfo {
+    virDomainUSBAddressSetPtr addrs;
+    size_t count;
+};
+
+
+static int
+qemuDomainAssignUSBPortsIterator(virDomainDeviceInfoPtr info,
+                                 void *opaque)
+{
+    struct qemuAssignUSBIteratorInfo *data = opaque;
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        return 0;
+
+    return virDomainUSBAddressAssign(data->addrs, info);
+}
+
+
+static int
+qemuDomainAssignUSBHubs(virDomainUSBAddressSetPtr addrs,
+                        virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhubs; i++) {
+        virDomainHubDefPtr hub = def->hubs[i];
+        if (hub->type != VIR_DOMAIN_HUB_TYPE_USB)
+            continue;
+
+        if (hub->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+            virDomainUSBAddressPortIsValid(hub->info.addr.usb.port))
+            continue;
+        if (virDomainUSBAddressAssign(addrs, &hub->info) < 0)
+            return -1;
+
+        if (virDomainUSBAddressSetAddHub(addrs, hub) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainAssignUSBPorts(virDomainUSBAddressSetPtr addrs,
+                         virDomainDefPtr def)
+{
+    struct qemuAssignUSBIteratorInfo data = { .addrs = addrs };
+
+    return virDomainUSBDeviceDefForeach(def,
+                                        qemuDomainAssignUSBPortsIterator,
+                                        &data,
+                                        true);
+}
+
+
 static int
 qemuDomainAssignUSBAddresses(virDomainDefPtr def,
                              virDomainObjPtr obj)
@@ -1641,6 +1698,14 @@ qemuDomainAssignUSBAddresses(virDomainDefPtr def,
         goto cleanup;
 
     VIR_DEBUG("Existing USB addresses have been reserved");
+
+    if (qemuDomainAssignUSBHubs(addrs, def) < 0)
+        goto cleanup;
+
+    if (qemuDomainAssignUSBPorts(addrs, def) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Finished assigning USB ports");
 
     if (obj && obj->privateData) {
         priv = obj->privateData;

@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
--device usb-ccid,id=ccid0 \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
 -chardev spicevmc,id=charsmartcard0,name=smartcard \
 -device ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
