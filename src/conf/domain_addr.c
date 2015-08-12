@@ -1735,3 +1735,33 @@ virDomainUSBAddressEnsure(virDomainUSBAddressSetPtr addrs,
 
     return 0;
 }
+
+
+int
+virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
+                           virDomainDeviceInfoPtr info)
+{
+    virDomainUSBAddressHubPtr targetHub = NULL;
+    char *portStr = NULL;
+    int targetPort;
+    int ret = -1;
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB ||
+        !virDomainUSBAddressPortIsValid(info->addr.usb.port))
+        return 0;
+
+    portStr = virDomainUSBAddressPortFormat(info->addr.usb.port);
+    VIR_DEBUG("Releasing USB addr bus=%u port=%s", info->addr.usb.bus, portStr);
+
+    if (!(targetHub = virDomainUSBAddressFindPort(addrs, info, &targetPort,
+                                                  portStr)))
+        goto cleanup;
+
+    ignore_value(virBitmapClearBit(targetHub->portmap, targetPort));
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(portStr);
+    return ret;
+}

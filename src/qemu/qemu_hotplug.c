@@ -711,6 +711,13 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
+    bool releaseaddr = false;
+
+    if (priv->usbaddrs) {
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
+            goto cleanup;
+        releaseaddr = true;
+    }
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -756,6 +763,8 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     virDomainDiskInsertPreAlloced(vm->def, disk);
 
  cleanup:
+    if (ret < 0 && releaseaddr)
+        virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
     virObjectUnref(cfg);
@@ -1557,6 +1566,12 @@ qemuDomainAttachChrDeviceAssignAddr(qemuDomainObjPrivatePtr priv,
             return -1;
         return 1;
 
+    } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+               chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &chr->info) < 0)
+            return -1;
+        return 1;
+
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
                chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
         if (virDomainVirtioSerialAddrAutoAssign(NULL, priv->vioserialaddrs,
@@ -1900,10 +1915,17 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
+    bool releaseaddr = false;
     bool added = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     int ret = -1;
+
+    if (priv->usbaddrs) {
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, hostdev->info) < 0)
+            goto cleanup;
+        releaseaddr = true;
+    }
 
     if (qemuHostdevPrepareUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
         goto cleanup;
@@ -1950,6 +1972,8 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
         if (added)
             qemuHostdevReAttachUSBDevices(driver, vm->def->name, &hostdev, 1);
+        if (releaseaddr)
+            virDomainUSBAddressRelease(priv->usbaddrs, hostdev->info);
     }
     VIR_FREE(devstr);
     return ret;
@@ -2988,6 +3012,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
+    if (priv->usbaddrs)
+        virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
 
     virDomainDiskDefFree(disk);
     return 0;
@@ -3084,6 +3110,7 @@ qemuDomainRemoveUSBHostDevice(virQEMUDriverPtr driver,
                               virDomainHostdevDefPtr hostdev)
 {
     qemuHostdevReAttachUSBDevices(driver, vm->def->name, &hostdev, 1);
+    qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
 }
 
 static void

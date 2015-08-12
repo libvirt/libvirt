@@ -1772,4 +1772,9 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
         virDomainVirtioSerialAddrRelease(priv->vioserialaddrs, info) < 0)
         VIR_WARN("Unable to release virtio-serial address on %s",
                  NULLSTR(devstr));
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+        priv->usbaddrs &&
+        virDomainUSBAddressRelease(priv->usbaddrs, info) < 0)
+        VIR_WARN("Unable to release USB address on %s",
+                 NULLSTR(devstr));
 }

@@ -27,6 +27,7 @@
       <readonly/>
       <shareable/>
       <alias name='usb-disk16'/>
+      <address type='usb' bus='0' port='1'/>
     </disk>
     <controller type='usb' index='0'>
       <alias name='usb'/>

@@ -112,6 +112,7 @@ virDomainUSBAddressEnsure;
 virDomainUSBAddressPortFormat;
 virDomainUSBAddressPortFormatBuf;
 virDomainUSBAddressPortIsValid;
+virDomainUSBAddressRelease;
 virDomainUSBAddressReserve;
 virDomainUSBAddressSetAddControllers;
 virDomainUSBAddressSetAddHub;

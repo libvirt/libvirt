@@ -293,4 +293,9 @@ int
 virDomainUSBAddressEnsure(virDomainUSBAddressSetPtr addrs,
                           virDomainDeviceInfoPtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
+                           virDomainDeviceInfoPtr info)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 #endif /* __DOMAIN_ADDR_H__ */
