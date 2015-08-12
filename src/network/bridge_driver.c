@@ -4960,9 +4960,6 @@ networkBandwidthGenericChecks(virDomainNetDefPtr iface,
     virNetDevBandwidthPtr ifaceBand;
     unsigned long long old_floor, new_floor;
 
-    if (!iface && !newBandwidth)
-        return false;
-
     if (virDomainNetGetActualType(iface) != VIR_DOMAIN_NET_TYPE_NETWORK) {
         /* This is not an interface that's plugged into a network.
          * We don't care. Thus from our POV bandwidth change is allowed. */
