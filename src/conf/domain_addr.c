@@ -1284,3 +1284,45 @@ virDomainUSBAddressPortFormat(unsigned int *port)
         return NULL;
     return virBufferContentAndReset(&buf);
 }
+
+
+virDomainUSBAddressSetPtr
+virDomainUSBAddressSetCreate(void)
+{
+    virDomainUSBAddressSetPtr addrs;
+
+    if (VIR_ALLOC(addrs) < 0)
+        return NULL;
+
+    return addrs;
+}
+
+
+static void
+virDomainUSBAddressHubFree(virDomainUSBAddressHubPtr hub)
+{
+    size_t i;
+
+    if (!hub)
+        return;
+
+    for (i = 0; i < hub->nports; i++)
+        virDomainUSBAddressHubFree(hub->ports[i]);
+    virBitmapFree(hub->portmap);
+    VIR_FREE(hub);
+}
+
+
+void
+virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs)
+{
+    size_t i;
+
+    if (!addrs)
+        return;
+
+    for (i = 0; i < addrs->nbuses; i++)
+        virDomainUSBAddressHubFree(addrs->buses[i]);
+    VIR_FREE(addrs->buses);
+    VIR_FREE(addrs);
+}

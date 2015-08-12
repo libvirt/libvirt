@@ -110,6 +110,8 @@ virDomainPCIControllerModelToConnectType;
 virDomainUSBAddressPortFormat;
 virDomainUSBAddressPortFormatBuf;
 virDomainUSBAddressPortIsValid;
+virDomainUSBAddressSetCreate;
+virDomainUSBAddressSetFree;
 virDomainVirtioSerialAddrAssign;
 virDomainVirtioSerialAddrAutoAssign;
 virDomainVirtioSerialAddrIsComplete;

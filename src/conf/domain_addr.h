@@ -249,4 +249,26 @@ char *
 virDomainUSBAddressPortFormat(unsigned int *port)
     ATTRIBUTE_NONNULL(1);
 
+typedef struct _virDomainUSBAddressHub virDomainUSBAddressHub;
+typedef virDomainUSBAddressHub *virDomainUSBAddressHubPtr;
+struct _virDomainUSBAddressHub {
+    /* indexes are shifted by one:
+     * ports[0] represents port 1, because ports are numbered from 1 */
+    virBitmapPtr portmap;
+    size_t nports;
+    virDomainUSBAddressHubPtr *ports;
+};
+
+struct _virDomainUSBAddressSet {
+    /* every <controller type='usb' index='i'> is represented
+     * as a hub at buses[i] */
+    virDomainUSBAddressHubPtr *buses;
+    size_t nbuses;
+};
+typedef struct _virDomainUSBAddressSet virDomainUSBAddressSet;
+typedef virDomainUSBAddressSet *virDomainUSBAddressSetPtr;
+
+virDomainUSBAddressSetPtr virDomainUSBAddressSetCreate(void);
+void virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs);
+
 #endif /* __DOMAIN_ADDR_H__ */
