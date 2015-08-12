@@ -863,66 +863,48 @@ static const vshCmdOptDef opts_attach_interface[] = {
 };
 
 /* parse inbound and outbound which are in the format of
- * 'average,peak,burst', in which peak and burst are optional,
+ * 'average,peak,burst,floor', in which peak and burst are optional,
  * thus 'average,,burst' and 'average,peak' are also legal. */
-static int parseRateStr(vshControl *ctl,
-                        const char *rateStr,
-                        virNetDevBandwidthRatePtr rate)
+
+#define VSH_PARSE_RATE_FIELD(index, name)                                      \
+    do {                                                                       \
+        if (index < ntok &&                                                    \
+            *tok[index] != '\0' &&                                             \
+            virStrToLong_ullp(tok[index], NULL, 10, &rate->name) < 0) {        \
+            vshError(ctl, _("field '%s' is malformed"), #name);                \
+            goto cleanup;                                                      \
+        }                                                                      \
+    } while (0)
+
+static int
+vshParseRateStr(vshControl *ctl,
+                const char *rateStr,
+                virNetDevBandwidthRatePtr rate)
 {
-    char *token;
-    char *next;
-    char *saveptr = NULL;
-    enum {
-        AVERAGE, PEAK, BURST, FLOOR
-    } state;
+    char **tok = NULL;
+    size_t ntok;
     int ret = -1;
 
-    if (!rateStr)
+    if (!(tok = virStringSplitCount(rateStr, ",", 0, &ntok)))
         return -1;
 
-    next = vshStrdup(ctl, rateStr);
-
-    for (state = AVERAGE; state <= FLOOR; state++) {
-        unsigned long long *tmp;
-        const char *field_name;
-
-        if (!(token = strtok_r(next, ",", &saveptr)))
-            break;
-        next = NULL;
-
-        switch (state) {
-        case AVERAGE:
-            tmp = &rate->average;
-            field_name = "average";
-            break;
-
-        case PEAK:
-            tmp = &rate->peak;
-            field_name = "peak";
-            break;
-
-        case BURST:
-            tmp = &rate->burst;
-            field_name = "burst";
-            break;
-
-        case FLOOR:
-            tmp = &rate->floor;
-            field_name = "floor";
-            break;
-        }
-
-        if (virStrToLong_ullp(token, NULL, 10, tmp) < 0) {
-            vshError(ctl, _("malformed %s field"), field_name);
-            goto cleanup;
-        }
+    if (ntok > 4) {
+        vshError(ctl, _("Rate string '%s' has too many fields"), rateStr);
+        goto cleanup;
     }
+
+    VSH_PARSE_RATE_FIELD(0, average);
+    VSH_PARSE_RATE_FIELD(1, peak);
+    VSH_PARSE_RATE_FIELD(2, burst);
+    VSH_PARSE_RATE_FIELD(3, floor);
 
     ret = 0;
  cleanup:
-    VIR_FREE(next);
+    virStringFreeList(tok);
     return ret;
 }
+
+#undef VSH_PARSE_RATE_FIELD
 
 static bool
 cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
@@ -979,7 +961,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     if (inboundStr) {
         memset(&inbound, 0, sizeof(inbound));
-        if (parseRateStr(ctl, inboundStr, &inbound) < 0)
+        if (vshParseRateStr(ctl, inboundStr, &inbound) < 0)
             goto cleanup;
         if (!inbound.average && !inbound.floor) {
             vshError(ctl, _("either inbound average or floor is mandatory"));
@@ -988,7 +970,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
     if (outboundStr) {
         memset(&outbound, 0, sizeof(outbound));
-        if (parseRateStr(ctl, outboundStr, &outbound) < 0)
+        if (vshParseRateStr(ctl, outboundStr, &outbound) < 0)
             goto cleanup;
         if (outbound.average == 0) {
             vshError(ctl, _("outbound average is mandatory"));
@@ -3307,7 +3289,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     memset(&outbound, 0, sizeof(outbound));
 
     if (inboundStr) {
-        if (parseRateStr(ctl, inboundStr, &inbound) < 0)
+        if (vshParseRateStr(ctl, inboundStr, &inbound) < 0)
             goto cleanup;
         /* we parse the rate as unsigned long long, but the API
          * only accepts UINT */
@@ -3349,7 +3331,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (outboundStr) {
-        if (parseRateStr(ctl, outboundStr, &outbound) < 0)
+        if (vshParseRateStr(ctl, outboundStr, &outbound) < 0)
             goto cleanup;
         if (outbound.average > UINT_MAX || outbound.peak > UINT_MAX ||
             outbound.burst > UINT_MAX) {
