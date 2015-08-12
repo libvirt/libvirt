@@ -237,4 +237,16 @@ virDomainVirtioSerialAddrRelease(virDomainVirtioSerialAddrSetPtr addrs,
                                  virDomainDeviceInfoPtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+bool
+virDomainUSBAddressPortIsValid(unsigned int *port)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
+                                 unsigned int *port)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+char *
+virDomainUSBAddressPortFormat(unsigned int *port)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __DOMAIN_ADDR_H__ */

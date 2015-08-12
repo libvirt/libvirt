@@ -84,7 +84,7 @@ typedef struct _virDomainDeviceCcidAddress {
 
 typedef struct _virDomainDeviceUSBAddress {
     unsigned int bus;
-    char *port;
+    unsigned int port[VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH];
 } virDomainDeviceUSBAddress, *virDomainDeviceUSBAddressPtr;
 
 typedef struct _virDomainDeviceSpaprVioAddress {

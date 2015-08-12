@@ -1251,3 +1251,36 @@ virDomainVirtioSerialAddrRelease(virDomainVirtioSerialAddrSetPtr addrs,
     VIR_FREE(str);
     return ret;
 }
+
+
+bool
+virDomainUSBAddressPortIsValid(unsigned int *port)
+{
+    return port[0] != 0;
+}
+
+
+void
+virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
+                                 unsigned int *port)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH; i++) {
+        if (port[i] == 0)
+            break;
+        virBufferAsprintf(buf, "%u.", port[i]);
+    }
+    virBufferTrim(buf, ".", -1);
+}
+
+
+char *
+virDomainUSBAddressPortFormat(unsigned int *port)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainUSBAddressPortFormatBuf(&buf, port);
+    if (virBufferCheckError(&buf) < 0)
+        return NULL;
+    return virBufferContentAndReset(&buf);
+}

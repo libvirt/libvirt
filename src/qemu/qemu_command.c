@@ -376,7 +376,10 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
                                                        info->addr.usb.bus)))
             goto cleanup;
         virBufferAsprintf(buf, ",bus=%s.0", contAlias);
-        virBufferEscapeString(buf, ",port=%s", info->addr.usb.port);
+        if (virDomainUSBAddressPortIsValid(info->addr.usb.port)) {
+            virBufferAddLit(buf, ",port=");
+            virDomainUSBAddressPortFormatBuf(buf, info->addr.usb.port);
+        }
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
         if (info->addr.spaprvio.has_reg)
             virBufferAsprintf(buf, ",reg=0x%llx", info->addr.spaprvio.reg);

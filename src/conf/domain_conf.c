@@ -32,6 +32,7 @@
 #include "internal.h"
 #include "virerror.h"
 #include "datatypes.h"
+#include "domain_addr.h"
 #include "domain_conf.h"
 #include "snapshot_conf.h"
 #include "viralloc.h"
@@ -3325,8 +3326,6 @@ virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 {
     VIR_FREE(info->alias);
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB)
-        VIR_FREE(info->addr.usb.port);
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     VIR_FREE(info->romfile);
@@ -4840,7 +4839,11 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
         virBufferAsprintf(buf, " bus='%d'", info->addr.usb.bus);
-        virBufferEscapeString(buf, " port='%s'", info->addr.usb.port);
+        if (virDomainUSBAddressPortIsValid(info->addr.usb.port)) {
+            virBufferAddLit(buf, " port='");
+            virDomainUSBAddressPortFormatBuf(buf, info->addr.usb.port);
+            virBufferAddLit(buf, "'");
+        }
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
@@ -5072,14 +5075,14 @@ virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
 }
 
 static int
-virDomainDeviceUSBAddressParsePort(char *port)
+virDomainDeviceUSBAddressParsePort(virDomainDeviceUSBAddressPtr addr,
+                                   char *port)
 {
-    unsigned int p;
     char *tmp = port;
     size_t i;
 
     for (i = 0; i < VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH; i++) {
-        if (virStrToLong_uip(tmp, &tmp, 10, &p) < 0)
+        if (virStrToLong_uip(tmp, &tmp, 10, &addr->port[i]) < 0)
             break;
 
         if (*tmp == '\0')
@@ -5106,11 +5109,8 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
     port = virXMLPropString(node, "port");
     bus = virXMLPropString(node, "bus");
 
-    if (port && virDomainDeviceUSBAddressParsePort(port) < 0)
+    if (port && virDomainDeviceUSBAddressParsePort(addr, port) < 0)
         goto cleanup;
-
-    addr->port = port;
-    port = NULL;
 
     if (bus &&
         virStrToLong_uip(bus, NULL, 10, &addr->bus) < 0) {
