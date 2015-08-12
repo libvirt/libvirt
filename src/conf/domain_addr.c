@@ -1326,3 +1326,124 @@ virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs)
     VIR_FREE(addrs->buses);
     VIR_FREE(addrs);
 }
+
+
+static size_t
+virDomainUSBAddressControllerModelToPorts(virDomainControllerDefPtr cont)
+{
+    int model = cont->model;
+
+    if (model == -1)
+        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+
+    switch ((virDomainControllerModelUSB) model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
+        return 2;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+        return 6;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+        /* These have two ports each and are used to provide USB1.1
+         * ports while ICH9_EHCI1 provides 6 USB2.0 ports.
+         * Ignore these since we will add the EHCI1 too. */
+        return 0;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
+        return 3;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+        if (cont->opts.usbopts.ports != -1)
+            return cont->opts.usbopts.ports;
+        return 4;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST:
+        break;
+    }
+    return 0;
+}
+
+
+static virDomainUSBAddressHubPtr
+virDomainUSBAddressHubNew(size_t nports)
+{
+    virDomainUSBAddressHubPtr hub = NULL, ret = NULL;
+
+    if (VIR_ALLOC(hub) < 0)
+        goto cleanup;
+
+    if (!(hub->portmap = virBitmapNew(nports)))
+        goto cleanup;
+
+    if (VIR_ALLOC_N(hub->ports, nports) < 0)
+        goto cleanup;
+    hub->nports = nports;
+
+    ret = hub;
+    hub = NULL;
+ cleanup:
+    virDomainUSBAddressHubFree(hub);
+    return ret;
+}
+
+
+static int
+virDomainUSBAddressSetAddController(virDomainUSBAddressSetPtr addrs,
+                                    virDomainControllerDefPtr cont)
+{
+    size_t nports = virDomainUSBAddressControllerModelToPorts(cont);
+    virDomainUSBAddressHubPtr hub = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Adding a USB controller model=%s with %zu ports",
+              virDomainControllerModelUSBTypeToString(cont->model),
+              nports);
+
+    /* Skip UHCI{1,2,3} companions; only add the EHCI1 */
+    if (nports == 0)
+        return 0;
+
+    if (addrs->nbuses <= cont->idx) {
+        if (VIR_EXPAND_N(addrs->buses, addrs->nbuses, cont->idx - addrs->nbuses + 1) < 0)
+            goto cleanup;
+    } else if (addrs->buses[cont->idx]) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Duplicate USB controllers with index %u"),
+                       cont->idx);
+        goto cleanup;
+    }
+
+    if (!(hub = virDomainUSBAddressHubNew(nports)))
+        goto cleanup;
+
+    addrs->buses[cont->idx] = hub;
+    hub = NULL;
+
+    ret = 0;
+ cleanup:
+    virDomainUSBAddressHubFree(hub);
+    return ret;
+}
+
+
+int
+virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
+                                     virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainControllerDefPtr cont = def->controllers[i];
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+            if (virDomainUSBAddressSetAddController(addrs, cont) < 0)
+                return -1;
+        }
+    }
+    return 0;
+}

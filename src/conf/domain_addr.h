@@ -269,6 +269,10 @@ typedef struct _virDomainUSBAddressSet virDomainUSBAddressSet;
 typedef virDomainUSBAddressSet *virDomainUSBAddressSetPtr;
 
 virDomainUSBAddressSetPtr virDomainUSBAddressSetCreate(void);
+
+int virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
+                                         virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs);
 
 #endif /* __DOMAIN_ADDR_H__ */
