@@ -825,7 +825,7 @@ virDomainVirtioSerialAddrFindController(virDomainVirtioSerialAddrSetPtr addrs,
  * Adds virtio serial ports of the existing controller
  * to the address set.
  */
-int
+static int
 virDomainVirtioSerialAddrSetAddController(virDomainVirtioSerialAddrSetPtr addrs,
                                           virDomainControllerDefPtr cont)
 {

@@ -111,7 +111,6 @@ virDomainVirtioSerialAddrAutoAssign;
 virDomainVirtioSerialAddrIsComplete;
 virDomainVirtioSerialAddrRelease;
 virDomainVirtioSerialAddrReserve;
-virDomainVirtioSerialAddrSetAddController;
 virDomainVirtioSerialAddrSetAddControllers;
 virDomainVirtioSerialAddrSetCreate;
 virDomainVirtioSerialAddrSetFree;
