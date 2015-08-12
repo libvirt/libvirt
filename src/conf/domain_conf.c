@@ -7483,7 +7483,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (driverIOThread) {
-        if (virStrToLong_uip(driverIOThread, NULL, 10, &def->iothread) < 0) {
+        if (virStrToLong_uip(driverIOThread, NULL, 10, &def->iothread) < 0 ||
+            def->iothread == 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid iothread attribute in disk driver "
                              "element: %s"), driverIOThread);
