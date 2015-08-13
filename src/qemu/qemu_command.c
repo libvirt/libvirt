@@ -296,6 +296,12 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         return -1;
     }
 
+    if (!virFileIsExecutable(cfg->bridgeHelperName)) {
+        virReportSystemError(errno, _("'%s' is not a suitable bridge helper"),
+                             cfg->bridgeHelperName);
+        return -1;
+    }
+
     cmd = virCommandNew(cfg->bridgeHelperName);
     if (flags & VIR_NETDEV_TAP_CREATE_VNET_HDR)
         virCommandAddArgFormat(cmd, "--use-vnet");
