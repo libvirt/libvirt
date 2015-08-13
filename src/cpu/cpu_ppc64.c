@@ -84,6 +84,53 @@ ppc64ConvertLegacyCPUDef(const virCPUDef *legacy)
     return cpu;
 }
 
+/* Some hosts can run guests in compatibility mode, but not all
+ * host CPUs support this and not all combinations are valid.
+ * This function performs the necessary checks */
+static virCPUCompareResult
+ppc64CheckCompatibilityMode(const char *host_model,
+                            const char *compat_mode)
+{
+    int host;
+    int compat;
+    char *tmp;
+    virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
+
+    if (!compat_mode)
+        return VIR_CPU_COMPARE_IDENTICAL;
+
+    /* Valid host CPUs: POWER6, POWER7, POWER8 */
+    if (!STRPREFIX(host_model, "POWER") ||
+        !(tmp = (char *) host_model + strlen("POWER")) ||
+        virStrToLong_i(tmp, NULL, 10, &host) < 0 ||
+        host < 6 || host > 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Host CPU does not support compatibility modes"));
+        goto out;
+    }
+
+    /* Valid compatibility modes: power6, power7, power8 */
+    if (!STRPREFIX(compat_mode, "power") ||
+        !(tmp = (char *) compat_mode + strlen("power")) ||
+        virStrToLong_i(tmp, NULL, 10, &compat) < 0 ||
+        compat < 6 || compat > 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown compatibility mode %s"),
+                       compat_mode);
+        goto out;
+    }
+
+    /* Version check */
+    if (compat > host)
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+    else
+        ret = VIR_CPU_COMPARE_IDENTICAL;
+
+ out:
+    return ret;
+}
+
 static void
 ppc64DataFree(virCPUppc64Data *data)
 {
@@ -509,10 +556,46 @@ ppc64Compute(virCPUDefPtr host,
         goto cleanup;
     }
 
-    if (!(map = ppc64LoadMap()) ||
-        !(host_model = ppc64ModelFromCPU(host, map)) ||
-        !(guest_model = ppc64ModelFromCPU(cpu, map)))
+    if (!(map = ppc64LoadMap()))
         goto cleanup;
+
+    /* Host CPU information */
+    if (!(host_model = ppc64ModelFromCPU(host, map)))
+        goto cleanup;
+
+    if (cpu->type == VIR_CPU_TYPE_GUEST) {
+        /* Guest CPU information */
+        virCPUCompareResult tmp;
+        switch (cpu->mode) {
+        case VIR_CPU_MODE_HOST_MODEL:
+            /* host-model only:
+             * we need to take compatibility modes into account */
+            tmp = ppc64CheckCompatibilityMode(host->model, cpu->model);
+            if (tmp != VIR_CPU_COMPARE_IDENTICAL) {
+                ret = tmp;
+                goto cleanup;
+            }
+            /* fallthrough */
+
+        case VIR_CPU_MODE_HOST_PASSTHROUGH:
+            /* host-model and host-passthrough:
+             * the guest CPU is the same as the host */
+            if (!(guest_model = ppc64ModelCopy(host_model)))
+                goto cleanup;
+            break;
+
+        case VIR_CPU_MODE_CUSTOM:
+            /* custom:
+             * look up guest CPU information */
+            if (!(guest_model = ppc64ModelFromCPU(cpu, map)))
+                goto cleanup;
+            break;
+        }
+    } else {
+        /* Other host CPU information */
+        if (!(guest_model = ppc64ModelFromCPU(cpu, map)))
+            goto cleanup;
+    }
 
     if (STRNEQ(guest_model->name, host_model->name)) {
         VIR_DEBUG("host CPU model does not match required CPU model %s",
