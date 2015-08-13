@@ -627,7 +627,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *monitorpath;
-    char *tmp;
+    char *tmp = NULL;
     int n;
     size_t i;
     xmlNodePtr *nodes = NULL;
@@ -715,6 +715,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         }
 
         priv->qemuCaps = qemuCaps;
+        qemuCaps = NULL;
     }
     VIR_FREE(nodes);
 
