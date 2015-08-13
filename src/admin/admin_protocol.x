@@ -32,11 +32,19 @@
  */
 const ADMIN_STRING_MAX = 4194304;
 
+/* Upper limit on list of servers */
+const ADMIN_SERVER_LIST_MAX = 16384;
+
 /* A long string, which may NOT be NULL. */
 typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 
 /* A long string, which may be NULL. */
 typedef admin_nonnull_string *admin_string;
+
+/* A server which may NOT be NULL */
+struct admin_nonnull_server {
+    admin_nonnull_string name;
+};
 
 /*----- Protocol. -----*/
 struct admin_connect_open_args {

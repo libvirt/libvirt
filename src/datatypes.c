@@ -65,6 +65,9 @@ virClassPtr virAdmConnectCloseCallbackDataClass;
 static void virAdmConnectDispose(void *obj);
 static void virAdmConnectCloseCallbackDataDispose(void *obj);
 
+virClassPtr virAdmServerClass;
+static void virAdmServerDispose(void *obj);
+
 static int
 virDataTypesOnceInit(void)
 {
@@ -94,6 +97,7 @@ virDataTypesOnceInit(void)
 
     DECLARE_CLASS_LOCKABLE(virAdmConnect);
     DECLARE_CLASS_LOCKABLE(virAdmConnectCloseCallbackData);
+    DECLARE_CLASS(virAdmServer);
 
 #undef DECLARE_CLASS_COMMON
 #undef DECLARE_CLASS_LOCKABLE
@@ -858,4 +862,35 @@ virAdmConnectCloseCallbackDataDispose(void *obj)
         cb_data->freeCallback(cb_data->opaque);
 
     virObjectUnlock(cb_data);
+}
+
+virAdmServerPtr
+virAdmGetServer(virAdmConnectPtr conn, const char *name)
+{
+    virAdmServerPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        goto error;
+
+    if (!(ret = virObjectNew(virAdmServerClass)))
+        goto error;
+    if (VIR_STRDUP(ret->name, name) < 0)
+        goto error;
+
+    ret->conn = virObjectRef(conn);
+
+    return ret;
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+static void
+virAdmServerDispose(void *obj)
+{
+    virAdmServerPtr srv = obj;
+    VIR_DEBUG("release server srv=%p name=%s", srv, srv->name);
+
+    VIR_FREE(srv->name);
+    virObjectUnref(srv->conn);
 }

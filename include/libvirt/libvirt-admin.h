@@ -43,6 +43,14 @@ extern "C" {
 typedef struct _virAdmConnect virAdmConnect;
 
 /**
+ * virAdmServer:
+ *
+ * a virAdmServer is a private structure and client-side representation of
+ * a remote server object
+ */
+typedef struct _virAdmServer virAdmServer;
+
+/**
  * virAdmConnectPtr:
  *
  * a virAdmConnectPtr is pointer to a virAdmConnect private structure,
@@ -50,6 +58,15 @@ typedef struct _virAdmConnect virAdmConnect;
  * in the API.
  */
 typedef virAdmConnect *virAdmConnectPtr;
+
+/**
+ * virAdmServerPtr:
+ *
+ * a virAdmServerPtr is a pointer to a virAdmServer structure,
+ * this is the type used to reference client-side representation of a
+ * remote server object throughout all the APIs.
+ */
+typedef virAdmServer *virAdmServerPtr;
 
 virAdmConnectPtr virAdmConnectOpen(const char *name, unsigned int flags);
 int virAdmConnectClose(virAdmConnectPtr conn);

@@ -1,4 +1,7 @@
 /* -*- c -*- */
+struct admin_nonnull_server {
+        admin_nonnull_string       name;
+};
 struct admin_connect_open_args {
         u_int                      flags;
 };
