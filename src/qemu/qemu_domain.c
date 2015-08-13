@@ -3374,6 +3374,7 @@ qemuDomainGetMemorySizeAlignment(virDomainDefPtr def ATTRIBUTE_UNUSED)
 int
 qemuDomainAlignMemorySizes(virDomainDefPtr def)
 {
+    unsigned long long initialmem = 0;
     unsigned long long mem;
     unsigned long long align = qemuDomainGetMemorySizeAlignment(def);
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
@@ -3381,13 +3382,17 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
 
     /* align NUMA cell sizes if relevant */
     for (i = 0; i < ncells; i++) {
-        mem = virDomainNumaGetNodeMemorySize(def->numa, i);
-        virDomainNumaSetNodeMemorySize(def->numa, i, VIR_ROUND_UP(mem, align));
+        mem = VIR_ROUND_UP(virDomainNumaGetNodeMemorySize(def->numa, i), align);
+        initialmem += mem;
+        virDomainNumaSetNodeMemorySize(def->numa, i, mem);
     }
 
-    /* align initial memory size */
-    mem = virDomainDefGetMemoryInitial(def);
-    virDomainDefSetMemoryTotal(def, VIR_ROUND_UP(mem, align));
+    /* align initial memory size, if NUMA is present calculate it as total of
+     * individual aligned NUMA node sizes */
+    if (initialmem == 0)
+        initialmem = VIR_ROUND_UP(virDomainDefGetMemoryInitial(def), align);
+
+    virDomainDefSetMemoryInitial(def, initialmem);
 
     def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, align);
 

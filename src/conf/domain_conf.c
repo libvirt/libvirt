@@ -3728,6 +3728,15 @@ virDomainDefRemoveDuplicateMetadata(virDomainDefPtr def)
 static int
 virDomainDefPostParseMemory(virDomainDefPtr def)
 {
+    size_t i;
+
+    if ((def->mem.initial_memory = virDomainNumaGetMemorySize(def->numa)) == 0) {
+        def->mem.initial_memory = def->mem.total_memory;
+
+        for (i = 0; i < def->nmems; i++)
+            def->mem.initial_memory -= def->mems[i]->size;
+    }
+
     if (virDomainDefGetMemoryInitial(def) == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Memory size must be specified via <memory> or in the "
@@ -7699,19 +7708,7 @@ virDomainDefHasMemoryHotplug(const virDomainDef *def)
 unsigned long long
 virDomainDefGetMemoryInitial(virDomainDefPtr def)
 {
-    unsigned long long ret;
-    size_t i;
-
-    /* return NUMA memory size total in case numa is enabled */
-    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0) {
-        return ret;
-    } else {
-        ret = def->mem.total_memory;
-        for (i = 0; i < def->nmems; i++)
-            ret -= def->mems[i]->size;
-    }
-
-    return def->mem.total_memory;
+    return def->mem.initial_memory;
 }
 
 
@@ -7720,13 +7717,30 @@ virDomainDefGetMemoryInitial(virDomainDefPtr def)
  * @def: domain definition
  * @size: size to set
  *
- * Sets the total memory size in @def.
+ * Sets the total memory size in @def. This function should be used only by
+ * hypervisors that don't support memory hotplug.
  */
 void
 virDomainDefSetMemoryTotal(virDomainDefPtr def,
                            unsigned long long size)
 {
     def->mem.total_memory = size;
+    def->mem.initial_memory = size;
+}
+
+
+/**
+ * virDomainDefSetMemoryInitial:
+ * @def: domain definition
+ * @size: size to set
+ *
+ * Sets the initial memory size (without memory modules) in @def.
+ */
+void
+virDomainDefSetMemoryInitial(virDomainDefPtr def,
+                             unsigned long long size)
+{
+    def->mem.initial_memory = size;
 }
 
 
@@ -7744,12 +7758,10 @@ virDomainDefGetMemoryActual(virDomainDefPtr def)
     unsigned long long ret;
     size_t i;
 
-    if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0) {
-        for (i = 0; i < def->nmems; i++)
-            ret += def->mems[i]->size;
-    } else {
-        ret = def->mem.total_memory;
-    }
+    ret = def->mem.initial_memory;
+
+    for (i = 0; i < def->nmems; i++)
+        ret += def->mems[i]->size;
 
     return ret;
 }
