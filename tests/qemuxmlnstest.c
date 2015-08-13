@@ -16,6 +16,7 @@
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"
+# include "qemu/qemu_process.h"
 # include "datatypes.h"
 # include "cpu/cpu_map.h"
 # include "testutilsqemu.h"
@@ -37,7 +38,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *actualargv = NULL;
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
-    virDomainChrSourceDef monitor_chr;
+    virDomainChrSourceDefPtr monitor_chr = NULL;
     virConnectPtr conn;
     char *log = NULL;
     char *emulator = NULL;
@@ -77,10 +78,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vmdef->id = -1;
 
-    memset(&monitor_chr, 0, sizeof(monitor_chr));
-    monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
-    monitor_chr.data.nix.listen = true;
+    if (VIR_ALLOC(monitor_chr) < 0)
+        goto fail;
+    if (qemuProcessPrepareMonitorChr(driver.config,
+                                     monitor_chr,
+                                     vmdef->name) < 0)
+        goto fail;
 
     virQEMUCapsSetList(extraFlags,
                        QEMU_CAPS_VNC_COLON,
@@ -104,7 +107,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver,
-                                     vmdef, &monitor_chr, json, extraFlags,
+                                     vmdef, monitor_chr, json, extraFlags,
                                      migrateFrom, migrateFd, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false, false, NULL,
@@ -142,6 +145,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  fail:
+    virDomainChrSourceDefFree(monitor_chr);
     VIR_FREE(log);
     VIR_FREE(emulator);
     VIR_FREE(actualargv);
@@ -198,6 +202,9 @@ mymain(void)
         abs_top_srcdir = abs_srcdir "/..";
 
     if (!(driver.config = virQEMUDriverConfigNew(false)))
+        return EXIT_FAILURE;
+    VIR_FREE(driver.config->libDir);
+    if (VIR_STRDUP_QUIET(driver.config->libDir, "/tmp") < 0)
         return EXIT_FAILURE;
     if ((driver.caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
