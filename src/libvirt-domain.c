@@ -7926,7 +7926,6 @@ virDomainPinIOThread(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
-    virCheckPositiveArgGoto(iothread_id, error);
     virCheckNonNullArgGoto(cpumap, error);
     virCheckPositiveArgGoto(maplen, error);
 
