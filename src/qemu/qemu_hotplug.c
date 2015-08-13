@@ -1756,6 +1756,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned long long oldmem = virDomainDefGetMemoryActual(vm->def);
+    unsigned long long newmem = oldmem + mem->size;
     char *devstr = NULL;
     char *objalias = NULL;
     const char *backendType;
@@ -1811,7 +1812,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         /* we shouldn't touch mem now, as the def might be freed */
         mem = NULL;
-        goto cleanup;
+        goto audit;
     }
 
     event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
@@ -1822,9 +1823,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (fix_balloon)
         vm->def->mem.cur_balloon += mem->size;
 
-    virDomainAuditMemory(vm, oldmem, virDomainDefGetMemoryActual(vm->def),
-                         "update", ret == 0);
-
     /* mem is consumed by vm->def */
     mem = NULL;
 
@@ -1834,6 +1832,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 
     ret = 0;
 
+ audit:
+    virDomainAuditMemory(vm, oldmem, newmem, "update", ret == 0);
  cleanup:
     virObjectUnref(cfg);
     VIR_FREE(devstr);
@@ -1844,7 +1844,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
  removedef:
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         mem = NULL;
-        goto cleanup;
+        goto audit;
     }
 
     if ((id = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
@@ -1852,7 +1852,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     else
         mem = NULL;
 
-    goto cleanup;
+    goto audit;
 }
 
 
