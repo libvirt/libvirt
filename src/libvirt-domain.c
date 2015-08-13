@@ -7952,9 +7952,9 @@ virDomainPinIOThread(virDomainPtr domain,
  * @iothread_id: the specific IOThread ID value to add
  * @flags: bitwise-OR of virDomainModificationImpact
  *
- * Dynamically add an IOThread to the domain. If @iothread_id is a positive
- * non-zero value, then attempt to add the specific IOThread ID and error
- * out if the iothread id already exists.
+ * Dynamically add an IOThread to the domain. It is left up to the
+ * underlying virtual hypervisor to determine the valid range for an
+ * @iothread_id and determining whether the @iothread_id already exists.
  *
  * Note that this call can fail if the underlying virtualization hypervisor
  * does not support it or if growing the number is arbitrarily limited.
