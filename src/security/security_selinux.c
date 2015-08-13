@@ -1740,7 +1740,7 @@ virSecuritySELinuxSetSecurityChardevLabel(virDomainDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (!dev_source->data.nix.listen) {
-            if (virSecuritySELinuxSetFilecon(dev_source->data.file.path,
+            if (virSecuritySELinuxSetFilecon(dev_source->data.nix.path,
                                              imagelabel) < 0)
                 goto done;
         }
