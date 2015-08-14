@@ -19937,6 +19937,12 @@ static int qemuDomainRename(virDomainPtr dom,
         goto endjob;
     }
 
+    if (STREQ(vm->def->name, new_name)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Can't rename domain to itself"));
+        goto cleanup;
+    }
+
     if (VIR_STRDUP(new_dom_name, new_name) < 0)
         goto endjob;
 
