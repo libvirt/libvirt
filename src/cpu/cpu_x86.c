@@ -1371,6 +1371,12 @@ x86Compute(virCPUDefPtr host,
     virArch arch;
     size_t i;
 
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        return VIR_CPU_COMPARE_ERROR;
+    }
+
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
 

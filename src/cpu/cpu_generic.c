@@ -65,6 +65,12 @@ genericCompare(virCPUDefPtr host,
     size_t i;
     unsigned int reqfeatures;
 
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        goto cleanup;
+    }
+
     if ((cpu->arch != VIR_ARCH_NONE &&
          host->arch != cpu->arch) ||
         STRNEQ(host->model, cpu->model)) {

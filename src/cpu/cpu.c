@@ -142,12 +142,6 @@ cpuCompare(virCPUDefPtr host,
 
     VIR_DEBUG("host=%p, cpu=%p", host, cpu);
 
-    if (!cpu->model) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("no guest CPU model specified"));
-        return VIR_CPU_COMPARE_ERROR;
-    }
-
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;
 
@@ -375,12 +369,6 @@ cpuGuestData(virCPUDefPtr host,
     struct cpuArchDriver *driver;
 
     VIR_DEBUG("host=%p, guest=%p, data=%p, msg=%p", host, guest, data, msg);
-
-    if (!guest->model) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("no guest CPU model specified"));
-        return VIR_CPU_COMPARE_ERROR;
-    }
 
     if ((driver = cpuGetSubDriver(host->arch)) == NULL)
         return VIR_CPU_COMPARE_ERROR;

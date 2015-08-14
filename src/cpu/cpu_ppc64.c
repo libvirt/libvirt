@@ -71,7 +71,8 @@ ppc64ConvertLegacyCPUDef(const virCPUDef *legacy)
     if (!(cpu = virCPUDefCopy(legacy)))
         goto out;
 
-    if (!(STREQ(cpu->model, "POWER7_v2.1") ||
+    if (!cpu->model ||
+        !(STREQ(cpu->model, "POWER7_v2.1") ||
           STREQ(cpu->model, "POWER7_v2.3") ||
           STREQ(cpu->model, "POWER7+_v2.1") ||
           STREQ(cpu->model, "POWER8_v1.0"))) {
