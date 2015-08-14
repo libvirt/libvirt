@@ -607,6 +607,10 @@ mymain(void)
     DO_TEST_COMPARE("ppc64", "host", "guest-legacy", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("ppc64", "host", "guest-legacy-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
     DO_TEST_COMPARE("ppc64", "host", "guest-legacy-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("ppc64", "host", "guest-compat-none", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "guest-compat-valid", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("ppc64", "host", "guest-compat-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("ppc64", "host", "guest-compat-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* guest updates for migration
      * automatically compares host CPU with the result */
@@ -617,6 +621,16 @@ mymain(void)
     DO_TEST_UPDATE("x86", "host", "host-model-nofallback", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("x86", "host", "host-passthrough", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("x86", "host-invtsc", "host-model", VIR_CPU_COMPARE_SUPERSET);
+
+    DO_TEST_UPDATE("ppc64", "host", "guest", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("ppc64", "host", "guest-nofallback", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_UPDATE("ppc64", "host", "guest-legacy", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("ppc64", "host", "guest-legacy-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_UPDATE("ppc64", "host", "guest-legacy-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_UPDATE("ppc64", "host", "guest-compat-none", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("ppc64", "host", "guest-compat-valid", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("ppc64", "host", "guest-compat-invalid", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_UPDATE("ppc64", "host", "guest-compat-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* computing baseline CPUs */
     DO_TEST_BASELINE("x86", "incompatible-vendors", 0, -1);

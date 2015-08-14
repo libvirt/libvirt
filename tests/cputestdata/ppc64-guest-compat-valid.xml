@@ -1,0 +1,3 @@
+<cpu mode='host-model'>
+  <model>power6</model>
+</cpu>
