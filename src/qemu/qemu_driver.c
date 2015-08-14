@@ -9995,6 +9995,9 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
+    if (!virNumaNodesetIsAvailable(nodeset))
+        goto cleanup;
+
     /* Ensure the cpuset string is formatted before passing to cgroup */
     if (!(nodeset_str = virBitmapFormat(nodeset)))
         goto cleanup;
