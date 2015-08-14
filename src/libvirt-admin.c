@@ -549,7 +549,86 @@ int virAdmConnectGetLibVersion(virAdmConnectPtr conn,
         goto error;
 
     return 0;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
 
+/**
+ * virAdmServerGetName:
+ * @srv: a server object
+ *
+ *  Get the public name for specified server
+ *
+ * Returns a pointer to the name or NULL. The string doesn't need to be
+ * deallocated since its lifetime will be the same as the server object.
+ */
+const char *
+virAdmServerGetName(virAdmServerPtr srv)
+{
+    VIR_DEBUG("server=%p", srv);
+
+    virResetLastError();
+    virCheckAdmServerReturn(srv, NULL);
+
+    return srv->name;
+}
+
+/**
+ * virAdmServerFree:
+ * @srv: server object
+ *
+ * Release the server object. The running instance is kept alive.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int virAdmServerFree(virAdmServerPtr srv)
+{
+    VIR_DEBUG("server=%p", srv);
+
+    virResetLastError();
+    virCheckAdmServerReturn(srv, -1);
+
+    virObjectUnref(srv);
+    return 0;
+}
+
+/**
+ * virAdmConnectListServers:
+ * @conn: daemon connection reference
+ * @servers: Pointer to a list to store an array containing objects or NULL
+ *           if the list is not required (number of servers only)
+ * @flags: bitwise-OR of virAdmConnectListServersFlags
+ *
+ * Collect list of all servers provided by daemon the client is connected to.
+ *
+ * Returns the number of servers available on daemon side or -1 in case of a
+ * failure, setting @servers to NULL. There is a guaranteed extra element set
+ * to NULL in the @servers list returned to make the iteration easier, excluding
+ * this extra element from the final count.
+ * Caller is responsible to call virAdmServerFree() on each list element,
+ * followed by freeing @servers.
+ */
+int
+virAdmConnectListServers(virAdmConnectPtr conn,
+                         virAdmServerPtr **servers,
+                         unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, servers=%p, flags=%x", conn, servers, flags);
+
+    virResetLastError();
+
+    if (servers)
+        *servers = NULL;
+
+    virCheckAdmConnectReturn(conn, -1);
+    if ((ret = remoteAdminConnectListServers(conn, servers, flags)) < 0)
+        goto error;
+
+    return ret;
  error:
     virDispatchError(NULL);
     return -1;

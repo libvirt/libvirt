@@ -190,6 +190,45 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
     return srv;
 }
 
+
+/*
+ * Returns number of names allocated in *servers, on error sets
+ * *servers to NULL and returns -1.  List of *servers must be free()d,
+ * but not the items in it (similarly to virHashGetItems).
+ */
+ssize_t
+virNetDaemonGetServerNames(virNetDaemonPtr dmn,
+                           const char ***servers)
+{
+    virHashKeyValuePairPtr items = NULL;
+    size_t nservers = 0;
+    ssize_t ret = -1;
+    size_t i;
+
+    *servers = NULL;
+
+    virObjectLock(dmn);
+
+    items = virHashGetItems(dmn->servers, NULL);
+    if (!items)
+        goto cleanup;
+
+    for (i = 0; items[i].key; i++) {
+        if (VIR_APPEND_ELEMENT(*servers, nservers, items[i].key) < 0)
+            goto cleanup;
+    }
+
+    ret = nservers;
+
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(*servers);
+    VIR_FREE(items);
+    virObjectUnlock(dmn);
+    return ret;
+}
+
+
 virNetServerPtr
 virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
                               const char *serverName,

@@ -55,6 +55,16 @@ struct admin_connect_get_lib_version_ret {
     unsigned hyper libVer;
 };
 
+struct admin_connect_list_servers_args {
+    unsigned int need_results;
+    unsigned int flags;
+};
+
+struct admin_connect_list_servers_ret {
+    admin_nonnull_server servers<ADMIN_SERVER_LIST_MAX>;
+    unsigned int ret;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -90,5 +100,11 @@ enum admin_procedure {
     /**
      * @generate: both
      */
-    ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3
+    ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3,
+
+    /**
+      * @generate: none
+      * @priority: high
+      */
+    ADMIN_PROC_CONNECT_LIST_SERVERS = 4
 };

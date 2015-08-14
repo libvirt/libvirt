@@ -8,8 +8,20 @@ struct admin_connect_open_args {
 struct admin_connect_get_lib_version_ret {
         uint64_t                   libVer;
 };
+struct admin_connect_list_servers_args {
+        u_int                      need_results;
+        u_int                      flags;
+};
+struct admin_connect_list_servers_ret {
+        struct {
+                u_int              servers_len;
+                admin_nonnull_server * servers_val;
+        } servers;
+        u_int                      ret;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
         ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3,
+        ADMIN_PROC_CONNECT_LIST_SERVERS = 4,
 };

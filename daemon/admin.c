@@ -28,6 +28,7 @@
 
 #include "admin_protocol.h"
 #include "admin.h"
+#include "admin_server.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -77,6 +78,15 @@ remoteAdmClientInitHook(virNetServerClientPtr client ATTRIBUTE_UNUSED,
     return priv;
 }
 
+/* Helpers */
+
+static void
+make_nonnull_server(admin_nonnull_server *srv_dst,
+                    virAdmServerPtr srv_src)
+{
+    ignore_value(VIR_STRDUP_QUIET(srv_dst->name, srv_src->name));
+}
+
 /* Functions */
 static int
 adminDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
@@ -123,4 +133,49 @@ adminConnectGetLibVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+adminDispatchConnectListServers(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                virNetServerClientPtr client,
+                                virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                admin_connect_list_servers_args *args,
+                                admin_connect_list_servers_ret *ret)
+{
+    virAdmServerPtr *servers = NULL;
+    int nservers = 0;
+    int rv = -1;
+    size_t i;
+    struct daemonAdmClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if ((nservers =
+            adminDaemonListServers(priv->dmn,
+                                   args->need_results ? &servers : NULL,
+                                   args->flags)) < 0)
+        goto cleanup;
+
+    if (servers && nservers) {
+        if (VIR_ALLOC_N(ret->servers.servers_val, nservers) < 0)
+            goto cleanup;
+
+        ret->servers.servers_len = nservers;
+        for (i = 0; i < nservers; i++)
+            make_nonnull_server(ret->servers.servers_val + i, servers[i]);
+    } else {
+        ret->servers.servers_len = 0;
+        ret->servers.servers_val = NULL;
+    }
+
+    ret->ret = nservers;
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    if (servers && nservers > 0)
+        for (i = 0; i < nservers; i++)
+            virObjectUnref(servers[i]);
+    VIR_FREE(servers);
+    return rv;
+}
 #include "admin_dispatch.h"

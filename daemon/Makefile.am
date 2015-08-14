@@ -128,7 +128,7 @@ libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
 
 noinst_LTLIBRARIES += libvirtd_admin.la
 libvirtd_admin_la_SOURCES = \
-		admin.c admin.h
+		admin.c admin.h admin_server.c admin_server.h
 
 libvirtd_admin_la_CFLAGS = \
 		$(AM_CFLAGS)		\

@@ -7,6 +7,8 @@
 
 # admin/admin_protocol.x
 xdr_admin_connect_get_lib_version_ret;
+xdr_admin_connect_list_servers_args;
+xdr_admin_connect_list_servers_ret;
 xdr_admin_connect_open_args;
 
 # datatypes.h

@@ -70,9 +70,13 @@ typedef virAdmServer *virAdmServerPtr;
 
 virAdmConnectPtr virAdmConnectOpen(const char *name, unsigned int flags);
 int virAdmConnectClose(virAdmConnectPtr conn);
-
 int virAdmConnectRef(virAdmConnectPtr conn);
 int virAdmConnectIsAlive(virAdmConnectPtr conn);
+int virAdmServerFree(virAdmServerPtr srv);
+
+int virAdmConnectListServers(virAdmConnectPtr dmn,
+                             virAdmServerPtr **servers,
+                             unsigned int flags);
 
 int virAdmGetVersion(unsigned long long *libVer);
 
@@ -99,6 +103,8 @@ int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
                                        virFreeCallback freecb);
 int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
                                          virAdmConnectCloseFunc cb);
+
+const char *virAdmServerGetName(virAdmServerPtr srv);
 
 # ifdef __cplusplus
 }

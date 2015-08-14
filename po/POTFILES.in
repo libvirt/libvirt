@@ -10,6 +10,7 @@ gnulib/lib/gai_strerror.c
 gnulib/lib/regcomp.c
 src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c
+src/admin/admin_remote.c
 src/bhyve/bhyve_command.c
 src/bhyve/bhyve_device.c
 src/bhyve/bhyve_driver.c
