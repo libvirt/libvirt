@@ -4606,9 +4606,6 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
     /* Add pid/thread to the cgroup */
     rv = virCgroupAddTask(new_cgroup, pid);
     if (rv < 0) {
-        virReportSystemError(-rv,
-                             _("unable to add id %d task %d to cgroup"),
-                             idx, pid);
         virCgroupRemove(new_cgroup);
         goto error;
     }
