@@ -2655,7 +2655,7 @@ vshReadlineDeinit(vshControl *ctl ATTRIBUTE_UNUSED)
     /* empty */
 }
 
-static char *
+char *
 vshReadline(vshControl *ctl, const char *prompt)
 {
     char line[1024];
