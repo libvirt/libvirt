@@ -19888,7 +19888,7 @@ static int qemuDomainRename(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virQEMUDriverConfigPtr cfg = NULL;
-    virDomainObjPtr vm;
+    virDomainObjPtr vm = NULL;
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
@@ -19901,9 +19901,6 @@ static int qemuDomainRename(virDomainPtr dom,
     char *old_dom_cfg_file = NULL;
 
     virCheckFlags(0, ret);
-
-    if (VIR_STRDUP(new_dom_name, new_name) < 0)
-        goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -19939,6 +19936,9 @@ static int qemuDomainRename(virDomainPtr dom,
                        "%s", _("cannot rename domain with snapshots"));
         goto endjob;
     }
+
+    if (VIR_STRDUP(new_dom_name, new_name) < 0)
+        goto endjob;
 
     if (virAsprintf(&rename_log_msg, ": domain %s has been renamed to %s\n",
                     vm->def->name, new_name) < 0) {
