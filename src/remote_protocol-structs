@@ -2690,7 +2690,7 @@ struct remote_domain_rename_args {
         u_int                      flags;
 };
 struct remote_domain_rename_ret {
-        int                        rename;
+        int                        retcode;
 };
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,

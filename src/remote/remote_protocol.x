@@ -3237,7 +3237,7 @@ struct remote_domain_rename_args {
 };
 
 struct remote_domain_rename_ret {
-    int rename;
+    int retcode;
 };
 
 /*----- Protocol. -----*/
