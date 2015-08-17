@@ -334,7 +334,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
 {
     size_t key, len = 0;
     virHashEntryPtr entry;
-    char *new_name;
+    void *new_name;
 
     if ((table == NULL) || (name == NULL))
         return -1;
