@@ -150,4 +150,8 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
                                         virStorageSourcePtr src);
 
+int virSecurityManagerDomainSetDirLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        const char *path);
+
 #endif /* VIR_SECURITY_MANAGER_H__ */

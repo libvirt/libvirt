@@ -118,6 +118,9 @@ typedef int (*virSecurityDomainSetImageLabel) (virSecurityManagerPtr mgr,
 typedef int (*virSecurityDomainRestoreImageLabel) (virSecurityManagerPtr mgr,
                                                    virDomainDefPtr def,
                                                    virStorageSourcePtr src);
+typedef int (*virSecurityDomainSetDirLabel) (virSecurityManagerPtr mgr,
+                                             virDomainDefPtr def,
+                                             const char *path);
 
 
 struct _virSecurityDriver {
@@ -168,6 +171,8 @@ struct _virSecurityDriver {
     virSecurityDomainSetHugepages domainSetSecurityHugepages;
 
     virSecurityDriverGetBaseLabel getBaseLabel;
+
+    virSecurityDomainSetDirLabel domainSetDirLabel;
 };
 
 virSecurityDriverPtr virSecurityDriverLookup(const char *name,
