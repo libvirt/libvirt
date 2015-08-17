@@ -97,6 +97,8 @@ vshLookupDomainInternal(vshControl *ctl,
         dom = virDomainLookupByName(ctl->conn, name);
     }
 
+    vshResetLibvirtError();
+
     if (!dom)
         vshError(ctl, _("failed to get domain '%s'"), name);
 
