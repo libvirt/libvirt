@@ -353,6 +353,8 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
                 entry->payload = userdata;
                 return 0;
             } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Duplicate key"));
                 return -1;
             }
         }
