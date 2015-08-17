@@ -9827,7 +9827,7 @@ cmdDomrename(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virDomainFree(dom);
-    return false;
+    return ret;
 }
 
 /*
