@@ -938,8 +938,8 @@ virConfSetValue(virConfPtr conf,
  * Returns 0 on success, or -1 on failure.
  */
 int virConfWalk(virConfPtr conf,
-                 virConfWalkCallback callback,
-                 void *opaque)
+                virConfWalkCallback callback,
+                void *opaque)
 {
     virConfEntryPtr cur;
 

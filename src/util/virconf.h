@@ -77,25 +77,24 @@ typedef int (*virConfWalkCallback)(const char* name,
                                    virConfValuePtr value,
                                    void *opaque);
 
-virConfPtr      virConfNew             (void);
-virConfPtr	virConfReadFile	(const char *filename, unsigned int flags);
-virConfPtr	virConfReadMem		(const char *memory,
-                                         int len, unsigned int flags);
-int		virConfFree		(virConfPtr conf);
-void            virConfFreeValue      (virConfValuePtr val);
-
-virConfValuePtr	virConfGetValue	(virConfPtr conf,
-                                         const char *setting);
-int             virConfSetValue        (virConfPtr conf,
-                                         const char *setting,
-                                         virConfValuePtr value);
+virConfPtr virConfNew(void);
+virConfPtr virConfReadFile(const char *filename, unsigned int flags);
+virConfPtr virConfReadMem(const char *memory,
+                          int len, unsigned int flags);
+int virConfFree(virConfPtr conf);
+void virConfFreeValue(virConfValuePtr val);
+virConfValuePtr virConfGetValue(virConfPtr conf,
+                                const char *setting);
+int virConfSetValue(virConfPtr conf,
+                    const char *setting,
+                    virConfValuePtr value);
 int virConfWalk(virConfPtr conf,
                 virConfWalkCallback callback,
                 void *opaque);
-int		virConfWriteFile	(const char *filename,
-                                         virConfPtr conf);
-int		virConfWriteMem	(char *memory,
-                                         int *len,
-                                         virConfPtr conf);
+int virConfWriteFile(const char *filename,
+                     virConfPtr conf);
+int virConfWriteMem(char *memory,
+                    int *len,
+                    virConfPtr conf);
 
 #endif /* __VIR_CONF_H__ */
