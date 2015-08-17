@@ -619,14 +619,16 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
         goto cleanup;
 
     while ((value = virDirRead(dir, &ent, taskPath)) > 0) {
+        long long tmp;
         pid_t tmp_pid;
 
         /* Skip . and .. */
         if (STRPREFIX(ent->d_name, "."))
             continue;
 
-        if (virStrToLong_i(ent->d_name, NULL, 10, &tmp_pid) < 0)
+        if (virStrToLong_ll(ent->d_name, NULL, 10, &tmp) < 0)
             goto cleanup;
+        tmp_pid = tmp;
 
         if (VIR_APPEND_ELEMENT(*pids, *npids, tmp_pid) < 0)
             goto cleanup;
