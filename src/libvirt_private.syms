@@ -1021,6 +1021,7 @@ virSecurityDriverLookup;
 # security/security_manager.h
 virSecurityManagerCheckAllLabel;
 virSecurityManagerClearSocketLabel;
+virSecurityManagerDomainSetDirLabel;
 virSecurityManagerGenLabel;
 virSecurityManagerGetBaseLabel;
 virSecurityManagerGetDOI;
