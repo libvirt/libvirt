@@ -2506,6 +2506,21 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
     return opts;
 }
 
+static char *
+virSecuritySELinuxDomainSetDirLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr def,
+                                    const char *path)
+{
+    virSecurityLabelDefPtr seclabel;
+    int ret = -1;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!seclabel || !seclabel->relabel)
+        return 0;
+
+    return virSecuritySELinuxSetFilecon(path, seclabel->imagelabel);
+}
+
 virSecurityDriver virSecurityDriverSELinux = {
     .privateDataLen                     = sizeof(virSecuritySELinuxData),
     .name                               = SECURITY_SELINUX_NAME,
@@ -2550,4 +2565,6 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .domainGetSecurityMountOptions      = virSecuritySELinuxGetSecurityMountOptions,
     .getBaseLabel                       = virSecuritySELinuxGetBaseLabel,
+
+    .domainSetDirLabel                  = virSecuritySELinuxDomainSetDirLabel,
 };
