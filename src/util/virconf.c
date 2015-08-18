@@ -840,7 +840,7 @@ virConfFree(virConfPtr conf)
 /**
  * virConfGetValue:
  * @conf: a configuration file handle
- * @entry: the name of the entry
+ * @setting: the name of the entry
  *
  * Lookup the value associated to this entry in the configuration file
  *
@@ -870,7 +870,7 @@ virConfGetValue(virConfPtr conf, const char *setting)
 /**
  * virConfSetValue:
  * @conf: a configuration file handle
- * @entry: the name of the entry
+ * @setting: the name of the entry
  * @value: the new configuration value
  *
  * Set (or replace) the value associated to this entry in the configuration
