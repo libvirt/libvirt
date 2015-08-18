@@ -19907,6 +19907,7 @@ static int qemuDomainRename(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virQEMUDriverConfigPtr cfg = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainObjPtr tmp_dom = NULL;
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
@@ -19958,6 +19959,21 @@ static int qemuDomainRename(virDomainPtr dom,
     if (STREQ(vm->def->name, new_name)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Can't rename domain to itself"));
+        goto endjob;
+    }
+
+    /*
+     * This is a rather racy check, but still better than reporting
+     * internal error.  And since new_name != name here, there's no
+     * deadlock imminent.
+     */
+    tmp_dom = virDomainObjListFindByName(driver->domains, new_name);
+    if (tmp_dom) {
+        virObjectUnlock(tmp_dom);
+        virObjectUnref(tmp_dom);
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("domain with name '%s' already exists"),
+                       new_name);
         goto endjob;
     }
 
