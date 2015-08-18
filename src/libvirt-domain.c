@@ -8783,6 +8783,11 @@ virDomainIsPersistent(virDomainPtr dom)
  * argument. Depending on each driver implementation it may be
  * required that domain is in a specific state.
  *
+ * There might be some attributes and/or elements in domain XML that if no
+ * value provided at XML defining time, libvirt will derive their value from
+ * the domain name. These are not updated by this API. Users are strongly
+ * advised to change these after the rename was successful.
+ *
  * Returns 0 if successfully renamed, -1 on error
  */
 int
