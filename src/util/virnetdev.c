@@ -3032,39 +3032,15 @@ static int
 virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
 {
     int ret = -1;
-    int sock = -1;
-    virIfreq ifr;
+    int fd;
+    struct ifreq ifr;
 
-    sock = socket(AF_LOCAL, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        virReportSystemError(errno, "%s", _("Cannot open control socket"));
-        goto cleanup;
-    }
-
-    memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, ifname);
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return ret;
     ifr.ifr_data = cmd;
-    ret = ioctl(sock, SIOCETHTOOL, &ifr);
-    if (ret != 0) {
-        switch (errno) {
-            case EPERM:
-                VIR_DEBUG("ethtool ioctl: permission denied");
-                break;
-            case EINVAL:
-                VIR_DEBUG("ethtool ioctl: invalid request");
-                break;
-            case EOPNOTSUPP:
-                VIR_DEBUG("ethtool ioctl: request not supported");
-                break;
-            default:
-                virReportSystemError(errno, "%s", _("ethtool ioctl error"));
-                goto cleanup;
-        }
-    }
+    ret = ioctl(fd, SIOCETHTOOL, &ifr);
 
- cleanup:
-    if (sock)
-        VIR_FORCE_CLOSE(sock);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -3081,12 +3057,12 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
 static int
 virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 {
-    int ret = -1;
-
     cmd = (void*)cmd;
-    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
-        ret = cmd->data > 0 ? 1 : 0;
-    return ret;
+    if (virNetDevSendEthtoolIoctl(ifname, cmd) < 0) {
+        virReportSystemError(errno, _("Cannot get device %s flags"), ifname);
+        return -1;
+    }
+    return cmd->data > 0 ? 1 : 0;
 }
 
 
@@ -3103,12 +3079,12 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 static int
 virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
 {
-    int ret = -1;
-
     cmd = (void*)cmd;
-    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
-        ret = FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
-    return ret;
+    if (virNetDevSendEthtoolIoctl(ifname, cmd) < 0) {
+        virReportSystemError(errno, _("Cannot get device %s generic features"), ifname);
+        return -1;
+    }
+    return FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
 }
 # endif
 
