@@ -930,7 +930,7 @@ virConfSetValue(virConfPtr conf,
  * virConfWalk:
  * @conf: a configuration file handle
  * @callback: the function to call to process each entry
- * @data: obscure data passed to callback
+ * @opaque: obscure data passed to callback
  *
  * Walk over all entries of the configuration file and run the callback
  * for each with entry name, value and the obscure data.
