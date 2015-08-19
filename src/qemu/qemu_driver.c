@@ -9183,7 +9183,8 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             virTypedParameterPtr param = &params[i];
 
             if (STREQ(param->field, VIR_DOMAIN_BLKIO_WEIGHT)) {
-                if (virCgroupSetBlkioWeight(priv->cgroup, param->value.ui) < 0)
+                if (virCgroupSetBlkioWeight(priv->cgroup, param->value.ui) < 0 ||
+                    virCgroupGetBlkioWeight(priv->cgroup, &def->blkio.weight) < 0)
                     ret = -1;
             } else if (STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) ||
                        STREQ(param->field, VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) ||
