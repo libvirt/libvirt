@@ -218,15 +218,6 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 %.png: %.fig
 	convert -rotate 90 $< $@
 
-internals/%.html.tmp: internals/%.html.in subsite.xsl page.xsl sitemap.html.in
-	@if [ -x $(XSLTPROC) ] ; then \
-	  echo "Generating $@"; \
-	  $(MKDIR_P) internals; \
-	  name=`echo $@ | sed -e 's/.tmp//'`; \
-	  $(XSLTPROC) --stringparam pagename $$name --nonet \
-	    $(top_srcdir)/docs/subsite.xsl $< > $@ \
-	    || { rm $@ && exit 1; }; fi
-
 %.html.tmp: %.html.in site.xsl page.xsl sitemap.html.in $(acl_generated)
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
