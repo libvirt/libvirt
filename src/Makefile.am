@@ -540,7 +540,7 @@ check-drivername:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
 		$(srcdir)/driver.h \
 		$(srcdir)/libvirt_public.syms \
-		$(srcdir)/libvirt_admin.syms \
+		$(srcdir)/libvirt_admin_public.syms \
 		$(srcdir)/libvirt_qemu.syms \
 		$(srcdir)/libvirt_lxc.syms
 
@@ -2009,8 +2009,9 @@ EXTRA_DIST += \
 	libvirt_public.syms		\
 	libvirt_lxc.syms		\
 	libvirt_qemu.syms		\
-	libvirt_admin.syms		\
+	libvirt_admin_public.syms	\
 	$(SYM_FILES)			\
+	$(ADMIN_SYM_FILES)		\
 	$(NULL)
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
@@ -2036,6 +2037,19 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp $@
+
+libvirt_admin.syms: libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
+		$(top_builddir)/config.status
+	$(AM_V_GEN)rm -f $@-tmp $@ ; \
+	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
+	cat $(srcdir)/libvirt_admin_public.syms >>$@-tmp && \
+	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
+	printf 'LIBVIRT_ADMIN_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
+	printf 'global:\n\n' >>$@-tmp && \
+	cat $(ADMIN_SYM_FILES) >>$@-tmp && \
+	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
+	chmod a-w $@-tmp && \
+	mv $@-tmp libvirt_admin.syms
 
 lib_LTLIBRARIES += libvirt-admin.la
 libvirt_admin_la_SOURCES = \
@@ -2075,6 +2089,8 @@ libvirt_admin_la_LIBADD += \
 		$(SSH2_LIBS)			\
 		$(SASL_LIBS)			\
 		$(GNUTLS_LIBS)
+
+ADMIN_SYM_FILES = $(srcdir)/libvirt_admin_private.syms
 
 if WITH_DTRACE_PROBES
 libvirt_admin_la_LIBADD += libvirt_probes.lo

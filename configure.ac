@@ -2346,7 +2346,7 @@ WIN32_EXTRA_CFLAGS=
 dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
 dnl hence the asymmetric naming of these two symbol files.
 LIBVIRT_SYMBOL_FILE=libvirt.syms
-LIBVIRT_ADMIN_SYMBOL_FILE='$(srcdir)/libvirt_admin.syms'
+LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
 LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
 MSCOM_LIBS=
