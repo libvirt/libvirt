@@ -136,14 +136,14 @@ libvirtd_admin_la_CFLAGS = \
 		$(PIE_CFLAGS)		\
 		$(WARN_CFLAGS)		\
 		$(LIBXML_CFLAGS)	\
-		$(COVERAGE_CFLAGS)
-
+		$(COVERAGE_CFLAGS)	\
+		$(NULL)
 libvirtd_admin_la_LDFLAGS = \
 		$(PIE_LDFLAGS)		\
 		$(RELRO_LDFLAGS)	\
 		$(COVERAGE_LDFLAGS)	\
-		$(NO_INDIRECT_LDFLAGS)
-
+		$(NO_INDIRECT_LDFLAGS)  \
+		$(NULL)
 libvirtd_admin_la_LIBADD =	\
 		../src/libvirt-admin.la
 
