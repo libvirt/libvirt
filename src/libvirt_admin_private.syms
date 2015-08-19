@@ -1,0 +1,14 @@
+#
+# General private symbols for libvirt_admin. Add symbols here, and see
+# Makefile.am for more details.
+#
+# Keep this file sorted by header name, then by symbols with each header.
+#
+
+# admin/admin_protocol.x
+xdr_admin_connect_open_args;
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:
