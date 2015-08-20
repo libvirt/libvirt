@@ -359,6 +359,143 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     return ret;
 }
 
+static const char *nsInfoLocal[VIR_LXC_DOMAIN_NAMESPACE_LAST] = {
+    [VIR_LXC_DOMAIN_NAMESPACE_SHARENET] = "net",
+    [VIR_LXC_DOMAIN_NAMESPACE_SHAREIPC] = "ipc",
+    [VIR_LXC_DOMAIN_NAMESPACE_SHAREUTS] = "uts",
+};
+
+static int virLXCProcessSetupNamespaceName(virConnectPtr conn, int ns_type, const char *name)
+{
+    virLXCDriverPtr driver = conn->privateData;
+    int fd = -1;
+    virDomainObjPtr vm;
+    virLXCDomainObjPrivatePtr priv;
+    char *path;
+
+    vm = virDomainObjListFindByName(driver->domains, name);
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("No domain with matching name '%s'"), name);
+        return -1;
+    }
+
+    priv = vm->privateData;
+    if (!priv->initpid) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Init pid is not yet available"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&path, "/proc/%lld/ns/%s",
+                    (long long int)priv->initpid,
+                    nsInfoLocal[ns_type]) < 0)
+        goto cleanup;
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("failed to open ns %s"),
+                             virLXCDomainNamespaceTypeToString(ns_type));
+        goto cleanup;
+    }
+
+ cleanup:
+    VIR_FREE(path);
+    virObjectUnlock(vm);
+    virObjectUnref(vm);
+    return fd;
+}
+
+
+static int virLXCProcessSetupNamespacePID(int ns_type, const char *name)
+{
+    int fd;
+    char *path;
+
+    if (virAsprintf(&path, "/proc/%s/ns/%s",
+                    name,
+                    nsInfoLocal[ns_type]) < 0)
+        return -1;
+    fd = open(path, O_RDONLY);
+    VIR_FREE(path);
+    if (fd < 0) {
+        virReportSystemError(errno,
+                             _("failed to open ns %s"),
+                             virLXCDomainNamespaceTypeToString(ns_type));
+        return -1;
+    }
+    return fd;
+}
+
+
+static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
+{
+    char *path;
+    int fd;
+    if (ns_type != VIR_LXC_DOMAIN_NAMESPACE_SHARENET) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'netns' namespace source can only be "
+                         "used with sharenet"));
+        return -1;
+    }
+
+    if (virAsprintf(&path, "/var/run/netns/%s", name) < 0)
+        return  -1;
+    fd = open(path, O_RDONLY);
+    VIR_FREE(path);
+    if (fd < 0) {
+        virReportSystemError(errno,
+                             _("failed to open netns %s"), name);
+        return -1;
+    }
+    return fd;
+}
+
+
+/**
+ * virLXCProcessSetupNamespaces:
+ * @conn: pointer to connection
+ * @def: pointer to virtual machines namespaceData
+ * @nsFDs: out parameter to store the namespace FD
+ *
+ * Opens the specified namespace that needs to be shared and
+ * will moved into the container namespace later after clone has been called.
+ *
+ * Returns 0 on success or -1 in case of error
+ */
+static int virLXCProcessSetupNamespaces(virConnectPtr conn,
+                                        lxcDomainDefPtr lxcDef,
+                                        int *nsFDs)
+{
+    size_t i;
+
+    for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
+        nsFDs[i] = -1;
+    /*If there are no namespace to be opened just return success*/
+    if (lxcDef == NULL)
+        return 0;
+
+    for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
+        switch (lxcDef->ns_source[i]) {
+        case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NONE:
+            continue;
+        case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NAME:
+            if ((nsFDs[i] = virLXCProcessSetupNamespaceName(conn, i, lxcDef->ns_val[i])) < 0)
+                return -1;
+            break;
+        case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_PID:
+            if ((nsFDs[i] = virLXCProcessSetupNamespacePID(i, lxcDef->ns_val[i])) < 0)
+                return -1;
+            break;
+        case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NETNS:
+            if ((nsFDs[i] = virLXCProcessSetupNamespaceNet(i, lxcDef->ns_val[i])) < 0)
+                return -1;
+            break;
+        }
+    }
+
+    return 0;
+}
 
 /**
  * virLXCProcessSetupInterfaces:
@@ -764,6 +901,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
                                 char **veths,
                                 int *ttyFDs,
                                 size_t nttyFDs,
+                                int *nsInheritFDs,
                                 int *files,
                                 size_t nfiles,
                                 int handshakefd,
@@ -823,6 +961,19 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
         virCommandAddArg(cmd, "--passfd");
         virCommandAddArgFormat(cmd, "%d", files[i]);
         virCommandPassFD(cmd, files[i], 0);
+    }
+
+    for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
+        if (nsInheritFDs[i] > 0) {
+            char *tmp = NULL;
+            if (virAsprintf(&tmp, "--share-%s",
+                            nsInfoLocal[i]) < 0)
+                goto cleanup;
+            virCommandAddArg(cmd, tmp);
+            virCommandAddArgFormat(cmd, "%d", nsInheritFDs[i]);
+            virCommandPassFD(cmd, nsInheritFDs[i], 0);
+            VIR_FREE(tmp);
+        }
     }
 
     virCommandAddArgPair(cmd, "--security",
@@ -1032,6 +1183,7 @@ int virLXCProcessStart(virConnectPtr conn,
     off_t pos = -1;
     char ebuf[1024];
     char *timestamp;
+    int nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_LAST];
     virCommandPtr cmd = NULL;
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
@@ -1204,6 +1356,10 @@ int virLXCProcessStart(virConnectPtr conn,
     if (virLXCProcessSetupInterfaces(conn, vm->def, &nveths, &veths) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up namespaces if any");
+    if (virLXCProcessSetupNamespaces(conn, vm->def->namespaceData, nsInheritFDs) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Preparing to launch");
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
              S_IRUSR|S_IWUSR)) < 0) {
@@ -1223,6 +1379,7 @@ int virLXCProcessStart(virConnectPtr conn,
                                                 vm,
                                                 nveths, veths,
                                                 ttyFDs, nttyFDs,
+                                                nsInheritFDs,
                                                 files, nfiles,
                                                 handshakefds[1],
                                                 &logfd,

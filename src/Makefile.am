@@ -1320,7 +1320,12 @@ libvirt_driver_lxc_impl_la_CFLAGS = \
 		-I$(srcdir)/access \
 		-I$(srcdir)/conf \
 		$(AM_CFLAGS)
-libvirt_driver_lxc_impl_la_LIBADD = $(CAPNG_LIBS) $(LIBNL_LIBS) $(FUSE_LIBS)
+libvirt_driver_lxc_impl_la_LIBADD = \
+               $(CAPNG_LIBS) \
+               $(LIBNL_LIBS) \
+               $(LIBXML_LIBS) \
+               $(FUSE_LIBS)
+
 if WITH_BLKID
 libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)

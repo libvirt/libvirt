@@ -119,6 +119,8 @@ struct _virLXCController {
     size_t npassFDs;
     int *passFDs;
 
+    int *nsFDs;
+
     size_t nconsoles;
     virLXCControllerConsolePtr consoles;
     char *devptmx;
@@ -287,6 +289,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     VIR_FREE(ctrl->nbdpids);
 
+    VIR_FREE(ctrl->nsFDs);
     virCgroupFree(&ctrl->cgroup);
 
     /* This must always be the last thing to be closed */
@@ -2391,6 +2394,7 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
                                            ctrl->passFDs,
                                            control[1],
                                            containerhandshake[1],
+                                           ctrl->nsFDs,
                                            ctrl->nconsoles,
                                            containerTTYPaths)) < 0)
         goto cleanup;
@@ -2399,6 +2403,10 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
 
     for (i = 0; i < ctrl->npassFDs; i++)
         VIR_FORCE_CLOSE(ctrl->passFDs[i]);
+
+    if (ctrl->nsFDs)
+        for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
+            VIR_FORCE_CLOSE(ctrl->nsFDs[i]);
 
     if (virLXCControllerSetupCgroupLimits(ctrl) < 0)
         goto cleanup;
@@ -2468,6 +2476,7 @@ int main(int argc, char *argv[])
     const char *name = NULL;
     size_t nveths = 0;
     char **veths = NULL;
+    int ns_fd[VIR_LXC_DOMAIN_NAMESPACE_LAST];
     int handshakeFd = -1;
     bool bg = false;
     const struct option options[] = {
@@ -2478,6 +2487,9 @@ int main(int argc, char *argv[])
         { "passfd", 1, NULL, 'p' },
         { "handshakefd", 1, NULL, 's' },
         { "security", 1, NULL, 'S' },
+        { "share-net", 1, NULL, 'N' },
+        { "share-ipc", 1, NULL, 'I' },
+        { "share-uts", 1, NULL, 'U' },
         { "help", 0, NULL, 'h' },
         { 0, 0, 0, 0 },
     };
@@ -2488,6 +2500,9 @@ int main(int argc, char *argv[])
     virLXCControllerPtr ctrl = NULL;
     size_t i;
     const char *securityDriver = "none";
+
+    for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
+        ns_fd[i] = -1;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -2504,7 +2519,7 @@ int main(int argc, char *argv[])
     while (1) {
         int c;
 
-        c = getopt_long(argc, argv, "dn:v:p:m:c:s:h:S:",
+        c = getopt_long(argc, argv, "dn:v:p:m:c:s:h:S:N:I:U:",
                         options, NULL);
 
         if (c == -1)
@@ -2552,6 +2567,30 @@ int main(int argc, char *argv[])
             }
             break;
 
+        case 'N':
+            if (virStrToLong_i(optarg, NULL, 10, &ns_fd[VIR_LXC_DOMAIN_NAMESPACE_SHARENET]) < 0) {
+                fprintf(stderr, "malformed --share-net argument '%s'",
+                        optarg);
+                goto cleanup;
+            }
+            break;
+
+        case 'I':
+            if (virStrToLong_i(optarg, NULL, 10, &ns_fd[VIR_LXC_DOMAIN_NAMESPACE_SHAREIPC]) < 0) {
+                fprintf(stderr, "malformed --share-ipc argument '%s'",
+                        optarg);
+                goto cleanup;
+            }
+            break;
+
+        case 'U':
+            if (virStrToLong_i(optarg, NULL, 10, &ns_fd[VIR_LXC_DOMAIN_NAMESPACE_SHAREUTS]) < 0) {
+                fprintf(stderr, "malformed --share-uts argument '%s'",
+                        optarg);
+                goto cleanup;
+            }
+            break;
+
         case 'S':
             securityDriver = optarg;
             break;
@@ -2569,6 +2608,9 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  -v VETH, --veth VETH\n");
             fprintf(stderr, "  -s FD, --handshakefd FD\n");
             fprintf(stderr, "  -S NAME, --security NAME\n");
+            fprintf(stderr, "  -N FD, --share-net FD\n");
+            fprintf(stderr, "  -I FD, --share-ipc FD\n");
+            fprintf(stderr, "  -U FD, --share-uts FD\n");
             fprintf(stderr, "  -h, --help\n");
             fprintf(stderr, "\n");
             goto cleanup;
@@ -2620,6 +2662,19 @@ int main(int argc, char *argv[])
 
     ctrl->passFDs = passFDs;
     ctrl->npassFDs = npassFDs;
+
+    for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
+        if (ns_fd[i] != -1) {
+            if (!ctrl->nsFDs) {/*allocate only once */
+                size_t j = 0;
+                if (VIR_ALLOC_N(ctrl->nsFDs, VIR_LXC_DOMAIN_NAMESPACE_LAST) < 0)
+                    goto cleanup;
+                for (j = 0; j < VIR_LXC_DOMAIN_NAMESPACE_LAST; j++)
+                    ctrl->nsFDs[j] = -1;
+            }
+            ctrl->nsFDs[i] = ns_fd[i];
+        }
+    }
 
     for (i = 0; i < nttyFDs; i++) {
         if (virLXCControllerAddConsole(ctrl, ttyFDs[i]) < 0)

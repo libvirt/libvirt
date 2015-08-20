@@ -27,6 +27,31 @@
 # include "lxc_conf.h"
 # include "lxc_monitor.h"
 
+typedef enum {
+    VIR_LXC_DOMAIN_NAMESPACE_SHARENET = 0,
+    VIR_LXC_DOMAIN_NAMESPACE_SHAREIPC,
+    VIR_LXC_DOMAIN_NAMESPACE_SHAREUTS,
+    VIR_LXC_DOMAIN_NAMESPACE_LAST,
+} virLXCDomainNamespace;
+
+typedef enum {
+    VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NONE,
+    VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NAME,
+    VIR_LXC_DOMAIN_NAMESPACE_SOURCE_PID,
+    VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NETNS,
+
+    VIR_LXC_DOMAIN_NAMESPACE_SOURCE_LAST,
+} virLXCDomainNamespaceSource;
+
+VIR_ENUM_DECL(virLXCDomainNamespace)
+VIR_ENUM_DECL(virLXCDomainNamespaceSource)
+
+typedef struct _lxcDomainDef lxcDomainDef;
+typedef lxcDomainDef *lxcDomainDefPtr;
+struct _lxcDomainDef {
+    int ns_source[VIR_LXC_DOMAIN_NAMESPACE_LAST]; /* virLXCDomainNamespaceSource */
+    char *ns_val[VIR_LXC_DOMAIN_NAMESPACE_LAST];
+};
 
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
 typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
@@ -41,6 +66,7 @@ struct _virLXCDomainObjPrivate {
     virCgroupPtr cgroup;
 };
 
+extern virDomainXMLNamespace virLXCDriverDomainXMLNamespace;
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 

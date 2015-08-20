@@ -133,6 +133,7 @@ mymain(void)
     DO_TEST("filesystem-root");
     DO_TEST("idmap");
     DO_TEST("capabilities");
+    DO_TEST("sharenet");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

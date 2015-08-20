@@ -25,6 +25,7 @@
 # define LXC_CONTAINER_H
 
 # include "lxc_conf.h"
+# include "lxc_domain.h"
 # include "security/security_manager.h"
 
 enum {
@@ -60,6 +61,7 @@ int lxcContainerStart(virDomainDefPtr def,
                       int *passFDs,
                       int control,
                       int handshakefd,
+                      int *nsInheritFDs,
                       size_t nttyPaths,
                       char **ttyPaths);
 

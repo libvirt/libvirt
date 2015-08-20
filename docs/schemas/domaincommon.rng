@@ -68,6 +68,9 @@
           <ref name='qemucmdline'/>
         </optional>
         <optional>
+          <ref name='lxcsharens'/>
+        </optional>
+        <optional>
           <ref name='keywrap'/>
         </optional>
       </interleave>
@@ -5052,6 +5055,45 @@
             <attribute name='value'/>
           </optional>
           <empty/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <!--
+       Optional hypervisor extensions in their own namespace:
+       LXC
+    -->
+  <define name="lxcsharens">
+    <element name="namespace" ns="http://libvirt.org/schemas/domain/lxc/1.0">
+      <zeroOrMore>
+        <element name="sharenet">
+          <attribute name="type">
+            <choice>
+              <value>netns</value>
+              <value>name</value>
+              <value>pid</value>
+            </choice>
+          </attribute>
+          <attribute name='value'/>
+        </element>
+        <element name="shareipc">
+          <attribute name="type">
+            <choice>
+              <value>name</value>
+              <value>pid</value>
+            </choice>
+          </attribute>
+          <attribute name='value'/>
+        </element>
+        <element name="shareuts">
+          <attribute name="type">
+            <choice>
+              <value>name</value>
+              <value>pid</value>
+            </choice>
+          </attribute>
+          <attribute name='value'/>
         </element>
       </zeroOrMore>
     </element>
