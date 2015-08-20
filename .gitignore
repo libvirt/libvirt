@@ -124,6 +124,7 @@
 /src/libvirt_access_lxc.xml
 /src/libvirt_access_qemu.syms
 /src/libvirt_access_qemu.xml
+/src/libvirt_admin.syms
 /src/libvirt_*.stp
 /src/libvirt_*helper
 /src/libvirt_*probes.h
