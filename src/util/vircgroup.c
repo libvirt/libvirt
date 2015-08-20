@@ -4427,8 +4427,7 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupGetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
                               const char *path ATTRIBUTE_UNUSED,
-                              const char *dev_str ATTRIBUTE_UNUSED,
-                              unsigned int weight ATTRIBUTE_UNUSED)
+                              unsigned int *weight ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -4438,8 +4437,7 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupGetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
                                 const char *path ATTRIBUTE_UNUSED,
-                                const char *dev_str ATTRIBUTE_UNUSED,
-                                unsigned int riops ATTRIBUTE_UNUSED)
+                                unsigned int *riops ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -4449,8 +4447,7 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
                                  const char *path ATTRIBUTE_UNUSED,
-                                 const char *dev_str ATTRIBUTE_UNUSED,
-                                 unsigned int wiops ATTRIBUTE_UNUSED)
+                                 unsigned int *wiops ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -4460,8 +4457,7 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupGetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
                                const char *path ATTRIBUTE_UNUSED,
-                               const char *dev_str ATTRIBUTE_UNUSED,
-                               unsigned long long rbps ATTRIBUTE_UNUSED)
+                               unsigned long long *rbps ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -4471,8 +4467,7 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
                                 const char *path ATTRIBUTE_UNUSED,
-                                const char *dev_str ATTRIBUTE_UNUSED,
-                                unsigned long long wbps ATTRIBUTE_UNUSED)
+                                unsigned long long *wbps ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
