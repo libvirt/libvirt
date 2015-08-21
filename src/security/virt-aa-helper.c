@@ -572,7 +572,8 @@ valid_path(const char *path, const bool readonly)
         "/boot/",
         "/vmlinuz",
         "/initrd",
-        "/initrd.img"
+        "/initrd.img",
+        "/usr/share/ovmf/"               /* for OVMF images */
     };
     /* override the above with these */
     const char * const override[] = {
