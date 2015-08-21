@@ -291,6 +291,15 @@ sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<kernel>$tm
 touch "$tmpdir/kernel"
 testme "0" "kernel" "-r -u $valid_uuid" "$test_xml"
 
+if [ -f /usr/share/ovmf/OVMF.fd ]; then
+    sed -e "s,###UUID###,$uuid,g"  \
+        -e "s,###DISK###,$disk1,g" \
+        -e "s,</os>,<loader readonly='yes' type='pflash'>/usr/share/ovmf/OVMF.fd</loader></os>,g" "$template_xml" > "$test_xml"
+    testme "0" "ovmf" "-r -u $valid_uuid" "$test_xml"
+else
+    echo "Skipping OVMF test. Could not find /usr/share/ovmf/OVMF.fd"
+fi
+
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>$tmpdir/initrd</initrd></os>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/initrd"
 testme "0" "initrd" "-r -u $valid_uuid" "$test_xml"
