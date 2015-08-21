@@ -2775,7 +2775,7 @@
             attribute provides the format type. For example, LXC
             supports a type of "loop", with a format of "raw" or
             "nbd" with any format. QEMU supports a type of "path"
-            or "handle", but no formats. Parallels driver supports
+            or "handle", but no formats. Virtuozzo driver supports
             a type of "ploop" with a format of "ploop".
           </li>
         </ul>
@@ -5135,13 +5135,13 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           You can provide the amount of video memory in kibibytes (blocks of
           1024 bytes) using <code>vram</code>. This is supported only for guest
-          type of "libxl", "parallels", "qemu", "vbox", "vmx" and "xen". If no
+          type of "libxl", "vz", "qemu", "vbox", "vmx" and "xen". If no
           value is provided the default is used. If the size is not a power of
           two it will be rounded to closest one.
         </p>
         <p>
           The number of screen can be set using <code>heads</code>. This is
-          supported only for guests type of "parallels", "kvm", "vbox" and "vmx".
+          supported only for guests type of "vz", "kvm", "vbox" and "vmx".
         </p>
         <p>
           For guest type of kvm the optional attribute <code>ram</code>

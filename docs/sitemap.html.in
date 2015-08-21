@@ -259,8 +259,8 @@
                 <span>Driver for IBM PowerVM</span>
               </li>
               <li>
-                <a href="drvparallels.html">Parallels</a>
-                <span>Driver for Parallels Cloud Server</span>
+                <a href="drvvirtuozzo.html">Virtuozzo</a>
+                <span>Driver for Virtuozzo</span>
               </li>
               <li>
                 <a href="drvbhyve.html">Bhyve</a>

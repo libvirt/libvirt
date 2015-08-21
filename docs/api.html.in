@@ -330,7 +330,7 @@
     daemon through the <a href="remote.html">remote</a> driver via an
     <a href="internals/rpc.html">RPC</a>. Some hypervisors do support
     client-side connections and responses, such as Test, OpenVZ, VMware,
-    Power VM (phyp), VirtualBox (vbox), ESX, Hyper-V, Xen, and Parallels.
+    Power VM (phyp), VirtualBox (vbox), ESX, Hyper-V, Xen, and Virtuozzo.
     The libvirtd daemon service is started on the host at system boot
     time and can also be restarted at any time by a properly privileged
     user, such as root. The libvirtd daemon uses the same libvirt API

@@ -200,7 +200,7 @@
         <value>hyperv</value>
         <value>vbox</value>
         <value>phyp</value>
-        <value>parallels</value>
+        <value>vz</value>
         <value>bhyve</value>
       </choice>
     </attribute>

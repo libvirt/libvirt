@@ -2,43 +2,43 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1>Parallels Cloud Server driver</h1>
+    <h1>Virtuozzo driver</h1>
     <ul id="toc"></ul>
     <p>
-        The libvirt Parallels driver can manage Parallels Cloud Server starting from version 6.0.
+        The libvirt vz driver can manage Virtuozzo starting from version 6.0.
     </p>
 
 
     <h2><a name="project">Project Links</a></h2>
     <ul>
       <li>
-        The <a href="http://www.parallels.com/products/server/baremetal/sp/">Parallels Cloud Server</a> Virtualization Solution.
+        The <a href="http://www.odin.com/products/virtuozzo/">Virtuozzo</a> Solution.
       </li>
     </ul>
 
 
-    <h2><a name="uri">Connections to the Parallels Cloud Server driver</a></h2>
+    <h2><a name="uri">Connections to the Virtuozzo driver</a></h2>
     <p>
-        The libvirt Parallels driver is a single-instance privileged driver, with a driver name of 'parallels'. Some example connection URIs for the libvirt driver are:
+        The libvirt Virtuozzo driver is a single-instance privileged driver, with a driver name of 'virtuozzo'. Some example connection URIs for the libvirt driver are:
     </p>
 <pre>
-parallels:///system                     (local access)
-parallels+unix:///system                (local access)
-parallels://example.com/system          (remote access, TLS/x509)
-parallels+tcp://example.com/system      (remote access, SASl/Kerberos)
-parallels+ssh://root@example.com/system (remote access, SSH tunnelled)
+vz:///system                     (local access)
+vz+unix:///system                (local access)
+vz://example.com/system          (remote access, TLS/x509)
+vz+tcp://example.com/system      (remote access, SASl/Kerberos)
+vz+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
     <h2><a name="example">Example guest domain XML configuration</a></h2>
 
     <p>
-    Parallels driver require at least one hard disk for new domains
+    Virtuozzo driver require at least one hard disk for new domains
     at this time. It is used for defining directory, where VM should
     be created.
     </p>
 
 <pre>
-&lt;domain type='parallels'&gt;
+&lt;domain type='vz'&gt;
   &lt;name&gt;demo&lt;/name&gt;
   &lt;uuid&gt;54cdecad-4492-4e31-a209-33cc21d64057&lt;/uuid&gt;
   &lt;description&gt;some description&lt;/description&gt;
