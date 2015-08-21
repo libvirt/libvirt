@@ -107,12 +107,14 @@ vah_usage(void)
             "  Options:\n"
             "    -a | --add                     load profile\n"
             "    -c | --create                  create profile from template\n"
+            "    -d | --dry-run                 dry run\n"
             "    -D | --delete                  unload and delete profile\n"
             "    -f | --add-file <file>         add file to profile\n"
             "    -F | --append-file <file>      append file to profile\n"
             "    -r | --replace                 reload profile\n"
             "    -R | --remove                  unload profile\n"
             "    -h | --help                    this help\n"
+            "    -p | --probing [0|1]           allow disk format probing\n"
             "    -u | --uuid <uuid>             uuid (profile name)\n"
             "\n"), progname);
 
