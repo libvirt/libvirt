@@ -546,7 +546,9 @@ array_starts_with(const char *str, const char * const *arr, const long size)
 static int
 valid_path(const char *path, const bool readonly)
 {
-    int npaths, opaths;
+    int npaths;
+    int nropaths;
+
     const char * const restricted[] = {
         "/bin/",
         "/etc/",
@@ -596,18 +598,23 @@ valid_path(const char *path, const bool readonly)
     if (!virFileExists(path))
         vah_warning(_("path does not exist, skipping file type checks"));
 
-    opaths = sizeof(override)/sizeof(*(override));
+    /* overrides are always allowed */
+    npaths = sizeof(override)/sizeof(*(override));
+    if (array_starts_with(path, override, npaths) == 0)
+        return 0;
 
-    npaths = sizeof(restricted)/sizeof(*(restricted));
-    if (array_starts_with(path, restricted, npaths) == 0 &&
-        array_starts_with(path, override, opaths) != 0)
-            return 1;
-
-    npaths = sizeof(restricted_rw)/sizeof(*(restricted_rw));
-    if (!readonly) {
-        if (array_starts_with(path, restricted_rw, npaths) == 0)
-            return 1;
+    /* allow read only paths upfront */
+    if (readonly) {
+        nropaths = sizeof(restricted_rw)/sizeof(*(restricted_rw));
+        if (array_starts_with(path, restricted_rw, nropaths) == 0)
+            return 0;
     }
+
+    /* disallow RW acess to all paths in restricted and restriced_rw */
+    npaths = sizeof(restricted)/sizeof(*(restricted));
+    if ((array_starts_with(path, restricted, npaths) == 0
+        || array_starts_with(path, restricted_rw, nropaths) == 0))
+        return 1;
 
     return 0;
 }
