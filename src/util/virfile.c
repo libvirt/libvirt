@@ -2311,6 +2311,112 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     return ret;
 }
 
+
+/* virFileUnlink:
+ * @path: file to unlink
+ * @uid: uid that was used to create the file (not required)
+ * @gid: gid that was used to create the file (not required)
+ *
+ * If a file/volume was created in an NFS root-squash environment,
+ * then we must 'unlink' the file in the same environment. Unlike
+ * the virFileOpenAs[Forked] and virDirCreate[NoFork], this code
+ * takes no extra flags and does not bother with EACCES failures
+ * from the child.
+ */
+int
+virFileUnlink(const char *path,
+              uid_t uid,
+              gid_t gid)
+{
+    pid_t pid;
+    int waitret;
+    int status, ret = 0;
+    gid_t *groups;
+    int ngroups;
+
+    /* If not running as root or if a non explicit uid/gid was being used for
+     * the file/volume, then use unlink directly
+     */
+    if ((geteuid() != 0) ||
+        ((uid == (uid_t) -1) && (gid == (gid_t) -1)))
+        return unlink(path);
+
+    /* Otherwise, we have to deal with the NFS root-squash craziness
+     * to run under the uid/gid that created the volume in order to
+     * perform the unlink of the volume.
+     */
+    if (uid == (uid_t) -1)
+        uid = geteuid();
+    if (gid == (gid_t) -1)
+        gid = getegid();
+
+    ngroups = virGetGroupList(uid, gid, &groups);
+    if (ngroups < 0)
+        return -errno;
+
+    pid = virFork();
+
+    if (pid < 0) {
+        ret = -errno;
+        VIR_FREE(groups);
+        return ret;
+    }
+
+    if (pid) { /* parent */
+        /* wait for child to complete, and retrieve its exit code */
+        VIR_FREE(groups);
+
+        while ((waitret = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
+        if (waitret == -1) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("failed to wait for child unlinking '%s'"),
+                                 path);
+            goto parenterror;
+        }
+
+        /*
+         * If waitpid succeeded, but if the child exited abnormally or
+         * reported non-zero status, report failure
+         */
+        if (!WIFEXITED(status) || (WEXITSTATUS(status)) != 0) {
+            char *msg = virProcessTranslateStatus(status);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("child failed to unlink '%s': %s"),
+                           path, msg);
+            VIR_FREE(msg);
+            if (WIFEXITED(status))
+                ret = -WEXITSTATUS(status);
+            else
+                ret = -EACCES;
+        }
+
+ parenterror:
+        return ret;
+    }
+
+    /* child */
+
+    /* set desired uid/gid, then attempt to unlink the file */
+    if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
+        ret = errno;
+        goto childerror;
+    }
+
+    if (unlink(path) < 0) {
+        ret = errno;
+        goto childerror;
+    }
+
+ childerror:
+    if ((ret & 0xff) != ret) {
+        VIR_WARN("unable to pass desired return value %d", ret);
+        ret = 0xff;
+    }
+    _exit(ret);
+}
+
+
 /* return -errno on failure, or 0 on success */
 static int
 virDirCreateNoFork(const char *path,
