@@ -486,6 +486,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     int fd = -1;
     int operation_flags;
     bool reflink_copy = false;
+    mode_t open_mode = VIR_STORAGE_DEFAULT_VOL_PERM_MODE;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
                   VIR_STORAGE_VOL_CREATE_REFLINK,
@@ -518,11 +519,12 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (pool->def->type == VIR_STORAGE_POOL_NETFS)
         operation_flags |= VIR_FILE_OPEN_FORK;
 
+    if (vol->target.perms->mode != (mode_t) -1)
+        open_mode = vol->target.perms->mode;
+
     if ((fd = virFileOpenAs(vol->target.path,
                             O_RDWR | O_CREAT | O_EXCL,
-                            (vol->target.perms->mode ?
-                             VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
-                             vol->target.perms->mode),
+                            open_mode,
                             vol->target.perms->uid,
                             vol->target.perms->gid,
                             operation_flags)) < 0) {
