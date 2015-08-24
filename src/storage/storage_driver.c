@@ -1872,8 +1872,12 @@ storageVolCreateXML(virStoragePoolPtr obj,
     }
 
     if (backend->refreshVol &&
-        backend->refreshVol(obj->conn, pool, voldef) < 0)
+        backend->refreshVol(obj->conn, pool, voldef) < 0) {
+        storageVolDeleteInternal(volobj, backend, pool, voldef,
+                                 0, false);
+        voldef = NULL;
         goto cleanup;
+    }
 
     /* Update pool metadata ignoring the disk backend since
      * it updates the pool values.
