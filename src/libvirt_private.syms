@@ -1439,6 +1439,7 @@ virFileSanitizePath;
 virFileSkipRoot;
 virFileStripSuffix;
 virFileTouch;
+virFileUnlink;
 virFileUnlock;
 virFileUpdatePerm;
 virFileWaitForDevices;
