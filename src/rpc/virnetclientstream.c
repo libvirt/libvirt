@@ -279,7 +279,7 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
         goto end;
     }
 
-    pieces = (length + size - 1) / size;
+    pieces = VIR_DIV_UP(length, size);
     for (piece = 0; piece < pieces; piece++) {
         if (size > length - offset)
             size = length - offset;

@@ -71,7 +71,7 @@ virBitmapNewQuiet(size_t size)
     if (SIZE_MAX - VIR_BITMAP_BITS_PER_UNIT < size || size == 0)
         return NULL;
 
-    sz = (size + VIR_BITMAP_BITS_PER_UNIT - 1) / VIR_BITMAP_BITS_PER_UNIT;
+    sz = VIR_DIV_UP(size, VIR_BITMAP_BITS_PER_UNIT);
 
     if (VIR_ALLOC_QUIET(bitmap) < 0)
         return NULL;
