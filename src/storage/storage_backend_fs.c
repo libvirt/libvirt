@@ -1149,7 +1149,8 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     switch ((virStorageVolType) vol->type) {
     case VIR_STORAGE_VOL_FILE:
-        if (unlink(vol->target.path) < 0) {
+        if (virFileUnlink(vol->target.path, vol->target.perms->uid,
+                          vol->target.perms->gid) < 0) {
             /* Silently ignore failures where the vol has already gone away */
             if (errno != ENOENT) {
                 virReportSystemError(errno,
