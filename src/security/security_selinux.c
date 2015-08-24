@@ -2505,13 +2505,12 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
     return opts;
 }
 
-static char *
-virSecuritySELinuxDomainSetDirLabel(virSecurityManagerPtr mgr,
+static int
+virSecuritySELinuxDomainSetDirLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                     virDomainDefPtr def,
                                     const char *path)
 {
     virSecurityLabelDefPtr seclabel;
-    int ret = -1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!seclabel || !seclabel->relabel)
