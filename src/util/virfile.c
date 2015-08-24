@@ -2113,8 +2113,13 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
 
         /* File is successfully open. Set permissions if requested. */
         ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
-        if (ret < 0)
+        if (ret < 0) {
+            ret = -errno;
+            virReportSystemError(errno,
+                                 _("child process failed to force owner mode file '%s'"),
+                                 path);
             goto childerror;
+        }
 
         do {
             ret = sendfd(pair[1], fd);
