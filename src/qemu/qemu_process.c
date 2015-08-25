@@ -46,7 +46,6 @@
 
 #include "cpu/cpu.h"
 #include "datatypes.h"
-#include "dirname.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -4390,7 +4389,7 @@ int qemuProcessStart(virConnectPtr conn,
     unsigned int hostdev_flags = 0;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
-    char *tmppath = NULL, *tmpdirpath = NULL;
+    char *tmppath = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s stdin_fd=%d "
               "stdin_path=%s snapshot=%p vmop=%d flags=0x%x",
@@ -4738,15 +4737,11 @@ int qemuProcessStart(virConnectPtr conn,
     if (virFileMakePath(tmppath) < 0)
         goto cleanup;
 
-    if (!(tmpdirpath = mdir_name(tmppath)))
-        goto cleanup;
-
     if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
-                                            vm->def, tmpdirpath) < 0)
+                                            vm->def, tmppath) < 0)
         goto cleanup;
 
     VIR_FREE(tmppath);
-    VIR_FREE(tmpdirpath);
 
     if (virAsprintf(&tmppath, "%s/domain-%s",
                     cfg->channelTargetDir, vm->def->name) < 0)
@@ -4755,14 +4750,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (virFileMakePath(tmppath) < 0)
         goto cleanup;
 
-    if (!(tmpdirpath = mdir_name(tmppath)))
-        goto cleanup;
-
     if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
-                                            vm->def, tmpdirpath) < 0)
+                                            vm->def, tmppath) < 0)
         goto cleanup;
 
-    VIR_FREE(tmpdirpath);
     VIR_FREE(tmppath);
 
     /* now that we know it is about to start call the hook if present */
@@ -5119,7 +5110,6 @@ int qemuProcessStart(virConnectPtr conn,
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
     VIR_FREE(tmppath);
-    VIR_FREE(tmpdirpath);
     VIR_FREE(nodeset);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
