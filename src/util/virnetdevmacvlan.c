@@ -220,7 +220,7 @@ virNetDevMacVLanCreate(const char *ifname,
  */
 int virNetDevMacVLanDelete(const char *ifname)
 {
-    return virNetlinkDelLink(ifname);
+    return virNetlinkDelLink(ifname, NULL);
 }
 
 

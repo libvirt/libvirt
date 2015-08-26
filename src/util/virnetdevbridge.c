@@ -558,19 +558,14 @@ int virNetDevBridgeCreate(const char *brname)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
-#if defined(__linux__) && defined(HAVE_LIBNL)
-int virNetDevBridgeDelete(const char *brname)
-{
-    /* If netlink is available, use it, as it is successful at
-     * deleting a bridge even if it is currently IFF_UP.
-     */
-    return virNetlinkDelLink(brname);
-}
-#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
-int virNetDevBridgeDelete(const char *brname)
+#if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+static int
+virNetDevBridgeDeleteWithIoctl(const char *brname)
 {
     int fd = -1;
     int ret = -1;
+
+    ignore_value(virNetDevSetOnline(brname, false));
 
     if ((fd = virNetDevSetupControl(NULL, NULL)) < 0)
         return -1;
@@ -587,8 +582,36 @@ int virNetDevBridgeDelete(const char *brname)
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
+#endif
+
+
+#if defined(__linux__) && defined(HAVE_LIBNL)
+int
+virNetDevBridgeDelete(const char *brname)
+{
+    /* If netlink is available, use it, as it is successful at
+     * deleting a bridge even if it is currently IFF_UP. fallback to
+     * using ioctl(SIOCBRDELBR) if netlink fails with EOPNOTSUPP.
+     */
+# if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+    return virNetlinkDelLink(brname, virNetDevBridgeDeleteWithIoctl);
+# else
+    return virNetlinkDelLink(brname, NULL);
+# endif
+}
+
+
+#elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRDELBR)
+int
+virNetDevBridgeDelete(const char *brname)
+{
+    return virNetDevBridgeDeleteWithIoctl(brname);
+}
+
+
 #elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFDESTROY)
-int virNetDevBridgeDelete(const char *brname)
+int
+virNetDevBridgeDelete(const char *brname)
 {
     int s;
     struct ifreq ifr;

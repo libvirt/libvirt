@@ -51,7 +51,10 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
                       struct nlmsghdr **resp, unsigned int *respbuflen,
                       uint32_t src_pid, uint32_t dst_pid,
                       unsigned int protocol, unsigned int groups);
-int virNetlinkDelLink(const char *ifname);
+
+typedef int (*virNetlinkDelLinkFallback)(const char *ifname);
+
+int virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback);
 
 int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 
