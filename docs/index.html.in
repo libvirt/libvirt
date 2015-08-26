@@ -72,7 +72,7 @@
         The <a href="http://libvirt.org/drvphyp.html">IBM PowerVM</a> hypervisor
       </li>
       <li>
-        The <a href="http://libvirt.org/drvirtuozzo.html">Virtuozzo</a> hypervisor
+        The <a href="http://libvirt.org/drvvirtuozzo.html">Virtuozzo</a> hypervisor
       </li>
       <li>
         The <a href="http://libvirt.org/drvbhyve.html">Bhyve</a> hypervisor
