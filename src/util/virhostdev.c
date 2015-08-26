@@ -1,6 +1,6 @@
 /* virhostdev.c: hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2013 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -230,7 +230,6 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
             virObjectUnref(list);
             return NULL;
         }
-
         if (virPCIDeviceListAdd(list, dev) < 0) {
             virPCIDeviceFree(dev);
             virObjectUnref(list);
@@ -579,7 +578,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         struct virHostdevIsPCINodeDeviceUsedData data = {hostdev_mgr, dom_name,
                                                          usesVfio};
 
-        if (!virPCIDeviceIsAssignable(dev, strict_acs_check)) {
+        if (!usesVfio && !virPCIDeviceIsAssignable(dev, strict_acs_check)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is not assignable"),
                            virPCIDeviceGetName(dev));
