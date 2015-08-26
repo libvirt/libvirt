@@ -778,9 +778,22 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
      * This is especially important when using SRIOV capable cards that
      * emulate their switch in firmware.
      */
+
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
-        if (virNetDevReplaceNetConfig(linkdev, -1, macaddress, -1, stateDir) < 0)
-            return -1;
+        if (virtPortProfile &&
+            virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH) {
+            /* The Cisco enic driver (the only card that uses
+             * 802.1Qbh) doesn't support IFLA_VFINFO_LIST, which is
+             * required for virNetDevReplaceNetConfig(), so we must
+             * use this function (which uses ioctl(SIOCGIFHWADDR)
+             * instead or virNetDevReplaceNetConfig()
+             */
+            if (virNetDevReplaceMacAddress(linkdev, macaddress, stateDir) < 0)
+                return -1;
+        } else {
+            if (virNetDevReplaceNetConfig(linkdev, -1, macaddress, -1, stateDir) < 0)
+                return -1;
+        }
     }
 
     if (tgifname) {
@@ -913,8 +926,13 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
     int ret = 0;
     int vf = -1;
 
-    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU)
-        ignore_value(virNetDevRestoreNetConfig(linkdev, vf, stateDir));
+    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
+        if (virtPortProfile &&
+             virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH)
+            ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
+        else
+            ignore_value(virNetDevRestoreNetConfig(linkdev, vf, stateDir));
+    }
 
     if (ifname) {
         if (virNetDevVPortProfileDisassociate(ifname,
