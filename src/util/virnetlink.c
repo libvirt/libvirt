@@ -281,6 +281,10 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
  * virNetlinkDelLink:
  *
  * @ifname: Name of the link
+ * @fallback: pointer to an alternate function that will
+ *            be called to perform the delete if RTM_DELLINK fails
+ *            with EOPNOTSUPP (any other error will simply be treated
+ *            as an error).
  *
  * delete a network "link" (aka interface aka device) with the given
  * name. This works for many different types of network devices,
@@ -289,7 +293,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
  * Returns 0 on success, -1 on fatal error.
  */
 int
-virNetlinkDelLink(const char *ifname)
+virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
 {
     int rc = -1;
     struct nlmsghdr *resp = NULL;
@@ -325,6 +329,10 @@ virNetlinkDelLink(const char *ifname)
         if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
             goto malformed_resp;
 
+        if (-err->error == EOPNOTSUPP && fallback) {
+            rc = fallback(ifname);
+            goto cleanup;
+        }
         if (err->error) {
             virReportSystemError(-err->error,
                                  _("error destroying network device %s"),
@@ -886,7 +894,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
 
 
 int
-virNetlinkDelLink(const char *ifname ATTRIBUTE_UNUSED)
+virNetlinkDelLink(const char *ifname ATTRIBUTE_UNUSED,
+                  virNetlinkDelLinkFallback fallback ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
