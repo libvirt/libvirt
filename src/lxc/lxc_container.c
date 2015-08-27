@@ -2184,25 +2184,9 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def ATTRIBUTE_UNUSED,
  */
 static int lxcAttachNS(int *ns_fd)
 {
-    size_t i;
-    if (ns_fd)
-        for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
-            if (ns_fd[i] < 0)
-                continue;
-            VIR_DEBUG("Setting into namespace\n");
-            /* We get EINVAL if new NS is same as the current
-             * NS, or if the fd namespace doesn't match the
-             * type passed to setns()'s second param. Since we
-             * pass 0, we know the EINVAL is harmless
-             */
-            if (setns(ns_fd[i], 0) < 0 &&
-                errno != EINVAL) {
-                virReportSystemError(errno, _("failed to set namespace '%s'"),
-                                     virLXCDomainNamespaceTypeToString(i));
-                return -1;
-            }
-            VIR_FORCE_CLOSE(ns_fd[i]);
-        }
+    if (ns_fd &&
+        virProcessSetNamespaces(VIR_LXC_DOMAIN_NAMESPACE_LAST, ns_fd) < 0)
+        return -1;
     return 0;
 }
 
