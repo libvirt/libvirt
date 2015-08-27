@@ -705,6 +705,9 @@ int virProcessSetNamespaces(size_t nfdlist,
         return -1;
     }
     for (i = 0; i < nfdlist; i++) {
+        if (fdlist[i] < 0)
+            continue;
+
         /* We get EINVAL if new NS is same as the current
          * NS, or if the fd namespace doesn't match the
          * type passed to setns()'s second param. Since we
