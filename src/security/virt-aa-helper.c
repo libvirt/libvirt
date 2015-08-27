@@ -546,9 +546,6 @@ array_starts_with(const char *str, const char * const *arr, const long size)
 static int
 valid_path(const char *path, const bool readonly)
 {
-    int npaths;
-    int nropaths;
-
     const char * const restricted[] = {
         "/bin/",
         "/etc/",
@@ -581,6 +578,10 @@ valid_path(const char *path, const bool readonly)
         "/etc/libvirt-sandbox/services/" /* for virt-sandbox service config */
     };
 
+    const int nropaths = ARRAY_CARDINALITY(restricted);
+    const int nrwpaths = ARRAY_CARDINALITY(restricted_rw);
+    const int nopaths = ARRAY_CARDINALITY(override);
+
     if (path == NULL) {
         vah_error(NULL, 0, _("bad pathname"));
         return -1;
@@ -600,21 +601,18 @@ valid_path(const char *path, const bool readonly)
         vah_warning(_("path does not exist, skipping file type checks"));
 
     /* overrides are always allowed */
-    npaths = sizeof(override)/sizeof(*(override));
-    if (array_starts_with(path, override, npaths) == 0)
+    if (array_starts_with(path, override, nopaths) == 0)
         return 0;
 
     /* allow read only paths upfront */
     if (readonly) {
-        nropaths = sizeof(restricted_rw)/sizeof(*(restricted_rw));
-        if (array_starts_with(path, restricted_rw, nropaths) == 0)
+        if (array_starts_with(path, restricted_rw, nrwpaths) == 0)
             return 0;
     }
 
     /* disallow RW acess to all paths in restricted and restriced_rw */
-    npaths = sizeof(restricted)/sizeof(*(restricted));
-    if ((array_starts_with(path, restricted, npaths) == 0
-        || array_starts_with(path, restricted_rw, nropaths) == 0))
+    if ((array_starts_with(path, restricted, nropaths) == 0 ||
+         array_starts_with(path, restricted_rw, nrwpaths) == 0))
         return 1;
 
     return 0;
