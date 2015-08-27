@@ -2806,6 +2806,7 @@ AC_CONFIG_FILES([\
         examples/domtop/Makefile \
         examples/openauth/Makefile \
         examples/hellolibvirt/Makefile \
+        examples/rename/Makefile \
         examples/systemtap/Makefile \
         examples/xml/nwfilter/Makefile \
         examples/lxcconvert/Makefile \

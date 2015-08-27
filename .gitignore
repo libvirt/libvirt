@@ -83,6 +83,7 @@
 /examples/domtop/domtop
 /examples/hellolibvirt/hellolibvirt
 /examples/openauth/openauth
+/examples/rename/test
 /gnulib/lib/*
 /gnulib/m4/*
 /gnulib/tests/*
