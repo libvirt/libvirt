@@ -95,40 +95,6 @@ VIR_LOG_INIT("lxc.lxc_container");
 # define CLONE_NEWNET  0x40000000 /* New network namespace */
 #endif
 
-/*
- * Workaround older glibc. While kernel may support the setns
- * syscall, the glibc wrapper might not exist. If that's the
- * case, use our own.
- */
-#ifndef __NR_setns
-# if defined(__x86_64__)
-#  define __NR_setns 308
-# elif defined(__i386__)
-#  define __NR_setns 346
-# elif defined(__arm__)
-#  define __NR_setns 375
-# elif defined(__aarch64__)
-#  define __NR_setns 375
-# elif defined(__powerpc__)
-#  define __NR_setns 350
-# elif defined(__s390__)
-#  define __NR_setns 339
-# endif
-#endif
-
-#ifndef HAVE_SETNS
-# if defined(__NR_setns)
-#  include <sys/syscall.h>
-
-static inline int setns(int fd, int nstype)
-{
-    return syscall(__NR_setns, fd, nstype);
-}
-# else /* !__NR_setns */
-#  error Please determine the syscall number for setns on your architecture
-# endif
-#endif
-
 /* messages between parent and container */
 typedef char lxc_message_t;
 #define LXC_CONTINUE_MSG 'c'
