@@ -2571,6 +2571,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  -S NAME, --security NAME\n");
             fprintf(stderr, "  -h, --help\n");
             fprintf(stderr, "\n");
+            rc = 0;
             goto cleanup;
         }
     }
