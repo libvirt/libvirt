@@ -5708,7 +5708,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357,
 
     /**
-     * @generate: both
+     * @generate: server
      * @acl: domain:write
      * @acl: domain:save
      */
