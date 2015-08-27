@@ -2613,6 +2613,7 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  -U FD, --share-uts FD\n");
             fprintf(stderr, "  -h, --help\n");
             fprintf(stderr, "\n");
+            rc = 0;
             goto cleanup;
         }
     }
