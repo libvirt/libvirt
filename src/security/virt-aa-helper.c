@@ -1361,7 +1361,7 @@ main(int argc, char **argv)
                 ctl->def->virtType == VIR_DOMAIN_VIRT_KVM) {
                 virBufferAsprintf(&buf, "  \"%s/log/libvirt/**/%s.log\" w,\n",
                                   LOCALSTATEDIR, ctl->def->name);
-                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/**/%s.monitor\" rw,\n",
+                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/domain-%s/monitor.sock\" rw,\n",
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                                   LOCALSTATEDIR, ctl->def->name);
