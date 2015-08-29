@@ -195,6 +195,11 @@ umlBuildCommandLineNet(virConnectPtr conn,
                        _("TCP client networking type not supported"));
         goto error;
 
+    case VIR_DOMAIN_NET_TYPE_UDP:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("UDP networking type not supported"));
+        goto error;
+
     case VIR_DOMAIN_NET_TYPE_MCAST:
         /* ethNNN=tuntap,macaddr,ipaddr,port */
         virBufferAddLit(&buf, "mcast");

@@ -628,6 +628,7 @@ mymain(void)
     DO_TEST("memory-hotplug");
     DO_TEST("memory-hotplug-nonuma");
     DO_TEST("memory-hotplug-dimm");
+    DO_TEST("net-udp");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

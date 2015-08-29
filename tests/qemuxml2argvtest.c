@@ -1029,6 +1029,7 @@ mymain(void)
     DO_TEST("net-client", NONE);
     DO_TEST("net-server", NONE);
     DO_TEST("net-mcast", NONE);
+    DO_TEST("net-udp", NONE);
     DO_TEST("net-hostdev",
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("net-hostdev-multidomain",

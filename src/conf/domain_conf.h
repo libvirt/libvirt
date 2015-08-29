@@ -923,6 +923,7 @@ typedef enum {
     VIR_DOMAIN_NET_TYPE_INTERNAL,
     VIR_DOMAIN_NET_TYPE_DIRECT,
     VIR_DOMAIN_NET_TYPE_HOSTDEV,
+    VIR_DOMAIN_NET_TYPE_UDP,
 
     VIR_DOMAIN_NET_TYPE_LAST
 } virDomainNetType;
@@ -1025,6 +1026,8 @@ struct _virDomainNetDef {
         struct {
             char *address;
             int port;
+            char *localaddr;
+            int localport;
         } socket; /* any of NET_CLIENT or NET_SERVER or NET_MCAST */
         struct {
             char *name;

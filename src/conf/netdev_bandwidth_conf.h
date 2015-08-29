@@ -53,6 +53,7 @@ static inline bool virNetDevSupportBandwidth(virDomainNetType type)
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_LAST:

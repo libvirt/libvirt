@@ -2402,6 +2402,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_UDP:
             if (STRNEQ_NULLABLE(olddev->data.socket.address,
                                 newdev->data.socket.address) ||
                 olddev->data.socket.port != newdev->data.socket.port) {

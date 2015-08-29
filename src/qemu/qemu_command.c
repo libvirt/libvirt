@@ -5594,6 +5594,16 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
        type_sep = ',';
        break;
 
+    case VIR_DOMAIN_NET_TYPE_UDP:
+       virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d",
+                         type_sep,
+                         net->data.socket.address,
+                         net->data.socket.port,
+                         net->data.socket.localaddr,
+                         net->data.socket.localport);
+       type_sep = ',';
+       break;
+
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
         virBufferAddLit(&buf, "user");
@@ -8667,6 +8677,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_LAST:

@@ -2181,6 +2181,33 @@
         </group>
         <group>
           <attribute name="type">
+            <choice>
+              <value>udp</value>
+            </choice>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="address">
+                <ref name="ipv4Addr"/>
+              </attribute>
+              <attribute name="port">
+                <ref name="PortNumber"/>
+              </attribute>
+              <element name="local">
+                <attribute name="address">
+                  <ref name="ipv4Addr"/>
+                </attribute>
+                <attribute name="port">
+                  <ref name="PortNumber"/>
+                </attribute>
+                <empty/>
+              </element>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
             <value>server</value>
           </attribute>
           <interleave>

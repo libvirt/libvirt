@@ -397,7 +397,8 @@ VIR_ENUM_IMPL(virDomainNet, VIR_DOMAIN_NET_TYPE_LAST,
               "bridge",
               "internal",
               "direct",
-              "hostdev")
+              "hostdev",
+              "udp")
 
 VIR_ENUM_IMPL(virDomainNetBackend, VIR_DOMAIN_NET_BACKEND_TYPE_LAST,
               "default",
@@ -1645,7 +1646,9 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
         VIR_FREE(def->data.socket.address);
+        VIR_FREE(def->data.socket.localaddr);
         break;
 
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -8589,6 +8592,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *script = NULL;
     char *address = NULL;
     char *port = NULL;
+    char *localaddr = NULL;
+    char *localport = NULL;
     char *model = NULL;
     char *backend = NULL;
     char *txmode = NULL;
@@ -8701,10 +8706,18 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (!address &&
                        (def->type == VIR_DOMAIN_NET_TYPE_SERVER ||
                         def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
-                        def->type == VIR_DOMAIN_NET_TYPE_MCAST) &&
+                        def->type == VIR_DOMAIN_NET_TYPE_MCAST ||
+                        def->type == VIR_DOMAIN_NET_TYPE_UDP) &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 address = virXMLPropString(cur, "address");
                 port = virXMLPropString(cur, "port");
+                if (!localaddr && def->type == VIR_DOMAIN_NET_TYPE_UDP) {
+                    xmlNodePtr tmpnode = ctxt->node;
+                    ctxt->node = cur;
+                    localaddr = virXPathString("string(./local/@address)", ctxt);
+                    localport = virXPathString("string(./local/@port)", ctxt);
+                    ctxt->node = tmpnode;
+                }
             } else if (xmlStrEqual(cur->name, BAD_CAST "ip")) {
                 virDomainNetIpDefPtr ip = NULL;
 
@@ -8942,6 +8955,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
         if (port == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("No <source> 'port' attribute "
@@ -8957,7 +8971,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         if (address == NULL) {
             if (def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
-                def->type == VIR_DOMAIN_NET_TYPE_MCAST) {
+                def->type == VIR_DOMAIN_NET_TYPE_MCAST ||
+                def->type == VIR_DOMAIN_NET_TYPE_UDP) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("No <source> 'address' attribute "
                                  "specified with socket interface"));
@@ -8966,6 +8981,32 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         } else {
             def->data.socket.address = address;
             address = NULL;
+        }
+
+        if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
+            break;
+
+        if (localport == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No <local> 'port' attribute "
+                             "specified with socket interface"));
+            goto error;
+        }
+        if (virStrToLong_i(localport, NULL, 10, &def->data.socket.localport) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse <local> 'port' attribute "
+                             "with socket interface"));
+            goto error;
+        }
+
+        if (localaddr == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No <local> 'address' attribute "
+                             "specified with socket interface"));
+            goto error;
+        } else {
+            def->data.socket.localaddr = localaddr;
+            localaddr = NULL;
         }
         break;
 
@@ -9322,6 +9363,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(trustGuestRxFilters);
     VIR_FREE(ips);
     VIR_FREE(vhost_path);
+    VIR_FREE(localaddr);
+    VIR_FREE(localport);
     virNWFilterHashTableFree(filterparams);
 
     return def;
@@ -19959,13 +20002,29 @@ virDomainNetDefFormat(virBufferPtr buf,
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:
         case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_UDP:
             if (def->data.socket.address) {
-                virBufferAsprintf(buf, "<source address='%s' port='%d'/>\n",
-                                  def->data.socket.address, def->data.socket.port);
+                virBufferAsprintf(buf, "<source address='%s' port='%d'",
+                                  def->data.socket.address,
+                                  def->data.socket.port);
             } else {
-                virBufferAsprintf(buf, "<source port='%d'/>\n",
+                virBufferAsprintf(buf, "<source port='%d'",
                                   def->data.socket.port);
             }
+
+            if (def->type != VIR_DOMAIN_NET_TYPE_UDP) {
+                virBufferAddLit(buf, "/>\n");
+                break;
+            }
+
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+
+            virBufferAsprintf(buf, "<local address='%s' port='%d'/>\n",
+                              def->data.socket.localaddr,
+                              def->data.socket.localport);
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</source>\n");
             break;
 
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
