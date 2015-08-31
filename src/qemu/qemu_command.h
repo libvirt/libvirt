@@ -318,4 +318,9 @@ int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
 
 bool
 qemuCheckFips(void);
+
+bool qemuCheckCCWS390AddressSupport(virDomainDefPtr def,
+                                    virDomainDeviceInfo info,
+                                    virQEMUCapsPtr qemuCaps,
+                                    const char *devicename);
 #endif /* __QEMU_COMMAND_H__*/

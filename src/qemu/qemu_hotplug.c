@@ -331,6 +331,10 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+    } else {
+        if (!qemuCheckCCWS390AddressSupport(vm->def, disk->info, priv->qemuCaps,
+                                            disk->dst))
+            goto cleanup;
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -448,6 +452,10 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                 controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
             else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
                 controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+        } else {
+            if (!qemuCheckCCWS390AddressSupport(vm->def, controller->info,
+                                                priv->qemuCaps, "controller"))
+                goto cleanup;
         }
 
         if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
@@ -1663,6 +1671,10 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
             rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
         }
+    } else {
+        if (!qemuCheckCCWS390AddressSupport(vm->def, rng->info, priv->qemuCaps,
+                                            rng->source.file))
+            return -1;
     }
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
