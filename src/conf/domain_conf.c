@@ -20800,9 +20800,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         if (def->data.vnc.socket) {
-            if (def->data.vnc.socket)
-                virBufferAsprintf(buf, " socket='%s'",
-                                  def->data.vnc.socket);
+            virBufferEscapeString(buf, " socket='%s'", def->data.vnc.socket);
         } else {
             if (def->data.vnc.port &&
                 (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
