@@ -496,6 +496,9 @@ endif ! WITH_LINUX
 check-symsorting:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
 		$(srcdir) $(SYM_FILES)
+check-admin-symsorting:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
+		$(srcdir) $(ADMIN_SYM_FILES)
 EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 # Keep this list synced with RPC_PROBE_FILES
@@ -614,7 +617,7 @@ EXTRA_DIST += check-driverimpls.pl check-aclrules.pl check-aclperms.pl
 
 check-local: check-protocol check-symfile check-symsorting \
 	check-drivername check-driverimpls check-aclrules \
-	check-aclperms check-admin-symfile
+	check-aclperms check-admin-symfile check-admin-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
