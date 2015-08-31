@@ -1103,7 +1103,7 @@ USED_SYM_FILES = $(srcdir)/libvirt_private.syms
 GENERATED_SYM_FILES = \
 	$(ACCESS_DRIVER_SYM_FILES) \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
-	libvirt_admin.def \
+	libvirt_admin.syms libvirt_admin.def \
 	$(NULL)
 
 if WITH_TEST
