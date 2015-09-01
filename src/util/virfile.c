@@ -797,8 +797,7 @@ virFileNBDDeviceFindUnused(void)
             if (rv < 0)
                 goto cleanup;
             if (rv == 0) {
-                if (virAsprintf(&ret, "/dev/%s", de->d_name) < 0)
-                    goto cleanup;
+                ignore_value(virAsprintf(&ret, "/dev/%s", de->d_name));
                 goto cleanup;
             }
         }
