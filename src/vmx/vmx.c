@@ -2178,8 +2178,9 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 (*def)->transient = STRCASEEQ(mode,
                                               "independent-nonpersistent");
         } else if (virFileHasSuffix(fileName, ".iso") ||
-                   STRCASEEQ(deviceType, "atapi-cdrom") ||
-                   STRCASEEQ(deviceType, "cdrom-raw")) {
+                   (deviceType &&
+                    (STRCASEEQ(deviceType, "atapi-cdrom") ||
+                     STRCASEEQ(deviceType, "cdrom-raw")))) {
             /*
              * This function was called in order to parse a harddisk device,
              * but .iso files, 'atapi-cdrom', and 'cdrom-raw' devices are for
@@ -2199,13 +2200,11 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         if (virFileHasSuffix(fileName, ".iso")) {
             char *tmp;
 
-            if (deviceType != NULL) {
-                if (STRCASENEQ(deviceType, "cdrom-image")) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Expecting VMX entry '%s' to be 'cdrom-image' "
-                                     "but found '%s'"), deviceType_name, deviceType);
-                    goto cleanup;
-                }
+            if (deviceType && STRCASENEQ(deviceType, "cdrom-image")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Expecting VMX entry '%s' to be 'cdrom-image' "
+                                 "but found '%s'"), deviceType_name, deviceType);
+                goto cleanup;
             }
 
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_FILE);
@@ -2224,7 +2223,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
              * handle it.
              */
             goto ignore;
-        } else if (STRCASEEQ(deviceType, "atapi-cdrom")) {
+        } else if (deviceType && STRCASEEQ(deviceType, "atapi-cdrom")) {
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
 
             if (STRCASEEQ(fileName, "auto detect")) {
@@ -2233,7 +2232,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             } else if (virDomainDiskSetSource(*def, fileName) < 0) {
                 goto cleanup;
             }
-        } else if (STRCASEEQ(deviceType, "cdrom-raw")) {
+        } else if (deviceType && STRCASEEQ(deviceType, "cdrom-raw")) {
             /* Raw access CD-ROMs actually are device='lun' */
             (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
             virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
