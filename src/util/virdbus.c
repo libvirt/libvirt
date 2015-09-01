@@ -544,6 +544,10 @@ static void virDBusTypeStackFree(virDBusTypeStack **stack,
                                  size_t *nstack)
 {
     size_t i;
+
+    if (!*stack)
+        return;
+
     /* The iter in the first level of the stack is the
      * root iter which must not be freed
      */
