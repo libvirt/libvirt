@@ -172,4 +172,5 @@
     <flag name='xio3130-downstream'/>
     <flag name='rtl8139'/>
     <flag name='e1000'/>
+    <flag name='virtio-net'/>
   </qemuCaps>

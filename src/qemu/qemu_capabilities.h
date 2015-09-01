@@ -237,6 +237,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM = 195, /* -device xio3130-downstream */
     QEMU_CAPS_DEVICE_RTL8139 = 196, /* -device rtl8139 */
     QEMU_CAPS_DEVICE_E1000 = 197, /* -device e1000 */
+    QEMU_CAPS_DEVICE_VIRTIO_NET = 198, /* -device virtio-net-* */
 
     QEMU_CAPS_LAST,                   /* this must always be the last item */
 } virQEMUCapsFlags;
