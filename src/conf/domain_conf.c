@@ -24067,10 +24067,11 @@ virDomainObjListCollect(virDomainObjListPtr domlist,
                         unsigned int flags)
 {
     struct virDomainListData data = { NULL, 0 };
+    ssize_t hash_size;
 
     virObjectLock(domlist);
-    sa_assert(domlist->objs);
-    if (VIR_ALLOC_N(data.vms, virHashSize(domlist->objs)) < 0) {
+    if ((hash_size = virHashSize(domlist->objs)) < 0 ||
+        (VIR_ALLOC_N(data.vms, hash_size) < 0)) {
         virObjectUnlock(domlist);
         return -1;
     }
@@ -24132,8 +24133,8 @@ virDomainObjListConvert(virDomainObjListPtr domlist,
     }
     virObjectUnlock(domlist);
 
-    sa_assert(*vms);
-    virDomainObjListFilter(vms, nvms, conn, filter, flags);
+    if (*vms)
+        virDomainObjListFilter(vms, nvms, conn, filter, flags);
 
     return 0;
 
