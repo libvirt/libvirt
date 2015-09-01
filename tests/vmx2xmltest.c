@@ -221,6 +221,7 @@ mymain(void)
     DO_TEST("cdrom-scsi-device", "cdrom-scsi-device");
     DO_TEST("cdrom-scsi-raw-device", "cdrom-scsi-raw-device");
     DO_TEST("cdrom-scsi-raw-auto-detect", "cdrom-scsi-raw-auto-detect");
+    DO_TEST("cdrom-scsi-passthru", "cdrom-scsi-passthru");
     DO_TEST("cdrom-ide-file", "cdrom-ide-file");
     DO_TEST("cdrom-ide-device", "cdrom-ide-device");
     DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device");
@@ -261,6 +262,7 @@ mymain(void)
     DO_TEST("esx-in-the-wild-4", "esx-in-the-wild-4");
     DO_TEST("esx-in-the-wild-5", "esx-in-the-wild-5");
     DO_TEST("esx-in-the-wild-6", "esx-in-the-wild-6");
+    DO_TEST("esx-in-the-wild-7", "esx-in-the-wild-7");
 
     DO_TEST("gsx-in-the-wild-1", "gsx-in-the-wild-1");
     DO_TEST("gsx-in-the-wild-2", "gsx-in-the-wild-2");

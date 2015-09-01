@@ -2180,12 +2180,14 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
         } else if (virFileHasSuffix(fileName, ".iso") ||
                    (deviceType &&
                     (STRCASEEQ(deviceType, "atapi-cdrom") ||
-                     STRCASEEQ(deviceType, "cdrom-raw")))) {
+                     STRCASEEQ(deviceType, "cdrom-raw") ||
+                     (STRCASEEQ(deviceType, "scsi-passthru") &&
+                      STRPREFIX(fileName, "/vmfs/devices/cdrom/"))))) {
             /*
              * This function was called in order to parse a harddisk device,
-             * but .iso files, 'atapi-cdrom', and 'cdrom-raw' devices are for
-             * CDROM devices only. Just ignore it, another call to this
-             * function to parse a CDROM device may handle it.
+             * but .iso files, 'atapi-cdrom', 'cdrom-raw', and 'scsi-passthru'
+             * CDROM devices are for CDROM devices only. Just ignore it, another
+             * call to this function to parse a CDROM device may handle it.
              */
             goto ignore;
         } else {
@@ -2242,6 +2244,24 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 (*def)->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_OPTIONAL;
             } else if (virDomainDiskSetSource(*def, fileName) < 0) {
                 goto cleanup;
+            }
+        } else if (busType == VIR_DOMAIN_DISK_BUS_SCSI &&
+                   deviceType && STRCASEEQ(deviceType, "scsi-passthru")) {
+            if (STRPREFIX(fileName, "/vmfs/devices/cdrom/")) {
+                /* SCSI-passthru CD-ROMs actually are device='lun' */
+                (*def)->device = VIR_DOMAIN_DISK_DEVICE_LUN;
+                virDomainDiskSetType(*def, VIR_STORAGE_TYPE_BLOCK);
+
+                if (virDomainDiskSetSource(*def, fileName) < 0)
+                    goto cleanup;
+            } else {
+                /*
+                 * This function was called in order to parse a CDROM device,
+                 * but the filename does not indicate a CDROM device. Just ignore
+                 * it, another call to this function to parse a harddisk device
+                 * may handle it.
+                 */
+                goto ignore;
             }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3425,7 +3445,13 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
         else
             vmxDeviceType = "atapi-cdrom";
     } else if (def->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        vmxDeviceType = "cdrom-raw";
+        const char *src = virDomainDiskGetSource(def);
+
+        if (def->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+            src && STRPREFIX(src, "/vmfs/devices/cdrom/"))
+            vmxDeviceType = "scsi-passthru";
+        else
+            vmxDeviceType = "cdrom-raw";
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("%s %s '%s' has an unsupported type '%s'"),

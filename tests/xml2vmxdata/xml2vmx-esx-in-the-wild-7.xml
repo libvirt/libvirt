@@ -1,0 +1,35 @@
+<domain type='vmware'>
+  <name>esx-rhel6-mini-with-scsi-device</name>
+  <uuid>564d9176-621f-0239-f5ad-3a002371953b</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/esx-rhel6-mini.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='block' device='lun'>
+      <source dev='/vmfs/devices/cdrom/mpx.vmhba32:C0:T0:L0'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <controller type='scsi' index='0' model='vmpvscsi'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:9f:08:51'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='8192'/>
+    </video>
+  </devices>
+</domain>
