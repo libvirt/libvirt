@@ -2,7 +2,7 @@
  * vmx.c: VMware VMX parsing/formatting functions
  *
  * Copyright (C) 2010-2014 Red Hat, Inc.
- * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2011, 2014-2015 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2191,8 +2191,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
                              "for VMX entry '%s' for device type '%s'"),
-                             fileName, fileName_name,
-                             deviceType ? deviceType : "unknown");
+                           fileName, fileName_name,
+                           deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -2248,8 +2248,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
                              "for VMX entry '%s' for device type '%s'"),
-                             fileName, fileName_name,
-                             deviceType ? deviceType : "unknown");
+                           fileName, fileName_name,
+                           deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else if (device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
@@ -2272,8 +2272,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid or not yet handled value '%s' "
                              "for VMX entry '%s' for device type '%s'"),
-                             fileName, fileName_name,
-                             deviceType ? deviceType : "unknown");
+                           fileName, fileName_name,
+                           deviceType ? deviceType : "unknown");
             goto cleanup;
         }
     } else {
@@ -2545,8 +2545,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
             STRCASENEQ(virtualDev, "e1000e")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                             "'vmxnet3' or 'e1000e' or 'e1000e' but found '%s'"), virtualDev_name,
-                           virtualDev);
+                             "'vmxnet3' or 'e1000e' or 'e1000e' but found '%s'"),
+                           virtualDev_name, virtualDev);
             goto cleanup;
         }
 
@@ -3360,7 +3360,7 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 
 int
 virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
-                     virBufferPtr buffer)
+                 virBufferPtr buffer)
 {
     int controllerOrBus, unit;
     const char *vmxDeviceType = NULL;
@@ -3376,7 +3376,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
      * an ISO.
      */
     const char *fileExt = (def->device == VIR_DOMAIN_DISK_DEVICE_DISK) ?
-                            ".vmdk" : ".iso";
+                           ".vmdk" : ".iso";
 
     /* Check that we got a valid device type */
     if (def->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
@@ -3419,7 +3419,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
     if (def->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
         type == VIR_STORAGE_TYPE_FILE) {
         vmxDeviceType = (def->bus == VIR_DOMAIN_DISK_BUS_SCSI) ?
-            "scsi-hardDisk" : "ata-hardDisk";
+                        "scsi-hardDisk" : "ata-hardDisk";
     } else if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
         if (type == VIR_STORAGE_TYPE_FILE)
             vmxDeviceType = "cdrom-image";
@@ -3491,6 +3491,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
         virBufferAsprintf(buffer,
                           "%s%d:%d.mode = \"independent-nonpersistent\"\n",
                           busType, controllerOrBus, unit);
+
     return 0;
 }
 
