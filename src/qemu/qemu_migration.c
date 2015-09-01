@@ -5023,7 +5023,8 @@ doPeer2PeerMigrate3(virQEMUDriverPtr driver,
                 orig_err->domain == VIR_FROM_QEMU &&
                 orig_err->code == VIR_ERR_OPERATION_FAILED) {
                 virErrorPtr err = virGetLastError();
-                if (err->domain == VIR_FROM_QEMU &&
+                if (err &&
+                    err->domain == VIR_FROM_QEMU &&
                     err->code != VIR_ERR_MIGRATE_FINISH_OK) {
                     virFreeError(orig_err);
                     orig_err = NULL;
