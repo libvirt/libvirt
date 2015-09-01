@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 Red Hat, Inc.
+ * Copyright (C) 2008-2015 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -2151,7 +2151,8 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def ATTRIBUTE_UNUSED,
 static int lxcAttachNS(int *ns_fd)
 {
     if (ns_fd &&
-        virProcessSetNamespaces(VIR_LXC_DOMAIN_NAMESPACE_LAST, ns_fd) < 0)
+        virProcessSetNamespaces((size_t)VIR_LXC_DOMAIN_NAMESPACE_LAST,
+                                ns_fd) < 0)
         return -1;
     return 0;
 }
