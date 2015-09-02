@@ -3323,6 +3323,12 @@ qemuDomainMachineNeedsFDC(const virDomainDef *def)
 }
 
 
+bool
+qemuDomainMachineIsS390CCW(const virDomainDef *def)
+{
+    return STRPREFIX(def->os.machine, "s390-ccw");
+}
+
 
 /**
  * qemuDomainUpdateCurrentMemorySize:

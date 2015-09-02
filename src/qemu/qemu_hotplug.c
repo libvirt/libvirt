@@ -326,7 +326,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     const char *src = virDomainDiskGetSource(disk);
 
     if (!disk->info.type) {
-        if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        if (qemuDomainMachineIsS390CCW(vm->def) &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
             disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
@@ -443,7 +443,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            if (STRPREFIX(vm->def->os.machine, "s390-ccw") &&
+            if (qemuDomainMachineIsS390CCW(vm->def) &&
                 virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
                 controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
             else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
@@ -991,7 +991,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+    if (qemuDomainMachineIsS390CCW(vm->def) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
         net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         if (virDomainCCWAddressAssign(&net->info, priv->ccwaddrs,
@@ -1657,7 +1657,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         return -1;
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (STRPREFIX(vm->def->os.machine, "s390-ccw") &&
+        if (qemuDomainMachineIsS390CCW(vm->def) &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
             rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
         } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
@@ -3412,7 +3412,7 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+    if (qemuDomainMachineIsS390CCW(vm->def) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
         if (!virDomainDeviceAddressIsValid(&detach->info,
                                            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
@@ -3942,7 +3942,7 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                                              virDomainNetGetActualHostdev(detach));
         goto cleanup;
     }
-    if (STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+    if (qemuDomainMachineIsS390CCW(vm->def) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
         if (!virDomainDeviceAddressIsValid(&detach->info,
                                            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {

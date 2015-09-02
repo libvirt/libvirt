@@ -1342,7 +1342,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
     virDomainCCWAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
-    if (STREQLEN(def->os.machine, "s390-ccw", 8) &&
+    if (qemuDomainMachineIsS390CCW(def) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
@@ -1864,7 +1864,7 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
         devstr = info->alias;
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        STREQLEN(vm->def->os.machine, "s390-ccw", 8) &&
+        qemuDomainMachineIsS390CCW(vm->def) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW) &&
         virDomainCCWAddressReleaseAddr(priv->ccwaddrs, info) < 0)
         VIR_WARN("Unable to release CCW address on %s",
