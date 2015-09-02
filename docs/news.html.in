@@ -9,6 +9,235 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+  <h3>1.2.19: Sep 02 2015</h3>
+    <ul>
+      <li>Features:<br/>
+      Big improvements on ppc64 support (Andrea Bolognani),<br/>
+      New virDomainRename API (Tomas Meszaros),<br/>
+      Support for QEMU new pci emulations (Laine Stump)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Rename page about vz driver (Sergey Bronnikov),<br/>
+      docs: Rename 'parallels' to 'vz' (Sergey Bronnikov),<br/>
+      virDomainRename: Extend API documentation (Tomas Meszaros),<br/>
+      virt-aa-helper: document --probing and --dry-run (Guido Günther),<br/>
+      docs: Drop unused rule for internals/%.html.tmp target (Guido Günther),<br/>
+      api: Adjust comment for virDomainAddIOThread (John Ferlan),<br/>
+      fix typo in comments (Cao jin),<br/>
+      virDomainCoreDumpWithFormat: Mention enum for @dumpformat (Michal Privoznik)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      lxc: ensure setns() syscall is defined (Daniel P. Berrange),<br/>
+      selinux: fix compile errors (Guido Günther),<br/>
+      util: fix build without cgroup (Roman Bogorodskiy),<br/>
+      build: fix mingw build (Eric Blake),<br/>
+      protocol: Don't use rename as a variable name (Martin Kletzander),<br/>
+      Remove static keyword from vshReadline when readline does not exist (Moshe Levi),<br/>
+      Detect location of qemu-bridge-helper (Guido Günther),<br/>
+      Check if qemu-bridge-helper exists and is executable (Guido Günther),<br/>
+      nodeinfo: Fix build failure when KVM headers are not available (Andrea Bolognani)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      apparmor: Adjust path to domain monitor socket (Guido Günther),<br/>
+      util: fallback to ioctl(SIOCBRDELBR) if netlink RTM_DELLINK fails (Laine Stump),<br/>
+      util: fallback to ioctl(SIOCBRADDBR) if netlink RTM_NEWLINK fails (Laine Stump),<br/>
+      Revert "LXC: show used memory as 0 when domain is not active" (Jim Fehlig),<br/>
+      libxl: acquire a job when receiving a migrating domain (Jim Fehlig),<br/>
+      libxl: don't attempt to resume domain when suspend fails (Jim Fehlig),<br/>
+      libxl: fix ref counting of libxlMigrationDstArgs (Jim Fehlig),<br/>
+      libvirt_lxc: Claim success for --help (Michal Privoznik),<br/>
+      util: Allow virProcessSetNamespaces() to have sparse FD list (Michal Privoznik),<br/>
+      virt-aa-helper: Improve valid_path (Michal Privoznik),<br/>
+      lxc: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu: Emit correct audit message for memory hot unplug (Luyao Huang),<br/>
+      qemu: Emit correct audit message for memory hot plug (Luyao Huang),<br/>
+      hostdev: skip ACS check when using VFIO for device assignment (Laine Stump),<br/>
+      qemu: Label correct per-VM path when starting (Martin Kletzander),<br/>
+      qemu: Update blkio.weight value after successful set (Luyao Huang),<br/>
+      Eliminate incorrect and unnecessary check for changed IP address (Vasiliy Tolstov),<br/>
+      storage: only run safezero if allocation is &gt; 0 (Guido Günther),<br/>
+      virt-aa-helper: allow access to /usr/share/ovmf/ (intrigeri),<br/>
+      qemu: Fix access to auto-generated socket paths (Martin Kletzander),<br/>
+      cpu: Move check for NULL CPU model inside the driver (Andrea Bolognani),<br/>
+      qemu: Sync BlkioDevice values when setting them in cgroups (Martin Kletzander),<br/>
+      lxc: Sync BlkioDevice values when setting them in cgroups (Martin Kletzander),<br/>
+      qemuDomainRename: Don't leave a domain locked uppon fail (Michal Privoznik),<br/>
+      qemu: Add check for invalid iothread_id in qemuDomainChgIOThread (John Ferlan),<br/>
+      virsh: Reset global error after successfull domain lookup (Luyao Huang),<br/>
+      libvirt-domain: forbid use virDomainRename in readonly connection (Luyao Huang),<br/>
+      virsh: fix always return false in domrename (Luyao Huang),<br/>
+      qemu: Resolve Coverity UNINIT (John Ferlan),<br/>
+      qemu: Fix segfault when parsing private domain data (Martin Kletzander),<br/>
+      conf: Check for hostdev conflicts when assign default disk address (John Ferlan),<br/>
+      conf: Add SCSI hostdev check for disk drive address already in use (John Ferlan),<br/>
+      Revert "qemu: Allow to plug virtio-net-pci into PCIe slot" (Laine Stump),<br/>
+      domain: Fix crash if trying to live update disk &lt;serial&gt; (Cole Robinson),<br/>
+      util: don't overwrite stack when getting ethtool gfeatures (Laine Stump),<br/>
+      cpu: Fix segfault in the ppc64 driver (Andrea Bolognani),<br/>
+      conf: Don't try formating non-existing addresses (Martin Kletzander),<br/>
+      qemu: fail on attempts to use &lt;filterref&gt; for non-tap network connections (Laine Stump),<br/>
+      network: validate network NAT range (Laine Stump),<br/>
+      qemu: Enable ioeventfd usage for virtio-scsi controllers (Martin Kletzander),<br/>
+      virNetDevBandwidthParseRate: Reject negative values (Michal Privoznik),<br/>
+      network: verify proper address family in updates to &lt;host&gt; and &lt;range&gt; (Laine Stump),<br/>
+      virDomainDefParseXML: Check for malicious cpu ids in &lt;numa/&gt; (Michal Privoznik),<br/>
+      qemu: Fix reporting of physical capacity for block devices (Peter Krempa),<br/>
+      qemu: Build correct command line for PCI NICs on ARM (Pavel Fedin),<br/>
+      qemu: Forbid image pre-creation for non-shared storage migration (Peter Krempa),<br/>
+      conf: Resolve Coverity FORWARD_NULL (John Ferlan),<br/>
+      virsh: fix domfsinfo output in quiet mode (Luyao Huang),<br/>
+      Avoid starting a PowerPC VM with floppy disk (Kothapally Madhu Pavan),<br/>
+      Caps: Disable floppy disk for PowerPC VM (Kothapally Madhu Pavan),<br/>
+      qemu: fix some api cannot work when disable cpuset in conf (Luyao Huang)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      src: Check for symbols ordering in ADMIN_SYM_FILES (Michal Privoznik),<br/>
+      src: Cleanup libvirt_admin.syms (Michal Privoznik),<br/>
+      src: Check libvirt_admin.syms for exported symbols (Michal Privoznik),<br/>
+      lxc_container: Turn lxcAttachNS into calling virProcessSetNamespaces (Michal Privoznik),<br/>
+      utils: Remove the logging of errors from virNetDevSendEthtoolIoctl (Moshe Levi),<br/>
+      Start daemon only after filesystems are mounted (Martin Kletzander),<br/>
+      virt-aa-helper: add NVRAM store file for read/write (Peter Kieser),<br/>
+      Fix link to page for Virtuozzo driver (Sergey Bronnikov),<br/>
+      lxc: Inherit namespace feature (ik.nitk),<br/>
+      qemu: add a check for nodeset in qemuDomainSetNumaParamsLive (Luyao Huang),<br/>
+      virt-aa-helper: Simplify restriction logic (Guido Günther),<br/>
+      tests: Use qemuProcessPrepareMonitorChr in qemuxmlnstest (Martin Kletzander),<br/>
+      security_dac: Add SetDirLabel support (Martin Kletzander),<br/>
+      security_selinux: Add SetDirLabel support (Martin Kletzander),<br/>
+      security_stack: Add SetDirLabel support (Martin Kletzander),<br/>
+      security: Add virSecurityDomainSetDirLabel (Martin Kletzander),<br/>
+      security_dac: Label non-listening sockets (Martin Kletzander),<br/>
+      security_selinux: Use proper structure to access socket data (Martin Kletzander),<br/>
+      locking: Remove redundant 'srv' element from virLockDaemon (Erik Skultety),<br/>
+      tests: Add some compatibility-related cases to the CPU tests (Andrea Bolognani),<br/>
+      cpu: Better support for ppc64 compatibility modes (Andrea Bolognani),<br/>
+      cpu: Don't update host-model guest CPUs on ppc64 (Andrea Bolognani),<br/>
+      Add generated libvirt_admin.syms into .gitignore (Martin Kletzander),<br/>
+      conf: Check for attach disk usage of iothread=0 (John Ferlan),<br/>
+      libvirt-admin: Generate symbols file (Guido Günther),<br/>
+      daemon: Use $(NULL) for libvird_admin's flags (Guido Günther),<br/>
+      virconf: correct code formatting (Cao jin),<br/>
+      virConfWalk: fix the inconsistent name (Cao jin),<br/>
+      qemu: Report better error message when renaming to existing domain name (Martin Kletzander),<br/>
+      util: Add getters for cgroup block device I/O throttling (Martin Kletzander),<br/>
+      util: Add virCgroupGetBlockDevString (Martin Kletzander),<br/>
+      util: Add virStringGetFirstWithPrefix (Martin Kletzander),<br/>
+      api: Remove check on iothread_id arg in virDomainPinIOThread (John Ferlan),<br/>
+      qemuDomainAddCgroupForThread: Don't overwrite the error (Luyao Huang),<br/>
+      virconf: fix the inconsistent name (Cao jin),<br/>
+      qemuDomainRename: Explicitly check if domain is renaming to itself (Michal Privoznik),<br/>
+      virHashAddEntry: Report error on duplicate key (Michal Privoznik),<br/>
+      virHashAddOrUpdateEntry: Turn @new_name into void * (Michal Privoznik),<br/>
+      tools: Introduce new client generic module vsh (Erik Skultety),<br/>
+      qemu: Implement virDomainRename (Tomas Meszaros),<br/>
+      Introduce new VIR_DOMAIN_EVENT_DEFINED_RENAMED event (Tomas Meszaros),<br/>
+      domain_conf: Introducde virDomainObjListRenameAddNew() &amp; virDomainObjListRenameRemove() (Tomas Meszaros),<br/>
+      virsh: Implement "domrename" command (Tomas Meszaros),<br/>
+      Introduce virDomainRename API (Tomas Meszaros),<br/>
+      conf: Remove 'vmdef' from virDomainHostdevDefParseXML (John Ferlan),<br/>
+      qemu: Use numad information when getting pin information (Martin Kletzander),<br/>
+      qemu: Keep numad hint after daemon restart (Martin Kletzander),<br/>
+      conf: Pass private data to Parse function of XML options (Martin Kletzander),<br/>
+      conf: Create locals for virDomainDiskDefAssignAddress (John Ferlan),<br/>
+      Drive hot-unplug: reliable parsing of HMP results (Frank Schreuder),<br/>
+      cmdAttachInterface: Fully implement @floor support (Michal Privoznik),<br/>
+      networkBandwidthGenericChecks: Drop useless check (Michal Privoznik),<br/>
+      networkBandwidthUpdate: Don't blindly dereference pointers (Michal Privoznik),<br/>
+      virsh: Refactor parseRateStr to avoid false-positive uninitialized variable (Peter Krempa),<br/>
+      qemu: fix qemuDomainSupportsPCI() for ARM machines of "virt" machinetype (Laine Stump),<br/>
+      virNetSocketCheckProtocols: handle EAI_NONAME as IPv6 unavailable (Guido Günther),<br/>
+      qemu: Implement VIR_DOMAIN_BANDWIDTH_IN_FLOOR (Michal Privoznik),<br/>
+      virsh: Implement VIR_DOMAIN_BANDWIDTH_IN_FLOOR (Michal Privoznik),<br/>
+      Introduce VIR_DOMAIN_BANDWIDTH_IN_FLOOR (Michal Privoznik),<br/>
+      virsh: Rework parseRateStr (Michal Privoznik),<br/>
+      qemuDomainSetInterfaceParameters: Use new functions to update bandwidth (Michal Privoznik),<br/>
+      bridge_driver: Introduce networkBandwidthUpdate (Michal Privoznik),<br/>
+      bridge_driver: Introduce networkBandwidthChangeAllowed (Michal Privoznik),<br/>
+      virNetDevBandwidthUpdateRate: turn class_id into integer (Michal Privoznik),<br/>
+      virNetDevParseMcast: Avoid magic constant (Michal Privoznik),<br/>
+      tests: Add a bunch of cpu test case for ppc64 (Andrea Bolognani),<br/>
+      tests: Re-enable ppc64 cpu tests (Andrea Bolognani),<br/>
+      cpu: Forbid model fallback in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Implement backwards compatibility in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Add POWER8NVL information to CPU map XML (Andrea Bolognani),<br/>
+      cpu: Parse and use PVR masks in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Simplify ppc64 part of CPU map XML (Andrea Bolognani),<br/>
+      cpu: Support multiple PVRs in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Align ppc64 CPU data with x86 (Andrea Bolognani),<br/>
+      tests: Temporarily disable ppc64 cpu tests (Andrea Bolognani),<br/>
+      cpu: Use ppc64Compute() to implement ppc64DriverCompare() (Andrea Bolognani),<br/>
+      cpu: CPU model names have to match on ppc64 (Andrea Bolognani),<br/>
+      cpu: Never skip CPU model name check in ppc64 driver (Andrea Bolognani),<br/>
+      tests: Improve result handling in cpuTestGuestData() (Andrea Bolognani),<br/>
+      cpu: Reorder functions in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Simplify ppc64ModelFromCPU() (Andrea Bolognani),<br/>
+      cpu: Simplify NULL handling in ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Mark driver functions in ppc64 driver (Andrea Bolognani),<br/>
+      admin: Drop 'internal.h' include from libvirt-admin.h (Erik Skultety),<br/>
+      conf: Add ioeventfd option for controllers (Martin Kletzander),<br/>
+      qemuMonitorOpenInternal: remove redundant code (Cao jin),<br/>
+      rpc: Remove keepalive_required option (Martin Kletzander),<br/>
+      qemu: support new pci controller model "pcie-switch-downstream-port" (Laine Stump),<br/>
+      conf: new pcie-controller model "pcie-switch-downstream-port" (Laine Stump),<br/>
+      qemu: add capabilities bit for device xio3130-downstream (Laine Stump),<br/>
+      qemu: support new pci controller model "pcie-switch-upstream-port" (Laine Stump),<br/>
+      conf: new pci controller model "pcie-switch-upstream-port" (Laine Stump),<br/>
+      qemu: add capabilities bit for device x3130-upstream (Laine Stump),<br/>
+      qemu: support new pci controller model "pcie-root-port" (Laine Stump),<br/>
+      conf: new pci controller model "pcie-root-port" (Laine Stump),<br/>
+      qemu: add capabilities bit for device ioh3420 (Laine Stump),<br/>
+      qemu: implement &lt;target chassisNr='n'/&gt; subelement/attribute of &lt;controller&gt; (Laine Stump),<br/>
+      conf: add new &lt;target&gt; subelement with chassisNr attribute to &lt;controller&gt; (Laine Stump),<br/>
+      qemu: implement &lt;model&gt; subelement to &lt;controller&gt; (Laine Stump),<br/>
+      conf: add new &lt;model&gt; subelement with name attribute to &lt;controller&gt; (Laine Stump),<br/>
+      conf: more useful error message when pci function is out of range (Laine Stump),<br/>
+      numa_conf: Introduce virDomainNumaGetMaxCPUID (Michal Privoznik),<br/>
+      Allow vfio hotplug of a device to the domain which owns the iommu (Shivaprasad G Bhat),<br/>
+      qemuDomainDefPostParse: Adjust indent (Michal Privoznik),<br/>
+      bootstrap: Don't require python-config (Michal Privoznik),<br/>
+      qemu: Allow to plug virtio-net-pci into PCIe slot (Pavel Fedin),<br/>
+      qemu: Add PCI-Express root to ARM virt machine (Pavel Fedin),<br/>
+      qemu: Introduce QEMU_CAPS_OBJECT_GPEX (Pavel Fedin),<br/>
+      cpu: Indentation changes in the ppc64 driver (Andrea Bolognani),<br/>
+      cpu: Rename {powerpc,ppc} =&gt; ppc64 (internal symbols) (Andrea Bolognani),<br/>
+      cpu: Rename {powerpc,ppc} =&gt; ppc64 (exported symbols) (Andrea Bolognani),<br/>
+      cpu: Rename {powerpc,ppc} =&gt; ppc64 (filesystem) (Andrea Bolognani),<br/>
+      tests: extend workaround for gnutls private key loading failure (Daniel P. Berrange),<br/>
+      conf: Allow error reporting in virDomainDiskSourceIsBlockType (John Ferlan),<br/>
+      docs: Add Fibre Channel NPIV supported option for volume lun config (John Ferlan),<br/>
+      conf: Change when virDomainDiskDefAssignAddress is called (John Ferlan),<br/>
+      conf: Remove unused param from virDomainHostdevDefParseXML (John Ferlan),<br/>
+      conf: Change when virDomainHostdevAssignAddress is called (John Ferlan),<br/>
+      conf: Try controller add when searching hostdev bus for unit (John Ferlan),<br/>
+      conf: Add check for host address type while checking in use (John Ferlan),<br/>
+      conf: Add xmlopt to virDomainDeviceDefPostParseInternal (John Ferlan),<br/>
+      conf: Move hostdev and disk address validations (John Ferlan),<br/>
+      conf: Add 'bus' and 'target' to SCSI address conflict checks (John Ferlan),<br/>
+      conf: Remove extraneous check in virDomainHostdevAssignAddress (John Ferlan),<br/>
+      qemu: Remove double unlock for domains (Martin Kletzander),<br/>
+      tests: Add subcores3 nodeinfo test (Andrea Bolognani),<br/>
+      tests: Add subcores2 nodeinfo test (Andrea Bolognani),<br/>
+      tests: Add subcores1 nodeinfo test (Andrea Bolognani),<br/>
+      tests: Prepare for subcore tests (Shivaprasad G Bhat),<br/>
+      nodeinfo: Fix output on PPC64 KVM hosts (Shivaprasad G Bhat),<br/>
+      rpc: Fix slow volume download (virsh vol-download) (Ossi Herrala),<br/>
+      There is no virDomainFindBy{ID, Name, UUID} anymore (Cao jin),<br/>
+      Post-release version bump to 1.2.19 (Martin Kletzander),<br/>
+      Fix a trailing space in spec file (Daniel Veillard)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      Revert "lxc: ensure setns() syscall is defined" (Michal Privoznik),<br/>
+      test: Replace tabs with spaces in virnetdaemondata json files (Erik Skultety),<br/>
+      tests: Remove unused file (Andrea Bolognani),<br/>
+      cpu: Remove ISA information from CPU map XML (Andrea Bolognani)<br/>
+      </li>
+    </ul>
    <h3>v1.2.18: Aug 03 2015</h3>
     <ul>
       <li>Features:<br/>

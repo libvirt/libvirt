@@ -2330,6 +2330,12 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Wed Sep  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.19-1
+- Big improvements on ppc64 support
+- New virDomainRename API
+- Support for QEMU new pci emulations
+- a number of improvements and bug fixes
+
 * Mon Aug  3 2015 Daniel Veillard <veillard@redhat.com> - 1.2.18-1
 - libxl: support dom0
 - a number of improvements and bug fixes
