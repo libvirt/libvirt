@@ -486,6 +486,10 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     xmlNodePtr *disks = NULL;
     size_t i;
     bool details = false;
+    char *type = NULL;
+    char *device = NULL;
+    char *target = NULL;
+    char *source = NULL;
 
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -516,11 +520,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     vshPrintExtra(ctl, "------------------------------------------------\n");
 
     for (i = 0; i < ndisks; i++) {
-        char *type = NULL;
-        char *device = NULL;
-        char *target;
-        char *source;
-
         ctxt->node = disks[i];
 
         if (details) {
@@ -528,8 +527,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
             device = virXPathString("string(./@device)", ctxt);
             if (!type || !device) {
                 vshPrint(ctl, "unable to query block list details");
-                VIR_FREE(type);
-                VIR_FREE(device);
                 goto cleanup;
             }
         }
@@ -537,8 +534,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         target = virXPathString("string(./target/@dev)", ctxt);
         if (!target) {
             vshError(ctl, "unable to query block list");
-            VIR_FREE(type);
-            VIR_FREE(device);
             goto cleanup;
         }
         source = virXPathString("string(./source/@file"
@@ -549,24 +544,28 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
         if (details) {
             vshPrint(ctl, "%-10s %-10s %-10s %s\n", type, device,
                      target, source ? source : "-");
-            VIR_FREE(type);
-            VIR_FREE(device);
         } else {
             vshPrint(ctl, "%-10s %s\n", target, source ? source : "-");
         }
 
-        VIR_FREE(target);
         VIR_FREE(source);
+        VIR_FREE(target);
+        VIR_FREE(device);
+        VIR_FREE(type);
     }
 
     ret = true;
 
  cleanup:
+    VIR_FREE(source);
+    VIR_FREE(target);
+    VIR_FREE(device);
+    VIR_FREE(type);
     VIR_FREE(disks);
-    virDomainFree(dom);
-    VIR_FREE(xml);
-    xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xmldoc);
+    VIR_FREE(xml);
+    virDomainFree(dom);
     return ret;
 }
 
