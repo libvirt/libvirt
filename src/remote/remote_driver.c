@@ -377,10 +377,6 @@ remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
         cbdata->freeCallback = NULL;
     }
     virObjectUnlock(cbdata);
-
-    /* free the connection reference that comes along with the callback
-     * registration */
-    virObjectUnref(cbdata->conn);
 }
 
 /* helper macro to ease extraction of arguments from the URI */
