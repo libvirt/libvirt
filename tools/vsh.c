@@ -2714,20 +2714,18 @@ vshInitDebug(vshControl *ctl)
 /*
  * Initialize global data
  */
-int
+bool
 vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
 {
-    int ret = -1;
-
     if (!ctl->hooks) {
         vshError(ctl, "%s", _("client hooks cannot be NULL"));
-        goto error;
+        return false;
     }
 
     if (!groups && !set) {
         vshError(ctl, "%s", _("command groups and command set "
                               "cannot both be NULL"));
-        goto error;
+        return false;
     }
 
     cmdGroups = groups;
@@ -2735,11 +2733,9 @@ vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
     vshInitDebug(ctl);
 
     if (ctl->imode && vshReadlineInit(ctl) < 0)
-        goto error;
+        return false;
 
-    ret = 0;
- error:
-    return ret;
+    return true;
 }
 
 void

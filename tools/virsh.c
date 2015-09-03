@@ -904,7 +904,7 @@ main(int argc, char **argv)
     if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
         ctl->connname = vshStrdup(ctl, defaultConn);
 
-    if (vshInit(ctl, cmdGroups, NULL) < 0)
+    if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);
 
     if (!virshParseArgv(ctl, argc, argv) ||
