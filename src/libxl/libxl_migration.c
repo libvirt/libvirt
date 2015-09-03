@@ -472,7 +472,6 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
     virURIPtr uri = NULL;
     virNetSocketPtr sock;
     int sockfd = -1;
-    int saved_errno = EINVAL;
     int ret = -1;
 
     /* parse dst host:port from uri */
@@ -487,12 +486,8 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
     /* socket connect to dst host:port */
     if (virNetSocketNewConnectTCP(hostname, portstr,
                                   AF_UNSPEC,
-                                  &sock) < 0) {
-        virReportSystemError(saved_errno,
-                             _("unable to connect to '%s:%s'"),
-                             hostname, portstr);
+                                  &sock) < 0)
         goto cleanup;
-    }
 
     if (virNetSocketSetBlocking(sock, true) < 0) {
         virObjectUnref(sock);
