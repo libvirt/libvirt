@@ -2552,8 +2552,8 @@ vshReadlineInit(vshControl *ctl)
     char *name_capitalized = NULL;
     int max_history = 500;
     int ret = -1;
+    char *histsize_env = NULL;
     const char *histsize_str = NULL;
-    const char *histsize_env = NULL;
     const char *strings[] = {
         name_capitalized,
         "HISTSIZE",
@@ -2613,6 +2613,7 @@ vshReadlineInit(vshControl *ctl)
  cleanup:
     VIR_FREE(userdir);
     VIR_FREE(name_capitalized);
+    VIR_FREE(histsize_env);
     return ret;
 }
 
