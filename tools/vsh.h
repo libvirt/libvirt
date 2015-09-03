@@ -303,6 +303,7 @@ int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 void vshPrintExtra(vshControl *ctl, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);
 bool vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set);
+bool vshInitReload(vshControl *ctl);
 void vshDeinit(vshControl *ctl);
 void vshInitDebug(vshControl *ctl);
 void vshDebug(vshControl *ctl, int level, const char *format, ...)

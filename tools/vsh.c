@@ -2738,6 +2738,25 @@ vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set)
     return true;
 }
 
+bool
+vshInitReload(vshControl *ctl)
+{
+    if (!cmdGroups && !cmdSet) {
+        vshError(ctl, "%s", _("command groups and command are both NULL "
+                              "run vshInit before reloading"));
+        return false;
+    }
+
+    vshInitDebug(ctl);
+
+    if (ctl->imode)
+        vshReadlineDeinit(ctl);
+    if (ctl->imode && vshReadlineInit(ctl) < 0)
+        return false;
+
+    return true;
+}
+
 void
 vshDeinit(vshControl *ctl)
 {

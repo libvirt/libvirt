@@ -347,8 +347,9 @@ virshInit(vshControl *ctl)
     virshControlPtr priv = ctl->privData;
 
     /* Since we have the commandline arguments parsed, we need to
-     * re-initialize all the debugging to make it work properly */
-    vshInitDebug(ctl);
+     * reload our initial settings to make debugging and readline
+     * work properly */
+    vshInitReload(ctl);
 
     if (priv->conn)
         return false;
