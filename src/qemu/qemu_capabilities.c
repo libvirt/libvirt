@@ -291,7 +291,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "gpex-pcihost",
               "ioh3420",
               "x3130-upstream",
-              "xio3130-downstream",
+
+              "xio3130-downstream", /* 195 */
+              "rtl8139",
     );
 
 
@@ -1576,6 +1578,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ioh3420", QEMU_CAPS_DEVICE_IOH3420 },
     { "x3130-upstream", QEMU_CAPS_DEVICE_X3130_UPSTREAM },
     { "xio3130-downstream", QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM },
+    { "rtl8139", QEMU_CAPS_DEVICE_RTL8139 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

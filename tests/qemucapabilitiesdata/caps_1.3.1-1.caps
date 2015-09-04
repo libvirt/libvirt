@@ -138,4 +138,5 @@
     <flag name='ioh3420'/>
     <flag name='x3130-upstream'/>
     <flag name='xio3130-downstream'/>
+    <flag name='rtl8139'/>
   </qemuCaps>
