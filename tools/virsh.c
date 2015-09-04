@@ -787,7 +787,9 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         longindex = -1;
     }
 
-    if (argc > optind) {
+    if (argc == optind) {
+        ctl->imode = true;
+    } else {
         /* parse command */
         ctl->imode = false;
         if (argc - optind == 1) {
@@ -847,7 +849,6 @@ main(int argc, char **argv)
     memset(ctl, 0, sizeof(vshControl));
     memset(&virshCtl, 0, sizeof(virshControl));
     ctl->name = "virsh";        /* hardcoded name of the binary */
-    ctl->imode = true;          /* default is interactive mode */
     ctl->log_fd = -1;           /* Initialize log file descriptor */
     ctl->debug = VSH_DEBUG_DEFAULT;
     ctl->hooks = &hooks;
