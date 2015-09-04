@@ -2680,7 +2680,7 @@ vshReadline(vshControl *ctl, const char *prompt)
 /*
  * Initialize debug settings.
  */
-void
+static void
 vshInitDebug(vshControl *ctl)
 {
     const char *debugEnv;

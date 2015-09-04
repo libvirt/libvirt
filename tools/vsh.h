@@ -305,7 +305,6 @@ void vshPrintExtra(vshControl *ctl, const char *format, ...)
 bool vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set);
 bool vshInitReload(vshControl *ctl);
 void vshDeinit(vshControl *ctl);
-void vshInitDebug(vshControl *ctl);
 void vshDebug(vshControl *ctl, int level, const char *format, ...)
     ATTRIBUTE_FMT_PRINTF(3, 4);
 
