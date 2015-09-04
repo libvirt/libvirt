@@ -139,4 +139,5 @@
     <flag name='x3130-upstream'/>
     <flag name='xio3130-downstream'/>
     <flag name='rtl8139'/>
+    <flag name='e1000'/>
   </qemuCaps>

@@ -410,7 +410,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_NET,
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST("qemu-kvm-0.12.3", 12003, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -526,7 +527,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_DEVICE_IVSHMEM,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -594,7 +596,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_NET,
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST("qemu-kvm-0.12.1.2-rhel62-beta", 12001, 1, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -670,7 +673,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -761,7 +765,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_X3130_UPSTREAM,
             QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_VNC_COLON,
             QEMU_CAPS_NO_REBOOT,
@@ -865,7 +870,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_X3130_UPSTREAM,
             QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
-            QEMU_CAPS_DEVICE_RTL8139);
+            QEMU_CAPS_DEVICE_RTL8139,
+            QEMU_CAPS_DEVICE_E1000);
     DO_TEST_FULL("qemu-1.2.0", 1002000, 0, 0, VIR_ERR_CONFIG_UNSUPPORTED,
             QEMU_CAPS_LAST);
     DO_TEST_FULL("qemu-kvm-1.2.0", 1002000, 1, 0, VIR_ERR_CONFIG_UNSUPPORTED,

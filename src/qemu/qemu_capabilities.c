@@ -294,6 +294,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "xio3130-downstream", /* 195 */
               "rtl8139",
+              "e1000",
     );
 
 
@@ -1579,6 +1580,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "x3130-upstream", QEMU_CAPS_DEVICE_X3130_UPSTREAM },
     { "xio3130-downstream", QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM },
     { "rtl8139", QEMU_CAPS_DEVICE_RTL8139 },
+    { "e1000", QEMU_CAPS_DEVICE_E1000 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
