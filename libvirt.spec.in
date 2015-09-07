@@ -1546,7 +1546,7 @@ rm -fr %{buildroot}
 # on RHEL 5, thus we need to expand it here.
 make install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
 
-for i in object-events dominfo domsuspend hellolibvirt openauth xml/nwfilter systemtap dommigrate domtop
+for i in object-events dominfo domsuspend hellolibvirt openauth xml/nwfilter systemtap dommigrate domtop rename
 do
   (cd examples/$i ; make clean ; rm -rf .deps .libs Makefile Makefile.in)
 done
@@ -2330,6 +2330,7 @@ exit 0
 %doc examples/dommigrate
 %doc examples/openauth
 %doc examples/xml
+%doc examples/rename
 %doc examples/systemtap
 
 %changelog
