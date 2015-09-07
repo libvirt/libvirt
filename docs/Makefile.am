@@ -204,7 +204,7 @@ todo:
 	rm -f todo.html.in
 	$(MAKE) todo.html
 
-hvsupport.html:: $(srcdir)/hvsupport.html.in
+hvsupport.html: $(srcdir)/hvsupport.html.in
 
 $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 		$(top_srcdir)/src/libvirt_public.syms \
