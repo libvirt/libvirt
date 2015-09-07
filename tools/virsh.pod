@@ -2507,6 +2507,7 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
 [I<--inbound average,peak,burst,floor>] [I<--outbound average,peak,burst>]
+[I<--print-xml>]
 
 Attach a new network interface to the domain.  I<type> can be
 I<network> to indicate connection via a libvirt virtual network, or
@@ -2535,6 +2536,9 @@ are expressed in kilobytes per second, while I<burst> is expressed in
 kilobytes in a single burst at I<peak> speed as described in the
 Network XML documentation at
 L<http://libvirt.org/formatnetwork.html#elementQoS>.
+
+If I<--print-xml> is specified, then the XML of the interface that would be
+attached is printed instead.
 
 If I<--live> is specified, affect a running domain.
 If I<--config> is specified, affect the next startup of a persistent domain.

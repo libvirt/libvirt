@@ -862,6 +862,10 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
     },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than attach the interface")
+    },
     {.name = NULL}
 };
 
@@ -921,7 +925,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     int ret;
     bool functionReturn = false;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *xml;
+    char *xml = NULL;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
@@ -936,13 +940,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (config || persistent)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    if (persistent &&
-        virDomainIsActive(dom) == 1)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0 ||
@@ -1051,6 +1048,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         virBufferAddLit(&buf, "</bandwidth>\n");
     }
 
+    virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</interface>\n");
 
     if (virBufferError(&buf)) {
@@ -1060,12 +1058,23 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     xml = virBufferContentAndReset(&buf);
 
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", xml);
+        functionReturn = true;
+        goto cleanup;
+    }
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
     if (flags || current)
         ret = virDomainAttachDeviceFlags(dom, xml, flags);
     else
         ret = virDomainAttachDevice(dom, xml);
-
-    VIR_FREE(xml);
 
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach interface"));
@@ -1075,7 +1084,9 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virDomainFree(dom);
+    VIR_FREE(xml);
+    if (dom)
+        virDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
