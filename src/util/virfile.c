@@ -2637,6 +2637,20 @@ virDirCreate(const char *path ATTRIBUTE_UNUSED,
 
     return -ENOSYS;
 }
+
+int
+virFileUnlink(const char *path,
+              uid_t uid ATTRIBUTE_UNUSED,
+              gid_t gid ATTRIBUTE_UNUSED)
+{
+    if (unlink(path) < 0) {
+        virReportSystemError(errno, _("Unable to unlink path '%s'"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
 #endif /* WIN32 */
 
 /**
