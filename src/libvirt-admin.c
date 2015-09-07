@@ -132,6 +132,7 @@ remoteAdminPrivFree(void *opaque)
     virAdmConnectPtr conn = opaque;
 
     remoteAdminConnectClose(conn);
+    virObjectUnref(conn->privateData);
 }
 
 static remoteAdminPrivPtr
