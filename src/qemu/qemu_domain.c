@@ -1193,7 +1193,8 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 }
 
 static const char *
-qemuDomainDefaultNetModel(const virDomainDef *def)
+qemuDomainDefaultNetModel(const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
 {
     if (ARCH_IS_S390(def->os.arch))
         return "virtio";
@@ -1211,6 +1212,18 @@ qemuDomainDefaultNetModel(const virDomainDef *def)
         return "lan9118";
     }
 
+    /* Try several network devices in turn; each of these devices is
+     * less likely be supported out-of-the-box by the guest operating
+     * system than the previous one */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_RTL8139))
+        return "rtl8139";
+    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_E1000))
+        return "e1000";
+    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_NET))
+        return "virtio";
+
+    /* We've had no luck detecting support for any network device,
+     * but we have to return something: might as well be rtl8139 */
     return "rtl8139";
 }
 
@@ -1220,18 +1233,24 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
                              void *opaque)
 {
-    int ret = -1;
     virQEMUDriverPtr driver = opaque;
+    virQEMUCapsPtr qemuCaps = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
+    int ret = -1;
 
     if (driver)
         cfg = virQEMUDriverGetConfig(driver);
+
+    /* This condition is actually a (temporary) hack for test suite which
+     * does not create capabilities cache */
+    if (driver && driver->qemuCapsCache)
+        qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         !dev->data.net->model) {
         if (VIR_STRDUP(dev->data.net->model,
-                       qemuDomainDefaultNetModel(def)) < 0)
+                       qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
             goto cleanup;
     }
 
@@ -1357,6 +1376,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     ret = 0;
 
  cleanup:
+    virObjectUnref(qemuCaps);
     virObjectUnref(cfg);
     return ret;
 }
