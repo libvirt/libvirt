@@ -4734,8 +4734,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (virAsprintf(&tmppath, "%s/domain-%s", cfg->libDir, vm->def->name) < 0)
         goto cleanup;
 
-    if (virFileMakePath(tmppath) < 0)
+    if (virFileMakePath(tmppath) < 0) {
+        virReportSystemError(errno, _("Cannot create directory '%s'"), tmppath);
         goto cleanup;
+    }
 
     if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
                                             vm->def, tmppath) < 0)
@@ -4747,8 +4749,10 @@ int qemuProcessStart(virConnectPtr conn,
                     cfg->channelTargetDir, vm->def->name) < 0)
         goto cleanup;
 
-    if (virFileMakePath(tmppath) < 0)
+    if (virFileMakePath(tmppath) < 0) {
+        virReportSystemError(errno, _("Cannot create directory '%s'"), tmppath);
         goto cleanup;
+    }
 
     if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
                                             vm->def, tmppath) < 0)
