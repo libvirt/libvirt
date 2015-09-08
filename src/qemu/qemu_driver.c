@@ -3175,7 +3175,6 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     char *xml = NULL;
     bool was_running = false;
     int ret = -1;
-    int rc;
     virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps;
@@ -3256,14 +3255,14 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (ret < 0) {
         if (was_running && virDomainObjIsActive(vm)) {
             virErrorPtr save_err = virSaveLastError();
-            rc = qemuProcessStartCPUs(driver, vm, dom->conn,
-                                      VIR_DOMAIN_RUNNING_SAVE_CANCELED,
-                                      QEMU_ASYNC_JOB_SAVE);
-            if (rc < 0) {
+            if (qemuProcessStartCPUs(driver, vm, dom->conn,
+                                     VIR_DOMAIN_RUNNING_SAVE_CANCELED,
+                                     QEMU_ASYNC_JOB_SAVE) < 0) {
                 VIR_WARN("Unable to resume guest CPUs after save failure");
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                          VIR_DOMAIN_EVENT_SUSPENDED,
-                                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
+                qemuDomainEventQueue(driver,
+                                     virDomainEventLifecycleNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_SUSPENDED,
+                                         VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR));
             }
             virSetError(save_err);
             virFreeError(save_err);
