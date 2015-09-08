@@ -172,16 +172,15 @@ UTIL_SOURCES =							\
 		util/virxml.c util/virxml.h			\
 		$(NULL)
 
-
-EXTRA_DIST += $(srcdir)/util/virkeymaps.h $(srcdir)/util/keymaps.csv \
-		$(srcdir)/util/virkeycode-mapgen.py
+EXTRA_DIST += $(srcdir)/util/keymaps.csv $(srcdir)/util/virkeycode-mapgen.py
 
 BUILT_SOURCES += util/virkeymaps.h
+MAINTAINERCLEANFILES += util/virkeymaps.h
 
 util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py \
-	  <$(srcdir)/util/keymaps.csv >$(srcdir)/util/virkeymaps.h
+	  <$(srcdir)/util/keymaps.csv >util/virkeymaps.h
 
 # Internal generic driver infrastructure
 NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c nodeinfopriv.h
