@@ -759,11 +759,15 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
         }
         VIR_FREE(tmp);
 
-        for (j = 0; j < i; j++) {
+        for (j = 0; j < n; j++) {
+            if (j == cur_cell || !def->mem_nodes[j].cpumask)
+                continue;
+
             if (virBitmapOverlaps(def->mem_nodes[j].cpumask,
-                                  def->mem_nodes[i].cpumask)) {
+                                  def->mem_nodes[cur_cell].cpumask)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("NUMA cells %zu and %zu have overlapping vCPU ids"), i, j);
+                               _("NUMA cells %u and %zu have overlapping vCPU ids"),
+                               cur_cell, j);
                 goto cleanup;
             }
         }
