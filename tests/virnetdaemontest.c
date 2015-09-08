@@ -125,6 +125,8 @@ testCreateServer(const char *host, int family)
     virObjectUnref(cln2);
     virObjectUnref(svc1);
     virObjectUnref(svc2);
+    virObjectUnref(sk1);
+    virObjectUnref(sk2);
     return srv;
 
  error:
