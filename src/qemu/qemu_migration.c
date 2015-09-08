@@ -2989,7 +2989,8 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     }
 
     if (vm->def->mem.max_memory ||
-        (vm->newDef &&
+        ((flags & VIR_MIGRATE_PERSIST_DEST) &&
+         vm->newDef &&
          vm->newDef->mem.max_memory))
         cookieFlags |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
 
