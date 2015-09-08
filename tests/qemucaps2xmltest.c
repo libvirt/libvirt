@@ -113,6 +113,7 @@ testGetCaps(char *capsData, const testQemuData *data)
 
  error:
     virObjectUnref(qemuCaps);
+    virObjectUnref(caps);
     return NULL;
 }
 
