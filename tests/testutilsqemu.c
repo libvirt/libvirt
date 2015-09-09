@@ -8,6 +8,8 @@
 # include "cpu_conf.h"
 # include "qemu/qemu_driver.h"
 # include "qemu/qemu_domain.h"
+# define __QEMU_CAPSRIV_H_ALLOW__
+# include "qemu/qemu_capspriv.h"
 # include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
@@ -529,9 +531,36 @@ qemuTestParseCapabilities(const char *capsFile)
 
 void qemuTestDriverFree(virQEMUDriver *driver)
 {
+    virQEMUCapsCacheFree(driver->qemuCapsCache);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
+}
+
+int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
+                            virQEMUCapsPtr caps)
+{
+    int ret;
+
+    if (caps) {
+        /* Our caps were created artificially, so we don't want
+         * virQEMUCapsCacheFree() to attempt to deallocate them */
+        virObjectRef(caps);
+    } else {
+        caps = virQEMUCapsNew();
+        if (!caps)
+            return -ENOMEM;
+    }
+
+    /* We can have repeating names for our test data sets,
+     * so make sure there's no old copy */
+    virHashRemoveEntry(cache->binaries, binary);
+
+    ret = virHashAddEntry(cache->binaries, binary, caps);
+    if (ret < 0)
+        virObjectUnref(caps);
+
+    return ret;
 }
 
 int qemuTestDriverInit(virQEMUDriver *driver)
@@ -554,4 +583,5 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     qemuTestDriverFree(driver);
     return -1;
 }
+
 #endif

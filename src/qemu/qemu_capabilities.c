@@ -42,6 +42,8 @@
 #include "virstring.h"
 #include "qemu_hostdev.h"
 #include "qemu_domain.h"
+#define __QEMU_CAPSRIV_H_ALLOW__
+#include "qemu_capspriv.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -329,15 +331,6 @@ struct _virQEMUCaps {
     char **machineTypes;
     char **machineAliases;
     unsigned int *machineMaxCpus;
-};
-
-struct _virQEMUCapsCache {
-    virMutex lock;
-    virHashTablePtr binaries;
-    char *libDir;
-    char *cacheDir;
-    uid_t runUid;
-    gid_t runGid;
 };
 
 struct virQEMUCapsSearchData {
@@ -3744,11 +3737,17 @@ virQEMUCapsCacheNew(const char *libDir,
     return NULL;
 }
 
+const char *qemuTestCapsName;
 
 virQEMUCapsPtr
 virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
 {
     virQEMUCapsPtr ret = NULL;
+
+    /* This is used only by test suite!!! */
+    if (qemuTestCapsName)
+        binary = qemuTestCapsName;
+
     virMutexLock(&cache->lock);
     ret = virHashLookup(cache->binaries, binary);
     if (ret &&
