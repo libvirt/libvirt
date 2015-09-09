@@ -179,6 +179,12 @@ testCompareXMLToArgvHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
+    qemuTestCapsName = info->name;
+    result = qemuTestCapsCacheInsert(driver.qemuCapsCache, info->name,
+                                     info->extraFlags);
+    if (result < 0)
+        goto cleanup;
+
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
                                        info->migrateFrom, info->migrateFd,
                                        info->json, info->expectError);

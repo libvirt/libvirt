@@ -57,18 +57,12 @@ static int
 qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr *vm,
                          const char *domxml,
-                         bool event)
+                         bool event, const char *testname)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (!(*vm = virDomainObjNew(xmlopt)))
-        goto cleanup;
-
-    if (!((*vm)->def = virDomainDefParseString(domxml,
-                                               driver.caps,
-                                               driver.xmlopt,
-                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     priv = (*vm)->privateData;
@@ -84,6 +78,17 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
+
+    ret = qemuTestCapsCacheInsert(driver.qemuCapsCache, testname,
+                                  priv->qemuCaps);
+    if (ret < 0)
+        goto cleanup;
+
+    if (!((*vm)->def = virDomainDefParseString(domxml,
+                                               driver.caps,
+                                               driver.xmlopt,
+                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+        goto cleanup;
 
     if (qemuDomainAssignAddresses((*vm)->def, priv->qemuCaps, *vm) < 0)
         goto cleanup;
@@ -243,7 +248,8 @@ testQemuHotplug(const void *data)
         vm = test->vm;
     } else {
         if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
-                                     test->deviceDeletedEvent) < 0)
+                                     test->deviceDeletedEvent,
+                                     test->domain_filename) < 0)
             goto cleanup;
     }
 

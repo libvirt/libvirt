@@ -559,6 +559,8 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
     ret = virHashAddEntry(cache->binaries, binary, caps);
     if (ret < 0)
         virObjectUnref(caps);
+    else
+        qemuTestCapsName = binary;
 
     return ret;
 }
@@ -573,8 +575,17 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->caps)
         goto error;
 
+    /* Using /dev/null for libDir and cacheDir automatically produces errors
+     * upon attempt to use any of them */
+    driver->qemuCapsCache = virQEMUCapsCacheNew("/dev/null", "/dev/null", 0, 0);
+    if (!driver->qemuCapsCache)
+        goto error;
+
     driver->xmlopt = virQEMUDriverCreateXMLConf(driver);
     if (!driver->xmlopt)
+        goto error;
+
+    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, "empty", NULL) < 0)
         goto error;
 
     return 0;
