@@ -1040,10 +1040,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return ret;
 
 
-    /* This condition is actually a (temporary) hack for test suite which
-     * does not create capabilities cache */
-    if (driver && driver->qemuCapsCache)
-        qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
+    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {
@@ -1242,10 +1239,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (driver)
         cfg = virQEMUDriverGetConfig(driver);
 
-    /* This condition is actually a (temporary) hack for test suite which
-     * does not create capabilities cache */
-    if (driver && driver->qemuCapsCache)
-        qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
+    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
