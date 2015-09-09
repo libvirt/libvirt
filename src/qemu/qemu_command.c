@@ -2261,7 +2261,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
                 goto cleanup;
 
-            if (qemuAssignDevicePCISlots(def, addrs) < 0)
+            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
                 goto cleanup;
 
             for (i = 1; i < addrs->nbuses; i++) {
@@ -2294,7 +2294,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             if (qemuValidateDevicePCISlotsChipsets(def, qemuCaps, addrs) < 0)
                 goto cleanup;
 
-            if (qemuAssignDevicePCISlots(def, addrs) < 0)
+            if (qemuAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
                 goto cleanup;
 
             for (i = 0; i < def->ncontrollers; i++) {
@@ -2426,6 +2426,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  */
 int
 qemuAssignDevicePCISlots(virDomainDefPtr def,
+                         virQEMUCapsPtr qemuCaps,
                          virDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
@@ -2616,6 +2617,12 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 ||
             def->disks[i]->info.type ==
             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+            continue;
+
+        /* Also ignore virtio-mmio disks if our machine allows them */
+        if (def->disks[i]->info.type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO))
             continue;
 
         if (def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
