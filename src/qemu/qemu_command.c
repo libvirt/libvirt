@@ -285,6 +285,7 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
                                             unsigned int flags)
 {
     virCommandPtr cmd;
+    char *errbuf = NULL, *cmdstr = NULL;
     int pair[2] = { -1, -1 };
 
     if ((flags & ~VIR_NETDEV_TAP_CREATE_VNET_HDR) != VIR_NETDEV_TAP_CREATE_IFUP)
@@ -300,6 +301,8 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
         virCommandAddArgFormat(cmd, "--use-vnet");
     virCommandAddArgFormat(cmd, "--br=%s", brname);
     virCommandAddArgFormat(cmd, "--fd=%d", pair[1]);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+    virCommandDoAsyncIO(cmd);
     virCommandPassFD(cmd, pair[1],
                      VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     virCommandClearCaps(cmd);
@@ -314,9 +317,24 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     do {
         *tapfd = recvfd(pair[0], 0);
     } while (*tapfd < 0 && errno == EINTR);
+
     if (*tapfd < 0) {
-        virReportSystemError(errno, "%s",
-                             _("failed to retrieve file descriptor for interface"));
+        char ebuf[1024];
+        char *errstr = NULL;
+
+        if (!(cmdstr = virCommandToString(cmd)))
+            goto cleanup;
+        virCommandAbort(cmd);
+
+        if (errbuf && *errbuf &&
+            virAsprintf(&errstr, "\nstderr=%s", errbuf) < 0)
+            goto cleanup;
+
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            _("%s: failed to communicate with bridge helper: %s%s"),
+            cmdstr, virStrerror(errno, ebuf, sizeof(ebuf)),
+            errstr ? errstr : "");
+        VIR_FREE(errstr);
         goto cleanup;
     }
 
@@ -327,6 +345,8 @@ static int qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     }
 
  cleanup:
+    VIR_FREE(cmdstr);
+    VIR_FREE(errbuf);
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(pair[0]);
     return *tapfd < 0 ? -1 : 0;
