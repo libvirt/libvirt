@@ -2306,7 +2306,7 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
             continue;
         }
         if (virSecuritySELinuxSetSecurityDiskLabel(mgr,
-                                         def, def->disks[i]) < 0)
+                                                   def, def->disks[i]) < 0)
             return -1;
     }
     /* XXX fixme process  def->fss if relabel == true */
@@ -2355,11 +2355,9 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
         virSecuritySELinuxSetFilecon(def->os.dtb, data->content_context) < 0)
         return -1;
 
-    if (stdin_path) {
-        if (virSecuritySELinuxSetFilecon(stdin_path, data->content_context) < 0 &&
-            virFileIsSharedFSType(stdin_path, VIR_FILE_SHFS_NFS) != 1)
-            return -1;
-    }
+    if (stdin_path &&
+        virSecuritySELinuxSetFilecon(stdin_path, data->content_context) < 0)
+        return -1;
 
     return 0;
 }
