@@ -68,14 +68,17 @@ struct _virSecuritySELinuxData {
 #endif
 };
 
-#define SECURITY_SELINUX_VOID_DOI       "0"
-#define SECURITY_SELINUX_NAME "selinux"
+/* Data structure to pass to various callbacks so we have everything we need */
+typedef struct _virSecuritySELinuxCallbackData virSecuritySELinuxCallbackData;
+typedef virSecuritySELinuxCallbackData *virSecuritySELinuxCallbackDataPtr;
 
-/* Data structure to pass to *FileIterate so we have everything we need */
-struct SELinuxSCSICallbackData {
+struct _virSecuritySELinuxCallbackData {
     virSecurityManagerPtr mgr;
     virDomainDefPtr def;
 };
+
+#define SECURITY_SELINUX_VOID_DOI       "0"
+#define SECURITY_SELINUX_NAME "selinux"
 
 static int
 virSecuritySELinuxRestoreSecurityTPMFileLabelInt(virSecurityManagerPtr mgr,
@@ -1319,7 +1322,7 @@ virSecuritySELinuxSetSecuritySCSILabel(virSCSIDevicePtr dev,
                                        const char *file, void *opaque)
 {
     virSecurityLabelDefPtr secdef;
-    struct SELinuxSCSICallbackData *ptr = opaque;
+    virSecuritySELinuxCallbackDataPtr ptr = opaque;
     virSecurityManagerPtr mgr = ptr->mgr;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
@@ -1400,7 +1403,7 @@ virSecuritySELinuxSetSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
         virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-        struct SELinuxSCSICallbackData data = {.mgr = mgr, .def = def};
+        virSecuritySELinuxCallbackData data = {.mgr = mgr, .def = def};
 
         virSCSIDevicePtr scsi =
             virSCSIDeviceNew(NULL,
