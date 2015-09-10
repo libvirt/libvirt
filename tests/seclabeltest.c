@@ -17,7 +17,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
     if (virThreadInitialize() < 0)
         return EXIT_FAILURE;
 
-    mgr = virSecurityManagerNew(NULL, "QEMU", false, true, false);
+    mgr = virSecurityManagerNew(NULL, "QEMU", false, true, false, false);
     if (mgr == NULL) {
         fprintf(stderr, "Failed to start security driver");
         return EXIT_FAILURE;

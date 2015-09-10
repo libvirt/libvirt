@@ -2603,7 +2603,7 @@ int main(int argc, char *argv[])
 
     if (!(ctrl->securityManager = virSecurityManagerNew(securityDriver,
                                                         LXC_DRIVER_NAME,
-                                                        false, false, false)))
+                                                        false, false, false, false)))
         goto cleanup;
 
     if (ctrl->def->seclabels) {

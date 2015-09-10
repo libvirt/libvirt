@@ -40,6 +40,7 @@ struct _virSecurityManager {
     bool allowDiskFormatProbing;
     bool defaultConfined;
     bool requireConfined;
+    bool privileged;
     const char *virtDriver;
     void *privateData;
 };
@@ -78,7 +79,8 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
                             const char *virtDriver,
                             bool allowDiskFormatProbing,
                             bool defaultConfined,
-                            bool requireConfined)
+                            bool requireConfined,
+                            bool privileged)
 {
     virSecurityManagerPtr mgr;
     char *privateData;
@@ -87,10 +89,10 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
         return NULL;
 
     VIR_DEBUG("drv=%p (%s) virtDriver=%s allowDiskFormatProbing=%d "
-              "defaultConfined=%d requireConfined=%d",
+              "defaultConfined=%d requireConfined=%d privileged=%d",
               drv, drv->name, virtDriver,
               allowDiskFormatProbing, defaultConfined,
-              requireConfined);
+              requireConfined, privileged);
 
     if (VIR_ALLOC_N(privateData, drv->privateDataLen) < 0)
         return NULL;
@@ -104,6 +106,7 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     mgr->allowDiskFormatProbing = allowDiskFormatProbing;
     mgr->defaultConfined = defaultConfined;
     mgr->requireConfined = requireConfined;
+    mgr->privileged = privileged;
     mgr->virtDriver = virtDriver;
     mgr->privateData = privateData;
 
@@ -124,7 +127,8 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
                                     virSecurityManagerGetDriver(primary),
                                     virSecurityManagerGetAllowDiskFormatProbing(primary),
                                     virSecurityManagerGetDefaultConfined(primary),
-                                    virSecurityManagerGetRequireConfined(primary));
+                                    virSecurityManagerGetRequireConfined(primary),
+                                    virSecurityManagerGetPrivileged(primary));
 
     if (!mgr)
         return NULL;
@@ -153,6 +157,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
                          bool defaultConfined,
                          bool requireConfined,
                          bool dynamicOwnership,
+                         bool privileged,
                          virSecurityManagerDACChownCallback chownCallback)
 {
     virSecurityManagerPtr mgr =
@@ -160,7 +165,8 @@ virSecurityManagerNewDAC(const char *virtDriver,
                                     virtDriver,
                                     allowDiskFormatProbing,
                                     defaultConfined,
-                                    requireConfined);
+                                    requireConfined,
+                                    privileged);
 
     if (!mgr)
         return NULL;
@@ -182,7 +188,8 @@ virSecurityManagerNew(const char *name,
                       const char *virtDriver,
                       bool allowDiskFormatProbing,
                       bool defaultConfined,
-                      bool requireConfined)
+                      bool requireConfined,
+                      bool privileged)
 {
     virSecurityDriverPtr drv = virSecurityDriverLookup(name, virtDriver);
     if (!drv)
@@ -212,7 +219,8 @@ virSecurityManagerNew(const char *name,
                                        virtDriver,
                                        allowDiskFormatProbing,
                                        defaultConfined,
-                                       requireConfined);
+                                       requireConfined,
+                                       privileged);
 }
 
 
@@ -330,6 +338,13 @@ bool
 virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr)
 {
     return mgr->requireConfined;
+}
+
+
+bool
+virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr)
+{
+    return mgr->privileged;
 }
 
 
