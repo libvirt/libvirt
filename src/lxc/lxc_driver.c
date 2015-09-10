@@ -1558,7 +1558,8 @@ lxcSecurityInit(virLXCDriverConfigPtr cfg)
                                                       LXC_DRIVER_NAME,
                                                       false,
                                                       cfg->securityDefaultConfined,
-                                                      cfg->securityRequireConfined);
+                                                      cfg->securityRequireConfined,
+                                                      true);
     if (!mgr)
         goto error;
 

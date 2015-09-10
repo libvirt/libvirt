@@ -398,7 +398,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                               QEMU_DRIVER_NAME,
                                               cfg->allowDiskFormatProbing,
                                               cfg->securityDefaultConfined,
-                                              cfg->securityRequireConfined)))
+                                              cfg->securityRequireConfined,
+                                              virQEMUDriverIsPrivileged(driver))))
                 goto error;
             if (!stack) {
                 if (!(stack = virSecurityManagerNewStack(mgr)))
@@ -415,7 +416,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                           QEMU_DRIVER_NAME,
                                           cfg->allowDiskFormatProbing,
                                           cfg->securityDefaultConfined,
-                                          cfg->securityRequireConfined)))
+                                          cfg->securityRequireConfined,
+                                          virQEMUDriverIsPrivileged(driver))))
             goto error;
         if (!(stack = virSecurityManagerNewStack(mgr)))
             goto error;
@@ -429,6 +431,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                              cfg->allowDiskFormatProbing,
                                              cfg->securityDefaultConfined,
                                              cfg->securityRequireConfined,
+                                             virQEMUDriverIsPrivileged(driver),
                                              cfg->dynamicOwnership,
                                              qemuSecurityChownCallback)))
             goto error;

@@ -351,7 +351,7 @@ mymain(void)
     if (!rc)
         return EXIT_AM_SKIP;
 
-    if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false))) {
+    if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false, true))) {
         virErrorPtr err = virGetLastError();
         VIR_TEST_VERBOSE("Unable to initialize security driver: %s\n",
                 err->message);

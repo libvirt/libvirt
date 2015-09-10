@@ -34,7 +34,8 @@ virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                             const char *virtDriver,
                                             bool allowDiskFormatProbing,
                                             bool defaultConfined,
-                                            bool requireConfined);
+                                            bool requireConfined,
+                                            bool privileged);
 
 virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
 int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
@@ -62,6 +63,7 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                bool defaultConfined,
                                                bool requireConfined,
                                                bool dynamicOwnership,
+                                               bool privileged,
                                                virSecurityManagerDACChownCallback chownCallback);
 
 int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
@@ -77,6 +79,7 @@ const char *virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr, int virtTy
 bool virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr);
 bool virSecurityManagerGetRequireConfined(virSecurityManagerPtr mgr);
+bool virSecurityManagerGetPrivileged(virSecurityManagerPtr mgr);
 
 int virSecurityManagerRestoreDiskLabel(virSecurityManagerPtr mgr,
                                        virDomainDefPtr def,
