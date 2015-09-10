@@ -2,55 +2,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1>libvirt Application Development Guide</h1>
-
-    <ul id="toc"></ul>
+    <h1>libvirt Application Development Guides</h1>
 
     <p>
-      The guide is both a learning tool for developing with libvirt and an
-      API reference document. It is a work in progress, composed by a
-      professional author from contributions written by members of the
-      libvirt team.
+      The libvirt API is accessible from a number of programming languages.
+      At this time, there are application development guides available
+      which cover the C API and the Python API. Of the two, the Python guide
+      is currently the more comprehensive document.
     </p>
-
-    <p>
-      Contributions to the guide are <b>VERY</b> welcome. If you'd like to get
-      your name on this and demonstrate your virtualisation prowess, a solid
-      contribution to the content here will do it. :)
-    </p>
-
-    <h2><a name="online">Browsable online</a></h2>
 
     <ul>
-      <li><a href="http://libvirt.org/guide/html/">
-        HTML format using multiple pages</a></li>
-      <li><a href="http://libvirt.org/guide/html-single/">
-        HTML format using one big page</a></li>
-      <li><a href="http://libvirt.org/guide/pdf/Application_Development_Guide.pdf">
-        PDF format</a></li>
-      <li><a href="http://libvirt.org/guide/libvirt-0.7.5-Application_Development_Guide-en-US.epub">
-        ePub format</a></li>
-      <li><a href="http://libvirt.org/guide/txt/Application_Development_Guide.txt">
-        Plain text format</a></li>
-      <li><a href="http://libvirt.org/guide/libvirt-Application_Development_Guide-0.7.5-web-en-US-1-9.el5.src.rpm">
-        Source RPM format</a></li>
+      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide/en-US/html/">Application Development Guide (C language) HTML</a></li>
+      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide/en-US/pdf/">Application Development Guide (C language) PDF</a></li>
+      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide-python/en-US/html/">Application Development Guide (Python language) HTML</a></li>
+      <li><a href="http://libvirt.org/docs/libvirt-appdev-guide-python/en-US/pdf/">Application Development Guide (Python language) PDF</a></li>
     </ul>
 
-    <h2><a name="git">GIT source repository</a></h2>
+    <h2>Contributing content</h2>
 
     <p>
-      The source is in a git repository:
+      These guides are written in DocBook and published with the
+      publican tool, which is also used for Fedora and Red Hat
+      documentation. The original content is provided in GIT and
+      any contributions to the guide are welcome.
     </p>
 
     <pre>
-      git clone git://libvirt.org/libvirt-appdev-guide.git</pre>
+      # C language
+      $ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git">git://libvirt.org/libvirt-appdev-guide.git</a>
 
-    <p>
-      Browsable here:
-    </p>
+      # Python language
+      $ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git">git://libvirt.org/libvirt-appdev-guide-python.git</a>
 
-    <pre>
-      <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary</a></pre>
+      # Publican Style/Theme
+      $ git clone <a href="http://libvirt.org/git/?p=libvirt-publican.git">git://libvirt.org/libvirt-publican.git</a>
+    </pre>
 
   </body>
 </html>
