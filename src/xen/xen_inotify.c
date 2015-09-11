@@ -217,11 +217,11 @@ xenInotifyRemoveDomainConfigInfo(virConnectPtr conn, const char *fname)
 }
 
 static int
-xenInotifyAddDomainConfigInfo(virConnectPtr conn, const char *fname)
+xenInotifyAddDomainConfigInfo(virConnectPtr conn, const char *fname, time_t now)
 {
     xenUnifiedPrivatePtr priv = conn->privateData;
     return priv->useXenConfigCache ?
-        xenXMConfigCacheAddFile(conn, fname) :
+        xenXMConfigCacheAddFile(conn, fname, now) :
         xenInotifyXendDomainsDirAddEntry(conn, fname);
 }
 
@@ -238,6 +238,7 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
     char *tmp, *name;
     virConnectPtr conn = data;
     xenUnifiedPrivatePtr priv = NULL;
+    time_t now = time(NULL);
 
     VIR_DEBUG("got inotify event");
 
@@ -300,7 +301,7 @@ xenInotifyEvent(int watch ATTRIBUTE_UNUSED,
             }
         } else if (e->mask & (IN_CREATE | IN_CLOSE_WRITE | IN_MOVED_TO)) {
             virObjectEventPtr event;
-            if (xenInotifyAddDomainConfigInfo(conn, fname) < 0) {
+            if (xenInotifyAddDomainConfigInfo(conn, fname, now) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config cache"));
                 goto cleanup;
@@ -344,6 +345,7 @@ xenInotifyOpen(virConnectPtr conn,
     char *path;
     xenUnifiedPrivatePtr priv = conn->privateData;
     int direrr;
+    time_t now = time(NULL);
 
     virCheckFlags(VIR_CONNECT_RO, -1);
 
@@ -374,7 +376,7 @@ xenInotifyOpen(virConnectPtr conn,
                 return -1;
             }
 
-            if (xenInotifyAddDomainConfigInfo(conn, path) < 0) {
+            if (xenInotifyAddDomainConfigInfo(conn, path, now) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config list"));
                 closedir(dh);
