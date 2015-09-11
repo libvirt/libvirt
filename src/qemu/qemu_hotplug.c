@@ -321,6 +321,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
     char *drivestr = NULL;
+    char *drivealias = NULL;
     bool releaseaddr = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
@@ -365,6 +366,9 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
             goto error;
 
+        if (!(drivealias = qemuDeviceDriveHostAlias(disk, priv->qemuCaps)))
+            goto error;
+
         if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
             goto error;
     }
@@ -379,10 +383,11 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             ret = qemuMonitorAddDevice(priv->mon, devstr);
             if (ret < 0) {
                 virErrorPtr orig_err = virSaveLastError();
-                if (qemuMonitorDriveDel(priv->mon, drivestr) < 0) {
+                if (!drivealias ||
+                    qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
                     VIR_WARN("Unable to remove drive %s (%s) after failed "
                              "qemuMonitorAddDevice",
-                             drivestr, devstr);
+                             NULLSTR(drivealias), drivestr);
                 }
                 if (orig_err) {
                     virSetError(orig_err);
@@ -415,6 +420,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
  cleanup:
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
+    VIR_FREE(drivealias);
     virObjectUnref(cfg);
     return ret;
 
