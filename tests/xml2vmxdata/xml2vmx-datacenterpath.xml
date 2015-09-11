@@ -1,0 +1,9 @@
+<domain type='vmware' xmlns:vmware='http://libvirt.org/schemas/domain/vmware/1.0'>
+  <name>datacenterpath</name>
+  <uuid>564d9bef-acd9-b4e0-c8f0-aea8b9103515</uuid>
+  <memory unit='KiB'>4096</memory>
+  <os>
+    <type>hvm</type>
+  </os>
+  <vmware:datacenterpath>folder1/folder2/datacenter1</vmware:datacenterpath>
+</domain>

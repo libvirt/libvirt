@@ -1,7 +1,7 @@
 /*
  * vmx.h: VMware VMX parsing/formatting functions
  *
- * Copyright (C) 2009-2010 Matthias Bolte <matthias.bolte@googlemail.com>
+ * Copyright (C) 2009-2011, 2015 Matthias Bolte <matthias.bolte@googlemail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,15 +41,17 @@ typedef int (*virVMXAutodetectSCSIControllerModel)(virDomainDiskDefPtr def,
                                                    int *model, void *opaque);
 
 /*
- * virVMXParseFileName is only used by virVMXParseConfig.
- * virVMXFormatFileName is only used by virVMXFormatConfig.
- * virVMXAutodetectSCSIControllerModel is optionally used by virVMXFormatConfig.
+ * parseFileName is only used by virVMXParseConfig.
+ * formatFileName is only used by virVMXFormatConfig.
+ * autodetectSCSIControllerModel is optionally used by virVMXFormatConfig.
+ * datacenterPath is only used by virVMXFormatConfig.
  */
 struct _virVMXContext {
     void *opaque;
     virVMXParseFileName parseFileName;
     virVMXFormatFileName formatFileName;
     virVMXAutodetectSCSIControllerModel autodetectSCSIControllerModel;
+    const char *datacenterPath; /* including folders */
 };
 
 

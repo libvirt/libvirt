@@ -381,7 +381,10 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
+    ctx.parseFileName = NULL;
     ctx.formatFileName = vmwareCopyVMXFileName;
+    ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
@@ -671,7 +674,10 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
 
+    ctx.parseFileName = NULL;
     ctx.formatFileName = vmwareCopyVMXFileName;
+    ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     vmwareDriverLock(driver);
 
@@ -1022,6 +1028,9 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     }
 
     ctx.parseFileName = vmwareCopyVMXFileName;
+    ctx.formatFileName = NULL;
+    ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     def = virVMXParseConfig(&ctx, driver->xmlopt, nativeConfig);
 

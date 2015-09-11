@@ -523,10 +523,11 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Helpers
  */
+
 static int
-vmxDomainDefPostParse(virDomainDefPtr def,
-                      virCapsPtr caps ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+virVMXDomainDefPostParse(virDomainDefPtr def,
+                         virCapsPtr caps ATTRIBUTE_UNUSED,
+                         void *opaque ATTRIBUTE_UNUSED)
 {
     /* memory hotplug tunables are not supported by this driver */
     if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
@@ -536,27 +537,60 @@ vmxDomainDefPostParse(virDomainDefPtr def,
 }
 
 static int
-vmxDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                            const virDomainDef *def ATTRIBUTE_UNUSED,
-                            virCapsPtr caps ATTRIBUTE_UNUSED,
-                            void *opaque ATTRIBUTE_UNUSED)
+virVMXDomainDevicesDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                const virDomainDef *def ATTRIBUTE_UNUSED,
+                                virCapsPtr caps ATTRIBUTE_UNUSED,
+                                void *opaque ATTRIBUTE_UNUSED)
 {
     return 0;
 }
 
-virDomainDefParserConfig virVMXDomainDefParserConfig = {
+static virDomainDefParserConfig virVMXDomainDefParserConfig = {
     .hasWideSCSIBus = true,
     .macPrefix = {0x00, 0x0c, 0x29},
-    .devicesPostParseCallback = vmxDomainDeviceDefPostParse,
-    .domainPostParseCallback = vmxDomainDefPostParse,
+    .devicesPostParseCallback = virVMXDomainDevicesDefPostParse,
+    .domainPostParseCallback = virVMXDomainDefPostParse,
 };
 
+static void
+virVMXDomainDefNamespaceFree(void *nsdata)
+{
+    VIR_FREE(nsdata);
+}
+
+static int
+virVMXDomainDefNamespaceFormatXML(virBufferPtr buf, void *nsdata)
+{
+    const char *datacenterPath = nsdata;
+
+    if (!datacenterPath)
+        return 0;
+
+    virBufferAddLit(buf, "<vmware:datacenterpath>");
+    virBufferEscapeString(buf, "%s", datacenterPath);
+    virBufferAddLit(buf, "</vmware:datacenterpath>\n");
+
+    return 0;
+}
+
+static const char *
+virVMXDomainDefNamespaceHref(void)
+{
+    return "xmlns:vmware='http://libvirt.org/schemas/domain/vmware/1.0'";
+}
+
+static virDomainXMLNamespace virVMXDomainXMLNamespace = {
+    .parse = NULL,
+    .free = virVMXDomainDefNamespaceFree,
+    .format = virVMXDomainDefNamespaceFormatXML,
+    .href = virVMXDomainDefNamespaceHref,
+};
 
 virDomainXMLOptionPtr
 virVMXDomainXMLConfInit(void)
 {
-    return virDomainXMLOptionNew(&virVMXDomainDefParserConfig,
-                               NULL, NULL);
+    return virDomainXMLOptionNew(&virVMXDomainDefParserConfig, NULL,
+                                 &virVMXDomainXMLNamespace);
 }
 
 char *
@@ -1268,6 +1302,7 @@ virVMXParseConfig(virVMXContext *ctx,
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
     int cpumasklen;
+    char *namespaceData;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1765,6 +1800,15 @@ virVMXParseConfig(virVMXContext *ctx,
 
         if (def->parallels[def->nparallels] != NULL)
             ++def->nparallels;
+    }
+
+    /* ctx:datacenterPath -> def:namespaceData */
+    if (ctx->datacenterPath) {
+        if (VIR_STRDUP(namespaceData, ctx->datacenterPath) < 0)
+            goto cleanup;
+
+        def->ns = *virDomainXMLOptionGetNamespace(xmlopt);
+        def->namespaceData = namespaceData;
     }
 
     success = true;

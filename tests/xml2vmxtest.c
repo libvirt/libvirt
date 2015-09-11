@@ -221,6 +221,7 @@ mymain(void)
     ctx.parseFileName = NULL;
     ctx.formatFileName = testFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = testAutodetectSCSIControllerModel;
+    ctx.datacenterPath = NULL;
 
     DO_TEST("minimal", "minimal", 4);
     DO_TEST("minimal-64bit", "minimal-64bit", 4);
@@ -292,6 +293,8 @@ mymain(void)
     DO_TEST("smbios", "smbios", 4);
 
     DO_TEST("svga", "svga", 4);
+
+    DO_TEST("datacenterpath", "datacenterpath", 4);
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

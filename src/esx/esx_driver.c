@@ -2741,6 +2741,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     ctx.parseFileName = esxParseVMXFileName;
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = priv->primary->datacenterPath;
 
     def = virVMXParseConfig(&ctx, priv->xmlopt, vmx);
 
@@ -2799,6 +2800,7 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     ctx.parseFileName = esxParseVMXFileName;
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     def = virVMXParseConfig(&ctx, priv->xmlopt, nativeConfig);
 
@@ -2853,6 +2855,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     ctx.parseFileName = NULL;
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
+    ctx.datacenterPath = NULL;
 
     vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 
@@ -3096,6 +3099,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     ctx.parseFileName = NULL;
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
+    ctx.datacenterPath = NULL;
 
     vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 

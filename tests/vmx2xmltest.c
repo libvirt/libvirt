@@ -201,6 +201,7 @@ mymain(void)
     ctx.parseFileName = testParseVMXFileName;
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     DO_TEST("case-insensitive-1", "case-insensitive-1");
     DO_TEST("case-insensitive-2", "case-insensitive-2");
@@ -279,6 +280,10 @@ mymain(void)
     DO_TEST("smbios", "smbios");
 
     DO_TEST("svga", "svga");
+
+    ctx.datacenterPath = "folder1/folder2/datacenter1";
+
+    DO_TEST("datacenterpath", "datacenterpath");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

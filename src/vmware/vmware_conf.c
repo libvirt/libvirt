@@ -145,6 +145,9 @@ vmwareLoadDomains(struct vmware_driver *driver)
     virCommandPtr cmd;
 
     ctx.parseFileName = vmwareCopyVMXFileName;
+    ctx.formatFileName = NULL;
+    ctx.autodetectSCSIControllerModel = NULL;
+    ctx.datacenterPath = NULL;
 
     cmd = virCommandNewArgList(driver->vmrun, "-T",
                                vmwareDriverTypeToString(driver->type),
