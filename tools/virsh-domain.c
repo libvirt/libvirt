@@ -1700,10 +1700,6 @@ virshPrintJobProgress(const char *label, unsigned long long remaining,
 {
     int progress;
 
-    if (total == 0)
-        /* migration has not been started */
-        return;
-
     if (remaining == 0) {
         /* migration has completed */
         progress = 100;
@@ -4401,7 +4397,7 @@ virshWatchJob(vshControl *ctl,
             ret = virDomainGetJobInfo(dom, &jobinfo);
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
             if (ret == 0) {
-                if (verbose)
+                if (verbose && jobinfo.dataTotal > 0)
                     virshPrintJobProgress(label, jobinfo.dataRemaining,
                                           jobinfo.dataTotal);
 
