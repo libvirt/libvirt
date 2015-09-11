@@ -1020,6 +1020,7 @@ libvirportallocatormock_la_SOURCES = \
 	virportallocatortest.c
 libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
 libvirportallocatormock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+libvirportallocatormock_la_LIBADD = ../src/libvirt.la
 
 vircgrouptest_SOURCES = \
 	vircgrouptest.c testutils.h testutils.c

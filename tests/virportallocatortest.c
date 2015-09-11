@@ -49,7 +49,7 @@ static void init_syms(void)
     realsocket = dlsym(RTLD_NEXT, "socket");
 
     if (!realsocket) {
-        VIR_TEST_DEBUG("Unable to find 'socket' symbol\n");
+        fprintf(stderr, "Unable to find 'socket' symbol\n");
         abort();
     }
 
