@@ -136,11 +136,11 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
           ka, ka->client, ka->countToDeath, timeval);
 
     if (ka->countToDeath == 0) {
-        VIR_WARN("No response from client %p after %d keepalive messages in"
-                 " %d seconds",
-                 ka->client,
-                 ka->count,
-                 timeval);
+        VIR_DEBUG("No response from client %p after %d keepalive messages "
+                  "in %d seconds",
+                  ka->client, ka->count, timeval);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("connection closed due to keepalive timeout"));
         return true;
     } else {
         ka->countToDeath--;

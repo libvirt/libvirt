@@ -107,6 +107,7 @@ struct _virNetClient {
     virKeepAlivePtr keepalive;
     bool wantClose;
     int closeReason;
+    virErrorPtr error;
 
     virNetClientCloseFunc closeCb;
     void *closeOpaque;
@@ -636,10 +637,14 @@ virNetClientMarkClose(virNetClientPtr client,
                       int reason)
 {
     VIR_DEBUG("client=%p, reason=%d", client, reason);
+
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
+
     /* Don't override reason that's already set. */
     if (!client->wantClose) {
+        if (!client->error)
+            client->error = virSaveLastError();
         client->wantClose = true;
         client->closeReason = reason;
     }
@@ -669,6 +674,9 @@ virNetClientCloseLocked(virNetClientPtr client)
     ka = client->keepalive;
     client->keepalive = NULL;
     client->wantClose = false;
+
+    virFreeError(client->error);
+    client->error = NULL;
 
     if (ka || client->closeCb) {
         virNetClientCloseFunc closeCb = client->closeCb;
@@ -1602,6 +1610,10 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
     }
 
  error:
+    if (client->error) {
+        VIR_DEBUG("error on socket: %s", client->error->message);
+        virSetError(client->error);
+    }
     virNetClientCallRemove(&client->waitDispatch, thiscall);
     virNetClientIOEventLoopPassTheBuck(client, thiscall);
     return -1;
