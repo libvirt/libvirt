@@ -31,7 +31,7 @@
 # include "domain_conf.h"
 
 int xenXMConfigCacheRefresh (virConnectPtr conn);
-int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename);
+int xenXMConfigCacheAddFile(virConnectPtr conn, const char *filename, time_t now);
 int xenXMConfigCacheRemoveFile(virConnectPtr conn, const char *filename);
 
 int xenXMOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags);
