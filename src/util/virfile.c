@@ -2311,8 +2311,7 @@ virFileRemove(const char *path,
               gid_t gid)
 {
     pid_t pid;
-    int waitret;
-    int status, ret = 0;
+    int status = 0, ret = 0;
     gid_t *groups;
     int ngroups;
 
@@ -2352,32 +2351,21 @@ virFileRemove(const char *path,
         /* wait for child to complete, and retrieve its exit code */
         VIR_FREE(groups);
 
-        while ((waitret = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
-        if (waitret == -1) {
-            ret = -errno;
-            virReportSystemError(errno,
-                                 _("failed to wait for child unlinking '%s'"),
-                                 path);
-            goto parenterror;
+        if (virProcessWait(pid, &status, 0) < 0) {
+            /* virProcessWait() reports errno on waitpid failure, so we'll just
+             * set our return status to EINTR; otherwise, set status to EACCES
+             * since the original failure for the fork+setuid path would have
+             * been EACCES or EPERM by definition.
+             */
+            if (virLastErrorIsSystemErrno(0))
+                status = EINTR;
+            else if (!status)
+                status = EACCES;
         }
 
-        /*
-         * If waitpid succeeded, but if the child exited abnormally or
-         * reported non-zero status, report failure
-         */
-        if (!WIFEXITED(status) || (WEXITSTATUS(status)) != 0) {
-            char *msg = virProcessTranslateStatus(status);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("child failed to unlink '%s': %s"),
-                           path, msg);
-            VIR_FREE(msg);
-            if (WIFEXITED(status))
-                ret = -WEXITSTATUS(status);
-            else
-                ret = -EACCES;
-        }
+        if (status)
+            ret = -status;
 
- parenterror:
         return ret;
     }
 
