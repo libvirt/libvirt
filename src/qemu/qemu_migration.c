@@ -3000,10 +3000,9 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
         }
     }
 
-    if (vm->def->mem.max_memory ||
+    if (virDomainDefHasMemoryHotplug(vm->def) ||
         ((flags & VIR_MIGRATE_PERSIST_DEST) &&
-         vm->newDef &&
-         vm->newDef->mem.max_memory))
+         vm->newDef && virDomainDefHasMemoryHotplug(vm->newDef)))
         cookieFlags |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))

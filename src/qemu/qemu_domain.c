@@ -1361,7 +1361,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_MEMORY &&
-        def->mem.max_memory == 0) {
+        !virDomainDefHasMemoryHotplug(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("maxMemory has to be specified when using memory "
                          "devices "));

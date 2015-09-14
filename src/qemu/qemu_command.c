@@ -9323,7 +9323,7 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     virCommandAddArg(cmd, "-m");
 
-    if (def->mem.max_memory) {
+    if (virDomainDefHasMemoryHotplug(def)) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("memory hotplug isn't supported by this QEMU binary"));

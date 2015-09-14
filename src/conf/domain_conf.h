@@ -2324,6 +2324,7 @@ struct _virDomainDef {
 unsigned long long virDomainDefGetMemoryInitial(virDomainDefPtr def);
 void virDomainDefSetMemoryInitial(virDomainDefPtr def, unsigned long long size);
 unsigned long long virDomainDefGetMemoryActual(virDomainDefPtr def);
+bool virDomainDefHasMemoryHotplug(const virDomainDef *def);
 
 typedef enum {
     VIR_DOMAIN_KEY_WRAP_CIPHER_NAME_AES,

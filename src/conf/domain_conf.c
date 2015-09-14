@@ -1154,7 +1154,7 @@ int
 virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def)
 {
     /* memory hotplug tunables are not supported by this driver */
-    if (def->mem.max_memory > 0 || def->mem.memory_slots > 0) {
+    if (virDomainDefHasMemoryHotplug(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("memory hotplug tunables <maxMemory> are not "
                          "supported by this hypervisor driver"));
@@ -7668,6 +7668,13 @@ virDomainParseMemoryLimit(const char *xpath,
         *mem = virMemoryLimitTruncate(VIR_DIV_UP(bytes, 1024));
 
     return 0;
+}
+
+
+bool
+virDomainDefHasMemoryHotplug(const virDomainDef *def)
+{
+    return def->mem.memory_slots > 0 || def->mem.max_memory > 0;
 }
 
 
@@ -21537,7 +21544,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         xmlIndentTreeOutput = oldIndentTreeOutput;
     }
 
-    if (def->mem.max_memory) {
+    if (virDomainDefHasMemoryHotplug(def)) {
         virBufferAsprintf(buf,
                           "<maxMemory slots='%u' unit='KiB'>%llu</maxMemory>\n",
                           def->mem.memory_slots, def->mem.max_memory);
