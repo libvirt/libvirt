@@ -8338,6 +8338,7 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
          * We allow updating src/type//driverType/cachemode/
          */
         orig->cachemode = disk->cachemode;
+        orig->startupPolicy = disk->startupPolicy;
 
         virStorageSourceFree(orig->src);
         orig->src = disk->src;
