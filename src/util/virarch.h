@@ -45,7 +45,7 @@ typedef enum {
 
     VIR_ARCH_MIPS64,       /* MIPS        64 BE http://en.wikipedia.org/wiki/MIPS_architecture */
     VIR_ARCH_MIPS64EL,     /* MIPS        64 LE http://en.wikipedia.org/wiki/MIPS_architecture */
-    VIR_ARCH_OR32,         /* OpenRisc    32 BE http://en.wikipedia.org/wiki/OpenRISC#QEMU_support*/
+    VIR_ARCH_OR32,         /* OpenRisc    32 BE http://en.wikipedia.org/wiki/OpenRISC#QEMU_support */
     VIR_ARCH_PARISC,       /* PA-Risc     32 BE http://en.wikipedia.org/wiki/PA-RISC */
     VIR_ARCH_PARISC64,     /* PA-Risc     64 BE http://en.wikipedia.org/wiki/PA-RISC */
 
