@@ -386,6 +386,28 @@ static const char *virQEMUCapsArchToString(virArch arch)
     return virArchToString(arch);
 }
 
+/* Given a host and guest architectures, find a suitable QEMU target.
+ *
+ * This is meant to be used as a second attempt if qemu-system-$guestarch
+ * can't be found, eg. on a x86_64 host you want to use qemu-system-i386,
+ * if available, instead of qemu-system-x86_64 to run i686 guests */
+static virArch
+virQEMUCapsFindTarget(virArch hostarch,
+                      virArch guestarch)
+{
+    /* Both ppc64 and ppc64le guests can use the ppc64 target */
+    if (ARCH_IS_PPC64(guestarch))
+        guestarch = VIR_ARCH_PPC64;
+
+    /* armv7l guests on aarch64 hosts can use the aarch64 target
+     * i686 guests on x86_64 hosts can use the x86_64 target */
+    if ((guestarch == VIR_ARCH_ARMV7L && hostarch == VIR_ARCH_AARCH64) ||
+        (guestarch == VIR_ARCH_I686 && hostarch == VIR_ARCH_X86_64)) {
+        return hostarch;
+    }
+
+    return guestarch;
+}
 
 static virCommandPtr
 virQEMUCapsProbeCommand(const char *qemu,
@@ -690,51 +712,55 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     return ret;
 }
 
+static char *
+virQEMUCapsFindBinary(const char *format,
+                      const char *archstr)
+{
+    char *ret = NULL;
+    char *binary = NULL;
+
+    if (virAsprintf(&binary, format, archstr) < 0)
+        goto out;
+
+    ret = virFindFileInPath(binary);
+    VIR_FREE(binary);
+    if (ret && virFileIsExecutable(ret))
+        goto out;
+
+    VIR_FREE(ret);
+
+ out:
+    return ret;
+}
 
 static char *
 virQEMUCapsFindBinaryForArch(virArch hostarch,
                              virArch guestarch)
 {
-    char *ret;
+    char *ret = NULL;
     const char *archstr;
-    char *binary;
+    virArch target;
 
-    if (ARCH_IS_PPC64(guestarch))
-        archstr = virQEMUCapsArchToString(VIR_ARCH_PPC64);
-    else
-        archstr = virQEMUCapsArchToString(guestarch);
+    /* First attempt: try the guest architecture as it is */
+    archstr = virQEMUCapsArchToString(guestarch);
+    if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
+        goto out;
 
-    if (virAsprintf(&binary, "qemu-system-%s", archstr) < 0)
-        return NULL;
-
-    ret = virFindFileInPath(binary);
-    VIR_FREE(binary);
-    if (ret && !virFileIsExecutable(ret))
-        VIR_FREE(ret);
-
-    if (guestarch == VIR_ARCH_ARMV7L &&
-        !ret &&
-        hostarch == VIR_ARCH_AARCH64) {
-        ret = virFindFileInPath("qemu-system-aarch64");
-        if (ret && !virFileIsExecutable(ret))
-            VIR_FREE(ret);
+    /* Second attempt: try looking up by target instead */
+    target = virQEMUCapsFindTarget(hostarch, guestarch);
+    if (target != guestarch) {
+        archstr = virQEMUCapsArchToString(target);
+        if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
+            goto out;
     }
 
-    if (guestarch == VIR_ARCH_I686 &&
-        !ret &&
-        hostarch == VIR_ARCH_X86_64) {
-        ret = virFindFileInPath("qemu-system-x86_64");
-        if (ret && !virFileIsExecutable(ret))
-            VIR_FREE(ret);
+    /* Third attempt, i686 only: try 'qemu' */
+    if (guestarch == VIR_ARCH_I686) {
+        if ((ret = virQEMUCapsFindBinary("%s", "qemu")) != NULL)
+            goto out;
     }
 
-    if (guestarch == VIR_ARCH_I686 &&
-        !ret) {
-        ret = virFindFileInPath("qemu");
-        if (ret && !virFileIsExecutable(ret))
-            VIR_FREE(ret);
-    }
-
+ out:
     return ret;
 }
 
@@ -3789,13 +3815,24 @@ virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
+    virArch target;
     struct virQEMUCapsSearchData data = { .arch = arch };
 
     virMutexLock(&cache->lock);
     ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
-    VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
+    if (!ret) {
+        /* If the first attempt at finding capabilities has failed, try
+         * again using the QEMU target as lookup key instead */
+        target = virQEMUCapsFindTarget(virArchFromHost(), data.arch);
+        if (target != data.arch) {
+            data.arch = target;
+            ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
+        }
+    }
     virObjectRef(ret);
     virMutexUnlock(&cache->lock);
+
+    VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
 
     return ret;
 }
