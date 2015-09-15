@@ -1460,6 +1460,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                                    virNetClientCallPtr thiscall)
 {
     struct pollfd fds[2];
+    bool error = false;
     int ret;
 
     fds[0].fd = virNetSocketGetFD(client->sock);
@@ -1551,10 +1552,11 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         if (virNetSocketHasCachedData(client->sock))
             fds[0].revents |= POLLIN;
 
-        /* If wantClose flag is set, pretend there was an error on the socket
+        /* If wantClose flag is set, pretend there was an error on the socket,
+         * but still read and process any data we received so far.
          */
         if (client->wantClose)
-            fds[0].revents = POLLERR;
+            error = true;
 
         if (fds[1].revents) {
             VIR_DEBUG("Woken up from poll by other thread");
@@ -1562,21 +1564,24 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
                 virReportSystemError(errno, "%s",
                                      _("read on wakeup fd failed"));
                 virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
-                goto error;
+                error = true;
+                /* Fall through to process any pending data. */
             }
         }
 
         if (fds[0].revents & POLLOUT) {
             if (virNetClientIOHandleOutput(client) < 0) {
                 virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
-                goto error;
+                error = true;
+                /* Fall through to process any pending data. */
             }
         }
 
         if (fds[0].revents & POLLIN) {
             if (virNetClientIOHandleInput(client) < 0) {
                 virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
-                goto error;
+                error = true;
+                /* Fall through to process any pending data. */
             }
         }
 
@@ -1600,6 +1605,9 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
             virNetClientIOEventLoopPassTheBuck(client, thiscall);
             return 1;
         }
+
+        if (error)
+            goto error;
 
         if (fds[0].revents & (POLLHUP | POLLERR)) {
             virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_EOF);
