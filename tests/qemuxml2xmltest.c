@@ -180,8 +180,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
                                       driver.caps, driver.xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
-                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST))) {
+                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES))) {
         fprintf(stderr, "Failed to parse domain status XML:\n%s", source);
         goto cleanup;
     }
