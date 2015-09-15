@@ -7924,7 +7924,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     switch ((virDomainDiskDevice) disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-        if (!virDomainDiskDiffersSourceOnly(disk, orig_disk))
+        if (!qemuDomainDiskChangeSupported(disk, orig_disk))
             goto cleanup;
 
         /* Add the new disk src into shared disk hash table */

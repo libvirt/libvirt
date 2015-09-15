@@ -415,6 +415,9 @@ bool qemuDomainDiskSourceDiffers(virConnectPtr conn,
                                  virDomainDiskDefPtr disk,
                                  virDomainDiskDefPtr origDisk);
 
+bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
+                                   virDomainDiskDefPtr orig_disk);
+
 int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virStorageSourcePtr src);

@@ -2512,8 +2512,6 @@ int virDomainDeviceFindControllerModel(virDomainDefPtr def,
 virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
-bool virDomainDiskDiffersSourceOnly(virDomainDiskDefPtr disk,
-                                    virDomainDiskDefPtr orig_disk);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
