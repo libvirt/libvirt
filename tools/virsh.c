@@ -95,12 +95,42 @@ static int disconnected; /* we may have been disconnected */
  * handler, just save the fact it was raised.
  */
 static void
-virshCatchDisconnect(virConnectPtr conn ATTRIBUTE_UNUSED,
+virshCatchDisconnect(virConnectPtr conn,
                      int reason,
-                     void *opaque ATTRIBUTE_UNUSED)
+                     void *opaque)
 {
-    if (reason != VIR_CONNECT_CLOSE_REASON_CLIENT)
+    if (reason != VIR_CONNECT_CLOSE_REASON_CLIENT) {
+        vshControl *ctl = opaque;
+        const char *str = "unknown reason";
+        virErrorPtr error;
+        char *uri;
+
+        error = virSaveLastError();
+        uri = virConnectGetURI(conn);
+
+        switch ((virConnectCloseReason) reason) {
+        case VIR_CONNECT_CLOSE_REASON_ERROR:
+            str = N_("Disconnected from %s due to I/O error");
+            break;
+        case VIR_CONNECT_CLOSE_REASON_EOF:
+            str = N_("Disconnected from %s due to end of file");
+            break;
+        case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
+            str = N_("Disconnected from %s due to keepalive timeout");
+            break;
+        /* coverity[dead_error_begin] */
+        case VIR_CONNECT_CLOSE_REASON_CLIENT:
+        case VIR_CONNECT_CLOSE_REASON_LAST:
+            break;
+        }
+        vshError(ctl, _(str), NULLSTR(uri));
+
+        if (error) {
+            virSetError(error);
+            virFreeError(error);
+        }
         disconnected++;
+    }
 }
 
 /* Main Function which should be used for connecting.
