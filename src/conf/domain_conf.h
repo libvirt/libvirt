@@ -2632,19 +2632,25 @@ void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
 typedef enum {
     /* parse internal domain status information */
     VIR_DOMAIN_DEF_PARSE_STATUS          = 1 << 0,
+    /* Parse only parts of the XML that would be present in an inactive libvirt
+     * XML. Note that the flag does not imply that ABI incompatible
+     * transformations can be used, since it's used to strip runtime info when
+     * restoring save images/migration. */
     VIR_DOMAIN_DEF_PARSE_INACTIVE        = 1 << 1,
     /* parse <actual> element */
     VIR_DOMAIN_DEF_PARSE_ACTUAL_NET      = 1 << 2,
     /* parse original states of host PCI device */
     VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES = 1 << 3,
+    /* internal flag passed to device info sub-parser to allow using <rom> */
     VIR_DOMAIN_DEF_PARSE_ALLOW_ROM       = 1 << 4,
+    /* internal flag passed to device info sub-parser to allow specifying boot order */
     VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT      = 1 << 5,
     /* parse only source half of <disk> */
     VIR_DOMAIN_DEF_PARSE_DISK_SOURCE     = 1 << 6,
+    /* perform RNG schema validation on the passed XML document */
     VIR_DOMAIN_DEF_PARSE_VALIDATE        = 1 << 7,
     /* don't validate os.type and arch against capabilities. Prevents
-     * VMs from disappearing when qemu is removed and libvirtd is restarted
-     */
+     * VMs from disappearing when qemu is removed and libvirtd is restarted */
     VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS = 1 << 8,
 } virDomainDefParseFlags;
 
