@@ -68,8 +68,8 @@
       There is now a high level API that provides a safe and
       flexible way to spawn commands, which prevents the most
       common errors &amp; is easy to code against.  This
-      code is provided in the <code>src/util/command.h</code>
-      header which can be imported using <code>#include "command.h"</code>
+      code is provided in the <code>src/util/vircommand.h</code>
+      header which can be imported using <code>#include "vircommand.h"</code>
     </p>
 
     <h3><a name="initial">Defining commands in libvirt</a></h3>

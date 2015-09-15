@@ -268,7 +268,7 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
  *
  * Deprecated after 0.4.6.
  * Renamed to virDomainCreateXML() providing identical functionality.
- * This existing name will left indefinitely for API compatibility.
+ * This existing name will be left indefinitely for API compatibility.
  *
  * Returns a new domain object or NULL in case of failure
  */

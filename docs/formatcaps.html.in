@@ -162,7 +162,7 @@
       &lt;suspend_mem/&gt;
       &lt;suspend_disk/&gt;
       &lt;suspend_hybrid/&gt;
-    &lt;power_management/&gt;
+    &lt;/power_management&gt;
   &lt;/host&gt;</span>
 
   &lt;!-- xen-3.0-x86_64 --&gt;
