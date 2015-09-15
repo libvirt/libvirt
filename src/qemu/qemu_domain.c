@@ -3057,15 +3057,15 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     } while (0)
 
     CHECK_EQ(device, "device", false);
-    CHECK_EQ(cachemode, "cache", true);
-    CHECK_EQ(error_policy, "error_policy", true);
-    CHECK_EQ(rerror_policy, "rerror_policy", true);
-    CHECK_EQ(iomode, "io", true);
-    CHECK_EQ(ioeventfd, "ioeventfd", true);
-    CHECK_EQ(event_idx, "event_idx", true);
-    CHECK_EQ(copy_on_read, "copy_on_read", true);
-    CHECK_EQ(discard, "discard", true);
-    CHECK_EQ(iothread, "iothread", true);
+    CHECK_EQ(bus, "bus", false);
+    if (STRNEQ(disk->dst, orig_disk->dst)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "bus");
+        return false;
+    }
+    CHECK_EQ(tray_status, "tray", true);
+    CHECK_EQ(removable, "removable", true);
 
     if (disk->geometry.cylinders &&
         disk->geometry.heads &&
@@ -3080,9 +3080,6 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
              "blockio logical_block_size", false);
     CHECK_EQ(blockio.physical_block_size,
              "blockio physical_block_size", false);
-
-    if (disk->bus == VIR_DOMAIN_DISK_BUS_USB)
-        CHECK_EQ(removable, "removable", true);
 
     CHECK_EQ(blkdeviotune.total_bytes_sec,
              "blkdeviotune total_bytes_sec",
@@ -3124,8 +3121,6 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
              "blkdeviotune size_iops_sec",
              true);
 
-    CHECK_EQ(transient, "transient", true);
-
     if (disk->serial && STRNEQ_NULLABLE(disk->serial, orig_disk->serial)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
@@ -3154,7 +3149,29 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
         return false;
     }
 
+    CHECK_EQ(cachemode, "cache", true);
+    CHECK_EQ(error_policy, "error_policy", true);
+    CHECK_EQ(rerror_policy, "rerror_policy", true);
+    CHECK_EQ(iomode, "io", true);
+    CHECK_EQ(ioeventfd, "ioeventfd", true);
+    CHECK_EQ(event_idx, "event_idx", true);
+    CHECK_EQ(copy_on_read, "copy_on_read", true);
+    CHECK_EQ(snapshot, "snapshot", true);
+    CHECK_EQ(startupPolicy, "startupPolicy", true);
+    CHECK_EQ(transient, "transient", true);
     CHECK_EQ(info.bootIndex, "boot order", true);
+    CHECK_EQ(rawio, "rawio", true);
+    CHECK_EQ(sgio, "sgio", true);
+    CHECK_EQ(discard, "discard", true);
+    CHECK_EQ(iothread, "iothread", true);
+
+    if (disk->domain_name &&
+        STRNEQ_NULLABLE(disk->domain_name, orig_disk->domain_name)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "backenddomain");
+        return false;
+    }
 
 #undef CHECK_EQ
 
