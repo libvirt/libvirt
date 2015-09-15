@@ -7896,11 +7896,11 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainChangeDiskMediaLive(virConnectPtr conn,
-                              virDomainObjPtr vm,
-                              virDomainDeviceDefPtr dev,
-                              virQEMUDriverPtr driver,
-                              bool force)
+qemuDomainChangeDiskLive(virConnectPtr conn,
+                         virDomainObjPtr vm,
+                         virDomainDeviceDefPtr dev,
+                         virQEMUDriverPtr driver,
+                         bool force)
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
@@ -7965,7 +7965,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
-        ret = qemuDomainChangeDiskMediaLive(conn, vm, dev, driver, force);
+        ret = qemuDomainChangeDiskLive(conn, vm, dev, driver, force);
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
