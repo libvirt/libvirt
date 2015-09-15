@@ -5269,14 +5269,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     ignore_value(virAsprintf(&tmppath, "%s/domain-%s",
                              cfg->libDir, vm->def->name));
-    if (tmppath)
-        virFileDeleteTree(tmppath);
+    virFileDeleteTree(tmppath);
     VIR_FREE(tmppath);
 
     ignore_value(virAsprintf(&tmppath, "%s/domain-%s",
                              cfg->channelTargetDir, vm->def->name));
-    if (tmppath)
-        virFileDeleteTree(tmppath);
+    virFileDeleteTree(tmppath);
     VIR_FREE(tmppath);
 
     ignore_value(virDomainChrDefForeach(vm->def,

@@ -65,7 +65,7 @@ myCleanup(void)
     }
 
     if (mgr) {
-        if (mgr->stateDir && !getenv("LIBVIRT_SKIP_CLEANUP"))
+        if (!getenv("LIBVIRT_SKIP_CLEANUP"))
             virFileDeleteTree(mgr->stateDir);
 
         virObjectUnref(mgr->activePCIHostdevs);

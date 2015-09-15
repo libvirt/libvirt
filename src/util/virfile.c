@@ -934,13 +934,17 @@ int virFileNBDDeviceAssociate(const char *file,
  */
 int virFileDeleteTree(const char *dir)
 {
-    DIR *dh = opendir(dir);
+    DIR *dh;
     struct dirent *de;
     char *filepath = NULL;
     int ret = -1;
     int direrr;
 
-    if (!dh) {
+    /* Silently return 0 if passed NULL or directory doesn't exist */
+    if (!dir || !virFileExists(dir))
+        return 0;
+
+    if (!(dh = opendir(dir))) {
         virReportSystemError(errno, _("Cannot open dir '%s'"),
                              dir);
         return -1;
