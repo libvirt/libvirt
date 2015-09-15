@@ -3157,7 +3157,7 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     CHECK_EQ(event_idx, "event_idx", true);
     CHECK_EQ(copy_on_read, "copy_on_read", true);
     CHECK_EQ(snapshot, "snapshot", true);
-    CHECK_EQ(startupPolicy, "startupPolicy", true);
+    /* startupPolicy is allowed to be updated. Therefore not checked here. */
     CHECK_EQ(transient, "transient", true);
     CHECK_EQ(info.bootIndex, "boot order", true);
     CHECK_EQ(rawio, "rawio", true);
