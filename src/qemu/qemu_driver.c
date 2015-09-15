@@ -7907,48 +7907,54 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     int ret = -1;
 
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
-        goto end;
+        goto cleanup;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
-        goto end;
+        goto cleanup;
 
-    switch (disk->device) {
+    if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
+                                                   disk->bus, disk->dst))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No device with bus '%s' and target '%s'"),
+                       virDomainDiskBusTypeToString(disk->bus),
+                       disk->dst);
+        goto cleanup;
+    }
+
+    switch ((virDomainDiskDevice) disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-        if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
-                                                       disk->bus, disk->dst))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("No device with bus '%s' and target '%s'"),
-                           virDomainDiskBusTypeToString(disk->bus),
-                           disk->dst);
-            goto end;
-        }
-
         if (!virDomainDiskDiffersSourceOnly(disk, orig_disk))
-            goto end;
+            goto cleanup;
 
         /* Add the new disk src into shared disk hash table */
         if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
-            goto end;
+            goto cleanup;
 
         if (qemuDomainChangeEjectableMedia(driver, conn, vm,
-                                           orig_disk, dev->data.disk->src, force) < 0) {
-            ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk, vm->def->name));
-            goto end;
+                                           orig_disk, disk->src, force) < 0) {
+            ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
+            goto cleanup;
         }
 
-        dev->data.disk->src = NULL;
-        ret = 0;
+        disk->src = NULL;
         break;
 
-    default:
+    case VIR_DOMAIN_DISK_DEVICE_DISK:
+    case VIR_DOMAIN_DISK_DEVICE_LUN:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk bus '%s' cannot be updated."),
                        virDomainDiskBusTypeToString(disk->bus));
+        goto cleanup;
+        break;
+
+    case VIR_DOMAIN_DISK_DEVICE_LAST:
+        /* nada */
         break;
     }
 
- end:
+    ret = 0;
+ cleanup:
     return ret;
 }
 
