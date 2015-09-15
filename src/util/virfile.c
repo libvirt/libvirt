@@ -2448,8 +2448,7 @@ virDirCreate(const char *path,
 {
     struct stat st;
     pid_t pid;
-    int waitret;
-    int status, ret = 0;
+    int status = 0, ret = 0;
     gid_t *groups;
     int ngroups;
 
@@ -2495,36 +2494,30 @@ virDirCreate(const char *path,
         /* wait for child to complete, and retrieve its exit code */
         VIR_FREE(groups);
 
-        while ((waitret = waitpid(pid, &status, 0)) == -1 && errno == EINTR);
-        if (waitret == -1) {
-            ret = -errno;
-            virReportSystemError(errno,
-                                 _("failed to wait for child creating '%s'"),
-                                 path);
-            goto parenterror;
+        if (virProcessWait(pid, &status, 0) < 0) {
+            /* virProcessWait() reports errno on waitpid failure, so we'll just
+             * set our return status to EINTR; otherwise, set status to EACCES
+             * since the original failure for the fork+setuid path would have
+             * been EACCES or EPERM by definition.
+             */
+            if (virLastErrorIsSystemErrno(0))
+                status = EINTR;
+            else if (!status)
+                status = EACCES;
         }
 
         /*
-         * If waitpid succeeded, but if the child exited abnormally or
-         * reported non-zero status, report failure, except for EACCES where
-         * we try to fall back to non-fork method as in the original logic
-         * introduced and explained by commit 98f6f381.
+         * If the child exited with EACCES, then fall back to non-fork method
+         * as in the original logic introduced and explained by commit 98f6f381.
          */
-        if (!WIFEXITED(status) || (WEXITSTATUS(status)) != 0) {
-            if (WEXITSTATUS(status) == EACCES)
-                return virDirCreateNoFork(path, mode, uid, gid, flags);
-            char *msg = virProcessTranslateStatus(status);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("child failed to create '%s': %s"),
-                           path, msg);
-            VIR_FREE(msg);
-            if (WIFEXITED(status))
-                ret = -WEXITSTATUS(status);
-            else
-                ret = -EACCES;
+        if (status == EACCES) {
+            virResetLastError();
+            return virDirCreateNoFork(path, mode, uid, gid, flags);
         }
 
- parenterror:
+        if (status)
+            ret = -status;
+
         return ret;
     }
 
