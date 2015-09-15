@@ -411,6 +411,10 @@ int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  bool force_probe,
                                  bool report_broken);
 
+bool qemuDomainDiskSourceDiffers(virConnectPtr conn,
+                                 virDomainDiskDefPtr disk,
+                                 virDomainDiskDefPtr origDisk);
+
 int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virStorageSourcePtr src);

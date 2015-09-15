@@ -3002,6 +3002,39 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
 
 bool
+qemuDomainDiskSourceDiffers(virConnectPtr conn,
+                            virDomainDiskDefPtr disk,
+                            virDomainDiskDefPtr origDisk)
+{
+    char *diskSrc = NULL, *origDiskSrc = NULL;
+    bool diskEmpty, origDiskEmpty;
+    bool ret = true;
+
+    diskEmpty = virStorageSourceIsEmpty(disk->src);
+    origDiskEmpty = virStorageSourceIsEmpty(origDisk->src);
+
+    if (diskEmpty && origDiskEmpty)
+        return false;
+
+    if (diskEmpty ^ origDiskEmpty)
+        return true;
+
+    if (qemuGetDriveSourceString(disk->src, conn, &diskSrc) < 0 ||
+        qemuGetDriveSourceString(origDisk->src, conn, &origDiskSrc) < 0)
+        goto cleanup;
+
+    /* So far in qemu disk sources are considered different
+     * if either path to disk or its format changes. */
+    ret = virDomainDiskGetFormat(disk) != virDomainDiskGetFormat(origDisk) ||
+          STRNEQ_NULLABLE(diskSrc, origDiskSrc);
+ cleanup:
+    VIR_FREE(diskSrc);
+    VIR_FREE(origDiskSrc);
+    return ret;
+}
+
+
+bool
 qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
