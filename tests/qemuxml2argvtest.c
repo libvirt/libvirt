@@ -483,8 +483,7 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    driver.config = virQEMUDriverConfigNew(false);
-    if (driver.config == NULL)
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     driver.privileged = true;
@@ -499,10 +498,6 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->spiceTLSx509certdir, "/etc/pki/libvirt-spice") < 0)
         return EXIT_FAILURE;
 
-    if ((driver.caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
-        return EXIT_FAILURE;
     VIR_FREE(driver.config->stateDir);
     if (VIR_STRDUP_QUIET(driver.config->stateDir, "/nowhere") < 0)
         return EXIT_FAILURE;
@@ -1761,9 +1756,7 @@ mymain(void)
             QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DRIVE, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
-    virObjectUnref(driver.config);
-    virObjectUnref(driver.caps);
-    virObjectUnref(driver.xmlopt);
+    qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -145,15 +145,9 @@ mymain(void)
 {
     int ret = 0;
 
-    driver.config = virQEMUDriverConfigNew(false);
-    if (driver.config == NULL)
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    if ((driver.caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
-
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
-        return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, flags)                                      \
     do {                                                                \
@@ -298,9 +292,7 @@ mymain(void)
     DO_TEST("machine-deakeywrap-off-argv");
     DO_TEST("machine-keywrap-none-argv");
 
-    virObjectUnref(driver.config);
-    virObjectUnref(driver.caps);
-    virObjectUnref(driver.xmlopt);
+    qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

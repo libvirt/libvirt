@@ -302,11 +302,11 @@ mymain(void)
     int ret = 0;
     struct testInfo info;
 
-    if ((driver.caps = testQemuCapsInit()) == NULL)
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
-        return EXIT_FAILURE;
+    /* TODO: test with format probing disabled too */
+    driver.config->allowDiskFormatProbing = true;
 
 # define DO_TEST_FULL(name, is_different, when)                                \
     do {                                                                       \
@@ -631,8 +631,7 @@ mymain(void)
     DO_TEST("memory-hotplug-dimm");
     DO_TEST("net-udp");
 
-    virObjectUnref(driver.caps);
-    virObjectUnref(driver.xmlopt);
+    qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

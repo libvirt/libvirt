@@ -152,13 +152,11 @@ mymain(void)
 {
     int ret = 0;
 
-    if ((driver.caps = testQemuCapsInit()) == NULL)
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    if (!(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver))) {
-        virObjectUnref(driver.caps);
-        return EXIT_FAILURE;
-    }
+    /* TODO: test with format probing disabled too */
+    driver.config->allowDiskFormatProbing = true;
 
     if (VIR_ALLOC(testSnapshotXMLVariableLineRegex) < 0)
         goto cleanup;
@@ -227,8 +225,7 @@ mymain(void)
     if (testSnapshotXMLVariableLineRegex)
         regfree(testSnapshotXMLVariableLineRegex);
     VIR_FREE(testSnapshotXMLVariableLineRegex);
-    virObjectUnref(driver.caps);
-    virObjectUnref(driver.xmlopt);
+    qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

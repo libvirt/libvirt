@@ -526,4 +526,32 @@ qemuTestParseCapabilities(const char *capsFile)
     xmlXPathFreeContext(ctxt);
     return NULL;
 }
+
+void qemuTestDriverFree(virQEMUDriver *driver)
+{
+    virObjectUnref(driver->xmlopt);
+    virObjectUnref(driver->caps);
+    virObjectUnref(driver->config);
+}
+
+int qemuTestDriverInit(virQEMUDriver *driver)
+{
+    driver->config = virQEMUDriverConfigNew(false);
+    if (!driver->config)
+        return -1;
+
+    driver->caps = testQemuCapsInit();
+    if (!driver->caps)
+        goto error;
+
+    driver->xmlopt = virQEMUDriverCreateXMLConf(driver);
+    if (!driver->xmlopt)
+        goto error;
+
+    return 0;
+
+ error:
+    qemuTestDriverFree(driver);
+    return -1;
+}
 #endif

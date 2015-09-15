@@ -908,8 +908,8 @@ testQemuAgentGetInterfaces(const void *data)
 static int
 mymain(void)
 {
+    virQEMUDriver driver;
     int ret = 0;
-    virDomainXMLOptionPtr xmlopt;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -917,13 +917,13 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        !(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
+        qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST(name)                                           \
-    if (virtTestRun(# name, testQemuAgent ## name, xmlopt) < 0) \
+#define DO_TEST(name)                                                  \
+    if (virtTestRun(# name, testQemuAgent ## name, driver.xmlopt) < 0) \
         ret = -1
 
     DO_TEST(FSFreeze);
@@ -938,7 +938,7 @@ mymain(void)
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 
-    virObjectUnref(xmlopt);
+    qemuTestDriverFree(&driver);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

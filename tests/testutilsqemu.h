@@ -16,4 +16,6 @@ extern virCPUDefPtr cpuHaswell;
 void testQemuCapsSetCPU(virCapsPtr caps,
                         virCPUDefPtr hostCPU);
 
+int qemuTestDriverInit(virQEMUDriver *driver);
+void qemuTestDriverFree(virQEMUDriver *driver);
 #endif

@@ -338,14 +338,11 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        !(driver.caps = testQemuCapsInit()) ||
-        !(driver.xmlopt = virQEMUDriverCreateXMLConf(&driver)))
+        qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
 
-    if (!(driver.config = virQEMUDriverConfigNew(false)))
-        return EXIT_FAILURE;
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
     /* some dummy values from 'config file' */
@@ -486,9 +483,7 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    virObjectUnref(driver.caps);
-    virObjectUnref(driver.xmlopt);
-    virObjectUnref(driver.config);
+    qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
