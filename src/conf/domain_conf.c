@@ -3726,18 +3726,8 @@ virDomainDefRemoveDuplicateMetadata(virDomainDefPtr def)
 
 
 static int
-virDomainDefPostParseInternal(virDomainDefPtr def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED)
+virDomainDefPostParseMemory(virDomainDefPtr def)
 {
-    size_t i;
-
-    /* verify init path for container based domains */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("init binary must be specified"));
-        return -1;
-    }
-
     if (virDomainDefGetMemoryInitial(def) == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Memory size must be specified via <memory> or in the "
@@ -3764,6 +3754,26 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
                          "the actual memory size"));
         return -1;
     }
+
+    return 0;
+}
+
+
+static int
+virDomainDefPostParseInternal(virDomainDefPtr def,
+                              virCapsPtr caps ATTRIBUTE_UNUSED)
+{
+    size_t i;
+
+    /* verify init path for container based domains */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("init binary must be specified"));
+        return -1;
+    }
+
+    if (virDomainDefPostParseMemory(def) < 0)
+        return -1;
 
     /*
      * Some really crazy backcompat stuff for consoles
