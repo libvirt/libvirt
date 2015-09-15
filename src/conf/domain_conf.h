@@ -2652,6 +2652,8 @@ typedef enum {
     /* don't validate os.type and arch against capabilities. Prevents
      * VMs from disappearing when qemu is removed and libvirtd is restarted */
     VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS = 1 << 8,
+    /* allow updates in post parse callback that would break ABI otherwise */
+    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE = 1 << 9,
 } virDomainDefParseFlags;
 
 typedef enum {
