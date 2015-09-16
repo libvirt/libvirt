@@ -1492,7 +1492,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         VIR_FREE(val);
     }
     memory = xenapiDomainGetMaxMemory(dom);
-    virDomainDefSetMemoryInitial(defPtr, memory);
+    virDomainDefSetMemoryTotal(defPtr, memory);
     if (xen_vm_get_memory_dynamic_max(session, &dynamic_mem, vm)) {
         defPtr->mem.cur_balloon = (unsigned long) (dynamic_mem / 1024);
     } else {

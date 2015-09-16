@@ -316,7 +316,7 @@ xenParseMem(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
     def->mem.cur_balloon *= 1024;
-    virDomainDefSetMemoryInitial(def, memory * 1024);
+    virDomainDefSetMemoryTotal(def, memory * 1024);
 
     return 0;
 }

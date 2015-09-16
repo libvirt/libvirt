@@ -605,7 +605,7 @@ xenXMDomainSetMaxMemory(virConnectPtr conn,
     if (entry->def->mem.cur_balloon > memory)
         entry->def->mem.cur_balloon = memory;
 
-    virDomainDefSetMemoryInitial(entry->def, memory);
+    virDomainDefSetMemoryTotal(entry->def, memory);
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
      */

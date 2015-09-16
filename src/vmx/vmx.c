@@ -1416,7 +1416,7 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
     }
 
-    virDomainDefSetMemoryInitial(def, memsize * 1024); /* Scale from megabytes to kilobytes */
+    virDomainDefSetMemoryTotal(def, memsize * 1024); /* Scale from megabytes to kilobytes */
 
     /* vmx:sched.mem.max -> def:mem.cur_balloon */
     if (virVMXGetConfigLong(conf, "sched.mem.max", &sched_mem_max, memsize,

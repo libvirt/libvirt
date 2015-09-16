@@ -770,7 +770,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
         if (lxcConvertSize(value->str, &size) < 0)
             return -1;
         size = size / 1024;
-        virDomainDefSetMemoryInitial(def, size);
+        virDomainDefSetMemoryTotal(def, size);
         def->mem.hard_limit = virMemoryLimitTruncate(size);
     }
 
@@ -1010,7 +1010,7 @@ lxcParseConfigString(const char *config)
     }
 
     vmdef->id = -1;
-    virDomainDefSetMemoryInitial(vmdef, 64 * 1024);
+    virDomainDefSetMemoryTotal(vmdef, 64 * 1024);
 
     vmdef->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
     vmdef->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;

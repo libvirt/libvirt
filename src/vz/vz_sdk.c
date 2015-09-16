@@ -1299,7 +1299,7 @@ prlsdkLoadDomain(vzConnPtr privconn,
     /* get RAM parameters */
     pret = PrlVmCfg_GetRamSize(sdkdom, &ram);
     prlsdkCheckRetGoto(pret, error);
-    virDomainDefSetMemoryInitial(def, ram << 10); /* RAM size obtained in Mbytes,
+    virDomainDefSetMemoryTotal(def, ram << 10); /* RAM size obtained in Mbytes,
                                                      convert to Kbytes */
     def->mem.cur_balloon = ram << 10;
 

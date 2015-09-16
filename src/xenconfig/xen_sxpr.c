@@ -1154,7 +1154,7 @@ xenParseSxpr(const struct sexpr *root,
         }
     }
 
-    virDomainDefSetMemoryInitial(def, (sexpr_u64(root, "domain/maxmem") << 10));
+    virDomainDefSetMemoryTotal(def, (sexpr_u64(root, "domain/maxmem") << 10));
     def->mem.cur_balloon = (sexpr_u64(root, "domain/memory") << 10);
 
     if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))

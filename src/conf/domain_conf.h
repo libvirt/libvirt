@@ -2142,8 +2142,9 @@ typedef struct _virDomainMemtune virDomainMemtune;
 typedef virDomainMemtune *virDomainMemtunePtr;
 
 struct _virDomainMemtune {
-    unsigned long long max_balloon; /* in kibibytes, capped at ulong thanks
-                                       to virDomainGetMaxMemory */
+    /* total memory size including memory modules in kibibytes, this field
+     * should be accessed only via accessors */
+    unsigned long long total_memory;
     unsigned long long cur_balloon; /* in kibibytes, capped at ulong thanks
                                        to virDomainGetInfo */
 
@@ -2322,7 +2323,7 @@ struct _virDomainDef {
 };
 
 unsigned long long virDomainDefGetMemoryInitial(virDomainDefPtr def);
-void virDomainDefSetMemoryInitial(virDomainDefPtr def, unsigned long long size);
+void virDomainDefSetMemoryTotal(virDomainDefPtr def, unsigned long long size);
 unsigned long long virDomainDefGetMemoryActual(virDomainDefPtr def);
 bool virDomainDefHasMemoryHotplug(const virDomainDef *def);
 

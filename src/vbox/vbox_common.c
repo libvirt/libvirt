@@ -3898,7 +3898,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
      * reading and while dumping xml
      */
     /* def->mem.max_balloon = maxMemorySize * 1024; */
-    virDomainDefSetMemoryInitial(def, memorySize * 1024);
+    virDomainDefSetMemoryTotal(def, memorySize * 1024);
 
     gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
     def->maxvcpus = def->vcpus = CPUCount;
@@ -6051,7 +6051,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
          * the notation here seems to be inconsistent while
          * reading and while dumping xml
          */
-        virDomainDefSetMemoryInitial(def->dom, memorySize * 1024);
+        virDomainDefSetMemoryTotal(def->dom, memorySize * 1024);
         def->dom->os.type = VIR_DOMAIN_OSTYPE_HVM;
         def->dom->os.arch = virArchFromHost();
         gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);

@@ -1828,7 +1828,7 @@ static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
         goto cleanup;
     }
 
-    virDomainDefSetMemoryInitial(vm->def, newmax);
+    virDomainDefSetMemoryTotal(vm->def, newmax);
     ret = 0;
 
  cleanup:

@@ -2256,7 +2256,7 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
         return -1;
 
     /* XXX validate not over host memory wrt to other domains */
-    virDomainDefSetMemoryInitial(privdom->def, memory);
+    virDomainDefSetMemoryTotal(privdom->def, memory);
 
     virDomainObjEndAPI(&privdom);
     return 0;

@@ -2357,7 +2357,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                 goto endjob;
             }
 
-            virDomainDefSetMemoryInitial(persistentDef, newmem);
+            virDomainDefSetMemoryTotal(persistentDef, newmem);
 
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;

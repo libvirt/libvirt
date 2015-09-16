@@ -3387,7 +3387,7 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
 
     /* align initial memory size */
     mem = virDomainDefGetMemoryInitial(def);
-    virDomainDefSetMemoryInitial(def, VIR_ROUND_UP(mem, align));
+    virDomainDefSetMemoryTotal(def, VIR_ROUND_UP(mem, align));
 
     def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, align);
 

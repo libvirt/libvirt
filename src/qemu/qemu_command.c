@@ -13010,7 +13010,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 
     def->id = -1;
     def->mem.cur_balloon = 64 * 1024;
-    virDomainDefSetMemoryInitial(def, def->mem.cur_balloon);
+    virDomainDefSetMemoryTotal(def, def->mem.cur_balloon);
     def->maxvcpus = 1;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
@@ -13216,7 +13216,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                                _("cannot parse memory level '%s'"), val);
                 goto error;
             }
-            virDomainDefSetMemoryInitial(def, mem * 1024);
+            virDomainDefSetMemoryTotal(def, mem * 1024);
             def->mem.cur_balloon = mem * 1024;
         } else if (STREQ(arg, "-smp")) {
             WANT_VALUE();

@@ -7706,27 +7706,27 @@ virDomainDefGetMemoryInitial(virDomainDefPtr def)
     if ((ret = virDomainNumaGetMemorySize(def->numa)) > 0) {
         return ret;
     } else {
-        ret = def->mem.max_balloon;
+        ret = def->mem.total_memory;
         for (i = 0; i < def->nmems; i++)
             ret -= def->mems[i]->size;
     }
 
-    return def->mem.max_balloon;
+    return def->mem.total_memory;
 }
 
 
 /**
- * virDomainDefSetMemoryInitial:
+ * virDomainDefSetMemoryTotal:
  * @def: domain definition
  * @size: size to set
  *
- * Sets the initial memory size in @def.
+ * Sets the total memory size in @def.
  */
 void
-virDomainDefSetMemoryInitial(virDomainDefPtr def,
-                             unsigned long long size)
+virDomainDefSetMemoryTotal(virDomainDefPtr def,
+                           unsigned long long size)
 {
-    def->mem.max_balloon = size;
+    def->mem.total_memory = size;
 }
 
 
@@ -7748,7 +7748,7 @@ virDomainDefGetMemoryActual(virDomainDefPtr def)
         for (i = 0; i < def->nmems; i++)
             ret += def->mems[i]->size;
     } else {
-        ret = def->mem.max_balloon;
+        ret = def->mem.total_memory;
     }
 
     return ret;
@@ -14763,7 +14763,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* Extract domain memory */
     if (virDomainParseMemory("./memory[1]", NULL, ctxt,
-                             &def->mem.max_balloon, false, true) < 0)
+                             &def->mem.total_memory, false, true) < 0)
         goto error;
 
     if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
