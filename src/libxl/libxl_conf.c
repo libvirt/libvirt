@@ -1496,7 +1496,7 @@ libxlDriverConfigNew(void)
 {
     libxlDriverConfigPtr cfg;
     char *log_file = NULL;
-    xentoollog_level log_level;
+    xentoollog_level log_level = XTL_DEBUG;
     char ebuf[1024];
     unsigned int free_mem;
 
