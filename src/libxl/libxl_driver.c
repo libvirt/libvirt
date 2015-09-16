@@ -553,7 +553,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
     vm->def->vcpus = d_info.vcpu_online;
     vm->def->maxvcpus = d_info.vcpu_max_id + 1;
     vm->def->mem.cur_balloon = d_info.current_memkb;
-    vm->def->mem.max_balloon = d_info.max_memkb;
+    virDomainDefSetMemoryInitial(vm->def, d_info.max_memkb);
 
     ret = 0;
 

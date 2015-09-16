@@ -1200,7 +1200,7 @@ vzDomainGetMaxMemory(virDomainPtr domain)
     if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
-    ret = dom->def->mem.max_balloon;
+    ret = virDomainDefGetMemoryActual(dom->def);
     virObjectUnlock(dom);
     return ret;
 }
