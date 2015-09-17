@@ -106,6 +106,7 @@ VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "custom-dtb");
 
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
+              "none",
               "qemu",
               "kqemu",
               "kvm",
@@ -14738,7 +14739,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virCapsDomainDataPtr capsdata = NULL;
 
         if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-                def->os.arch, use_virttype ? def->virtType : -1,
+                def->os.arch, use_virttype ? def->virtType : VIR_DOMAIN_VIRT_NONE,
                 NULL, NULL)))
             goto error;
 

@@ -1,7 +1,7 @@
 /*
  * capabilities.c: hypervisor capabilities
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -573,7 +573,7 @@ virCapsDomainDataCompare(virCapsGuestPtr guest,
                          virCapsGuestMachinePtr machine,
                          int ostype,
                          virArch arch,
-                         int domaintype,
+                         virDomainVirtType domaintype,
                          const char *emulator,
                          const char *machinetype)
 {
@@ -584,7 +584,8 @@ virCapsDomainDataCompare(virCapsGuestPtr guest,
     if ((arch != VIR_ARCH_NONE) && (guest->arch.id != arch))
         return false;
 
-    if (domaintype != -1 && (!domain || domain->type != domaintype))
+    if (domaintype != VIR_DOMAIN_VIRT_NONE &&
+        (!domain || domain->type != domaintype))
         return false;
 
     if (emulator) {
@@ -611,7 +612,7 @@ static virCapsDomainDataPtr
 virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
                                         int ostype,
                                         virArch arch,
-                                        int domaintype,
+                                        virDomainVirtType domaintype,
                                         const char *emulator,
                                         const char *machinetype)
 {
@@ -678,7 +679,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
                               virDomainOSTypeToString(ostype));
         if (arch)
             virBufferAsprintf(&buf, "arch=%s ", virArchToString(arch));
-        if (domaintype != -1)
+        if (domaintype > VIR_DOMAIN_VIRT_NONE)
             virBufferAsprintf(&buf, "domaintype=%s ",
                               virDomainVirtTypeToString(domaintype));
         if (emulator)
@@ -723,7 +724,7 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
  * @caps: capabilities to query
  * @ostype: guest operating system type, of enum VIR_DOMAIN_OSTYPE
  * @arch: Architecture to search for
- * @domaintype: domain type to search for, of enum VIR_DOMAIN_VIRT
+ * @domaintype: domain type to search for, of enum virDomainVirtType
  * @emulator: Emulator path to search for
  * @machinetype: Machine type to search for
  *

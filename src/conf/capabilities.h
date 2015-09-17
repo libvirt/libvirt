@@ -1,7 +1,7 @@
 /*
  * capabilities.h: hypervisor capabilities
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ struct _virCapsGuestDomainInfo {
 typedef struct _virCapsGuestDomain virCapsGuestDomain;
 typedef virCapsGuestDomain *virCapsGuestDomainPtr;
 struct _virCapsGuestDomain {
-    int type;
+    int type; /* virDomainVirtType */
     virCapsGuestDomainInfo info;
 };
 
@@ -197,7 +197,7 @@ typedef virCapsDomainData *virCapsDomainDataPtr;
 struct _virCapsDomainData {
     int ostype;
     int arch;
-    int domaintype;
+    int domaintype; /* virDomainVirtType */
     const char *emulator;
     const char *machinetype;
 };
