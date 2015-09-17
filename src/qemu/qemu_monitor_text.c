@@ -564,7 +564,7 @@ int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
 
 
 int qemuMonitorTextGetVirtType(qemuMonitorPtr mon,
-                               int *virtType)
+                               virDomainVirtType *virtType)
 {
     char *reply = NULL;
 

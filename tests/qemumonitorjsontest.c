@@ -1311,7 +1311,7 @@ testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *data)
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
-    int virtType;
+    virDomainVirtType virtType;
 
     if (!test)
         return -1;

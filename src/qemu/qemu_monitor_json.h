@@ -56,7 +56,7 @@ int qemuMonitorJSONSystemReset(qemuMonitorPtr mon);
 int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids);
 int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
-                               int *virtType);
+                               virDomainVirtType *virtType);
 int qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
                                          virDomainVideoDefPtr video,
                                          char *path);

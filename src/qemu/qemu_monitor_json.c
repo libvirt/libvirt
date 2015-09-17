@@ -1339,7 +1339,7 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
 
 
 int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
-                               int *virtType)
+                               virDomainVirtType *virtType)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-kvm",

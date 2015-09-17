@@ -360,7 +360,7 @@ int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                           int **pids);
 int qemuMonitorGetVirtType(qemuMonitorPtr mon,
-                           int *virtType);
+                           virDomainVirtType *virtType);
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
                               unsigned long long *currmem);
 int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,

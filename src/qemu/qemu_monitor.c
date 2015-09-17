@@ -1635,7 +1635,7 @@ qemuMonitorSetLink(qemuMonitorPtr mon,
 
 int
 qemuMonitorGetVirtType(qemuMonitorPtr mon,
-                       int *virtType)
+                       virDomainVirtType *virtType)
 {
     QEMU_CHECK_MONITOR(mon);
 

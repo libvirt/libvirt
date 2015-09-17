@@ -2192,7 +2192,7 @@ struct _virDomainKeyWrapDef {
 typedef struct _virDomainDef virDomainDef;
 typedef virDomainDef *virDomainDefPtr;
 struct _virDomainDef {
-    int virtType;
+    virDomainVirtType virtType;
     int id;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *name;
