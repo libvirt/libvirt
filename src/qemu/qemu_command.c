@@ -9318,7 +9318,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuDomainAlignMemorySizes(def) < 0)
+    if (!migrateFrom && !snapshot &&
+        qemuDomainAlignMemorySizes(def) < 0)
         goto error;
 
     virCommandAddArg(cmd, "-m");
