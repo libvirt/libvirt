@@ -4321,6 +4321,7 @@ testStoragePoolUndefine(virStoragePoolPtr pool)
     }
 
     virStoragePoolObjRemove(&privconn->pools, privpool);
+    privpool = NULL;
     ret = 0;
 
  cleanup:
