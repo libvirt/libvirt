@@ -2,7 +2,7 @@
  * interface_backend_netcf.c: backend driver methods to handle physical
  *                            interface configuration using the netcf library.
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -629,8 +629,9 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         }
 
         if (ifaces) {
-            iface_obj = virGetInterface(conn, ncf_if_name(iface),
-                                        ncf_if_mac_string(iface));
+            if (!(iface_obj = virGetInterface(conn, ncf_if_name(iface),
+                                              ncf_if_mac_string(iface))))
+                goto cleanup;
             tmp_iface_objs[niface_objs++] = iface_obj;
         }
 
