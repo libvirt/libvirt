@@ -583,6 +583,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 
     for (i = 0; i < count; i++) {
         virInterfaceDefPtr def;
+
         iface = ncf_lookup_by_name(driver->netcf, names[i]);
         if (!iface) {
             const char *errmsg, *details;
@@ -615,27 +616,26 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
             virInterfaceDefFree(def);
             continue;
         }
-        virInterfaceDefFree(def);
-
         /* XXX: Filter the result, need to be split once new filter flags
          * except active|inactive are supported.
          */
         if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
             !((MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE) && active) ||
               (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) && !active))) {
+            virInterfaceDefFree(def);
             ncf_if_free(iface);
             iface = NULL;
             continue;
         }
 
         if (ifaces) {
-            if (!(iface_obj = virGetInterface(conn, ncf_if_name(iface),
-                                              ncf_if_mac_string(iface))))
+            if (!(iface_obj = virGetInterface(conn, def->name, def->mac)))
                 goto cleanup;
             tmp_iface_objs[niface_objs] = iface_obj;
         }
         niface_objs++;
 
+        virInterfaceDefFree(def);
         ncf_if_free(iface);
         iface = NULL;
     }
@@ -698,7 +698,7 @@ static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
     if (virInterfaceLookupByNameEnsureACL(conn, def) < 0)
        goto cleanup;
 
-    ret = virGetInterface(conn, ncf_if_name(iface), ncf_if_mac_string(iface));
+    ret = virGetInterface(conn, def->name, def->mac);
 
  cleanup:
     ncf_if_free(iface);
@@ -746,7 +746,7 @@ static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
     if (virInterfaceLookupByMACStringEnsureACL(conn, def) < 0)
        goto cleanup;
 
-    ret = virGetInterface(conn, ncf_if_name(iface), ncf_if_mac_string(iface));
+    ret = virGetInterface(conn, def->name, def->mac);
 
  cleanup:
     ncf_if_free(iface);
