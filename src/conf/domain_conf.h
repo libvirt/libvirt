@@ -2459,6 +2459,7 @@ virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 int
 virDomainDefPostParse(virDomainDefPtr def,
                       virCapsPtr caps,
+                      unsigned int parseFlags,
                       virDomainXMLOptionPtr xmlopt);
 
 static inline bool

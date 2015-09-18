@@ -3726,15 +3726,34 @@ virDomainDefRemoveDuplicateMetadata(virDomainDefPtr def)
 
 
 static int
-virDomainDefPostParseMemory(virDomainDefPtr def)
+virDomainDefPostParseMemory(virDomainDefPtr def,
+                            unsigned int parseFlags)
 {
     size_t i;
+    unsigned long long numaMemory = 0;
+    unsigned long long hotplugMemory = 0;
 
-    if ((def->mem.initial_memory = virDomainNumaGetMemorySize(def->numa)) == 0) {
-        def->mem.initial_memory = def->mem.total_memory;
+    /* Attempt to infer the initial memory size from the sum NUMA memory sizes
+     * in case ABI updates are allowed or the <memory> element wasn't specified */
+    if (def->mem.total_memory == 0 ||
+        parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)
+        numaMemory = virDomainNumaGetMemorySize(def->numa);
 
+    if (numaMemory) {
+        virDomainDefSetMemoryInitial(def, numaMemory);
+    } else {
+        /* calculate the sizes of hotplug memory */
         for (i = 0; i < def->nmems; i++)
-            def->mem.initial_memory -= def->mems[i]->size;
+            hotplugMemory += def->mems[i]->size;
+
+        if (hotplugMemory > def->mem.total_memory) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Total size of memory devices exceeds the total "
+                             "memory size"));
+            return -1;
+        }
+
+        virDomainDefSetMemoryInitial(def, def->mem.total_memory - hotplugMemory);
     }
 
     if (virDomainDefGetMemoryInitial(def) == 0) {
@@ -3770,7 +3789,8 @@ virDomainDefPostParseMemory(virDomainDefPtr def)
 
 static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED)
+                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                              unsigned int parseFlags)
 {
     size_t i;
 
@@ -3781,7 +3801,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
-    if (virDomainDefPostParseMemory(def) < 0)
+    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
         return -1;
 
     /*
@@ -4274,6 +4294,7 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
 int
 virDomainDefPostParse(virDomainDefPtr def,
                       virCapsPtr caps,
+                      unsigned int parseFlags,
                       virDomainXMLOptionPtr xmlopt)
 {
     int ret;
@@ -4299,7 +4320,7 @@ virDomainDefPostParse(virDomainDefPtr def,
         return ret;
 
 
-    if ((ret = virDomainDefPostParseInternal(def, caps)) < 0)
+    if ((ret = virDomainDefPostParseInternal(def, caps, parseFlags)) < 0)
         return ret;
 
     return 0;
@@ -16426,7 +16447,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, xmlopt) < 0)
+    if (virDomainDefPostParse(def, caps, flags, xmlopt) < 0)
         goto error;
 
     /* Auto-add any implied controllers which aren't present */
