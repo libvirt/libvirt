@@ -528,10 +528,10 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 {
     int count;
     size_t i;
+    unsigned int ncf_flags = 0;
     struct netcf_if *iface = NULL;
     virInterfacePtr *tmp_iface_objs = NULL;
     virInterfacePtr iface_obj = NULL;
-    bool active;
     int niface_objs = 0;
     int ret = -1;
     char **names = NULL;
@@ -543,14 +543,20 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
 
     virObjectLock(driver);
 
-    /* List all interfaces, in case of we might support new filter flags
-     * except active|inactive in future.
-     */
-    count = ncf_num_of_interfaces(driver->netcf, NETCF_IFACE_ACTIVE |
-                                  NETCF_IFACE_INACTIVE);
-    if (count < 0) {
+    /* let netcf pre-filter for this flag to save time */
+    if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE)) {
+        if (MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE))
+            ncf_flags |= NETCF_IFACE_ACTIVE;
+        if (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE))
+            ncf_flags |= NETCF_IFACE_INACTIVE;
+    } else {
+        ncf_flags = NETCF_IFACE_ACTIVE | NETCF_IFACE_INACTIVE;
+    }
+
+    if ((count = ncf_num_of_interfaces(driver->netcf, ncf_flags)) < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
+
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to get number of host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
@@ -566,11 +572,11 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
     if (VIR_ALLOC_N(names, count) < 0)
         goto cleanup;
 
-    if ((count = ncf_list_interfaces(driver->netcf, count, names,
-                                     NETCF_IFACE_ACTIVE |
-                                     NETCF_IFACE_INACTIVE)) < 0) {
+    if ((count = ncf_list_interfaces(driver->netcf, count,
+                                     names, ncf_flags)) < 0) {
         const char *errmsg, *details;
         int errcode = ncf_error(driver->netcf, &errmsg, &details);
+
         virReportError(netcf_to_vir_err(errcode),
                        _("failed to list host interfaces: %s%s%s"),
                        errmsg, details ? " - " : "",
@@ -604,9 +610,6 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
             }
         }
 
-        if (netcfInterfaceObjIsActive(iface, &active) < 0)
-            goto cleanup;
-
         if (!(def = netcfGetMinimalDefForDevice(iface)))
             goto cleanup;
 
@@ -614,17 +617,6 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
             ncf_if_free(iface);
             iface = NULL;
             virInterfaceDefFree(def);
-            continue;
-        }
-        /* XXX: Filter the result, need to be split once new filter flags
-         * except active|inactive are supported.
-         */
-        if (MATCH(VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE) &&
-            !((MATCH(VIR_CONNECT_LIST_INTERFACES_ACTIVE) && active) ||
-              (MATCH(VIR_CONNECT_LIST_INTERFACES_INACTIVE) && !active))) {
-            virInterfaceDefFree(def);
-            ncf_if_free(iface);
-            iface = NULL;
             continue;
         }
 
