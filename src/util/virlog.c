@@ -920,6 +920,7 @@ virLogOutputToJournald(virLogSourcePtr source,
     journalAddString(&state, "MESSAGE", rawstr);
     journalAddInt(&state, "PRIORITY",
                   virLogPrioritySyslog(priority));
+    journalAddInt(&state, "SYSLOG_FACILITY", LOG_DAEMON);
     journalAddString(&state, "LIBVIRT_SOURCE", source->name);
     if (filename)
         journalAddString(&state, "CODE_FILE", filename);
