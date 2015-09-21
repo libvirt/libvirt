@@ -3362,8 +3362,13 @@ qemuDomainAgentAvailable(virDomainObjPtr vm,
 
 
 static unsigned long long
-qemuDomainGetMemorySizeAlignment(virDomainDefPtr def ATTRIBUTE_UNUSED)
+qemuDomainGetMemorySizeAlignment(virDomainDefPtr def)
 {
+    /* PPC requires the memory sizes to be rounded to 256MiB increments, so
+     * round them to the size always. */
+    if (ARCH_IS_PPC64(def->os.arch))
+        return 256 * 1024;
+
     /* Align memory size. QEMU requires rounding to next 4KiB block.
      * We'll take the "traditional" path and round it to 1MiB*/
 

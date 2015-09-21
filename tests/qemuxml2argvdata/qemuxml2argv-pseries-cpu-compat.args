@@ -1,7 +1,7 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test \
 QEMU_AUDIO_DRV=none /usr/bin/qemu-system-ppc64 -S -M pseries \
 -cpu host,compat=power7 \
--m 214 -smp 4 -nographic -nodefconfig -nodefaults \
+-m 256 -smp 4 -nographic -nodefconfig -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -usb \
 -chardev pty,id=charserial0 \
