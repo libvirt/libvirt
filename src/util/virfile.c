@@ -2315,8 +2315,8 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 }
 
 
-/* virFileUnlink:
- * @path: file to unlink
+/* virFileRemove:
+ * @path: file to unlink or directory to remove
  * @uid: uid that was used to create the file (not required)
  * @gid: gid that was used to create the file (not required)
  *
@@ -2327,7 +2327,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
  * from the child.
  */
 int
-virFileUnlink(const char *path,
+virFileRemove(const char *path,
               uid_t uid,
               gid_t gid)
 {
@@ -2341,8 +2341,12 @@ virFileUnlink(const char *path,
      * the file/volume, then use unlink directly
      */
     if ((geteuid() != 0) ||
-        ((uid == (uid_t) -1) && (gid == (gid_t) -1)))
-        return unlink(path);
+        ((uid == (uid_t) -1) && (gid == (gid_t) -1))) {
+        if (virFileIsDir(path))
+            return rmdir(path);
+        else
+            return unlink(path);
+    }
 
     /* Otherwise, we have to deal with the NFS root-squash craziness
      * to run under the uid/gid that created the volume in order to
@@ -2406,9 +2410,16 @@ virFileUnlink(const char *path,
         goto childerror;
     }
 
-    if (unlink(path) < 0) {
-        ret = errno;
-        goto childerror;
+    if (virFileIsDir(path)) {
+        if (rmdir(path) < 0) {
+            ret = errno;
+            goto childerror;
+        }
+    } else {
+        if (unlink(path) < 0) {
+            ret = errno;
+            goto childerror;
+        }
     }
 
  childerror:
@@ -2643,7 +2654,7 @@ virDirCreate(const char *path ATTRIBUTE_UNUSED,
 }
 
 int
-virFileUnlink(const char *path,
+virFileRemove(const char *path,
               uid_t uid ATTRIBUTE_UNUSED,
               gid_t gid ATTRIBUTE_UNUSED)
 {

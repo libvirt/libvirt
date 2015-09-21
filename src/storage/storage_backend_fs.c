@@ -1203,23 +1203,21 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     switch ((virStorageVolType) vol->type) {
     case VIR_STORAGE_VOL_FILE:
-        if (virFileUnlink(vol->target.path, vol->target.perms->uid,
+    case VIR_STORAGE_VOL_DIR:
+        if (virFileRemove(vol->target.path, vol->target.perms->uid,
                           vol->target.perms->gid) < 0) {
             /* Silently ignore failures where the vol has already gone away */
             if (errno != ENOENT) {
-                virReportSystemError(errno,
-                                     _("cannot unlink file '%s'"),
-                                     vol->target.path);
+                if (vol->type == VIR_STORAGE_VOL_FILE)
+                    virReportSystemError(errno,
+                                         _("cannot unlink file '%s'"),
+                                         vol->target.path);
+                else
+                    virReportSystemError(errno,
+                                         _("cannot remove directory '%s'"),
+                                         vol->target.path);
                 return -1;
             }
-        }
-        break;
-    case VIR_STORAGE_VOL_DIR:
-        if (rmdir(vol->target.path) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot remove directory '%s'"),
-                                 vol->target.path);
-            return -1;
         }
         break;
     case VIR_STORAGE_VOL_BLOCK:

@@ -219,7 +219,7 @@ int virFileOpenAs(const char *path, int openflags, mode_t mode,
                   uid_t uid, gid_t gid,
                   unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-int virFileUnlink(const char *path, uid_t uid, gid_t gid);
+int virFileRemove(const char *path, uid_t uid, gid_t gid);
 
 enum {
     VIR_DIR_CREATE_NONE        = 0,
