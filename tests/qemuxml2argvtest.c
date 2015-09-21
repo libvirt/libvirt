@@ -553,16 +553,19 @@ mymain(void)
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
                  __VA_ARGS__)
 
+# define DO_TEST_LINUX(name, ...)                                       \
+    DO_TEST_LINUX_FULL(name, NULL, -1, 0, __VA_ARGS__)
+
 # ifdef __linux__
     /* This is a macro that invokes test only on Linux. It's
      * meant to be called in those cases where qemuxml2argvmock
      * cooperation is expected (e.g. we need a fixed time,
      * predictable NUMA topology and so on). On non-Linux
      * platforms the macro just consume its argument. */
-#  define DO_TEST_LINUX(name, ...)                                      \
-    DO_TEST_FULL(name, NULL, -1, 0, __VA_ARGS__)
+#  define DO_TEST_LINUX_FULL(name, ...)                                 \
+    DO_TEST_FULL(name, __VA_ARGS__)
 # else  /* __linux__ */
-#  define DO_TEST_LINUX(name, ...)                                      \
+#  define DO_TEST_LINUX_FULL(name, ...)                                 \
     do {                                                                \
         const char *tmp ATTRIBUTE_UNUSED = name;                        \
     } while (0)
@@ -1270,6 +1273,10 @@ mymain(void)
     DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, QEMU_CAPS_MIGRATE_QEMU_FD);
     DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0,
             QEMU_CAPS_MIGRATE_QEMU_TCP);
+
+    DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0,
+                       QEMU_CAPS_MIGRATE_KVM_STDIO, QEMU_CAPS_NUMA,
+                       QEMU_CAPS_OBJECT_MEMORY_RAM);
 
     DO_TEST("qemu-ns", NONE);
 

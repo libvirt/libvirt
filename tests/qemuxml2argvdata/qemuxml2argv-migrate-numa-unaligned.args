@@ -1,0 +1,13 @@
+LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
+/usr/bin/kvm -S -M pc -m 14338 -smp 32 \
+-object memory-backend-ram,id=ram-node0,size=20482048,host-nodes=3,\
+policy=preferred \
+-numa node,nodeid=0,cpus=0,memdev=ram-node0 \
+-object memory-backend-ram,id=ram-node1,size=675907584,host-nodes=0-7,\
+policy=bind \
+-numa node,nodeid=1,cpus=1-27,cpus=29,memdev=ram-node1 \
+-object memory-backend-ram,id=ram-node2,size=24578457600,host-nodes=1-2,\
+host-nodes=5,host-nodes=7,policy=bind \
+-numa node,nodeid=2,cpus=28,cpus=30-31,memdev=ram-node2 \
+-nographic -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi -boot c -usb -net none -serial none -parallel none -incoming stdio
