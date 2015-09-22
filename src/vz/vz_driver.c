@@ -309,8 +309,7 @@ vzConnectOpen(virConnectPtr conn,
     }
 
     if ((ret = vzOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS ||
-        (ret = vzStorageOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS ||
-        (ret = vzNetworkOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS) {
+        (ret = vzStorageOpen(conn, flags)) != VIR_DRV_OPEN_SUCCESS) {
         vzConnectClose(conn);
         return ret;
     }
@@ -326,7 +325,6 @@ vzConnectClose(virConnectPtr conn)
     if (!privconn)
         return 0;
 
-    vzNetworkClose(conn);
     vzStorageClose(conn);
 
     vzDriverLock(privconn);
@@ -1401,7 +1399,6 @@ static virHypervisorDriver vzDriver = {
 static virConnectDriver vzConnectDriver = {
     .hypervisorDriver = &vzDriver,
     .storageDriver = &vzStorageDriver,
-    .networkDriver = &vzNetworkDriver,
 };
 
 /* Parallels domain type backward compatibility*/

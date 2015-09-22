@@ -108,7 +108,6 @@ src/openvz/openvz_conf.c
 src/openvz/openvz_driver.c
 src/openvz/openvz_util.c
 src/vz/vz_driver.c
-src/vz/vz_network.c
 src/vz/vz_sdk.c
 src/vz/vz_utils.c
 src/vz/vz_utils.h

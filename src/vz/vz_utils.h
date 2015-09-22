@@ -98,10 +98,6 @@ virDrvOpenStatus vzStorageOpen(virConnectPtr conn, unsigned int flags);
 int vzStorageClose(virConnectPtr conn);
 extern virStorageDriver vzStorageDriver;
 
-virDrvOpenStatus vzNetworkOpen(virConnectPtr conn, unsigned int flags);
-int vzNetworkClose(virConnectPtr conn);
-extern virNetworkDriver vzNetworkDriver;
-
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
 virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
