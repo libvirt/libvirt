@@ -18917,8 +18917,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->ioeventfd || def->event_idx || def->copy_on_read ||
         def->discard || def->iothread) {
         virBufferAddLit(buf, "<driver");
-        if (def->src->driverName)
-            virBufferAsprintf(buf, " name='%s'", def->src->driverName);
+        virBufferEscapeString(buf, " name='%s'", def->src->driverName);
         if (def->src->format > 0)
             virBufferAsprintf(buf, " type='%s'",
                               virStorageFileFormatTypeToString(def->src->format));
