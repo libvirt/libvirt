@@ -1621,8 +1621,13 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     def = NULL;
 
-    if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0)
+    if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+        if (!dom->persistent) {
+            virDomainObjListRemove(privconn->domains, dom);
+            dom = NULL;
+        }
         goto cleanup;
+    }
 
     event = virDomainEventLifecycleNewFromObj(dom,
                                      VIR_DOMAIN_EVENT_STARTED,

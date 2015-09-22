@@ -1623,9 +1623,10 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     if (umlStartVMDaemon(conn, driver, vm,
                          (flags & VIR_DOMAIN_START_AUTODESTROY)) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        virDomainObjListRemove(driver->domains,
-                               vm);
-        vm = NULL;
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
         goto cleanup;
     }
     virDomainAuditStart(vm, "booted", true);
