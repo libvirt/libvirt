@@ -838,7 +838,6 @@ VZ_DRIVER_SOURCES =					\
 		vz/vz_driver.c			\
 		vz/vz_utils.c			\
 		vz/vz_utils.h			\
-		vz/vz_storage.c		\
 		vz/vz_sdk.h			\
 		vz/vz_sdk.c
 

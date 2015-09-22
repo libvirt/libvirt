@@ -94,10 +94,6 @@ struct vzDomObj {
 
 typedef struct vzDomObj *vzDomObjPtr;
 
-virDrvOpenStatus vzStorageOpen(virConnectPtr conn, unsigned int flags);
-int vzStorageClose(virConnectPtr conn);
-extern virStorageDriver vzStorageDriver;
-
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
 virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
