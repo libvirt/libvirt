@@ -1093,6 +1093,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     if (!(vm = virDomainObjListAdd(driver->domains,
                                    vmdef,
                                    driver->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
