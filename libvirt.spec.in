@@ -2330,6 +2330,9 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Mon Sep 21 2015 Cole Robinson <crobinso@redhat.com> - 1.2.18.1-1
+- Maintenance release 1.2.18.1
+
 * Mon Aug  3 2015 Daniel Veillard <veillard@redhat.com> - 1.2.18-1
 - libxl: support dom0 
 - a number of improvements and bug fixes
