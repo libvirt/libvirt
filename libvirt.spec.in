@@ -2,7 +2,7 @@
 
 # This spec file assumes you are building for Fedora 13 or newer,
 # or for RHEL 5 or newer. It may need some tweaks for other distros.
-# If neither fedora nor rhel was defined, try to guess them from %{dist}
+# If neither fedora nor rhel was defined, try to guess them from dist
 %if !0%{?rhel} && !0%{?fedora}
 %{expand:%(echo "%{?dist}" | \
   sed -ne 's/^\.el\([0-9]\+\).*/%%define rhel \1/p')}
@@ -13,13 +13,13 @@
 # Default to skipping autoreconf.  Distros can change just this one line
 # (or provide a command-line override) if they backport any patches that
 # touch configure.ac or Makefile.am.
-%{!?enable_autotools:%define enable_autotools 0}
+%{!?enable_autotools:%global enable_autotools 0}
 
 # A client only build will create a libvirt.so only containing
 # the generic RPC driver, and test driver and no libvirtd
 # Default to a full server + client build, but with the possibility
 # of a command-line or ~/.rpmmacros override for client-only.
-%{!?client_only:%define client_only 0}
+%{!?client_only:%global client_only 0}
 
 # Now turn off server build in certain cases
 
