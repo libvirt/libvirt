@@ -531,6 +531,7 @@ qemuTestParseCapabilities(const char *capsFile)
 
 void qemuTestDriverFree(virQEMUDriver *driver)
 {
+    virMutexDestroy(&driver->lock);
     virQEMUCapsCacheFree(driver->qemuCapsCache);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
@@ -567,9 +568,12 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
+    if (virMutexInit(&driver->lock) < 0)
+        return -1;
+
     driver->config = virQEMUDriverConfigNew(false);
     if (!driver->config)
-        return -1;
+        goto error;
 
     driver->caps = testQemuCapsInit();
     if (!driver->caps)
