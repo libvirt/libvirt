@@ -1751,7 +1751,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     def = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0) {
-        qemuDomainRemoveInactive(driver, vm);
+        if (!vm->persistent)
+            qemuDomainRemoveInactive(driver, vm);
         goto cleanup;
     }
 
@@ -1761,7 +1762,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                          start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
         qemuDomainObjEndJob(driver, vm);
-        qemuDomainRemoveInactive(driver, vm);
+        if (!vm->persistent)
+            qemuDomainRemoveInactive(driver, vm);
         goto cleanup;
     }
 

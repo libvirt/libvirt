@@ -1239,8 +1239,10 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
                            (flags & VIR_DOMAIN_START_AUTODESTROY),
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
         goto cleanup;
     }
 

@@ -710,8 +710,10 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     vmdef = NULL;
 
     if (vmwareStartVM(driver, vm) < 0) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
         goto cleanup;
     }
 
