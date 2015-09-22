@@ -1753,8 +1753,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     def = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0) {
-        if (!vm->persistent)
-            qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
         goto cleanup;
     }
 
@@ -1764,8 +1763,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                          start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
         qemuDomainObjEndJob(driver, vm);
-        if (!vm->persistent)
-            qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
         goto cleanup;
     }
 
@@ -2250,7 +2248,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     ret = 0;
  endjob:
     qemuDomainObjEndJob(driver, vm);
-    if (ret == 0 && !vm->persistent)
+    if (ret == 0)
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
@@ -3273,7 +3271,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         }
     }
     qemuDomainObjEndAsyncJob(driver, vm);
-    if (ret == 0 && !vm->persistent)
+    if (ret == 0)
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
@@ -3774,7 +3772,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     }
 
     qemuDomainObjEndAsyncJob(driver, vm);
-    if (ret == 0 && flags & VIR_DUMP_CRASH && !vm->persistent)
+    if (ret == 0 && flags & VIR_DUMP_CRASH)
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
@@ -4054,8 +4052,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 
         virDomainAuditStop(vm, "destroyed");
 
-        if (!vm->persistent)
-            qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
         break;
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
@@ -6831,7 +6828,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         VIR_WARN("Failed to close %s", path);
 
     qemuDomainObjEndJob(driver, vm);
-    if (ret < 0 && !vm->persistent)
+    if (ret < 0)
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
@@ -7526,6 +7523,7 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
         } else {
             /* Brand new domain. Remove it */
             VIR_INFO("Deleting domain '%s'", vm->def->name);
+            vm->persistent = 0;
             qemuDomainRemoveInactive(driver, vm);
         }
         goto cleanup;
@@ -7651,11 +7649,9 @@ qemuDomainUndefineFlags(virDomainPtr dom,
      * domainDestroy and domainShutdown will take care of removing the
      * domain obj from the hash table.
      */
-    if (virDomainObjIsActive(vm)) {
-        vm->persistent = 0;
-    } else {
+    vm->persistent = 0;
+    if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
-    }
 
     ret = 0;
 
@@ -15550,12 +15546,9 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
 
         if (qemuDomainSnapshotRevertInactive(driver, vm, snap) < 0) {
-            if (!vm->persistent) {
-                qemuDomainObjEndJob(driver, vm);
-                qemuDomainRemoveInactive(driver, vm);
-                goto cleanup;
-            }
-            goto endjob;
+            qemuDomainObjEndJob(driver, vm);
+            qemuDomainRemoveInactive(driver, vm);
+            goto cleanup;
         }
         if (config)
             virDomainObjAssignDef(vm, config, false, NULL);
@@ -15575,12 +15568,9 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                   start_flags);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             if (rc < 0) {
-                if (!vm->persistent) {
-                    qemuDomainObjEndJob(driver, vm);
-                    qemuDomainRemoveInactive(driver, vm);
-                    goto cleanup;
-                }
-                goto endjob;
+                qemuDomainObjEndJob(driver, vm);
+                qemuDomainRemoveInactive(driver, vm);
+                goto cleanup;
             }
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
             event = virDomainEventLifecycleNewFromObj(vm,

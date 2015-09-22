@@ -323,8 +323,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     qemuProcessStop(driver, vm, stopReason, stopFlags);
     virDomainAuditStop(vm, auditReason);
 
-    if (!vm->persistent)
-        qemuDomainRemoveInactive(driver, vm);
+    qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
     virObjectUnlock(vm);
@@ -3898,8 +3897,7 @@ qemuProcessReconnect(void *opaque)
         qemuProcessStop(driver, obj, state, stopFlags);
     }
 
-    if (!obj->persistent)
-        qemuDomainRemoveInactive(driver, obj);
+    qemuDomainRemoveInactive(driver, obj);
 
  cleanup:
     virDomainObjEndAPI(&obj);
@@ -3943,8 +3941,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
                          "might be incomplete"));
        /* We can't spawn a thread and thus connect to monitor. Kill qemu. */
         qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
-        if (!obj->persistent)
-            qemuDomainRemoveInactive(src->driver, obj);
+        qemuDomainRemoveInactive(src->driver, obj);
 
         virDomainObjEndAPI(&obj);
         virObjectUnref(data->conn);
@@ -5750,8 +5747,7 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 
     qemuDomainObjEndJob(driver, dom);
 
-    if (!dom->persistent)
-        qemuDomainRemoveInactive(driver, dom);
+    qemuDomainRemoveInactive(driver, dom);
 
     qemuDomainEventQueue(driver, event);
 

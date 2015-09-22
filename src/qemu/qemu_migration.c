@@ -3483,8 +3483,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         VIR_FREE(priv->origname);
         virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
         priv->nbdPort = 0;
-        if (!vm->persistent)
-            qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
     qemuDomainEventQueue(driver, event);
@@ -3873,8 +3872,7 @@ qemuMigrationConfirm(virConnectPtr conn,
                                     flags, cancelled);
 
     qemuMigrationJobFinish(driver, vm);
-    if (!virDomainObjIsActive(vm) &&
-        (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))) {
+    if (!virDomainObjIsActive(vm)) {
         if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
         qemuDomainRemoveInactive(driver, vm);
@@ -5357,9 +5355,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     }
 
     qemuMigrationJobFinish(driver, vm);
-    if (!virDomainObjIsActive(vm) &&
-        (!vm->persistent ||
-         (ret == 0 && (flags & VIR_MIGRATE_UNDEFINE_SOURCE)))) {
+    if (!virDomainObjIsActive(vm) && ret == 0) {
         if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
         qemuDomainRemoveInactive(driver, vm);
@@ -5435,7 +5431,7 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
         qemuMigrationJobFinish(driver, vm);
     else
         qemuMigrationJobContinue(vm);
-    if (!virDomainObjIsActive(vm) && !vm->persistent)
+    if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
@@ -5804,7 +5800,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         VIR_WARN("Unable to encode migration cookie");
 
     qemuMigrationJobFinish(driver, vm);
-    if (!vm->persistent && !virDomainObjIsActive(vm))
+    if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:

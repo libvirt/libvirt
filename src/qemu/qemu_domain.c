@@ -2619,7 +2619,14 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
 {
     bool haveJob = true;
     char *snapDir;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virQEMUDriverConfigPtr cfg;
+
+    if (vm->persistent) {
+        /* Short-circuit, we don't want to remove a persistent domain */
+        return;
+    }
+
+    cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         haveJob = false;
