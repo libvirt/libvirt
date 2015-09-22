@@ -14,6 +14,7 @@
 # include "qemu/qemu_monitor.h"
 # include "qemu/qemu_monitor_text.h"
 # include "qemumonitortestutils.h"
+# include "testutilsqemu.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -164,11 +165,11 @@ testMonitorTextBlockInfo(const void *opaque)
 static int
 mymain(void)
 {
-    virDomainXMLOptionPtr xmlopt;
+    virQEMUDriver driver;
     int result = 0;
 
     if (virThreadInitialize() < 0 ||
-        !(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
+        qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
@@ -176,7 +177,7 @@ mymain(void)
 # define DO_TEST(_name)                                                 \
     do {                                                                \
         if (virtTestRun("qemu monitor "#_name, test##_name,             \
-                        xmlopt) < 0) {                                  \
+                        driver.xmlopt) < 0) {                           \
             result = -1;                                                \
         }                                                               \
     } while (0)
@@ -185,7 +186,7 @@ mymain(void)
     DO_TEST(UnescapeArg);
     DO_TEST(MonitorTextBlockInfo);
 
-    virObjectUnref(xmlopt);
+    qemuTestDriverFree(&driver);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

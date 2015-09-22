@@ -160,7 +160,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virDomainXMLOptionPtr xmlopt;
+    virQEMUDriver driver;
     testQemuData data;
 
 #if !WITH_YAJL
@@ -169,12 +169,12 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        !(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
+        qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
 
-    data.xmlopt = xmlopt;
+    data.xmlopt = driver.xmlopt;
 
 #define DO_TEST(name)                                   \
     do {                                                \
@@ -191,7 +191,8 @@ mymain(void)
     DO_TEST("caps_1.6.50-1");
     DO_TEST("caps_2.1.1-1");
 
-    virObjectUnref(xmlopt);
+    qemuTestDriverFree(&driver);
+
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

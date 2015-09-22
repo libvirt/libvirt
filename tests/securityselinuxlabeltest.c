@@ -46,7 +46,7 @@
 VIR_LOG_INIT("tests.securityselinuxlabeltest");
 
 static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static virQEMUDriver driver;
 
 static virSecurityManagerPtr mgr;
 
@@ -189,7 +189,7 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(xmlfile, caps, xmlopt, 0)))
+    if (!(def = virDomainDefParseFile(xmlfile, caps, driver.xmlopt, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -361,7 +361,7 @@ mymain(void)
     if ((caps = testQemuCapsInit()) == NULL)
         return EXIT_FAILURE;
 
-    if (!(xmlopt = virQEMUDriverCreateXMLConf(NULL)))
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name)                                           \
@@ -374,6 +374,8 @@ mymain(void)
     DO_TEST_LABELING("kernel");
     DO_TEST_LABELING("chardev");
     DO_TEST_LABELING("nfs");
+
+    qemuTestDriverFree(&driver);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
