@@ -918,6 +918,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
 
     if (!(vm = virDomainObjListAdd(privconn->domains, def,
                                    privconn->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE, NULL)))
         goto cleanup;
     def = NULL;
