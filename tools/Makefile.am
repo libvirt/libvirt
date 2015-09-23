@@ -129,6 +129,24 @@ virt-sanlock-cleanup.8: virt-sanlock-cleanup.in $(top_srcdir)/configure.ac
 	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
 
+noinst_LTLIBRARIES = libvirt_shell.la
+libvirt_shell_la_CFLAGS = \
+		$(AM_CFLAGS)						\
+		$(PIE_CFLAGS)						\
+		$(READLINE_CFLAGS)					\
+		$(LIBXML_CFLAGS)					\
+		$(NULL)
+libvirt_shell_la_LDFLAGS = \
+		$(AM_LDFLAGS)						\
+		$(PIE_LDFLAGS)						\
+		$(COVERAGE_LDFLAGS)					\
+		$(NULL)
+libvirt_shell_la_LIBADD = \
+		$(LIBXML_LIBS)						\
+		../gnulib/lib/libgnu.la				\
+		$(NULL)
+libvirt_shell_la_SOURCES = vsh.c vsh.h
+
 virt_host_validate_SOURCES = \
 		virt-host-validate.c \
 		virt-host-validate-common.c virt-host-validate-common.h \
@@ -179,11 +197,7 @@ virt_login_shell_CFLAGS =					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)
 
-virt_shell_SOURCES =					\
-		vsh.c vsh.h
-
 virsh_SOURCES =							\
-		$(virt_shell_SOURCES)			\
 		virsh.c virsh.h					\
 		virsh-console.c virsh-console.h			\
 		virsh-domain.c virsh-domain.h			\
@@ -209,15 +223,13 @@ virsh_LDADD =							\
 		../src/libvirt.la				\
 		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\
-		../gnulib/lib/libgnu.la				\
-		$(LIBXML_LIBS)					\
+		libvirt_shell.la				\
 		$(VIRSH_LIBS)
 virsh_CFLAGS =							\
 		$(WARN_CFLAGS)					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)				\
-		$(LIBXML_CFLAGS)				\
-		$(READLINE_CFLAGS)
+		$(LIBXML_CFLAGS)
 BUILT_SOURCES =
 
 if WITH_WIN_ICON
