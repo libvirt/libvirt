@@ -6828,8 +6828,6 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         VIR_WARN("Failed to close %s", path);
 
     qemuDomainObjEndJob(driver, vm);
-    if (ret < 0)
-        qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
     virDomainDefFree(def);
@@ -6837,6 +6835,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     VIR_FREE(xml);
     VIR_FREE(xmlout);
     virFileWrapperFdFree(wrapperFd);
+    if (vm && ret < 0)
+        qemuDomainRemoveInactive(driver, vm);
     virDomainObjEndAPI(&vm);
     virNWFilterUnlockFilterUpdates();
     return ret;
