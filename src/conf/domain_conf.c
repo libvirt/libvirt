@@ -21020,19 +21020,17 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     * <graphics>. This is done to improve backward compatibility.
     */
     for (i = 0; i < def->nListens; i++) {
-        virDomainGraphicsListenType listenType;
-
         if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
             def->listens[i].fromConfig)
             continue;
-        listenType = virDomainGraphicsListenGetType(def, i);
 
-        if (listenType == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
-            (listenType == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
-             !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
-            if ((listenAddr = virDomainGraphicsListenGetAddress(def, i)))
-                break;
-        }
+        if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
+            flags & (VIR_DOMAIN_DEF_FORMAT_INACTIVE |
+                     VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
+            continue;
+
+        if ((listenAddr = virDomainGraphicsListenGetAddress(def, i)))
+            break;
     }
 
     virBufferAsprintf(buf, "<graphics type='%s'", type);
