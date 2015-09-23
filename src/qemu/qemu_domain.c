@@ -1233,11 +1233,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUCapsPtr qemuCaps = NULL;
-    virQEMUDriverConfigPtr cfg = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-
-    if (driver)
-        cfg = virQEMUDriverGetConfig(driver);
 
     qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
@@ -1253,37 +1250,34 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         virDomainDiskDefPtr disk = dev->data.disk;
 
-        /* both of these require data from the driver config */
-        if (cfg) {
-            /* assign default storage format and driver according to config */
-            if (cfg->allowDiskFormatProbing) {
-                /* default disk format for drives */
-                if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                    (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-                     virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-                    virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
+        /* assign default storage format and driver according to config */
+        if (cfg->allowDiskFormatProbing) {
+            /* default disk format for drives */
+            if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+                (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+                 virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
+                virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
 
-                /* default disk format for mirrored drive */
-                if (disk->mirror &&
-                    disk->mirror->format == VIR_STORAGE_FILE_NONE)
-                    disk->mirror->format = VIR_STORAGE_FILE_AUTO;
-            } else {
-                /* default driver if probing is forbidden */
-                if (!virDomainDiskGetDriver(disk) &&
-                    virDomainDiskSetDriver(disk, "qemu") < 0)
-                    goto cleanup;
+            /* default disk format for mirrored drive */
+            if (disk->mirror &&
+                disk->mirror->format == VIR_STORAGE_FILE_NONE)
+                disk->mirror->format = VIR_STORAGE_FILE_AUTO;
+        } else {
+            /* default driver if probing is forbidden */
+            if (!virDomainDiskGetDriver(disk) &&
+                virDomainDiskSetDriver(disk, "qemu") < 0)
+                goto cleanup;
 
-                /* default disk format for drives */
-                if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                    (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-                     virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-                    virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
+            /* default disk format for drives */
+            if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+                (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+                 virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
+                virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
 
-                /* default disk format for mirrored drive */
-                if (disk->mirror &&
-                    disk->mirror->format == VIR_STORAGE_FILE_NONE)
-                    disk->mirror->format = VIR_STORAGE_FILE_RAW;
-            }
+            /* default disk format for mirrored drive */
+            if (disk->mirror &&
+                disk->mirror->format == VIR_STORAGE_FILE_NONE)
+                disk->mirror->format = VIR_STORAGE_FILE_RAW;
         }
     }
 
@@ -1315,12 +1309,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
         dev->data.chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
         !dev->data.chr->source.data.nix.path) {
-        if (!cfg) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cannot generate UNIX socket path"));
-            goto cleanup;
-        }
-
         if (virAsprintf(&dev->data.chr->source.data.nix.path,
                         "%s/domain-%s/%s",
                         cfg->channelTargetDir, def->name,
