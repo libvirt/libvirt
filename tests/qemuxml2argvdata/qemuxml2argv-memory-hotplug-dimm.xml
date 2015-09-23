@@ -36,7 +36,7 @@
     <memballoon model='virtio'/>
     <memory model='dimm'>
       <target>
-        <size unit='KiB'>524287</size>
+        <size unit='KiB'>523264</size>
         <node>0</node>
       </target>
     </memory>

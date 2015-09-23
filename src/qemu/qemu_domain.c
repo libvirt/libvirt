@@ -3376,6 +3376,21 @@ qemuDomainGetMemorySizeAlignment(virDomainDefPtr def)
 }
 
 
+static unsigned long long
+qemuDomainGetMemoryModuleSizeAlignment(const virDomainDef *def,
+                                       const virDomainMemoryDef *mem ATTRIBUTE_UNUSED)
+{
+    /* PPC requires the memory sizes to be rounded to 256MiB increments, so
+     * round them to the size always. */
+    if (ARCH_IS_PPC64(def->os.arch))
+        return 256 * 1024;
+
+    /* dimm memory modules require 2MiB alignment rather than the 1MiB we are
+     * using elsewhere. */
+    return 2048;
+}
+
+
 int
 qemuDomainAlignMemorySizes(virDomainDefPtr def)
 {
@@ -3402,8 +3417,10 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
     def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, align);
 
     /* Align memory module sizes */
-    for (i = 0; i < def->nmems; i++)
+    for (i = 0; i < def->nmems; i++) {
+        align = qemuDomainGetMemoryModuleSizeAlignment(def, def->mems[i]);
         def->mems[i]->size = VIR_ROUND_UP(def->mems[i]->size, align);
+    }
 
     return 0;
 }
