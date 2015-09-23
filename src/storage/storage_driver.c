@@ -3199,6 +3199,8 @@ virStorageTranslateDiskSourcePoolAuth(virDomainDiskDefPtr def,
     def->src->auth = virStorageAuthDefCopy(source->auth);
     if (!def->src->auth)
         goto cleanup;
+    /* A <disk> doesn't use <auth type='%s', so clear that out for the disk */
+    def->src->auth->authType = VIR_STORAGE_AUTH_TYPE_NONE;
     ret = 0;
 
  cleanup:
