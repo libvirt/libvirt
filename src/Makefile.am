@@ -763,7 +763,8 @@ QEMU_DRIVER_SOURCES =							\
 		qemu/qemu_monitor_json.c				\
 		qemu/qemu_monitor_json.h				\
 		qemu/qemu_driver.c qemu/qemu_driver.h	\
-		qemu/qemu_interface.c qemu/qemu_interface.h
+		qemu/qemu_interface.c qemu/qemu_interface.h		\
+		qemu/qemu_capspriv.h
 
 XENAPI_DRIVER_SOURCES =						\
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
