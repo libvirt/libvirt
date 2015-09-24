@@ -5333,7 +5333,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                              virDomainNetGetActualDirectMode(net),
                              virDomainNetGetActualVirtPortProfile(net),
                              cfg->stateDir));
-            VIR_FREE(net->ifname);
             break;
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
