@@ -11534,6 +11534,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
     xmlNodePtr source = NULL;
     char *device_type = NULL;
     char *ret = NULL;
+    char *startupPolicy = NULL;
 
     if (!disk_node)
         return NULL;
@@ -11567,13 +11568,15 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         goto cleanup;
     }
 
-    if (type == VIRSH_UPDATE_DISK_XML_INSERT && source) {
-        vshError(NULL, _("The disk device '%s' already has media"), target);
-        goto cleanup;
-    }
-
-    /* remove current source */
     if (source) {
+        if (type == VIRSH_UPDATE_DISK_XML_INSERT) {
+            vshError(NULL, _("The disk device '%s' already has media"), target);
+            goto cleanup;
+        }
+
+        startupPolicy = virXMLPropString(source, "startupPolicy");
+
+        /* remove current source */
         xmlUnlinkNode(source);
         xmlFreeNode(source);
         source = NULL;
@@ -11597,6 +11600,8 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         else
             xmlNewProp(source, BAD_CAST "file", BAD_CAST new_source);
 
+        if (startupPolicy)
+            xmlNewProp(source, BAD_CAST "startupPolicy", BAD_CAST startupPolicy);
         xmlAddChild(disk_node, source);
     }
 
@@ -11607,6 +11612,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
  cleanup:
     VIR_FREE(device_type);
+    VIR_FREE(startupPolicy);
     return ret;
 }
 
