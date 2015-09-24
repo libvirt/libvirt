@@ -262,6 +262,16 @@
         using a dashboard.  Compute part uses libvirt to manage VM
         life-cycle, monitoring and so on.
       </dd>
+
+      <dt><a href="https://github.com/gustavfranssonnyvell/cherrypop">Cherrypop</a></dt>
+      <dd>
+        A cloud software with no masters or central points. Nodes
+        autodetect other nodes and autodistribute virtual
+        machines and autodivide up the workload. Also there is no
+        minimum limit for hosts, well, one might be nice. It's
+        perfect for setting up low-end servers in a cloud or a
+        cloud where you want the most bang for the bucks.
+      </dd>
     </dl>
 
     <h2><a name="libraries">Libraries</a></h2>
