@@ -831,7 +831,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             goto error;
     }
     virObjectUnref(caps);
-    caps = NULL;
     VIR_FREE(tmp);
 
     return 0;
