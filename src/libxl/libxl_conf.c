@@ -319,6 +319,12 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
         return -1;
     }
 
+    if (!ver_info->capabilities) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to get capabilities from libxenlight"));
+        return -1;
+    }
+
     err = regcomp(&regex, XEN_CAP_REGEX, REG_EXTENDED);
     if (err != 0) {
         char error[100];
