@@ -3156,7 +3156,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     virFileWrapperFdFree(wrapperFd);
     VIR_FREE(xml);
 
-    if (ret != 0 && needUnlink)
+    if (ret < 0 && needUnlink)
         unlink(path);
 
     return ret;
@@ -3250,11 +3250,10 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     /* Shut it down */
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
     virDomainAuditStop(vm, "saved");
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_STOPPED,
-                                     VIR_DOMAIN_EVENT_STOPPED_SAVED);
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_SAVED);
  endjob:
-    if (ret != 0) {
+    if (ret < 0) {
         if (was_running && virDomainObjIsActive(vm)) {
             virErrorPtr save_err = virSaveLastError();
             rc = qemuProcessStartCPUs(driver, vm, dom->conn,
