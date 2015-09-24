@@ -1766,7 +1766,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
     virStorageBackendPtr backend;
     virStorageVolDefPtr voldef = NULL;
     virStorageVolPtr ret = NULL, volobj = NULL;
-    virStorageVolDefPtr buildvoldef = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -1828,19 +1827,21 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(buildvoldef) < 0) {
-        voldef = NULL;
-        goto cleanup;
-    }
-
-    /* Make a shallow copy of the 'defined' volume definition, since the
-     * original allocation value will change as the user polls 'info',
-     * but we only need the initial requested values
-     */
-    memcpy(buildvoldef, voldef, sizeof(*voldef));
 
     if (backend->buildVol) {
         int buildret;
+        virStorageVolDefPtr buildvoldef = NULL;
+
+        if (VIR_ALLOC(buildvoldef) < 0) {
+            voldef = NULL;
+            goto cleanup;
+        }
+
+        /* Make a shallow copy of the 'defined' volume definition, since the
+         * original allocation value will change as the user polls 'info',
+         * but we only need the initial requested values
+         */
+        memcpy(buildvoldef, voldef, sizeof(*voldef));
 
         /* Drop the pool lock during volume allocation */
         pool->asyncjobs++;
@@ -1891,7 +1892,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
  cleanup:
     virObjectUnref(volobj);
     virStorageVolDefFree(voldef);
-    VIR_FREE(buildvoldef);
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
