@@ -204,6 +204,9 @@ virEventRemoveTimeout(int timer)
  * to integrate with the libglib2 event loop, or libevent
  * or the QT event loop.
  *
+ * For proper event handling, it is important that the event implementation
+ * is registered before a connection to the Hypervisor is opened.
+ *
  * Use of the virEventAddHandle() and similar APIs require that the
  * corresponding handler is registered.  Use of the
  * virConnectDomainEventRegisterAny() and similar APIs requires that
@@ -246,6 +249,9 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
  * that can be used by any client application which does
  * not have a need to integrate with an external event
  * loop impl.
+ *
+ * For proper event handling, it is important that the event implementation
+ * is registered before a connection to the Hypervisor is opened.
  *
  * Once registered, the application has to invoke virEventRunDefaultImpl() in
  * a loop to process events.  Failure to do so may result in connections being
