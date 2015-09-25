@@ -1670,10 +1670,6 @@ if test "$with_pm_utils" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_PM_UTILS], [test "$with_pm_utils" = "yes"])
 
-dnl virsh libraries
-VIRSH_LIBS="$VIRSH_LIBS $READLINE_LIBS"
-AC_SUBST([VIRSH_LIBS])
-
 dnl check if the network driver should be compiled
 
 AC_ARG_WITH([network],

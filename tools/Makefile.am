@@ -143,6 +143,8 @@ libvirt_shell_la_LDFLAGS = \
 		$(NULL)
 libvirt_shell_la_LIBADD = \
 		$(LIBXML_LIBS)						\
+		$(READLINE_LIBS)					\
+		../src/libvirt.la					\
 		../gnulib/lib/libgnu.la				\
 		$(NULL)
 libvirt_shell_la_SOURCES = vsh.c vsh.h
@@ -220,11 +222,9 @@ virsh_LDFLAGS = \
 virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
 		$(PIE_LDFLAGS)					\
-		../src/libvirt.la				\
 		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\
-		libvirt_shell.la				\
-		$(VIRSH_LIBS)
+		libvirt_shell.la
 virsh_CFLAGS =							\
 		$(WARN_CFLAGS)					\
 		$(PIE_CFLAGS)					\
