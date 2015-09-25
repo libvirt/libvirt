@@ -14640,7 +14640,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
     size_t i, j;
-    int n;
+    int n, virtType;
     long id = -1;
     virDomainDefPtr def;
     bool uuid_generated = false;
@@ -14678,11 +14678,12 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
-    if ((def->virtType = virDomainVirtTypeFromString(tmp)) < 0) {
+    if ((virtType = virDomainVirtTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("invalid domain type %s"), tmp);
         goto error;
     }
+    def->virtType = virtType;
     VIR_FREE(tmp);
 
     def->os.bootloader = virXPathString("string(./bootloader)", ctxt);
