@@ -146,11 +146,10 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
         goto unlock;
     }
 
+    qemuAgentClose(agent);
     priv->agent = NULL;
 
     virObjectUnlock(vm);
-
-    qemuAgentClose(agent);
     return;
 
  unlock:
