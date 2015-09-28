@@ -430,8 +430,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
                                              cfg->allowDiskFormatProbing,
                                              cfg->securityDefaultConfined,
                                              cfg->securityRequireConfined,
-                                             virQEMUDriverIsPrivileged(driver),
                                              cfg->dynamicOwnership,
+                                             virQEMUDriverIsPrivileged(driver),
                                              qemuSecurityChownCallback)))
             goto error;
         if (!stack) {
