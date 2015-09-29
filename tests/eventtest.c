@@ -63,6 +63,41 @@ enum {
     EV_ERROR_DATA,
 };
 
+struct testEventResultData {
+    bool failed;
+    const char *msg;
+};
+
+static int
+testEventResultCallback(const void *opaque)
+{
+    const struct testEventResultData *data = opaque;
+
+    if (data->failed && data->msg)
+        fprintf(stderr, "%s", data->msg);
+    return data->failed;
+}
+
+static void
+ATTRIBUTE_FMT_PRINTF(3, 4)
+testEventReport(const char *name, bool failed, const char *msg, ...)
+{
+    va_list vargs;
+    va_start(vargs, msg);
+    char *str = NULL;
+    struct testEventResultData data;
+
+    if (msg && virVasprintfQuiet(&str, msg, vargs) != 0)
+        failed = true;
+
+    data.failed = failed;
+    data.msg = str;
+    virtTestRun(name, testEventResultCallback, &data);
+
+    va_end(vargs);
+    VIR_FREE(str);
+}
+
 static void
 testPipeReader(int watch, int fd, int events, void *data)
 {
@@ -148,13 +183,13 @@ verifyFired(const char *name, int handle, int timer)
     for (i = 0; i < NUM_FDS; i++) {
         if (handles[i].fired) {
             if (i != handle) {
-                virtTestResult(name, 1,
+                testEventReport(name, 1,
                                "Handle %zu fired, but expected %d\n", i,
                                handle);
                 return EXIT_FAILURE;
             } else {
                 if (handles[i].error != EV_ERROR_NONE) {
-                    virtTestResult(name, 1,
+                    testEventReport(name, 1,
                                    "Handle %zu fired, but had error %d\n", i,
                                    handles[i].error);
                     return EXIT_FAILURE;
@@ -163,7 +198,7 @@ verifyFired(const char *name, int handle, int timer)
             }
         } else {
             if (i == handle) {
-                virtTestResult(name, 1,
+                testEventReport(name, 1,
                                "Handle %d should have fired, but didn't\n",
                                handle);
                 return EXIT_FAILURE;
@@ -171,7 +206,7 @@ verifyFired(const char *name, int handle, int timer)
         }
     }
     if (handleFired != 1 && handle != -1) {
-        virtTestResult(name, 1,
+        testEventReport(name, 1,
                        "Something weird happened, expecting handle %d\n",
                        handle);
         return EXIT_FAILURE;
@@ -181,12 +216,12 @@ verifyFired(const char *name, int handle, int timer)
     for (i = 0; i < NUM_TIME; i++) {
         if (timers[i].fired) {
             if (i != timer) {
-                virtTestResult(name, 1,
+                testEventReport(name, 1,
                                "Timer %zu fired, but expected %d\n", i, timer);
                 return EXIT_FAILURE;
             } else {
                 if (timers[i].error != EV_ERROR_NONE) {
-                    virtTestResult(name, 1,
+                    testEventReport(name, 1,
                                    "Timer %zu fired, but had error %d\n", i,
                                    timers[i].error);
                     return EXIT_FAILURE;
@@ -195,7 +230,7 @@ verifyFired(const char *name, int handle, int timer)
             }
         } else {
             if (i == timer) {
-                virtTestResult(name, 1,
+                testEventReport(name, 1,
                                "Timer %d should have fired, but didn't\n",
                                timer);
                 return EXIT_FAILURE;
@@ -203,7 +238,7 @@ verifyFired(const char *name, int handle, int timer)
         }
     }
     if (timerFired != 1 && timer != -1) {
-        virtTestResult(name, 1,
+        testEventReport(name, 1,
                        "Something weird happened, expecting timer %d\n",
                        timer);
         return EXIT_FAILURE;
@@ -234,14 +269,14 @@ finishJob(const char *name, int handle, int timer)
         rc = pthread_cond_timedwait(&eventThreadJobCond, &eventThreadMutex,
                                     &waitTime);
     if (rc != 0) {
-        virtTestResult(name, 1, "Timed out waiting for pipe event\n");
+        testEventReport(name, 1, "Timed out waiting for pipe event\n");
         return EXIT_FAILURE;
     }
 
     if (verifyFired(name, handle, timer) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
-    virtTestResult(name, 0, NULL);
+    testEventReport(name, 0, NULL);
     return EXIT_SUCCESS;
 }
 
