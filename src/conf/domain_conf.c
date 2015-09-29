@@ -24451,18 +24451,29 @@ virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
 
 
 int
-virDomainDefCheckDuplicateDiskWWN(virDomainDefPtr def)
+virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
 {
     size_t i;
     size_t j;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->wwn) {
+        if (def->disks[i]->wwn || def->disks[i]->serial) {
             for (j = i + 1; j < def->ndisks; j++) {
-                if (STREQ_NULLABLE(def->disks[i]->wwn,
+                if (def->disks[i]->wwn &&
+                    STREQ_NULLABLE(def->disks[i]->wwn,
                                    def->disks[j]->wwn)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("Disks '%s' and '%s' have identical WWN"),
+                                   def->disks[i]->dst,
+                                   def->disks[j]->dst);
+                    return -1;
+                }
+
+                if (def->disks[i]->serial &&
+                    STREQ_NULLABLE(def->disks[i]->serial,
+                                   def->disks[j]->serial)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Disks '%s' and '%s' have identical serial"),
                                    def->disks[i]->dst,
                                    def->disks[j]->dst);
                     return -1;

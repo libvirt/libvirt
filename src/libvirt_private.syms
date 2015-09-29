@@ -200,7 +200,7 @@ virDomainCpuPlacementModeTypeFromString;
 virDomainCpuPlacementModeTypeToString;
 virDomainDefAddImplicitControllers;
 virDomainDefCheckABIStability;
-virDomainDefCheckDuplicateDiskWWN;
+virDomainDefCheckDuplicateDiskInfo;
 virDomainDefCheckUnsupportedMemoryHotplug;
 virDomainDefClearCCWAddresses;
 virDomainDefClearDeviceAliases;
