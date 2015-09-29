@@ -119,44 +119,6 @@ static void virTestAllocHook(int nalloc ATTRIBUTE_UNUSED,
 }
 #endif
 
-void virtTestResult(const char *name, int ret, const char *msg, ...)
-{
-    va_list vargs;
-    va_start(vargs, msg);
-
-    if (testCounter == 0 && !virTestGetVerbose())
-        fprintf(stderr, "      ");
-
-    testCounter++;
-    if (virTestGetVerbose()) {
-        fprintf(stderr, "%3zu) %-60s ", testCounter, name);
-        if (ret == 0) {
-            fprintf(stderr, "OK\n");
-        } else {
-            fprintf(stderr, "FAILED\n");
-            if (msg) {
-                char *str;
-                if (virVasprintfQuiet(&str, msg, vargs) == 0) {
-                    fprintf(stderr, "%s", str);
-                    VIR_FREE(str);
-                }
-            }
-        }
-    } else {
-        if (testCounter != 1 &&
-            !((testCounter-1) % 40)) {
-            fprintf(stderr, " %-3zu\n", (testCounter-1));
-            fprintf(stderr, "      ");
-        }
-        if (ret == 0)
-            fprintf(stderr, ".");
-        else
-            fprintf(stderr, "!");
-    }
-
-    va_end(vargs);
-}
-
 #ifdef TEST_OOM_TRACE
 static void
 virTestShowTrace(void)
