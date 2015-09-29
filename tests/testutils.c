@@ -91,6 +91,11 @@ bool virtTestOOMActive(void)
     return testOOMActive;
 }
 
+static int virtTestUseTerminalColors(void)
+{
+    return isatty(STDIN_FILENO);
+}
+
 static unsigned int
 virTestGetFlag(const char *name)
 {
@@ -217,11 +222,20 @@ virtTestRun(const char *title,
 
     if (virTestGetVerbose()) {
         if (ret == 0)
-            fprintf(stderr, "OK\n");
+            if (virtTestUseTerminalColors())
+                fprintf(stderr, "\e[32mOK\e[0m\n");  /* green */
+            else
+                fprintf(stderr, "OK\n");
         else if (ret == EXIT_AM_SKIP)
-            fprintf(stderr, "SKIP\n");
+            if (virtTestUseTerminalColors())
+                fprintf(stderr, "\e[34m\e[1mSKIP\e[0m\n");  /* bold blue */
+            else
+                fprintf(stderr, "SKIP\n");
         else
-            fprintf(stderr, "FAILED\n");
+            if (virtTestUseTerminalColors())
+                fprintf(stderr, "\e[31m\e[1mFAILED\e[0m\n");  /* bold red */
+            else
+                fprintf(stderr, "FAILED\n");
     } else {
         if (testCounter != 1 &&
             !((testCounter-1) % 40)) {
