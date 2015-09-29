@@ -44,15 +44,28 @@ typedef struct {
     uint64_t expected_allocation;
 } collie_test;
 
+struct testNodeInfoParserData {
+    collie_test data;
+    const char *poolxml;
+};
+
+struct testVDIListParserData {
+    collie_test data;
+    const char *poolxml;
+    const char *volxml;
+};
+
 
 static int
-test_node_info_parser(collie_test test, char *poolxml)
+test_node_info_parser(const void *opaque)
 {
+    const struct testNodeInfoParserData *data = opaque;
+    collie_test test = data->data;
     int ret = -1;
     char *output = NULL;
     virStoragePoolDefPtr pool = NULL;
 
-    if (!(pool = virStoragePoolDefParseFile(poolxml)))
+    if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
         goto cleanup;
 
     if (VIR_STRDUP(output, test.output) < 0)
@@ -78,17 +91,19 @@ test_node_info_parser(collie_test test, char *poolxml)
 }
 
 static int
-test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
+test_vdi_list_parser(const void *opaque)
 {
+    const struct testVDIListParserData *data = opaque;
+    collie_test test = data->data;
     int ret = -1;
     char *output = NULL;
     virStoragePoolDefPtr pool = NULL;
     virStorageVolDefPtr vol = NULL;
 
-    if (!(pool = virStoragePoolDefParseFile(poolxml)))
+    if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
         goto cleanup;
 
-    if (!(vol = virStorageVolDefParseFile(pool, volxml, 0)))
+    if (!(vol = virStorageVolDefParseFile(pool, data->volxml, 0)))
         goto cleanup;
 
     if (VIR_STRDUP(output, test.output) < 0)
@@ -118,7 +133,7 @@ test_vdi_list_parser(collie_test test, char *poolxml, char *volxml)
 static int
 mymain(void)
 {
-    int ret = -1;
+    int ret = 0;
     char *poolxml = NULL;
     char *volxml = NULL;
 
@@ -170,25 +185,41 @@ mymain(void)
                     abs_srcdir) < 0)
         goto cleanup;
 
+#define DO_TEST_NODE(collie)                                            \
+    do {                                                                \
+        struct testNodeInfoParserData data = {                          \
+            .data = collie,                                             \
+            .poolxml = poolxml,                                         \
+        };                                                              \
+        if (virtTestRun("node_info_parser", test_node_info_parser,      \
+                        &data) < 0)                                     \
+            ret = -1;                                                   \
+    } while (0)
+
     while (test->output != NULL) {
-        ret = test_node_info_parser(*test, poolxml);
-        virtTestResult("node_info_parser", ret, NULL);
+        DO_TEST_NODE(*test);
         ++test;
-        if (ret < 0)
-            return EXIT_FAILURE;
     }
+
+
+#define DO_TEST_VDI(collie)                                             \
+    do {                                                                \
+        struct testVDIListParserData data = {                           \
+            .data = collie,                                             \
+            .poolxml = poolxml,                                         \
+            .volxml = volxml,                                           \
+        };                                                              \
+        if (virtTestRun("vdi_list_parser", test_vdi_list_parser,        \
+                        &data) < 0)                                     \
+            ret = -1;                                                   \
+    } while (0)
 
     test = vdi_list_tests;
 
     while (test->output != NULL) {
-        ret = test_vdi_list_parser(*test, poolxml, volxml);
-        virtTestResult("vdi_list_parser", ret, NULL);
+        DO_TEST_VDI(*test);
         ++test;
-        if (ret < 0)
-            return EXIT_FAILURE;
     }
-
-    ret = 0;
 
  cleanup:
     VIR_FREE(poolxml);
