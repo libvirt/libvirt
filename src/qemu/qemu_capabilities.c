@@ -769,7 +769,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     char *binary = NULL;
     virQEMUCapsPtr qemubinCaps = NULL;
     virQEMUCapsPtr kvmbinCaps = NULL;
-    bool native_kvm, x86_32on64_kvm, arm_32on64_kvm;
+    bool native_kvm, x86_32on64_kvm, arm_32on64_kvm, ppc64_kvm;
     int ret = -1;
 
     /* Check for existence of base emulator, or alternate base
@@ -789,14 +789,16 @@ virQEMUCapsInitGuest(virCapsPtr caps,
      *  - host & guest arches match
      *  - hostarch is x86_64 and guest arch is i686 (needs -cpu qemu32)
      *  - hostarch is aarch64 and guest arch is armv7l (needs -cpu aarch64=off)
+     *  - hostarch and guestarch are both ppc64*
      */
     native_kvm = (hostarch == guestarch);
     x86_32on64_kvm = (hostarch == VIR_ARCH_X86_64 &&
         guestarch == VIR_ARCH_I686);
     arm_32on64_kvm = (hostarch == VIR_ARCH_AARCH64 &&
         guestarch == VIR_ARCH_ARMV7L);
+    ppc64_kvm = (ARCH_IS_PPC64(hostarch) && ARCH_IS_PPC64(guestarch));
 
-    if (native_kvm || x86_32on64_kvm || arm_32on64_kvm) {
+    if (native_kvm || x86_32on64_kvm || arm_32on64_kvm || ppc64_kvm) {
         const char *kvmbins[] = {
             "/usr/libexec/qemu-kvm", /* RHEL */
             "qemu-kvm", /* Fedora */
