@@ -298,6 +298,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "rtl8139",
               "e1000",
               "virtio-net",
+              "gic-version",
     );
 
 
@@ -3403,6 +3404,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
      * but there is no way to query for that capability */
     if (qemuCaps->version >= 2004000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
+
+    /* Since 2.4.50 ARM virt machine supports gic-version option */
+    if (qemuCaps->version >= 2004050)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;
