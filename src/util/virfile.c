@@ -2381,9 +2381,10 @@ virFileUnlink(const char *path,
                            path, msg);
             VIR_FREE(msg);
             if (WIFEXITED(status))
-                ret = -WEXITSTATUS(status);
+                errno = WEXITSTATUS(status);
             else
-                ret = -EACCES;
+                errno = EACCES;
+            ret = -errno;
         }
 
  parenterror:
