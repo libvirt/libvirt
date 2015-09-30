@@ -7702,19 +7702,6 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         have_cpu = true;
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
-        if (def->gic_version && def->gic_version != 2) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("gic version '%u' is not supported"),
-                           def->gic_version);
-            goto cleanup;
-        }
-
-        /* There's no command line argument currently to turn on/off GIC. It's
-         * done automatically by qemu-system-aarch64. But if this changes, lets
-         * put the code here. */
-    }
-
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
@@ -7929,6 +7916,37 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
             !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap)) {
             virBufferFreeAndReset(&buf);
             return -1;
+        }
+
+        if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->gic_version) {
+                if ((def->os.arch != VIR_ARCH_ARMV7L &&
+                     def->os.arch != VIR_ARCH_AARCH64) ||
+                    (STRNEQ(def->os.machine, "virt") &&
+                     !STRPREFIX(def->os.machine, "virt-"))) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("gic-version option is available "
+                                     "only for ARM virt machine"));
+                    virBufferFreeAndReset(&buf);
+                    return -1;
+                }
+
+                /* 2 is the default, so we don't put it as option for
+                 * backwards compatibility
+                 */
+                if (def->gic_version != 2) {
+                    if (!virQEMUCapsGet(qemuCaps,
+                                        QEMU_CAPS_MACH_VIRT_GIC_VERSION)) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("gic-version option is not available "
+                                         "with this QEMU binary"));
+                        virBufferFreeAndReset(&buf);
+                        return -1;
+                    }
+
+                    virBufferAsprintf(&buf, ",gic-version=%d", def->gic_version);
+                }
+            }
         }
 
         virCommandAddArgBuffer(cmd, &buf);
