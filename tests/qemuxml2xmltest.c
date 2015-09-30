@@ -625,6 +625,9 @@ mymain(void)
     DO_TEST("smbios-multiple-type2");
     DO_TEST("aarch64-aavmf-virtio-mmio");
 
+    DO_TEST("aarch64-gic");
+    DO_TEST("aarch64-gicv3");
+
     DO_TEST("memory-hotplug");
     DO_TEST("memory-hotplug-nonuma");
     DO_TEST("memory-hotplug-dimm");
