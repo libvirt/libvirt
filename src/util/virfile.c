@@ -2364,8 +2364,10 @@ virFileRemove(const char *path,
                 status = EACCES;
         }
 
-        if (status)
-            ret = -status;
+        if (status) {
+            errno = status;
+            ret = -1;
+        }
 
         return ret;
     }
