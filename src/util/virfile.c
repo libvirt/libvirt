@@ -2316,10 +2316,11 @@ virFileRemove(const char *path,
     int ngroups;
 
     /* If not running as root or if a non explicit uid/gid was being used for
-     * the file/volume, then use unlink directly
+     * the file/volume or the explicit uid/gid matches, then use unlink directly
      */
     if ((geteuid() != 0) ||
-        ((uid == (uid_t) -1) && (gid == (gid_t) -1))) {
+        ((uid == (uid_t) -1) && (gid == (gid_t) -1)) ||
+        (uid == geteuid() && gid == getegid())) {
         if (virFileIsDir(path))
             return rmdir(path);
         else
