@@ -1796,6 +1796,15 @@ storageVolCreateXML(virStoragePoolPtr obj,
     if (virStorageVolCreateXMLEnsureACL(obj->conn, pool->def, voldef) < 0)
         goto cleanup;
 
+    /* While not perfect, refresh the list of volumes in the pool and
+     * then check that the incoming name isn't already in the pool.
+     */
+    if (backend->refreshPool) {
+        virStoragePoolObjClearVols(pool);
+        if (backend->refreshPool(obj->conn, pool) < 0)
+            goto cleanup;
+    }
+
     if (virStorageVolDefFindByName(pool, voldef->name)) {
         virReportError(VIR_ERR_STORAGE_VOL_EXIST,
                        _("'%s'"), voldef->name);
