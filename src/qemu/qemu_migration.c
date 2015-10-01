@@ -5743,10 +5743,11 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                 if (v3proto)
                     goto endjob;
             }
-            if (priv->job.completed) {
-                qemuDomainJobInfoUpdateTime(priv->job.completed);
-                qemuDomainJobInfoUpdateDowntime(priv->job.completed);
-            }
+        }
+
+        if (priv->job.completed) {
+            qemuDomainJobInfoUpdateTime(priv->job.completed);
+            qemuDomainJobInfoUpdateDowntime(priv->job.completed);
         }
 
         dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
