@@ -432,6 +432,33 @@ virStorageBackendDiskFindLabel(const char* device)
 
 
 /**
+ * Determine whether the label on the disk is valid or in a known format
+ * for the purpose of rewriting the label during build
+ *
+ * Return: True if it's OK
+ *         False if something's wrong
+ */
+static bool
+virStorageBackendDiskValidLabel(const char *device)
+{
+    bool valid = false;
+    int check;
+
+    check = virStorageBackendDiskFindLabel(device);
+    if (check > 0) {
+        valid = true;
+    } else if (check < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Error checking for disk label"));
+    } else {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Disk label already present"));
+    }
+    return valid;
+}
+
+
+/**
  * Write a new partition table header
  */
 static int
@@ -450,23 +477,11 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                              VIR_STORAGE_POOL_BUILD_NO_OVERWRITE,
                              error);
 
-    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
+    if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE)
         ok_to_mklabel = true;
-    } else {
-        int check;
-
-        check = virStorageBackendDiskFindLabel(
-                    pool->def->source.devices[0].path);
-        if (check > 0) {
-            ok_to_mklabel = true;
-        } else if (check < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Error checking for disk label"));
-        } else {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Disk label already present"));
-        }
-    }
+    else
+        ok_to_mklabel = virStorageBackendDiskValidLabel(
+                                            pool->def->source.devices[0].path);
 
     if (ok_to_mklabel) {
         /* eg parted /dev/sda mklabel --script msdos */
