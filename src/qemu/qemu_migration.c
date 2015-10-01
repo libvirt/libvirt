@@ -5671,21 +5671,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 
         dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
     } else if (retcode == 0) {
+        unsigned long long timeReceived = 0;
+
+        ignore_value(virTimeMillisNow(&timeReceived));
+
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest unexpectedly quit"));
             qemuMigrationErrorReport(driver, vm->def->name);
             goto endjob;
-        }
-
-        if (mig->jobInfo) {
-            qemuDomainJobInfoPtr jobInfo = mig->jobInfo;
-            priv->job.completed = jobInfo;
-            mig->jobInfo = NULL;
-            if (jobInfo->sent && virTimeMillisNow(&jobInfo->received) == 0) {
-                jobInfo->timeDelta = jobInfo->received - jobInfo->sent;
-                jobInfo->timeDeltaSet = true;
-            }
         }
 
         if (qemuMigrationVPAssociatePortProfiles(vm->def) < 0)
@@ -5745,7 +5739,16 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             }
         }
 
-        if (priv->job.completed) {
+        if (mig->jobInfo) {
+            qemuDomainJobInfoPtr jobInfo = mig->jobInfo;
+            priv->job.completed = jobInfo;
+            mig->jobInfo = NULL;
+
+            if (jobInfo->sent && timeReceived) {
+                jobInfo->timeDelta = timeReceived - jobInfo->sent;
+                jobInfo->received = timeReceived;
+                jobInfo->timeDeltaSet = true;
+            }
             qemuDomainJobInfoUpdateTime(priv->job.completed);
             qemuDomainJobInfoUpdateDowntime(priv->job.completed);
         }
