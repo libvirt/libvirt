@@ -5120,12 +5120,6 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     }
 
     if (pagesize || hugepage) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support hugepage memory backing"));
-            goto cleanup;
-        }
-
         if (pagesize) {
             /* Now lets see, if the huge page we want to use is even mounted
              * and ready to use */
@@ -5204,29 +5198,32 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             goto cleanup;
     }
 
-    if (!hugepage && !pagesize) {
-
-        if ((userNodeset || nodeSpecified || force) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
+    /* If none of the following is requested... */
+    if (!pagesize && !userNodeset && !memAccess && !nodeSpecified && !force) {
+        /* report back that using the new backend is not necessary
+         * to achieve the desired configuration */
+        ret = 1;
+    } else {
+        /* otherwise check the required capability */
+        if (STREQ(*backendType, "memory-backend-file") &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this qemu doesn't support the "
+                             "memory-backend-file object"));
+            goto cleanup;
+        } else if (STREQ(*backendType, "memory-backend-ram") &&
+                   !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
             goto cleanup;
         }
 
-        /* report back that using the new backend is not necessary to achieve
-         * the desired configuration */
-        if (!userNodeset && !nodeSpecified) {
-            *backendProps = props;
-            props = NULL;
-            ret = 1;
-            goto cleanup;
-        }
+        ret = 0;
     }
 
     *backendProps = props;
     props = NULL;
-    ret = 0;
 
  cleanup:
     virJSONValueFree(props);
