@@ -435,24 +435,40 @@ virStorageBackendDiskFindLabel(const char* device)
  * Determine whether the label on the disk is valid or in a known format
  * for the purpose of rewriting the label during build
  *
+ * When 'writelabel' is true, if we find a valid disk label on the device,
+ * then we shouldn't be attempting to write as the volume may contain
+ * data. Force the usage of the overwrite flag to the build command in
+ * order to be certain. When the disk label is unrecognized, then it
+ * should be safe to write.
+ *
  * Return: True if it's OK
  *         False if something's wrong
  */
 static bool
-virStorageBackendDiskValidLabel(const char *device)
+virStorageBackendDiskValidLabel(const char *device,
+                                bool writelabel)
 {
     bool valid = false;
     int check;
 
     check = virStorageBackendDiskFindLabel(device);
     if (check > 0) {
-        valid = true;
+        if (writelabel)
+            valid = true;
+        else
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Unrecognized disk label found, requires build"));
     } else if (check < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Error checking for disk label"));
+                       _("Error checking for disk label, failed to get "
+                         "disk partition information"));
     } else {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Disk label already present"));
+        if (writelabel)
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Valid disk label already present, "
+                             "requires --overwrite"));
+        else
+            valid = true;
     }
     return valid;
 }
@@ -481,7 +497,8 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         ok_to_mklabel = true;
     else
         ok_to_mklabel = virStorageBackendDiskValidLabel(
-                                            pool->def->source.devices[0].path);
+                                            pool->def->source.devices[0].path,
+                                            true);
 
     if (ok_to_mklabel) {
         /* eg parted /dev/sda mklabel --script msdos */
