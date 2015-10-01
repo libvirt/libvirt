@@ -396,7 +396,9 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Check for a valid disk label (partition table) on device
  *
  * return: 0 - valid disk label found
- *        >0 - no or unrecognized disk label
+ *         1 - no or unrecognized disk label
+ *         2 - did not find the Partition Table type
+ *         3 - Partition Table type unknown
  *        <0 - error finding the disk label
  */
 static int
@@ -408,6 +410,7 @@ virStorageBackendDiskFindLabel(const char* device)
     virCommandPtr cmd = virCommandNew(PARTED);
     char *output = NULL;
     char *error = NULL;
+    char *start, *end;
     int ret = -1;
 
     virCommandAddArgSet(cmd, args);
@@ -422,14 +425,39 @@ virStorageBackendDiskFindLabel(const char* device)
             (error && strstr(error, "unrecognised disk label"))) {
             ret = 1;
         }
+        goto cleanup;
     }
 
+    /* Search for "Partition Table:" in the output. If not present,
+     * then we cannot validate the partition table type.
+     */
+    if (!(start = strstr(output, "Partition Table: ")) ||
+        !(end = strstr(start, "\n"))) {
+        VIR_DEBUG("Unable to find tag in output: %s", output);
+        ret = 2;
+        goto cleanup;
+    }
+    start += strlen("Partition Table: ");
+    *end = '\0';
+
+    /* on disk it's "msdos", but we document/use "dos" so deal with it here */
+    if (STREQ(start, "msdos"))
+        start += 2;
+
+    /* Make sure we know about this type */
+    if (virStoragePoolFormatDiskTypeFromString(start) < 0) {
+        ret = 3;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
     virCommandFree(cmd);
     VIR_FREE(output);
     VIR_FREE(error);
     return ret;
 }
-
 
 /**
  * Determine whether the label on the disk is valid or in a known format
@@ -452,12 +480,19 @@ virStorageBackendDiskValidLabel(const char *device,
     int check;
 
     check = virStorageBackendDiskFindLabel(device);
-    if (check > 0) {
+    if (check == 1) {
         if (writelabel)
             valid = true;
         else
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Unrecognized disk label found, requires build"));
+    } else if (check == 2) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to determine Partition Type, "
+                         "requires build --overwrite"));
+    } else if (check == 3) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unknown Partition Type, requires build --overwrite"));
     } else if (check < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Error checking for disk label, failed to get "

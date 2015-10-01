@@ -834,6 +834,7 @@ virStoragePoolDefParseFile;
 virStoragePoolDefParseNode;
 virStoragePoolDefParseSourceString;
 virStoragePoolDefParseString;
+virStoragePoolFormatDiskTypeFromString;
 virStoragePoolFormatDiskTypeToString;
 virStoragePoolFormatFileSystemNetTypeToString;
 virStoragePoolFormatFileSystemTypeToString;
