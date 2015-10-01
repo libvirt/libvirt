@@ -461,13 +461,18 @@ virStorageBackendDiskFindLabel(const char* device)
 
 /**
  * Determine whether the label on the disk is valid or in a known format
- * for the purpose of rewriting the label during build
+ * for the purpose of rewriting the label during build or being able to
+ * start a pool on a device.
  *
  * When 'writelabel' is true, if we find a valid disk label on the device,
  * then we shouldn't be attempting to write as the volume may contain
  * data. Force the usage of the overwrite flag to the build command in
  * order to be certain. When the disk label is unrecognized, then it
  * should be safe to write.
+ *
+ * When 'writelabel' is false, only if we find a valid disk label on the
+ * device should we allow the start since for this path we won't be
+ * rewriting the label.
  *
  * Return: True if it's OK
  *         False if something's wrong
@@ -506,6 +511,27 @@ virStorageBackendDiskValidLabel(const char *device,
             valid = true;
     }
     return valid;
+}
+
+
+static int
+virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
+                               virStoragePoolObjPtr pool)
+{
+    virFileWaitForDevices();
+
+    if (!virFileExists(pool->def->source.devices[0].path)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("device path '%s' doesn't exist"),
+                       pool->def->source.devices[0].path);
+        return -1;
+    }
+
+    if (!virStorageBackendDiskValidLabel(pool->def->source.devices[0].path,
+                                         false))
+        return -1;
+
+    return 0;
 }
 
 
@@ -940,6 +966,7 @@ virStorageBackendDiskVolWipe(virConnectPtr conn,
 virStorageBackend virStorageBackendDisk = {
     .type = VIR_STORAGE_POOL_DISK,
 
+    .startPool = virStorageBackendDiskStartPool,
     .buildPool = virStorageBackendDiskBuildPool,
     .refreshPool = virStorageBackendDiskRefreshPool,
 
