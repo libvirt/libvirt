@@ -8148,6 +8148,10 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         }
     }
 
+    if (!needBackend &&
+        qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)
+        goto cleanup;
+
     for (i = 0; i < ncells; i++) {
         VIR_FREE(cpumask);
         if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
