@@ -5249,17 +5249,17 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     const char *backendType;
     int ret = -1;
     int rc;
+    unsigned long long memsize = virDomainNumaGetNodeMemorySize(def->numa,
+                                                                cell);
 
     *backendStr = NULL;
 
     if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
         goto cleanup;
 
-    if ((rc = qemuBuildMemoryBackendStr(virDomainNumaGetNodeMemorySize(def->numa, cell),
-                                        0, cell,
-                                        NULL, auto_nodeset,
-                                        def, qemuCaps, cfg,
-                                        &backendType, &props, false)) < 0)
+    if ((rc = qemuBuildMemoryBackendStr(memsize, 0, cell, NULL, auto_nodeset,
+                                        def, qemuCaps, cfg, &backendType,
+                                        &props, false)) < 0)
         goto cleanup;
 
     if (!(*backendStr = qemuBuildObjectCommandlineFromJSON(backendType,
