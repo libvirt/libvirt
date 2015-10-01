@@ -156,12 +156,27 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT |
                                            VIR_STORAGE_VOL_OPEN_NOERROR) == -1)
             return -1;
-        vol->target.allocation = vol->target.capacity =
+        vol->target.allocation = 0;
+        vol->target.capacity =
             (vol->source.extents[0].end - vol->source.extents[0].start);
     } else {
         if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
             return -1;
+    }
+
+    /* Find the extended partition and increase the allocation value */
+    if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
+        size_t i;
+
+        for (i = 0; i < pool->volumes.count; i++) {
+            if (pool->volumes.objs[i]->source.partType ==
+                VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+                pool->volumes.objs[i]->target.allocation +=
+                    vol->target.allocation;
+                break;
+            }
+        }
     }
 
     if (STRNEQ(groups[2], "metadata"))
@@ -841,17 +856,14 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
             goto cleanup;
     }
 
-    /* If this is not a logical partition, then either we've removed an
-     * extended partition or a primary partion - refresh the pool which
-     * includes resetting the [n]freeExtents data so a subsequent allocation
-     * might be able to use what was deleted.  A logical partition is part
-     * of an extended partition and handled differently
+    /* Refreshing the pool is the easiest option as LOGICAL and EXTENDED
+     * partition allocation/capacity management is handled within
+     * virStorageBackendDiskMakeDataVol and trying to redo that logic
+     * here is pointless
      */
-    if (vol->source.partType != VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
-        virStoragePoolObjClearVols(pool);
-        if (virStorageBackendDiskRefreshPool(conn, pool) < 0)
-            goto cleanup;
-    }
+    virStoragePoolObjClearVols(pool);
+    if (virStorageBackendDiskRefreshPool(conn, pool) < 0)
+        goto cleanup;
 
     rc = 0;
  cleanup:
