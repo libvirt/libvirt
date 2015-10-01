@@ -441,5 +441,19 @@
       </dd>
     </dl>
 
+    <h2><a name="other">Other</a></h2>
+
+    <dl>
+      <dt><a href="http://cuckoosandbox.org/">Cuckoo Sandbox</a></dt>
+      <dd>
+        Cuckoo Sandbox is a malware analysis system.  You can throw
+        any suspicious file at it and in a matter of seconds Cuckoo
+        will provide you back some detailed results outlining what
+        such file did when executed inside an isolated environment.
+        And libvirt is one of the backends that can be used for the
+        isolated environment.
+      </dd>
+    </dl>
+
   </body>
 </html>
