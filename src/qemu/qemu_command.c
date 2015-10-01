@@ -5052,6 +5052,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     virBitmapPtr nodemask = NULL;
     int ret = -1;
     virJSONValuePtr props = NULL;
+    bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
 
     *backendProps = NULL;
     *backendType = NULL;
@@ -5204,7 +5205,6 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     }
 
     if (!hugepage && !pagesize) {
-        bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
 
         if ((userNodeset || nodeSpecified || force) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
