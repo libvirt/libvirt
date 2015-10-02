@@ -3425,16 +3425,15 @@ virDomainMigrateDirect(virDomainPtr domain,
                      NULLSTR(xmlin), flags, NULLSTR(dname), NULLSTR(uri),
                      bandwidth);
 
-    if (!domain->conn->driver->domainMigratePerform) {
-        virReportUnsupportedError();
-        return -1;
-    }
-
     /* Perform the migration.  The driver isn't supposed to return
      * until the migration is complete.
      */
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
+        if (!domain->conn->driver->domainMigratePerform3) {
+            virReportUnsupportedError();
+            return -1;
+        }
         VIR_DEBUG("Using migration protocol 3");
         /* dconn URI not relevant in direct migration, since no
          * target libvirtd is involved */
@@ -3450,6 +3449,10 @@ virDomainMigrateDirect(virDomainPtr domain,
                                                            dname,
                                                            bandwidth);
     } else {
+        if (!domain->conn->driver->domainMigratePerform) {
+            virReportUnsupportedError();
+            return -1;
+        }
         VIR_DEBUG("Using migration protocol 2");
         if (xmlin) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
