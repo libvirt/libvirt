@@ -3319,27 +3319,35 @@ virDomainMigrateCheckNotLocal(const char *dconnuri)
  * In normal migration, the libvirt client co-ordinates communication
  * between the 2 libvirtd instances on source & dest hosts.
  *
- * In this peer-2-peer migration alternative, the libvirt client
- * only talks to the source libvirtd instance. The source libvirtd
- * then opens its own connection to the destination and co-ordinates
- * migration itself.
+ * This function encapsulates 2 alternatives to the above case.
+ *
+ * 1. peer-2-peer migration, the libvirt client only talks to the source
+ * libvirtd instance. The source libvirtd then opens its own
+ * connection to the destination and co-ordinates migration itself.
+ *
+ * 2. direct migration, where there is no requirement for a libvirtd instance
+ * on the dest host. Eg, XenD can talk direct to XenD, so libvirtd on dest
+ * does not need to be involved at all, or even running.
  */
 static int
-virDomainMigratePeer2PeerPlain(virDomainPtr domain,
-                               const char *xmlin,
-                               unsigned int flags,
-                               const char *dname,
-                               const char *dconnuri,
-                               const char *miguri,
-                               unsigned long long bandwidth)
+virDomainMigrateUnmanaged(virDomainPtr domain,
+                          const char *xmlin,
+                          unsigned int flags,
+                          const char *dname,
+                          const char *dconnuri,
+                          const char *miguri,
+                          unsigned long long bandwidth)
 {
+    const char *uri = NULL;
+
     VIR_DOMAIN_DEBUG(domain,
                      "dconnuri=%s, xmlin=%s, dname=%s, migrui=%s, "
                      "bandwidth=%llu, flags=%x",
                      dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(miguri),
                      bandwidth, flags);
 
-    if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
+    if ((flags & VIR_MIGRATE_PEER2PEER) &&
+        virDomainMigrateCheckNotLocal(dconnuri) < 0)
         return -1;
 
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
@@ -3364,13 +3372,18 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
                              "migration"));
             return -1;
         }
-        if (miguri) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to override peer2peer migration URI"));
-            return -1;
+        if (flags & VIR_MIGRATE_PEER2PEER) {
+            if (miguri) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to override peer2peer migration URI"));
+                return -1;
+            }
+            uri = dconnuri;
+        } else {
+            uri = miguri;
         }
         return domain->conn->driver->domainMigratePerform
-                (domain, NULL, 0, dconnuri, flags, dname, bandwidth);
+                (domain, NULL, 0, uri, flags, dname, bandwidth);
     }
 }
 
@@ -3398,75 +3411,6 @@ virDomainMigratePeer2PeerParams(virDomainPtr domain,
     return domain->conn->driver->domainMigratePerform3Params
             (domain, dconnuri, params, nparams,
              NULL, 0, NULL, NULL, flags);
-}
-
-
-/*
- * In normal migration, the libvirt client co-ordinates communication
- * between the 2 libvirtd instances on source & dest hosts.
- *
- * Some hypervisors support an alternative, direct migration where
- * there is no requirement for a libvirtd instance on the dest host.
- * In this case
- *
- * eg, XenD can talk direct to XenD, so libvirtd on dest does not
- * need to be involved at all, or even running
- */
-static int
-virDomainMigrateDirect(virDomainPtr domain,
-                       const char *xmlin,
-                       unsigned long flags,
-                       const char *dname,
-                       const char *uri,
-                       unsigned long bandwidth)
-{
-    VIR_DOMAIN_DEBUG(domain,
-                     "xmlin=%s, flags=%lx, dname=%s, uri=%s, bandwidth=%lu",
-                     NULLSTR(xmlin), flags, NULLSTR(dname), NULLSTR(uri),
-                     bandwidth);
-
-    /* Perform the migration.  The driver isn't supposed to return
-     * until the migration is complete.
-     */
-    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
-        if (!domain->conn->driver->domainMigratePerform3) {
-            virReportUnsupportedError();
-            return -1;
-        }
-        VIR_DEBUG("Using migration protocol 3");
-        /* dconn URI not relevant in direct migration, since no
-         * target libvirtd is involved */
-        return domain->conn->driver->domainMigratePerform3(domain,
-                                                           xmlin,
-                                                           NULL, /* cookiein */
-                                                           0,    /* cookieinlen */
-                                                           NULL, /* cookieoutlen */
-                                                           NULL, /* cookieoutlen */
-                                                           NULL, /* dconnuri */
-                                                           uri,
-                                                           flags,
-                                                           dname,
-                                                           bandwidth);
-    } else {
-        if (!domain->conn->driver->domainMigratePerform) {
-            virReportUnsupportedError();
-            return -1;
-        }
-        VIR_DEBUG("Using migration protocol 2");
-        if (xmlin) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Unable to change target guest XML during migration"));
-            return -1;
-        }
-        return domain->conn->driver->domainMigratePerform(domain,
-                                                          NULL, /* cookie */
-                                                          0,    /* cookielen */
-                                                          uri,
-                                                          flags,
-                                                          dname,
-                                                          bandwidth);
-    }
 }
 
 
@@ -3607,8 +3551,8 @@ virDomainMigrate(virDomainPtr domain,
             }
 
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2PeerPlain(domain, NULL, flags, dname,
-                                               uri ? uri : dstURI, NULL, bandwidth) < 0) {
+            if (virDomainMigrateUnmanaged(domain, NULL, flags, dname,
+                                          uri ? uri : dstURI, NULL, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -3828,8 +3772,8 @@ virDomainMigrate2(virDomainPtr domain,
                 return NULL;
 
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags, dname,
-                                               dstURI, uri, bandwidth) < 0) {
+            if (virDomainMigrateUnmanaged(domain, dxml, flags, dname,
+                                          dstURI, uri, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -4209,8 +4153,8 @@ virDomainMigrateToURI(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2PeerPlain(domain, NULL, flags,
-                                               dname, duri, NULL, bandwidth) < 0)
+            if (virDomainMigrateUnmanaged(domain, NULL, flags,
+                                          dname, duri, NULL, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4221,8 +4165,8 @@ virDomainMigrateToURI(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
             VIR_DEBUG("Using direct migration");
-            if (virDomainMigrateDirect(domain, NULL, flags,
-                                       dname, duri, bandwidth) < 0)
+            if (virDomainMigrateUnmanaged(domain, NULL, flags,
+                                          dname, NULL, duri, bandwidth) < 0)
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
@@ -4355,8 +4299,8 @@ virDomainMigrateToURI2(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags,
-                                               dname, dconnuri, miguri, bandwidth) < 0)
+            if (virDomainMigrateUnmanaged(domain, dxml, flags,
+                                          dname, dconnuri, miguri, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4367,8 +4311,8 @@ virDomainMigrateToURI2(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
             VIR_DEBUG("Using direct migration");
-            if (virDomainMigrateDirect(domain, dxml, flags,
-                                       dname, miguri, bandwidth) < 0)
+            if (virDomainMigrateUnmanaged(domain, dxml, flags,
+                                          dname, NULL, miguri, bandwidth) < 0)
                 goto error;
         } else {
             /* Cannot do a migration with only the perform step */
@@ -4486,8 +4430,8 @@ virDomainMigrateToURI3(virDomainPtr domain,
                 goto error;
         } else if (compat) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags, dname,
-                                               dconnuri, uri, bandwidth) < 0)
+            if (virDomainMigrateUnmanaged(domain, dxml, flags, dname,
+                                          dconnuri, uri, bandwidth) < 0)
                 goto error;
         } else {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -4514,8 +4458,8 @@ virDomainMigrateToURI3(virDomainPtr domain,
         }
 
         VIR_DEBUG("Using direct migration");
-        if (virDomainMigrateDirect(domain, dxml, flags,
-                                   dname, uri, bandwidth) < 0)
+        if (virDomainMigrateUnmanaged(domain, dxml, flags,
+                                      dname, NULL, uri, bandwidth) < 0)
             goto error;
     }
 
