@@ -3322,27 +3322,29 @@ virDomainMigrateUnmanagedProto2(virDomainPtr domain,
                                 int nparams,
                                 unsigned int flags)
 {
+    /* uri parameter is added for direct case */
+    const char *compatParams[] = { VIR_MIGRATE_PARAM_DEST_NAME,
+                                   VIR_MIGRATE_PARAM_BANDWIDTH,
+                                   VIR_MIGRATE_PARAM_URI };
     const char *uri = NULL;
     const char *miguri = NULL;
     const char *dname = NULL;
-    const char *xmlin = NULL;
     unsigned long long bandwidth = 0;
+
+    if (!virTypedParamsCheck(params, nparams, compatParams,
+                             ARRAY_CARDINALITY(compatParams))) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Some parameters are not supported by migration "
+                         "protocol 2"));
+        return -1;
+    }
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_XML, &xmlin) < 0 ||
         virTypedParamsGetULLong(params, nparams,
                                 VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
-        return -1;
-    }
-
-    if (xmlin) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Unable to change target guest XML during "
-                         "migration"));
         return -1;
     }
 
@@ -3369,10 +3371,22 @@ virDomainMigrateUnmanagedProto3(virDomainPtr domain,
                                 int nparams,
                                 unsigned int flags)
 {
+    const char *compatParams[] = { VIR_MIGRATE_PARAM_URI,
+                                   VIR_MIGRATE_PARAM_DEST_NAME,
+                                   VIR_MIGRATE_PARAM_DEST_XML,
+                                   VIR_MIGRATE_PARAM_BANDWIDTH };
     const char *miguri = NULL;
     const char *dname = NULL;
     const char *xmlin = NULL;
     unsigned long long bandwidth = 0;
+
+    if (!virTypedParamsCheck(params, nparams, compatParams,
+                             ARRAY_CARDINALITY(compatParams))) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Some parameters are not supported by migration "
+                         "protocol 3"));
+        return -1;
+    }
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
@@ -4468,12 +4482,6 @@ virDomainMigrateToURI3(virDomainPtr domain,
                        unsigned int nparams,
                        unsigned int flags)
 {
-    bool compat;
-    const char *compatParams[] = { VIR_MIGRATE_PARAM_URI,
-                                   VIR_MIGRATE_PARAM_DEST_NAME,
-                                   VIR_MIGRATE_PARAM_DEST_XML,
-                                   VIR_MIGRATE_PARAM_BANDWIDTH };
-
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparms=%u flags=%x",
                      NULLSTR(dconnuri), params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
@@ -4487,9 +4495,6 @@ virDomainMigrateToURI3(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
                              VIR_MIGRATE_NON_SHARED_INC,
                              error);
-
-    compat = virTypedParamsCheck(params, nparams, compatParams,
-                                 ARRAY_CARDINALITY(compatParams));
 
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
@@ -4506,17 +4511,11 @@ virDomainMigrateToURI3(virDomainPtr domain,
             if (virDomainMigratePeer2PeerParams(domain, dconnuri, params,
                                                 nparams, flags) < 0)
                 goto error;
-        } else if (compat) {
+        } else {
             VIR_DEBUG("Using peer2peer migration");
             if (virDomainMigrateUnmanagedParams(domain, dconnuri, params,
                                                 nparams, flags) < 0)
                 goto error;
-        } else {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Peer-to-peer migration with extensible "
-                             "parameters is not supported but extended "
-                             "parameters were passed"));
-            goto error;
         }
     } else {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
@@ -4525,13 +4524,6 @@ virDomainMigrateToURI3(virDomainPtr domain,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("Direct migration is not supported by the"
                              " connection driver"));
-            goto error;
-        }
-
-        if (!compat) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Direct migration does not support extensible "
-                             "parameters"));
             goto error;
         }
 
