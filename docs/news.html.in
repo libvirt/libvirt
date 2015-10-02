@@ -9,6 +9,168 @@
     <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
 and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
 
+   <h3>v1.2.20: Oct 02 2015</h3>
+    <ul>
+      <li>Security:<br/>
+      storage: Handle failure from refreshVol (John Ferlan),<br/>
+      storage: Correct the 'mode' check (John Ferlan),<br/>
+      virfile: Introduce virFileUnlink (John Ferlan)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      docs: Add yet another libvirt based app (Michal Privoznik),<br/>
+      conf: Document all VIR_DOMAIN_DEF_PARSE_* flags (Peter Krempa),<br/>
+      Minor typo fixes in documentation (Christian Loehle),<br/>
+      util: Add space before comment end marker (Andrea Bolognani),<br/>
+      docs: Update devguide.html to point to the new Python dev guide (Daniel P. Berrange),<br/>
+      docs: Remove last use of double semicolon in Makefile (Martin Kletzander)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      tools: Link libvirt.la and readline to libvirt_shell.a (Michal Privoznik),<br/>
+      util: Add win32 version of virFileUnlink (Martin Kletzander)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      qemu: Fix dynamic_ownership qemu.conf setting (Cole Robinson),<br/>
+      virsh: Preserve startupPolicy in change-media command (Michal Privoznik),<br/>
+      Create a shallow copy for volume building only if supported (Ján Tomko),<br/>
+      Update pool allocation with new values on volume creation (Ján Tomko),<br/>
+      conf: Fix virtType check (John Ferlan),<br/>
+      qemu: Make virtType of type virDomainVirtType (Shivangi Dhir),<br/>
+      Use daemon log facility for journald (Guido Günther),<br/>
+      domain: Fix migratable XML with graphics/@listen (Jiri Denemark),<br/>
+      qemu: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      qemu: Clean up ret in qemuDomainSaveMemory and qemuDomainSaveInternal (John Ferlan),<br/>
+      qemu: Resolve Coverity CHECKED_RETURN (John Ferlan),<br/>
+      virsh: Resolve Coverity DEADCODE (John Ferlan),<br/>
+      tests: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      tests: Resolve Coverity RESOURCE_LEAK (John Ferlan),<br/>
+      virDomainRestore: Don't keep transient domains around (Michal Privoznik),<br/>
+      virDomainCreateXML: Make domain definition transient (Michal Privoznik),<br/>
+      virDomainCreateXML: Don't remove persistent domains on error (Michal Privoznik),<br/>
+      virsh: Fix job status indicator for 0 length block jobs (Peter Krempa),<br/>
+      qemu: Refresh memory size only on fresh starts (Peter Krempa),<br/>
+      client rpc: Process pending data on error (Jiri Denemark),<br/>
+      conf: escape string for disk driver name attribute (Luyao Huang),<br/>
+      Makefile: fix build fail when make rpm (Luyao Huang),<br/>
+      tests: Avoid use of virQEMUDriverCreateXMLConf(NULL) (Michal Privoznik),<br/>
+      qemuTestDriverInit: init the driver lock too (Michal Privoznik),<br/>
+      Revert "qemu: Fix integer/boolean logic in qemuSetUnprivSGIO" (John Ferlan),<br/>
+      qemu: ppc64: Align memory sizes to 256MiB blocks (Peter Krempa),<br/>
+      qemu: command: Align memory sizes only on fresh starts (Peter Krempa),<br/>
+      test driver: don't unlock pool after freeing it (David Mansfield),<br/>
+      qemuDomainChangeDiskLive: Allow startupPolicy change (Michal Privoznik),<br/>
+      qemu: Fix some corner cases in persistent migration (Jiri Denemark),<br/>
+      qemu: Don't report false errors in migration protocol v2 (Jiri Denemark),<br/>
+      qemu: Kill domain when migration finish fails (Jiri Denemark),<br/>
+      libxl: fix AttachDeviceConfig on hostdev type (Chunyan Liu),<br/>
+      qemu: Fix using guest architecture as lookup key (Andrea Bolognani),<br/>
+      libxl: fix compiler error introduced by commit ba25c214 (Jim Fehlig),<br/>
+      Ignore virtio-mmio disks in qemuAssignDevicePCISlots() (Pavel Fedin),<br/>
+      security_selinux: Take @privileged into account (Michal Privoznik),<br/>
+      qemu: Allow others to browse /var/lib/libvirt/qemu (Martin Kletzander),<br/>
+      qemu: hotplug: Properly clean up drive backend if frontend hotplug fails (Peter Krempa),<br/>
+      xen: fix race in refresh of config cache (Daniel P. Berrange),<br/>
+      libxl: don't end job for ephemeal domain on start failure (Ian Campbell),<br/>
+      qemu: Report error if per-VM directory cannot be created (Martin Kletzander),<br/>
+      Revert "docs: Drop unused rule for internals/%.html.tmp target" (Martin Kletzander),<br/>
+      conf: fix crash when parsing a unordered NUMA &lt;cell/&gt; (Luyao Huang),<br/>
+      admin: Resolve leaked reference to private data (Erik Skultety),<br/>
+      util: Avoid Coverity FORWARD_NULL (John Ferlan),<br/>
+      virfile: Avoid Coverity IDENTICAL_BRANCHES error (John Ferlan),<br/>
+      lxc: Avoid Coverity SIZEOF_MISMATCH (John Ferlan),<br/>
+      qemu: Check virGetLastError return value for migration finish failure (John Ferlan),<br/>
+      qemu: Need to check for machine.os when using ADDRESS_TYPE_CCW (John Ferlan),<br/>
+      libxl: don't overwrite error from virNetSocketNewConnectTCP() (Jim Fehlig),<br/>
+      util: don't use netlink to save/set mac for macvtap+passthrough+802.1Qbh (Laine Stump),<br/>
+      remoteClientCloseFunc: Don't mangle connection object refcount (Michal Privoznik),<br/>
+      vshInit: Don't leak @histsize_env (Michal Privoznik)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      conf: Add new VIR_DOMAIN_VIRT_NONE enum (Shivangi Dhir),<br/>
+      vsh: create a noinstall libvirt_shell library (Erik Skultety),<br/>
+      qemu: Move vm-&gt;persistent check into qemuDomainRemoveInactive (Michal Privoznik),<br/>
+      Remove redundand assignment (Martin Kletzander),<br/>
+      qemuDomainDeviceDefPostParse: Drop useless checks (Michal Privoznik),<br/>
+      qemu: Align memory module sizes to 2MiB (Peter Krempa),<br/>
+      virsh: Notify users about disconnects (Jiri Denemark),<br/>
+      client rpc: Report proper error for keepalive disconnections (Jiri Denemark),<br/>
+      Use VIR_DIV_UP macro where possible (Martin Kletzander),<br/>
+      spec: Fix some warnings with latest rpmbuild (Cole Robinson),<br/>
+      test: Add test to validate that memory sizes don't get updated on migration (Peter Krempa),<br/>
+      conf: Don't always recalculate initial memory size from NUMA size totals (Peter Krempa),<br/>
+      conf: Pre-calculate initial memory size instead of always calculating it (Peter Krempa),<br/>
+      conf: Rename max_balloon to total_memory (Peter Krempa),<br/>
+      conf: Split memory related post parse stuff into separate function (Peter Krempa),<br/>
+      conf: Add XML parser flag that will allow us to do incompatible updates (Peter Krempa),<br/>
+      conf: Drop VIR_DOMAIN_DEF_PARSE_CLOCK_ADJUST flag (Peter Krempa),<br/>
+      qemu: Make memory alignment helper more universal (Peter Krempa),<br/>
+      conf: Add helper to determine whether memory hotplug is enabled for a vm (Peter Krempa),<br/>
+      libxl: vz: Use accessor instead of direct access for max_balloon (Peter Krempa),<br/>
+      Removed unneeded check (Pavel Fedin),<br/>
+      tests: use mockup cache (Pavel Fedin),<br/>
+      Implement infrastracture for mocking up QEMU capabilities cache (Pavel Fedin),<br/>
+      tests: split out common qemu driver initialization (Pavel Fedin),<br/>
+      virfile: Use virProcessWait in virDirCreate (John Ferlan),<br/>
+      virfile: Use virProcessWait in virFileUnlink (John Ferlan),<br/>
+      virfile: Use virProcessWait in virFileOpenForked (John Ferlan),<br/>
+      virfile: Rename virFileUnlink to virFileRemove (John Ferlan),<br/>
+      vz: remove error logging from prlsdkUUIDParse (Maxim Nestratov),<br/>
+      qemuDomainDiskChangeSupported: Fill in missing checks (Michal Privoznik),<br/>
+      qemu: s/virDomainDiskDiffersSourceOnly/qemuDomainDiskChangeSupported/ (Michal Privoznik),<br/>
+      qemuDomainChangeDiskLive: rework slightly (Michal Privoznik),<br/>
+      qemu_domain: Introduce qemuDomainDiskSourceDiffers (Michal Privoznik),<br/>
+      qemu: s/qemuDomainChangeDiskMediaLive/qemuDomainChangeDiskLive/ (Michal Privoznik),<br/>
+      qemuDomainUpdateDeviceConfig: Allow startupPolicy update, yet again (Michal Privoznik),<br/>
+      qemu: Queue events in migration Finish phase ASAP (Jiri Denemark),<br/>
+      qemuDomainEventQueue: Check if event is non-NULL (Jiri Denemark),<br/>
+      qemu: Don't fail migration on save status failure (Jiri Denemark),<br/>
+      qemu: Simplify qemuMigrationFinish (Jiri Denemark),<br/>
+      qemu: Split qemuMigrationFinish (Jiri Denemark),<br/>
+      vmx: Expose datacenter path in domain XML (Matthias Bolte),<br/>
+      virfile: Check for existence of dir in virFileDeleteTree (John Ferlan),<br/>
+      virsh: Teach attach-interface to --print-xml (Michal Privoznik),<br/>
+      libxl: open libxl log stream with libvirtd log_level (Jim Fehlig),<br/>
+      virSecurityManager: Track if running as privileged (Michal Privoznik),<br/>
+      security_selinux: Replace SELinuxSCSICallbackData with proper struct (Michal Privoznik),<br/>
+      virSecuritySELinuxSetSecurityAllLabel: drop useless virFileIsSharedFSType (Michal Privoznik),<br/>
+      qemu: Do not allow others into per-VM subdirectories (Martin Kletzander),<br/>
+      qemu: command: Report stderr from qemu-bridge-helper (Cole Robinson),<br/>
+      tests: Don't use testutils in mock libraries (Martin Kletzander),<br/>
+      qemu: Try several network devices when looking for a default (Andrea Bolognani),<br/>
+      qemu: Introduce QEMU_CAPS_DEVICE_VIRTIO_NET (Andrea Bolognani),<br/>
+      qemu: Introduce QEMU_CAPS_DEVICE_E1000 (Andrea Bolognani),<br/>
+      qemu: Introduce QEMU_CAPS_DEVICE_RTL8139 (Andrea Bolognani),<br/>
+      qemu: migration: Relax enforcement of memory hotplug support (Peter Krempa),<br/>
+      vmx: Add handling for CDROM devices with SCSI passthru (Matthias Bolte),<br/>
+      vmx: The virVMXParseDisk deviceType can be NULL, add some missing checks (Matthias Bolte),<br/>
+      cpu: Introduce IvyBridge CPU model (Jiri Denemark),<br/>
+      virsh: Slightly rework cmdDomblklist (Michal Privoznik),<br/>
+      .gitignore: Ignore the correct rename example binary (Michal Privoznik),<br/>
+      examples: Add missing build data for 'rename' (Martin Kletzander),<br/>
+      conf: Remove need for a couple of sa_asserts (John Ferlan),<br/>
+      Change name of the domain upon successful rename (Martin Kletzander),<br/>
+      Add example that renames domain there and back (Martin Kletzander),<br/>
+      examples: Add example polkit ACL rules (Jiri Denemark),<br/>
+      qemu: Introduce qemuDomainMachineIsS390CCW (John Ferlan),<br/>
+      vsh: Make vshInitDebug static (Erik Skultety),<br/>
+      virsh: Do not make interactive mode default (Erik Skultety),<br/>
+      vsh: Introduce vshInitReload (Erik Skultety),<br/>
+      vsh: adjust vshInit signature and remove redundant error label (Erik Skultety),<br/>
+      domain-conf: escape string for socket attribute (Pavel Hrdina),<br/>
+      util: make virNetDev(Replace|Restore)MacAddress public functions (Laine Stump),<br/>
+      virfile: Add error for root squash change mode failure (John Ferlan),<br/>
+      qemu: add udp interface support (Jonathan Toppins),<br/>
+      Post release version bump to 1.2.20 (Ján Tomko)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      maint: Remove control characters from LGPL license file (Andrea Bolognani),<br/>
+      vmx: Some whitespace cleanup (Matthias Bolte)<br/>
+      </li>
+    </ul>
   <h3>1.2.19: Sep 02 2015</h3>
     <ul>
       <li>Features:<br/>
