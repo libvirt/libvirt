@@ -524,6 +524,8 @@ virNetSSHAuthenticateAgent(virNetSSHSessionPtr sess,
     int ret;
     char *errmsg;
 
+    VIR_DEBUG("sess=%p", sess);
+
     if (libssh2_agent_connect(sess->agent) < 0) {
         virReportError(VIR_ERR_SSH, "%s",
                        _("Failed to connect to ssh agent"));
@@ -594,6 +596,8 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
     char *errmsg;
     int ret;
     char *tmp;
+
+    VIR_DEBUG("sess=%p", sess);
 
     /* try open the key with no password */
     if ((ret = libssh2_userauth_publickey_fromfile(sess->session,
@@ -697,6 +701,8 @@ virNetSSHAuthenticatePassword(virNetSSHSessionPtr sess,
     int ret = -1;
     int rc;
 
+    VIR_DEBUG("sess=%p", sess);
+
     if (priv->password) {
         /* tunelled password authentication */
         if ((ret = libssh2_userauth_password(sess->session,
@@ -770,6 +776,8 @@ virNetSSHAuthenticateKeyboardInteractive(virNetSSHSessionPtr sess,
     char *errmsg;
     int ret;
 
+    VIR_DEBUG("sess=%p", sess);
+
     if (!sess->cred || !sess->cred->cb) {
         virReportError(VIR_ERR_SSH, "%s",
                        _("Can't perform keyboard-interactive authentication: "
@@ -836,6 +844,8 @@ virNetSSHAuthenticate(virNetSSHSessionPtr sess)
     char *errmsg;
     size_t i;
     int ret;
+
+    VIR_DEBUG("sess=%p", sess);
 
     if (!sess->nauths) {
         virReportError(VIR_ERR_SSH, "%s",
