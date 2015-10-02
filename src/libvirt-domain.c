@@ -3293,6 +3293,28 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
 }
 
 
+static int ATTRIBUTE_NONNULL(1)
+virDomainMigrateCheckNotLocal(const char *dconnuri)
+{
+    virURIPtr tempuri = NULL;
+    int ret = -1;
+
+    if (!(tempuri = virURIParse(dconnuri)))
+        goto cleanup;
+    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
+        virReportInvalidArg(dconnuri, "%s",
+                            _("Attempt to migrate guest to the same host %s"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virURIFree(tempuri);
+    return ret;
+}
+
+
 /*
  * In normal migration, the libvirt client co-ordinates communication
  * between the 2 libvirtd instances on source & dest hosts.
@@ -3311,8 +3333,6 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
                                const char *uri,
                                unsigned long long bandwidth)
 {
-    virURIPtr tempuri = NULL;
-
     VIR_DOMAIN_DEBUG(domain,
                      "dconnuri=%s, xmlin=%s, dname=%s, uri=%s, bandwidth=%llu "
                      "flags=%x",
@@ -3325,15 +3345,8 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
         return -1;
     }
 
-    if (!(tempuri = virURIParse(dconnuri)))
+    if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
         return -1;
-    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
-        virReportInvalidArg(dconnuri, "%s",
-                            _("unable to parse server from dconnuri"));
-        virURIFree(tempuri);
-        return -1;
-    }
-    virURIFree(tempuri);
 
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
@@ -3367,8 +3380,6 @@ virDomainMigratePeer2PeerParams(virDomainPtr domain,
                                 int nparams,
                                 unsigned int flags)
 {
-    virURIPtr tempuri = NULL;
-
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
                      dconnuri, params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
@@ -3378,15 +3389,8 @@ virDomainMigratePeer2PeerParams(virDomainPtr domain,
         return -1;
     }
 
-    if (!(tempuri = virURIParse(dconnuri)))
+    if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
         return -1;
-    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
-        virReportInvalidArg(dconnuri, "%s",
-                            _("unable to parse server from dconnuri"));
-        virURIFree(tempuri);
-        return -1;
-    }
-    virURIFree(tempuri);
 
     VIR_DEBUG("Using migration protocol 3 with extensible parameters");
     return domain->conn->driver->domainMigratePerform3Params
