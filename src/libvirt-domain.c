@@ -3434,8 +3434,19 @@ virDomainMigrateUnmanagedParams(virDomainPtr domain,
         virDomainMigrateCheckNotLocal(dconnuri) < 0)
         return -1;
 
-    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
+    if ((flags & VIR_MIGRATE_PEER2PEER) &&
+        VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_PARAMS)) {
+        VIR_DEBUG("Using migration protocol 3 with extensible parameters");
+        if (!domain->conn->driver->domainMigratePerform3Params) {
+            virReportUnsupportedError();
+            return -1;
+        }
+        return domain->conn->driver->domainMigratePerform3Params
+                (domain, dconnuri, params, nparams,
+                 NULL, 0, NULL, NULL, flags);
+    } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                        VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
         if (!domain->conn->driver->domainMigratePerform3) {
             virReportUnsupportedError();
@@ -3452,32 +3463,6 @@ virDomainMigrateUnmanagedParams(virDomainPtr domain,
         return virDomainMigrateUnmanagedProto2(domain, dconnuri,
                                                params, nparams, flags);
     }
-}
-
-
-static int
-virDomainMigratePeer2PeerParams(virDomainPtr domain,
-                                const char *dconnuri,
-                                virTypedParameterPtr params,
-                                int nparams,
-                                unsigned int flags)
-{
-    VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
-                     dconnuri, params, nparams, flags);
-    VIR_TYPED_PARAMS_DEBUG(params, nparams);
-
-    if (!domain->conn->driver->domainMigratePerform3Params) {
-        virReportUnsupportedError();
-        return -1;
-    }
-
-    if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
-        return -1;
-
-    VIR_DEBUG("Using migration protocol 3 with extensible parameters");
-    return domain->conn->driver->domainMigratePerform3Params
-            (domain, dconnuri, params, nparams,
-             NULL, 0, NULL, NULL, flags);
 }
 
 
@@ -4505,18 +4490,9 @@ virDomainMigrateToURI3(virDomainPtr domain,
             goto error;
         }
 
-        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_PARAMS)) {
-            VIR_DEBUG("Using peer2peer migration with extensible parameters");
-            if (virDomainMigratePeer2PeerParams(domain, dconnuri, params,
-                                                nparams, flags) < 0)
-                goto error;
-        } else {
-            VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigrateUnmanagedParams(domain, dconnuri, params,
-                                                nparams, flags) < 0)
-                goto error;
-        }
+        VIR_DEBUG("Using peer2peer migration");
+        if (virDomainMigrateUnmanagedParams(domain, dconnuri, params, nparams, flags) < 0)
+            goto error;
     } else {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
