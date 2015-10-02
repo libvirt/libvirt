@@ -3301,37 +3301,26 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
  * only talks to the source libvirtd instance. The source libvirtd
  * then opens its own connection to the destination and co-ordinates
  * migration itself.
- *
- * If useParams is true, params and nparams contain migration parameters and
- * we know it's safe to call the API which supports extensible parameters.
- * Otherwise, we have to use xmlin, dname, uri, and bandwidth and pass them
- * to the old-style APIs.
  */
 static int
-virDomainMigratePeer2PeerFull(virDomainPtr domain,
-                              const char *dconnuri,
-                              const char *xmlin,
-                              const char *dname,
-                              const char *uri,
-                              unsigned long long bandwidth,
-                              virTypedParameterPtr params,
-                              int nparams,
-                              bool useParams,
-                              unsigned int flags)
+virDomainMigratePeer2PeerPlain(virDomainPtr domain,
+                               const char *xmlin,
+                               unsigned int flags,
+                               const char *dname,
+                               const char *dconnuri,
+                               const char *uri,
+                               unsigned long long bandwidth)
 {
     virURIPtr tempuri = NULL;
 
     VIR_DOMAIN_DEBUG(domain,
                      "dconnuri=%s, xmlin=%s, dname=%s, uri=%s, bandwidth=%llu "
-                     "params=%p, nparams=%d, useParams=%d, flags=%x",
+                     "flags=%x",
                      dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
-                     bandwidth, params, nparams, useParams, flags);
-    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+                     bandwidth, flags);
 
-    if ((useParams && !domain->conn->driver->domainMigratePerform3Params) ||
-        (!useParams &&
-         !domain->conn->driver->domainMigratePerform &&
-         !domain->conn->driver->domainMigratePerform3)) {
+    if (!domain->conn->driver->domainMigratePerform &&
+        !domain->conn->driver->domainMigratePerform3) {
         virReportUnsupportedError();
         return -1;
     }
@@ -3346,13 +3335,8 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
     }
     virURIFree(tempuri);
 
-    if (useParams) {
-        VIR_DEBUG("Using migration protocol 3 with extensible parameters");
-        return domain->conn->driver->domainMigratePerform3Params
-                (domain, dconnuri, params, nparams,
-                 NULL, 0, NULL, NULL, flags);
-    } else if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                        VIR_DRV_FEATURE_MIGRATION_V3)) {
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
         return domain->conn->driver->domainMigratePerform3
                 (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
@@ -3377,28 +3361,37 @@ virDomainMigratePeer2PeerFull(virDomainPtr domain,
 
 
 static int
-virDomainMigratePeer2Peer(virDomainPtr domain,
-                          const char *xmlin,
-                          unsigned long flags,
-                          const char *dname,
-                          const char *dconnuri,
-                          const char *uri,
-                          unsigned long bandwidth)
-{
-    return virDomainMigratePeer2PeerFull(domain, dconnuri, xmlin, dname, uri,
-                                         bandwidth, NULL, 0, false, flags);
-}
-
-
-static int
 virDomainMigratePeer2PeerParams(virDomainPtr domain,
                                 const char *dconnuri,
                                 virTypedParameterPtr params,
                                 int nparams,
                                 unsigned int flags)
 {
-    return virDomainMigratePeer2PeerFull(domain, dconnuri, NULL, NULL, NULL, 0,
-                                         params, nparams, true, flags);
+    virURIPtr tempuri = NULL;
+
+    VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
+                     dconnuri, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    if (!domain->conn->driver->domainMigratePerform3Params) {
+        virReportUnsupportedError();
+        return -1;
+    }
+
+    if (!(tempuri = virURIParse(dconnuri)))
+        return -1;
+    if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
+        virReportInvalidArg(dconnuri, "%s",
+                            _("unable to parse server from dconnuri"));
+        virURIFree(tempuri);
+        return -1;
+    }
+    virURIFree(tempuri);
+
+    VIR_DEBUG("Using migration protocol 3 with extensible parameters");
+    return domain->conn->driver->domainMigratePerform3Params
+            (domain, dconnuri, params, nparams,
+             NULL, 0, NULL, NULL, flags);
 }
 
 
@@ -3605,8 +3598,8 @@ virDomainMigrate(virDomainPtr domain,
             }
 
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, NULL, flags, dname,
-                                          uri ? uri : dstURI, NULL, bandwidth) < 0) {
+            if (virDomainMigratePeer2PeerPlain(domain, NULL, flags, dname,
+                                               uri ? uri : dstURI, NULL, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -3826,8 +3819,8 @@ virDomainMigrate2(virDomainPtr domain,
                 return NULL;
 
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, dxml, flags, dname,
-                                          dstURI, uri, bandwidth) < 0) {
+            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags, dname,
+                                               dstURI, uri, bandwidth) < 0) {
                 VIR_FREE(dstURI);
                 goto error;
             }
@@ -4207,8 +4200,8 @@ virDomainMigrateToURI(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, NULL, flags,
-                                          dname, duri, NULL, bandwidth) < 0)
+            if (virDomainMigratePeer2PeerPlain(domain, NULL, flags,
+                                               dname, duri, NULL, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4353,8 +4346,8 @@ virDomainMigrateToURI2(virDomainPtr domain,
         if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, dxml, flags,
-                                          dname, dconnuri, miguri, bandwidth) < 0)
+            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags,
+                                               dname, dconnuri, miguri, bandwidth) < 0)
                 goto error;
         } else {
             /* No peer to peer migration supported */
@@ -4484,8 +4477,8 @@ virDomainMigrateToURI3(virDomainPtr domain,
                 goto error;
         } else if (compat) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigratePeer2Peer(domain, dxml, flags, dname,
-                                          dconnuri, uri, bandwidth) < 0)
+            if (virDomainMigratePeer2PeerPlain(domain, dxml, flags, dname,
+                                               dconnuri, uri, bandwidth) < 0)
                 goto error;
         } else {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
