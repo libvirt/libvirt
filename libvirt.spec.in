@@ -2038,10 +2038,9 @@ exit 0
         %endif
     %endif # ! %{with_driver_modules}
 
-    %if %{with_network}
-
 %doc examples/polkit/*.rules
 
+    %if %{with_network}
 %files daemon-config-network
 %defattr(-, root, root)
 %dir %{_datadir}/libvirt/networks/
