@@ -3330,21 +3330,32 @@ virDomainMigrateCheckNotLocal(const char *dconnuri)
  * does not need to be involved at all, or even running.
  */
 static int
-virDomainMigrateUnmanaged(virDomainPtr domain,
-                          const char *xmlin,
-                          unsigned int flags,
-                          const char *dname,
-                          const char *dconnuri,
-                          const char *miguri,
-                          unsigned long long bandwidth)
+virDomainMigrateUnmanagedParams(virDomainPtr domain,
+                                const char *dconnuri,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags)
 {
     const char *uri = NULL;
+    const char *miguri = NULL;
+    const char *dname = NULL;
+    const char *xmlin = NULL;
+    unsigned long long bandwidth = 0;
 
-    VIR_DOMAIN_DEBUG(domain,
-                     "dconnuri=%s, xmlin=%s, dname=%s, migrui=%s, "
-                     "bandwidth=%llu, flags=%x",
-                     dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(miguri),
-                     bandwidth, flags);
+    VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
+                     dconnuri, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &xmlin) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        return -1;
+    }
 
     if ((flags & VIR_MIGRATE_PEER2PEER) &&
         virDomainMigrateCheckNotLocal(dconnuri) < 0)
@@ -3411,6 +3422,46 @@ virDomainMigratePeer2PeerParams(virDomainPtr domain,
     return domain->conn->driver->domainMigratePerform3Params
             (domain, dconnuri, params, nparams,
              NULL, 0, NULL, NULL, flags);
+}
+
+
+static int
+virDomainMigrateUnmanaged(virDomainPtr domain,
+                          const char *xmlin,
+                          unsigned int flags,
+                          const char *dname,
+                          const char *dconnuri,
+                          const char *miguri,
+                          unsigned long long bandwidth)
+{
+    int ret = -1;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+
+    if (miguri &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_URI, miguri) < 0)
+        goto cleanup;
+    if (dname &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, dname) < 0)
+        goto cleanup;
+    if (xmlin &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, xmlin) < 0)
+        goto cleanup;
+    if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, bandwidth) < 0)
+        goto cleanup;
+
+    ret = virDomainMigrateUnmanagedParams(domain, dconnuri, params,
+                                          nparams, flags);
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+
+    return ret;
 }
 
 
@@ -4380,10 +4431,6 @@ virDomainMigrateToURI3(virDomainPtr domain,
                                    VIR_MIGRATE_PARAM_DEST_NAME,
                                    VIR_MIGRATE_PARAM_DEST_XML,
                                    VIR_MIGRATE_PARAM_BANDWIDTH };
-    const char *uri = NULL;
-    const char *dname = NULL;
-    const char *dxml = NULL;
-    unsigned long long bandwidth = 0;
 
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparms=%u flags=%x",
                      NULLSTR(dconnuri), params, nparams, flags);
@@ -4402,17 +4449,6 @@ virDomainMigrateToURI3(virDomainPtr domain,
     compat = virTypedParamsCheck(params, nparams, compatParams,
                                  ARRAY_CARDINALITY(compatParams));
 
-    if (virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_URI, &uri) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_XML, &dxml) < 0 ||
-        virTypedParamsGetULLong(params, nparams,
-                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
-        goto error;
-    }
-
     if (flags & VIR_MIGRATE_PEER2PEER) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_P2P)) {
@@ -4430,8 +4466,8 @@ virDomainMigrateToURI3(virDomainPtr domain,
                 goto error;
         } else if (compat) {
             VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigrateUnmanaged(domain, dxml, flags, dname,
-                                          dconnuri, uri, bandwidth) < 0)
+            if (virDomainMigrateUnmanagedParams(domain, dconnuri, params,
+                                                nparams, flags) < 0)
                 goto error;
         } else {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -4458,8 +4494,8 @@ virDomainMigrateToURI3(virDomainPtr domain,
         }
 
         VIR_DEBUG("Using direct migration");
-        if (virDomainMigrateUnmanaged(domain, dxml, flags,
-                                      dname, NULL, uri, bandwidth) < 0)
+        if (virDomainMigrateUnmanagedParams(domain, NULL, params,
+                                            nparams, flags) < 0)
             goto error;
     }
 
