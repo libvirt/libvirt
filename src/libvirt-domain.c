@@ -4139,6 +4139,45 @@ virDomainMigrate3(virDomainPtr domain,
 }
 
 
+static
+int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
+                                         unsigned int flags)
+{
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_MIGRATE_NON_SHARED_DISK,
+                            VIR_MIGRATE_NON_SHARED_INC,
+                            -1);
+
+    if (flags & VIR_MIGRATE_OFFLINE &&
+        !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                  VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("offline migration is not supported by "
+                         "the source host"));
+        return -1;
+    }
+
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("p2p migration is not supported by "
+                             "the source host"));
+            return -1;
+        }
+    } else {
+        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("direct migration is not supported by "
+                             "the source host"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * virDomainMigrateToURI:
  * @domain: a domain object
@@ -4217,6 +4256,9 @@ virDomainMigrateToURI(virDomainPtr domain,
                       const char *dname,
                       unsigned long bandwidth)
 {
+    const char *dconnuri = NULL;
+    const char *miguri = NULL;
+
     VIR_DOMAIN_DEBUG(domain, "duri=%p, flags=%lx, dname=%s, bandwidth=%lu",
                      NULLSTR(duri), flags, NULLSTR(dname), bandwidth);
 
@@ -4225,49 +4267,19 @@ virDomainMigrateToURI(virDomainPtr domain,
     /* First checkout the source */
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
-
     virCheckNonNullArgGoto(duri, error);
 
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
-                             VIR_MIGRATE_NON_SHARED_INC,
-                             error);
-
-    if (flags & VIR_MIGRATE_OFFLINE &&
-        !VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                  VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("offline migration is not supported by "
-                         "the source host"));
+    if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
-    }
 
-    if (flags & VIR_MIGRATE_PEER2PEER) {
-        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigrateUnmanaged(domain, NULL, flags,
-                                          dname, duri, NULL, bandwidth) < 0)
-                goto error;
-        } else {
-            /* No peer to peer migration supported */
-            virReportUnsupportedError();
-            goto error;
-        }
-    } else {
-        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
-            VIR_DEBUG("Using direct migration");
-            if (virDomainMigrateUnmanaged(domain, NULL, flags,
-                                          dname, NULL, duri, bandwidth) < 0)
-                goto error;
-        } else {
-            /* Cannot do a migration with only the perform step */
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("direct migration is not supported by the"
-                             " connection driver"));
-            goto error;
-        }
-    }
+    if (flags & VIR_MIGRATE_PEER2PEER)
+        dconnuri = duri;
+    else
+        miguri = duri;
+
+    if (virDomainMigrateUnmanaged(domain, NULL, flags,
+                                  dname, dconnuri, miguri, bandwidth) < 0)
+        goto error;
 
     return 0;
 
@@ -4383,37 +4395,15 @@ virDomainMigrateToURI2(virDomainPtr domain,
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
-                             VIR_MIGRATE_NON_SHARED_INC,
-                             error);
+    if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
+        goto error;
 
-    if (flags & VIR_MIGRATE_PEER2PEER) {
-        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            VIR_DEBUG("Using peer2peer migration");
-            if (virDomainMigrateUnmanaged(domain, dxml, flags,
-                                          dname, dconnuri, miguri, bandwidth) < 0)
-                goto error;
-        } else {
-            /* No peer to peer migration supported */
-            virReportUnsupportedError();
-            goto error;
-        }
-    } else {
-        if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                     VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
-            VIR_DEBUG("Using direct migration");
-            if (virDomainMigrateUnmanaged(domain, dxml, flags,
-                                          dname, NULL, miguri, bandwidth) < 0)
-                goto error;
-        } else {
-            /* Cannot do a migration with only the perform step */
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("direct migration is not supported by the"
-                             " connection driver"));
-            goto error;
-        }
-    }
+    if (!(flags & VIR_MIGRATE_PEER2PEER))
+        dconnuri = NULL;
+
+    if (virDomainMigrateUnmanaged(domain, NULL, flags,
+                                  dname, dconnuri, miguri, bandwidth) < 0)
+        goto error;
 
     return 0;
 
@@ -4477,37 +4467,15 @@ virDomainMigrateToURI3(virDomainPtr domain,
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
-    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
-                             VIR_MIGRATE_NON_SHARED_INC,
-                             error);
+    if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
+        goto error;
 
-    if (flags & VIR_MIGRATE_PEER2PEER) {
-        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                      VIR_DRV_FEATURE_MIGRATION_P2P)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Peer-to-peer migration is not supported by "
-                             "the connection driver"));
-            goto error;
-        }
+    if (!(flags & VIR_MIGRATE_PEER2PEER))
+        dconnuri = NULL;
 
-        VIR_DEBUG("Using peer2peer migration");
-        if (virDomainMigrateUnmanagedParams(domain, dconnuri, params, nparams, flags) < 0)
-            goto error;
-    } else {
-        if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
-                                      VIR_DRV_FEATURE_MIGRATION_DIRECT)) {
-            /* Cannot do a migration with only the perform step */
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Direct migration is not supported by the"
-                             " connection driver"));
-            goto error;
-        }
-
-        VIR_DEBUG("Using direct migration");
-        if (virDomainMigrateUnmanagedParams(domain, NULL, params,
-                                            nparams, flags) < 0)
-            goto error;
-    }
+    if (virDomainMigrateUnmanagedParams(domain, dconnuri,
+                                        params, nparams, flags) < -1)
+        goto error;
 
     return 0;
 
