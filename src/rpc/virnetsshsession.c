@@ -344,16 +344,14 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
             memset(&askKey, 0, sizeof(virConnectCredential));
 
             for (i = 0; i < sess->cred->ncredtype; i++) {
-                if (sess->cred->credtype[i] == VIR_CRED_ECHOPROMPT) {
-                    i = -1;
+                if (sess->cred->credtype[i] == VIR_CRED_ECHOPROMPT)
                     break;
-                }
             }
 
-            if (i > 0) {
+            if (i == sess->cred->ncredtype) {
                 virReportError(VIR_ERR_SSH, "%s",
-                               _("no suitable method to retrieve "
-                                 "authentication credentials"));
+                               _("no suitable callback for host key "
+                                 "verification"));
                 return -1;
             }
 
