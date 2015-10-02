@@ -3339,23 +3339,25 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
                      dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
                      bandwidth, flags);
 
-    if (!domain->conn->driver->domainMigratePerform &&
-        !domain->conn->driver->domainMigratePerform3) {
-        virReportUnsupportedError();
-        return -1;
-    }
-
     if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
         return -1;
 
     if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                  VIR_DRV_FEATURE_MIGRATION_V3)) {
         VIR_DEBUG("Using migration protocol 3");
+        if (!domain->conn->driver->domainMigratePerform3) {
+            virReportUnsupportedError();
+            return -1;
+        }
         return domain->conn->driver->domainMigratePerform3
                 (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
                  uri, flags, dname, bandwidth);
     } else {
         VIR_DEBUG("Using migration protocol 2");
+        if (!domain->conn->driver->domainMigratePerform) {
+            virReportUnsupportedError();
+            return -1;
+        }
         if (xmlin) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                            _("Unable to change target guest XML during "
