@@ -4398,7 +4398,9 @@ virDomainMigrateToURI2(virDomainPtr domain,
     if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
 
-    if (!(flags & VIR_MIGRATE_PEER2PEER))
+    if (flags & VIR_MIGRATE_PEER2PEER)
+        virCheckNonNullArgGoto(dconnuri, error);
+    else
         dconnuri = NULL;
 
     if (virDomainMigrateUnmanaged(domain, NULL, flags,
@@ -4470,7 +4472,9 @@ virDomainMigrateToURI3(virDomainPtr domain,
     if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
 
-    if (!(flags & VIR_MIGRATE_PEER2PEER))
+    if (flags & VIR_MIGRATE_PEER2PEER)
+        virCheckNonNullArgGoto(dconnuri, error);
+    else
         dconnuri = NULL;
 
     if (virDomainMigrateUnmanagedParams(domain, dconnuri,
