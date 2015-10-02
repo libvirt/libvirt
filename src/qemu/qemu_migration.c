@@ -5725,6 +5725,27 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             }
         }
 
+        /* We need to wait for QEMU to process all data sent by the source
+         * before starting guest CPUs.
+         */
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
+            int rv;
+            VIR_DEBUG("Waiting for migration to complete");
+            while ((rv = qemuMigrationCompleted(driver, vm,
+                                                QEMU_ASYNC_JOB_MIGRATION_IN,
+                                                NULL, 0)) != 1) {
+                if (rv < 0 || virDomainObjWait(vm) < 0) {
+                    /* There's not much we can do for v2 protocol since the
+                     * original domain on the source host is already gone.
+                     */
+                    if (v3proto)
+                        goto endjob;
+                    else
+                        break;
+                }
+            }
+        }
+
         if (!(flags & VIR_MIGRATE_PAUSED)) {
             /* run 'cont' on the destination, which allows migration on qemu
              * >= 0.10.6 to work properly.  This isn't strictly necessary on
