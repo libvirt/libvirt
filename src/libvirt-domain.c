@@ -3330,13 +3330,13 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
                                unsigned int flags,
                                const char *dname,
                                const char *dconnuri,
-                               const char *uri,
+                               const char *miguri,
                                unsigned long long bandwidth)
 {
     VIR_DOMAIN_DEBUG(domain,
-                     "dconnuri=%s, xmlin=%s, dname=%s, uri=%s, bandwidth=%llu "
-                     "flags=%x",
-                     dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(uri),
+                     "dconnuri=%s, xmlin=%s, dname=%s, migrui=%s, "
+                     "bandwidth=%llu, flags=%x",
+                     dconnuri, NULLSTR(xmlin), NULLSTR(dname), NULLSTR(miguri),
                      bandwidth, flags);
 
     if (virDomainMigrateCheckNotLocal(dconnuri) < 0)
@@ -3351,7 +3351,7 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
         }
         return domain->conn->driver->domainMigratePerform3
                 (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
-                 uri, flags, dname, bandwidth);
+                 miguri, flags, dname, bandwidth);
     } else {
         VIR_DEBUG("Using migration protocol 2");
         if (!domain->conn->driver->domainMigratePerform) {
@@ -3364,7 +3364,7 @@ virDomainMigratePeer2PeerPlain(virDomainPtr domain,
                              "migration"));
             return -1;
         }
-        if (uri) {
+        if (miguri) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to override peer2peer migration URI"));
             return -1;
