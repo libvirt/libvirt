@@ -3315,6 +3315,82 @@ virDomainMigrateCheckNotLocal(const char *dconnuri)
 }
 
 
+static int
+virDomainMigrateUnmanagedProto2(virDomainPtr domain,
+                                const char *dconnuri,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags)
+{
+    const char *uri = NULL;
+    const char *miguri = NULL;
+    const char *dname = NULL;
+    const char *xmlin = NULL;
+    unsigned long long bandwidth = 0;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &xmlin) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        return -1;
+    }
+
+    if (xmlin) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Unable to change target guest XML during "
+                         "migration"));
+        return -1;
+    }
+
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (miguri) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unable to override peer2peer migration URI"));
+            return -1;
+        }
+        uri = dconnuri;
+    } else {
+        uri = miguri;
+    }
+
+    return domain->conn->driver->domainMigratePerform
+            (domain, NULL, 0, uri, flags, dname, bandwidth);
+}
+
+
+static int
+virDomainMigrateUnmanagedProto3(virDomainPtr domain,
+                                const char *dconnuri,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags)
+{
+    const char *miguri = NULL;
+    const char *dname = NULL;
+    const char *xmlin = NULL;
+    unsigned long long bandwidth = 0;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, &xmlin) < 0 ||
+        virTypedParamsGetULLong(params, nparams,
+                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
+        return -1;
+    }
+
+    return domain->conn->driver->domainMigratePerform3
+            (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
+             miguri, flags, dname, bandwidth);
+}
+
+
 /*
  * In normal migration, the libvirt client co-ordinates communication
  * between the 2 libvirtd instances on source & dest hosts.
@@ -3336,26 +3412,9 @@ virDomainMigrateUnmanagedParams(virDomainPtr domain,
                                 int nparams,
                                 unsigned int flags)
 {
-    const char *uri = NULL;
-    const char *miguri = NULL;
-    const char *dname = NULL;
-    const char *xmlin = NULL;
-    unsigned long long bandwidth = 0;
-
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
                      dconnuri, params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
-
-    if (virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0 ||
-        virTypedParamsGetString(params, nparams,
-                                VIR_MIGRATE_PARAM_DEST_XML, &xmlin) < 0 ||
-        virTypedParamsGetULLong(params, nparams,
-                                VIR_MIGRATE_PARAM_BANDWIDTH, &bandwidth) < 0) {
-        return -1;
-    }
 
     if ((flags & VIR_MIGRATE_PEER2PEER) &&
         virDomainMigrateCheckNotLocal(dconnuri) < 0)
@@ -3368,33 +3427,16 @@ virDomainMigrateUnmanagedParams(virDomainPtr domain,
             virReportUnsupportedError();
             return -1;
         }
-        return domain->conn->driver->domainMigratePerform3
-                (domain, xmlin, NULL, 0, NULL, NULL, dconnuri,
-                 miguri, flags, dname, bandwidth);
+        return virDomainMigrateUnmanagedProto3(domain, dconnuri,
+                                               params, nparams, flags);
     } else {
         VIR_DEBUG("Using migration protocol 2");
         if (!domain->conn->driver->domainMigratePerform) {
             virReportUnsupportedError();
             return -1;
         }
-        if (xmlin) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Unable to change target guest XML during "
-                             "migration"));
-            return -1;
-        }
-        if (flags & VIR_MIGRATE_PEER2PEER) {
-            if (miguri) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to override peer2peer migration URI"));
-                return -1;
-            }
-            uri = dconnuri;
-        } else {
-            uri = miguri;
-        }
-        return domain->conn->driver->domainMigratePerform
-                (domain, NULL, 0, uri, flags, dname, bandwidth);
+        return virDomainMigrateUnmanagedProto2(domain, dconnuri,
+                                               params, nparams, flags);
     }
 }
 
