@@ -24,6 +24,9 @@
   </devices>
   <!-- intentional mis-indentation -->
   <metadata>
+      <herp2erp xmlns:foobar="http://foo.bar3/"/>
+      <herp2erp xmlns:foobar="http://foo.bar3/"/>
+      <herp2erp xmlns:foobar="http://foo.bar3/"/>
       <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
       <app3:foo xmlns:app3="http://foo.org/">fooish</app3:foo>
       <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
