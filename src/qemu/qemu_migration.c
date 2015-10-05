@@ -2618,6 +2618,11 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 }
 
 
+enum qemuMigrationCompletedFlags {
+    QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR = (1 << 0),
+    QEMU_MIGRATION_COMPLETED_CHECK_STORAGE  = (1 << 1),
+};
+
 /**
  * Returns 1 if migration completed successfully,
  *         0 if the domain is still being migrated,
@@ -2629,8 +2634,7 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        qemuDomainAsyncJob asyncJob,
                        virConnectPtr dconn,
-                       bool abort_on_error,
-                       bool storage)
+                       unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
@@ -2639,10 +2643,11 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
     if (qemuMigrationCheckJobStatus(driver, vm, asyncJob) < 0)
         goto error;
 
-    if (storage && qemuMigrationDriveMirrorReady(driver, vm) < 0)
+    if (flags & QEMU_MIGRATION_COMPLETED_CHECK_STORAGE &&
+        qemuMigrationDriveMirrorReady(driver, vm) < 0)
         goto error;
 
-    if (abort_on_error &&
+    if (flags & QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR &&
         virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
         pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
@@ -2689,11 +2694,17 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+    unsigned int flags = 0;
     int rv;
 
+    if (abort_on_error)
+        flags |= QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR;
+    if (storage)
+        flags |= QEMU_MIGRATION_COMPLETED_CHECK_STORAGE;
+
     jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
-    while ((rv = qemuMigrationCompleted(driver, vm, asyncJob, dconn,
-                                        abort_on_error, storage)) != 1) {
+    while ((rv = qemuMigrationCompleted(driver, vm, asyncJob,
+                                        dconn, flags)) != 1) {
         if (rv < 0)
             return rv;
 
