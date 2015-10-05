@@ -61,6 +61,9 @@ int virAdmGetVersion(unsigned long long *libVer);
 
 char *virAdmConnectGetURI(virAdmConnectPtr conn);
 
+int virAdmConnectGetLibVersion(virAdmConnectPtr conn,
+                               unsigned long long *libVer);
+
 /**
  * virAdmConnectCloseFunc:
  * @conn: virAdmConnect connection

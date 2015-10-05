@@ -197,6 +197,67 @@ cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
+/*
+ * "version" command
+ */
+
+static const vshCmdInfo info_version[] = {
+    {.name = "help",
+     .data = N_("show version")
+    },
+    {.name = "desc",
+     .data = N_("Display the system and also the daemon version information.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    unsigned long libVersion;
+    unsigned long long includeVersion;
+    unsigned long long daemonVersion;
+    int ret;
+    unsigned int major;
+    unsigned int minor;
+    unsigned int rel;
+    vshAdmControlPtr priv = ctl->privData;
+
+    includeVersion = LIBVIR_VERSION_NUMBER;
+    major = includeVersion / 1000000;
+    includeVersion %= 1000000;
+    minor = includeVersion / 1000;
+    rel = includeVersion % 1000;
+    vshPrint(ctl, _("Compiled against library: libvirt %d.%d.%d\n"),
+             major, minor, rel);
+
+    ret = virGetVersion(&libVersion, NULL, NULL);
+    if (ret < 0) {
+        vshError(ctl, "%s", _("failed to get the library version"));
+        return false;
+    }
+    major = libVersion / 1000000;
+    libVersion %= 1000000;
+    minor = libVersion / 1000;
+    rel = libVersion % 1000;
+    vshPrint(ctl, _("Using library: libvirt %d.%d.%d\n"),
+             major, minor, rel);
+
+    ret = virAdmConnectGetLibVersion(priv->conn, &daemonVersion);
+    if (ret < 0) {
+        vshError(ctl, "%s", _("failed to get the daemon version"));
+    } else {
+        major = daemonVersion / 1000000;
+        daemonVersion %= 1000000;
+        minor = daemonVersion / 1000;
+        rel = daemonVersion % 1000;
+        vshPrint(ctl, _("Running against daemon: %d.%d.%d\n"),
+                 major, minor, rel);
+    }
+
+    return true;
+}
+
 
 /* ---------------
  * Command Connect
@@ -514,6 +575,12 @@ static const vshCmdDef vshAdmCmds[] = {
      .handler = cmdURI,
      .opts = NULL,
      .info = info_uri,
+     .flags = 0
+    },
+    {.name = "version",
+     .handler = cmdVersion,
+     .opts = NULL,
+     .info = info_version,
      .flags = 0
     },
     {.name = "connect",

@@ -50,7 +50,7 @@ my $protocol = shift or die "missing protocol argument";
 my @autogen;
 
 my $connect_ptr = $structprefix eq "admin" ? "virAdmConnectPtr" : "virConnectPtr";
-my $prefix = ($structprefix eq "admin") ? "adm" : "vir";
+my $prefix = ($structprefix eq "admin") ? "admin" : "vir";
 
 sub fixup_name {
     my $name = shift;
@@ -1401,8 +1401,13 @@ elsif ($mode eq "client") {
                     my $ret_name = $1;
 
                     if ($call->{ProcName} =~ m/Get(Lib)?Version/) {
-                        push(@args_list, "unsigned long *$ret_name");
-                        push(@ret_list, "if ($ret_name) HYPER_TO_ULONG(*$ret_name, ret.$ret_name);");
+                        if ($structprefix eq "admin") {
+                            push(@args_list, "unsigned long long *$ret_name");
+                            push(@ret_list, "*$ret_name = ret.$ret_name;");
+                        } else {
+                            push(@args_list, "unsigned long *$ret_name");
+                            push(@ret_list, "if ($ret_name) HYPER_TO_ULONG(*$ret_name, ret.$ret_name);");
+                        }
                         push(@ret_list, "rv = 0;");
                         $single_ret_var = "int rv = -1";
                         $single_ret_type = "int";

@@ -114,4 +114,13 @@ adminDispatchConnectClose(virNetServerPtr server ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+adminConnectGetLibVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                          unsigned long long *libVer)
+{
+    if (libVer)
+        *libVer = LIBVIR_VERSION_NUMBER;
+    return 0;
+}
+
 #include "admin_dispatch.h"

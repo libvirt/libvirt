@@ -6,6 +6,7 @@
 #
 
 # admin/admin_protocol.x
+xdr_admin_connect_get_lib_version_ret;
 xdr_admin_connect_open_args;
 
 # Let emacs know we want case-insensitive sorting

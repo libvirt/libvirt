@@ -523,3 +523,34 @@ int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectGetLibVersion:
+ * @conn: pointer to an active admin connection
+ * @libVer: stores the current remote libvirt version number
+ *
+ * Retrieves the remote side libvirt version used by the daemon. Format
+ * returned in @libVer is of a following pattern:
+ * major * 1,000,000 + minor * 1,000 + release.
+ *
+ * Returns 0 on success, -1 on failure and @libVer follows this format:
+ */
+int virAdmConnectGetLibVersion(virAdmConnectPtr conn,
+                               unsigned long long *libVer)
+{
+    VIR_DEBUG("conn=%p, libVir=%p", conn, libVer);
+
+    virResetLastError();
+
+    virCheckAdmConnectReturn(conn, -1);
+    virCheckNonNullArgReturn(libVer, -1);
+
+    if (remoteAdminConnectGetLibVersion(conn, libVer) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

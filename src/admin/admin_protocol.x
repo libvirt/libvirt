@@ -41,6 +41,10 @@ struct admin_connect_open_args {
     unsigned int flags;
 };
 
+struct admin_connect_get_lib_version_ret {
+    unsigned hyper libVer;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -71,5 +75,10 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_CONNECT_CLOSE = 2
+    ADMIN_PROC_CONNECT_CLOSE = 2,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3
 };
