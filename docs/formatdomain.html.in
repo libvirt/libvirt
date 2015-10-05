@@ -1464,7 +1464,7 @@
     &lt;kvm&gt;
       &lt;hidden state='on'/&gt;
     &lt;/kvm&gt;
-    &lt;pvspinlock/&gt;
+    &lt;pvspinlock state='on'/&gt;
     &lt;gic version='2'/&gt;
 
   &lt;/features&gt;
