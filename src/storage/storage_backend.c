@@ -345,9 +345,8 @@ virStorageBackendCreateBlockFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
     remain = vol->target.capacity;
 
     if (inputvol) {
-        int res = virStorageBackendCopyToFD(vol, inputvol,
-                                            fd, &remain, false, reflink_copy);
-        if (res < 0)
+        if (virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
+                                      false, reflink_copy) < 0)
             goto cleanup;
     }
 
@@ -444,9 +443,8 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         /* allow zero blocks to be skipped if we've requested sparse
          * allocation (allocation < capacity) or we have already
          * been able to allocate the required space. */
-        ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
-                                        !need_alloc, reflink_copy);
-        if (ret < 0)
+        if ((ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
+                                             !need_alloc, reflink_copy)) < 0)
             goto cleanup;
 
         /* If the new allocation is greater than the original capacity,
