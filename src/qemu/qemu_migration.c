@@ -2574,7 +2574,8 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 static int
 qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            qemuDomainAsyncJob asyncJob)
+                            qemuDomainAsyncJob asyncJob,
+                            bool updateJobStats)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
@@ -2604,7 +2605,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_JOB_COMPLETED:
         /* Fetch statistics of a completed migration */
-        if (events &&
+        if (events && updateJobStats &&
             qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
             return -1;
         break;
@@ -2621,6 +2622,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 enum qemuMigrationCompletedFlags {
     QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR = (1 << 0),
     QEMU_MIGRATION_COMPLETED_CHECK_STORAGE  = (1 << 1),
+    QEMU_MIGRATION_COMPLETED_UPDATE_STATS   = (1 << 2),
 };
 
 /**
@@ -2639,8 +2641,9 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     int pauseReason;
+    bool updateStats = !!(flags & QEMU_MIGRATION_COMPLETED_UPDATE_STATS);
 
-    if (qemuMigrationCheckJobStatus(driver, vm, asyncJob) < 0)
+    if (qemuMigrationCheckJobStatus(driver, vm, asyncJob, updateStats) < 0)
         goto error;
 
     if (flags & QEMU_MIGRATION_COMPLETED_CHECK_STORAGE &&
@@ -2694,7 +2697,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-    unsigned int flags = 0;
+    unsigned int flags = QEMU_MIGRATION_COMPLETED_UPDATE_STATS;
     int rv;
 
     if (abort_on_error)
@@ -4358,7 +4361,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * connection from qemu which may never be initiated.
          */
         if (qemuMigrationCheckJobStatus(driver, vm,
-                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                        false) < 0)
             goto cancel;
 
         while ((fd = accept(spec->dest.unix_socket.sock, NULL, NULL)) < 0) {
