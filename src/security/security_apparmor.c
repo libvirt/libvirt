@@ -66,10 +66,11 @@ struct SDPDOP {
 };
 
 /*
- * profile_status returns '-1' on error, '0' if loaded
+ * profile_status returns '-2' on error, '-1' if not loaded, '0' if loaded
  *
- * If check_enforcing is set to '1', then returns '-1' on error, '0' if
- * loaded in complain mode, and '1' if loaded in enforcing mode.
+ * If check_enforcing is set to '1', then returns '-2' on error, '-1' if
+ * not loaded, '0' if loaded in complain mode, and '1' if loaded in
+ * enforcing mode.
  */
 static int
 profile_status(const char *str, const int check_enforcing)
@@ -77,7 +78,7 @@ profile_status(const char *str, const int check_enforcing)
     char *content = NULL;
     char *tmp = NULL;
     char *etmp = NULL;
-    int rc = -1;
+    int rc = -2;
 
     /* create string that is '<str> \0' for accurate matching */
     if (virAsprintf(&tmp, "%s ", str) == -1)
@@ -100,6 +101,8 @@ profile_status(const char *str, const int check_enforcing)
 
     if (strstr(content, tmp) != NULL)
         rc = 0;
+    else
+        rc = -1; /* return -1 if not loaded */
     if (check_enforcing != 0) {
         if (rc == 0 && strstr(content, etmp) != NULL)
             rc = 1;                 /* return '1' if loaded and enforcing */
@@ -262,6 +265,9 @@ use_apparmor(void)
         goto cleanup;
 
     rc = profile_status(libvirt_daemon, 1);
+    /* Error or unconfined should all result in -1*/
+    if (rc < 0)
+        rc = -1;
 
  cleanup:
     VIR_FREE(libvirt_daemon);
@@ -517,10 +523,20 @@ AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virSecurityLabelPtr sec)
 {
     int rc = -1;
+    int status;
     char *profile_name = NULL;
 
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
+
+    status = profile_status(profile_name, 1);
+    if (status < -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("error getting profile status"));
+        goto cleanup;
+    } else if (status == -1) {
+        profile_name[0] = '\0';
+    }
 
     if (virStrcpy(sec->label, profile_name,
         VIR_SECURITY_LABEL_BUFLEN) == NULL) {
@@ -529,11 +545,7 @@ AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if ((sec->enforcing = profile_status(profile_name, 1)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("error calling profile_status()"));
-        goto cleanup;
-    }
+    sec->enforcing = status == 1;
     rc = 0;
 
  cleanup:
