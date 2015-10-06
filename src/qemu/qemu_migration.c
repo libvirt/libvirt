@@ -2156,6 +2156,34 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuMigrationIsAllowedHostdev:
+ * @def: domain definition
+ *
+ * Checks that @def does not contain any host devices unsupported accross
+ * migrations. Returns true if the vm is allowed to migrate.
+ */
+static bool
+qemuMigrationIsAllowedHostdev(const virDomainDef *def)
+{
+    size_t i;
+
+    /* Migration with USB host devices is allowed, all other devices are
+     * forbidden. */
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain has assigned non-USB host devices"));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 /* Validate whether the domain is safe to migrate.  If vm is NULL,
  * then this is being run in the v2 Prepare stage on the destination
  * (where we only have the target xml); if vm is provided, then this
@@ -2213,17 +2241,8 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
         def = vm->def;
     }
 
-    /* Migration with USB host devices is allowed, all other devices are
-     * forbidden. */
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain has assigned non-USB host devices"));
-            return false;
-        }
-    }
+    if (!qemuMigrationIsAllowedHostdev(def))
+        return false;
 
     if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
         for (i = 0; i < def->cpu->nfeatures; i++) {
@@ -3195,7 +3214,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     unsigned int cookieFlags;
     virCapsPtr caps = NULL;
     char *migrateFrom = NULL;
-    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool taint_hook = false;
 
     virNWFilterReadLockFilterUpdates();
@@ -3225,7 +3243,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, NULL, *def, true, abort_on_error))
+    if (!qemuMigrationIsAllowedHostdev(*def))
         goto cleanup;
 
     /* Let migration hook filter domain XML */
