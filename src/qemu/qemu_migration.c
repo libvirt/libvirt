@@ -2208,12 +2208,6 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
     int pauseReason;
     size_t i;
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is marked for auto destroy"));
-        return false;
-    }
-
     /* perform these checks only when migrating to remote hosts */
     if (remote) {
         nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
@@ -2229,6 +2223,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
 
         /* cancel migration if disk I/O error is emitted while migrating */
         if (flags & VIR_MIGRATE_ABORT_ON_ERROR &&
+            !(flags & VIR_MIGRATE_OFFLINE) &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2238,43 +2233,53 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuDomainHasBlockjob(vm, false)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain has an active block job"));
-        return false;
-    }
+    /* following checks don't make sense for offline migration */
+    if (!(flags & VIR_MIGRATE_OFFLINE)) {
+        if (qemuProcessAutoDestroyActive(driver, vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("domain is marked for auto destroy"));
+            return false;
+        }
 
-    if (!qemuMigrationIsAllowedHostdev(vm->def))
-        return false;
 
-    if (vm->def->cpu && vm->def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
-        for (i = 0; i < vm->def->cpu->nfeatures; i++) {
-            virCPUFeatureDefPtr feature = &vm->def->cpu->features[i];
+        if (qemuDomainHasBlockjob(vm, false)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain has an active block job"));
+            return false;
+        }
 
-            if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
-                continue;
+        if (!qemuMigrationIsAllowedHostdev(vm->def))
+            return false;
 
-            /* QEMU blocks migration and save with invariant TSC enabled */
-            if (STREQ(feature->name, "invtsc")) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("domain has CPU feature: %s"),
-                               feature->name);
-                return false;
+        if (vm->def->cpu && vm->def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            for (i = 0; i < vm->def->cpu->nfeatures; i++) {
+                virCPUFeatureDefPtr feature = &vm->def->cpu->features[i];
+
+                if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
+                    continue;
+
+                /* QEMU blocks migration and save with invariant TSC enabled */
+                if (STREQ(feature->name, "invtsc")) {
+                    virReportError(VIR_ERR_OPERATION_INVALID,
+                                   _("domain has CPU feature: %s"),
+                                   feature->name);
+                    return false;
+                }
             }
         }
-    }
 
-    /* Verify that memory device config can be transferred reliably */
-    for (i = 0; i < vm->def->nmems; i++) {
-        virDomainMemoryDefPtr mem = vm->def->mems[i];
+        /* Verify that memory device config can be transferred reliably */
+        for (i = 0; i < vm->def->nmems; i++) {
+            virDomainMemoryDefPtr mem = vm->def->mems[i];
 
-        if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
-            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain's dimm info lacks slot ID "
-                             "or base address"));
+            if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
+                mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("domain's dimm info lacks slot ID "
+                                 "or base address"));
 
-            return false;
+                return false;
+            }
         }
     }
 
