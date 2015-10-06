@@ -364,7 +364,8 @@ mymain(void)
     if (!driver.lockManager)
         return EXIT_FAILURE;
 
-    if (!(mgr = virSecurityManagerNew("none", "qemu", false, false, false, true)))
+    if (!(mgr = virSecurityManagerNew("none", "qemu",
+                                      VIR_SECURITY_MANAGER_PRIVILEGED)))
         return EXIT_FAILURE;
     if (!(driver.securityManager = virSecurityManagerNewStack(mgr)))
         return EXIT_FAILURE;

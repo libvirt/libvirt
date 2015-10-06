@@ -30,12 +30,23 @@
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
 
+typedef enum {
+    VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE   = 1 << 0,
+    VIR_SECURITY_MANAGER_DEFAULT_CONFINED   = 1 << 1,
+    VIR_SECURITY_MANAGER_REQUIRE_CONFINED   = 1 << 2,
+    VIR_SECURITY_MANAGER_PRIVILEGED         = 1 << 3,
+    VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP  = 1 << 4,
+} virSecurityManagerNewFlags;
+
+# define VIR_SECURITY_MANAGER_NEW_MASK  \
+    (VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE  | \
+     VIR_SECURITY_MANAGER_DEFAULT_CONFINED  | \
+     VIR_SECURITY_MANAGER_REQUIRE_CONFINED  | \
+     VIR_SECURITY_MANAGER_PRIVILEGED)
+
 virSecurityManagerPtr virSecurityManagerNew(const char *name,
                                             const char *virtDriver,
-                                            bool allowDiskFormatProbing,
-                                            bool defaultConfined,
-                                            bool requireConfined,
-                                            bool privileged);
+                                            unsigned int flags);
 
 virSecurityManagerPtr virSecurityManagerNewStack(virSecurityManagerPtr primary);
 int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
@@ -59,11 +70,7 @@ typedef int
 virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
                                                uid_t user,
                                                gid_t group,
-                                               bool allowDiskFormatProbing,
-                                               bool defaultConfined,
-                                               bool requireConfined,
-                                               bool dynamicOwnership,
-                                               bool privileged,
+                                               unsigned int flags,
                                                virSecurityManagerDACChownCallback chownCallback);
 
 int virSecurityManagerPreFork(virSecurityManagerPtr mgr);

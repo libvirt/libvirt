@@ -389,6 +389,16 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     virSecurityManagerPtr mgr = NULL;
     virSecurityManagerPtr stack = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    unsigned int flags = 0;
+
+    if (cfg->allowDiskFormatProbing)
+        flags |= VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE;
+    if (cfg->securityDefaultConfined)
+        flags |= VIR_SECURITY_MANAGER_DEFAULT_CONFINED;
+    if (cfg->securityRequireConfined)
+        flags |= VIR_SECURITY_MANAGER_REQUIRE_CONFINED;
+    if (virQEMUDriverIsPrivileged(driver))
+        flags |= VIR_SECURITY_MANAGER_PRIVILEGED;
 
     if (cfg->securityDriverNames &&
         cfg->securityDriverNames[0]) {
@@ -396,10 +406,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
         while (names && *names) {
             if (!(mgr = virSecurityManagerNew(*names,
                                               QEMU_DRIVER_NAME,
-                                              cfg->allowDiskFormatProbing,
-                                              cfg->securityDefaultConfined,
-                                              cfg->securityRequireConfined,
-                                              virQEMUDriverIsPrivileged(driver))))
+                                              flags)))
                 goto error;
             if (!stack) {
                 if (!(stack = virSecurityManagerNewStack(mgr)))
@@ -414,10 +421,7 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     } else {
         if (!(mgr = virSecurityManagerNew(NULL,
                                           QEMU_DRIVER_NAME,
-                                          cfg->allowDiskFormatProbing,
-                                          cfg->securityDefaultConfined,
-                                          cfg->securityRequireConfined,
-                                          virQEMUDriverIsPrivileged(driver))))
+                                          flags)))
             goto error;
         if (!(stack = virSecurityManagerNewStack(mgr)))
             goto error;
@@ -425,14 +429,12 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     }
 
     if (virQEMUDriverIsPrivileged(driver)) {
+        if (cfg->dynamicOwnership)
+            flags |= VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP;
         if (!(mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
                                              cfg->user,
                                              cfg->group,
-                                             cfg->allowDiskFormatProbing,
-                                             cfg->securityDefaultConfined,
-                                             cfg->securityRequireConfined,
-                                             cfg->dynamicOwnership,
-                                             virQEMUDriverIsPrivileged(driver),
+                                             flags,
                                              qemuSecurityChownCallback)))
             goto error;
         if (!stack) {

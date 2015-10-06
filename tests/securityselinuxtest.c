@@ -272,7 +272,9 @@ mymain(void)
     int ret = 0;
     virSecurityManagerPtr mgr;
 
-    if (!(mgr = virSecurityManagerNew("selinux", "QEMU", false, true, false, true))) {
+    if (!(mgr = virSecurityManagerNew("selinux", "QEMU",
+                                      VIR_SECURITY_MANAGER_DEFAULT_CONFINED |
+                                      VIR_SECURITY_MANAGER_PRIVILEGED))) {
         virErrorPtr err = virGetLastError();
         fprintf(stderr, "Unable to initialize security driver: %s\n",
                 err->message);

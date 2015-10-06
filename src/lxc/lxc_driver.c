@@ -1556,13 +1556,17 @@ static int lxcCheckNetNsSupport(void)
 static virSecurityManagerPtr
 lxcSecurityInit(virLXCDriverConfigPtr cfg)
 {
+    unsigned int flags = VIR_SECURITY_MANAGER_PRIVILEGED;
+
     VIR_INFO("lxcSecurityInit %s", cfg->securityDriverName);
+
+    if (cfg->securityDefaultConfined)
+        flags |= VIR_SECURITY_MANAGER_DEFAULT_CONFINED;
+    if (cfg->securityRequireConfined)
+        flags |= VIR_SECURITY_MANAGER_REQUIRE_CONFINED;
+
     virSecurityManagerPtr mgr = virSecurityManagerNew(cfg->securityDriverName,
-                                                      LXC_DRIVER_NAME,
-                                                      false,
-                                                      cfg->securityDefaultConfined,
-                                                      cfg->securityRequireConfined,
-                                                      true);
+                                                      LXC_DRIVER_NAME, flags);
     if (!mgr)
         goto error;
 
