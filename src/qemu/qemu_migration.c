@@ -2184,11 +2184,25 @@ qemuMigrationIsAllowedHostdev(const virDomainDef *def)
 }
 
 
+/**
+ * qemuMigrationIsAllowed:
+ * @driver: qemu driver struct
+ * @vm: domain object
+ * @remote: migration is remote
+ * @flags: migration flags (see struct virDomainMigrateFlags)
+ *
+ * Validates that the configuration of @vm can be migrated in various
+ * situations. If @remote is true, the migration happens to remote host. @flags
+ * is used to check various special migration types according to the request.
+ *
+ * Returns true if migration is supported. Reports libvirt error and returns
+ * false otherwise.
+ */
 bool
 qemuMigrationIsAllowed(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        bool remote,
-                       bool abort_on_error)
+                       unsigned int flags)
 {
     int nsnapshots;
     int pauseReason;
@@ -2214,7 +2228,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
         }
 
         /* cancel migration if disk I/O error is emitted while migrating */
-        if (abort_on_error &&
+        if (flags & VIR_MIGRATE_ABORT_ON_ERROR &&
             virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
             pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -2950,7 +2964,6 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
-    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
               " cookieout=%p, cookieoutlen=%p,"
@@ -2969,7 +2982,7 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
-    if (!qemuMigrationIsAllowed(driver, vm, true, abort_on_error))
+    if (!qemuMigrationIsAllowed(driver, vm, true, flags))
         goto cleanup;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) &&
@@ -5319,7 +5332,6 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     int ret = -1;
     virErrorPtr orig_err = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
 
     if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
@@ -5330,7 +5342,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (!qemuMigrationIsAllowed(driver, vm, true, abort_on_error))
+    if (!qemuMigrationIsAllowed(driver, vm, true, flags))
         goto endjob;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) &&
