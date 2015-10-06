@@ -174,8 +174,7 @@ int qemuMigrationConfirm(virConnectPtr conn,
                          int cancelled);
 
 bool qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                            virDomainDefPtr def, bool remote,
-                            bool abort_on_error);
+                            bool remote, bool abort_on_error);
 
 int qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                         int fd, off_t offset, const char *path,

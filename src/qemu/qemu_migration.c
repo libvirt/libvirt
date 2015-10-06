@@ -2184,69 +2184,58 @@ qemuMigrationIsAllowedHostdev(const virDomainDef *def)
 }
 
 
-/* Validate whether the domain is safe to migrate.  If vm is NULL,
- * then this is being run in the v2 Prepare stage on the destination
- * (where we only have the target xml); if vm is provided, then this
- * is being run in either v2 Perform or v3 Begin (where we also have
- * access to all of the domain's metadata, such as whether it is
- * marked autodestroy or has snapshots).  While it would be nice to
- * assume that checking on source is sufficient to prevent ever
- * talking to the destination in the first place, we are stuck with
- * the fact that older servers did not do checks on the source. */
 bool
-qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                       virDomainDefPtr def, bool remote, bool abort_on_error)
+qemuMigrationIsAllowed(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       bool remote,
+                       bool abort_on_error)
 {
     int nsnapshots;
     int pauseReason;
     size_t i;
 
-    if (vm) {
-        if (qemuProcessAutoDestroyActive(driver, vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("domain is marked for auto destroy"));
-            return false;
-        }
-
-        /* perform these checks only when migrating to remote hosts */
-        if (remote) {
-            nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
-            if (nsnapshots < 0)
-                return false;
-
-            if (nsnapshots > 0) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("cannot migrate domain with %d snapshots"),
-                               nsnapshots);
-                return false;
-            }
-
-            /* cancel migration if disk I/O error is emitted while migrating */
-            if (abort_on_error &&
-                virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
-                pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("cannot migrate domain with I/O error"));
-                return false;
-            }
-
-        }
-
-        if (qemuDomainHasBlockjob(vm, false)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain has an active block job"));
-            return false;
-        }
-
-        def = vm->def;
+    if (qemuProcessAutoDestroyActive(driver, vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is marked for auto destroy"));
+        return false;
     }
 
-    if (!qemuMigrationIsAllowedHostdev(def))
+    /* perform these checks only when migrating to remote hosts */
+    if (remote) {
+        nsnapshots = virDomainSnapshotObjListNum(vm->snapshots, NULL, 0);
+        if (nsnapshots < 0)
+            return false;
+
+        if (nsnapshots > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("cannot migrate domain with %d snapshots"),
+                           nsnapshots);
+            return false;
+        }
+
+        /* cancel migration if disk I/O error is emitted while migrating */
+        if (abort_on_error &&
+            virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
+            pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot migrate domain with I/O error"));
+            return false;
+        }
+
+    }
+
+    if (qemuDomainHasBlockjob(vm, false)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain has an active block job"));
+        return false;
+    }
+
+    if (!qemuMigrationIsAllowedHostdev(vm->def))
         return false;
 
-    if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
-        for (i = 0; i < def->cpu->nfeatures; i++) {
-            virCPUFeatureDefPtr feature = &def->cpu->features[i];
+    if (vm->def->cpu && vm->def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        for (i = 0; i < vm->def->cpu->nfeatures; i++) {
+            virCPUFeatureDefPtr feature = &vm->def->cpu->features[i];
 
             if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
                 continue;
@@ -2262,8 +2251,8 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
     }
 
     /* Verify that memory device config can be transferred reliably */
-    for (i = 0; i < def->nmems; i++) {
-        virDomainMemoryDefPtr mem = def->mems[i];
+    for (i = 0; i < vm->def->nmems; i++) {
+        virDomainMemoryDefPtr mem = vm->def->mems[i];
 
         if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
             mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
@@ -2980,7 +2969,7 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_BEGIN3);
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL, true, abort_on_error))
+    if (!qemuMigrationIsAllowed(driver, vm, true, abort_on_error))
         goto cleanup;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) &&
@@ -5341,7 +5330,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (!qemuMigrationIsAllowed(driver, vm, NULL, true, abort_on_error))
+    if (!qemuMigrationIsAllowed(driver, vm, true, abort_on_error))
         goto endjob;
 
     if (!(flags & VIR_MIGRATE_UNSAFE) &&
