@@ -1243,6 +1243,7 @@ if [ $COUNT -gt 0 ]; then
 fi
 echo "Applied $COUNT patches"
 rm -f $PATCHLIST
+rm -rf .git
 
 %build
 %if ! %{with_xen}
