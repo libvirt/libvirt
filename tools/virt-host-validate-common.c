@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/utsname.h>
+#include <mntent.h>
 
 #include "virutil.h"
 #include "viralloc.h"
@@ -104,14 +105,29 @@ static const char *failEscapeCodes[] = {
 verify(ARRAY_CARDINALITY(failEscapeCodes) == VIR_HOST_VALIDATE_LAST);
 
 void virHostMsgFail(virHostValidateLevel level,
-                    const char *hint)
+                    const char *format,
+                    ...)
 {
+    va_list args;
+    char *msg;
+
+    if (quiet)
+        return;
+
+    va_start(args, format);
+    if (virVasprintf(&msg, format, args) < 0) {
+        perror("malloc");
+        abort();
+    }
+    va_end(args);
+
     if (virHostMsgWantEscape())
         fprintf(stdout, "%s%s\033[0m (%s)\n",
-                failEscapeCodes[level], _(failMessages[level]), hint);
+                failEscapeCodes[level], _(failMessages[level]), msg);
     else
         fprintf(stdout, "%s (%s)\n",
-                _(failMessages[level]), hint);
+                _(failMessages[level]), msg);
+    VIR_FREE(msg);
 }
 
 
@@ -123,7 +139,7 @@ int virHostValidateDeviceExists(const char *hvname,
     virHostMsgCheck(hvname, "if device %s exists", dev_name);
 
     if (access(dev_name, F_OK) < 0) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     }
 
@@ -140,7 +156,7 @@ int virHostValidateDeviceAccessible(const char *hvname,
     virHostMsgCheck(hvname, "if device %s is accessible", dev_name);
 
     if (access(dev_name, R_OK|W_OK) < 0) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     }
 
@@ -160,7 +176,7 @@ int virHostValidateNamespace(const char *hvname,
     snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
 
     if (access(nspath, F_OK) < 0) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     }
 
@@ -211,20 +227,117 @@ int virHostValidateLinuxKernel(const char *hvname,
                     (version & 0xff));
 
     if (STRNEQ(uts.sysname, "Linux")) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     }
 
     if (virParseVersionString(uts.release, &thisversion, true) < 0) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     }
 
     if (thisversion < version) {
-        virHostMsgFail(level, hint);
+        virHostMsgFail(level, "%s", hint);
         return -1;
     } else {
         virHostMsgPass();
         return 0;
     }
+}
+
+
+static int virHostValidateCGroupSupport(const char *hvname,
+                                        const char *cg_name,
+                                        virHostValidateLevel level,
+                                        const char *config_name)
+{
+    virHostMsgCheck(hvname, "for cgroup '%s' controller support", cg_name);
+    FILE *fp = fopen("/proc/self/cgroup", "r");
+    size_t len = 0;
+    char *line = NULL;
+    ssize_t ret;
+    bool matched = false;
+
+    if (!fp)
+        goto error;
+
+    while ((ret = getline(&line, &len, fp)) >= 0 && !matched) {
+        char *tmp = strstr(line, cg_name);
+        if (!tmp)
+            continue;
+
+        tmp += strlen(cg_name);
+        if (*tmp != ',' &&
+            *tmp != ':')
+            continue;
+
+        matched = true;
+    }
+    VIR_FREE(line);
+    VIR_FORCE_FCLOSE(fp);
+    if (!matched)
+        goto error;
+
+    virHostMsgPass();
+    return 0;
+
+ error:
+    VIR_FREE(line);
+    virHostMsgFail(level, "Enable CONFIG_%s in kernel Kconfig file", config_name);
+    return -1;
+}
+
+static int virHostValidateCGroupMount(const char *hvname,
+                                      const char *cg_name,
+                                      virHostValidateLevel level)
+{
+    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
+    FILE *fp = setmntent("/proc/mounts", "r");
+    struct mntent ent;
+    char mntbuf[1024];
+    bool matched = false;
+
+    if (!fp)
+        goto error;
+
+    while (getmntent_r(fp, &ent, mntbuf, sizeof(mntbuf)) && !matched) {
+        char *tmp = strstr(ent.mnt_opts, cg_name);
+        if (!tmp)
+            continue;
+
+        tmp += strlen(cg_name);
+        if (*tmp != ',' &&
+            *tmp != '\0')
+            continue;
+
+        matched = true;
+    }
+    endmntent(fp);
+    if (!matched)
+        goto error;
+
+    virHostMsgPass();
+    return 0;
+
+ error:
+    virHostMsgFail(level, "Mount '%s' cgroup controller (suggested at /sys/fs/cgroup/%s)",
+                   cg_name, cg_name);
+    return -1;
+}
+
+int virHostValidateCGroupController(const char *hvname,
+                                    const char *cg_name,
+                                    virHostValidateLevel level,
+                                    const char *config_name)
+{
+    if (virHostValidateCGroupSupport(hvname,
+                                     cg_name,
+                                     level,
+                                     config_name) < 0)
+        return -1;
+    if (virHostValidateCGroupMount(hvname,
+                                   cg_name,
+                                   level) < 0)
+        return -1;
+    return 0;
 }

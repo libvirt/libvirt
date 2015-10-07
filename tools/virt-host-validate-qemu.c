@@ -57,5 +57,35 @@ int virHostValidateQEMU(void)
                                     _("Load the 'tun' module to enable networking for QEMU guests")) < 0)
         ret = -1;
 
+    if (virHostValidateCGroupController("QEMU", "memory",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "MEMCG") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("QEMU", "cpu",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "CGROUP_CPU") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("QEMU", "cpuacct",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "CGROUP_CPUACCT") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("QEMU", "devices",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "CGROUP_DEVICES") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("QEMU", "net_cls",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "NET_CLS_CGROUP") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("QEMU", "blkio",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "BLK_CGROUP") < 0)
+        ret = -1;
+
     return ret;
 }

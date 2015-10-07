@@ -63,5 +63,35 @@ int virHostValidateLXC(void)
                                  _("User namespace support is recommended")) < 0)
         ret = -1;
 
+    if (virHostValidateCGroupController("LXC", "memory",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "MEMCG") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("LXC", "cpu",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "CGROUP_SCHED") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("LXC", "cpuacct",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "CGROUP_CPUACCT") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("LXC", "devices",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "CGROUP_DEVICE") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("LXC", "net_cls",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "NET_CLS_CGROUP") < 0)
+        ret = -1;
+
+    if (virHostValidateCGroupController("LXC", "freezer",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "CGROUP_FREEZER") < 0)
+        ret = -1;
+
     return ret;
 }

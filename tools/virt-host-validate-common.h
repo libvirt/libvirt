@@ -40,7 +40,8 @@ extern void virHostMsgCheck(const char *prefix,
 
 extern void virHostMsgPass(void);
 extern void virHostMsgFail(virHostValidateLevel level,
-                           const char *hint);
+                           const char *format,
+                           ...) ATTRIBUTE_FMT_PRINTF(2, 3);
 
 extern int virHostValidateDeviceExists(const char *hvname,
                                        const char *dev_name,
@@ -63,5 +64,10 @@ extern int virHostValidateNamespace(const char *hvname,
                                     const char *ns_name,
                                     virHostValidateLevel level,
                                     const char *hint);
+
+extern int virHostValidateCGroupController(const char *hvname,
+                                           const char *cg_name,
+                                           virHostValidateLevel level,
+                                           const char *config_name);
 
 #endif /* __VIRT_HOST_VALIDATE_COMMON_H__ */
