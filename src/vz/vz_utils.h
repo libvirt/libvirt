@@ -27,11 +27,8 @@
 
 # include "driver.h"
 # include "conf/domain_conf.h"
-# include "conf/storage_conf.h"
 # include "conf/domain_event.h"
-# include "conf/network_conf.h"
 # include "virthread.h"
-# include "virjson.h"
 
 # define vzParseError()                                                 \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
@@ -50,11 +47,6 @@
 # define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "Routed"
 # define PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME  "Bridged"
 
-# define PARALLELS_REQUIRED_HOSTONLY_NETWORK "Host-Only"
-# define PARALLELS_HOSTONLY_NETWORK_TYPE "host-only"
-# define PARALLELS_REQUIRED_BRIDGED_NETWORK  "Bridged"
-# define PARALLELS_BRIDGED_NETWORK_TYPE  "bridged"
-
 struct _vzConn {
     virMutex lock;
 
@@ -62,12 +54,9 @@ struct _vzConn {
     virDomainObjListPtr domains;
 
     PRL_HANDLE server;
-    virStoragePoolObjList pools;
-    virNetworkObjListPtr networks;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
-    virStorageDriverStatePtr storageState;
     const char *drivername;
 };
 
@@ -97,19 +86,10 @@ typedef struct vzDomObj *vzDomObjPtr;
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
 virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
-virJSONValuePtr vzParseOutput(const char *binary, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-int vzCmdRun(const char *binary, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-char * vzAddFileExt(const char *path, const char *ext);
 void vzDriverLock(vzConnPtr driver);
 void vzDriverUnlock(vzConnPtr driver);
-virStorageVolPtr vzStorageVolLookupByPathLocked(virConnectPtr conn,
-                                                const char *path);
-int vzStorageVolDefRemove(virStoragePoolObjPtr privpool,
-                          virStorageVolDefPtr privvol);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \

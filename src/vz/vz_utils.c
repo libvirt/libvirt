@@ -115,33 +115,6 @@ vzDoCmdRun(char **outbuf, const char *binary, va_list list)
 }
 
 /*
- * Run command and parse its JSON output, return
- * pointer to virJSONValue or NULL in case of error.
- */
-virJSONValuePtr
-vzParseOutput(const char *binary, ...)
-{
-    char *outbuf;
-    virJSONValuePtr jobj = NULL;
-    va_list list;
-    int ret;
-
-    va_start(list, binary);
-    ret = vzDoCmdRun(&outbuf, binary, list);
-    va_end(list);
-    if (ret)
-        return NULL;
-
-    jobj = virJSONValueFromString(outbuf);
-    if (!jobj)
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid output from prlctl: %s"), outbuf);
-
-    VIR_FREE(outbuf);
-    return jobj;
-}
-
-/*
  * Run command and return its output, pointer to
  * buffer or NULL in case of error. Caller os responsible
  * for freeing the buffer.
@@ -160,44 +133,4 @@ vzGetOutput(const char *binary, ...)
         return NULL;
 
     return outbuf;
-}
-
-/*
- * Run prlctl command and check for errors
- *
- * Return value is 0 in case of success, else - -1
- */
-int
-vzCmdRun(const char *binary, ...)
-{
-    int ret;
-    va_list list;
-
-    va_start(list, binary);
-    ret = vzDoCmdRun(NULL, binary, list);
-    va_end(list);
-
-    return ret;
-}
-
-/*
- * Return new file path in malloced string created by
- * concatenating first and second function arguments.
- */
-char *
-vzAddFileExt(const char *path, const char *ext)
-{
-    char *new_path = NULL;
-    size_t len = strlen(path) + strlen(ext) + 1;
-
-    if (VIR_ALLOC_N(new_path, len) < 0)
-        return NULL;
-
-    if (!virStrcpy(new_path, path, len)) {
-        VIR_FREE(new_path);
-        return NULL;
-    }
-    strcat(new_path, ext);
-
-    return new_path;
 }

@@ -262,7 +262,6 @@ vzOpenDefault(virConnectPtr conn)
  error:
     virObjectUnref(privconn->domains);
     virObjectUnref(privconn->caps);
-    virStoragePoolObjListFree(&privconn->pools);
     virObjectEventStateFree(privconn->domainEventState);
     prlsdkDisconnect(privconn);
     prlsdkDeinit();
