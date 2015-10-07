@@ -125,6 +125,17 @@ virLockDaemonFree(virLockDaemonPtr lockd)
     VIR_FREE(lockd);
 }
 
+static inline void
+virLockDaemonLock(virLockDaemonPtr lockd)
+{
+    virMutexLock(&lockd->lock);
+}
+
+static inline void
+virLockDaemonUnlock(virLockDaemonPtr lockd)
+{
+    virMutexUnlock(&lockd->lock);
+}
 
 static void virLockDaemonLockSpaceDataFree(void *data,
                                            const void *key ATTRIBUTE_UNUSED)
@@ -275,9 +286,9 @@ int virLockDaemonAddLockSpace(virLockDaemonPtr lockd,
                               virLockSpacePtr lockspace)
 {
     int ret;
-    virMutexLock(&lockd->lock);
+    virLockDaemonLock(lockd);
     ret = virHashAddEntry(lockd->lockspaces, path, lockspace);
-    virMutexUnlock(&lockd->lock);
+    virLockDaemonUnlock(lockd);
     return ret;
 }
 
@@ -285,12 +296,12 @@ virLockSpacePtr virLockDaemonFindLockSpace(virLockDaemonPtr lockd,
                                            const char *path)
 {
     virLockSpacePtr lockspace;
-    virMutexLock(&lockd->lock);
+    virLockDaemonLock(lockd);
     if (path && STRNEQ(path, ""))
         lockspace = virHashLookup(lockd->lockspaces, path);
     else
         lockspace = lockd->defaultLockspace;
-    virMutexUnlock(&lockd->lock);
+    virLockDaemonUnlock(lockd);
     return lockspace;
 }
 
@@ -675,14 +686,14 @@ virLockDaemonClientFree(void *opaque)
 
         /* Release all locks associated with this
          * owner in all lockspaces */
-        virMutexLock(&lockDaemon->lock);
+        virLockDaemonLock(lockDaemon);
         virHashForEach(lockDaemon->lockspaces,
                        virLockDaemonClientReleaseLockspace,
                        &data);
         virLockDaemonClientReleaseLockspace(lockDaemon->defaultLockspace,
                                             "",
                                             &data);
-        virMutexUnlock(&lockDaemon->lock);
+        virLockDaemonUnlock(lockDaemon);
 
         /* If the client had some active leases when it
          * closed the connection, we must kill it off
