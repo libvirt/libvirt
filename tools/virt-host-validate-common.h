@@ -42,10 +42,15 @@ extern void virHostMsgPass(void);
 extern void virHostMsgFail(virHostValidateLevel level,
                            const char *hint);
 
-extern int virHostValidateDevice(const char *hvname,
-                                 const char *dev_name,
-                                 virHostValidateLevel level,
-                                 const char *hint);
+extern int virHostValidateDeviceExists(const char *hvname,
+                                       const char *dev_name,
+                                       virHostValidateLevel level,
+                                       const char *hint);
+
+extern int virHostValidateDeviceAccessible(const char *hvname,
+                                           const char *dev_name,
+                                           virHostValidateLevel level,
+                                           const char *hint);
 
 extern bool virHostValidateHasCPUFlag(const char *name);
 

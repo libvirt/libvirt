@@ -20,7 +20,6 @@
  */
 
 #include <config.h>
-
 #include "virt-host-validate-qemu.h"
 #include "virt-host-validate-common.h"
 
@@ -32,25 +31,30 @@ int virHostValidateQEMU(void)
     if (virHostValidateHasCPUFlag("svm") ||
         virHostValidateHasCPUFlag("vmx")) {
         virHostMsgPass();
-        if (virHostValidateDevice("QEMU", "/dev/kvm",
-                                  VIR_HOST_VALIDATE_FAIL,
-                                  _("Check that the 'kvm-intel' or 'kvm-amd' modules are "
-                                    "loaded & the BIOS has enabled virtualization")) < 0)
+        if (virHostValidateDeviceExists("QEMU", "/dev/kvm",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        _("Check that the 'kvm-intel' or 'kvm-amd' modules are "
+                                          "loaded & the BIOS has enabled virtualization")) < 0)
+            ret = -1;
+        else if (virHostValidateDeviceAccessible("QEMU", "/dev/kvm",
+                                                 VIR_HOST_VALIDATE_FAIL,
+                                                 _("Check /dev/kvm is world writable or you are in "
+                                                   "a group that is allowed to access it")) < 0)
             ret = -1;
     } else {
         virHostMsgFail(VIR_HOST_VALIDATE_WARN,
                        _("Only emulated CPUs are available, performance will be significantly limited"));
     }
 
-    if (virHostValidateDevice("QEMU", "/dev/vhost-net",
-                              VIR_HOST_VALIDATE_WARN,
-                              _("Load the 'vhost_net' module to improve performance "
-                                "of virtio networking")) < 0)
+    if (virHostValidateDeviceExists("QEMU", "/dev/vhost-net",
+                                    VIR_HOST_VALIDATE_WARN,
+                                    _("Load the 'vhost_net' module to improve performance "
+                                      "of virtio networking")) < 0)
         ret = -1;
 
-    if (virHostValidateDevice("QEMU", "/dev/net/tun",
-                              VIR_HOST_VALIDATE_FAIL,
-                              _("Load the 'tun' module to enable networking for QEMU guests")) < 0)
+    if (virHostValidateDeviceExists("QEMU", "/dev/net/tun",
+                                    VIR_HOST_VALIDATE_FAIL,
+                                    _("Load the 'tun' module to enable networking for QEMU guests")) < 0)
         ret = -1;
 
     return ret;
