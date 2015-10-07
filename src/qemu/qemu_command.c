@@ -9401,38 +9401,37 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virDomainNumaGetNodeCount(def->numa)) {
-        if (qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
+    if (virDomainNumaGetNodeCount(def->numa) &&
+        qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
             goto error;
 
-        /* memory hotplug requires NUMA to be enabled - we already checked
-         * that memory devices are present only when NUMA is */
+    /* memory hotplug requires NUMA to be enabled - we already checked
+     * that memory devices are present only when NUMA is */
 
-        if (def->nmems > def->mem.memory_slots) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("memory device count '%zu' exceeds slots count '%u'"),
-                           def->nmems, def->mem.memory_slots);
+    if (def->nmems > def->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("memory device count '%zu' exceeds slots count '%u'"),
+                       def->nmems, def->mem.memory_slots);
+        goto error;
+    }
+
+    for (i = 0; i < def->nmems; i++) {
+        char *backStr;
+        char *dimmStr;
+
+        if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
+                                                      qemuCaps, cfg)))
             goto error;
-        }
 
-        for (i = 0; i < def->nmems; i++) {
-            char *backStr;
-            char *dimmStr;
-
-            if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
-                                                          qemuCaps, cfg)))
-                goto error;
-
-            if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], def, qemuCaps))) {
-                VIR_FREE(backStr);
-                goto error;
-            }
-
-            virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
-
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], def, qemuCaps))) {
             VIR_FREE(backStr);
-            VIR_FREE(dimmStr);
+            goto error;
         }
+
+        virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
+
+        VIR_FREE(backStr);
+        VIR_FREE(dimmStr);
     }
 
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
