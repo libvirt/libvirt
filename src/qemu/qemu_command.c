@@ -4965,7 +4965,8 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
  * qemuBuildMemoryBackendStr:
  * @size: size of the memory device in kibibytes
  * @pagesize: size of the requested memory page in KiB, 0 for default
- * @guestNode: NUMA node in the guest that the memory object will be attached to
+ * @guestNode: NUMA node in the guest that the memory object will be attached
+ *             to, or -1 if NUMA is not used in the guest
  * @hostNodes: map of host nodes to alloc the memory in, NULL for default
  * @autoNodeset: fallback nodeset in case of automatic numa placement
  * @def: domain definition object
@@ -5011,19 +5012,19 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     *backendProps = NULL;
     *backendType = NULL;
 
-    /* memory devices could provide a invalid guest node */
-    if (guestNode >= virDomainNumaGetNodeCount(def->numa)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("can't add memory backend for guest node '%d' as "
-                         "the guest has only '%zu' NUMA nodes configured"),
-                       guestNode, virDomainNumaGetNodeCount(def->numa));
-        return -1;
+    if (guestNode >= 0) {
+        /* memory devices could provide a invalid guest node */
+        if (guestNode >= virDomainNumaGetNodeCount(def->numa)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("can't add memory backend for guest node '%d' as "
+                             "the guest has only '%zu' NUMA nodes configured"),
+                           guestNode, virDomainNumaGetNodeCount(def->numa));
+            return -1;
+        }
+
+        memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
     }
 
-    if (!(props = virJSONValueNewObject()))
-        return -1;
-
-    memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, guestNode);
     if (virDomainNumatuneGetMode(def->numa, guestNode, &mode) < 0 &&
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
@@ -5039,6 +5040,10 @@ qemuBuildMemoryBackendStr(unsigned long long size,
                 master_hugepage = hugepage;
                 continue;
             }
+
+            /* just find the master hugepage in case we don't use NUMA */
+            if (guestNode < 0)
+                continue;
 
             if (virBitmapGetBit(hugepage->nodemask, guestNode,
                                 &thisHugepage) < 0) {
@@ -5072,6 +5077,9 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         pagesize = 0;
         hugepage = NULL;
     }
+
+    if (!(props = virJSONValueNewObject()))
+        return -1;
 
     if (pagesize || hugepage) {
         if (pagesize) {
