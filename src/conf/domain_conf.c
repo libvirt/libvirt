@@ -12544,10 +12544,15 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
     int ret = -1;
     xmlNodePtr save = ctxt->node;
     ctxt->node = node;
+    int rv;
 
-    if (virXPathUInt("string(./node)", ctxt, &def->targetNode) < 0) {
+    /* initialize to value which marks that the user didn't specify it */
+    def->targetNode = -1;
+
+    if ((rv = virXPathInt("string(./node)", ctxt, &def->targetNode)) == -2 ||
+        (rv == 0 && def->targetNode < 0)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("invalid or missing value of memory device node"));
+                       _("invalid value of memory device node"));
         goto cleanup;
     }
 
@@ -17711,8 +17716,8 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
 
     if (src->targetNode != dst->targetNode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target memory device targetNode '%u' "
-                         "doesn't match source targetNode '%u'"),
+                       _("Target memory device targetNode '%d' "
+                         "doesn't match source targetNode '%d'"),
                        dst->targetNode, src->targetNode);
         return false;
     }
@@ -20802,7 +20807,8 @@ virDomainMemoryTargetDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->size);
-    virBufferAsprintf(buf, "<node>%u</node>\n", def->targetNode);
+    if (def->targetNode >= 0)
+        virBufferAsprintf(buf, "<node>%d</node>\n", def->targetNode);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</target>\n");

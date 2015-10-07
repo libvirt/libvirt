@@ -6300,8 +6300,9 @@ qemu-kvm -net nic,model=? /dev/null
           added memory as a scaled integer.
         </p>
         <p>
-          The mandatory <code>node</code> subelement configures the guest NUMA
-          node to attach the memory to.
+          The <code>node</code> subelement configures the guest NUMA node to
+          attach the memory to. The element shall be used only if the guest has
+          NUMA nodes configured.
         </p>
       </dd>
     </dl>

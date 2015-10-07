@@ -2022,7 +2022,7 @@ struct _virDomainMemoryDef {
 
     /* target */
     int model; /* virDomainMemoryModel */
-    unsigned int targetNode;
+    int targetNode;
     unsigned long long size; /* kibibytes */
 
     virDomainDeviceInfo info;

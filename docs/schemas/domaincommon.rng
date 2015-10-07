@@ -4532,9 +4532,11 @@
         <element name="size">
           <ref name="scaledInteger"/>
         </element>
-        <element name="node">
-          <ref name="unsignedInt"/>
-        </element>
+        <optional>
+          <element name="node">
+            <ref name="unsignedInt"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

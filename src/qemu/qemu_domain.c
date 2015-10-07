@@ -3597,6 +3597,13 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
             return -1;
         }
 
+        if (mem->targetNode == -1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target NUMA node needs to be specified for "
+                             "memory device"));
+            return -1;
+        }
+
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
             if (mem->info.addr.dimm.slot >= def->mem.memory_slots) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
