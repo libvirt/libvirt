@@ -316,8 +316,8 @@ typedef enum {
 } virQEMUCapsFlags;
 
 /* Aliases for some of the capabilities defined above */
-#define QEMU_CAPS_NET_NAME QEMU_CAPS_0_10 /* -net ...,name=str */
-#define QEMU_CAPS_HOST_NET_ADD QEMU_CAPS_0_10 /* host_net_add command */
+# define QEMU_CAPS_NET_NAME QEMU_CAPS_0_10 /* -net ...,name=str */
+# define QEMU_CAPS_HOST_NET_ADD QEMU_CAPS_0_10 /* host_net_add command */
 
 typedef struct _virQEMUCaps virQEMUCaps;
 typedef virQEMUCaps *virQEMUCapsPtr;
