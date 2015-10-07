@@ -115,12 +115,29 @@ void virHostMsgFail(virHostValidateLevel level,
 }
 
 
-int virHostValidateDevice(const char *hvname,
-                          const char *dev_name,
-                          virHostValidateLevel level,
-                          const char *hint)
+int virHostValidateDeviceExists(const char *hvname,
+                                const char *dev_name,
+                                virHostValidateLevel level,
+                                const char *hint)
 {
-    virHostMsgCheck(hvname, "for device %s", dev_name);
+    virHostMsgCheck(hvname, "if device %s exists", dev_name);
+
+    if (access(dev_name, F_OK) < 0) {
+        virHostMsgFail(level, hint);
+        return -1;
+    }
+
+    virHostMsgPass();
+    return 0;
+}
+
+
+int virHostValidateDeviceAccessible(const char *hvname,
+                                    const char *dev_name,
+                                    virHostValidateLevel level,
+                                    const char *hint)
+{
+    virHostMsgCheck(hvname, "if device %s is accessible", dev_name);
 
     if (access(dev_name, R_OK|W_OK) < 0) {
         virHostMsgFail(level, hint);
