@@ -330,9 +330,10 @@ virSecurityDACRestoreSecurityFileLabelInternal(virSecurityDACDataPtr priv,
 
 
 static int
-virSecurityDACRestoreSecurityFileLabel(const char *path)
+virSecurityDACRestoreSecurityFileLabel(virSecurityDACDataPtr priv,
+                                       const char *path)
 {
-    return virSecurityDACRestoreSecurityFileLabelInternal(NULL, NULL, path);
+    return virSecurityDACRestoreSecurityFileLabelInternal(priv, NULL, path);
 }
 
 
@@ -614,27 +615,33 @@ virSecurityDACSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreSecurityPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file,
-                                      void *opaque ATTRIBUTE_UNUSED)
+                                      void *opaque)
 {
-    return virSecurityDACRestoreSecurityFileLabel(file);
+    virSecurityManagerPtr mgr = opaque;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return virSecurityDACRestoreSecurityFileLabel(priv, file);
 }
 
 
 static int
 virSecurityDACRestoreSecurityUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                                       const char *file,
-                                      void *opaque ATTRIBUTE_UNUSED)
+                                      void *opaque)
 {
-    return virSecurityDACRestoreSecurityFileLabel(file);
+    virSecurityManagerPtr mgr = opaque;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return virSecurityDACRestoreSecurityFileLabel(priv, file);
 }
 
 
 static int
 virSecurityDACRestoreSecuritySCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
                                        const char *file,
-                                       void *opaque ATTRIBUTE_UNUSED)
+                                       void *opaque)
 {
-    return virSecurityDACRestoreSecurityFileLabel(file);
+    virSecurityManagerPtr mgr = opaque;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return virSecurityDACRestoreSecurityFileLabel(priv, file);
 }
 
 
@@ -819,11 +826,12 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
                                   virDomainChrDefPtr dev,
                                   virDomainChrSourceDefPtr dev_source)
 {
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
     int ret = -1;
@@ -838,7 +846,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     switch ((virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACRestoreSecurityFileLabel(dev_source->data.file.path);
+        ret = virSecurityDACRestoreSecurityFileLabel(priv, dev_source->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -846,11 +854,11 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
             (virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0))
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
-            if ((virSecurityDACRestoreSecurityFileLabel(out) < 0) ||
-                (virSecurityDACRestoreSecurityFileLabel(in) < 0)) {
+            if ((virSecurityDACRestoreSecurityFileLabel(priv, out) < 0) ||
+                (virSecurityDACRestoreSecurityFileLabel(priv, in) < 0)) {
                 goto done;
             }
-        } else if (virSecurityDACRestoreSecurityFileLabel(dev_source->data.file.path) < 0) {
+        } else if (virSecurityDACRestoreSecurityFileLabel(priv, dev_source->data.file.path) < 0) {
             goto done;
         }
         ret = 0;
@@ -976,19 +984,19 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
     }
 
     if (def->os.loader && def->os.loader->nvram &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.loader->nvram) < 0)
+        virSecurityDACRestoreSecurityFileLabel(priv, def->os.loader->nvram) < 0)
         rc = -1;
 
     if (def->os.kernel &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.kernel) < 0)
+        virSecurityDACRestoreSecurityFileLabel(priv, def->os.kernel) < 0)
         rc = -1;
 
     if (def->os.initrd &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.initrd) < 0)
+        virSecurityDACRestoreSecurityFileLabel(priv, def->os.initrd) < 0)
         rc = -1;
 
     if (def->os.dtb &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.dtb) < 0)
+        virSecurityDACRestoreSecurityFileLabel(priv, def->os.dtb) < 0)
         rc = -1;
 
     return rc;
@@ -1104,7 +1112,7 @@ virSecurityDACRestoreSavedStateLabel(virSecurityManagerPtr mgr,
     if (!priv->dynamicOwnership)
         return 0;
 
-    return virSecurityDACRestoreSecurityFileLabel(savefile);
+    return virSecurityDACRestoreSecurityFileLabel(priv, savefile);
 }
 
 
