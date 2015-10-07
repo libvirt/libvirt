@@ -132,6 +132,26 @@ int virHostValidateDevice(const char *hvname,
 }
 
 
+int virHostValidateNamespace(const char *hvname,
+                             const char *ns_name,
+                             virHostValidateLevel level,
+                             const char *hint)
+{
+    virHostMsgCheck(hvname, "for namespace %s", ns_name);
+    char nspath[100];
+
+    snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
+
+    if (access(nspath, F_OK) < 0) {
+        virHostMsgFail(level, hint);
+        return -1;
+    }
+
+    virHostMsgPass();
+    return 0;
+}
+
+
 bool virHostValidateHasCPUFlag(const char *name)
 {
     FILE *fp = fopen("/proc/cpuinfo", "r");

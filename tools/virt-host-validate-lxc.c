@@ -33,5 +33,35 @@ int virHostValidateLXC(void)
                                    _("Upgrade to a kernel supporting namespaces")) < 0)
         ret = -1;
 
+    if (virHostValidateNamespace("LXC", "ipc",
+                                 VIR_HOST_VALIDATE_FAIL,
+                                 _("IPC namespace support is required")) < 0)
+        ret = -1;
+
+    if (virHostValidateNamespace("LXC", "mnt",
+                                 VIR_HOST_VALIDATE_FAIL,
+                                 _("Mount namespace support is required")) < 0)
+        ret = -1;
+
+    if (virHostValidateNamespace("LXC", "pid",
+                                 VIR_HOST_VALIDATE_FAIL,
+                                 _("PID namespace support is required")) < 0)
+        ret = -1;
+
+    if (virHostValidateNamespace("LXC", "uts",
+                                 VIR_HOST_VALIDATE_FAIL,
+                                 _("UTS namespace support is required")) < 0)
+        ret = -1;
+
+    if (virHostValidateNamespace("LXC", "net",
+                                 VIR_HOST_VALIDATE_WARN,
+                                 _("Network namespace support is recommended")) < 0)
+        ret = -1;
+
+    if (virHostValidateNamespace("LXC", "user",
+                                 VIR_HOST_VALIDATE_FAIL,
+                                 _("User namespace support is recommended")) < 0)
+        ret = -1;
+
     return ret;
 }

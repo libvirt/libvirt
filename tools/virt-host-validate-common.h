@@ -54,4 +54,9 @@ extern int virHostValidateLinuxKernel(const char *hvname,
                                       virHostValidateLevel level,
                                       const char *hint);
 
+extern int virHostValidateNamespace(const char *hvname,
+                                    const char *ns_name,
+                                    virHostValidateLevel level,
+                                    const char *hint);
+
 #endif /* __VIRT_HOST_VALIDATE_COMMON_H__ */
