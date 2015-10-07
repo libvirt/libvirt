@@ -29,6 +29,7 @@
 #ifdef HAVE_MNTENT_H
 # include <mntent.h>
 #endif /* HAVE_MNTENT_H */
+#include <sys/stat.h>
 
 #include "virutil.h"
 #include "viralloc.h"
@@ -352,5 +353,69 @@ int virHostValidateCGroupController(const char *hvname,
                                    cg_name,
                                    level) < 0)
         return -1;
+    return 0;
+}
+
+int virHostValidateIOMMU(const char *hvname,
+                         virHostValidateLevel level)
+{
+    struct stat sb;
+    const char *bootarg = NULL;
+    bool isAMD = false, isIntel = false;
+
+    if (virHostValidateHasCPUFlag("vmx"))
+        isIntel = true;
+    else if (virHostValidateHasCPUFlag("svm"))
+        isAMD = true;
+    else
+        /* XXX PPC/ARM/etc support */
+        return 0;
+
+    virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
+
+    if (isIntel) {
+        if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
+            virHostMsgPass();
+            bootarg = "intel_iommu=on";
+        } else {
+            virHostMsgFail(level,
+                           "No ACPI DMAR table found, IOMMU either "
+                           "disabled in BIOS or not supported by this "
+                           "hardware platform");
+            return -1;
+        }
+    } else if (isAMD) {
+        if (access("/sys/firmware/acpi/tables/IVRS", F_OK) == 0) {
+            virHostMsgPass();
+            bootarg = "iommu=pt iommu=1";
+        } else {
+            virHostMsgFail(level,
+                           "No ACPI IVRS table found, IOMMU either "
+                           "disabled in BIOS or not supported by this "
+                           "hardware platform");
+            return -1;
+        }
+    } else {
+        virHostMsgFail(level,
+                       "Unknown if this platform has IOMMU support");
+        return -1;
+    }
+
+
+    /* We can only check on newer kernels with iommu groups & vfio */
+    if (stat("/sys/kernel/iommu_groups", &sb) < 0)
+        return 0;
+
+    if (!S_ISDIR(sb.st_mode))
+        return 0;
+
+    virHostMsgCheck(hvname, "%s", _("if IOMMU is enabled by kernel"));
+    if (sb.st_nlink <= 2) {
+        virHostMsgFail(level,
+                       "IOMMU appears to be disabled in kernel. "
+                       "Add %s to kernel cmdline arguments", bootarg);
+        return -1;
+    }
+    virHostMsgPass();
     return 0;
 }

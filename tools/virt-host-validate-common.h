@@ -70,4 +70,7 @@ extern int virHostValidateCGroupController(const char *hvname,
                                            virHostValidateLevel level,
                                            const char *config_name);
 
+extern int virHostValidateIOMMU(const char *hvname,
+                                virHostValidateLevel level);
+
 #endif /* __VIRT_HOST_VALIDATE_COMMON_H__ */
