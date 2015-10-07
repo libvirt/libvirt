@@ -312,6 +312,7 @@ virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
 static int
 virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
 {
+    /* XXX record previous ownership */
     return virSecurityDACSetOwnershipInternal(NULL, NULL, path, uid, gid);
 }
 
@@ -324,7 +325,7 @@ virSecurityDACRestoreSecurityFileLabelInternal(virSecurityDACDataPtr priv,
     VIR_INFO("Restoring DAC user and group on '%s'",
              NULLSTR(src ? src->path : path));
 
-    /* XXX record previous ownership */
+    /* XXX recall previous ownership */
     return virSecurityDACSetOwnershipInternal(priv, src, path, 0, 0);
 }
 
