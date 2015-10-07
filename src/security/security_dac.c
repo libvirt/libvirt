@@ -242,7 +242,6 @@ virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
                                    gid_t gid)
 {
     int rc;
-    int chown_errno;
 
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
              NULLSTR(src ? src->path : path), (long) uid, (long) gid);
@@ -255,9 +254,6 @@ virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
         /* on -2 returned an error was already reported */
         if (rc == -2)
             return -1;
-
-        /* on -1 only errno was set */
-        chown_errno = errno;
     } else {
         struct stat sb;
 
@@ -271,34 +267,34 @@ virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
             path = src->path;
         }
 
-        rc = chown(path, uid, gid);
-        chown_errno = errno;
-
-        if (rc < 0 &&
-            stat(path, &sb) >= 0) {
-            if (sb.st_uid == uid &&
-                sb.st_gid == gid) {
-                /* It's alright, there's nothing to change anyway. */
-                return 0;
-            }
+        if (stat(path, &sb) < 0) {
+            virReportSystemError(errno, _("unable to stat: %s"), path);
+            return -1;
         }
+
+        if (sb.st_uid == uid && sb.st_gid == gid) {
+            /* nothing to chown */
+            return 0;
+        }
+
+        rc = chown(path, uid, gid);
     }
 
     if (rc < 0) {
-        if (chown_errno == EOPNOTSUPP || chown_errno == EINVAL) {
+        if (errno == EOPNOTSUPP || errno == EINVAL) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "supported by filesystem",
                      (long) uid, (long) gid, path);
-        } else if (chown_errno == EPERM) {
+        } else if (errno == EPERM) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "permitted",
                      (long) uid, (long) gid, path);
-        } else if (chown_errno == EROFS) {
+        } else if (errno == EROFS) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "possible on readonly filesystem",
                      (long) uid, (long) gid, path);
         } else {
-            virReportSystemError(chown_errno,
+            virReportSystemError(errno,
                                  _("unable to set user and group to '%ld:%ld' "
                                    "on '%s'"),
                                  (long) uid, (long) gid, path);
