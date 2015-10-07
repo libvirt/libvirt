@@ -306,10 +306,13 @@ virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
 
 
 static int
-virSecurityDACSetOwnership(const char *path, uid_t uid, gid_t gid)
+virSecurityDACSetOwnership(virSecurityDACDataPtr priv,
+                           const char *path,
+                           uid_t uid,
+                           gid_t gid)
 {
     /* XXX record previous ownership */
-    return virSecurityDACSetOwnershipInternal(NULL, NULL, path, uid, gid);
+    return virSecurityDACSetOwnershipInternal(priv, NULL, path, uid, gid);
 }
 
 
@@ -472,7 +475,7 @@ virSecurityDACSetSecurityHostdevLabelHelper(const char *file,
     if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL))
         return -1;
 
-    return virSecurityDACSetOwnership(file, user, group);
+    return virSecurityDACSetOwnership(priv, file, user, group);
 }
 
 
@@ -766,7 +769,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     switch ((virDomainChrType) dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACSetOwnership(dev_source->data.file.path,
+        ret = virSecurityDACSetOwnership(priv, dev_source->data.file.path,
                                          user, group);
         break;
 
@@ -775,11 +778,11 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
             (virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0))
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
-            if ((virSecurityDACSetOwnership(in, user, group) < 0) ||
-                (virSecurityDACSetOwnership(out, user, group) < 0)) {
+            if ((virSecurityDACSetOwnership(priv, in, user, group) < 0) ||
+                (virSecurityDACSetOwnership(priv, out, user, group) < 0)) {
                 goto done;
             }
-        } else if (virSecurityDACSetOwnership(dev_source->data.file.path,
+        } else if (virSecurityDACSetOwnership(priv, dev_source->data.file.path,
                                               user, group) < 0) {
             goto done;
         }
@@ -788,7 +791,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (!dev_source->data.nix.listen) {
-            if (virSecurityDACSetOwnership(dev_source->data.nix.path,
+            if (virSecurityDACSetOwnership(priv, dev_source->data.nix.path,
                                            user, group) < 0)
                 goto done;
         }
@@ -1053,19 +1056,19 @@ virSecurityDACSetSecurityAllLabel(virSecurityManagerPtr mgr,
         return -1;
 
     if (def->os.loader && def->os.loader->nvram &&
-        virSecurityDACSetOwnership(def->os.loader->nvram, user, group) < 0)
+        virSecurityDACSetOwnership(priv, def->os.loader->nvram, user, group) < 0)
         return -1;
 
     if (def->os.kernel &&
-        virSecurityDACSetOwnership(def->os.kernel, user, group) < 0)
+        virSecurityDACSetOwnership(priv, def->os.kernel, user, group) < 0)
         return -1;
 
     if (def->os.initrd &&
-        virSecurityDACSetOwnership(def->os.initrd, user, group) < 0)
+        virSecurityDACSetOwnership(priv, def->os.initrd, user, group) < 0)
         return -1;
 
     if (def->os.dtb &&
-        virSecurityDACSetOwnership(def->os.dtb, user, group) < 0)
+        virSecurityDACSetOwnership(priv, def->os.dtb, user, group) < 0)
         return -1;
 
     return 0;
@@ -1087,7 +1090,7 @@ virSecurityDACSetSavedStateLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetImageIds(secdef, priv, &user, &group) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(savefile, user, group);
+    return virSecurityDACSetOwnership(priv, savefile, user, group);
 }
 
 
@@ -1406,7 +1409,7 @@ virSecurityDACDomainSetDirLabel(virSecurityManagerPtr mgr,
     if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(path, user, group);
+    return virSecurityDACSetOwnership(priv, path, user, group);
 }
 
 virSecurityDriver virSecurityDriverDAC = {
