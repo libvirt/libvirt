@@ -7796,7 +7796,7 @@ virDomainDefHasMemoryHotplug(const virDomainDef *def)
  * or the sum of memory sizes of NUMA nodes in case NUMA is enabled in @def.
  */
 unsigned long long
-virDomainDefGetMemoryInitial(virDomainDefPtr def)
+virDomainDefGetMemoryInitial(const virDomainDef *def)
 {
     return def->mem.initial_memory;
 }
