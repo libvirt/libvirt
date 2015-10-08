@@ -2057,7 +2057,12 @@ virFileOpenForceOwnerMode(const char *path, int fd, mode_t mode,
  * virFileOpenAs(). It forks, then the child does setuid+setgid to
  * given uid:gid and attempts to open the file, while the parent just
  * calls recvfd to get the open fd back from the child. returns the
- * fd, or -errno if there is an error. */
+ * fd, or -errno if there is an error. Additionally, to avoid another
+ * round-trip to unlink the file in a forked process; on error if this
+ * function created the file, but failed to perform some action after
+ * creation, then perform the unlink of the file. The storage driver
+ * buildVol backend function expects the file to be deleted on error.
+ */
 static int
 virFileOpenForked(const char *path, int openflags, mode_t mode,
                   uid_t uid, gid_t gid, unsigned int flags)
@@ -2069,6 +2074,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     int pair[2] = { -1, -1 };
     gid_t *groups;
     int ngroups;
+    bool created = false;
 
     /* parent is running as root, but caller requested that the
      * file be opened as some other user and/or group). The
@@ -2113,6 +2119,8 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
                                  path);
             goto childerror;
         }
+        if (openflags & O_CREAT)
+            created = true;
 
         /* File is successfully open. Set permissions if requested. */
         ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
@@ -2141,8 +2149,11 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         /* XXX This makes assumptions about errno being < 255, which is
          * not true on Hurd.  */
         VIR_FORCE_CLOSE(pair[1]);
-        if (ret < 0)
+        if (ret < 0) {
             VIR_FORCE_CLOSE(fd);
+            if (created)
+                unlink(path);
+        }
         ret = -ret;
         if ((ret & 0xff) != ret) {
             VIR_WARN("unable to pass desired return value %d", ret);
@@ -2218,13 +2229,18 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
  * the file already existed with different permissions).
  *
  * The return value (if non-negative) is the file descriptor, left
- * open.  Returns -errno on failure.
+ * open.  Returns -errno on failure. Additionally, to avoid another
+ * round-trip to unlink the file; on error if this function created the
+ * file, but failed to perform some action after creation, then perform
+ * the unlink of the file. The storage driver buildVol backend function
+ * expects the file to be deleted on error.
  */
 int
 virFileOpenAs(const char *path, int openflags, mode_t mode,
               uid_t uid, gid_t gid, unsigned int flags)
 {
     int ret = 0, fd = -1;
+    bool created = false;
 
     /* allow using -1 to mean "current value" */
     if (uid == (uid_t) -1)
@@ -2246,6 +2262,8 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
             if (!(flags & VIR_FILE_OPEN_FORK))
                 goto error;
         } else {
+            if (openflags & O_CREAT)
+                created = true;
             ret = virFileOpenForceOwnerMode(path, fd, mode, uid, gid, flags);
             if (ret < 0)
                 goto error;
@@ -2288,6 +2306,8 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
     if (fd >= 0) {
         /* some other failure after the open succeeded */
         VIR_FORCE_CLOSE(fd);
+        if (created)
+            unlink(path);
     }
     /* whoever failed the open last has already set ret = -errno */
     return ret;
