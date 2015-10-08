@@ -48,6 +48,16 @@ typedef int (*virStorageBackendStopPool)(virConnectPtr conn,
 typedef int (*virStorageBackendDeletePool)(virConnectPtr conn,
                                            virStoragePoolObjPtr pool,
                                            unsigned int flags);
+
+/* A 'buildVol' backend must remove any volume created on error since
+ * the storage driver does not distinguish whether the failure is due
+ * to failure to create the volume, to reserve any space necessary for
+ * the volume, to get data about the volume, to change it's accessibility,
+ * etc. This avoids issues arising from a creation failure due to some
+ * external action which created a volume of the same name that libvirt
+ * was not aware of between checking the pool and the create attempt. It
+ * also avoids extra round trips to just delete a file.
+ */
 typedef int (*virStorageBackendBuildVol)(virConnectPtr conn,
                                          virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol,
