@@ -1859,6 +1859,8 @@ storageVolCreateXML(virStoragePoolPtr obj,
 
         buildret = backend->buildVol(obj->conn, pool, buildvoldef, flags);
 
+        VIR_FREE(buildvoldef);
+
         storageDriverLock();
         virStoragePoolObjLock(pool);
         storageDriverUnlock();
@@ -1867,7 +1869,6 @@ storageVolCreateXML(virStoragePoolPtr obj,
         pool->asyncjobs--;
 
         if (buildret < 0) {
-            VIR_FREE(buildvoldef);
             storageVolDeleteInternal(volobj, backend, pool, voldef,
                                      0, false);
             voldef = NULL;
