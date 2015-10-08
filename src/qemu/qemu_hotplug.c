@@ -1767,11 +1767,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     int id;
     int ret = -1;
 
-    if (vm->def->nmems == vm->def->mem.memory_slots) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("no free memory device slot available"));
+    qemuDomainMemoryDeviceAlignSize(vm->def, mem);
+
+    if (qemuDomainDefValidateMemoryHotplug(vm->def, priv->qemuCaps, mem) < 0)
         goto cleanup;
-    }
 
     if (virAsprintf(&mem->info.alias, "dimm%zu", vm->def->nmems) < 0)
         goto cleanup;
@@ -1784,8 +1783,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 
     if (!(devstr = qemuBuildMemoryDeviceStr(mem, vm->def, priv->qemuCaps)))
         goto cleanup;
-
-    qemuDomainMemoryDeviceAlignSize(vm->def, mem);
 
     if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,
                                   mem->targetNode, mem->sourceNodes, NULL,

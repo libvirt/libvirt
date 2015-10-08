@@ -3559,6 +3559,84 @@ qemuDomainMachineIsS390CCW(const virDomainDef *def)
 
 
 /**
+ * qemuDomainDefValidateMemoryHotplug:
+ * @def: domain definition
+ * @qemuCaps: qemu capabilities object
+ * @mem: definition of memory device that is to be added to @def with hotplug,
+ *       NULL in case of regular VM startup
+ *
+ * Validates that the domain definition and memory modules have valid
+ * configuration and are possibly able to accept @mem via hotplug if it's
+ * non-NULL.
+ *
+ * Returns 0 on success; -1 and a libvirt error on error.
+ */
+int
+qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
+                                   virQEMUCapsPtr qemuCaps,
+                                   const virDomainMemoryDef *mem)
+{
+    unsigned int nmems = def->nmems;
+    unsigned long long hotplugSpace;
+    unsigned long long hotplugMemory = 0;
+    size_t i;
+
+    hotplugSpace = def->mem.max_memory - virDomainDefGetMemoryInitial(def);
+
+    if (mem) {
+        nmems++;
+        hotplugMemory = mem->size;
+    }
+
+    if (!virDomainDefHasMemoryHotplug(def)) {
+        if (nmems) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot use/hotplug a memory device when domain "
+                             "'maxMemory' is not defined"));
+            return -1;
+        }
+
+        return 0;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory hotplug isn't supported by this QEMU binary"));
+        return -1;
+    }
+
+    /* due to guest support, qemu would silently enable NUMA with one node
+     * once the memory hotplug backend is enabled. To avoid possible
+     * confusion we will enforce user originated numa configuration along
+     * with memory hotplug. */
+    if (virDomainNumaGetNodeCount(def->numa) == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("At least one numa node has to be configured when "
+                         "enabling memory hotplug"));
+        return -1;
+    }
+
+    if (nmems > def->mem.memory_slots) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("memory device count '%u' exceeds slots count '%u'"),
+                       nmems, def->mem.memory_slots);
+        return -1;
+    }
+
+    for (i = 0; i < def->nmems; i++)
+        hotplugMemory += def->mems[i]->size;
+
+    if (hotplugMemory > hotplugSpace) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory device total size exceeds hotplug space"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * qemuDomainUpdateCurrentMemorySize:
  *
  * Updates the current balloon size from the monitor if necessary. In case when

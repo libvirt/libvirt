@@ -9326,26 +9326,12 @@ qemuBuildCommandLine(virConnectPtr conn,
         qemuDomainAlignMemorySizes(def) < 0)
         goto error;
 
+    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
+        goto error;
+
     virCommandAddArg(cmd, "-m");
 
     if (virDomainDefHasMemoryHotplug(def)) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("memory hotplug isn't supported by this QEMU binary"));
-            goto error;
-        }
-
-        /* due to guest support, qemu would silently enable NUMA with one node
-         * once the memory hotplug backend is enabled. To avoid possible
-         * confusion we will enforce user originated numa configuration along
-         * with memory hotplug. */
-        if (virDomainNumaGetNodeCount(def->numa) == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("At least one numa node has to be configured when "
-                             "enabling memory hotplug"));
-            goto error;
-        }
-
         /* Use the 'k' suffix to let qemu handle the units */
         virCommandAddArgFormat(cmd, "size=%lluk,slots=%u,maxmem=%lluk",
                                virDomainDefGetMemoryInitial(def),
@@ -9408,12 +9394,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
 
-    if (def->nmems > def->mem.memory_slots) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("memory device count '%zu' exceeds slots count '%u'"),
-                       def->nmems, def->mem.memory_slots);
-        goto error;
-    }
 
     for (i = 0; i < def->nmems; i++) {
         char *backStr;
