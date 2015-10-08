@@ -1619,6 +1619,25 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
 }
 
 
+static void
+storageVolRemoveFromPool(virStoragePoolObjPtr pool,
+                         virStorageVolDefPtr vol)
+{
+    size_t i;
+
+    for (i = 0; i < pool->volumes.count; i++) {
+        if (pool->volumes.objs[i] == vol) {
+            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
+                     vol->name, pool->def->name);
+            virStorageVolDefFree(vol);
+
+            VIR_DELETE_ELEMENT(pool->volumes.objs, i, pool->volumes.count);
+            break;
+        }
+    }
+}
+
+
 static int
 storageVolDeleteInternal(virStorageVolPtr obj,
                          virStorageBackendPtr backend,
@@ -1627,7 +1646,6 @@ storageVolDeleteInternal(virStorageVolPtr obj,
                          unsigned int flags,
                          bool updateMeta)
 {
-    size_t i;
     int ret = -1;
 
     if (!backend->deleteVol) {
@@ -1651,16 +1669,7 @@ storageVolDeleteInternal(virStorageVolPtr obj,
         }
     }
 
-    for (i = 0; i < pool->volumes.count; i++) {
-        if (pool->volumes.objs[i] == vol) {
-            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
-                     vol->name, pool->def->name);
-            virStorageVolDefFree(vol);
-
-            VIR_DELETE_ELEMENT(pool->volumes.objs, i, pool->volumes.count);
-            break;
-        }
-    }
+    storageVolRemoveFromPool(pool, vol);
     ret = 0;
 
  cleanup:
