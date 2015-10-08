@@ -257,7 +257,7 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendSheepdogBuildVol(virConnectPtr conn,
+virStorageBackendSheepdogBuildVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
@@ -277,9 +277,6 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn,
     virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    if (virStorageBackendSheepdogRefreshVol(conn, pool, vol) < 0)
         goto cleanup;
 
     ret = 0;
