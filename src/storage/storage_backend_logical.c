@@ -731,6 +731,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     virErrorPtr err;
     struct stat sb;
+    bool created = false;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -771,6 +772,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     if (virCommandRun(cmd, NULL) < 0)
         goto error;
 
+    created = true;
     virCommandFree(cmd);
     cmd = NULL;
 
@@ -816,7 +818,8 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
  error:
     err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
-    virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
+    if (created)
+        virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
     virCommandFree(cmd);
     virSetError(err);
     virFreeError(err);
