@@ -679,6 +679,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     uid_t uid;
     mode_t mode;
     bool filecreated = false;
+    int ret = -1;
 
     if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
         && (((geteuid() == 0)
@@ -703,11 +704,11 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 
     if (!filecreated) {
         if (virCommandRun(cmd, NULL) < 0)
-            return -1;
+            goto cleanup;
         if (stat(vol->target.path, &st) < 0) {
             virReportSystemError(errno,
                                  _("failed to create %s"), vol->target.path);
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -721,7 +722,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                              _("cannot chown %s to (%u, %u)"),
                              vol->target.path, (unsigned int) uid,
                              (unsigned int) gid);
-        return -1;
+        goto cleanup;
     }
 
     mode = (vol->target.perms->mode == (mode_t) -1 ?
@@ -730,9 +731,13 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
         virReportSystemError(errno,
                              _("cannot set mode of '%s' to %04o"),
                              vol->target.path, mode);
-        return -1;
+        goto cleanup;
     }
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
 }
 
 enum {
