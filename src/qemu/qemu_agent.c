@@ -1461,7 +1461,7 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data = NULL;
-    int ndata;
+    ssize_t ndata;
 
     if (!(cmd = qemuAgentMakeCommand("guest-get-vcpus", NULL)))
         return -1;
@@ -1767,7 +1767,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
 {
     size_t i, j, k;
     int ret = -1;
-    int ndata = 0, ndisk;
+    ssize_t ndata = 0, ndisk;
     char **alias;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
@@ -1810,7 +1810,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
 
         if (!entry) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("array element '%zd' of '%d' missing in "
+                           _("array element '%zd' of '%zd' missing in "
                              "guest-get-fsinfo return data"),
                            i, ndata);
             goto cleanup;
@@ -1871,7 +1871,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
 
             if (!disk) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("array element '%zd' of '%d' missing in "
+                               _("array element '%zd' of '%zd' missing in "
                                  "guest-get-fsinfo 'disk' data"),
                                j, ndisk);
                 goto cleanup;
@@ -1954,7 +1954,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
 {
     int ret = -1;
     size_t i, j;
-    int size = -1;
+    ssize_t size = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr ret_array = NULL;
@@ -1994,7 +1994,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
         virJSONValuePtr tmp_iface = virJSONValueArrayGet(ret_array, i);
         virJSONValuePtr ip_addr_arr = NULL;
         const char *hwaddr, *ifname_s, *name = NULL;
-        int ip_addr_arr_size;
+        ssize_t ip_addr_arr_size;
         virDomainInterfacePtr iface = NULL;
 
         /* Shouldn't happen but doesn't hurt to check neither */

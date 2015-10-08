@@ -369,7 +369,7 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
     virJSONValuePtr clients;
     virJSONValuePtr services;
     size_t i;
-    int n;
+    ssize_t n;
     unsigned int min_workers;
     unsigned int max_workers;
     unsigned int priority_workers;

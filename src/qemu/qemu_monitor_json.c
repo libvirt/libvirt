@@ -1265,7 +1265,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
     int ret = -1;
     size_t i;
     int *threads = NULL;
-    int ncpus;
+    ssize_t ncpus;
 
     if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3061,7 +3061,7 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
     int ret = -1;
     const char *tmp;
     virJSONValuePtr returnArray, entry, table, element;
-    int nTable;
+    ssize_t nTable;
     size_t i;
     virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
 
@@ -4090,7 +4090,7 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
-    int nr_results;
+    ssize_t nr_results;
     size_t i;
     virHashTablePtr blockJobs = NULL;
 
@@ -4597,7 +4597,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorMachineInfoPtr *infolist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *machines = NULL;
@@ -4777,7 +4777,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **commandlist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *commands = NULL;
@@ -4845,7 +4845,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **eventlist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *events = NULL;
@@ -4922,7 +4922,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     virJSONValuePtr data = NULL;
     virJSONValuePtr array = NULL;
     char **paramlist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *params = NULL;
@@ -5093,7 +5093,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **typelist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *types = NULL;
@@ -5162,7 +5162,7 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorJSONListPathPtr *pathlist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *paths = NULL;
@@ -5408,7 +5408,7 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **proplist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *props = NULL;
@@ -5527,7 +5527,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
     virJSONValuePtr caps;
     char **list = NULL;
     size_t i;
-    int n;
+    ssize_t n;
 
     *capabilities = NULL;
 
@@ -5804,7 +5804,7 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **list = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *array = NULL;
@@ -6167,7 +6167,7 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
     virCPUx86Data *x86Data = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
-    int n;
+    ssize_t n;
     int ret = -1;
 
     /* look up if the property exists before asking */
@@ -6330,7 +6330,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorIOThreadInfoPtr *infolist = NULL;
-    int n = 0;
+    ssize_t n = 0;
     size_t i;
 
     *iothreads = NULL;

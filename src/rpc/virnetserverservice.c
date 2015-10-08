@@ -328,7 +328,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     virNetServerServicePtr svc;
     virJSONValuePtr socks;
     size_t i;
-    int n;
+    ssize_t n;
     unsigned int max;
 
     if (virNetServerServiceInitialize() < 0)

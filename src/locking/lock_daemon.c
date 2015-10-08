@@ -184,7 +184,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     virJSONValuePtr lockspaces;
     virNetServerPtr srv;
     size_t i;
-    int n;
+    ssize_t n;
 
     if (VIR_ALLOC(lockd) < 0)
         return NULL;

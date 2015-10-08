@@ -3599,7 +3599,7 @@ networkGetDHCPLeases(virNetworkPtr network,
     size_t i, j;
     size_t nleases = 0;
     int rv = -1;
-    int size = 0;
+    ssize_t size = 0;
     int custom_lease_file_len = 0;
     bool need_results = !!leases;
     long long currtime = 0;

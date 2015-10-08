@@ -293,7 +293,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 {
     virLockSpacePtr lockspace;
     virJSONValuePtr resources;
-    int n;
+    ssize_t n;
     size_t i;
 
     VIR_DEBUG("object=%p", object);
@@ -336,7 +336,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         const char *tmp;
         virJSONValuePtr owners;
         size_t j;
-        int m;
+        ssize_t m;
 
         if (VIR_ALLOC(res) < 0)
             goto error;
