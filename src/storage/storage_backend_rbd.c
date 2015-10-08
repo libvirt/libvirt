@@ -532,9 +532,6 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0)
-        goto cleanup;
-
     ret = 0;
 
  cleanup:
