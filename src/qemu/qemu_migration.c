@@ -4058,6 +4058,7 @@ static void qemuMigrationIOFunc(void *arg)
     if (virStreamFinish(data->st) < 0)
         goto error;
 
+    VIR_FORCE_CLOSE(data->sock);
     VIR_FREE(buffer);
 
     return;
@@ -4075,7 +4076,11 @@ static void qemuMigrationIOFunc(void *arg)
     }
 
  error:
-    virCopyLastError(&data->err);
+    /* Let the source qemu know that the transfer cant continue anymore.
+     * Don't copy the error for EPIPE as destination has the actual error. */
+    VIR_FORCE_CLOSE(data->sock);
+    if (!virLastErrorIsSystemErrno(EPIPE))
+        virCopyLastError(&data->err);
     virResetLastError();
     VIR_FREE(buffer);
 }
@@ -4399,9 +4404,14 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         }
     }
 
-    if (spec->fwdType != MIGRATION_FWD_DIRECT &&
-        !(iothread = qemuMigrationStartTunnel(spec->fwd.stream, fd)))
-        goto cancel;
+    if (spec->fwdType != MIGRATION_FWD_DIRECT) {
+        if (!(iothread = qemuMigrationStartTunnel(spec->fwd.stream, fd)))
+            goto cancel;
+        /* If we've created a tunnel, then the 'fd' will be closed in the
+         * qemuMigrationIOFunc as data->sock.
+         */
+        fd = -1;
+    }
 
     rc = qemuMigrationWaitForCompletion(driver, vm,
                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
