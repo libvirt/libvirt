@@ -2421,7 +2421,15 @@ virFileRemove(const char *path,
 }
 
 
-/* return -errno on failure, or 0 on success */
+/* Attempt to create a directory and possibly adjust its owner/group and
+ * permissions.
+ *
+ * return 0 on success or -errno on failure. Additionally to avoid another
+ * round-trip to remove the directory on failure, perform the rmdir when
+ * a mkdir was successful, but some other failure would cause a -1 return.
+ * The storage driver buildVol backend function expects the directory to
+ * be deleted on error.
+ */
 static int
 virDirCreateNoFork(const char *path,
                    mode_t mode, uid_t uid, gid_t gid,
@@ -2429,6 +2437,7 @@ virDirCreateNoFork(const char *path,
 {
     int ret = 0;
     struct stat st;
+    bool created = false;
 
     if (!((flags & VIR_DIR_CREATE_ALLOW_EXIST) && virFileExists(path))) {
         if (mkdir(path, mode) < 0) {
@@ -2437,6 +2446,7 @@ virDirCreateNoFork(const char *path,
                                  path);
             goto error;
         }
+        created = true;
     }
 
     if (stat(path, &st) == -1) {
@@ -2460,10 +2470,30 @@ virDirCreateNoFork(const char *path,
         goto error;
     }
  error:
+    if (ret < 0 && created)
+        rmdir(path);
     return ret;
 }
 
-/* return -errno on failure, or 0 on success */
+/*
+ * virDirCreate:
+ * @path: directory to create
+ * @mode: mode to use on creation or when forcing permissions
+ * @uid: uid that should own directory
+ * @gid: gid that should own directory
+ * @flags: bit-wise or of VIR_DIR_CREATE_* flags
+ *
+ * Attempt to create a directory and possibly adjust its owner/group and
+ * permissions. If conditions allow, use the *NoFork code in order to create
+ * the directory under current owner/group rather than via a forked process.
+ *
+ * return 0 on success or -errno on failure. Additionally to avoid another
+ * round-trip to remove the directory on failure, perform the rmdir if a
+ * mkdir was successful, but some other failure would cause a -1 return.
+ * The storage driver buildVol backend function expects the directory to
+ * be deleted on error.
+ *
+ */
 int
 virDirCreate(const char *path,
              mode_t mode, uid_t uid, gid_t gid,
@@ -2474,6 +2504,7 @@ virDirCreate(const char *path,
     int status = 0, ret = 0;
     gid_t *groups;
     int ngroups;
+    bool created = false;
 
     /* Everything after this check is crazyness to allow setting uid/gid
      * on directories that are on root-squash NFS shares. We only want
@@ -2561,6 +2592,7 @@ virDirCreate(const char *path,
         }
         goto childerror;
     }
+    created = true;
 
     /* check if group was set properly by creating after
      * setgid. If not, try doing it with chown */
@@ -2587,6 +2619,9 @@ virDirCreate(const char *path,
     }
 
  childerror:
+    if (ret != 0 && created)
+        rmdir(path);
+
     if ((ret & 0xff) != ret) {
         VIR_WARN("unable to pass desired return value %d", ret);
         ret = 0xff;
