@@ -485,6 +485,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     int operation_flags;
     bool reflink_copy = false;
     mode_t open_mode = VIR_STORAGE_DEFAULT_VOL_PERM_MODE;
+    bool created = false;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
                   VIR_STORAGE_VOL_CREATE_REFLINK,
@@ -531,6 +532,7 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
                              vol->target.path);
         goto cleanup;
     }
+    created = true;
 
     if (vol->target.nocow) {
 #ifdef __linux__
@@ -557,6 +559,10 @@ virStorageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         ret = -1;
 
  cleanup:
+    if (ret < 0 && created)
+        ignore_value(virFileRemove(vol->target.path,
+                                   vol->target.perms->uid,
+                                   vol->target.perms->gid));
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
