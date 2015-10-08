@@ -5272,44 +5272,8 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
 }
 
 
-static bool
-qemuCheckMemoryDimmConflict(virDomainDefPtr def,
-                            virDomainMemoryDefPtr mem)
-{
-    size_t i;
-
-    for (i = 0; i < def->nmems; i++) {
-         virDomainMemoryDefPtr tmp = def->mems[i];
-
-         if (tmp == mem ||
-             tmp->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
-             continue;
-
-         if (mem->info.addr.dimm.slot == tmp->info.addr.dimm.slot) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("memory device slot '%u' is already being "
-                              "used by another memory device"),
-                            mem->info.addr.dimm.slot);
-             return true;
-         }
-
-         if (mem->info.addr.dimm.base != 0 &&
-             mem->info.addr.dimm.base == tmp->info.addr.dimm.base) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("memory device base '0x%llx' is already being "
-                              "used by another memory device"),
-                            mem->info.addr.dimm.base);
-             return true;
-         }
-    }
-
-    return false;
-}
-
 char *
-qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
-                         virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps)
+qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -5321,35 +5285,10 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
 
     switch ((virDomainMemoryModel) mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PC_DIMM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support the pc-dimm device"));
-            return NULL;
-        }
-
-        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
-            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only 'dimm' addresses are supported for the "
-                             "pc-dimm device"));
-            return NULL;
-        }
-
-        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
-            mem->info.addr.dimm.slot >= def->mem.memory_slots) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("memory device slot '%u' exceeds slots count '%u'"),
-                           mem->info.addr.dimm.slot, def->mem.memory_slots);
-            return NULL;
-        }
-
         virBufferAsprintf(&buf, "pc-dimm,node=%d,memdev=mem%s,id=%s",
                           mem->targetNode, mem->info.alias, mem->info.alias);
 
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
-            if (qemuCheckMemoryDimmConflict(def, mem))
-                return NULL;
-
             virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
             virBufferAsprintf(&buf, ",addr=%llu", mem->info.addr.dimm.base);
         }
@@ -9403,7 +9342,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                                       qemuCaps, cfg)))
             goto error;
 
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i], def, qemuCaps))) {
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i]))) {
             VIR_FREE(backStr);
             goto error;
         }

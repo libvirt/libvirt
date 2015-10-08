@@ -173,9 +173,7 @@ int qemuBuildMemoryBackendStr(unsigned long long size,
                               virJSONValuePtr *backendProps,
                               bool force);
 
-char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
-                               virDomainDefPtr def,
-                               virQEMUCapsPtr qemuCaps);
+char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem);
 
 /* Legacy, pre device support */
 char *qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,

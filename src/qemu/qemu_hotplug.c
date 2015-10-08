@@ -1781,7 +1781,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (vm->def->mem.cur_balloon == virDomainDefGetMemoryActual(vm->def))
         fix_balloon = true;
 
-    if (!(devstr = qemuBuildMemoryDeviceStr(mem, vm->def, priv->qemuCaps)))
+    if (!(devstr = qemuBuildMemoryDeviceStr(mem)))
         goto cleanup;
 
     if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,

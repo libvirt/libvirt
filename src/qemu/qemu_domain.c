@@ -1347,14 +1347,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_MEMORY &&
-        !virDomainDefHasMemoryHotplug(def)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("maxMemory has to be specified when using memory "
-                         "devices "));
-        goto cleanup;
-    }
-
     ret = 0;
 
  cleanup:
@@ -3558,6 +3550,79 @@ qemuDomainMachineIsS390CCW(const virDomainDef *def)
 }
 
 
+static bool
+qemuCheckMemoryDimmConflict(const virDomainDef *def,
+                            const virDomainMemoryDef *mem)
+{
+    size_t i;
+
+    for (i = 0; i < def->nmems; i++) {
+         virDomainMemoryDefPtr tmp = def->mems[i];
+
+         if (tmp == mem ||
+             tmp->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
+             continue;
+
+         if (mem->info.addr.dimm.slot == tmp->info.addr.dimm.slot) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("memory device slot '%u' is already being "
+                              "used by another memory device"),
+                            mem->info.addr.dimm.slot);
+             return true;
+         }
+
+         if (mem->info.addr.dimm.base != 0 &&
+             mem->info.addr.dimm.base == tmp->info.addr.dimm.base) {
+             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("memory device base '0x%llx' is already being "
+                              "used by another memory device"),
+                            mem->info.addr.dimm.base);
+             return true;
+         }
+    }
+
+    return false;
+}
+static int
+qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
+                                         const virDomainDef *def)
+{
+    switch ((virDomainMemoryModel) mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM &&
+            mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only 'dimm' addresses are supported for the "
+                             "pc-dimm device"));
+            return -1;
+        }
+
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
+            if (mem->info.addr.dimm.slot >= def->mem.memory_slots) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("memory device slot '%u' exceeds slots "
+                                 "count '%u'"),
+                               mem->info.addr.dimm.slot, def->mem.memory_slots);
+                return -1;
+            }
+
+
+            if (qemuCheckMemoryDimmConflict(def, mem))
+                return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid memory device type"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuDomainDefValidateMemoryHotplug:
  * @def: domain definition
@@ -3586,6 +3651,9 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
     if (mem) {
         nmems++;
         hotplugMemory = mem->size;
+
+        if (qemuDomainDefValidateMemoryHotplugDevice(mem, def) < 0)
+            return -1;
     }
 
     if (!virDomainDefHasMemoryHotplug(def)) {
@@ -3623,8 +3691,14 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         return -1;
     }
 
-    for (i = 0; i < def->nmems; i++)
+    for (i = 0; i < def->nmems; i++) {
         hotplugMemory += def->mems[i]->size;
+
+        /* already existing devices don't need to be checked on hotplug */
+        if (!mem &&
+            qemuDomainDefValidateMemoryHotplugDevice(def->mems[i], def) < 0)
+            return -1;
+    }
 
     if (hotplugMemory > hotplugSpace) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
