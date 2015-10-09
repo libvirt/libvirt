@@ -31,7 +31,7 @@ INCLUDES =	-I../gnulib/lib					\
 		-I../include					\
 		-I$(top_srcdir)/include				\
 		-I$(srcdir)/util				\
-		-I$(builddir)/util				\
+		-I./util					\
 		-DIN_LIBVIRT					\
 		-Dabs_topbuilddir="\"$(abs_topbuilddir)\""	\
 		-Dabs_topsrcdir="\"$(abs_topsrcdir)\""		\
