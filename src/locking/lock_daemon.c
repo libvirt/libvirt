@@ -1322,10 +1322,9 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    /* rv == 1, means we setup everything from saved state,
-     * so only (possibly) daemonize and setup stuff from
-     * scratch if rv == 0
-     */
+    /* rv == 1 means we successfully restored from the saved internal state
+     * (but still need to add @lockProgram into @srv). rv == 0 means that no
+     * saved state is present, therefore initialize from scratch here. */
     if (rv == 0) {
         if (godaemon) {
             char ebuf[1024];
@@ -1366,6 +1365,8 @@ int main(int argc, char **argv) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
+    } else if (rv == 1) {
+        srv = virNetDaemonGetServer(lockDaemon->dmn, 0);
     }
 
     if (timeout != -1) {
