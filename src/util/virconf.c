@@ -38,6 +38,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF
 
@@ -1052,4 +1053,59 @@ virConfWriteMem(char *memory, int *len, virConfPtr conf)
     VIR_FREE(content);
     *len = use;
     return use;
+}
+
+static char *
+virConfLoadConfigPath(const char *name)
+{
+    char *path;
+    if (geteuid() == 0) {
+        if (virAsprintf(&path, "%s/libvirt/libvirt%s%s.conf",
+                        SYSCONFDIR,
+                        name ? "-" : "",
+                        name ? name : "") < 0)
+            return NULL;
+    } else {
+        char *userdir = virGetUserConfigDirectory();
+        if (!userdir)
+            return NULL;
+
+        if (virAsprintf(&path, "%s/libvirt%s%s.conf",
+                        userdir,
+                        name ? "-" : "",
+                        name ? name : "") < 0) {
+            VIR_FREE(userdir);
+            return NULL;
+        }
+        VIR_FREE(userdir);
+    }
+
+    return path;
+}
+
+int
+virConfLoadConfig(virConfPtr *conf, const char *name)
+{
+    char *path = NULL;
+    int ret = -1;
+
+    *conf = NULL;
+
+    if (!(path = virConfLoadConfigPath(name)))
+        goto cleanup;
+
+    if (!virFileExists(path)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Loading config file '%s'", path);
+    if (!(*conf = virConfReadFile(path, 0)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
 }

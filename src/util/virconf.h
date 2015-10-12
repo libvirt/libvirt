@@ -96,5 +96,6 @@ int virConfWriteFile(const char *filename,
 int virConfWriteMem(char *memory,
                     int *len,
                     virConfPtr conf);
+int virConfLoadConfig(virConfPtr *conf, const char *name);
 
 #endif /* __VIR_CONF_H__ */

@@ -1332,6 +1332,7 @@ virRun;
 virConfFree;
 virConfFreeValue;
 virConfGetValue;
+virConfLoadConfig;
 virConfNew;
 virConfReadFile;
 virConfReadMem;

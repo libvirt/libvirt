@@ -908,59 +908,6 @@ virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
     return -1;
 }
 
-
-static char *
-virConnectGetConfigFilePath(void)
-{
-    char *path;
-    if (geteuid() == 0) {
-        if (virAsprintf(&path, "%s/libvirt/libvirt.conf",
-                        SYSCONFDIR) < 0)
-            return NULL;
-    } else {
-        char *userdir = virGetUserConfigDirectory();
-        if (!userdir)
-            return NULL;
-
-        if (virAsprintf(&path, "%s/libvirt.conf",
-                        userdir) < 0) {
-            VIR_FREE(userdir);
-            return NULL;
-        }
-        VIR_FREE(userdir);
-    }
-
-    return path;
-}
-
-
-static int
-virConnectGetConfigFile(virConfPtr *conf)
-{
-    char *filename = NULL;
-    int ret = -1;
-
-    *conf = NULL;
-
-    if (!(filename = virConnectGetConfigFilePath()))
-        goto cleanup;
-
-    if (!virFileExists(filename)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Loading config file '%s'", filename);
-    if (!(*conf = virConfReadFile(filename, 0)))
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(filename);
-    return ret;
-}
-
 #define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
 
@@ -1078,7 +1025,7 @@ do_open(const char *name,
     if (ret == NULL)
         return NULL;
 
-    if (virConnectGetConfigFile(&conf) < 0)
+    if (virConfLoadConfig(&conf, NULL) < 0)
         goto failed;
 
     if (name && name[0] == '\0')
