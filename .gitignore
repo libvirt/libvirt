@@ -183,6 +183,7 @@
 /tools/virt-login-shell
 /tools/virsh
 /tools/virsh-*-edit.c
+/tools/virt-admin
 /tools/virt-*-validate
 /tools/virt-sanlock-cleanup
 /tools/wireshark/src/plugin.c

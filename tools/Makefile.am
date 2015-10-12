@@ -1,4 +1,4 @@
-## Copyright (C) 2005-2014 Red Hat, Inc.
+## Copyright (C) 2005-2015 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -63,7 +63,7 @@ confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh virt-host-validate
+bin_PROGRAMS = virsh virt-host-validate virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 
 if WITH_SANLOCK
@@ -230,6 +230,28 @@ virsh_CFLAGS =							\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)				\
 		$(LIBXML_CFLAGS)
+
+virt_admin_SOURCES =						\
+		virt-admin.c virt-admin.h			\
+		$(NULL)
+
+virt_admin_LDFLAGS =						\
+		$(AM_LDFLAGS)					\
+		$(COVERAGE_LDFLAGS)				\
+		$(STATIC_BINARIES)				\
+		$(PIE_LDFLAGS)					\
+		$(NULL)
+virt_admin_LDADD =						\
+		../src/libvirt-admin.la				\
+		libvirt_shell.la				\
+		$(LIBXML_LIBS)					\
+		$(NULL)
+virt_admin_CFLAGS =						\
+		$(WARN_CFLAGS)					\
+		$(PIE_CFLAGS)					\
+		$(COVERAGE_CFLAGS)				\
+		$(LIBXML_CFLAGS)				\
+		$(READLINE_CFLAGS)
 BUILT_SOURCES =
 
 if WITH_WIN_ICON
