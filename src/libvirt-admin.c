@@ -27,6 +27,7 @@
 #include "configmake.h"
 
 #include "viralloc.h"
+#include "virconf.h"
 #include "virlog.h"
 #include "virnetclient.h"
 #include "virobject.h"
@@ -95,65 +96,90 @@ virAdmInitialize(void)
 }
 
 static char *
-getSocketPath(const char *name)
+getSocketPath(virURIPtr uri)
 {
     char *rundir = virGetUserRuntimeDirectory();
     char *sock_path = NULL;
     size_t i = 0;
-    virURIPtr uri = NULL;
 
-    if (name) {
-        if (!(uri = virURIParse(name)))
-            goto error;
+    if (!uri)
+        goto cleanup;
 
-        if (STRNEQ(uri->scheme, "admin") ||
-            uri->server || uri->user || uri->fragment) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid connection name '%s'"), name);
-            goto error;
-        }
 
-        for (i = 0; i < uri->paramsCount; i++) {
-            virURIParamPtr param = &uri->params[i];
+    for (i = 0; i < uri->paramsCount; i++) {
+        virURIParamPtr param = &uri->params[i];
 
-            if (STREQ(param->name, "socket")) {
-                VIR_FREE(sock_path);
-                if (VIR_STRDUP(sock_path, param->value) < 0)
-                    goto error;
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown URI parameter '%s'"), param->name);
+        if (STREQ(param->name, "socket")) {
+            VIR_FREE(sock_path);
+            if (VIR_STRDUP(sock_path, param->value) < 0)
                 goto error;
-            }
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown URI parameter '%s'"), param->name);
+            goto error;
         }
     }
 
     if (!sock_path) {
-        if (!uri || !uri->path || STREQ(uri->path, "/system")) {
+        if (STRNEQ(uri->scheme, "libvirtd")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported URI scheme '%s'"),
+                           uri->scheme);
+            goto error;
+        }
+        if (STREQ_NULLABLE(uri->path, "/system")) {
             if (VIR_STRDUP(sock_path, LIBVIRTD_ADMIN_UNIX_SOCKET) < 0)
                 goto error;
         } else if (STREQ_NULLABLE(uri->path, "/session")) {
-            if (!rundir)
-                goto error;
-
-            if (virAsprintf(&sock_path,
-                            "%s%s", rundir, LIBVIRTD_ADMIN_SOCK_NAME) < 0)
+            if (!rundir || virAsprintf(&sock_path, "%s%s", rundir,
+                                       LIBVIRTD_ADMIN_SOCK_NAME) < 0)
                 goto error;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid URI path '%s'"), uri->path);
+                           _("Invalid URI path '%s', try '/system'"),
+                           uri->path ? uri->path : "");
             goto error;
         }
     }
 
  cleanup:
     VIR_FREE(rundir);
-    virURIFree(uri);
     return sock_path;
 
  error:
     VIR_FREE(sock_path);
     goto cleanup;
+}
+
+static const char *
+virAdmGetDefaultURI(virConfPtr conf)
+{
+    virConfValuePtr value = NULL;
+    const char *uristr = NULL;
+
+    uristr = virGetEnvAllowSUID("LIBVIRT_ADMIN_DEFAULT_URI");
+    if (uristr && *uristr) {
+        VIR_DEBUG("Using LIBVIRT_ADMIN_DEFAULT_URI '%s'", uristr);
+    } else if ((value = virConfGetValue(conf, "admin_uri_default"))) {
+        if (value->type != VIR_CONF_STRING) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Expected a string for 'admin_uri_default' config "
+                             "parameter"));
+            return NULL;
+        }
+
+        VIR_DEBUG("Using config file uri '%s'", value->str);
+        uristr = value->str;
+    } else {
+        /* Since we can't probe connecting via any hypervisor driver as libvirt
+         * does, if no explicit URI was given and neither the environment
+         * variable, nor the configuration parameter had previously been set,
+         * we set the default admin server URI to 'libvirtd://system'.
+         */
+        uristr = "libvirtd:///system";
+    }
+
+    return uristr;
 }
 
 /**
@@ -170,6 +196,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 {
     char *sock_path = NULL;
     virAdmConnectPtr conn = NULL;
+    virConfPtr conf = NULL;
 
     if (virAdmInitialize() < 0)
         goto error;
@@ -180,7 +207,16 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     if (!(conn = virAdmConnectNew()))
         goto error;
 
-    if (!(sock_path = getSocketPath(name)))
+    if (virConfLoadConfig(&conf, "libvirt-admin.conf") < 0)
+        goto error;
+
+    if (!name && !(name = virAdmGetDefaultURI(conf)))
+        goto error;
+
+    if (!(conn->uri = virURIParse(name)))
+        goto error;
+
+    if (!(sock_path = getSocketPath(conn->uri)))
         goto error;
 
     if (!(conn->privateData = remoteAdminPrivNew(sock_path)))
@@ -193,6 +229,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 
  cleanup:
     VIR_FREE(sock_path);
+    virConfFree(conf);
     return conn;
 
  error:
@@ -339,4 +376,31 @@ virAdmConnectIsAlive(virAdmConnectPtr conn)
     virObjectUnlock(priv);
 
     return ret;
+}
+
+/**
+ * virAdmConnectGetURI:
+ * @conn: pointer to an admin connection
+ *
+ * String returned by this method is normally the same as the string passed
+ * to the virAdmConnectOpen. Even if NULL was passed to virAdmConnectOpen,
+ * this method returns a non-null URI string.
+ *
+ * Returns an URI string related to the connection or NULL in case of an error.
+ * Caller is responsible for freeing the string.
+ */
+char *
+virAdmConnectGetURI(virAdmConnectPtr conn)
+{
+    char *uri = NULL;
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    virCheckAdmConnectReturn(conn, NULL);
+
+    if (!(uri = virURIFormat(conn->uri)))
+        virDispatchError(NULL);
+
+    return uri;
 }

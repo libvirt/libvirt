@@ -59,6 +59,7 @@ int virAdmConnectIsAlive(virAdmConnectPtr conn);
 
 int virAdmGetVersion(unsigned long long *libVer);
 
+char *virAdmConnectGetURI(virAdmConnectPtr conn);
 
 # ifdef __cplusplus
 }

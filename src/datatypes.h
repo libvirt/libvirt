@@ -397,6 +397,7 @@ struct _virConnect {
  */
 struct _virAdmConnect {
     virObjectLockable object;
+    virURIPtr uri;
 
     void *privateData;
     virFreeCallback privateDataFreeFunc;

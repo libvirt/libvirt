@@ -113,6 +113,39 @@ vshAdmReconnect(vshControl *ctl)
     priv->wantReconnect = false;
 }
 
+/*
+ * 'uri' command
+ */
+
+static const vshCmdInfo info_uri[] = {
+    {.name = "help",
+     .data = N_("print the admin server URI")
+    },
+    {.name = "desc",
+     .data = ""
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *uri;
+    vshAdmControlPtr priv = ctl->privData;
+
+    uri = virAdmConnectGetURI(priv->conn);
+    if (!uri) {
+        vshError(ctl, "%s", _("failed to get URI"));
+        return false;
+    }
+
+    vshPrint(ctl, "%s\n", uri);
+    VIR_FREE(uri);
+
+    return true;
+}
+
+
 /* ---------------
  * Command Connect
  * ---------------
@@ -425,6 +458,12 @@ static const vshCmdDef vshAdmCmds[] = {
     VSH_CMD_HELP,
     VSH_CMD_PWD,
     VSH_CMD_QUIT,
+    {.name = "uri",
+     .handler = cmdURI,
+     .opts = NULL,
+     .info = info_uri,
+     .flags = 0
+    },
     {.name = "connect",
      .handler = cmdConnect,
      .opts = opts_connect,

@@ -832,4 +832,6 @@ virAdmConnectDispose(void *obj)
 
     if (conn->privateDataFreeFunc)
         conn->privateDataFreeFunc(conn);
+
+    virURIFree(conn->uri);
 }
