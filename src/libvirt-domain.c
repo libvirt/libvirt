@@ -3293,7 +3293,7 @@ virDomainMigrateVersion3Params(virDomainPtr domain,
 }
 
 
-static int ATTRIBUTE_NONNULL(1)
+static int
 virDomainMigrateCheckNotLocal(const char *dconnuri)
 {
     virURIPtr tempuri = NULL;
