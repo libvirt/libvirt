@@ -10177,6 +10177,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     size_t i;
     virDomainObjPtr vm = NULL;
     virDomainNumatuneMemMode tmpmode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+    qemuDomainObjPrivatePtr priv;
     char *nodeset = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
@@ -10187,6 +10188,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
+    priv = vm->privateData;
 
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -10214,7 +10216,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
             break;
 
         case 1: /* fill numa nodeset here */
-            nodeset = virDomainNumatuneFormatNodeset(def->numa, NULL, -1);
+            nodeset = virDomainNumatuneFormatNodeset(def->numa,
+                                                     priv->autoNodeset, -1);
             if (!nodeset ||
                 virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
