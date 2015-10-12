@@ -64,12 +64,12 @@ enum admin_procedure {
      *   in the function parameter list.
      */
     /**
-     * @generate: client
+     * @generate: none
      */
     ADMIN_PROC_CONNECT_OPEN = 1,
 
     /**
-     * @generate: client
+     * @generate: none
      */
     ADMIN_PROC_CONNECT_CLOSE = 2
 };

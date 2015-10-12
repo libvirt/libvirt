@@ -101,6 +101,51 @@ call(virAdmConnectPtr conn,
 
 #include "admin_client.h"
 
+static int
+remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = conn->privateData;
+    admin_connect_open_args args;
+
+    virObjectLock(priv);
+
+    args.flags = flags;
+
+    if (call(conn, 0, ADMIN_PROC_CONNECT_OPEN,
+             (xdrproc_t)xdr_admin_connect_open_args, (char *)&args,
+             (xdrproc_t)xdr_void, (char *)NULL) == -1) {
+        goto done;
+    }
+
+    rv = 0;
+
+ done:
+    virObjectUnlock(priv);
+    return rv;
+}
+
+static int
+remoteAdminConnectClose(virAdmConnectPtr conn)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = conn->privateData;
+
+    virObjectLock(priv);
+
+    if (call(conn, 0, ADMIN_PROC_CONNECT_CLOSE,
+             (xdrproc_t)xdr_void, (char *)NULL,
+             (xdrproc_t)xdr_void, (char *)NULL) == -1) {
+        goto done;
+    }
+
+    rv = 0;
+
+ done:
+    virObjectUnlock(priv);
+    return rv;
+}
+
 static void
 remoteAdminPrivFree(void *opaque)
 {
