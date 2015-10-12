@@ -83,7 +83,8 @@ dist_man1_MANS = \
 		virt-host-validate.1 \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
-		virsh.1
+		virsh.1 \
+		virt-admin.1
 if WITH_LXC
 dist_man1_MANS += virt-login-shell.1
 else ! WITH_LXC
@@ -280,14 +281,9 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	  --output-format coff --output $@
 endif WITH_WIN_ICON
 
-virt-login-shell.1: virt-login-shell.pod $(top_srcdir)/configure.ac
+%.1: %.pod $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
-
-virsh.1: virsh.pod $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
+		&& if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
 
 install-data-local: install-init install-systemd

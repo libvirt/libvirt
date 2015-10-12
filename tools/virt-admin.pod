@@ -1,0 +1,255 @@
+=head1 NAME
+
+virt-admin - daemon administration interface
+
+=head1 SYNOPSIS
+
+B<virt-admin> [I<OPTION>]... [I<COMMAND_STRING>]
+
+B<virt-admin> [I<OPTION>]... I<COMMAND> [I<ARG>]...
+
+=head1 DESCRIPTION
+
+The B<virt-admin> program is the main administration interface for modifying
+the libvirt daemon configuration at runtime, changing daemon behaviour as well
+as for monitoring and managing all clients connected to the daemon.
+
+The basic structure of most virt-admin usage is:
+
+  virt-admin [OPTION]... <command> [ARG]...
+
+Where I<command> is one of the commands listed below.
+
+The B<virt-admin> program can be used either to run one I<COMMAND> by giving the
+command and its arguments on the shell command line, or a I<COMMAND_STRING>
+which is a single shell argument consisting of multiple I<COMMAND> actions
+and their arguments joined with whitespace, and separated by semicolons
+between commands.  Within I<COMMAND_STRING>, virt-admin understands the
+same single, double, and backslash escapes as the shell, although you must
+add another layer of shell escaping in creating the single shell argument.
+If no command is given in the command line, B<virt-admin> will then start a minimal
+interpreter waiting for your commands, and the B<quit> command will then exit
+the program.
+
+The B<virt-admin> program understands the following I<OPTIONS>.
+
+=over 4
+
+=item B<-c>, B<--connect> I<URI>
+
+Connect to the specified I<URI>, as if by the B<connect> command,
+instead of the default connection.
+
+=item B<-d>, B<--debug> I<LEVEL>
+
+Enable debug messages at integer I<LEVEL> and above.  I<LEVEL> can
+range from 0 to 4 (default).  See the documentation of B<VIRT_ADMIN_DEBUG>
+environment variable below for the description of each I<LEVEL>.
+
+=item B<-h>, B<--help>
+
+Ignore all other arguments, and behave as if the B<help> command were
+given instead.
+
+=item B<-l>, B<--log> I<FILE>
+
+Output logging details to I<FILE>.
+
+=item B<-q>, B<--quiet>
+
+Avoid extra informational messages.
+
+=item B<-v>, B<--version[=short]>
+
+Ignore all other arguments, and prints the version of the libvirt library
+virt-admin is coming from
+
+=item B<-V>, B<--version=long>
+
+Ignore all other arguments, and prints the version of the libvirt library
+virt-admin is coming from.
+
+=back
+
+=head1 NOTES
+
+Running B<virt-admin> requires root privileges due to the
+communications channels used to talk to the daemon. Consider changing the
+I<unix_sock_group> ownership setting to grant access to specific set of users
+or modifying I<unix_sock_rw_perms> permissions. Daemon configuration file
+provides more information about setting permissions.
+
+=head1 GENERIC COMMANDS
+
+The following commands are generic.
+
+=over 4
+
+=item B<help> [I<command-or-group>]
+
+This lists each of the virt-admin commands.  When used without options, all
+commands are listed, one per line, grouped into related categories,
+displaying the keyword for each group.
+
+To display detailed information for a specific command, use its name as the
+option.
+
+=item B<quit>, B<exit>
+
+quit this interactive terminal
+
+=item B<version>
+
+Will print out the version info about which libvirt library was this client
+built from. As opposed to I<virsh> client, the output already includes
+the version of the daemon.
+
+B<Example>
+
+ $ virt-admin version
+ Compiled against library: libvirt 1.2.21
+ Using library: libvirt 1.2.21
+ Running against daemon: 1.2.20
+
+=item B<cd> [I<directory>]
+
+Will change current directory to I<directory>.  The default directory
+for the B<cd> command is the home directory or, if there is no I<HOME>
+variable in the environment, the root directory.
+
+This command is only available in interactive mode.
+
+=item B<pwd>
+
+Will print the current directory.
+
+=item B<connect> [I<URI>]
+
+(Re)-Connect to a daemon's administrating server. The I<URI> parameter
+specifies how to connect to the administrating server.
+If I<LIBVIRT_ADMIN_DEFAULT_URI> or I<admin_uri_default> (see below) were set,
+I<connect> is automatically issued every time a command that requires an
+active connection is executed. Note that this only applies if there is no
+connection at all or there is an inactive one.
+
+To find the currently used URI, check the I<uri> command documented below.
+
+For remote access see the documentation page at
+L<http://libvirt.org/uri.html> on how to make URIs.
+
+=item B<uri>
+
+Prints the administrating server canonical URI, can be useful in shell mode. If
+no I<uri> was specified, neither I<LIBVIRT_ADMIN_DEFAULT_URI> or
+I<admin_uri_default> were set, libvirtd:///system is used.
+
+=back
+
+=head1 ENVIRONMENT
+
+The following environment variables can be set to alter the behaviour
+of C<virt-admin>
+
+=over 4
+
+=item VIRT_ADMIN_DEBUG=<0 to 4>
+
+Turn on verbose debugging of virt-admin commands. Valid levels are
+
+=over 4
+
+=item * VIRT_ADMIN_DEBUG=0
+
+DEBUG - Messages at ALL levels get logged
+
+=item * VIRT_ADMIN_DEBUG=1
+
+INFO - Logs messages at levels INFO, NOTICE, WARNING and ERROR
+
+=item * VIRT_ADMIN_DEBUG=2
+
+NOTICE - Logs messages at levels NOTICE, WARNING and ERROR
+
+=item * VIRT_ADMIN_DEBUG=3
+
+WARNING - Logs messages at levels WARNING and ERROR
+
+=item * VIRT_ADMIN_DEBUG=4
+
+ERROR - Messages at only ERROR level gets logged.
+
+=back
+
+=item VIRT_ADMIN_LOG_FILE=C<LOGFILE>
+
+The file to log virt-admin debug messages.
+
+=item LIBVIRT_ADMIN_DEFAULT_URI
+
+The daemon whose admin server to connect to by default. Set this to a URI, in
+the same format as accepted by the B<connect> option. This overrides the
+default URI set in any client config file.
+
+=item VIRT_ADMIN_HISTSIZE
+
+The number of commands to remember in the command  history.  The
+default value is 500.
+
+=item LIBVIRT_DEBUG=LEVEL
+
+Turn on verbose debugging of all libvirt API calls. Valid levels are
+
+=over 4
+
+=item * LIBVIRT_DEBUG=1
+
+Messages at level DEBUG or above
+
+=item * LIBVIRT_DEBUG=2
+
+Messages at level INFO or above
+
+=item * LIBVIRT_DEBUG=3
+
+Messages at level WARNING or above
+
+=item * LIBVIRT_DEBUG=4
+
+Messages at level ERROR or above
+
+=back
+
+For further information about debugging options consult C<http://libvirt.org/logging.html>
+
+=back
+
+=head1 BUGS
+
+Report any bugs discovered to the libvirt community via the mailing
+list C<http://libvirt.org/contact.html> or bug tracker C<http://libvirt.org/bugs.html>.
+Alternatively report bugs to your software distributor / vendor.
+
+=head1 AUTHORS
+
+  Please refer to the AUTHORS file distributed with libvirt.
+
+  Based on the virsh man page.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2015 Red Hat, Inc., and the authors listed in the
+libvirt AUTHORS file.
+
+=head1 LICENSE
+
+virt-admin is distributed under the terms of the GNU LGPL v2+.
+This is free software; see the source for copying conditions. There
+is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE
+
+=head1 SEE ALSO
+
+L<virsh(1)>, L<virt-xml-validate(1)>, L<virt-host-validate(1)>,
+L<http://www.libvirt.org/>
+
+=cut
