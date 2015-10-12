@@ -26,7 +26,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/utsname.h>
-#include <mntent.h>
+#ifdef HAVE_MNTENT_H
+# include <mntent.h>
+#endif /* HAVE_MNTENT_H */
 
 #include "virutil.h"
 #include "viralloc.h"
@@ -287,6 +289,7 @@ static int virHostValidateCGroupSupport(const char *hvname,
     return -1;
 }
 
+#ifdef HAVE_MNTENT_H
 static int virHostValidateCGroupMount(const char *hvname,
                                       const char *cg_name,
                                       virHostValidateLevel level)
@@ -324,6 +327,16 @@ static int virHostValidateCGroupMount(const char *hvname,
                    cg_name, cg_name);
     return -1;
 }
+#else /* ! HAVE_MNTENT_H */
+static int virHostValidateCGroupMount(const char *hvname,
+                                      const char *cg_name,
+                                      virHostValidateLevel level)
+{
+    virHostMsgCheck(hvname, "for cgroup '%s' controller mount-point", cg_name);
+    virHostMsgFail(level, "%s", "This platform does not support cgroups");
+    return -1;
+}
+#endif /* ! HAVE_MNTENT_H */
 
 int virHostValidateCGroupController(const char *hvname,
                                     const char *cg_name,
