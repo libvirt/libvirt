@@ -60,8 +60,10 @@ static void virStorageVolDispose(void *obj);
 static void virStoragePoolDispose(void *obj);
 
 virClassPtr virAdmConnectClass;
+virClassPtr virAdmConnectCloseCallbackDataClass;
 
 static void virAdmConnectDispose(void *obj);
+static void virAdmConnectCloseCallbackDataDispose(void *obj);
 
 static int
 virDataTypesOnceInit(void)
@@ -91,6 +93,7 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virStoragePool);
 
     DECLARE_CLASS_LOCKABLE(virAdmConnect);
+    DECLARE_CLASS_LOCKABLE(virAdmConnectCloseCallbackData);
 
 #undef DECLARE_CLASS_COMMON
 #undef DECLARE_CLASS_LOCKABLE
@@ -822,7 +825,14 @@ virAdmConnectNew(void)
     if (!(ret = virObjectLockableNew(virAdmConnectClass)))
         return NULL;
 
+    if (!(ret->closeCallback = virObjectLockableNew(virAdmConnectCloseCallbackDataClass)))
+        goto error;
+
     return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
 }
 
 static void
@@ -834,4 +844,18 @@ virAdmConnectDispose(void *obj)
         conn->privateDataFreeFunc(conn);
 
     virURIFree(conn->uri);
+    virObjectUnref(conn->closeCallback);
+}
+
+static void
+virAdmConnectCloseCallbackDataDispose(void *obj)
+{
+    virAdmConnectCloseCallbackDataPtr cb_data = obj;
+
+    virObjectLock(cb_data);
+
+    if (cb_data->freeCallback)
+        cb_data->freeCallback(cb_data->opaque);
+
+    virObjectUnlock(cb_data);
 }

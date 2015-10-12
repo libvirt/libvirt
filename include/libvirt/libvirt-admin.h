@@ -61,6 +61,25 @@ int virAdmGetVersion(unsigned long long *libVer);
 
 char *virAdmConnectGetURI(virAdmConnectPtr conn);
 
+/**
+ * virAdmConnectCloseFunc:
+ * @conn: virAdmConnect connection
+ * @reason: reason why the connection was closed (see virConnectCloseReason)
+ * @opaque: opaque client data
+ *
+ * A callback to be registered, in case a connection was closed.
+ */
+typedef void (*virAdmConnectCloseFunc)(virAdmConnectPtr conn,
+                                       int reason,
+                                       void *opaque);
+
+int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
+                                       virAdmConnectCloseFunc cb,
+                                       void *opaque,
+                                       virFreeCallback freecb);
+int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
+                                         virAdmConnectCloseFunc cb);
+
 # ifdef __cplusplus
 }
 # endif

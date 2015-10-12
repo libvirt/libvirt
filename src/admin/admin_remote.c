@@ -101,6 +101,28 @@ call(virAdmConnectPtr conn,
 
 #include "admin_client.h"
 
+static void
+remoteAdminClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
+                           int reason,
+                           void *opaque)
+{
+    virAdmConnectCloseCallbackDataPtr cbdata = opaque;
+
+    virObjectLock(cbdata);
+
+    if (cbdata->callback) {
+        VIR_DEBUG("Triggering connection close callback %p reason=%d, opaque=%p",
+                  cbdata->callback, reason, cbdata->opaque);
+        cbdata->callback(cbdata->conn, reason, cbdata->opaque);
+
+        if (cbdata->freeCallback)
+            cbdata->freeCallback(cbdata->opaque);
+        cbdata->callback = NULL;
+        cbdata->freeCallback = NULL;
+    }
+    virObjectUnlock(cbdata);
+}
+
 static int
 remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
 {
@@ -111,6 +133,17 @@ remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
     virObjectLock(priv);
 
     args.flags = flags;
+
+    if (virNetClientRegisterAsyncIO(priv->client) < 0) {
+        VIR_DEBUG("Failed to add event watch, disabling events and support for"
+                  " keepalive messages");
+        virResetLastError();
+    }
+
+    virObjectRef(conn->closeCallback);
+    virNetClientSetCloseCallback(priv->client, remoteAdminClientCloseFunc,
+                                 conn->closeCallback,
+                                 virObjectFreeCallback);
 
     if (call(conn, 0, ADMIN_PROC_CONNECT_OPEN,
              (xdrproc_t)xdr_admin_connect_open_args, (char *)&args,
@@ -138,6 +171,8 @@ remoteAdminConnectClose(virAdmConnectPtr conn)
              (xdrproc_t)xdr_void, (char *)NULL) == -1) {
         goto done;
     }
+
+    virNetClientSetCloseCallback(priv->client, NULL, NULL, NULL);
 
     rv = 0;
 

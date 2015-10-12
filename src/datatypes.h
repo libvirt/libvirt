@@ -331,15 +331,26 @@ extern virClassPtr virAdmConnectClass;
 
 typedef struct _virConnectCloseCallbackData virConnectCloseCallbackData;
 typedef virConnectCloseCallbackData *virConnectCloseCallbackDataPtr;
+typedef struct _virAdmConnectCloseCallbackData virAdmConnectCloseCallbackData;
+typedef virAdmConnectCloseCallbackData *virAdmConnectCloseCallbackDataPtr;
 
 /**
- * Internal structure holding data related to connection close callbacks.
+ * Internal structures holding data related to connection close callbacks.
  */
 struct _virConnectCloseCallbackData {
     virObjectLockable parent;
 
     virConnectPtr conn;
     virConnectCloseFunc callback;
+    void *opaque;
+    virFreeCallback freeCallback;
+};
+
+struct _virAdmConnectCloseCallbackData {
+    virObjectLockable parent;
+
+    virAdmConnectPtr conn;
+    virAdmConnectCloseFunc callback;
     void *opaque;
     virFreeCallback freeCallback;
 };
@@ -401,6 +412,9 @@ struct _virAdmConnect {
 
     void *privateData;
     virFreeCallback privateDataFreeFunc;
+
+    /* Per-connection close callback */
+    virAdmConnectCloseCallbackDataPtr closeCallback;
 };
 
 

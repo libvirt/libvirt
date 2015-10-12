@@ -52,6 +52,53 @@ static char *progname;
 static const vshCmdGrp cmdGroups[];
 static const vshClientHooks hooks;
 
+/*
+ * vshAdmCatchDisconnect:
+ *
+ * We get here when the connection was closed. Unlike virsh, we do not save
+ * the fact that the event was raised, sice there is virAdmConnectIsAlive to
+ * check if the communication channel has not been closed by remote party.
+ */
+static void
+vshAdmCatchDisconnect(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
+                      int reason,
+                      void *opaque)
+{
+    vshControl *ctl = opaque;
+    const char *str = "unknown reason";
+    virErrorPtr error;
+    char *uri = NULL;
+
+    if (reason == VIR_CONNECT_CLOSE_REASON_CLIENT)
+        return;
+
+    error = virSaveLastError();
+    uri = virAdmConnectGetURI(conn);
+
+    switch ((virConnectCloseReason) reason) {
+    case VIR_CONNECT_CLOSE_REASON_ERROR:
+        str = N_("Disconnected from %s due to I/O error");
+        break;
+    case VIR_CONNECT_CLOSE_REASON_EOF:
+        str = N_("Disconnected from %s due to end of file");
+        break;
+    case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
+        str = N_("Disconnected from %s due to keepalive timeout");
+        break;
+        /* coverity[dead_error_condition] */
+    case VIR_CONNECT_CLOSE_REASON_CLIENT:
+    case VIR_CONNECT_CLOSE_REASON_LAST:
+        break;
+    }
+
+    vshError(ctl, _(str), NULLSTR(uri));
+
+    if (error) {
+        virSetError(error);
+        virFreeError(error);
+    }
+}
+
 static int
 vshAdmConnect(vshControl *ctl, unsigned int flags)
 {
@@ -66,6 +113,10 @@ vshAdmConnect(vshControl *ctl, unsigned int flags)
             vshError(ctl, "%s", _("Failed to connect to the admin server"));
         return -1;
     } else {
+        if (virAdmConnectRegisterCloseCallback(priv->conn, vshAdmCatchDisconnect,
+                                               NULL, NULL) < 0)
+            vshError(ctl, "%s", _("Unable to register disconnect callback"));
+
         if (priv->wantReconnect)
             vshPrint(ctl, "%s\n", _("Reconnected to the admin server"));
         else
@@ -84,6 +135,7 @@ vshAdmDisconnect(vshControl *ctl)
     if (!priv->conn)
         return ret;
 
+    virAdmConnectUnregisterCloseCallback(priv->conn, vshAdmCatchDisconnect);
     ret = virAdmConnectClose(priv->conn);
     if (ret < 0)
         vshError(ctl, "%s", _("Failed to disconnect from the admin server"));

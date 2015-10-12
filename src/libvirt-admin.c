@@ -411,3 +411,115 @@ virAdmConnectGetURI(virAdmConnectPtr conn)
 
     return uri;
 }
+
+/**
+ * virAdmConnectRegisterCloseCallback:
+ * @conn: connection to admin server
+ * @cb: callback to be invoked upon connection close
+ * @opaque: user data to pass to @cb
+ * @freecb: callback to free @opaque
+ *
+ * Registers a callback to be invoked when the connection
+ * is closed. This callback is invoked when there is any
+ * condition that causes the socket connection to the
+ * hypervisor to be closed.
+ *
+ * The @freecb must not invoke any other libvirt public
+ * APIs, since it is not called from a re-entrant safe
+ * context.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
+                                       virAdmConnectCloseFunc cb,
+                                       void *opaque,
+                                       virFreeCallback freecb)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    virCheckAdmConnectReturn(conn, -1);
+
+    virObjectRef(conn);
+
+    virObjectLock(conn);
+    virObjectLock(conn->closeCallback);
+
+    virCheckNonNullArgGoto(cb, error);
+
+    if (conn->closeCallback->callback) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A close callback is already registered"));
+        goto error;
+    }
+
+    conn->closeCallback->conn = conn;
+    conn->closeCallback->callback = cb;
+    conn->closeCallback->opaque = opaque;
+    conn->closeCallback->freeCallback = freecb;
+
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
+
+    return 0;
+
+ error:
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
+    virDispatchError(NULL);
+    virObjectUnref(conn);
+    return -1;
+
+}
+
+/**
+ * virAdmConnectUnregisterCloseCallback:
+ * @conn: pointer to connection object
+ * @cb: pointer to the current registered callback
+ *
+ * Unregisters the callback previously set with the
+ * virAdmConnectRegisterCloseCallback method. The callback
+ * will no longer receive notifications when the connection
+ * closes. If a virFreeCallback was provided at time of
+ * registration, it will be invoked.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
+                                         virAdmConnectCloseFunc cb)
+{
+    VIR_DEBUG("conn=%p", conn);
+
+    virResetLastError();
+
+    virCheckAdmConnectReturn(conn, -1);
+
+    virObjectLock(conn);
+    virObjectLock(conn->closeCallback);
+
+    virCheckNonNullArgGoto(cb, error);
+
+    if (conn->closeCallback->callback != cb) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A different callback was requested"));
+        goto error;
+    }
+
+    conn->closeCallback->callback = NULL;
+    if (conn->closeCallback->freeCallback)
+        conn->closeCallback->freeCallback(conn->closeCallback->opaque);
+    conn->closeCallback->freeCallback = NULL;
+
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
+    virObjectUnref(conn);
+
+    return 0;
+
+ error:
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
+    virDispatchError(NULL);
+    return -1;
+}
