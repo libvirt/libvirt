@@ -5285,8 +5285,13 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
     switch ((virDomainMemoryModel) mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        virBufferAsprintf(&buf, "pc-dimm,node=%d,memdev=mem%s,id=%s",
-                          mem->targetNode, mem->info.alias, mem->info.alias);
+        virBufferAddLit(&buf, "pc-dimm,");
+
+        if (mem->targetNode >= 0)
+            virBufferAsprintf(&buf, "node=%d,", mem->targetNode);
+
+        virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
+                          mem->info.alias, mem->info.alias);
 
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
             virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
