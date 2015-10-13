@@ -2332,8 +2332,11 @@ virDomainIOThreadIDDefArrayFree(virDomainIOThreadIDDefPtr *def,
 static int
 virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
 {
-    unsigned int iothread_id = 1;
     int retval = -1;
+    size_t i;
+    ssize_t nxt = -1;
+    virDomainIOThreadIDDefPtr iothrid = NULL;
+    virBitmapPtr thrmap = NULL;
 
     /* Same value (either 0 or some number), then we have none to fill in or
      * the iothreadid array was filled from the XML
@@ -2341,19 +2344,40 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
     if (def->iothreads == def->niothreadids)
         return 0;
 
-    while (def->niothreadids != def->iothreads) {
-        if (!virDomainIOThreadIDFind(def, iothread_id)) {
-            virDomainIOThreadIDDefPtr iothrid;
+    /* iothread's are numbered starting at 1, account for that */
+    if (!(thrmap = virBitmapNew(def->iothreads + 1)))
+        goto error;
+    virBitmapSetAll(thrmap);
 
-            if (!(iothrid = virDomainIOThreadIDAdd(def, iothread_id)))
-                goto error;
-            iothrid->autofill = true;
+    /* Clear 0 since we don't use it, then mark those which are
+     * already provided by the user */
+    ignore_value(virBitmapClearBit(thrmap, 0));
+    for (i = 0; i < def->niothreadids; i++)
+        ignore_value(virBitmapClearBit(thrmap,
+                                       def->iothreadids[i]->iothread_id));
+
+    /* resize array */
+    if (VIR_REALLOC_N(def->iothreadids, def->iothreads) < 0)
+        goto error;
+
+    /* Populate iothreadids[] using the set bit number from thrmap */
+    while (def->niothreadids < def->iothreads) {
+        if ((nxt = virBitmapNextSetBit(thrmap, nxt)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to populate iothreadids"));
+            goto error;
         }
-        iothread_id++;
+        if (VIR_ALLOC(iothrid) < 0)
+            goto error;
+        iothrid->iothread_id = nxt;
+        iothrid->autofill = true;
+        def->iothreadids[def->niothreadids++] = iothrid;
     }
+
     retval = 0;
 
  error:
+    virBitmapFree(thrmap);
     return retval;
 }
 
