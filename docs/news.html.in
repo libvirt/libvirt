@@ -6044,9 +6044,10 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     <ul>
       <li>Features:<br/>
       Add support for AArch64 architecture (Pranavkumar Sawargaonkar),<br/>
-      Various improvements on test code and test driver (many people),<br/>
+      Various improvements on test code and test driver (many people)<br/>
+      </li>
 
-Security:<br/>
+      <li>Security:<br/>
       Don't link virt-login-shell against libvirt.so (CVE-2013-4400) (Daniel P. Berrange),<br/>
       Close all non-stdio FDs in virt-login-shell (CVE-2013-4400) (Daniel P. Berrange),<br/>
       Only allow 'stderr' log output when running setuid (CVE-2013-4400) (Daniel P. Berrange),<br/>
@@ -18325,8 +18326,10 @@ Security:<br/>
         <li>Portability:<br/>
         Misc win32 build fixes (Daniel P. Berrange),<br/>
         Don't require full daemon install for libvirt python bindings (Daniel P. Berrange),<br/>
-        Tweak specfile to fix RHEL6 rules &amp; ESX/PHYP enablement (Daniel P. Berrange),<br/>
-        Bug Fixes:,
+        Tweak specfile to fix RHEL6 rules &amp; ESX/PHYP enablement (Daniel P. Berrange)<br/>
+        </li>
+
+        <li>Bug Fixes:<br/>
         network: Fix printing XML 'delay' attribute (Cole Robinson),<br/>
         Fix virFileReadLimFD/virFileReadAll to handle EINTR (Daniel P. Berrange),<br/>
         storage: Fix generating iscsi 'auth' xml (Cole Robinson),<br/>
