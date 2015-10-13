@@ -4582,7 +4582,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       conf: Output disk backing store details in domain XML (Jiri Denemark),<br/>
       util: storage: Invert the way recursive metadata retrieval works (Peter Krempa),<br/>
       util: virstoragefile: Don't mangle data stored about directories (Peter Krempa),<br/>
-      storage: Move disk-&gt;backingChain to the recursive disk->src.backingStore (Peter Krempa),<br/>
+      storage: Move disk-&gt;backingChain to the recursive disk-&gt;src.backingStore (Peter Krempa),<br/>
       util: virstoragefile: Rename backingMeta to backingStore (Peter Krempa),<br/>
       util: virstorage: Kill struct virStorageFileMetadata (Peter Krempa),<br/>
       maint: Switch over from struct virStorageFileMetadata to virStorageSource (Peter Krempa),<br/>
@@ -7851,7 +7851,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Manage shared device entry for scsi host device (Osier Yang),<br/>
       qemu: Refactor the helpers to track shared scsi host device (Osier Yang),<br/>
       utils: Add a helper to get the device name that sg device mapped to (Osier Yang),<br/>
-      qemu: Rename qemu_driver-&gt;sharedDisks to qemu_driver->sharedDevices (Osier Yang),<br/>
+      qemu: Rename qemu_driver-&gt;sharedDisks to qemu_driver-&gt;sharedDevices (Osier Yang),<br/>
       conf: Introduce &lt;shareable&gt; for hostdev (Osier Yang),<br/>
       string: test VIR_STRDUP (Eric Blake),<br/>
       virsh: lookup interface by name or mac other than one by one (Guannan Ren),<br/>
@@ -17948,7 +17948,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       libvirt.c: don't let a NULL "cpumaps" argument provoke a NULL-deref (Jim Meyering),<br/>
       qemu migration: avoid NULL-deref given an invalid input (Jim Meyering),<br/>
       qemu_driver.c: don't unlink(NULL) on OOM error path (Jim Meyering),<br/>
-      remote_driver.c: also zero out ->saslDecodedOffset member (Jim Meyering),<br/>
+      remote_driver.c: also zero out -&gt;saslDecodedOffset member (Jim Meyering),<br/>
       qemu_driver.c: avoid double free on error path (Jim Meyering),<br/>
       libvirtd: avoid a NULL dereference on error path (Jim Meyering),<br/>
       virsh: avoid double-free (Jim Meyering),<br/>
@@ -17961,7 +17961,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix memory leak in virStorageBackendCopyToFD (Matthias Bolte),<br/>
       retrieve paused/running state at migration start (Paolo Bonzini),<br/>
       fix migration of paused vms upon failure (Paolo Bonzini),<br/>
-      qemu driver: Fix segfault in libvirt/libvirtd when uri->path is NULL. (Richard Jones),<br/>
+      qemu driver: Fix segfault in libvirt/libvirtd when uri-&gt;path is NULL. (Richard Jones),<br/>
       Fix a wellformedness problem in secret.rng (Diego Elio Pettenò),<br/>
       Fix virDomainObj ref handling in QEMU driver (Daniel P. Berrange),<br/>
       Pull code to start CPUs executing out of qemudInitCpuAffinity() (Daniel P. Berrange),<br/>
@@ -18018,7 +18018,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add virIndexToDiskName and fix mapping gap (Matthias Bolte),<br/>
       Add another SENTINEL attribute (Paolo Bonzini),<br/>
       Fix help message (Wolfgang Mauerer),<br/>
-      Alternate CPU affinity impl to cope with NR_CPUS > 1024 (Daniel P. Berrange)
+      Alternate CPU affinity impl to cope with NR_CPUS &gt; 1024 (Daniel P. Berrange)
       </li>
 
       <li>Cleanups:<br/>
