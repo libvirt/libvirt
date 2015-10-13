@@ -2087,6 +2087,7 @@ libvirt_admin_la_CFLAGS = \
 		-I$(srcdir)/admin
 
 libvirt_admin_la_CFLAGS += \
+		$(XDR_CFLAGS)			\
 		$(CAPNG_CFLAGS)			\
 		$(YAJL_CFLAGS)			\
 		$(SSH2_CFLAGS)			\
