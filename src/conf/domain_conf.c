@@ -2329,6 +2329,35 @@ virDomainIOThreadIDDefArrayFree(virDomainIOThreadIDDefPtr *def,
 }
 
 
+static int
+virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
+{
+    unsigned int iothread_id = 1;
+    int retval = -1;
+
+    /* Same value (either 0 or some number), then we have none to fill in or
+     * the iothreadid array was filled from the XML
+     */
+    if (def->iothreads == def->niothreadids)
+        return 0;
+
+    while (def->niothreadids != def->iothreads) {
+        if (!virDomainIOThreadIDFind(def, iothread_id)) {
+            virDomainIOThreadIDDefPtr iothrid;
+
+            if (!(iothrid = virDomainIOThreadIDAdd(def, iothread_id)))
+                goto error;
+            iothrid->autofill = true;
+        }
+        iothread_id++;
+    }
+    retval = 0;
+
+ error:
+    return retval;
+}
+
+
 void
 virDomainPinDefFree(virDomainPinDefPtr def)
 {
@@ -14979,22 +15008,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    /* If no iothreadid's or not fully populated, let's finish the job
-     * here rather than in PostParseCallback
-     */
-    if (def->iothreads && def->iothreads != def->niothreadids) {
-        unsigned int iothread_id = 1;
-        while (def->niothreadids != def->iothreads) {
-            if (!virDomainIOThreadIDFind(def, iothread_id)) {
-                virDomainIOThreadIDDefPtr iothrid;
-
-                if (!(iothrid = virDomainIOThreadIDAdd(def, iothread_id)))
-                    goto error;
-                iothrid->autofill = true;
-            }
-            iothread_id++;
-        }
-    }
+    if (virDomainIOThreadIDDefArrayInit(def) < 0)
+        goto error;
 
     /* Extract cpu tunables. */
     if ((n = virXPathULong("string(./cputune/shares[1])", ctxt,
