@@ -175,12 +175,13 @@ dnl are also linux specific.  The "network" and storage_fs drivers are known
 dnl to not work on MacOS X presently, so we also make a note if compiling
 dnl for that
 
-with_linux=no with_osx=no with_freebsd=no
+with_linux=no with_osx=no with_freebsd=no with_win=no with_cygwin=no
 case $host in
   *-*-linux*) with_linux=yes ;;
   *-*-darwin*) with_osx=yes ;;
   *-*-freebsd*) with_freebsd=yes ;;
   *-*-mingw* | *-*-msvc* ) with_win=yes ;;
+  *-*-cygwin*) with_cygwin=yes ;;
 esac
 
 if test $with_linux = no; then
@@ -192,9 +193,12 @@ if test $with_linux = no; then
 fi
 
 if test $with_freebsd = yes; then
-   want_ifconfig=yes
+    want_ifconfig=yes
+    with_firewalld=no
+fi
 
-   with_firewalld=no
+if test $with_cygwin = yes; then
+    with_vbox=no
 fi
 
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
