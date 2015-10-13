@@ -18296,8 +18296,11 @@ Security:<br/>
       Don't copy old machines from a domain which has none (Mark McLoughlin)
       </li>
     </ul>
-    <h3>0.7.3: Nov 20 2009</h3>
-    <p>Broken release use 0.7.4</p>
+  <h3>0.7.3: Nov 20 2009</h3>
+    <ul>
+      <li>Broken release, use 0.7.4
+      </li>
+    </ul>
 
     <h3>0.7.2: Oct 14 2009</h3>
       <ul>
