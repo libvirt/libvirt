@@ -5,9 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   </head>
   <body>
-    <h1 >Releases</h1>
-    <p>Here is the list of official releases, it is also possible to just use the <a href="downloads.html">GIT version or snapshot</a>, contact the mailing list
-and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> to gauge progress.</p>
+    <h1>Releases</h1>
+    <p>Here is the list of official releases, it is also possible to just use
+    the <a href="downloads.html">GIT version or snapshot</a>,
+    contact the mailing list and check
+    the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a>
+    to gauge progress.
+    </p>
 
    <h3>v1.2.20: Oct 02 2015</h3>
     <ul>
@@ -606,7 +610,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
    <h3>1.2.17: Jul 02 2015</h3>
     <ul>
       <li>Features:<br/>
-      numerous improvements and refactoring of the parallels driver(Maxim Nestratov)
+      numerous improvements and refactoring of the parallels driver (Maxim Nestratov)
       hardening of vcpu code (Peter Krempa)
       hardening of migration code (Jiri Denemark)
       </li>
@@ -2436,17 +2440,17 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>1.2.11: Dec 13 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Implement public API for virDomainGetFSInfo (Tomoki Sekiyama),<br/>
       Add support for the new throttle options (Matthias Gatto)<br/>
       </li>
 
-      <li> Security:<br/>
+      <li>Security:<br/>
       CVE-2014-8131: Fix possible deadlock and segfault in qemuConnectGetAllDomainStats() (Martin Kletzander),<br/>
       CVE-2014-7823: dumpxml: security hole with migratable flag (Eric Blake)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       virsh.pod: Fix typo (John Ferlan),<br/>
       Fix typo in path for storage pool (John Ferlan),<br/>
       Fix missing curly braces (Hao Liu),<br/>
@@ -2478,7 +2482,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       examples: add systemtap script to ease lock debugging (Martin Kletzander)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Fix build on mingw (Ján Tomko),<br/>
       define NTF_{SELF,MASTER} if undefined (Guido Günther),<br/>
       build: fix mingw printing of pid (Eric Blake),<br/>
@@ -2491,7 +2495,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemuxml2argvtest: Run some test only on Linux (Michal Privoznik)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Avoid getting '-1:-1' in devices cgroup list (Cédric Bosdonnat),<br/>
       conf: goto error when value of max_sectors is too large (Luyao Huang),<br/>
       Ignore CPU features without a model for host-passthrough (Ján Tomko),<br/>
@@ -2585,7 +2589,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: make advice from numad available when building commandline (Martin Kletzander)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       network: Bring netdevs online later (Matthew Rosato),<br/>
       lxc: give RW access to /proc/sys/net/ipv[46] to containers (Cédric Bosdonnat),<br/>
       conf: Ignore device address for guestfwd channel (Martin Kletzander),<br/>
@@ -2792,19 +2796,19 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       util: Introduce virPidFileForceCleanupPath (Martin Kletzander)<br/>
       </li>
 
-      <li> Cleanup:<br/>
+      <li>Cleanup:<br/>
       Remove left over debug in hvsupport.pl script (Daniel P. Berrange)<br/>
       </li>
     </ul>
     <h3>1.2.10: Nov 3 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       vbox: various drivers improvements (Taowei Luo),<br/>
       libxl: various drivers improvements (Stefan Bader, Jim Fehlig),<br/>
       Internal driver refactoring (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Documentation
+      <li>Documentation
       virsh: Adjust the text in man page regarding qemu-attach (John Ferlan),<br/>
       HACKING: Regenerate after recent change (Peter Krempa),<br/>
       fix an improper git browsable address (Chen Hanxiao),<br/>
@@ -2817,7 +2821,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       fix a typo in drvlxc (Chen Hanxiao)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       mingw: fix build failure (Pavel Hrdina),<br/>
       domain: fix parsing of memory tunables on 32-bit machines (Eric Blake),<br/>
       virnetdev: stub virNetDev{Add,Del}Multi on FreeBSD (Roman Bogorodskiy),<br/>
@@ -2830,7 +2834,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: monitor: Avoid shadowing variable "devname" on FreeBSD. Again. (Peter Krempa)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       hotplug: fix char device detach (Pavel Hrdina),<br/>
       vbox_storage: fix coverity issue with overwriting value (Pavel Hrdina),<br/>
       Relax duplicate SCSI host pool checking (Ján Tomko),<br/>
@@ -2883,7 +2887,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: json: Fix missing break in error reporting function (Peter Krempa)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Match scsi_host pools by parent address first (Ján Tomko),<br/>
       libxl: Support user-specified &lt;emulator&gt; (Jim Fehlig),<br/>
       Spell TIOCSCTTY right in the error message (Ján Tomko),<br/>
@@ -3013,26 +3017,26 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: monitor: Add helper function to fill physical/virtual image size (Peter Krempa)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       vbox: Remove unused things in vbox_tmpl.c (Taowei Luo),<br/>
       Cleanup maintainers list (Jiri Denemark)<br/>
       </li>
     </ul>
     <h3>1.2.9: Oct 1 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Introduce virNodeAllocPages (Michal Privoznik),<br/>
       event: introduce new event for tunable values (Pavel Hrdina),<br/>
       add migration support for OpenVZ driver (Hongbin Lu),<br/>
       Add support for fetching statistics of completed jobs (Jiri Denemark)<br/>
       </li>
 
-      <li> Security:<br/>
+      <li>Security:<br/>
       CVE-2014-3633: qemu: blkiotune: Use correct definition when looking up disk (Peter Krempa),<br/>
       CVE-2014-3657: domain_conf: fix domain deadlock (Pavel Hrdina)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       LXC: emphasis uid start of idmap only accept '0' in docs (Chen Hanxiao),<br/>
       specify vhost-net instead of net-vhost (Jianwei Hu),<br/>
       LXC: add HOME environment variable docs (Chen Hanxiao),<br/>
@@ -3046,7 +3050,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       fix encryption format attribute in example (Ján Tomko)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       qemu: monitor: Avoid shadowing variable "devname" on FreeBSD (Peter Krempa),<br/>
       lxc_monitor_protocol: Redefine xdr_uint64_t if needed (Michal Privoznik),<br/>
       Fix build without polkit (Pavel Hrdina),<br/>
@@ -3060,7 +3064,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       blockjob: avoid 32-bit compilation warning (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Allow setting migration max downtime any time (Chris St. Pierre),<br/>
       qemu: monitor: return block stats data as a hash to avoid disk mixup (Peter Krempa),<br/>
       Also filter out non-migratable features out of host-passthrough (Ján Tomko),<br/>
@@ -3172,7 +3176,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Free ifname in testDomainGenerateIfnames (Ján Tomko)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Fix typo s/EMULATORIN/EMULATORPIN/ (Daniel P. Berrange),<br/>
       Rename tunable event constants (Daniel P. Berrange),<br/>
       qemu: Always re-detect backing chain (Peter Krempa),<br/>
@@ -3322,7 +3326,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       util: Introduce flags field for macvtap creation (Matthew Rosato)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       nodeinfo: fix version of nodeAllocPages (Tomoki Sekiyama),<br/>
       audit: remove redundant NULL assignment (Ján Tomko),<br/>
       qemu: Drop unused formatting of uuid (Peter Krempa),<br/>
@@ -3334,7 +3338,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>1.2.8: Sep 2 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       blockcopy: virDomainBlockCopy with XML destination, typed params (Eric Blake),<br/>
       lib: Introduce API for retrieving bulk domain stats (Peter Krempa),<br/>
       Introduce virDomainOpenGraphicsFD API (Ján Tomko),<br/>
@@ -3647,11 +3651,11 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>1.2.7: Aug 2 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Introduce virConnectGetDomainCapabilities (Michal Privoznik)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       bhyve: document recent changes (Roman Bogorodskiy),<br/>
       fix an incorrect example for memoryBacking (Chen Hanxiao),<br/>
       libvirt-guests: fix some typos in a comment (Martin Kletzander),<br/>
@@ -3676,7 +3680,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       LXC: update comments of lxcDomainCreateXMLWithFiles() and lxcDomainCreateXML() (Yue wenyuan)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: fix build on cygwin (Eric Blake),<br/>
       domtop: Fix build on mingw (Michal Privoznik),<br/>
       build: fix build without numactl (Eric Blake),<br/>
@@ -3690,7 +3694,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       tests: Avoid double linking some libraries (Michal Privoznik)<br/>
       </li>
 
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       network: always set disable_ipv6, even when it should be 0 (Laine Stump),<br/>
       Fix a crash when cloning a volume with no backing store (Ján Tomko),<br/>
       qemu: error out if PCI passthrough type is not supported (Hu Tao),<br/>
@@ -3750,7 +3754,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: raise an error when trying to use readonly ide disks (Giuseppe Scrivano)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       blockcommit: turn on active commit (Eric Blake),<br/>
       blockcommit: track job type in xml (Eric Blake),<br/>
       Domain config: write &lt;features/&gt; if some capabilities are set. (Cédric Bosdonnat),<br/>
@@ -3951,7 +3955,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       util: unify extra asterisk in viralloc.h (Martin Kletzander)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       tests: Remove stale scsihostdata dir (Michal Privoznik),<br/>
       xenapiConnectGetCapabilities: Remove unused 'cleanup' label (Michal Privoznik)<br/>
       </li>
@@ -3959,12 +3963,12 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>1.2.6: Jul 2 2014</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       libxl: add migration support and fixes (Jim Fehlig),<br/>
       various improvements and fixes for NUMA (Michal Privoznik)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       security: manager: Document behavior of disk label manipulation funcs (Peter Krempa),<br/>
       fix some typos in formatdomain.html (Jincheng Miao),<br/>
       virsh: man: Correctly spell QEMU (Peter Krempa),<br/>
@@ -3977,7 +3981,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       formatcaps: Rework and add stubs to document (Michal Privoznik)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: link libvirt_conf with libxml (Martin Kletzander),<br/>
       vbox: fix linker error (Jim Fehlig),<br/>
       libxl: don't break the build on Xen&gt;=4.5 because of libxl_vcpu_setaffinity() (Dario Faggioli),<br/>
@@ -3997,7 +4001,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix build on freebsd (Pavel Hrdina)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: copy: Accept 'format' parameter when copying to a non-existing img (Peter Krempa),<br/>
       storage: gluster: Fix header reader function (Peter Krempa),<br/>
       conf: storage: Add volume feature formatter for gluster pools (Peter Krempa),<br/>
@@ -4068,7 +4072,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Check whether found volume is member of the specified storage pool (Peter Krempa)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Introduce virFileReadAllQuiet (Ján Tomko),<br/>
       Track privileged state in udev nodedev driver (Ján Tomko),<br/>
       build: fix 'make syntax-check' after commit c6cf5df3 (Jim Fehlig),<br/>
@@ -4248,7 +4252,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add helper program to create custom leases (Nehal J Wani)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove redundant docs from libvirt.h (Jiri Denemark),<br/>
       conf: whitespace tweak (Chen Fan)<br/>
       </li>
@@ -4256,16 +4260,16 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>1.2.5: Jun 2 2014</h3>
     <ul>
-      <li> Security:<br/>
+      <li>Security:<br/>
       LSN-2014-0003: Don't expand entities when parsing XML (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Features:<br/>
+      <li>Features:<br/>
       Introduce virDomain{Get,Set}Time APIs (Michal Privoznik),<br/>
       Introduce virDomainFSFreeze() and virDomainFSThaw() public API (Tomoki Sekiyama)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       bhyve driver documentation improvements (Roman Bogorodskiy),<br/>
       virsh: fix typos in virsh man page (Eric Blake),<br/>
       maint: fix typo in previous patch (Eric Blake),<br/>
@@ -4283,7 +4287,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       datatypes: Fix comment of secret uuid (Li Yang)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: avoid compiler warning on 32-bit platform (Eric Blake),<br/>
       build: fix build with libselinux 2.3 (Cédric Bosdonnat),<br/>
       qemu: Fix specifying char devs for PPC (Olivia Yin),<br/>
@@ -4293,7 +4297,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix build wihout macvtap or virtualport (Ján Tomko)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       util: fix DST end date in virtimetest timezones (Laine Stump),<br/>
       qemu: snapshot: Improve detection of mixed snapshots (Peter Krempa),<br/>
       qemu: snapshot: Reject internal active snapshot without memory state (Peter Krempa),<br/>
@@ -4323,7 +4327,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix vlan ID detection in udev interface driver (Ján Tomko)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       maint: cleanup detection of const'ness of selinux ctx (Jim Fehlig),<br/>
       storage: fs: Drop-in replace use of virStorageFileGetMetadataFromBuf (Peter Krempa),<br/>
       storage: Return backing format from virStorageFileGetMetadataFromFD (Peter Krempa),<br/>
@@ -4419,13 +4423,13 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       bhyve: improve bhyve_command.c testability (Roman Bogorodskiy)<br/>
       </li>
 
-      <li> Cleanup:<br/>
+      <li>Cleanup:<br/>
       virSecurityDACRestoreSecurityHostdevLabel: Unmark @def as unused (Michal Privoznik)<br/>
       </li>
     </ul>
     <h3>1.2.4: May 4 2014</h3>
     <ul>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       Device{Attach,Detach}: Document S4 limitations (Michal Privoznik),<br/>
       Add a new example to illustrate domain migration (Sahid Orentino Ferdjaoui),<br/>
       update docs for setting the QEMU BIOS path (Chen Hanxiao),<br/>
@@ -4436,7 +4440,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Fix comment of vshCmdInfo (Li Yang)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Explicitly link virfirewalltest and virsystemdtest against dbus (Guido Günther),<br/>
       qemuxml2argvtest: Don't use privileged mode upfront (Guido Günther),<br/>
       tests: skip virfirewalltest on non-Linux systems (Roman Bogorodskiy),<br/>
@@ -4460,7 +4464,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Use the force flag for mkfs -t xfs (Ján Tomko)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Restore skipping of setting capacity (John Ferlan),<br/>
       qemu: fix crash when removing &lt;filterref&gt; from interface with update-device (Laine Stump),<br/>
       storage: Clear all data allocated about backing store before reparsing (Peter Krempa),<br/>
@@ -4510,7 +4514,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: cleanup error checking on agent replies (Martin Kletzander)<br/>
       </li>
 
-      <li> Improvements
+      <li>Improvements
       util: new stricter unsigned int parsing (Eric Blake),<br/>
       util: fix uint parsing on 64-bit platforms (Eric Blake),<br/>
       Misc error reporting bugs in QEMU cli builder (Daniel P. Berrange),<br/>
@@ -4702,7 +4706,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       storage: netfs: Split up and tidy up NFS storage pool source function (Peter Krempa)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       tests: drop dead code from argv2xml and xml2xml (Eric Blake),<br/>
       qemu: remove unneeded forward declaration (Martin Kletzander)<br/>
       </li>
@@ -5136,7 +5140,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Bump version to 1.2.3 for new dev cycle (Michal Privoznik)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       util: remove useless comment for virCgroupMoveTask in vircgroup.c (Hongwei Bi),<br/>
       Don't leave empty first line in C source files (Martin Kletzander)<br/>
       </li>
@@ -8995,7 +8999,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>1.0.2: Jan 30 2013</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       LXC improvements (Daniel P. Berrange),<br/>
       S390 architecture improvement (Viktor Mihajlovski),<br/>
       Power architecture improvement (Li Zhang),<br/>
@@ -9003,7 +9007,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virTypedParams* APIs to helps with those data structures (Jiri Denemark)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       aesthetical cleanups (Martin Kletzander),<br/>
       fix missed documentation for virterror functions (Claudio Bley),<br/>
       util: Fix docs for virBitmapParse (Peter Krempa),<br/>
@@ -9034,7 +9038,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Replace &lt;/br&gt; with &lt;br/&gt; in docs/news.html.in (Peter Krempa)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Make sure we only abort without libcurl if $with_esx = yes (Guido Günther),<br/>
       build: Fix RPM build errors related to libvirt-lxc API (Viktor Mihajlovski),<br/>
       build: fix build on BSD (Eric Blake),<br/>
@@ -9052,7 +9056,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: Check for broken GCC -Wlogical-op in configure (Viktor Mihajlovski)<br/>
       </li>
 
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       conf: Don't format cputune element when not needed (Martin Kletzander),<br/>
       conf: Fix cpumask leak in virDomainDefFree (Ján Tomko),<br/>
       qemu: Destroy domain on decompression binary error (Michal Privoznik),<br/>
@@ -9179,7 +9183,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       S390: Fix virSysinfoRead memory corruption (Viktor Mihajlovski)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Ignore '.trs' files (Martin Kletzander),<br/>
       build: Regenerate man pages on version bump (Jiri Denemark),<br/>
       rng: Change the datatype for volume name for common use (Osier Yang),<br/>
@@ -9455,7 +9459,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: add qemu vga devices caps and one cap to mark them usable (Guannan Ren)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       virlog: remove old code comment (Doug Goldstein),<br/>
       rpc: Revert Coverity tag message (John Ferlan),<br/>
       rpc: Remove unnecessary calls (John Ferlan),<br/>
@@ -9478,7 +9482,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>1.0.1: Dec 17 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Introduce virtlockd daemon (Daniel P. Berrange),<br/>
       parallels: add disk and network device support (Dmitry Guryanov),<br/>
       Add virDomainSendProcessSignal API (Daniel P. Berrange),<br/>
@@ -9488,7 +9492,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       various snapshot improvements (Peter Krempa, Eric Blake)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       fix some typos in examples (Eric Blake),<br/>
       Fix location of libvirt.conf and auth.conf (Michał Łomnicki),<br/>
       Document offline migration (Jiri Denemark),<br/>
@@ -9499,7 +9503,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix "virsh create" example (Guido Günther)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: minor build fixes for BSD (Eric Blake),<br/>
       Socket identity support for FreeBSD. (Roman Bogorodskiy),<br/>
       Require SANLK_INQ_WAIT for inq_lockspace support (Guido Günther),<br/>
@@ -9521,7 +9525,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       spec: don't enable cgconfig under systemd (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       network: fix (non)update of dnsmasq config during virDomainUpdateDeviceFlags (Laine Stump),<br/>
       sanlock: Re-add lockspace unconditionally (Michal Privoznik),<br/>
       install: fix virtlockd installation (Eric Blake),<br/>
@@ -9612,7 +9616,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       conf: net: Fix helper for applying new network definition (Peter Krempa)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       spec: Include lockd files in libvirt-daemon package (Jiri Denemark),<br/>
       build: Install both qemu-lockd.conf and qemu-sanlock.conf (Jiri Denemark),<br/>
       build: use fewer cat processes (Eric Blake),<br/>
@@ -9838,7 +9842,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: use default machine type if missing it in qemu command line (Guannan Ren)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       storage: Remove the redundant white lines (Osier Yang),<br/>
       Fix the indention (Osier Yang),<br/>
       Do not export symbol virStateActive anymore (Osier Yang),<br/>
@@ -9863,7 +9867,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>1.0.0: Nov 2 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       virNodeGetCPUMap: Define public API. (Viktor Mihajlovski),<br/>
       Add systemd journal support (Daniel P. Berrange),<br/>
       Add a qemu capabilities cache manager (Daniel P. Berrange),<br/>
@@ -9873,7 +9877,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Lot of localization enhancements (Transifex teams)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       net-update docs: s/domain/network/ (Michal Privoznik),<br/>
       libvirtd no longer uses abstract namespace (Eric Blake),<br/>
       documentation: HTML tag fix (Philipp Hahn),<br/>
@@ -9898,7 +9902,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       node_memory: Improve the docs (Osier Yang)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Don't assume pid_t is the same size as an int (Daniel P. Berrange),<br/>
       build: Fix RPM build for non-x86 platforms (Viktor Mihajlovski),<br/>
       build: fix linking with systemtap probes (Eric Blake),<br/>
@@ -9920,7 +9924,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: fix detection of netcf linked with libnl1 (Christophe Fergeau)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: QMP capabilities support starts with 1.2 (Doug Goldstein),<br/>
       Linux Containers are not allowed to create device nodes. (Dan Walsh),<br/>
       qemu: Fix name comparison in qemuMonitorJSONBlockIoThrottleInfo() (Stefan Hajnoczi),<br/>
@@ -10000,7 +10004,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix start of containers with custom root filesystem (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       cpumap: optimize for clients that don't need online count (Eric Blake),<br/>
       daemon: Make the default PolicyKit policy auth_admin_keep. (Richard W.M. Jones),<br/>
       util: Improve error reporting from absolutePathFromBaseFile helper (Peter Krempa),<br/>
@@ -10203,7 +10207,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       command: Move environ-adding code to common function virCommandAddEnv. (Richard W.M. Jones)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       gitignore: Ignore 'tags' (Michal Privoznik),<br/>
       build: fix syntax-check tab violation (Eric Blake),<br/>
       maint: consistent whitespace after 'if' (Eric Blake),<br/>
@@ -10223,7 +10227,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.10.2: September 24 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       network: define new API virNetworkUpdate (Laine Stump),<br/>
       add support for QEmu sandbox support (Ján Tomko),<br/>
       blockjob: add virDomainBlockCommit (Eric Blake),<br/>
@@ -10241,7 +10245,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Support for Block Device IO Limits (Viktor Mihajlovski)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       locking: Remove README file in favor of internals/locking.html (Jiri Denemark),<br/>
       fix typo in filesystem docs (Eric Blake),<br/>
       include article about libvirt+audit in relatedlinks.html (Marcelo Cerri),<br/>
@@ -10257,7 +10261,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       correct dompmwakeup description (Martin Kletzander)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: fix nodeinfo build on non-Linux platforms (Eric Blake),<br/>
       virBitmap: fix build without HAVE_NUMACTL (Ján Tomko),<br/>
       build: Fix build failure on non-linux platform (Osier Yang),<br/>
@@ -10283,7 +10287,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix mingw64 build by using intptr_t for int-&gt;void* casts (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       network: don't "refresh" iptables rules on rule-less networks (Laine Stump),<br/>
       qemu: Fix failure path in disk hotplug (Jiri Denemark),<br/>
       Ensure existing selinux mount is removed before mounting new one in LXC (Daniel P. Berrange),<br/>
@@ -10332,7 +10336,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       schemas: Fix wwn pattern (Osier Yang)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Don't install legacy initscripts at same time as systemd ones (Daniel P. Berrange),<br/>
       network: log error for unknown virNetworkUpdate command codes (Laine Stump),<br/>
       network: make virNetworkObjUpdate error detection/recovery better (Laine Stump),<br/>
@@ -10486,7 +10490,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       util: Update the inconsistent and outdated comments (Osier Yang)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove redundant lines in src/qemu/qemu_driver.c (Tang Chen),<br/>
       Remove a redundant line in src/qemu/qemu_driver.c (Tang Chen),<br/>
       maint: fix up copyright notice inconsistencies (Eric Blake),<br/>
@@ -10503,7 +10507,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>0.10.1: August 31 2012</h3>
     <ul>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       conf: Avoid formatting auto-generated DAC labels (Marcelo Cerri),<br/>
       conf: Fix parsing of seclabels without model (Marcelo Cerri),<br/>
       virsh: fixed incorrect timing report (Viktor Mihajlovski),<br/>
@@ -10533,25 +10537,25 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Fix starting domains with no cpu cgroup (Jiri Denemark)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       virsh: Document subdriver option of attach-disk (Jiri Denemark),<br/>
       update option force to subcommand change-media (Guannan Ren),<br/>
       Fix typo in CPU tuning (Jiri Denemark),<br/>
       Fix emulator pinning example in formatdomain.html (Peter Krempa)<br/>
       </li>
 
-      <li> Improvement:<br/>
+      <li>Improvement:<br/>
       Implement virMacAddrIsBroadcastRaw (Stefan Berger)<br/>
       </li>
 
-      <li> Cleanup:<br/>
+      <li>Cleanup:<br/>
       security: remove dead code from virSecurityDACGenLabel (Alex Jia)<br/>
       </li>
     </ul>
 
     <h3>0.10.0: August 29 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       agent: add qemuAgentArbitraryCommand() for general qemu agent command (MATSUDA Daiki),<br/>
       Introduce virDomainPinEmulator and virDomainGetEmulatorPinInfo functions. (Tang Chen),<br/>
       network: use firewalld instead of iptables, when available (Thomas Woerner),<br/>
@@ -10562,7 +10566,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add virDomainGetHostname (Guido Günther)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       CPU allocation and pinning clarification (Martin Kletzander),<br/>
       libssh2_transport: Add docs to remote.html (Peter Krempa),<br/>
       Fix some typos in messages, docs and comments. (Yuri Chornoivan),<br/>
@@ -10593,7 +10597,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Clarify documentation for virsh dompmsuspend command (Peter Krempa)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Don't require gawk for a simple print expression (Guido Günther),<br/>
       Portability fixes for non-linux or old linux platforms (Daniel Veillard),<br/>
       build: define 'inline' iff HAVE_LIBNL1 (Michal Privoznik),<br/>
@@ -10626,7 +10630,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: fix typo that breaks non-Linux builds (Eric Blake)<br/>
       </li>
 
-      <li> BugFixes:<br/>
+      <li>BugFixes:<br/>
       nwfilter: Don't try to acquire DBus context when DBus is disabled (Peter Krempa),<br/>
       util: Prevent libvirtd crash (Alex Jia),<br/>
       security_dac: Don't return uninitialised uid and gid for image labels (Peter Krempa),<br/>
@@ -10731,7 +10735,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       fix key error for qemuMonitorGetBlockStatsInfo (lvroyce)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Introduce new VIR_ERR_AGENT_UNRESPONSIVE error code (Michal Privoznik),<br/>
       qemu: Switch to unified func name (Michal Privoznik),<br/>
       snapshot: rename an enum (Eric Blake),<br/>
@@ -11078,7 +11082,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: add rbd to whitelist of migration-safe formats (Josh Durgin)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       atomic: fix whitespace in previous patch (Eric Blake),<br/>
       virsh: drop unused headers (Eric Blake),<br/>
       maint: prohibit translations in testsuite (Eric Blake),<br/>
@@ -11112,7 +11116,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.13: July 2 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       S390: support for s390(x) (Thang Pham and Viktor Mihajlovski),<br/>
       snapshot: implement new APIs for esx and vbox (Eric Blake),<br/>
       snapshot: new query APIs and many improvements (Eric Blake),<br/>
@@ -11124,7 +11128,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       sVirt support for LXC domains inprovement (Daniel P. Berrange and Daniel J Walsh)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       virsh: Cleanup virsh -V output (Doug Goldstein),<br/>
       configure: show correct default argument in help (Marc-André Lureau),<br/>
       fix typo in virDomainDestroy API doc (Christophe Fergeau),<br/>
@@ -11141,7 +11145,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Improve docs about compiling libvirt from GIT (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Fix compilation on older sanlock (Daniel Veillard),<br/>
       Fix unused parameters / functions in virsh on Win32 (Daniel P. Berrange),<br/>
       Update to latest GNULIB to fix compat with Mingw64 toolchain (Daniel P. Berrange),<br/>
@@ -11159,7 +11163,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: really silence the 32-bit warning (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       build: use correct limit for unsigned long long (Eric Blake),<br/>
       nwfilter: Fix memory leak (Stefan Berger),<br/>
       network_conf: Don't free uninitialized pointers while parsing DNS SRV (Peter Krempa),<br/>
@@ -11215,7 +11219,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       nodeinfo: avoid probing host filesystem during test (Eric Blake)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Remove sub-mounts under /dev when starting an LXC container (Daniel P. Berrange),<br/>
       Fix vm's outbound traffic control problem (Eiichi Tsukata),<br/>
       conf: Don't shadow error from virGetDomain() (Peter Krempa),<br/>
@@ -11428,7 +11432,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Use XDG Base Directories instead of storing in home directory (William Jon McCann)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove accidentally added Patch: lines from mingw-libvirt.spec.in (Daniel P. Berrange),<br/>
       Add /tools/libvirt-guests.service to .gitignore (Guido Günther),<br/>
       sanlock: Properly indent (Michal Privoznik),<br/>
@@ -11444,12 +11448,12 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.12: May 14 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       qemu: allow snapshotting of sheepdog and rbd disks (Josh Durgin),<br/>
       blockjob: add new APIs (Eric Blake)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       mention migration issue of which credentials are used (Eric Blake),<br/>
       Add 'maintenance releases' link in 'News' sidebar (Cole Robinson),<br/>
       Added Snooze cloud manager to the IaaS section (Eugen Feller),<br/>
@@ -11465,7 +11469,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       news.html.in: Fix &lt;br&gt; void tag (Michal Privoznik)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       qemu: fix build when !HAVE_NUMACTL (Eric Blake),<br/>
       netlink: Fix build with libnl-3 (Jiri Denemark),<br/>
       build: avoid link failure on Windows (Eric Blake),<br/>
@@ -11485,7 +11489,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix format specifiers in test cases on Win32 (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       esx: Fix memory leaks in error paths related to transferred ownership (Matthias Bolte),<br/>
       qemu: Don't skip detection of virtual cpu's on non KVM targets (Peter Krempa),<br/>
       qemu: Re-detect virtual cpu threads after cpu hot (un)plug. (Peter Krempa),<br/>
@@ -11559,7 +11563,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Don't leak temporary list of USB devices (Michal Privoznik)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       qemu: Refactor qemuDomainSetVcpusFlags (Peter Krempa),<br/>
       numad: Update comments in libvirt.spec.in (Osier Yang),<br/>
       numad: Check numactl-devel if compiled with numad support (Osier Yang),<br/>
@@ -11658,7 +11662,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Clarify escape sequence (Michal Privoznik)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       building: remove libvirt_dbus.syms from EXTRA_DIST (Wen Congyang),<br/>
       conf: remove redundant () (Eric Blake),<br/>
       util: remove dead casts (Eric Blake),<br/>
@@ -11668,7 +11672,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.11: Apr 3 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Add support for the suspend event (Osier Yang),<br/>
       Add support for event tray moved of removable disks (Osier Yang),<br/>
       qemu: Support numad (Osier Yang),<br/>
@@ -11679,7 +11683,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       a number of snapshot improvements (Eric Blake)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: fix build on cygwin (Eric Blake),<br/>
       build: fix mingw ssize_t, syntax check (Eric Blake),<br/>
       Disable build of commandhelper &amp; ssh on Win32 (Daniel P. Berrange),<br/>
@@ -11696,7 +11700,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix compilation on MacOS X (Lincoln Myers)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       snapshot: fix virsh docs (Eric Blake),<br/>
       Expand docs for timer tick policy (Daniel P. Berrange),<br/>
       Add documentation for new attribute tray of disk target (Osier Yang),<br/>
@@ -11718,7 +11722,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Fix docs for list command (Peter Krempa)<br/>
       </li>
 
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       qemu: Start nested job in qemuDomainCheckEjectableMedia (Jiri Denemark),<br/>
       qemu: fix memory leak in virDomainGetVcpus (Laine Stump),<br/>
       conf: allow fuzz in XML with cur balloon &gt; max (Eric Blake),<br/>
@@ -11782,7 +11786,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix typos in API XML file paths (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Xen: Fix &lt;clock&gt; handling (Philipp Hahn),<br/>
       Support clock=variable relative to localtime (Philipp Hahn),<br/>
       python: improve conversion validation (Eric Blake),<br/>
@@ -11984,7 +11988,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: make block io tuning smarter (Eric Blake)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Fix typos and spacing in messages. (Yuri Chornoivan),<br/>
       qemu: eliminate nested switch, simplify code (Laine Stump),<br/>
       Fix typo in previous patch (Daniel P. Berrange),<br/>
@@ -12004,7 +12008,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>0.9.10: Feb 13 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Add support for sVirt in the LXC driver (Daniel P. Berrange),<br/>
       block rebase: add new API virDomainBlockRebase (Eric Blake),<br/>
       API: Add api to set and get domain metadata (Peter Krempa),<br/>
@@ -12018,7 +12022,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       QEMU guest agent support (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       fix typo in python bindings (Eric Blake),<br/>
       conf: small changes to comments in virDomainDeviceInfo (Laine Stump),<br/>
       Clarify the purpose of domxml-from-native (Dave Allan),<br/>
@@ -12041,7 +12045,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Document Android application using libvirt (Michal Privoznik)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       virpidfile: replace fopen/fwrite/fscanf with more portable version (Marc-André Lureau),<br/>
       util: Do not use PRIx64 macro (Osier Yang),<br/>
       Replace truncate() with ftruncate() (Daniel P. Berrange),<br/>
@@ -12069,7 +12073,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: avoid spurious compiler warning (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       rpc: Plug memory leaks on doRemoteOpen() failure path (Alex Jia),<br/>
       GetCPUStats: fix overflow test (Lai Jiangshan),<br/>
       python: Correct arguments number for migrateSetMaxSpeed (Osier Yang),<br/>
@@ -12123,7 +12127,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       config: report error when script given for inappropriate interface type (Laine Stump)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       python: make other APIs share common {get, set}PyVirTypedParameter (Guannan Ren),<br/>
       npiv: Auto-generate WWN if it's not specified (Osier Yang),<br/>
       Remove single quotes from audit records (Marcelo Cerri),<br/>
@@ -12288,7 +12292,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: one more client to live/config helper (Eric Blake)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       python: drop unused function (Eric Blake),<br/>
       python: drop redundant function (Eric Blake),<br/>
       Replace TAB with white spaces (Osier Yang),<br/>
@@ -12300,14 +12304,14 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.9: Jan 7 2012</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Add new API virDomain{S,G}etInterfaceParameters (Hu Tao),<br/>
       Add new API virDomain{G,S}etNumaParameters (Hu Tao),<br/>
       Add support for ppc64 qemu (Prerna Saxena, Bharata B Rao, Michael Ellerman),<br/>
       Support Xen domctl v8 (Jim Fehlig)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       Fix typos in messages. (Yuri Chornoivan),<br/>
       docs: re-fix stray / (Eric Blake),<br/>
       virsh: move version command to host group (Lai Jiangshan),<br/>
@@ -12323,7 +12327,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       threads: Document spurious wakeups on virCondWait (Michal Privoznik)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: fix mingw virCommand build (Eric Blake),<br/>
       tests: avoid test failure on rawhide gnutls (Eric Blake),<br/>
       build: drop check for ANSI compiler (Eric Blake),<br/>
@@ -12335,7 +12339,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       maint: allow bootstrap in a sandbox (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: Avoid memory leaks on qemuParseRBDString (Alex Jia),<br/>
       qemu: fix a bug in numatune (Hu Tao),<br/>
       qemu: fix use-after-free regression (Eric Blake),<br/>
@@ -12390,7 +12394,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix installation of libvirt-guests.service (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Implement DNS SRV record into the bridge driver (Michal Novotny),<br/>
       seclabel: honor device override in selinux (Eric Blake),<br/>
       seclabel: allow a seclabel override on a disk src (Eric Blake),<br/>
@@ -12457,13 +12461,13 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Use sysfs to gather host topology, in place of (Prerna Saxena)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       network_conf: Fix whitespace to pass syntax-check (Peter Krempa)<br/>
       </li>
     </ul>
     <h3>0.9.8: Dec 8 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Add support for QEMU 1.0 (Jiri Denemark),<br/>
       Add first parts of PPC cpu driver. (Prerna Saxena),<br/>
       Add new API virDomain{Set, Get}BlockIoTune (Lei Li),<br/>
@@ -12474,7 +12478,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add support for STP and VLANfiltering (Stefan Berger)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       Add documentation for &lt;disk&gt;&lt;source type="dir"&gt; (Christophe Fergeau),<br/>
       Fix typo in virDomainResume API doc (Christophe Fergeau),<br/>
       maint: fix improper use of 'an' (Eric Blake),<br/>
@@ -12486,7 +12490,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Documentation about chains' priorities, lists of elements etc. (Stefan Berger)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       spec: don't use chkconfig --list (Eric Blake),<br/>
       build: fix build with older libxml2 (Eric Blake),<br/>
       Conditionalize daemonPath decl for Win32 which lacks UNIX sockets (Daniel P. Berrange),<br/>
@@ -12509,7 +12513,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: fix mingw build of gnulib openpty (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix updating of haveTheBuck in RPC client to be race-free (Daniel P. Berrange),<br/>
       Prevent crash of libvirtd when attaching to existing qemu process (Jim Fehlig),<br/>
       qemu: Ignore shutdown event from destroyed domain (Jiri Denemark),<br/>
@@ -12559,7 +12563,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       lxc: free 'ttyFDs' array on return from lxcVmStart (Alex Jia)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       npiv: Expose fabric_name outside (Osier Yang),<br/>
       Improve error reporting when libvirtd is not installed (Daniel P. Berrange),<br/>
       spec: fix sanlock dependency (Eric Blake),<br/>
@@ -12710,7 +12714,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Add VSH_OFLAG_EMPTY_OK for attach-disk command (Xu He Jie)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove time APIs from src/util/util.h (Daniel P. Berrange),<br/>
       bandwidth: Fix funky identation (Michal Privoznik),<br/>
       qemu: fix a const-correctness issue (Eric Blake),<br/>
@@ -12750,7 +12754,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.7: Nov 8 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       esx: support vSphere 5.x (Patrice LACHANCE),<br/>
       vbox: support for VirtualBox 4.1 (Matthias Bolte),<br/>
       Introduce the virDomainOpenGraphics API (Daniel P. Berrange),<br/>
@@ -12759,7 +12763,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       api: Add public api for 'reset' (Xu He Jie)<br/>
       </li>
 
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       Add &lt;deviceboot&gt; capability. (Philipp Hahn),<br/>
       API: document scheduler parameter names (Eric Blake),<br/>
       improve typed parameter documentation (Eric Blake),<br/>
@@ -12790,7 +12794,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: Improve virsh manual for virsh memtune command (Peter Krempa)<br/>
       </li>
 
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: fix build on platforms without ptsname_r (Eric Blake),<br/>
       build: silence compiler warning on BSD (Eric Blake),<br/>
       build: fix linking on BSD (Eric Blake),<br/>
@@ -12814,7 +12818,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       spec: F15 still uses cgconfig, RHEL lacks hyperv (Eric Blake)<br/>
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix sending/receiving of FDs when stream returns EAGAIN (Daniel P. Berrange),<br/>
       lxc: avoid use-after-free (Eric Blake),<br/>
       conf: Don't free uninitialized pointer (Jiri Denemark),<br/>
@@ -12883,7 +12887,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix synchronous reading of stream data (Daniel P. Berrange)<br/>
       </li>
 
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Add missing defaultConsoleTargetType callback for AppArmour (Daniel P. Berrange),<br/>
       Fix naming of constant for disk event (Daniel P. Berrange),<br/>
       lxc: use common code for process cleanup (Eric Blake),<br/>
@@ -13063,7 +13067,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Transfer inactive XML among cookie (Michal Privoznik)<br/>
       </li>
 
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove translations in socket test case (Daniel P. Berrange),<br/>
       test: drop redundant check (Eric Blake),<br/>
       startupPolicty: Minor cleanups (Michal Privoznik),<br/>
@@ -13081,10 +13085,10 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>0.9.6: Sep 22 2011</h3>
     <ul>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       build: silence warning on 32-bit build (Eric Blake)<br/>
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       snapshot: fix logic bug in qemu undefine (Eric Blake),<br/>
       sanlock: fix memory leak (Eric Blake),<br/>
       virsh: fix regression in argv parsing (Eric Blake),<br/>
@@ -13094,7 +13098,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: Fix shutdown regression with buggy qemu (Jiri Denemark),<br/>
       remote: fix crash on OOM (Eric Blake)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       snapshot: also delete empty directory (Eric Blake),<br/>
       snapshot: remove snapshot metadata on transient exit (Eric Blake),<br/>
       snapshot: prepare to remove transient snapshot metadata (Eric Blake),<br/>
@@ -13107,7 +13111,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.5: Sep 20 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       many snapshot improvements (Eric Blake),<br/>
       latency: Define new public API and structure (Osier Yang),<br/>
       USB2 and various USB improvements (Marc-André Lureau),<br/>
@@ -13115,7 +13119,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add public API for getting migration speed (Jim Fehlig),<br/>
       Add basic driver for Microsoft Hyper-V (Matthias Bolte)<br/>
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       virsh: tweak previous domblkstat patch (Eric Blake),<br/>
       virsh: doc: Fix supported driver types for attach-disk command (Peter Krempa),<br/>
       doc: Add statment about permissions needed to do a core dump (Peter Krempa),<br/>
@@ -13134,7 +13138,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       use IPv6 addresses in range reserved for documentation (Laine Stump),<br/>
       describe new virtual switch configuration in network XML docs (Laine Stump)<br/>
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Update to require sanlock 1.8 for license compliance (Daniel P. Berrange),<br/>
       build: work around lack of MacOS fdatasync (Eric Blake),<br/>
       python: Fix bindings generated in VPATH build (Jiri Denemark),<br/>
@@ -13151,7 +13155,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       maint: fix some compilation issues on non-linux platforms (Stefan Berger),<br/>
       Fix detection of GnuTLS 1.x.y (Matthias Bolte)<br/>
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix crash on events due to allocation errors (Daniel Veillard),<br/>
       conf: Assign newDef of active domain as persistent conf if it is NULL (Osier Yang),<br/>
       storage: Ensure the device path exists before refreshing disk pool (Osier Yang),<br/>
@@ -13244,7 +13248,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       rpc:fix sasl session relocking intead of unlocking it (Guannan Ren),<br/>
       daemon: Unlink unix socket paths on shutdown (Osier Yang)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Remove devname identifier from autogenerated RPC code (Peter Krempa),<br/>
       maint: Prefer names over email in 'git shortlog' (Eric Blake),<br/>
       virsh: Add more human-friendly output of domblkstat command (Peter Krempa),<br/>
@@ -13461,7 +13465,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       network: eliminate lag in updating dnsmasq hosts files (Laine Stump),<br/>
       build: update to latest gnulib (Eric Blake)<br/>
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       maint: ignore generated files (Eric Blake),<br/>
       Remove two references to files not generated (Daniel Veillard),<br/>
       latency: fix make check for remote protocol structs and numbers (Daniel Veillard),<br/>
@@ -13910,7 +13914,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.3: Jul 4 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       vcpupin: introduce the new libvirt API (virDomainGetVcpupinInfo) (Taku Izumi),<br/>
       Add TXT record support for virtual DNS service (Michal Novotny),<br/>
       Support reboots with the QEMU driver (Daniel P. Berrange),<br/>
@@ -13922,7 +13926,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       support multifunction PCI device (Wen Congyang),<br/>
       lxc: various improvements (Cole Robinson)
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       Add documentation for configuration lock managers (Daniel P. Berrange),<br/>
       fix indentation of sub-elements of &lt;ip&gt; in network XML (Laine Stump),<br/>
       document correct flag name (Eric Blake),<br/>
@@ -13936,7 +13940,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add doc for video element (Osier Yang),<br/>
       Make hvsupport.pl pick up the host device drivers (Matthias Bolte)
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Explicitly invoke python for API doc generator (Daniel Veillard),<br/>
       fix virParseVersionString with linux 3.0 (Scott Moser),<br/>
       Add conditionals to allow build without SASL (Daniel P. Berrange),<br/>
@@ -13962,7 +13966,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virt-aa-helper: add missing include (Eric Blake)
       </li>
 
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       initialize pointer to NULL (Wen Congyang),<br/>
       storage: avoid crash on parse error (Eric Blake),<br/>
       vmware: avoid null deref on failed lookup (Eric Blake),<br/>
@@ -14025,7 +14029,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       storage: avoid mishandling backing store &gt; 2GB (Eric Blake)
 
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       tests: Add a general util test (Matthias Bolte),<br/>
       util: choose whether to require micro in version strings (Eric Blake),<br/>
       build: consistently use CFLAGS (Eric Blake),<br/>
@@ -14223,7 +14227,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Use VIR_USE_CPU instead of new wheel (Osier Yang),<br/>
       Avoid virGetVersion failure on specific driver support configurations (Matthias Bolte)
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       cgroup: silence coverity warning (Eric Blake),<br/>
       rpc: silence coverity warning (Eric Blake),<br/>
       qemu: silence coverity warnings (Eric Blake),<br/>
@@ -14247,7 +14251,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.2: Jun 6 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Framework for lock manager plugins (Daniel P. Berrange),<br/>
       API for network config change transactions (Michal Privoznik),<br/>
       flags for setting memory parameters (Hu Tao),<br/>
@@ -14257,7 +14261,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Defining the Screenshot public API (Michal Privoznik),<br/>
       public API for NMI injection (Lai Jiangshan)<br/>
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       esx: Fix driver method version annotations (Matthias Bolte),<br/>
       vbox: Fix typo in error message (Matthias Bolte),<br/>
       virsh: Document nodeinfo output (Jiri Denemark),<br/>
@@ -14274,7 +14278,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       updates to CA cert and client cert/key info (Doug Goldstein),<br/>
       node filesystem attr is 'accessmode', not 'mode' (Cole Robinson)<br/>
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       vbox: Fix version extraction on Windows for newer VirtualBox versions (Matthias Bolte),<br/>
       Make dlopen usage in lock manager conditional (Matthias Bolte),<br/>
       build: fix VPATH build break from previous patch (Eric Blake),<br/>
@@ -14299,7 +14303,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: fix VPATH build with distributed generated files (Eric Blake),<br/>
       build: fix VPATH builds (Eric Blake)<br/>
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix QEMU p2p v2 migration when run from a v3 client (Daniel P. Berrange),<br/>
       Don't raise an error if the migration cookie is NULL (Daniel P. Berrange),<br/>
       Fix check of virKillProcess return status (Daniel P. Berrange),<br/>
@@ -14368,7 +14372,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       apparmor: Fix uninitalized variable warning in virt-aa-helper (Matthias Bolte),<br/>
       Fix qemuMigrationToFile nonull annotation (Daniel P. Berrange)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       API: consolidate common unreleased enums (Eric Blake),<br/>
       uml: correct command line networking parameters (Heath Petersen),<br/>
       Add call to sanlock_restrict() in QEMU lock driver (Daniel P. Berrange),<br/>
@@ -14630,7 +14634,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Make QEMU hotplug use cached qemu capabilities data (Daniel P. Berrange),<br/>
       Persist qemu capabilities in the domain status file (Daniel P. Berrange)<br/>
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       build: silence coverity false positive (Eric Blake),<br/>
       build: silence coverity false positive (Eric Blake),<br/>
       .gitignore: Exempt a new test binary. (Eric Blake),<br/>
@@ -14648,14 +14652,14 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.1: May 5 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
        support various persistent domain updates (KAMEZAWA Hiroyuki),<br/>
        improvements on memory APIs (Taku Izumi),<br/>
        Add virDomainEventRebootNew (Matthias Bolte),<br/>
        various improvements to libxl driver (Markus Groß),<br/>
        Spice: support audio, images and stream compression (Michal Privoznik)<br/>
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
        fix missing VLAN id for Qbg example (Gerhard Stenzel),<br/>
        docs: Document filesystem tag device (Cole Robinson),<br/>
        maint: fix comment typos (Eric Blake),<br/>
@@ -14666,7 +14670,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
        docs: remove "returns" word from beginning of lines (Jean-Baptiste Rouault),<br/>
        docs: add an IPv6 address to network XML examples (Laine Stump)<br/>
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
        build: fix getcwd portability problems (Eric Blake),<br/>
        build: avoid test warnings on mingw (Eric Blake),<br/>
        virsh: avoid compiler warning on mingw (Eric Blake),<br/>
@@ -14685,7 +14689,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
        Fix build for older gcc (Jim Fehlig),<br/>
        Don't try to enable stack protector on Win32 (Daniel P. Berrange)<br/>
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
        storage: avoid null deref and leak on failure (Eric Blake),<br/>
        esx: Avoid null dereference on error in esxDomainGetInfo (Matthias Bolte),<br/>
        remote: avoid null dereference on error (Eric Blake),<br/>
@@ -14741,7 +14745,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
        Fix typo in systemtap tapset directory name (Daniel P. Berrange),<br/>
        qemu: Ignore unusable binaries (Jiri Denemark)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
        maint: detect clang 2.9 (Eric Blake),<br/>
        qemu: update qemuCgroupControllerActive signature (Eric Blake),<br/>
        lxc: report correct error (Eric Blake),<br/>
@@ -14838,7 +14842,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
        Allow relative path for qemu backing file (Jesse Cook),<br/>
        build: detect potentential uninitialized variables (Eric Blake)<br/>
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
        esx: Disable performance counter queries in esxDomainGetInfo (Matthias Bolte),<br/>
        esx: Remove dead store in esxUtil_ParseDatastorePath (Matthias Bolte),<br/>
        util: remove dead assignment (Eric Blake),<br/>
@@ -14876,7 +14880,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.9.0: Apr 4 2011</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Support cputune cpu usage tuning (Osier Yang and Nikunj A. Dadhania),<br/>
       Add public APIs for storage volume upload/download (Daniel P. Berrange),<br/>
       Add public API for setting migration speed on the fly (Daniel P. Berrange),<br/>
@@ -14888,7 +14892,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Dump the debug buffer to libvirtd.log on fatal signal (Daniel Veillard),<br/>
       Audit support (Eric Blake)<br/>
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       fix typo (Eric Blake),<br/>
       correct invalid xml (Eric Blake),<br/>
       virsh: Fix documentation for memtune command (Jiri Denemark),<br/>
@@ -14911,7 +14915,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix spelling mistake: seek (Philipp Hahn),<br/>
       maint: fix grammar in error message (Eric Blake)<br/>
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       virsh: fix mingw failure on creating nonblocking pipe (Eric Blake),<br/>
       Remove iohelper on Win32 since it is not required (Daniel P. Berrange),<br/>
       Fix domain events C example on Win32 (Daniel P. Berrange),<br/>
@@ -14927,7 +14931,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add check for kill() to fix build of cgroups on win32 (Daniel P. Berrange),<br/>
       build: fix broken mingw cross-compilation (Eric Blake)<br/>
       </li>
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       fix memory leak in qemuProcessHandleGraphics() (Wen Congyang),<br/>
       do not lock vm while allocating memory (Wen Congyang),<br/>
       Fix libxl driver startup (Daniel Veillard),<br/>
@@ -15003,7 +15007,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: freecell --all getting wrong NUMA nodes count (Michal Privoznik),<br/>
       remove duplicated call to reportOOMError (Christophe Fergeau)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Make check_fc_host() and check_vport_capable() usable as rvalues (Guido Günther),<br/>
       maint: avoid locale-sensitivity in string case comparisons (Eric Blake),<br/>
       extend logging to record configuration-related changes (Naoya Horiguchi),<br/>
@@ -15204,7 +15208,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: Fix VPATH build (Jiri Denemark),<br/>
       storage: Allow to delete device mapper disk partition (Osier Yang)<br/>
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       The next release is 0.9.0 not 0.8.9 (Daniel Veillard),<br/>
       maint: use space, not tab, in remote_protocol-structs (Eric Blake),<br/>
       Remove the Open Nebula driver (Daniel P. Berrange),<br/>
@@ -15725,7 +15729,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.8.6: Nov 30 2010</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       new API virDomainIsUpdated (Osier Yang),<br/>
       Add support for iSCSI target auto-discovery (Daniel P. Berrange),<br/>
       QED: Basic support for QED images (Adam Litke),<br/>
@@ -15734,7 +15738,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Add a sysinfo and SMBIOS support (Daniel Veillard),<br/>
       Implement virsh qemu-monitor-command. (Chris Lalancette)<br/>
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       updated c# bindings with arnauds latest changes (Justin Clift),<br/>
       Fix spelling of virBufferAsprintf (Jiri Denemark),<br/>
       Fix broken XML entity for '&gt;' (Philipp Hahn),<br/>
@@ -15755,7 +15759,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix comment for video tag in domain RNG schema (Daniel P. Berrange),<br/>
       fix typo (Eric Blake)<br/>
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       remote: Fix TLS transport on Windows (Matthias Bolte),<br/>
       Rename 'remove' param to 'toremove' to avoid clash with stdio.h (Daniel P. Berrange),<br/>
       virt-aa-helper: Fix several compile errors (Matthias Bolte),<br/>
@@ -15772,7 +15776,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: cleanup declaration of xen tests. (Diego Elio Pettenò),<br/>
       qemu: check compression program availability of virsh save and dump (KAMEZAWA Hiroyuki)<br/>
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       correct the arguments of migrate_speed (Wen Congyang),<br/>
       Fix memory leaks in audit &amp; VirtualBox code (Daniel P. Berrange),<br/>
       Fix host CPU counting on unusual NUMA topologies (Jiri Denemark),<br/>
@@ -15813,7 +15817,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       qemu: add the USB devices to the cgroup whitelist (Diego Elio Pettenò),<br/>
       802.1Qbg: use pre-associate state at beginning of inc. migr (Stefan Berger)<br/>
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Log client errors in libvirtd at debug priority,<br/>
       maint: prohibit most uses of xmlGetProp (Eric Blake),<br/>
       maint: ensure syntax check exceptions are distributed (Eric Blake),<br/>
@@ -15908,7 +15912,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       OpenVZ: Fix some overwritten error codes (Guido Günther),<br/>
       OpenVZ: take veid from vmdef-name when defining new domains (Guido Günther)<br/>
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       tests: Fix detection of expected errors (Jiri Denemark),<br/>
       Remove bogus check for Xen in example program (Daniel P. Berrange),<br/>
       build: enforce files.h usage (Eric Blake),<br/>
@@ -15935,7 +15939,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
 
     <h3>0.8.5: Oct 29 2010</h3>
     <ul>
-      <li> Features: <br/>
+      <li>Features:<br/>
       Enable JSON and netdev features in QEMU &gt; 0.13 (Daniel P. Berrange),<br/>
       framework for auditing integration (Daniel P. Berrange),<br/>
       framework for DTrace/SystemTap integration (Daniel P. Berrange),<br/>
@@ -15945,7 +15949,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Memory parameter controls (Nikunj A. Dadhania),<br/>
       portability to OS-X (Justin Clift)
       </li>
-      <li> Documentation: <br/>
+      <li>Documentation:<br/>
       virsh: improve the help description for managedsave and start (Justin Clift),<br/>
       updated the C# bindings page with arnauds latest changes (Justin Clift),<br/>
       update ruby bindings maintainer to chris lalancette (Justin Clift),<br/>
@@ -15980,7 +15984,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       improve wording for the dev guide (Justin Clift),<br/>
       add the app dev guide (Justin Clift)
       </li>
-      <li>Portability: <br/>
+      <li>Portability:<br/>
       mingw: Add body for virFork and remove double virDriverLoadModule export (Matthias Bolte),<br/>
       daemon: exclude requirement for probes.h on systems without systemtap (Justin Clift),<br/>
       build: skip xenapi driver when building for RHEL (Eric Blake),<br/>
@@ -15997,7 +16001,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       virsh: change wexitstatus order to allow compilation on mac osx (Justin Clift),<br/>
       build: use portable sed expressions (Eric Blake)
       </li>
-      <li> Bug Fixes: <br/>
+      <li>Bug Fixes:<br/>
       eliminate possibility of a double-closed file descriptor (Stefan Berger),<br/>
       qemu: check for vm after starting a job (Eric Blake),<br/>
       Only attempt removal of the rule allowing tftp if it was added (Laine Stump),<br/>
@@ -16026,7 +16030,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       nwfilter bug appearing on big endian machines (Stefan Berger),<br/>
       Rebuild network filter for UML guests on updates (Soren Hansen)
       </li>
-      <li> Improvements: <br/>
+      <li>Improvements:<br/>
       vbox: Stop hardcoding a single path for VBoxXPCOMC.so (Matthias Bolte),<br/>
       Add disk/net resource auditing to QEMU driver (Daniel P. Berrange),<br/>
       Add auditing of security label in QEMU driver (Daniel P. Berrange),<br/>
@@ -16144,7 +16148,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       libvirtd: improve the error message displayed on tls client auth failure (Justin Clift),<br/>
       virsh: Use virBuffer for generating XML (Jiri Denemark)
       </li>
-      <li> Cleanups: <br/>
+      <li>Cleanups:<br/>
       audit: printf warning fix (KAMEZAWA Hiroyuki),<br/>
       build: use shorter file names for 'make dist' (Eric Blake),<br/>
       maint: fix syntax-check failure of previous patch (Eric Blake),<br/>
@@ -16183,17 +16187,17 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.8.4: Sep 10 2010</h3>
     <ul>
-      <li> Features:
+      <li>Features:
       various improvements to UML driver (Soren Hansen)
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       docs: fix lxc examples (Serge Hallyn),<br/>
       docs: mention domain clock improvements (Eric Blake),<br/>
       docs: fix an incorrect keyword in updated hooks page (Justin Clift),<br/>
       docs: significant expansion of custom hook script information (Justin Clift)
 
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       cygwin: build fix (Stefan Berger),<br/>
       build: allow mingw VPATH build (Eric Blake),<br/>
       Generate libvirt_qemu.def from libvirt_qemu.syms for MinGW builds (Matthias Bolte),<br/>
@@ -16201,7 +16205,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build-sys: fix build when daemon is disabled by not installing libvirtd.8 (Diego Elio Pettenò)
 
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix block statistics with newer versions of Xen (Guido Günther),<br/>
       Fix off-by-1 in QEMU boot arg array handling (Daniel P. Berrange),<br/>
       bridge: Fix static-only DHCP configuration (Jiri Denemark),<br/>
@@ -16235,7 +16239,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Do not use boot=on on IDE device (Daniel Veillard)
 
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       virsh: Option for overriding disk type in attach-disk (Jiri Denemark),<br/>
       Explicitly pass uml_dir argument to user-mode-linux (Soren Hansen),<br/>
       Fix dependancies for remote generated files (Daniel P. Berrange),<br/>
@@ -16299,7 +16303,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       build: rerun bootstrap if po/Makevars got nuked (Eric Blake)
 
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Remove hack to get static binaries in DV environment (Daniel Veillard),<br/>
       build: avoid uninitialized variable warning (Eric Blake),<br/>
       vbox: factor a large function (Eric Blake),<br/>
@@ -16327,12 +16331,12 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.8.3: Aug  4 2010</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       esx: Support vSphere 4.1 (Matthias Bolte),<br/>
       Qemu arbitrary monitor commands. (Chris Lalancette),<br/>
       Qemu Monitor API entry point. (Chris Lalancette)
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       docs: Link wiki FAQ to main page (Cole Robinson),<br/>
       Document the memory balloon device (Daniel P. Berrange),<br/>
       man pages: update authors and copyright notice for libvirtd and virsh (Justin Clift),<br/>
@@ -16342,11 +16346,11 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       html docs: added firewall explanation page by daniel berrange (Justin Clift),<br/>
       libvirtd: add man page for libvirtd (Justin Clift)
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Fix compile on i686. (Chris Lalancette),<br/>
       daemon: dispatch.c should include stdio.h (and stdarg.h) (Ryota Ozaki)
       </li>
-      <li> Bug fixes:<br/>
+      <li>Bug fixes:<br/>
       qemu: Fix PCI address allocation (Jiri Denemark),<br/>
       Don't leak delay string when freeing virInterfaceBridgeDefs (Laine Stump),<br/>
       qemu: don't lose error on setting monitor capabilities (Eric Blake),<br/>
@@ -16396,7 +16400,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       cpuCompare: Fix comparison of two host CPUs (Jiri Denemark),<br/>
       Fix potential crash in QEMU monitor JSON impl (Daniel P. Berrange)
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       OpenVZ: implement suspend/resume driver APIs (Jean-Baptiste Rouault),<br/>
       esx: Set storage pool target path to host.mountInfo.path (Matthias Bolte),<br/>
       esx: Make storage pool lookup by name and UUID more robust (Matthias Bolte),<br/>
@@ -16467,7 +16471,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       cpuBaseline: Don't mess with the CPU returned by arch driver (Jiri Denemark),<br/>
       Make html docs in non-srcdir build (Jiri Denemark)
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       Fix build error in virsh.c (Laine Stump)<br/>
       Fix virsh error message when -d arg is not numeric (Eric Blake)<br/>
       Fix a couple of typo in iSCSI backend (Aurelien ROUGEMONT)<br/>
@@ -16495,7 +16499,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.8.2: Jul  5 2010</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       phyp: adding support for IVM (Eduardo Otubo),<br/>
       libvirt: introduce domainCreateWithFlags API (Eric Blake),<br/>
       add 802.1Qbh and 802.1Qbg switches handling (Stefan Berger),<br/>
@@ -16503,7 +16507,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Init script for handling guests on shutdown/boot (Jiri Denemark),<br/>
       qemu: live migration with non-shared storage for kvm (Kenneth Nagin)
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       html docs: add link to PHP bindings by Radek Hladik (Justin Clift),<br/>
       virsh: document attach-disk better (Eric Blake),<br/>
       bridge_driver.c: fix file description (Alan Pevec),<br/>
@@ -16524,7 +16528,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix a typo in docs (Ersek Laszlo),<br/>
       docs: hacking: explain why using curly braces well is important (Jim Meyering)
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       cgroup: Fix compilation broken on MinGW due to dirent-&gt;d_type (Ryota Ozaki),<br/>
       parthelper: fix compilation without optimization (Eric Blake),<br/>
       build: fix some mingw issues (Eric Blake),<br/>
@@ -16543,7 +16547,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       dnsmasqReload: avoid mingw link failure (Eric Blake),<br/>
       mingw: Fix symbol export (Matthias Bolte)
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       Avoid invoking the qemu monitor destroy callback if the constructor fails (Daniel P. Berrange),<br/>
       cgroup: Add missing errno == ENOENT check in virCgroupRemoveRecursively (Ryota Ozaki),<br/>
       Fix crash when detaching devices from qemu domains. (Chris Lalancette),<br/>
@@ -16632,7 +16636,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix memory leaks in cmdInterfaceEdit and cmdNWFilterEdit. (Laine Stump),<br/>
       lxc: Fix failure on starting a domain with multiple interfaces (Ryota Ozaki)
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       vbox: Let configure detect/set the XPCOMC directory (Matthias Bolte),<br/>
       udev: Parse PCI devices even if libpciaccess fails (Cole Robinson),<br/>
       qemu: Improve some qemu.conf error reporting (Cole Robinson),<br/>
@@ -16779,7 +16783,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       dnsmasq.c: Fix OOM error reporting (Matthias Bolte),<br/>
       autobuild.sh: provide default prefix (Eric Blake)
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       lxc: Change VIR_ERROR to VIR_DEBUG for just a debugging message (Ryota Ozaki),<br/>
       phyp: reduce scope of driver functions (Eric Blake),<br/>
       Fix test case failure due to missing -nodefconfig (Daniel P. Berrange),<br/>
@@ -16849,17 +16853,17 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
     </ul>
     <h3>0.8.1: Apr 30 2010</h3>
     <ul>
-      <li> Features:<br/>
+      <li>Features:<br/>
       Add virDomainGetBlockInfo API to query disk sizing (Daniel P. Berrange),<br/>
       Starts dnsmasq from libvirtd with --dhcp-hostsfile option (Satoru SATOH)
       </li>
-      <li> Documentation:<br/>
+      <li>Documentation:<br/>
       cleanup the download section of the documentation (Daniel Veillard),<br/>
       Fix messsage as message. (Chris Lalancette),<br/>
       Fix up a debug typo. (Chris Lalancette),<br/>
       add nwfilter functions to virsh man page (Stefan Berger)
       </li>
-      <li> Portability:<br/>
+      <li>Portability:<br/>
       Fix build on Ubuntu. (Chris Lalancette),<br/>
       cygwin/mingw: Fix version script handling (Matthias Bolte),<br/>
       build: fix autogen rule for VPATH build (Eric Blake),<br/>
@@ -16877,7 +16881,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Fix build of openvz on RHEL-5. (Chris Lalancette),<br/>
       Fix spec file for builds without lxc (Daniel Berteaud)
       </li>
-      <li> Bug Fixes:<br/>
+      <li>Bug Fixes:<br/>
       domain: Fix PCI address decimal parsing regression (Cole Robinson),<br/>
       Fix virt-pki-validate's determination of CN (Dustin Kirkland),<br/>
       Fix detection of disk in IO events (Daniel P. Berrange),<br/>
@@ -16924,7 +16928,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       esxVMX_GatherSCSIControllers: avoid NULL dereference (Jim Meyering),<br/>
       Fix nodeinfotest on NUMA machines (Daniel P. Berrange)
       </li>
-      <li> Improvements:<br/>
+      <li>Improvements:<br/>
       Add support for another explicit IO error event (Daniel P. Berrange),<br/>
       Report all errors in SELinuxRestoreSecurityFileLabel (Jiri Denemark),<br/>
       Prevent updates while IP address learn thread is running (Stefan Berger),<br/>
@@ -16990,7 +16994,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Consolidate interface related functions in interface.c (Stefan Berger),<br/>
       build: include usleep gnulib module (Eric Blake)
       </li>
-      <li> Cleanups:<br/>
+      <li>Cleanups:<br/>
       qemudDomainSaveFlag: remove dead store (Jim Meyering),<br/>
       Remove unused goto label from qemudDomainCreate (Daniel P. Berrange),<br/>
       Fix indentation for storage conf XML (David Allan),<br/>
@@ -18737,7 +18741,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       Run QEMU guests as an unprivileged user (Daniel P. Berrange),<br/>
       Support cgroups in QEMU driver (Daniel P. Berrange),<br/>
       QEmu hotplug NIC support (Mark McLoughlin),<br/>
-      Storage cloning for LVM and Disk backends(Cole Robinson),<br/>
+      Storage cloning for LVM and Disk backends (Cole Robinson),<br/>
       Switching to GIT (Jim Meyering)<br/>
       </li>
       <li>Documentation:<br/>
@@ -19005,7 +19009,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       <li>Bug fixes:<br/>
       forbid autostart on transcient networks,<br/>
       xen device removal crash (Daniel Berrange),<br/>
-      re-detection of transient VMs after libvirtd restart(Daniel Berrange),<br/>
+      re-detection of transient VMs after libvirtd restart (Daniel Berrange),<br/>
       bug in virFindFileInPath (Daniel Berrange),<br/>
       handle new availheap sysctl in Xen (Daniel Berrange),<br/>
       allow USB hostdev product 0 (Cole Robinson),<br/>
@@ -19100,7 +19104,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       cleanups and doc on virExec (Cole Robinson),<br/>
       error reporting in QEmu migrations (Cole Robinson),<br/>
       better path and driver detection in VBox (Pritesh Kothari),<br/>
-      avoid caching QEMU driver capabilities(Cole Robinson),<br/>
+      avoid caching QEMU driver capabilities (Cole Robinson),<br/>
       multiple graphics elements definitions (Pritesh Kothari),<br/>
       LSB init header init.d improvements (Frederik Himpe),<br/>
       special erro code for invalid operations (Daniel Berrange),<br/>
@@ -19446,7 +19450,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       <li>Improvements:<br/>
       use xend preferably to hypervisor call to set Xen max memory (Jim Fehlig),<br/>
       allow remote://hostname/ URI for automatic probe of hypervisors (Daniel Berrange),<br/>
-      fix daemon configuration regression testing (Jim Meyering ),<br/>
+      fix daemon configuration regression testing (Jim Meyering),<br/>
       check /usr/bin/kvm for QEmu driver init (Guido Günther),<br/>
       proper active vs. inactive differentiation (Guido Günther),<br/>
       improve MTU setting on tap interfaces (Eduardo Habkost),<br/>
@@ -19623,7 +19627,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       </li>
       <li>Bug fixes:<br/>
       memory leaks and testing for OOM (Daniel Berrange),<br/>
-      do_open driver bug(Evgeniy Sokolov),<br/>
+      do_open driver bug (Evgeniy Sokolov),<br/>
       don't use polkit auth when running as non-root (Daniel Berrange),<br/>
       boot of CDRom devices in QEmu/KVM (Daniel Berrange),<br/>
       fix OpenVZ probe function (Evgeniy Sokolov),<br/>
@@ -19909,7 +19913,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       framework for automatic code syntax checks (Jim Meyering),<br/>
       allow kernel+initrd setup in Xen PV (Daniel Berrange),<br/>
       allow change of Disk/NIC of an inactive domains (Shigeki Sakamoto),<br/>
-      virsh commands to manipulate and create storage(Daniel Berrange),<br/>
+      virsh commands to manipulate and create storage (Daniel Berrange),<br/>
       update use of PolicyKit APIs,<br/>
       better detection of fedault hypervisor,<br/>
       block device statistics for QEmu/KVM (Richard Jones),<br/>
@@ -20097,7 +20101,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       hypervisor support page update (Richard Jones)<br/>
       </li>
       <li>Bug fixes:<br/>
-      remove a couple of leaks in QEmu/KVM backend(Daniel berrange),<br/>
+      remove a couple of leaks in QEmu/KVM backend (Daniel berrange),<br/>
       fix GnuTLS 1.0 compatibility (Richard Jones),<br/>
       --config/-f option mistake for libvirtd (Richard Jones),<br/>
       remove leak in QEmu backend (Jim Paris),<br/>
@@ -20379,7 +20383,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       python bindings for new functions (Daniel Berrange)<br/>
       </li>
       <li>Cleanups:<br/>
-      Various internal cleanups (Richard Jones,Daniel Berrange,Mark McLoughlin)<br/>
+      Various internal cleanups (Richard Jones, Daniel Berrange, Mark McLoughlin)<br/>
       </li>
     </ul>
     <h3>0.2.0: Feb 14 2007</h3>
@@ -20432,7 +20436,7 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       <li>Features:<br/>
       separate the notion of maximum memory and current use at the XML level,<br/>
       add support for shareable drives,<br/>
-      add support for non-bridge style networking configs for guests(Daniel Berrange),<br/>
+      add support for non-bridge style networking configs for guests (Daniel Berrange),<br/>
       new config APIs virConfNew() and virConfSetValue() to build configs from scratch,<br/>
       hot plug device support based on Michel Ponceau patch,<br/>
       added support for inactive domains, new APIs, various associated cleanup (Daniel Berrange),<br/>
