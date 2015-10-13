@@ -602,9 +602,6 @@ and check the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a> 
       cpu_map.xml: Expand 486 CPU model (Jiri Denemark),<br/>
       cpu_map.xml: Sort features in x86 CPU models (Jiri Denemark)<br/>
       </li>
-
-      <li>Cleanups:<br/>
-      </li>
     </ul>
    <h3>1.2.17: Jul 02 2015</h3>
     <ul>
@@ -16847,8 +16844,6 @@ Security:<br/>
       qemu: Fix warning about a non-literal format string (Matthias Bolte),<br/>
       build: drop more redundant configure checks (Eric Blake),<br/>
       build: silence a clang false positive (Eric Blake)
-      </li>
-      <li>
       </li>
     </ul>
     <h3>0.8.1: Apr 30 2010</h3>
