@@ -3597,11 +3597,13 @@ qemuDomainDefValidateMemoryHotplugDevice(const virDomainMemoryDef *mem,
             return -1;
         }
 
-        if (mem->targetNode == -1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target NUMA node needs to be specified for "
-                             "memory device"));
-            return -1;
+        if (virDomainNumaGetNodeCount(def->numa) != 0) {
+            if (mem->targetNode == -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("target NUMA node needs to be specifed for "
+                                 "memory device"));
+                return -1;
+            }
         }
 
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
@@ -3680,15 +3682,17 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
         return -1;
     }
 
-    /* due to guest support, qemu would silently enable NUMA with one node
-     * once the memory hotplug backend is enabled. To avoid possible
-     * confusion we will enforce user originated numa configuration along
-     * with memory hotplug. */
-    if (virDomainNumaGetNodeCount(def->numa) == 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("At least one numa node has to be configured when "
-                         "enabling memory hotplug"));
-        return -1;
+    if (!ARCH_IS_PPC64(def->os.arch)) {
+        /* due to guest support, qemu would silently enable NUMA with one node
+         * once the memory hotplug backend is enabled. To avoid possible
+         * confusion we will enforce user originated numa configuration along
+         * with memory hotplug. */
+        if (virDomainNumaGetNodeCount(def->numa) == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("At least one numa node has to be configured when "
+                             "enabling memory hotplug"));
+            return -1;
+        }
     }
 
     if (nmems > def->mem.memory_slots) {

@@ -1,0 +1,38 @@
+<domain type='kvm'>
+  <name>QEMUGuest1</name>
+  <uuid>49545eb3-75e1-2d0a-acdd-f0294406c99e</uuid>
+  <maxMemory slots='16' unit='KiB'>4194304</maxMemory>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+    <kernel>/media/ram/uImage</kernel>
+    <initrd>/media/ram/ramdisk</initrd>
+    <cmdline>root=/dev/ram rw console=ttyS0,115200</cmdline>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+    <memballoon model='virtio'/>
+    <memory model='dimm'>
+      <target>
+        <size unit='KiB'>523264</size>
+      </target>
+    </memory>
+    <memory model='dimm'>
+      <target>
+        <size unit='KiB'>524287</size>
+      </target>
+    </memory>
+  </devices>
+</domain>

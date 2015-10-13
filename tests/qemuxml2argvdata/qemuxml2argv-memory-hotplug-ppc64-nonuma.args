@@ -1,0 +1,28 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name QEMUGuest1 \
+-S \
+-M pseries \
+-m size=1310720k,slots=16,maxmem=4194304k \
+-smp 1 \
+-object memory-backend-ram,id=memdimm0,size=536870912 \
+-device pc-dimm,memdev=memdimm0,id=dimm0 \
+-object memory-backend-ram,id=memdimm1,size=536870912 \
+-device pc-dimm,memdev=memdimm1,id=dimm1 \
+-uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-kernel /media/ram/uImage \
+-initrd /media/ram/ramdisk \
+-append 'root=/dev/ram rw console=ttyS0,115200' \
+-usb \
+-serial pty \
+-device virtio-balloon-pci,id=balloon0,bus=pci,addr=0x2
