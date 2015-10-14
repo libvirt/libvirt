@@ -55,6 +55,7 @@ virAdmConnectPtr virAdmConnectOpen(const char *name, unsigned int flags);
 int virAdmConnectClose(virAdmConnectPtr conn);
 
 int virAdmConnectRef(virAdmConnectPtr conn);
+int virAdmConnectIsAlive(virAdmConnectPtr conn);
 
 int virAdmGetVersion(unsigned long long *libVer);
 

@@ -159,10 +159,10 @@ vshAdmConnectionHandler(vshControl *ctl)
 {
     vshAdmControlPtr priv = ctl->privData;
 
-    if (!priv->conn)
+    if (!virAdmConnectIsAlive(priv->conn))
         vshAdmReconnect(ctl);
 
-    if (!priv->conn) {
+    if (!virAdmConnectIsAlive(priv->conn)) {
         vshError(ctl, "%s", _("no valid connection"));
         return NULL;
     }

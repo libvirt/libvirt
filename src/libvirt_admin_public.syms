@@ -16,4 +16,5 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmConnectClose;
         virAdmConnectRef;
         virAdmGetVersion;
+        virAdmConnectIsAlive;
 };

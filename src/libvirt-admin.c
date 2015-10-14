@@ -420,3 +420,36 @@ virAdmGetVersion(unsigned long long *libVer)
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectIsAlive:
+ * @conn: connection to admin server
+ *
+ * Decide whether the connection to the admin server is alive or not.
+ * Connection is considered alive if the channel it is running over is not
+ * closed.
+ *
+ * Returns 1, if the connection is alive, 0 if there isn't an existing
+ * connection at all or the channel has already been closed, or -1 on error.
+ */
+int
+virAdmConnectIsAlive(virAdmConnectPtr conn)
+{
+    bool ret;
+    remoteAdminPrivPtr priv = NULL;
+
+    VIR_DEBUG("conn=%p", conn);
+
+    if (!conn)
+        return 0;
+
+    virCheckAdmConnectReturn(conn, -1);
+    virResetLastError();
+
+    priv = conn->privateData;
+    virObjectLock(priv);
+    ret = virNetClientIsOpen(priv->client);
+    virObjectUnlock(priv);
+
+    return ret;
+}
