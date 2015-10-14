@@ -248,9 +248,9 @@ trap '(exit $?); exit $?' 1 2 13 15
 
 cd "$t_" || error_ "failed to cd to $t_"
 
-if ( diff --version < /dev/null 2>&1 | grep GNU ) 2>&1 > /dev/null; then
+if ( diff --version < /dev/null 2>&1 | grep GNU ) > /dev/null 2>&1; then
   compare() { diff -u "$@"; }
-elif ( cmp --version < /dev/null 2>&1 | grep GNU ) 2>&1 > /dev/null; then
+elif ( cmp --version < /dev/null 2>&1 | grep GNU ) > /dev/null 2>&1; then
   compare() { cmp -s "$@"; }
 else
   compare() { cmp "$@"; }
