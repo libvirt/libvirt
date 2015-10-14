@@ -13,7 +13,7 @@
     to gauge progress.
     </p>
 
-    <h3>v1.2.20: Oct 02 2015</h3>
+    <h3>1.2.20: Oct 02 2015</h3>
     <ul>
       <li>Security:<br/>
       storage: Handle failure from refreshVol (John Ferlan),<br/>
@@ -406,7 +406,7 @@
       </li>
     </ul>
 
-    <h3>v1.2.18: Aug 03 2015</h3>
+    <h3>1.2.18: Aug 03 2015</h3>
     <ul>
       <li>Features:<br/>
       libxl: support dom0 (Jim Fehlig),<br/>
@@ -1010,7 +1010,7 @@
       </li>
     </ul>
 
-    <h3>1.2.16: Jun 1 2015</h3>
+    <h3>1.2.16: Jun 01 2015</h3>
     <ul>
       <li>Features:<br/>
       Introduce pci-serial (Michal Privoznik),<br/>
@@ -1208,7 +1208,7 @@
       </li>
     </ul>
 
-    <h3>1.2.15: May 4 2015</h3>
+    <h3>1.2.15: May 04 2015</h3>
     <ul>
       <li>Features:<br/>
       Implement virDomainAddIOThread and virDomainDelIOThread (John Ferlan),<br/>
@@ -1601,7 +1601,7 @@
       </li>
     </ul>
 
-    <h3>1.2.14: Apr 2 2015</h3>
+    <h3>1.2.14: Apr 02 2015</h3>
     <ul>
       <li>Features:<br/>
       qemu: Implement memory device hotplug (Peter Krempa),<br/>
@@ -1963,7 +1963,7 @@
       </li>
     </ul>
 
-    <h3>1.2.13: Mar 2 2015</h3>
+    <h3>1.2.13: Mar 02 2015</h3>
     <ul>
       <li>Features:<br/>
       a lot of NUMA updates and improvments (Peter Krempa)<br/>
@@ -2804,7 +2804,7 @@
       </li>
     </ul>
 
-    <h3>1.2.10: Nov 3 2014</h3>
+    <h3>1.2.10: Nov 03 2014</h3>
     <ul>
       <li>Features:<br/>
       vbox: various drivers improvements (Taowei Luo),<br/>
@@ -3027,7 +3027,7 @@
       </li>
     </ul>
 
-    <h3>1.2.9: Oct 1 2014</h3>
+    <h3>1.2.9: Oct 01 2014</h3>
     <ul>
       <li>Features:<br/>
       Introduce virNodeAllocPages (Michal Privoznik),<br/>
@@ -3341,7 +3341,7 @@
       </li>
     </ul>
 
-    <h3>1.2.8: Sep 2 2014</h3>
+    <h3>1.2.8: Sep 02 2014</h3>
     <ul>
       <li>Features:<br/>
       blockcopy: virDomainBlockCopy with XML destination, typed params (Eric Blake),<br/>
@@ -3655,7 +3655,7 @@
       </li>
     </ul>
 
-    <h3>1.2.7: Aug 2 2014</h3>
+    <h3>1.2.7: Aug 02 2014</h3>
     <ul>
       <li>Features:<br/>
       Introduce virConnectGetDomainCapabilities (Michal Privoznik)<br/>
@@ -3967,7 +3967,7 @@
       </li>
     </ul>
 
-    <h3>1.2.6: Jul 2 2014</h3>
+    <h3>1.2.6: Jul 02 2014</h3>
     <ul>
       <li>Features:<br/>
       libxl: add migration support and fixes (Jim Fehlig),<br/>
@@ -4264,7 +4264,7 @@
       </li>
     </ul>
 
-    <h3>1.2.5: Jun 2 2014</h3>
+    <h3>1.2.5: Jun 02 2014</h3>
     <ul>
       <li>Security:<br/>
       LSN-2014-0003: Don't expand entities when parsing XML (Daniel P. Berrange)<br/>
@@ -4434,7 +4434,7 @@
       </li>
     </ul>
 
-    <h3>1.2.4: May 4 2014</h3>
+    <h3>1.2.4: May 04 2014</h3>
     <ul>
       <li>Documentation:<br/>
       Device{Attach,Detach}: Document S4 limitations (Michal Privoznik),<br/>
@@ -4719,7 +4719,7 @@
       </li>
     </ul>
 
-    <h3>1.2.3: Apr 1 2014</h3>
+    <h3>1.2.3: Apr 01 2014</h3>
     <ul>
       <li>Features:<br/>
       add new virDomainCoreDumpWithFormat API (Qiao Nuohan),<br/>
@@ -5154,7 +5154,7 @@
       </li>
     </ul>
 
-    <h3>1.2.2: Mar 2 2014</h3>
+    <h3>1.2.2: Mar 02 2014</h3>
     <ul>
       <li>Features:<br/>
       bhyve: add a basic driver (Roman Bogorodskiy),<br/>
@@ -5839,7 +5839,7 @@
       </li>
     </ul>
 
-    <h3>1.2.0: Dec 2 2013</h3>
+    <h3>1.2.0: Dec 02 2013</h3>
     <ul>
       <li>Features:<br/>
       Add support for gluster pool (Eric Blake),<br/>
@@ -6054,7 +6054,7 @@
       </li>
     </ul>
 
-    <h3>1.1.4: Nov 4 2013</h3>
+    <h3>1.1.4: Nov 04 2013</h3>
     <ul>
       <li>Features:<br/>
       Add support for AArch64 architecture (Pranavkumar Sawargaonkar),<br/>
@@ -6345,7 +6345,7 @@
       </li>
     </ul>
 
-    <h3>1.1.3: Oct 1 2013</h3>
+    <h3>1.1.3: Oct 01 2013</h3>
     <ul>
       <li>Features:<br/>
       VMware: Initial VMware Fusion support and various improvements (Doug Goldstein),<br/>
@@ -6684,7 +6684,7 @@
       </li>
     </ul>
 
-    <h3>1.1.2: Sep 2 2013</h3>
+    <h3>1.1.2: Sep 02 2013</h3>
     <ul>
       <li>Features:<br/>
       various improvements to libxl driver (Jim Fehlig, Bamvor Jian Zhang),<br/>
@@ -6986,7 +6986,7 @@
       </li>
     </ul>
 
-    <h3>1.1.1: July 30 2013</h3>
+    <h3>1.1.1: Jul 30 2013</h3>
     <ul>
       <li>Features:<br/>
       Adding device removal or deletion events (Jiri Denemark),<br/>
@@ -7398,7 +7398,7 @@
       </li>
     </ul>
 
-    <h3>1.1.0: July 1 2013</h3>
+    <h3>1.1.0: Jul 01 2013</h3>
     <ul>
       <li>Features:<br/>
       Extensible migration APIs (Jiri Denemark),<br/>
@@ -7638,7 +7638,7 @@
       </li>
     </ul>
 
-    <h3>1.0.6: June 3 2013</h3>
+    <h3>1.0.6: Jun 03 2013</h3>
     <ul>
       <li>Features:<br/>
       Move VirtualBox driver into libvirtd (Daniel P. Berrange),<br/>
@@ -8084,7 +8084,7 @@
       </li>
     </ul>
 
-    <h3>1.0.5: May 2 2013</h3>
+    <h3>1.0.5: May 02 2013</h3>
     <ul>
       <li>Features:<br/>
       Add NVRAM device (Li Zhang),<br/>
@@ -8436,7 +8436,7 @@
       </li>
     </ul>
 
-    <h3>1.0.4: Apr 1 2013</h3>
+    <h3>1.0.4: Apr 01 2013</h3>
     <ul>
       <li>Features:<br/>
       qemu: support passthrough for iscsi disks (Paolo Bonzini),<br/>
@@ -8649,7 +8649,7 @@
       </li>
     </ul>
 
-    <h3>1.0.3: Mar 5 2013</h3>
+    <h3>1.0.3: Mar 05 2013</h3>
     <ul>
       <li>Features:<br/>
       Introduce virDomainMigrate*CompressionCache APIs (Jiri Denemark),<br/>
@@ -9880,7 +9880,7 @@
       </li>
     </ul>
 
-    <h3>1.0.0: Nov 2 2012</h3>
+    <h3>1.0.0: Nov 02 2012</h3>
     <ul>
       <li>Features:<br/>
       virNodeGetCPUMap: Define public API. (Viktor Mihajlovski),<br/>
@@ -10241,7 +10241,7 @@
       </li>
     </ul>
 
-    <h3>0.10.2: September 24 2012</h3>
+    <h3>0.10.2: Sep 24 2012</h3>
     <ul>
       <li>Features:<br/>
       network: define new API virNetworkUpdate (Laine Stump),<br/>
@@ -10521,7 +10521,7 @@
       </li>
     </ul>
 
-    <h3>0.10.1: August 31 2012</h3>
+    <h3>0.10.1: Aug 31 2012</h3>
     <ul>
       <li>Bug Fixes:<br/>
       conf: Avoid formatting auto-generated DAC labels (Marcelo Cerri),<br/>
@@ -10569,7 +10569,7 @@
       </li>
     </ul>
 
-    <h3>0.10.0: August 29 2012</h3>
+    <h3>0.10.0: Aug 29 2012</h3>
     <ul>
       <li>Features:<br/>
       agent: add qemuAgentArbitraryCommand() for general qemu agent command (MATSUDA Daiki),<br/>
@@ -11131,7 +11131,7 @@
       </li>
     </ul>
 
-    <h3>0.9.13: July 2 2012</h3>
+    <h3>0.9.13: July 02 2012</h3>
     <ul>
       <li>Features:<br/>
       S390: support for s390(x) (Thang Pham and Viktor Mihajlovski),<br/>
@@ -11689,7 +11689,7 @@
       </li>
     </ul>
 
-    <h3>0.9.11: Apr 3 2012</h3>
+    <h3>0.9.11: Apr 03 2012</h3>
     <ul>
       <li>Features:<br/>
       Add support for the suspend event (Osier Yang),<br/>
@@ -12322,7 +12322,7 @@
       </li>
     </ul>
 
-    <h3>0.9.9: Jan 7 2012</h3>
+    <h3>0.9.9: Jan 07 2012</h3>
     <ul>
       <li>Features:<br/>
       Add new API virDomain{S,G}etInterfaceParameters (Hu Tao),<br/>
@@ -12486,7 +12486,7 @@
       </li>
     </ul>
 
-    <h3>0.9.8: Dec 8 2011</h3>
+    <h3>0.9.8: Dec 08 2011</h3>
     <ul>
       <li>Features:<br/>
       Add support for QEMU 1.0 (Jiri Denemark),<br/>
@@ -12774,7 +12774,7 @@
       </li>
     </ul>
 
-    <h3>0.9.7: Nov 8 2011</h3>
+    <h3>0.9.7: Nov 08 2011</h3>
     <ul>
       <li>Features:<br/>
       esx: support vSphere 5.x (Patrice LACHANCE),<br/>
@@ -13513,7 +13513,7 @@
       </li>
     </ul>
 
-    <h3>0.9.4: Aug 3 2011</h3>
+    <h3>0.9.4: Aug 03 2011</h3>
     <ul>
       <li>Features:<br/>
       bandwidth QoS control (Michal Privoznik),<br/>
@@ -13943,7 +13943,7 @@
       </li>
     </ul>
 
-    <h3>0.9.3: Jul 4 2011</h3>
+    <h3>0.9.3: Jul 04 2011</h3>
     <ul>
       <li>Features:<br/>
       vcpupin: introduce the new libvirt API (virDomainGetVcpupinInfo) (Taku Izumi),<br/>
@@ -14284,7 +14284,7 @@
       </li>
     </ul>
 
-    <h3>0.9.2: Jun 6 2011</h3>
+    <h3>0.9.2: Jun 06 2011</h3>
     <ul>
       <li>Features:<br/>
       Framework for lock manager plugins (Daniel P. Berrange),<br/>
@@ -14691,7 +14691,7 @@
       </li>
     </ul>
 
-    <h3>0.9.1: May 5 2011</h3>
+    <h3>0.9.1: May 05 2011</h3>
     <ul>
       <li>Features:<br/>
       support various persistent domain updates (KAMEZAWA Hiroyuki),<br/>
@@ -14925,7 +14925,7 @@
       </li>
     </ul>
 
-    <h3>0.9.0: Apr 4 2011</h3>
+    <h3>0.9.0: Apr 04 2011</h3>
     <ul>
       <li>Features:<br/>
       Support cputune cpu usage tuning (Osier Yang and Nikunj A. Dadhania),<br/>
@@ -15561,7 +15561,7 @@
       </li>
     </ul>
 
-    <h3>0.8.7: Jan 4 2011</h3>
+    <h3>0.8.7: Jan 04 2011</h3>
     <ul>
       <li>Features:<br/>
       Preliminary support for VirtualBox 4.0 (Matthias Bolte),<br/>
@@ -16395,7 +16395,7 @@
       </li>
     </ul>
 
-    <h3>0.8.3: Aug  4 2010</h3>
+    <h3>0.8.3: Aug 04 2010</h3>
     <ul>
       <li>Features:<br/>
       esx: Support vSphere 4.1 (Matthias Bolte),<br/>
@@ -16569,7 +16569,7 @@
       </li>
     </ul>
 
-    <h3>0.8.2: Jul  5 2010</h3>
+    <h3>0.8.2: Jul 05 2010</h3>
     <ul>
       <li>Features:<br/>
       phyp: adding support for IVM (Eduardo Otubo),<br/>
@@ -17468,7 +17468,7 @@
       </li>
     </ul>
 
-    <h3>0.7.7: Mar 5 2010</h3>
+    <h3>0.7.7: Mar 05 2010</h3>
     <ul>
       <li>Features:<br/>
       Introduce public API for domain async job handling (Daniel P. Berrange),<br/>
@@ -17730,7 +17730,7 @@
       </li>
     </ul>
 
-    <h3>0.7.6: Feb 3 2010</h3>
+    <h3>0.7.6: Feb 03 2010</h3>
     <ul>
       <li>Features:<br/>
       Implement support for multi IQN (David Allan),<br/>
@@ -18821,7 +18821,7 @@
       </li>
     </ul>
 
-    <h3>0.7.0: Aug  5 2009</h3>
+    <h3>0.7.0: Aug 05 2009</h3>
     <ul>
       <li>Features:<br/>
       Interface implementation based on netcf (Laine Stump, Daniel Veillard),<br/>
@@ -19087,7 +19087,7 @@
       </li>
     </ul>
 
-    <h3>0.6.5: Jul  3 2009</h3>
+    <h3>0.6.5: Jul 03 2009</h3>
     <ul>
       <li>Features:<br/>
       create storage columes on disk backend (Henrik Persson),<br/>
@@ -19299,7 +19299,7 @@
       </li>
     </ul>
 
-    <h3>0.6.2: Apr  3 2009</h3>
+    <h3>0.6.2: Apr 03 2009</h3>
     <ul>
       <li>Features:<br/>
       support SASL auth for VNC server (Daniel Berrange),<br/>
@@ -19365,7 +19365,7 @@
       </li>
     </ul>
 
-    <h3>0.6.1: Mar  3 2009</h3>
+    <h3>0.6.1: Mar 03 2009</h3>
     <ul>
       <li>Features:<br/>
       new APIs for Node device detach reattach and reset (Mark McLoughlin),<br/>
@@ -19561,7 +19561,7 @@
       </li>
     </ul>
 
-    <h3>0.5.1: Dec  4 2008</h3>
+    <h3>0.5.1: Dec 04 2008</h3>
     <ul>
       <li>Portability:<br/>
       fix missing dep in spec file,<br/>
@@ -19745,7 +19745,7 @@
       </li>
     </ul>
 
-    <h3>0.4.5: Sep 8 2008</h3>
+    <h3>0.4.5: Sep 08 2008</h3>
     <ul>
       <li>Features:<br/>
       NETNS support for Linux containers (Dan Smith),<br/>
@@ -19975,7 +19975,7 @@
       </li>
     </ul>
 
-    <h3>0.4.2: Apr 8 2008</h3>
+    <h3>0.4.2: Apr 08 2008</h3>
     <ul>
       <li>Features:<br/>
       memory operation for QEmu/KVM driver (Cole Robinson),<br/>
@@ -20034,7 +20034,7 @@
       </li>
     </ul>
 
-    <h3>0.4.1: Mar 3 2008</h3>
+    <h3>0.4.1: Mar 03 2008</h3>
     <ul>
       <li>Features:<br/>
       build on MacOSX (Richard Jones),<br/>
@@ -20358,7 +20358,7 @@
       </li>
     </ul>
 
-    <h3>0.3.0: Jul 9 2007</h3>
+    <h3>0.3.0: Jul 09 2007</h3>
     <ul>
       <li>Features:<br/>
       Secure Remote support (Richard Jones).
@@ -20421,7 +20421,7 @@
       </li>
     </ul>
 
-    <h3>0.2.3: Jun 8 2007</h3>
+    <h3>0.2.3: Jun 08 2007</h3>
     <ul>
       <li>Documentation:<br/>
       documentation for upcoming remote access (Richard Jones),<br/>
@@ -20730,7 +20730,7 @@
       </li>
     </ul>
 
-    <h3>0.1.5: Sep 5 2006</h3>
+    <h3>0.1.5: Sep 05 2006</h3>
     <ul>
       <li>Features:<br/>
       Support for new hypercalls change in Xen changeset 86d26e6ec89b<br/>
@@ -20805,7 +20805,7 @@
       </li>
     </ul>
 
-    <h3>0.1.2: Jul 3 2006</h3>
+    <h3>0.1.2: Jul 03 2006</h3>
     <ul>
       <li>Features:<br/>
       proxy mechanism for unprivileged read-only access by http<br/>
@@ -20936,7 +20936,7 @@
       </li>
     </ul>
 
-    <h3>0.0.3: Feb 9 2006</h3>
+    <h3>0.0.3: Feb 09 2006</h3>
     <ul>
       <li>Features:<br/>
       Switch name from 'libvir' to libvirt,<br/>
