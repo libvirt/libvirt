@@ -1637,7 +1637,7 @@
       Fix build on mingw (Ján Tomko)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: blockjob: Synchronously update backing chain in XML on ABORT/PIVOT (Peter Krempa),<br/>
       qemu: processBlockJob: Don't unlock @vm twice (Peter Krempa),<br/>
       qemu: blockCopy: Pass adjusted bandwidth when called via blockRebase (Peter Krempa),<br/>
@@ -2295,7 +2295,7 @@
       qemu: avoid rare race when undefining domain (Martin Kletzander)<br/>
       </li>
 
-      <li>Improvement:<br/>
+      <li>Improvements:<br/>
       tests: Check for virQEMUDriverConfigNew return value (Michal Privoznik),<br/>
       systemd: avoid string comparisons on dbus error messages (Daniel P. Berrange),<br/>
       aarch64: Support versioned machine types. (Richard W.M. Jones),<br/>
@@ -2436,7 +2436,7 @@
       conf: Ignore device address for model=none usb controller and memballon (Luyao Huang)<br/>
       </li>
 
-      <li>Cleanup:<br/>
+      <li>Cleanups:<br/>
       Indentation (Ján Tomko)<br/>
       </li>
     </ul>
@@ -2799,7 +2799,7 @@
       util: Introduce virPidFileForceCleanupPath (Martin Kletzander)<br/>
       </li>
 
-      <li>Cleanup:<br/>
+      <li>Cleanups:<br/>
       Remove left over debug in hvsupport.pl script (Daniel P. Berrange)<br/>
       </li>
     </ul>
@@ -3700,7 +3700,7 @@
       tests: Avoid double linking some libraries (Michal Privoznik)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       network: always set disable_ipv6, even when it should be 0 (Laine Stump),<br/>
       Fix a crash when cloning a volume with no backing store (Ján Tomko),<br/>
       qemu: error out if PCI passthrough type is not supported (Hu Tao),<br/>
@@ -4429,7 +4429,7 @@
       bhyve: improve bhyve_command.c testability (Roman Bogorodskiy)<br/>
       </li>
 
-      <li>Cleanup:<br/>
+      <li>Cleanups:<br/>
       virSecurityDACRestoreSecurityHostdevLabel: Unmark @def as unused (Michal Privoznik)<br/>
       </li>
     </ul>
@@ -5224,7 +5224,7 @@
       Use AC_PATH_PROG to search for dmidecode (Roman Bogorodskiy)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       bhyve: defined domains should be persistent (Roman Bogorodskiy),<br/>
       Fix journald PRIORITY values (Daniel P. Berrange),<br/>
       spec: Fix braces around macros (Peter Krempa),<br/>
@@ -6115,7 +6115,7 @@
       build: fix build --without-remote (Eric Blake)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       Fix race in starting transient VMs (Daniel P. Berrange),<br/>
       Use a port from the migration range for NBD as well (Ján Tomko),<br/>
       nodedev_hal: fix segfault when virDBusGetSystemBus fails (Ryota Ozaki),<br/>
@@ -6679,7 +6679,7 @@
       VMX: Create virVMXFormatDisk() from HD and CD-ROM (Doug Goldstein)<br/>
       </li>
 
-      <li>Cleanup:<br/>
+      <li>Cleanups:<br/>
       daemon: Avoid dead code in polkit auth (Jiri Denemark)<br/>
       </li>
     </ul>
@@ -9069,7 +9069,7 @@
       build: Check for broken GCC -Wlogical-op in configure (Viktor Mihajlovski)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       conf: Don't format cputune element when not needed (Martin Kletzander),<br/>
       conf: Fix cpumask leak in virDomainDefFree (Ján Tomko),<br/>
       qemu: Destroy domain on decompression binary error (Michal Privoznik),<br/>
@@ -10303,7 +10303,7 @@
       Fix mingw64 build by using intptr_t for int-&gt;void* casts (Daniel P. Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       network: don't "refresh" iptables rules on rule-less networks (Laine Stump),<br/>
       qemu: Fix failure path in disk hotplug (Jiri Denemark),<br/>
       Ensure existing selinux mount is removed before mounting new one in LXC (Daniel P. Berrange),<br/>
@@ -10560,11 +10560,11 @@
       Fix emulator pinning example in formatdomain.html (Peter Krempa)<br/>
       </li>
 
-      <li>Improvement:<br/>
+      <li>Improvements:<br/>
       Implement virMacAddrIsBroadcastRaw (Stefan Berger)<br/>
       </li>
 
-      <li>Cleanup:<br/>
+      <li>Cleanups:<br/>
       security: remove dead code from virSecurityDACGenLabel (Alex Jia)<br/>
       </li>
     </ul>
@@ -10646,7 +10646,7 @@
       build: fix typo that breaks non-Linux builds (Eric Blake)<br/>
       </li>
 
-      <li>BugFixes:<br/>
+      <li>Bug Fixes:<br/>
       nwfilter: Don't try to acquire DBus context when DBus is disabled (Peter Krempa),<br/>
       util: Prevent libvirtd crash (Alex Jia),<br/>
       security_dac: Don't return uninitialised uid and gid for image labels (Peter Krempa),<br/>
@@ -11741,7 +11741,7 @@
       virsh: Fix docs for list command (Peter Krempa)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: Start nested job in qemuDomainCheckEjectableMedia (Jiri Denemark),<br/>
       qemu: fix memory leak in virDomainGetVcpus (Laine Stump),<br/>
       conf: allow fuzz in XML with cur balloon &gt; max (Eric Blake),<br/>
@@ -14981,7 +14981,7 @@
       build: fix broken mingw cross-compilation (Eric Blake)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       fix memory leak in qemuProcessHandleGraphics() (Wen Congyang),<br/>
       do not lock vm while allocating memory (Wen Congyang),<br/>
       Fix libxl driver startup (Daniel Veillard),<br/>
@@ -15347,7 +15347,7 @@
       commandtest: avoid printing loader-control variables from commandhelper (Diego Elio Pettenò)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: Error prompt when saving a shutoff domain (Osier Yang),<br/>
       cgroup: preserve correct errno on failure (Eric Blake),<br/>
       qemu: Fix command line generation with faked host CPU (Jiri Denemark),<br/>
@@ -15605,7 +15605,7 @@
       Fix warning when macvtap support is disabled (Jean-Baptiste Rouault)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       virExec: fix logic bug (Eric Blake),<br/>
       Set broadcast address for IPv4 addresses on virtual network bridges (Laine Stump),<br/>
       Fix misuse of VIR_ERR_INVALID_DOMAIN (Matthias Bolte),<br/>
@@ -16419,7 +16419,7 @@
       daemon: dispatch.c should include stdio.h (and stdarg.h) (Ryota Ozaki)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       qemu: Fix PCI address allocation (Jiri Denemark),<br/>
       Don't leak delay string when freeing virInterfaceBridgeDefs (Laine Stump),<br/>
       qemu: don't lose error on setting monitor capabilities (Eric Blake),<br/>
@@ -18019,7 +18019,7 @@
       Fix compilation for configure --disable-nls (Matthias Bolte)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       cpu: Fix memory leaks in x86FeatureLoad and x86ModelLoad (Matthias Bolte),<br/>
       Make Xen VT-d PCI attach/detach work (Chris Lalancette),<br/>
       Fix detection of JSON when restarting libvirtd (Daniel P. Berrange),<br/>
@@ -18171,7 +18171,7 @@
       fix virDomainMigrateToURI doc (Dan Kenigsberg)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       504262 Check for duplicated UUID in XM Xen defines (Daniel Veillard),<br/>
       512069 fix domain XML schemas for backward compatibility (Daniel Veillard),<br/>
       qemu-kvm needs -enable-kvm flag for VT optimization (Steve Yarmie),<br/>
@@ -18588,7 +18588,7 @@
 
     <h3>0.7.1: Sep 15 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       Add support for encrypted (qcow) volume creation. (Miloslav Trmač),<br/>
       Secret manipulation public API (Miloslav Trmač),<br/>
       Multipath storage support module (Dave Allan),<br/>
@@ -18614,7 +18614,7 @@
       Fix win32 platform build (Daniel P. Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       VBox bug when starting machine from old versions (Pritesh Kothari),<br/>
       ESX avoid potential leaks (Matthias Bolte),<br/>
       Fix more OOM handling bugs (Daniel P. Berrange),<br/>
@@ -18665,7 +18665,7 @@
       Fix memleak if esxOpen fails (Matthias Bolte)<br/>
       </li>
 
-      <li>Improvement:<br/>
+      <li>Improvements:<br/>
       support lzop save compression for qemu (Charles Duffy),<br/>
       VBox 3.0.6 API change support (Pritesh Kothari),<br/>
       Add UUID definition required by storage encryption import (Daniel P. Berrange),<br/>
@@ -18823,7 +18823,7 @@
 
     <h3>0.7.0: Aug  5 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       Interface implementation based on netcf (Laine Stump, Daniel Veillard),<br/>
       Add new net filesystem glusterfs (Harshavardhana),<br/>
       Initial VMWare ESX driver (Matthias Bolte),<br/>
@@ -18869,7 +18869,7 @@
       rpm spec cleanup and split off client only package (Daniel Veillard)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       Add uniqueness checking for LXC define/create methods (Daniel P. Berrange),<br/>
       Fix removal of transient VMs when LXC aborts (Daniel P. Berrange),<br/>
       Don't try to activate cgroups if not present for LXC (Daniel P. Berrange),<br/>
@@ -19089,7 +19089,7 @@
 
     <h3>0.6.5: Jul  3 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       create storage columes on disk backend (Henrik Persson),<br/>
       drop of capabilities based on libcap-ng when possible (Daniel Berrange)<br/>
       </li>
@@ -19106,7 +19106,7 @@
       documentation for OpenNebula driver (Abel Miguez Rodriguez)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       forbid autostart on transcient networks,<br/>
       xen device removal crash (Daniel Berrange),<br/>
       re-detection of transient VMs after libvirtd restart (Daniel Berrange),<br/>
@@ -19167,7 +19167,7 @@
 
     <h3>0.6.4: May 29 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       new API virStorageVolCreateXMLFrom (Cole Robinson),<br/>
       full VBox graphic capabilities (Pritesh Kothari),<br/>
       Interface config APIs (Laine Stump),<br/>
@@ -19187,7 +19187,7 @@
       inconsistencies in storage volume docs and schemas (Ryota Ozaki)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       fix hostdev managed handling (Mark McLoughlin),<br/>
       lxc_controller should not cash without args (Guido Gunther),<br/>
       bug fixes in I/O routines (Guido Gunther),<br/>
@@ -19250,7 +19250,7 @@
 
     <h3>0.6.3: Apr 24 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       VirtualBox driver support (Pritesh Kothari),<br/>
       virt-xml-validate new command (Daniel Berrange)<br/>
       </li>
@@ -19269,7 +19269,7 @@
       VirtualBox Documentation (Pritesh Kothari)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       veth off-by-one error (Dan Smith),<br/>
       vcpupin to inactive Xen crash (Takahashi Tomohiro),<br/>
       virsh ttyconsole return value,<br/>
@@ -19301,7 +19301,7 @@
 
     <h3>0.6.2: Apr  3 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       support SASL auth for VNC server (Daniel Berrange),<br/>
       memory ballooning in QEMU (Daniel Berrange),<br/>
       SCSI HBA storage pool support (Dave Allan),<br/>
@@ -19319,7 +19319,7 @@
       missing disk bus values in RNG schemas<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       tap vs vbd type on block detach (Cole Robinson and Takahashi Tomohiro),<br/>
       bad free on storage volume error (Daniel Berrange),<br/>
       maplenght computations in remote driver (Daniel Berrange),<br/>
@@ -19367,7 +19367,7 @@
 
     <h3>0.6.1: Mar  3 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       new APIs for Node device detach reattach and reset (Mark McLoughlin),<br/>
       sVirt mandatory access control support (James Morris and Dan Walsh)<br/>
       </li>
@@ -19387,7 +19387,7 @@
       new example program (David Allan)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       NULL dereference in LXC (Jim Meyering),<br/>
       fix domain error reporting (John Levon),<br/>
       fix loop of libvirtd --timeout (Daniel Berrange),<br/>
@@ -19446,7 +19446,7 @@
 
     <h3>0.6.0: Jan 31 2009</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       thread safety of the API and event handling (Daniel Berrange),<br/>
       allow QEmu domains to survive daemon restart (Guido Günther),<br/>
       extended logging capabilities,<br/>
@@ -19478,7 +19478,7 @@
       provide RNG schemas for all XML formats used in libvirt APIs (Daniel Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       segfault on virtual network without bridge name (Cole Robinson),<br/>
       various locking fixes (Cole Robinson),<br/>
       fix serial and parallel devices on tcp/unix/telnet (Guido Günther),<br/>
@@ -19573,7 +19573,7 @@
       documentation copy and paste errors and typo (Cole Robinson)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       add a delay in storage backend for disks to show up (Chris Lalancette),<br/>
       fix parsing for CDRom device with no source (Daniel Berrange),<br/>
       use xenstore to list domains to avoid some bugs (Guido Günther),<br/>
@@ -19600,7 +19600,7 @@
 
     <h3>0.5.0: Nov 25 2008</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       CPU and scheduler support for LXC (Dan Smith),<br/>
       SDL display configuration (Daniel Berrange),<br/>
       domain lifecycle event support for QEmu and Xen with python bindings (Ben Guthro and Daniel Berrange),<br/>
@@ -19628,7 +19628,7 @@
       UML driver docs (Daniel Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       Xen interfaces ordering (Jim Fehlig),<br/>
       startup timeout with multiple pty (Cole Robinson),<br/>
       segfault if QEmu without active virtual network (Cole Robinson),<br/>
@@ -19721,7 +19721,7 @@
       missing include file (Richard Jones)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       avoid a segfault if missing qemu emulator (Cole Robinson),<br/>
       reading vncdisplay from xend domain (Cole Robinson),<br/>
       segfault in OpenVZ (Evgeniy Sokolov),<br/>
@@ -19747,7 +19747,7 @@
 
     <h3>0.4.5: Sep 8 2008</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       NETNS support for Linux containers (Dan Smith),<br/>
       unified XML domain and network parsing for all drivers (Daniel Berrange),<br/>
       OpenVZ features improvements (Evgeniy Sokolov),<br/>
@@ -19777,7 +19777,7 @@
       memory unit fixups (matthew chan)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       memory leaks and testing for OOM (Daniel Berrange),<br/>
       do_open driver bug (Evgeniy Sokolov),<br/>
       don't use polkit auth when running as non-root (Daniel Berrange),<br/>
@@ -19870,7 +19870,7 @@
 
     <h3>0.4.4: Jun 25 2008</h3>
     <ul>
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       QEmu network serialization (Kaitlin Rupert),<br/>
       internal memory allocation fixes (Chris Lalancette Jim Meyering),<br/>
       virsh large file config problem (Jim Meyering),<br/>
@@ -19892,7 +19892,7 @@
 
     <h3>0.4.3: Jun 12 2008</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       Linux Container start and stop (Dave Leskovec),<br/>
       Network interface model settings (Daniel Berrange),<br/>
       serial and parallel device support for QEmu and Xen (Daniel Berrange),<br/>
@@ -19914,7 +19914,7 @@
       docs for remote listen-tls/tcp fixes (Kenneth Nagin)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       save change to config file for Xen (Ryan Scott),<br/>
       fix /var/run/libvirt/ group ownership (Anton Protopopov),<br/>
       ancient libparted workaround (Soren Hansen),<br/>
@@ -19942,7 +19942,7 @@
       better error messages for xend driver (Richard Jones)<br/>
       </li>
 
-      <li>Code cleanups:<br/>
+      <li>Cleanups:<br/>
       OpenVZ compilation (Richard Jones),<br/>
       conn dom and net fields deprecation in error structures (Richard Jones),<br/>
       Xen-ism on UUID (Richard Jones),<br/>
@@ -19977,7 +19977,7 @@
 
     <h3>0.4.2: Apr 8 2008</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       memory operation for QEmu/KVM driver (Cole Robinson),<br/>
       new routed networking schemas (Mads Olesen)<br/>
       </li>
@@ -19988,7 +19988,7 @@
       string fixes (Francesco Tombolini)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       pointer errors in qemu (Jim Meyering),<br/>
       iSCSI login fix (Chris Lalancette),<br/>
       well formedness error in test driver capabilities (Cole Robinson),<br/>
@@ -20025,7 +20025,7 @@
       xen and hvm added to test driver capabilities (Cole Robinson)<br/>
       </li>
 
-      <li>Code cleanup:<br/>
+      <li>Cleanups:<br/>
       remove unused getopt header (Jim Meyering),<br/>
       mark more strings as translatable (Guido G&#xFC;nther and Jim Meyering),<br/>
       convert error strings to something meaningful and translatable (Jim Meyering),<br/>
@@ -20036,7 +20036,7 @@
 
     <h3>0.4.1: Mar 3 2008</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       build on MacOSX (Richard Jones),<br/>
       storage management (Daniel Berrange),<br/>
       Xenner - Xen on KVM - support (Daniel Berrange)<br/>
@@ -20049,7 +20049,7 @@
       add storage APIs documentation (Daniel Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       OpenVZ code compilation (Mikhail Pokidko),<br/>
       crash in policykit auth handling (Daniel Berrange),<br/>
       large config files (Daniel Berrange),<br/>
@@ -20091,7 +20091,7 @@
       various improvements for Xenner (Daniel Berrange)<br/>
       </li>
 
-      <li>Code cleanups:<br/>
+      <li>Cleanups:<br/>
       avoid warnings (Daniel Berrange),<br/>
       virRun helper function (Dan Berrange),<br/>
       iptable code fixes (Mark McLoughlin),<br/>
@@ -20123,7 +20123,7 @@
 
     <h3>0.4.0: Dec 18 2007</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       Compilation on Windows cygwin/mingw (Richard Jones),<br/>
       Ruby bindings (David Lutterkort),<br/>
       SASL based authentication for libvirt remote support (Daniel Berrange),<br/>
@@ -20144,7 +20144,7 @@
       authentication documentation updates (Daniel Berrange)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       NUMA topology error handling (Beth Kon),<br/>
       NUMA topology cells without CPU (Beth Kon),<br/>
       XML to/from XM bridge config (Daniel Berrange),<br/>
@@ -20193,7 +20193,7 @@
       separate qparams module for handling query parameters (Richard Jones)<br/>
       </li>
 
-      <li>Code cleanups:<br/>
+      <li>Cleanups:<br/>
       remove virDomainRestart from API as it was never used (Richard Jones),<br/>
       constify params for attach/detach APIs (Daniel Berrange),<br/>
       gcc printf attribute checkings (Jim Meyering),<br/>
@@ -20225,7 +20225,7 @@
 
     <h3>0.3.3: Sep 30 2007</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       Avahi mDNS daemon export (Daniel Berrange),<br/>
       NUMA support (Beth Kan)<br/>
       </li>
@@ -20235,7 +20235,7 @@
       typos (Eduardo Pereira)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       memory corruption on large dumps (Masayuki Sunou),<br/>
       fix virsh vncdisplay command exit (Masayuki Sunou),<br/>
       Fix network stats TX/RX result (Richard Jones),<br/>
@@ -20265,7 +20265,7 @@
       Python bindings for block and interface statistics<br/>
       </li>
 
-      <li>Code cleanups:<br/>
+      <li>Cleanups:<br/>
       virDrvOpenRemoteFlags definition (Richard Jones),<br/>
       configure tests and output (Daniel Berrange)<br/>
       </li>
@@ -20273,7 +20273,7 @@
 
     <h3>0.3.2: Aug 21 2007</h3>
     <ul>
-      <li>New features:<br/>
+      <li>Features:<br/>
       KVM migration and save/restore (Jim Paris),<br/>
       added API for migration (Richard Jones),<br/>
       added APIs for block device and interface statistic (Richard Jones)<br/>
@@ -20285,7 +20285,7 @@
       hypervisor support page update (Richard Jones)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       remove a couple of leaks in QEmu/KVM backend (Daniel berrange),<br/>
       fix GnuTLS 1.0 compatibility (Richard Jones),<br/>
       --config/-f option mistake for libvirtd (Richard Jones),<br/>
@@ -20299,7 +20299,7 @@
       virsh schedinfo cleanup (Saori Fukuta)<br/>
       </li>
 
-      <li>Improvement:<br/>
+      <li>Improvements:<br/>
       virsh new ttyconsole command,<br/>
       networking API implementation for test driver (Daniel berrange),<br/>
       qemu/kvm feature reporting of ACPI/APIC (David Lutterkort),<br/>
@@ -20327,7 +20327,7 @@
       Relax-NG early grammar for the network XML (David Lutterkort)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       leaks in disk XML parsing (Masayuki Sunou),<br/>
       hypervisor alignment call problems on PPC64 (Christian Ehrhardt),<br/>
       dead client registration in daemon event loop (Daniel Berrange),<br/>
@@ -20372,7 +20372,7 @@
       matrix of libvirt API/hypervisor support with version information (Richard Jones)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       examples Makefile.am generation (Richard Jones),<br/>
       SetMem fix (Mark Johnson),<br/>
       URI handling and ordering of drivers (Daniel Berrange),<br/>
@@ -20429,7 +20429,7 @@
       virsh help messages for dumpxml and net-dumpxml (Chris Wright)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       RelaxNG schemas regexp fix (Robin Green),<br/>
       RelaxNG arch bug (Mark McLoughlin),<br/>
       large buffers bug fixes (Shigeki Sakamoto),<br/>
@@ -20490,7 +20490,7 @@
       ilocalization problem raised by Thomas Canniot<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       virsh memory values test (Masayuki Sunou),<br/>
       operations without libvirt_qemud (Atsushi SAKAI),<br/>
       fix spec file (Florian La Roche, Jeremy Katz, Michael Schwendt),<br/>
@@ -20604,7 +20604,7 @@
       Add support for network configuration (Mark McLoughlin)<br/>
       </li>
 
-      <li>Bug fixes:<br/>
+      <li>Bug Fixes:<br/>
       avoid a crash in connect (Daniel Berrange),<br/>
       virsh args parsing (Richard Jones)<br/>
       </li>
@@ -20876,7 +20876,7 @@
       virDomainLookupByID (Jim Fehlig)<br/>
       </li>
 
-      <li>Improvements<br/>
+      <li>Improvements:<br/>
       enhancement and fixes of the XML description format (David Lutterkort and Jim Fehlig),<br/>
       virsh: more options, create, nodeinfo (Karel Zak),<br/>
       virsh: renaming of some options (Karel Zak),<br/>
@@ -20912,7 +20912,7 @@
 
     <h3>0.0.5: Feb 23 2006</h3>
     <ul>
-      <li>Features<br/>
+      <li>Features:<br/>
       Added XML description parsing, dependance to libxml2, implemented the creation API virDomainCreateLinux(),<br/>
       new APIs to lookup and name domain by UUID,<br/>
       Adding regression tests in python and examples in C,<br/>
