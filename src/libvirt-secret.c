@@ -110,7 +110,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
  * selects secrets that are kept in persistent storage.
  *
  * The second group of @flags is used to filter secrets by privacy. Flag
- * VIR_CONNECT_LIST_SECRETS_PRIVATE seclets secrets that are never revealed
+ * VIR_CONNECT_LIST_SECRETS_PRIVATE selects secrets that are never revealed
  * to any caller of libvirt nor to any other node. Flag
  * VIR_CONNECT_LIST_SECRETS_NO_PRIVATE selects non-private secrets.
  *
@@ -454,7 +454,7 @@ virSecretGetUsageType(virSecretPtr secret)
  * secret is to be used. The format of the identifier is
  * dependent on the usage type of the secret. For a secret
  * with a usage type of VIR_SECRET_USAGE_TYPE_VOLUME the
- * identifier will be a fully qualfied path name. The
+ * identifier will be a fully qualified path name. The
  * identifiers are intended to be unique within the set of
  * all secrets sharing the same usage type. ie, there shall
  * only ever be one secret for each volume path.
