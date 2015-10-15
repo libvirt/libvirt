@@ -1403,7 +1403,7 @@ virNWFilterDHCPSnoopThread(void *req0)
     }
 
     /* let creator know how well we initialized */
-    if (error == true || !threadkey || tmp < 0 || !worker ||
+    if (error || !threadkey || tmp < 0 || !worker ||
         ifindex != req->ifindex)
         req->threadStatus = THREAD_STATUS_FAIL;
     else

@@ -3416,7 +3416,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                break;
 
                case DATATYPE_BOOLEAN:
-                   if (item->u.boolean == true)
+                   if (item->u.boolean)
                        virBufferAddLit(buf, "true");
                    else
                        virBufferAddLit(buf, "false");

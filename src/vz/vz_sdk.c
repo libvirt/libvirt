@@ -3293,7 +3293,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
         goto cleanup;
     }
 
-    if (bootDisk == true) {
+    if (bootDisk) {
         pret = PrlVmDev_GetIndex(sdkdisk, &devIndex);
         prlsdkCheckRetGoto(pret, cleanup);
 
@@ -3551,7 +3551,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     for (i = 0; i < def->ndisks; i++) {
         bool bootDisk = false;
 
-        if (needBoot == true &&
+        if (needBoot &&
             def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
 
             needBoot = false;
