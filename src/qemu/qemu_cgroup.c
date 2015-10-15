@@ -1163,6 +1163,9 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
     char *mem_mask = NULL;
     virDomainNumatuneMemMode mem_mode;
 
+    if (def->niothreadids == 0)
+        return 0;
+
     if ((period || quota) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
