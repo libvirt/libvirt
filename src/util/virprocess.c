@@ -36,11 +36,11 @@
 # include <sched.h>
 #endif
 
-#if defined(__FreeBSD__) || HAVE_BSD_CPU_AFFINITY
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || HAVE_BSD_CPU_AFFINITY
 # include <sys/param.h>
 #endif
 
-#ifdef  __FreeBSD__
+#if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 # include <sys/sysctl.h>
 # include <sys/user.h>
 #endif
@@ -937,7 +937,7 @@ int virProcessGetStartTime(pid_t pid,
     VIR_FREE(buf);
     return ret;
 }
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp)
 {
