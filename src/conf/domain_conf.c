@@ -15220,7 +15220,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n) {
-        if (n > def->iothreads) {
+        if (n > def->niothreadids) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("too many iothreadsched nodes in cputune"));
             goto error;
@@ -21729,7 +21729,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 
-    if (def->iothreads > 0) {
+    if (def->niothreadids > 0) {
         virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n",
                           def->iothreads);
         /* Only print out iothreadids if we read at least one */

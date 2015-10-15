@@ -5671,13 +5671,13 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     size_t i;
     int ret = -1;
 
-    if (targetDef->iothreads == 0)
+    if (targetDef->niothreadids == 0)
         return 0;
 
     if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(info_ret, targetDef->iothreads) < 0)
+    if (VIR_ALLOC_N(info_ret, targetDef->niothreadids) < 0)
         goto cleanup;
 
     for (i = 0; i < targetDef->niothreadids; i++) {
@@ -5707,11 +5707,11 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
 
     *info = info_ret;
     info_ret = NULL;
-    ret = targetDef->iothreads;
+    ret = targetDef->niothreadids;
 
  cleanup:
     if (info_ret) {
-        for (i = 0; i < targetDef->iothreads; i++)
+        for (i = 0; i < targetDef->niothreadids; i++)
             virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
@@ -5910,8 +5910,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     size_t idx;
     int rc = -1;
     int ret = -1;
-    unsigned int orig_niothreads = vm->def->iothreads;
-    unsigned int exp_niothreads = vm->def->iothreads;
+    unsigned int orig_niothreads = vm->def->niothreadids;
+    unsigned int exp_niothreads = vm->def->niothreadids;
     int new_niothreads = 0;
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
     virCgroupPtr cgroup_iothread = NULL;
@@ -6039,8 +6039,8 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
     char *alias = NULL;
     int rc = -1;
     int ret = -1;
-    unsigned int orig_niothreads = vm->def->iothreads;
-    unsigned int exp_niothreads = vm->def->iothreads;
+    unsigned int orig_niothreads = vm->def->niothreadids;
+    unsigned int exp_niothreads = vm->def->niothreadids;
     int new_niothreads = 0;
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
 

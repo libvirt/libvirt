@@ -9462,7 +9462,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, smp);
     VIR_FREE(smp);
 
-    if (def->iothreads > 0 &&
+    if (def->niothreadids > 0 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
         /* Create iothread objects using the defined iothreadids list
          * and the defined id and name from the list. These may be used

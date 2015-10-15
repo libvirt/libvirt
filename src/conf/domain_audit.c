@@ -886,8 +886,8 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     virDomainAuditMemory(vm, 0, virDomainDefGetMemoryActual(vm->def),
                          "start", true);
     virDomainAuditVcpu(vm, 0, vm->def->vcpus, "start", true);
-    if (vm->def->iothreads)
-        virDomainAuditIOThread(vm, 0, vm->def->iothreads, "start", true);
+    if (vm->def->niothreadids)
+        virDomainAuditIOThread(vm, 0, vm->def->niothreadids, "start", true);
 
     virDomainAuditLifecycle(vm, "start", reason, success);
 }
