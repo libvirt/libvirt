@@ -4145,16 +4145,8 @@ qemuBuildDriveStr(virConnectPtr conn,
 
 static bool
 qemuCheckIOThreads(virDomainDefPtr def,
-                   virQEMUCapsPtr qemuCaps,
                    virDomainDiskDefPtr disk)
 {
-    /* Have capability */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads not supported for this QEMU"));
-        return false;
-    }
-
     /* Right "type" of disk" */
     if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO ||
         (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
@@ -4208,7 +4200,7 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     if (!qemuCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))
         goto error;
 
-    if (disk->iothread && !qemuCheckIOThreads(def, qemuCaps, disk))
+    if (disk->iothread && !qemuCheckIOThreads(def, disk))
         goto error;
 
     switch (disk->bus) {
@@ -9462,8 +9454,13 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandAddArg(cmd, smp);
     VIR_FREE(smp);
 
-    if (def->niothreadids > 0 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+    if (def->niothreadids) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("IOThreads not supported for this QEMU"));
+            goto error;
+        }
+
         /* Create iothread objects using the defined iothreadids list
          * and the defined id and name from the list. These may be used
          * by a disk definition which will associate to an iothread by
