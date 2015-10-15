@@ -2764,6 +2764,28 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
 
 static int
+qemuMigrationWaitForDestCompletion(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT))
+        return 0;
+
+    VIR_DEBUG("Waiting for incoming migration to complete");
+
+    while ((rv = qemuMigrationCompleted(driver, vm, asyncJob, NULL, 0)) != 1) {
+        if (rv < 0 || virDomainObjWait(vm) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   qemuMigrationCookiePtr cookie,
@@ -5731,22 +5753,13 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         /* We need to wait for QEMU to process all data sent by the source
          * before starting guest CPUs.
          */
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
-            int rv;
-            VIR_DEBUG("Waiting for migration to complete");
-            while ((rv = qemuMigrationCompleted(driver, vm,
-                                                QEMU_ASYNC_JOB_MIGRATION_IN,
-                                                NULL, 0)) != 1) {
-                if (rv < 0 || virDomainObjWait(vm) < 0) {
-                    /* There's not much we can do for v2 protocol since the
-                     * original domain on the source host is already gone.
-                     */
-                    if (v3proto)
-                        goto endjob;
-                    else
-                        break;
-                }
-            }
+        if (qemuMigrationWaitForDestCompletion(driver, vm,
+                                               QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
+            /* There's not much we can do for v2 protocol since the
+             * original domain on the source host is already gone.
+             */
+            if (v3proto)
+                goto endjob;
         }
 
         if (!(flags & VIR_MIGRATE_PAUSED)) {
