@@ -5280,7 +5280,7 @@ doDump(void *opaque)
             goto out;
         }
 
-        if (vshCommandOptString(ctl, cmd, "format", &format)) {
+        if (vshCommandOptString(ctl, cmd, "format", &format) > 0) {
             if (STREQ(format, "kdump-zlib")) {
                 dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB;
             } else if (STREQ(format, "kdump-lzo")) {
