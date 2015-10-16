@@ -1403,6 +1403,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     char *val = NULL;
     struct xen_vif_set *vif_set = NULL;
     char *xml;
+    unsigned int vcpus;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -1498,7 +1499,12 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     } else {
         defPtr->mem.cur_balloon = memory;
     }
-    defPtr->maxvcpus = defPtr->vcpus = xenapiDomainGetMaxVcpus(dom);
+
+    vcpus = xenapiDomainGetMaxVcpus(dom);
+
+    defPtr->maxvcpus = vcpus;
+    defPtr->vcpus = vcpus;
+
     enum xen_on_normal_exit action;
     if (xen_vm_get_actions_after_shutdown(session, &action, vm))
         defPtr->onPoweroff = xenapiNormalExitEnum2virDomainLifecycle(action);
