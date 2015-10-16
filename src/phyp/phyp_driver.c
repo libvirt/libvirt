@@ -3255,6 +3255,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDef def;
     char *managed_system = phyp_driver->managed_system;
     unsigned long long memory;
+    unsigned int vcpus;
 
     /* Flags checked by virDomainDefFormat */
 
@@ -3289,11 +3290,13 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto err;
     }
 
-    if ((def.maxvcpus = def.vcpus =
-         phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
+    if ((vcpus = phypGetLparCPU(dom->conn, managed_system, dom->id)) == 0) {
         VIR_ERROR(_("Unable to determine domain's CPU."));
         goto err;
     }
+
+    def.maxvcpus = vcpus;
+    def.vcpus = vcpus;
 
     return virDomainDefFormat(&def,
                               virDomainDefFormatConvertXMLFlags(flags));
