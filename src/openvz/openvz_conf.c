@@ -522,6 +522,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
     char *outbuf = NULL;
     char *line;
     virCommandPtr cmd = NULL;
+    unsigned int vcpus = 0;
 
     if (openvzAssignUUIDs() < 0)
         return -1;
@@ -575,12 +576,14 @@ int openvzLoadDomains(struct openvz_driver *driver)
                            veid);
             goto cleanup;
         } else if (ret > 0) {
-            def->maxvcpus = strtoI(temp);
+            vcpus = strtoI(temp);
         }
 
-        if (ret == 0 || def->maxvcpus == 0)
-            def->maxvcpus = openvzGetNodeCPUs();
-        def->vcpus = def->maxvcpus;
+        if (ret == 0 || vcpus == 0)
+            vcpus = openvzGetNodeCPUs();
+
+        def->maxvcpus = vcpus;
+        def->vcpus = vcpus;
 
         /* XXX load rest of VM config data .... */
 
