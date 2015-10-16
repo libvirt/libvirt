@@ -12745,7 +12745,11 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
         }
     }
 
-    dom->maxvcpus = maxcpus ? maxcpus : dom->vcpus;
+    if (maxcpus == 0)
+        maxcpus = dom->vcpus;
+
+    if (virDomainDefSetVcpusMax(dom, maxcpus) < 0)
+        goto error;
 
     if (sockets && cores && threads) {
         virCPUDefPtr cpu;
@@ -12859,7 +12863,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     def->id = -1;
     def->mem.cur_balloon = 64 * 1024;
     virDomainDefSetMemoryTotal(def, def->mem.cur_balloon);
-    def->maxvcpus = 1;
+    if (virDomainDefSetVcpusMax(def, 1) < 0)
+        goto error;
     def->vcpus = 1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
 

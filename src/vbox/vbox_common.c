@@ -3907,7 +3907,10 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefSetMemoryTotal(def, memorySize * 1024);
 
     gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
-    def->maxvcpus = def->vcpus = CPUCount;
+    if (virDomainDefSetVcpusMax(def, CPUCount) < 0)
+        goto cleanup;
+
+    def->vcpus = CPUCount;
 
     /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
 
@@ -6061,7 +6064,11 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         def->dom->os.type = VIR_DOMAIN_OSTYPE_HVM;
         def->dom->os.arch = virArchFromHost();
         gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
-        def->dom->maxvcpus = def->dom->vcpus = CPUCount;
+        if (virDomainDefSetVcpusMax(def->dom, CPUCount) < 0)
+            goto cleanup;
+
+        def->dom->vcpus = CPUCount;
+
         if (vboxSnapshotGetReadWriteDisks(def, snapshot) < 0)
             VIR_DEBUG("Could not get read write disks for snapshot");
 

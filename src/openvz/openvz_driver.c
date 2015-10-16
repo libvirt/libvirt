@@ -1368,7 +1368,10 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     if (virRun(prog, NULL) < 0)
         return -1;
 
-    vm->def->maxvcpus = vm->def->vcpus = nvcpus;
+    if (virDomainDefSetVcpusMax(vm->def, nvcpus) < 0)
+        return -1;
+
+    vm->def->vcpus = nvcpus;
     return 0;
 }
 

@@ -2343,6 +2343,8 @@ struct _virDomainDef {
     xmlNodePtr metadata;
 };
 
+int virDomainDefSetVcpusMax(virDomainDefPtr def, unsigned int vcpus);
+
 unsigned long long virDomainDefGetMemoryInitial(const virDomainDef *def);
 void virDomainDefSetMemoryTotal(virDomainDefPtr def, unsigned long long size);
 void virDomainDefSetMemoryInitial(virDomainDefPtr def, unsigned long long size);

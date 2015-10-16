@@ -502,7 +502,9 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
         MAX_VIRT_CPUS < count)
         return -1;
 
-    def->maxvcpus = count;
+    if (virDomainDefSetVcpusMax(def, count) < 0)
+        return -1;
+
     if (xenConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
         return -1;
 

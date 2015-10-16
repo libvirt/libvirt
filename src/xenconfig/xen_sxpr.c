@@ -1173,7 +1173,8 @@ xenParseSxpr(const struct sexpr *root,
         }
     }
 
-    def->maxvcpus = sexpr_int(root, "domain/vcpus");
+    if (virDomainDefSetVcpusMax(def, sexpr_int(root, "domain/vcpus")) < 0)
+        goto error;
     def->vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
     if (!def->vcpus || def->maxvcpus < def->vcpus)
         def->vcpus = def->maxvcpus;

@@ -873,8 +873,11 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virDomainDefSetMemoryTotal(def, memorySettingData->data->Limit * 1024); /* megabyte to kilobyte */
     def->mem.cur_balloon = memorySettingData->data->VirtualQuantity * 1024; /* megabyte to kilobyte */
 
+    if (virDomainDefSetVcpusMax(def,
+                                processorSettingData->data->VirtualQuantity) < 0)
+        goto cleanup;
+
     def->vcpus = processorSettingData->data->VirtualQuantity;
-    def->maxvcpus = processorSettingData->data->VirtualQuantity;
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     /* FIXME: devices section is totally missing */

@@ -1284,6 +1284,16 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 }
 
 
+int
+virDomainDefSetVcpusMax(virDomainDefPtr def,
+                        unsigned int maxvcpus)
+{
+    def->maxvcpus = maxvcpus;
+
+    return 0;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -14374,17 +14384,21 @@ virDomainVcpuParse(virDomainDefPtr def,
 {
     int n;
     char *tmp = NULL;
+    unsigned int maxvcpus;
     int ret = -1;
 
-    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &def->maxvcpus)) < 0) {
+    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &maxvcpus)) < 0) {
         if (n == -2) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("maximum vcpus count must be an integer"));
             goto cleanup;
         }
 
-        def->maxvcpus = 1;
+        maxvcpus = 1;
     }
+
+    if (virDomainDefSetVcpusMax(def, maxvcpus) < 0)
+        goto cleanup;
 
     if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &def->vcpus)) < 0) {
         if (n == -2) {
