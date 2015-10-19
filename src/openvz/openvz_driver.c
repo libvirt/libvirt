@@ -1030,7 +1030,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     if (openvzDomainSetNetworkConfig(conn, vm->def) < 0)
         goto cleanup;
 
-    if (vm->def->vcpus != vm->def->maxvcpus) {
+    if (virDomainDefHasVcpusOffline(vm->def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("current vcpu count must equal maximum"));
         goto cleanup;

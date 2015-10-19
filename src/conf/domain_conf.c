@@ -1297,6 +1297,13 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
 }
 
 
+bool
+virDomainDefHasVcpusOffline(const virDomainDef *def)
+{
+    return def->vcpus < def->maxvcpus;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -21521,7 +21528,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " cpuset='%s'", cpumask);
         VIR_FREE(cpumask);
     }
-    if (def->vcpus != def->maxvcpus)
+    if (virDomainDefHasVcpusOffline(def))
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
     virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
 

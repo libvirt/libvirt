@@ -1895,7 +1895,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
                        def->mem.cur_balloon, (unsigned)rc);
     }
 
-    if (def->vcpus != def->maxvcpus) {
+    if (virDomainDefHasVcpusOffline(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("current vcpu count must equal maximum"));
     }

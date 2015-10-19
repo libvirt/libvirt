@@ -219,6 +219,7 @@ virDomainDefGetMemoryInitial;
 virDomainDefGetSecurityLabelDef;
 virDomainDefHasDeviceAddress;
 virDomainDefHasMemoryHotplug;
+virDomainDefHasVcpusOffline;
 virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
 virDomainDefNeedsPlacementAdvice;

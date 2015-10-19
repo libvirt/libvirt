@@ -2240,7 +2240,7 @@ xenFormatSxpr(virConnectPtr conn,
     virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
-    if (def->vcpus < def->maxvcpus)
+    if (virDomainDefHasVcpusOffline(def))
         virBufferAsprintf(&buf, "(vcpu_avail %lu)", (1UL << def->vcpus) - 1);
 
     if (def->cpumask) {
@@ -2322,7 +2322,7 @@ xenFormatSxpr(virConnectPtr conn,
                 virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader->path);
 
             virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
-            if (def->vcpus < def->maxvcpus)
+            if (virDomainDefHasVcpusOffline(def))
                 virBufferAsprintf(&buf, "(vcpu_avail %lu)",
                                   (1UL << def->vcpus) - 1);
 

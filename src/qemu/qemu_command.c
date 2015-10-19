@@ -7962,7 +7962,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
     virBufferAsprintf(&buf, "%u", def->vcpus);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY)) {
-        if (def->vcpus != def->maxvcpus)
+        if (virDomainDefHasVcpusOffline(def))
             virBufferAsprintf(&buf, ",maxcpus=%u", def->maxvcpus);
         /* sockets, cores, and threads are either all zero
          * or all non-zero, thus checking one of them is enough */
@@ -7975,7 +7975,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
             virBufferAsprintf(&buf, ",cores=%u", 1);
             virBufferAsprintf(&buf, ",threads=%u", 1);
         }
-    } else if (def->vcpus != def->maxvcpus) {
+    } else if (virDomainDefHasVcpusOffline(def)) {
         virBufferFreeAndReset(&buf);
         /* FIXME - consider hot-unplugging cpus after boot for older qemu */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

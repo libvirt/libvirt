@@ -1933,7 +1933,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->vcpus != def->maxvcpus) {
+    if (virDomainDefHasVcpusOffline(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("current vcpus must be equal to maxvcpus"));
         return -1;

@@ -3180,7 +3180,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     }
 
     /* def:maxvcpus -> vmx:numvcpus */
-    if (def->vcpus != def->maxvcpus) {
+    if (virDomainDefHasVcpusOffline(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("No support for domain XML entry 'vcpu' attribute "
                          "'current'"));

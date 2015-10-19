@@ -1533,7 +1533,7 @@ xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
 
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
-    if (def->vcpus < def->maxvcpus &&
+    if (virDomainDefHasVcpusOffline(def) &&
         xenConfigSetInt(conf, "vcpu_avail", (1UL << def->vcpus) - 1) < 0)
         goto cleanup;
 
