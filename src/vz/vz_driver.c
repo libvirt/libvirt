@@ -1337,6 +1337,56 @@ vzDomainMemoryStats(virDomainPtr domain,
     return ret;
 }
 
+static int
+vzDomainGetVcpusFlags(virDomainPtr dom,
+                      unsigned int flags)
+{
+    virDomainObjPtr privdom = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+    if (!(privdom = vzDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = privdom->def->maxvcpus;
+    else
+        ret = privdom->def->vcpus;
+
+ cleanup:
+    if (privdom)
+        virObjectUnlock(privdom);
+
+    return ret;
+}
+
+static int vzDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return vzDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
+                                       VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static int vzDomainIsUpdated(virDomainPtr dom)
+{
+    virDomainObjPtr privdom;
+    int ret = -1;
+
+    /* As far as VZ domains are always updated (e.g. current==persistent),
+     * we just check for domain existence */
+    if (!(privdom = vzDomObjFromDomain(dom)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (privdom)
+        virObjectUnlock(privdom);
+    return ret;
+}
+
 static int vzConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 const char *type)
 {
@@ -1432,6 +1482,9 @@ static virHypervisorDriver vzDriver = {
     .domainDetachDevice = vzDomainDetachDevice, /* 1.2.15 */
     .domainDetachDeviceFlags = vzDomainDetachDeviceFlags, /* 1.2.15 */
     .domainIsActive = vzDomainIsActive, /* 1.2.10 */
+    .domainIsUpdated = vzDomainIsUpdated,     /* 1.2.21 */
+    .domainGetVcpusFlags = vzDomainGetVcpusFlags, /* 1.2.21 */
+    .domainGetMaxVcpus = vzDomainGetMaxVcpus, /* 1.2.21 */
     .connectDomainEventRegisterAny = vzConnectDomainEventRegisterAny, /* 1.2.10 */
     .connectDomainEventDeregisterAny = vzConnectDomainEventDeregisterAny, /* 1.2.10 */
     .nodeGetCPUMap = vzNodeGetCPUMap, /* 1.2.8 */
