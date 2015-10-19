@@ -14407,13 +14407,13 @@ virDomainVcpuParse(virDomainDefPtr def,
             goto cleanup;
         }
 
-        def->vcpus = def->maxvcpus;
+        def->vcpus = maxvcpus;
     }
 
-    if (def->maxvcpus < def->vcpus) {
+    if (maxvcpus < def->vcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("maxvcpus must not be less than current vcpus "
-                         "(%u < %u)"), def->maxvcpus, def->vcpus);
+                         "(%u < %u)"), maxvcpus, def->vcpus);
         goto cleanup;
     }
 
