@@ -15224,12 +15224,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n) {
-        if (n > def->maxvcpus) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("too many vcpusched nodes in cputune"));
-            goto error;
-        }
-
         if (VIR_ALLOC_N(def->cputune.vcpusched, n) < 0)
             goto error;
         def->cputune.nvcpusched = n;
