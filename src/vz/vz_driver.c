@@ -1337,12 +1337,26 @@ vzDomainMemoryStats(virDomainPtr domain,
     return ret;
 }
 
+static int vzConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                const char *type)
+{
+    /* As far as we have no limitation for containers
+     * we report maximum */
+    if (type == NULL || STRCASEEQ(type, "vz") || STRCASEEQ(type, "parallels"))
+        return 1028;
+
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("unknown type '%s'"), type);
+    return -1;
+}
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
     .connectClose = vzConnectClose,          /* 0.10.0 */
     .connectGetVersion = vzConnectGetVersion,   /* 0.10.0 */
     .connectGetHostname = vzConnectGetHostname,      /* 0.10.0 */
+    .connectGetMaxVcpus = vzConnectGetMaxVcpus, /* 1.2.21 */
     .nodeGetInfo = vzNodeGetInfo,      /* 0.10.0 */
     .connectGetCapabilities = vzConnectGetCapabilities,      /* 0.10.0 */
     .connectBaselineCPU = vzConnectBaselineCPU, /* 1.2.6 */
