@@ -1899,11 +1899,11 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("current vcpu count must equal maximum"));
     }
-    rc = gVBoxAPI.UIMachine.SetCPUCount(machine, def->maxvcpus);
+    rc = gVBoxAPI.UIMachine.SetCPUCount(machine, virDomainDefGetVcpusMax(def));
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("could not set the number of virtual CPUs to: %u, rc=%08x"),
-                       def->maxvcpus, (unsigned)rc);
+                       virDomainDefGetVcpusMax(def), (unsigned)rc);
     }
 
     rc = gVBoxAPI.UIMachine.SetCPUProperty(machine, CPUPropertyType_PAE,

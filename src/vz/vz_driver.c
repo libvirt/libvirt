@@ -1372,7 +1372,7 @@ vzDomainGetVcpusFlags(virDomainPtr dom,
         goto cleanup;
 
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
-        ret = privdom->def->maxvcpus;
+        ret = virDomainDefGetVcpusMax(privdom->def);
     else
         ret = privdom->def->vcpus;
 

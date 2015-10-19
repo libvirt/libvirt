@@ -4911,10 +4911,10 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     if (def)
-        maxvcpus = def->maxvcpus;
+        maxvcpus = virDomainDefGetVcpusMax(def);
     if (persistentDef) {
-        if (!maxvcpus || maxvcpus > persistentDef->maxvcpus)
-            maxvcpus = persistentDef->maxvcpus;
+        if (!maxvcpus || maxvcpus > virDomainDefGetVcpusMax(persistentDef))
+            maxvcpus = virDomainDefGetVcpusMax(persistentDef);
     }
     if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && nvcpus > maxvcpus) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -5557,7 +5557,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         }
     } else {
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
-            ret = def->maxvcpus;
+            ret = virDomainDefGetVcpusMax(def);
         else
             ret = def->vcpus;
     }
@@ -19078,7 +19078,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                               &record->nparams,
                               maxparams,
                               "vcpu.maximum",
-                              (unsigned) dom->def->maxvcpus) < 0)
+                              virDomainDefGetVcpusMax(dom->def)) < 0)
         return -1;
 
     if (VIR_ALLOC_N(cpuinfo, dom->def->vcpus) < 0)

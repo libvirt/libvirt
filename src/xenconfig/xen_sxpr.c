@@ -1176,8 +1176,8 @@ xenParseSxpr(const struct sexpr *root,
     if (virDomainDefSetVcpusMax(def, sexpr_int(root, "domain/vcpus")) < 0)
         goto error;
     def->vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
-    if (!def->vcpus || def->maxvcpus < def->vcpus)
-        def->vcpus = def->maxvcpus;
+    if (!def->vcpus || virDomainDefGetVcpusMax(def) < def->vcpus)
+        def->vcpus = virDomainDefGetVcpusMax(def);
 
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL) {
@@ -2237,7 +2237,7 @@ xenFormatSxpr(virConnectPtr conn,
     virBufferAsprintf(&buf, "(memory %llu)(maxmem %llu)",
                       VIR_DIV_UP(def->mem.cur_balloon, 1024),
                       VIR_DIV_UP(virDomainDefGetMemoryActual(def), 1024));
-    virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
+    virBufferAsprintf(&buf, "(vcpus %u)", virDomainDefGetVcpusMax(def));
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */
     if (virDomainDefHasVcpusOffline(def))
@@ -2321,7 +2321,7 @@ xenFormatSxpr(virConnectPtr conn,
             else
                 virBufferEscapeSexpr(&buf, "(kernel '%s')", def->os.loader->path);
 
-            virBufferAsprintf(&buf, "(vcpus %u)", def->maxvcpus);
+            virBufferAsprintf(&buf, "(vcpus %u)", virDomainDefGetVcpusMax(def));
             if (virDomainDefHasVcpusOffline(def))
                 virBufferAsprintf(&buf, "(vcpu_avail %lu)",
                                   (1UL << def->vcpus) - 1);

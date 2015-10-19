@@ -7963,7 +7963,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY)) {
         if (virDomainDefHasVcpusOffline(def))
-            virBufferAsprintf(&buf, ",maxcpus=%u", def->maxvcpus);
+            virBufferAsprintf(&buf, ",maxcpus=%u", virDomainDefGetVcpusMax(def));
         /* sockets, cores, and threads are either all zero
          * or all non-zero, thus checking one of them is enough */
         if (def->cpu && def->cpu->sockets) {
@@ -7971,7 +7971,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
             virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
             virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
         } else {
-            virBufferAsprintf(&buf, ",sockets=%u", def->maxvcpus);
+            virBufferAsprintf(&buf, ",sockets=%u", virDomainDefGetVcpusMax(def));
             virBufferAsprintf(&buf, ",cores=%u", 1);
             virBufferAsprintf(&buf, ",threads=%u", 1);
         }

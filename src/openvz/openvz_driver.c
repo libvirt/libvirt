@@ -1035,8 +1035,8 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
                        _("current vcpu count must equal maximum"));
         goto cleanup;
     }
-    if (vm->def->maxvcpus > 0) {
-        if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
+    if (virDomainDefGetVcpusMax(vm->def)) {
+        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set number of vCPUs"));
              goto cleanup;
@@ -1133,8 +1133,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
 
-    if (vm->def->maxvcpus > 0) {
-        if (openvzDomainSetVcpusInternal(vm, vm->def->maxvcpus) < 0) {
+    if (virDomainDefGetVcpusMax(vm->def) > 0) {
+        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set number of vCPUs"));
             goto cleanup;

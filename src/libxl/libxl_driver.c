@@ -2159,8 +2159,8 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && vm->def->maxvcpus < max)
-        max = vm->def->maxvcpus;
+    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && virDomainDefGetVcpusMax(vm->def) < max)
+        max = virDomainDefGetVcpusMax(vm->def);
 
     if (nvcpus > max) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -2297,7 +2297,10 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         def = vm->newDef ? vm->newDef : vm->def;
     }
 
-    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = virDomainDefGetVcpusMax(def);
+    else
+        ret = def->vcpus;
 
  cleanup:
     if (vm)
@@ -4699,7 +4702,7 @@ libxlDomainGetPerCPUStats(libxlDriverPrivatePtr driver,
     if (nparams == 0 && ncpus != 0)
         return LIBXL_NB_TOTAL_CPU_STAT_PARAM;
     else if (nparams == 0)
-        return vm->def->maxvcpus;
+        return virDomainDefGetVcpusMax(vm->def);
 
     cfg = libxlDriverConfigGet(driver);
     if ((vcpuinfo = libxl_list_vcpu(cfg->ctx, vm->def->id, &maxcpu,

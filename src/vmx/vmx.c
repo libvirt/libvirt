@@ -3071,6 +3071,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     bool scsi_present[4] = { false, false, false, false };
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     bool floppy_present[2] = { false, false };
+    unsigned int maxvcpus;
 
     if (ctx->formatFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3186,15 +3187,16 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
                          "'current'"));
         goto cleanup;
     }
-    if (def->maxvcpus <= 0 || (def->maxvcpus % 2 != 0 && def->maxvcpus != 1)) {
+    maxvcpus = virDomainDefGetVcpusMax(def);
+    if (maxvcpus == 0 || (maxvcpus % 2 != 0 && maxvcpus != 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting domain XML entry 'vcpu' to be an unsigned "
-                         "integer (1 or a multiple of 2) but found %d"),
-                       def->maxvcpus);
+                       _("Expecting domain XML entry 'vcpu' to be 1 or a "
+                         "multiple of 2 but found %d"),
+                       maxvcpus);
         goto cleanup;
     }
 
-    virBufferAsprintf(&buffer, "numvcpus = \"%d\"\n", def->maxvcpus);
+    virBufferAsprintf(&buffer, "numvcpus = \"%d\"\n", maxvcpus);
 
     /* def:cpumask -> vmx:sched.cpu.affinity */
     if (def->cpumask && virBitmapSize(def->cpumask) > 0) {
@@ -3207,11 +3209,11 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
         while ((bit = virBitmapNextSetBit(def->cpumask, bit)) >= 0)
             ++sched_cpu_affinity_length;
 
-        if (sched_cpu_affinity_length < def->maxvcpus) {
+        if (sched_cpu_affinity_length < maxvcpus) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting domain XML attribute 'cpuset' of entry "
                              "'vcpu' to contain at least %d CPU(s)"),
-                           def->maxvcpus);
+                           maxvcpus);
             goto cleanup;
         }
 

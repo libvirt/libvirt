@@ -695,7 +695,8 @@ xenXMDomainSetVcpusFlags(virConnectPtr conn,
     /* Can't specify a current larger than stored maximum; but
      * reducing maximum can silently reduce current.  */
     if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM))
-        max = entry->def->maxvcpus;
+        max = virDomainDefGetVcpusMax(entry->def);
+
     if (vcpus > max) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
@@ -760,8 +761,10 @@ xenXMDomainGetVcpusFlags(virConnectPtr conn,
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = ((flags & VIR_DOMAIN_VCPU_MAXIMUM) ? entry->def->maxvcpus
-           : entry->def->vcpus);
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = virDomainDefGetVcpusMax(entry->def);
+    else
+        ret = entry->def->vcpus;
 
  cleanup:
     xenUnifiedUnlock(priv);

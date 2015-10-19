@@ -504,8 +504,8 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
     else
         (*record)->memory_dynamic_max = (*record)->memory_static_max;
 
-    if (def->maxvcpus) {
-        (*record)->vcpus_max = (int64_t) def->maxvcpus;
+    if (virDomainDefGetVcpusMax(def) > 0) {
+        (*record)->vcpus_max = (int64_t) virDomainDefGetVcpusMax(def);
         (*record)->vcpus_at_startup = (int64_t) def->vcpus;
     }
     if (def->onPoweroff)

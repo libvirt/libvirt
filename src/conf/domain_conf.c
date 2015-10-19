@@ -1304,6 +1304,13 @@ virDomainDefHasVcpusOffline(const virDomainDef *def)
 }
 
 
+unsigned int
+virDomainDefGetVcpusMax(const virDomainDef *def)
+{
+    return def->maxvcpus;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -14983,7 +14990,8 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         for (i = 0; i < def->cputune.nvcpusched; i++) {
             if (virDomainThreadSchedParse(nodes[i],
-                                          0, def->maxvcpus - 1,
+                                          0,
+                                          virDomainDefGetVcpusMax(def) - 1,
                                           "vcpus",
                                           &def->cputune.vcpusched[i]) < 0)
                 goto error;
@@ -15060,7 +15068,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
 
         if (def->cpu->sockets &&
-            def->maxvcpus >
+            virDomainDefGetVcpusMax(def) >
             def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("Maximum CPUs greater than topology limit"));
@@ -15072,14 +15080,14 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainNumaDefCPUParseXML(def->numa, ctxt) < 0)
         goto error;
 
-    if (virDomainNumaGetCPUCountTotal(def->numa) > def->maxvcpus) {
+    if (virDomainNumaGetCPUCountTotal(def->numa) > virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Number of CPUs in <numa> exceeds the"
                          " <vcpu> count"));
         goto error;
     }
 
-    if (virDomainNumaGetMaxCPUID(def->numa) >= def->maxvcpus) {
+    if (virDomainNumaGetMaxCPUID(def->numa) >= virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("CPU IDs in <numa> exceed the <vcpu> count"));
         goto error;
@@ -17556,10 +17564,10 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        dst->vcpus, src->vcpus);
         goto error;
     }
-    if (src->maxvcpus != dst->maxvcpus) {
+    if (virDomainDefGetVcpusMax(src) != virDomainDefGetVcpusMax(dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vCPU max %d does not match source %d"),
-                       dst->maxvcpus, src->maxvcpus);
+                       virDomainDefGetVcpusMax(dst), virDomainDefGetVcpusMax(src));
         goto error;
     }
 
@@ -21530,7 +21538,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
     if (virDomainDefHasVcpusOffline(def))
         virBufferAsprintf(buf, " current='%u'", def->vcpus);
-    virBufferAsprintf(buf, ">%u</vcpu>\n", def->maxvcpus);
+    virBufferAsprintf(buf, ">%u</vcpu>\n", virDomainDefGetVcpusMax(def));
 
     if (def->niothreadids > 0) {
         virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n",

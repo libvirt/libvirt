@@ -643,8 +643,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     else
         libxl_domain_build_info_init_type(b_info, LIBXL_DOMAIN_TYPE_PV);
 
-    b_info->max_vcpus = def->maxvcpus;
-    if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, def->maxvcpus))
+    b_info->max_vcpus = virDomainDefGetVcpusMax(def);
+    if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, b_info->max_vcpus))
         return -1;
     libxl_bitmap_set_none(&b_info->avail_vcpus);
     for (i = 0; i < def->vcpus; i++)

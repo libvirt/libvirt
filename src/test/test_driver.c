@@ -2313,7 +2313,10 @@ testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    ret = (flags & VIR_DOMAIN_VCPU_MAXIMUM) ? def->maxvcpus : def->vcpus;
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = virDomainDefGetVcpusMax(def);
+    else
+        ret = def->vcpus;
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2356,19 +2359,19 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
     if (virDomainObjGetDefs(privdom, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
-    if (def && def->maxvcpus < nrCpus) {
+    if (def && virDomainDefGetVcpusMax(def) < nrCpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested cpu amount exceeds maximum (%d > %d)"),
-                       nrCpus, def->maxvcpus);
+                       nrCpus, virDomainDefGetVcpusMax(def));
         goto cleanup;
     }
 
     if (persistentDef &&
         !(flags & VIR_DOMAIN_VCPU_MAXIMUM) &&
-        persistentDef->maxvcpus < nrCpus) {
+        virDomainDefGetVcpusMax(persistentDef) < nrCpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested cpu amount exceeds maximum (%d > %d)"),
-                       nrCpus, persistentDef->maxvcpus);
+                       nrCpus, virDomainDefGetVcpusMax(persistentDef));
         goto cleanup;
     }
 

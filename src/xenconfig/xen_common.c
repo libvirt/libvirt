@@ -508,7 +508,7 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
     if (xenConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
         return -1;
 
-    def->vcpus = MIN(count_one_bits_l(count), def->maxvcpus);
+    def->vcpus = MIN(count_one_bits_l(count), virDomainDefGetVcpusMax(def));
     if (xenConfigGetString(conf, "cpus", &str, NULL) < 0)
         return -1;
 
@@ -1528,7 +1528,7 @@ xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
     int ret = -1;
     char *cpus = NULL;
 
-    if (xenConfigSetInt(conf, "vcpus", def->maxvcpus) < 0)
+    if (xenConfigSetInt(conf, "vcpus", virDomainDefGetVcpusMax(def)) < 0)
         goto cleanup;
 
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
