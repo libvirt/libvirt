@@ -1350,6 +1350,44 @@ static int vzConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
     return -1;
 }
 
+static int
+vzNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                  int cpuNum,
+                  virNodeCPUStatsPtr params,
+                  int *nparams,
+                  unsigned int flags)
+{
+    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+}
+
+static int
+vzNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     int cellNum,
+                     virNodeMemoryStatsPtr params,
+                     int *nparams,
+                     unsigned int flags)
+{
+    return nodeGetMemoryStats(NULL, cellNum, params, nparams, flags);
+}
+
+static int
+vzNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+                         unsigned long long *freeMems,
+                         int startCell,
+                         int maxCells)
+{
+    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+}
+
+static unsigned long long
+vzNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    unsigned long long freeMem;
+    if (nodeGetMemory(NULL, &freeMem) < 0)
+        return 0;
+    return freeMem;
+}
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -1358,6 +1396,10 @@ static virHypervisorDriver vzDriver = {
     .connectGetHostname = vzConnectGetHostname,      /* 0.10.0 */
     .connectGetMaxVcpus = vzConnectGetMaxVcpus, /* 1.2.21 */
     .nodeGetInfo = vzNodeGetInfo,      /* 0.10.0 */
+    .nodeGetCPUStats = vzNodeGetCPUStats,      /* 1.2.21 */
+    .nodeGetMemoryStats = vzNodeGetMemoryStats, /* 1.2.21 */
+    .nodeGetCellsFreeMemory = vzNodeGetCellsFreeMemory, /* 1.2.21 */
+    .nodeGetFreeMemory = vzNodeGetFreeMemory, /* 1.2.21 */
     .connectGetCapabilities = vzConnectGetCapabilities,      /* 0.10.0 */
     .connectBaselineCPU = vzConnectBaselineCPU, /* 1.2.6 */
     .connectListDomains = vzConnectListDomains,      /* 0.10.0 */
