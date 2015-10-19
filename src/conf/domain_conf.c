@@ -1288,6 +1288,9 @@ int
 virDomainDefSetVcpusMax(virDomainDefPtr def,
                         unsigned int maxvcpus)
 {
+    if (maxvcpus < def->vcpus)
+        def->vcpus = maxvcpus;
+
     def->maxvcpus = maxvcpus;
 
     return 0;

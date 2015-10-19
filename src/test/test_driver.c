@@ -2379,9 +2379,6 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
             if (virDomainDefSetVcpusMax(persistentDef, nrCpus) < 0)
                 goto cleanup;
-
-            if (nrCpus < persistentDef->vcpus)
-                persistentDef->vcpus = nrCpus;
         } else {
             persistentDef->vcpus = nrCpus;
         }

@@ -4981,9 +4981,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
                 if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
                     goto endjob;
-
-                if (nvcpus < persistentDef->vcpus)
-                    persistentDef->vcpus = nvcpus;
             } else {
                 persistentDef->vcpus = nvcpus;
             }
