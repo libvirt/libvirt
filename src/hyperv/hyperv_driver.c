@@ -774,7 +774,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     /* Flags checked by virDomainDefFormat */
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDefNew()))
         goto cleanup;
 
     virUUIDFormat(domain->uuid, uuid_string);
