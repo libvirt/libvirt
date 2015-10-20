@@ -5342,7 +5342,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         priv->vioserialaddrs = NULL;
     }
 
-    qemuDomainReAttachHostDevices(driver, vm->def);
+    qemuHostdevReAttachDomainDevices(driver, vm->def);
 
     def = vm->def;
     for (i = 0; i < def->nnets; i++) {

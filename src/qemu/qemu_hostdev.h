@@ -56,20 +56,20 @@ int qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
                                     virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
                                     unsigned int flags);
-void
-qemuDomainReAttachHostUSBDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs);
-void qemuDomainReAttachHostSCSIDevices(virQEMUDriverPtr driver,
-                                       const char *name,
-                                       virDomainHostdevDefPtr *hostdevs,
-                                       int nhostdevs);
-void qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
-                                      const char *name,
-                                      virDomainHostdevDefPtr *hostdevs,
-                                      int nhostdevs);
-void qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
-                                   virDomainDefPtr def);
+
+void qemuHostdevReAttachPCIDevices(virQEMUDriverPtr driver,
+                                   const char *name,
+                                   virDomainHostdevDefPtr *hostdevs,
+                                   int nhostdevs);
+void qemuHostdevReAttachUSBDevices(virQEMUDriverPtr driver,
+                                   const char *name,
+                                   virDomainHostdevDefPtr *hostdevs,
+                                   int nhostdevs);
+void qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
+                                    const char *name,
+                                    virDomainHostdevDefPtr *hostdevs,
+                                    int nhostdevs);
+void qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
+                                      virDomainDefPtr def);
 
 #endif /* __QEMU_HOSTDEV_H__ */

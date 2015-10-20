@@ -309,10 +309,10 @@ qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs)
+qemuHostdevReAttachPCIDevices(virQEMUDriverPtr driver,
+                              const char *name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *oldStateDir = cfg->stateDir;
@@ -325,10 +325,10 @@ qemuDomainReAttachHostdevDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuDomainReAttachHostUSBDevices(virQEMUDriverPtr driver,
-                                 const char *name,
-                                 virDomainHostdevDefPtr *hostdevs,
-                                 int nhostdevs)
+qemuHostdevReAttachUSBDevices(virQEMUDriverPtr driver,
+                              const char *name,
+                              virDomainHostdevDefPtr *hostdevs,
+                              int nhostdevs)
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
@@ -337,10 +337,10 @@ qemuDomainReAttachHostUSBDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuDomainReAttachHostSCSIDevices(virQEMUDriverPtr driver,
-                                  const char *name,
-                                  virDomainHostdevDefPtr *hostdevs,
-                                  int nhostdevs)
+qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
+                               const char *name,
+                               virDomainHostdevDefPtr *hostdevs,
+                               int nhostdevs)
 {
     size_t i;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
@@ -360,18 +360,18 @@ qemuDomainReAttachHostSCSIDevices(virQEMUDriverPtr driver,
 }
 
 void
-qemuDomainReAttachHostDevices(virQEMUDriverPtr driver,
-                              virDomainDefPtr def)
+qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
+                                 virDomainDefPtr def)
 {
     if (!def->nhostdevs)
         return;
 
-    qemuDomainReAttachHostdevDevices(driver, def->name, def->hostdevs,
-                                     def->nhostdevs);
+    qemuHostdevReAttachPCIDevices(driver, def->name, def->hostdevs,
+                                  def->nhostdevs);
 
-    qemuDomainReAttachHostUSBDevices(driver, def->name, def->hostdevs,
-                                     def->nhostdevs);
+    qemuHostdevReAttachUSBDevices(driver, def->name, def->hostdevs,
+                                  def->nhostdevs);
 
-    qemuDomainReAttachHostSCSIDevices(driver, def->name, def->hostdevs,
-                                      def->nhostdevs);
+    qemuHostdevReAttachSCSIDevices(driver, def->name, def->hostdevs,
+                                   def->nhostdevs);
 }
