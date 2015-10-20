@@ -4428,7 +4428,7 @@ int qemuProcessStart(virConnectPtr conn,
      * Fill them in prior to setting the domain def as transient. */
     VIR_DEBUG("Generating paths");
 
-    if (qemuPrepareNVRAM(cfg, vm, migrateFrom) < 0)
+    if (qemuPrepareNVRAM(cfg, vm, !!migrateFrom) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
