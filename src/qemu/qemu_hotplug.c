@@ -1263,11 +1263,11 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
 
     if (!cfg->relaxedACS)
         flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
-    if (qemuPrepareHostdevPCIDevices(driver, vm->def->name, vm->def->uuid,
+    if (qemuHostdevPreparePCIDevices(driver, vm->def->name, vm->def->uuid,
                                      &hostdev, 1, priv->qemuCaps, flags) < 0)
         goto cleanup;
 
-    /* this could have been changed by qemuPrepareHostdevPCIDevices */
+    /* this could have been changed by qemuHostdevPreparePCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
 
     switch ((virDomainHostdevSubsysPCIBackendType) backend) {
@@ -1885,7 +1885,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
     bool teardownlabel = false;
     int ret = -1;
 
-    if (qemuPrepareHostUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
+    if (qemuHostdevPrepareUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
         goto cleanup;
 
     added = true;
@@ -1968,7 +1968,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (!cont)
         return -1;
 
-    if (qemuPrepareHostdevSCSIDevices(driver, vm->def->name,
+    if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name,
                                       &hostdev, 1)) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {

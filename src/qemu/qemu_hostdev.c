@@ -156,9 +156,9 @@ qemuHostdevHostSupportsPassthroughLegacy(void)
 
 
 static bool
-qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
-                                  size_t nhostdevs,
-                                  virQEMUCapsPtr qemuCaps)
+qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
+                                         size_t nhostdevs,
+                                         virQEMUCapsPtr qemuCaps)
 {
     bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
@@ -219,7 +219,7 @@ qemuPrepareHostdevPCICheckSupport(virDomainHostdevDefPtr *hostdevs,
 }
 
 int
-qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
+qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
                              const char *name,
                              const unsigned char *uuid,
                              virDomainHostdevDefPtr *hostdevs,
@@ -230,7 +230,7 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
     int ret = -1;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
-    if (!qemuPrepareHostdevPCICheckSupport(hostdevs, nhostdevs, qemuCaps))
+    if (!qemuHostdevPreparePCIDevicesCheckSupport(hostdevs, nhostdevs, qemuCaps))
         goto out;
 
     ret = virHostdevPreparePCIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
@@ -241,11 +241,11 @@ qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
-                          const char *name,
-                          virDomainHostdevDefPtr *hostdevs,
-                          int nhostdevs,
-                          unsigned int flags)
+qemuHostdevPrepareUSBDevices(virQEMUDriverPtr driver,
+                             const char *name,
+                             virDomainHostdevDefPtr *hostdevs,
+                             int nhostdevs,
+                             unsigned int flags)
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
@@ -254,7 +254,7 @@ qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
 }
 
 int
-qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
+qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
                               const char *name,
                               virDomainHostdevDefPtr *hostdevs,
                               int nhostdevs)
@@ -284,24 +284,24 @@ qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
 
 
 int
-qemuPrepareHostDevices(virQEMUDriverPtr driver,
-                       virDomainDefPtr def,
-                       virQEMUCapsPtr qemuCaps,
-                       unsigned int flags)
+qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
+                                virDomainDefPtr def,
+                                virQEMUCapsPtr qemuCaps,
+                                unsigned int flags)
 {
     if (!def->nhostdevs)
         return 0;
 
-    if (qemuPrepareHostdevPCIDevices(driver, def->name, def->uuid,
+    if (qemuHostdevPreparePCIDevices(driver, def->name, def->uuid,
                                      def->hostdevs, def->nhostdevs,
                                      qemuCaps, flags) < 0)
         return -1;
 
-    if (qemuPrepareHostUSBDevices(driver, def->name,
-                                  def->hostdevs, def->nhostdevs, flags) < 0)
+    if (qemuHostdevPrepareUSBDevices(driver, def->name,
+                                     def->hostdevs, def->nhostdevs, flags) < 0)
         return -1;
 
-    if (qemuPrepareHostdevSCSIDevices(driver, def->name,
+    if (qemuHostdevPrepareSCSIDevices(driver, def->name,
                                       def->hostdevs, def->nhostdevs) < 0)
         return -1;
 

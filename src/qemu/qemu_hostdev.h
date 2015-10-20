@@ -35,27 +35,27 @@ int qemuUpdateActiveSCSIHostdevs(virQEMUDriverPtr driver,
                                  virDomainDefPtr def);
 bool qemuHostdevHostSupportsPassthroughLegacy(void);
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
-int qemuPrepareHostdevPCIDevices(virQEMUDriverPtr driver,
+
+int qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
                                  const unsigned char *uuid,
                                  virDomainHostdevDefPtr *hostdevs,
                                  int nhostdevs,
                                  virQEMUCapsPtr qemuCaps,
                                  unsigned int flags);
-int
-qemuPrepareHostUSBDevices(virQEMUDriverPtr driver,
-                          const char *name,
-                          virDomainHostdevDefPtr *hostdevs,
-                          int nhostdevs,
-                          unsigned int flags);
-int qemuPrepareHostdevSCSIDevices(virQEMUDriverPtr driver,
+int qemuHostdevPrepareUSBDevices(virQEMUDriverPtr driver,
+                                 const char *name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs,
+                                 unsigned int flags);
+int qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
                                   const char *name,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs);
-int qemuPrepareHostDevices(virQEMUDriverPtr driver,
-                           virDomainDefPtr def,
-                           virQEMUCapsPtr qemuCaps,
-                           unsigned int flags);
+int qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
+                                    virDomainDefPtr def,
+                                    virQEMUCapsPtr qemuCaps,
+                                    unsigned int flags);
 void
 qemuDomainReAttachHostUSBDevices(virQEMUDriverPtr driver,
                                  const char *name,
