@@ -7985,7 +7985,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (ioeventfd &&
         (def->ioeventfd = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'ioeventfd' value %s'"), max_sectors);
+                       _("Malformed 'ioeventfd' value %s'"), ioeventfd);
         goto error;
     }
 
