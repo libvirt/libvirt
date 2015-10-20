@@ -465,6 +465,27 @@ bhyveDomainIsPersistent(virDomainPtr domain)
 }
 
 static char *
+bhyveDomainGetOSType(virDomainPtr dom)
+{
+    virDomainObjPtr vm;
+    char *ret = NULL;
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)) < 0)
+        goto cleanup;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static char *
 bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     virDomainObjPtr vm;
@@ -1487,6 +1508,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
     .domainDefineXMLFlags = bhyveDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = bhyveDomainUndefine, /* 1.2.2 */
+    .domainGetOSType = bhyveDomainGetOSType, /* 1.2.21 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
     .domainIsActive = bhyveDomainIsActive, /* 1.2.2 */
     .domainIsPersistent = bhyveDomainIsPersistent, /* 1.2.2 */
