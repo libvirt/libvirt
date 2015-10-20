@@ -2026,6 +2026,32 @@ networkAddRouteToBridge(virNetworkObjPtr network,
 }
 
 static int
+networkWaitDadFinish(virNetworkObjPtr network)
+{
+    virNetworkIpDefPtr ipdef;
+    virSocketAddrPtr *addrs = NULL, addr = NULL;
+    size_t naddrs = 0;
+    int ret = -1;
+
+    VIR_DEBUG("Begin waiting for IPv6 DAD on network %s", network->def->name);
+
+    while ((ipdef = virNetworkDefGetIpByIndex(network->def,
+                                              AF_INET6, naddrs))) {
+        addr = &ipdef->address;
+        if (VIR_APPEND_ELEMENT_COPY(addrs, naddrs, addr) < 0)
+            goto cleanup;
+    }
+
+    ret = (naddrs == 0) ? 0 : virNetDevWaitDadFinish(addrs, naddrs);
+
+ cleanup:
+    VIR_FREE(addrs);
+    VIR_DEBUG("Finished waiting for IPv6 DAD on network %s with status %d",
+              network->def->name, ret);
+    return ret;
+}
+
+static int
 networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
                            virNetworkObjPtr network)
 {
@@ -2159,8 +2185,14 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (v6present && networkStartRadvd(driver, network) < 0)
         goto err4;
 
-    /* DAD has happened (dnsmasq waits for it), dnsmasq is now bound to the
-     * bridge's IPv6 address, so we can now set the dummy tun down.
+    /* dnsmasq does not wait for DAD to complete before daemonizing,
+     * so we need to wait for it ourselves.
+     */
+    if (v6present && networkWaitDadFinish(network) < 0)
+        goto err4;
+
+    /* DAD has finished, dnsmasq is now bound to the
+     * bridge's IPv6 address, so we can set the dummy tun down.
      */
     if (tapfd >= 0) {
         if (virNetDevSetOnline(macTapIfName, false) < 0)

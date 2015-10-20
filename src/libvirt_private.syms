@@ -1792,6 +1792,7 @@ virNetDevSetRcvMulti;
 virNetDevSetupControl;
 virNetDevSysfsFile;
 virNetDevValidateConfig;
+virNetDevWaitDadFinish;
 
 
 # util/virnetdevbandwidth.h
