@@ -924,6 +924,9 @@ int qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
                                    virHashTablePtr *info)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
+                               const char *uri);
+
 /**
  * When running two dd process and using <> redirection, we need a
  * shell that will not truncate files.  These two strings serve that

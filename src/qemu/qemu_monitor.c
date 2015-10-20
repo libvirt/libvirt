@@ -3811,3 +3811,15 @@ qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
     return ret;
 }
+
+
+int
+qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
+                           const char *uri)
+{
+    VIR_DEBUG("uri=%s", uri);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONMigrateIncoming(mon, uri);
+}

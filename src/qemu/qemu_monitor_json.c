@@ -6627,3 +6627,28 @@ qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
     VIR_FREE(linkname);
     return ret;
 }
+
+
+int
+qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
+                               const char *uri)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("migrate-incoming",
+                                           "s:uri", uri,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
