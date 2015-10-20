@@ -130,7 +130,7 @@ int
 virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
                                  virSecurityManagerPtr nested)
 {
-    if (!STREQ("stack", stack->drv->name))
+    if (STRNEQ("stack", stack->drv->name))
         return -1;
     return virSecurityStackAddNested(stack, nested);
 }

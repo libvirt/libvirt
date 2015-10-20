@@ -355,7 +355,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, ""))
+    if (STRNEQ(str, ""))
         goto error;
 
     VIR_FREE(str);
@@ -365,7 +365,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, "0"))
+    if (STRNEQ(str, "0"))
         goto error;
 
     VIR_FREE(str);
@@ -376,7 +376,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, "0,4-5"))
+    if (STRNEQ(str, "0,4-5"))
         goto error;
 
     VIR_FREE(str);
@@ -386,7 +386,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, "0,4-6"))
+    if (STRNEQ(str, "0,4-6"))
         goto error;
 
     VIR_FREE(str);
@@ -399,7 +399,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, "0,4-6,13-16"))
+    if (STRNEQ(str, "0,4-6,13-16"))
         goto error;
 
     VIR_FREE(str);
@@ -410,7 +410,7 @@ test6(const void *v ATTRIBUTE_UNUSED)
     if (!str)
         goto error;
 
-    if (!STREQ(str, "0,4-6,13-16,62-63"))
+    if (STRNEQ(str, "0,4-6,13-16,62-63"))
         goto error;
 
 

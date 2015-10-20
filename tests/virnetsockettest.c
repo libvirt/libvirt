@@ -406,7 +406,7 @@ static int testSocketSSH(const void *opaque)
         }
         buf[rv] = '\0';
 
-        if (!STREQ(buf, data->expectOut)) {
+        if (STRNEQ(buf, data->expectOut)) {
             virtTestDifference(stderr, data->expectOut, buf);
             goto cleanup;
         }

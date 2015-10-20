@@ -1873,7 +1873,7 @@ virStoragePoolLoadState(virStoragePoolObjListPtr pools,
     if (!(def = virStoragePoolDefParseXML(ctxt)))
         goto error;
 
-    if (!STREQ(name, def->name)) {
+    if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Storage pool state file '%s' does not match "
                          "pool name '%s'"),

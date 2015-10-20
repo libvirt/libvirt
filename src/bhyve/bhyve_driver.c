@@ -197,7 +197,7 @@ bhyveConnectOpen(virConnectPtr conn,
          if (conn->uri->server)
              return VIR_DRV_OPEN_DECLINED;
 
-         if (!STREQ_NULLABLE(conn->uri->path, "/system")) {
+         if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unexpected bhyve URI path '%s', try bhyve:///system"),
                            conn->uri->path);

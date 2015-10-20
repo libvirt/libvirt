@@ -58,13 +58,13 @@ static int testURIParse(const void *args)
     if (!(uri = virURIParse(data->uri)))
         goto cleanup;
 
-    if (!STREQ(uri->scheme, data->scheme)) {
+    if (STRNEQ(uri->scheme, data->scheme)) {
         VIR_DEBUG("Expected scheme '%s', actual '%s'",
                   data->scheme, uri->scheme);
         goto cleanup;
     }
 
-    if (!STREQ(uri->server, data->server)) {
+    if (STRNEQ(uri->server, data->server)) {
         VIR_DEBUG("Expected server '%s', actual '%s'",
                   data->server, uri->server);
         goto cleanup;
@@ -76,31 +76,31 @@ static int testURIParse(const void *args)
         goto cleanup;
     }
 
-    if (!STREQ_NULLABLE(uri->path, data->path)) {
+    if (STRNEQ_NULLABLE(uri->path, data->path)) {
         VIR_DEBUG("Expected path '%s', actual '%s'",
                   data->path, uri->path);
         goto cleanup;
     }
 
-    if (!STREQ_NULLABLE(uri->query, data->query)) {
+    if (STRNEQ_NULLABLE(uri->query, data->query)) {
         VIR_DEBUG("Expected query '%s', actual '%s'",
                   data->query, uri->query);
         goto cleanup;
     }
 
-    if (!STREQ_NULLABLE(uri->fragment, data->fragment)) {
+    if (STRNEQ_NULLABLE(uri->fragment, data->fragment)) {
         VIR_DEBUG("Expected fragment '%s', actual '%s'",
                   data->fragment, uri->fragment);
         goto cleanup;
     }
 
     for (i = 0; data->params && data->params[i].name && i < uri->paramsCount; i++) {
-        if (!STREQ_NULLABLE(data->params[i].name, uri->params[i].name)) {
+        if (STRNEQ_NULLABLE(data->params[i].name, uri->params[i].name)) {
             VIR_DEBUG("Expected param name %zu '%s', actual '%s'",
                       i, data->params[i].name, uri->params[i].name);
             goto cleanup;
         }
-        if (!STREQ_NULLABLE(data->params[i].value, uri->params[i].value)) {
+        if (STRNEQ_NULLABLE(data->params[i].value, uri->params[i].value)) {
             VIR_DEBUG("Expected param value %zu '%s', actual '%s'",
                       i, data->params[i].value, uri->params[i].value);
             goto cleanup;
@@ -123,7 +123,7 @@ static int testURIParse(const void *args)
     if (!(uristr = virURIFormat(uri)))
         goto cleanup;
 
-    if (!STREQ(uristr, data->uri_out)) {
+    if (STRNEQ(uristr, data->uri_out)) {
         VIR_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",
                   data->uri_out, uristr);
         goto cleanup;

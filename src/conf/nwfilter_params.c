@@ -444,7 +444,7 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
                     /* should never occur to step on a NULL here */
                     return true;
                 }
-                if (!STREQ(virNWFilterVarValueGetNthValue(tmp, cie->curValue),
+                if (STRNEQ(virNWFilterVarValueGetNthValue(tmp, cie->curValue),
                            virNWFilterVarValueGetNthValue(tmp, i))) {
                     isSame = false;
                     break;

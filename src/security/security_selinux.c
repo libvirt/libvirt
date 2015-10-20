@@ -2061,7 +2061,7 @@ virSecuritySELinuxSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (secdef == NULL)
         return 0;
 
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
@@ -2092,7 +2092,7 @@ virSecuritySELinuxSetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UN
         return 0;
 
     VIR_DEBUG("label=%s", secdef->label);
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
@@ -2126,7 +2126,7 @@ virSecuritySELinuxSetSecurityChildProcessLabel(virSecurityManagerPtr mgr ATTRIBU
         return 0;
 
     VIR_DEBUG("label=%s", secdef->label);
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
@@ -2155,7 +2155,7 @@ virSecuritySELinuxSetSecurityDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBU
     if (!secdef || !secdef->label)
         return 0;
 
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
@@ -2202,7 +2202,7 @@ virSecuritySELinuxSetSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNU
     if (!secdef || !secdef->label)
         return 0;
 
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "
@@ -2240,7 +2240,7 @@ virSecuritySELinuxClearSecuritySocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_U
     if (!secdef || !secdef->label)
         return 0;
 
-    if (!STREQ(SECURITY_SELINUX_NAME, secdef->model)) {
+    if (STRNEQ(SECURITY_SELINUX_NAME, secdef->model)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: "
                          "'%s' model configured for domain, but "

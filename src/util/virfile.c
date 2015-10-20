@@ -1008,7 +1008,7 @@ virFileStripSuffix(char *str, const char *suffix)
     if (len < suffixlen)
         return 0;
 
-    if (!STREQ(str + len - suffixlen, suffix))
+    if (STRNEQ(str + len - suffixlen, suffix))
         return 0;
 
     str[len-suffixlen] = '\0';

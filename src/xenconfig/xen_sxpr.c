@@ -2345,7 +2345,7 @@ xenFormatSxpr(virConnectPtr conn,
                     /* Only xend <= 3.0.2 wants cdrom config here */
                     if (xendConfigVersion != XEND_CONFIG_VERSION_3_0_2)
                         break;
-                    if (!STREQ(def->disks[i]->dst, "hdc") || !src)
+                    if (STRNEQ(def->disks[i]->dst, "hdc") || !src)
                         break;
 
                     virBufferEscapeSexpr(&buf, "(cdrom '%s')", src);

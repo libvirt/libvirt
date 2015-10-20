@@ -300,7 +300,7 @@ vzConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
 
     /* From this point on, the connection is for us. */
-    if (!STREQ_NULLABLE(conn->uri->path, "/system")) {
+    if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected Virtuozzo URI path '%s', try vz:///system"),
                        conn->uri->path);

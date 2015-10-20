@@ -188,7 +188,7 @@ testTypedParamsGetStringList(const void *opaque ATTRIBUTE_UNUSED)
                 goto cleanup;
             continue;
         }
-        if (!STREQLEN(strings[i], "bar", 3))
+        if (STRNEQLEN(strings[i], "bar", 3))
             goto cleanup;
         if (strings[i][3] != l++)
             goto cleanup;

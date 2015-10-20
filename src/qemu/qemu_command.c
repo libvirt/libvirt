@@ -3008,7 +3008,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
     if (transp)
         *transp++ = 0;
 
-    if (!STREQ(uri->scheme, scheme)) {
+    if (STRNEQ(uri->scheme, scheme)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid transport/scheme '%s'"), uri->scheme);
         goto error;
@@ -10027,7 +10027,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainDiskDefPtr disk = def->disks[i];
 
         if (disk->src->driverName != NULL &&
-            !STREQ(disk->src->driverName, "qemu")) {
+            STRNEQ(disk->src->driverName, "qemu")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported driver name '%s' for disk '%s'"),
                            disk->src->driverName, disk->src->path);
@@ -12725,7 +12725,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (VIR_STRDUP(model, tokens[i]) < 0)
                 goto cleanup;
 
-            if (!STREQ(model, "qemu32") && !STREQ(model, "qemu64")) {
+            if (STRNEQ(model, "qemu32") && STRNEQ(model, "qemu64")) {
                 if (!(cpu = qemuInitGuestCPU(dom)))
                     goto cleanup;
 

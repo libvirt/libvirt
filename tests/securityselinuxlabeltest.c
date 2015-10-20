@@ -282,7 +282,7 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
                 return -1;
             }
         }
-        if (!STREQ_NULLABLE(files[i].context, ctx)) {
+        if (STRNEQ_NULLABLE(files[i].context, ctx)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "File %s context '%s' did not match epected '%s'",
                            files[i].file, ctx, files[i].context);

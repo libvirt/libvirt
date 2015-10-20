@@ -147,7 +147,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
      * (lvs outputs "[$lvname_vorigin] for field "origin" if the
      *  lv is created with "--virtualsize").
      */
-    if (groups[1] && !STREQ(groups[1], "") && (groups[1][0] != '[')) {
+    if (groups[1] && STRNEQ(groups[1], "") && (groups[1][0] != '[')) {
         if (VIR_ALLOC(vol->target.backingStore) < 0)
             goto cleanup;
 

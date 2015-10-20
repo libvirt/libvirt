@@ -70,17 +70,17 @@ static int testParse(const void *args ATTRIBUTE_UNUSED)
         VIR_DEBUG("Missing Value 'Foo.three'");
         goto cleanup;
     }
-    if (!STREQ(virKeyFileGetValueString(kf, "Foo", "one"),
+    if (STRNEQ(virKeyFileGetValueString(kf, "Foo", "one"),
                "The first entry is here")) {
         VIR_DEBUG("Wrong value for 'Foo.one'");
         goto cleanup;
     }
-    if (!STREQ(virKeyFileGetValueString(kf, "Foo", "two"),
+    if (STRNEQ(virKeyFileGetValueString(kf, "Foo", "two"),
                "The second entry")) {
         VIR_DEBUG("Wrong value for 'Foo.one'");
         goto cleanup;
     }
-    if (!STREQ(virKeyFileGetValueString(kf, "Foo", "three"),
+    if (STRNEQ(virKeyFileGetValueString(kf, "Foo", "three"),
                "The third entry")) {
         VIR_DEBUG("Wrong value for 'Foo.one'");
         goto cleanup;
@@ -94,7 +94,7 @@ static int testParse(const void *args ATTRIBUTE_UNUSED)
         VIR_DEBUG("Missing Value 'Bar.one'");
         goto cleanup;
     }
-    if (!STREQ(virKeyFileGetValueString(kf, "Bar", "one"),
+    if (STRNEQ(virKeyFileGetValueString(kf, "Bar", "one"),
                "The first entry in second group")) {
         VIR_DEBUG("Wrong value for 'Bar.one'");
         goto cleanup;

@@ -60,7 +60,7 @@ static int testAuthLookup(const void *args)
 
     if (data->expect) {
         if (!actual ||
-            !STREQ(actual, data->expect)) {
+            STRNEQ(actual, data->expect)) {
             VIR_WARN("Expected value '%s' for '%s' '%s' '%s', but got '%s'",
                      data->expect, data->hostname,
                      data->service, data->credname,

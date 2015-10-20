@@ -662,7 +662,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
     }
 
     for (i = 0; i < EXPECTED_NCPUS; i++) {
-        if (!STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME)) {
+        if (STRNEQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME)) {
             fprintf(stderr,
                     "Wrong parameter name value from virCgroupGetPercpuStats at %zu (is: %s)\n",
                     i, params[i].field);

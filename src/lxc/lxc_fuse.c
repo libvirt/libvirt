@@ -90,7 +90,7 @@ static int lxcProcReaddir(const char *path, void *buf,
                           off_t offset ATTRIBUTE_UNUSED,
                           struct fuse_file_info *fi ATTRIBUTE_UNUSED)
 {
-    if (!STREQ(path, "/"))
+    if (STRNEQ(path, "/"))
         return -ENOENT;
 
     filler(buf, ".", NULL, 0);
@@ -103,7 +103,7 @@ static int lxcProcReaddir(const char *path, void *buf,
 static int lxcProcOpen(const char *path ATTRIBUTE_UNUSED,
                        struct fuse_file_info *fi ATTRIBUTE_UNUSED)
 {
-    if (!STREQ(path, fuse_meminfo_path))
+    if (STRNEQ(path, fuse_meminfo_path))
         return -ENOENT;
 
     if ((fi->flags & 3) != O_RDONLY)

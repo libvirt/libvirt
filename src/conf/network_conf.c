@@ -3042,7 +3042,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     if (!(def = virNetworkDefParseXML(ctxt)))
         goto error;
 
-    if (!STREQ(name, def->name)) {
+    if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Network config filename '%s'"
                          " does not match network name '%s'"),
@@ -3152,7 +3152,7 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
     if (!(def = virNetworkDefParseFile(configFile)))
         goto error;
 
-    if (!STREQ(name, def->name)) {
+    if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Network config filename '%s'"
                          " does not match network name '%s'"),

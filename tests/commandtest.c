@@ -516,7 +516,7 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
     virCommandFree(cmd);
     cmd = NULL;
 
-    if (!STREQ(outactual, outexpect)) {
+    if (STRNEQ(outactual, outexpect)) {
         virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
@@ -580,15 +580,15 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     if (!jointactual)
         goto cleanup;
 
-    if (!STREQ(outactual, outexpect)) {
+    if (STRNEQ(outactual, outexpect)) {
         virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
-    if (!STREQ(erractual, errexpect)) {
+    if (STRNEQ(erractual, errexpect)) {
         virtTestDifference(stderr, errexpect, erractual);
         goto cleanup;
     }
-    if (!STREQ(jointactual, jointexpect)) {
+    if (STRNEQ(jointactual, jointexpect)) {
         virtTestDifference(stderr, jointexpect, jointactual);
         goto cleanup;
     }
@@ -666,7 +666,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (!STREQ(outactual, outexpect)) {
+    if (STRNEQ(outactual, outexpect)) {
         virtTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }

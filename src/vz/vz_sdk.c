@@ -2026,7 +2026,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         }
     } else {
         if (def->os.nBootDevs != 0 ||
-            !STREQ_NULLABLE(def->os.init, "/sbin/init") ||
+            STRNEQ_NULLABLE(def->os.init, "/sbin/init") ||
             (def->os.initargv != NULL && def->os.initargv[0] != NULL)) {
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
