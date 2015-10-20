@@ -27,14 +27,15 @@
 # include "qemu_conf.h"
 # include "domain_conf.h"
 
-int qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
-                                virDomainDefPtr def);
-int qemuUpdateActiveUSBHostdevs(virQEMUDriverPtr driver,
-                                virDomainDefPtr def);
-int qemuUpdateActiveSCSIHostdevs(virQEMUDriverPtr driver,
-                                 virDomainDefPtr def);
 bool qemuHostdevHostSupportsPassthroughLegacy(void);
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
+
+int qemuHostdevUpdateActivePCIDevices(virQEMUDriverPtr driver,
+                                      virDomainDefPtr def);
+int qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
+                                      virDomainDefPtr def);
+int qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
+                                       virDomainDefPtr def);
 
 int qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
                                  const char *name,

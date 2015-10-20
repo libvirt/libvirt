@@ -45,8 +45,8 @@ VIR_LOG_INIT("qemu.qemu_hostdev");
 
 
 int
-qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
-                            virDomainDefPtr def)
+qemuHostdevUpdateActivePCIDevices(virQEMUDriverPtr driver,
+                                  virDomainDefPtr def)
 {
     virHostdevManagerPtr mgr = driver->hostdevMgr;
 
@@ -58,8 +58,8 @@ qemuUpdateActivePCIHostdevs(virQEMUDriverPtr driver,
 }
 
 int
-qemuUpdateActiveUSBHostdevs(virQEMUDriverPtr driver,
-                            virDomainDefPtr def)
+qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
+                                  virDomainDefPtr def)
 {
     virHostdevManagerPtr mgr = driver->hostdevMgr;
 
@@ -71,8 +71,8 @@ qemuUpdateActiveUSBHostdevs(virQEMUDriverPtr driver,
 }
 
 int
-qemuUpdateActiveSCSIHostdevs(virQEMUDriverPtr driver,
-                             virDomainDefPtr def)
+qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
+                                   virDomainDefPtr def)
 {
     virHostdevManagerPtr mgr = driver->hostdevMgr;
 
