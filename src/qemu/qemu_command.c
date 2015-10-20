@@ -9088,7 +9088,7 @@ qemuBuildTPMCommandLine(virDomainDefPtr def,
     return 0;
 }
 
-static int
+int
 qemuBuildIncomingCheckProtocol(virQEMUCapsPtr qemuCaps,
                                const char *migrateFrom)
 {
@@ -9113,7 +9113,7 @@ qemuBuildIncomingCheckProtocol(virQEMUCapsPtr qemuCaps,
 }
 
 
-static char *
+char *
 qemuBuildIncomingURI(const char *migrateFrom,
                      int migrateFd)
 {
@@ -9146,8 +9146,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      virDomainChrSourceDefPtr monitor_chr,
                      bool monitor_json,
                      virQEMUCapsPtr qemuCaps,
-                     const char *migrateFrom,
-                     int migrateFd,
+                     const char *migrateURI,
                      virDomainSnapshotObjPtr snapshot,
                      virNetDevVPortProfileOp vmop,
                      qemuBuildCommandLineCallbacksPtr callbacks,
@@ -9208,10 +9207,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     int bootCD = 0, bootFloppy = 0, bootDisk = 0;
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
-              "qemuCaps=%p migrateFrom=%s migrateFD=%d "
-              "snapshot=%p vmop=%d",
+              "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",
               conn, driver, def, monitor_chr, monitor_json,
-              qemuCaps, migrateFrom, migrateFd, snapshot, vmop);
+              qemuCaps, migrateURI, snapshot, vmop);
 
     virUUIDFormat(def->uuid, uuid);
 
@@ -9290,7 +9288,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
 
     if (qemuBuildCpuArgStr(driver, def, emulator, qemuCaps,
-                           hostarch, &cpu, &hasHwVirt, !!migrateFrom) < 0)
+                           hostarch, &cpu, &hasHwVirt, !!migrateURI) < 0)
         goto error;
 
     if (cpu) {
@@ -9305,7 +9303,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (!migrateFrom && !snapshot &&
+    if (!migrateURI && !snapshot &&
         qemuDomainAlignMemorySizes(def) < 0)
         goto error;
 
@@ -10975,22 +10973,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (migrateFrom) {
-        char *migrateURI;
-
-        if (qemuBuildIncomingCheckProtocol(qemuCaps, migrateFrom) < 0)
-            goto error;
-
-        if (STREQ(migrateFrom, "stdio") ||
-            STRPREFIX(migrateFrom, "fd"))
-            virCommandPassFD(cmd, migrateFd, 0);
-
-        migrateURI = qemuBuildIncomingURI(migrateFrom, migrateFd);
-        if (!migrateURI)
-            goto error;
+    if (migrateURI)
         virCommandAddArgList(cmd, "-incoming", migrateURI, NULL);
-        VIR_FREE(migrateURI);
-    }
 
     /* QEMU changed its default behavior to not include the virtio balloon
      * device.  Explicitly request it to ensure it will be present.

@@ -78,8 +78,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virDomainChrSourceDefPtr monitor_chr,
                                    bool monitor_json,
                                    virQEMUCapsPtr qemuCaps,
-                                   const char *migrateFrom,
-                                   int migrateFd,
+                                   const char *migrateURI,
                                    virDomainSnapshotObjPtr current_snapshot,
                                    virNetDevVPortProfileOp vmop,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
@@ -320,4 +319,10 @@ bool qemuCheckCCWS390AddressSupport(virDomainDefPtr def,
                                     virDomainDeviceInfo info,
                                     virQEMUCapsPtr qemuCaps,
                                     const char *devicename);
+int qemuBuildIncomingCheckProtocol(virQEMUCapsPtr qemuCaps,
+                                   const char *migrateFrom);
+
+char *qemuBuildIncomingURI(const char *migrateFrom,
+                           int migrateFd);
+
 #endif /* __QEMU_COMMAND_H__*/

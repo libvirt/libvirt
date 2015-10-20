@@ -4185,6 +4185,7 @@ int qemuProcessStart(virConnectPtr conn,
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
     char *tmppath = NULL;
+    char *migrateURI = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s stdin_fd=%d "
               "stdin_path=%s snapshot=%p vmop=%d flags=0x%x",
@@ -4512,16 +4513,26 @@ int qemuProcessStart(virConnectPtr conn,
             goto error;
     }
 
+    if (migrateFrom) {
+        if (qemuBuildIncomingCheckProtocol(priv->qemuCaps, migrateFrom) < 0)
+            goto error;
+
+        if (!(migrateURI = qemuBuildIncomingURI(migrateFrom, stdin_fd)))
+            goto error;
+    }
+
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON, priv->qemuCaps,
-                                     migrateFrom, stdin_fd, snapshot, vmop,
+                                     migrateURI, snapshot, vmop,
                                      &buildCommandLineCallbacks, false,
                                      qemuCheckFips(),
                                      priv->autoNodeset,
                                      &nnicindexes, &nicindexes)))
         goto error;
 
+    if (migrateFrom && stdin_fd != -1)
+        virCommandPassFD(cmd, stdin_fd, 0);
 
     /*
      * Create all per-domain directories in order to make sure domain
@@ -4907,6 +4918,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_FREE(nicindexes);
     VIR_FREE(nodeset);
     VIR_FREE(tmppath);
+    VIR_FREE(migrateURI);
     return ret;
 
  error:

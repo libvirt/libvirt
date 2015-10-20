@@ -249,8 +249,7 @@ typedef enum {
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
                                      virQEMUCapsPtr extraFlags,
-                                     const char *migrateFrom,
-                                     int migrateFd,
+                                     const char *migrateURI,
                                      virQemuXML2ArgvTestFlags flags)
 {
     char *actualargv = NULL;
@@ -341,7 +340,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,
-                                     migrateFrom, migrateFd, NULL,
+                                     migrateURI, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
@@ -408,6 +407,12 @@ testCompareXMLToArgvHelper(const void *data)
     char *xml = NULL;
     char *args = NULL;
     unsigned int flags = info->flags;
+    char *migrateURI = NULL;
+
+    if (info->migrateFrom &&
+        !(migrateURI = qemuBuildIncomingURI(info->migrateFrom,
+                                            info->migrateFd)))
+        goto cleanup;
 
     if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
                     abs_srcdir, info->name) < 0 ||
@@ -427,10 +432,10 @@ testCompareXMLToArgvHelper(const void *data)
         goto cleanup;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
-                                       info->migrateFrom, info->migrateFd,
-                                       flags);
+                                       migrateURI, flags);
 
  cleanup:
+    VIR_FREE(migrateURI);
     VIR_FREE(xml);
     VIR_FREE(args);
     return result;
