@@ -1039,6 +1039,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                virQEMUCapsPtr qemuCaps)
 {
     bool addDefaultUSB = true;
+    int usbModel = -1; /* "default for machinetype" */
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
@@ -1061,8 +1062,15 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         if (STRPREFIX(def->os.machine, "pc-q35") ||
             STREQ(def->os.machine, "q35")) {
             addPCIeRoot = true;
-            addDefaultUSB = false;
             addImplicitSATA = true;
+
+            /* add a USB2 controller set, but only if the
+             * ich9-usb-ehci1 device is supported
+             */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1))
+                usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1;
+            else
+                addDefaultUSB = false;
             break;
         }
         if (!STRPREFIX(def->os.machine, "pc-0.") &&
@@ -1120,8 +1128,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     }
 
     if (addDefaultUSB &&
-        virDomainDefMaybeAddController(
-            def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0, -1) < 0)
+        virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0 &&
+        virDomainDefAddUSBController(def, 0, usbModel) < 0)
         goto cleanup;
 
     if (addImplicitSATA &&
