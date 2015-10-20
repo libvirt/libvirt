@@ -1733,6 +1733,13 @@ mymain(void)
             QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
+    DO_TEST("qemu-ns-domain-ns0", NONE);
+    DO_TEST("qemu-ns-domain-commandline", NONE);
+    DO_TEST("qemu-ns-domain-commandline-ns0", NONE);
+    DO_TEST("qemu-ns-commandline", NONE);
+    DO_TEST("qemu-ns-commandline-ns0", NONE);
+    DO_TEST("qemu-ns-commandline-ns1", NONE);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
