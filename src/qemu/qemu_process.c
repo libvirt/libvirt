@@ -4365,6 +4365,7 @@ int qemuProcessStart(virConnectPtr conn,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags)
 {
+    int ret = -1;
     int rv;
     off_t pos = -1;
     char ebuf[1024];
@@ -5095,13 +5096,15 @@ int qemuProcessStart(virConnectPtr conn,
     if (!migrateFrom)
         qemuMonitorSetDomainLog(priv->mon, -1);
 
+    ret = 0;
+
+ cleanup:
     virCommandFree(cmd);
     VIR_FORCE_CLOSE(logfile);
     virObjectUnref(cfg);
     virObjectUnref(caps);
     VIR_FREE(nicindexes);
-
-    return 0;
+    return ret;
 
  error:
     /* We jump here if we failed to start the VM for any reason, or
@@ -5109,16 +5112,10 @@ int qemuProcessStart(virConnectPtr conn,
      * pretend we never started it */
     VIR_FREE(tmppath);
     VIR_FREE(nodeset);
-    virCommandFree(cmd);
-    VIR_FORCE_CLOSE(logfile);
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
-    virObjectUnref(cfg);
-    virObjectUnref(caps);
-    VIR_FREE(nicindexes);
-
-    return -1;
+    goto cleanup;
 
  exit_monitor:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
