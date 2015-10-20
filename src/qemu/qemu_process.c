@@ -4365,7 +4365,7 @@ int qemuProcessStart(virConnectPtr conn,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags)
 {
-    int ret;
+    int rv;
     off_t pos = -1;
     char ebuf[1024];
     int logfile = -1;
@@ -4846,15 +4846,15 @@ int qemuProcessStart(virConnectPtr conn,
 
     if (virSecurityManagerPreFork(driver->securityManager) < 0)
         goto error;
-    ret = virCommandRun(cmd, NULL);
+    rv = virCommandRun(cmd, NULL);
     virSecurityManagerPostFork(driver->securityManager);
 
     /* wait for qemu process to show up */
-    if (ret == 0) {
+    if (rv == 0) {
         if (virPidFileReadPath(priv->pidfile, &vm->pid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Domain %s didn't show up"), vm->def->name);
-            ret = -1;
+            rv = -1;
         }
         VIR_DEBUG("QEMU vm=%p name=%s running with pid=%llu",
                   vm, vm->def->name, (unsigned long long)vm->pid);
@@ -4921,10 +4921,10 @@ int qemuProcessStart(virConnectPtr conn,
     if (migrateFrom)
         flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
-    if (ret == -1) /* The VM failed to start; tear filters before taps */
+    if (rv == -1) /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
 
-    if (ret == -1) /* The VM failed to start */
+    if (rv == -1) /* The VM failed to start */
         goto error;
 
     VIR_DEBUG("Setting cgroup for emulator (if required)");
@@ -4940,8 +4940,8 @@ int qemuProcessStart(virConnectPtr conn,
         goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
-    if ((ret = qemuConnectAgent(driver, vm)) < 0) {
-        if (ret == -2)
+    if ((rv = qemuConnectAgent(driver, vm)) < 0) {
+        if (rv == -2)
             goto error;
 
         VIR_WARN("Cannot connect to QEMU guest agent for %s",
