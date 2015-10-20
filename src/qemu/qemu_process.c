@@ -5104,14 +5104,14 @@ int qemuProcessStart(virConnectPtr conn,
     virObjectUnref(cfg);
     virObjectUnref(caps);
     VIR_FREE(nicindexes);
+    VIR_FREE(nodeset);
+    VIR_FREE(tmppath);
     return ret;
 
  error:
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
-    VIR_FREE(tmppath);
-    VIR_FREE(nodeset);
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
