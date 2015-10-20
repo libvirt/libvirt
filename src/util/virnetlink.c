@@ -394,7 +394,9 @@ virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
         break;
 
     default:
-        goto malformed_resp;
+        /* We allow multipart messages. */
+        if (!(resp->nlmsg_flags & NLM_F_MULTI))
+            goto malformed_resp;
     }
 
     return result;
