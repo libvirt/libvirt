@@ -319,10 +319,5 @@ bool qemuCheckCCWS390AddressSupport(virDomainDefPtr def,
                                     virDomainDeviceInfo info,
                                     virQEMUCapsPtr qemuCaps,
                                     const char *devicename);
-int qemuBuildIncomingCheckProtocol(virQEMUCapsPtr qemuCaps,
-                                   const char *migrateFrom);
-
-char *qemuBuildIncomingURI(const char *migrateFrom,
-                           int migrateFd);
 
 #endif /* __QEMU_COMMAND_H__*/

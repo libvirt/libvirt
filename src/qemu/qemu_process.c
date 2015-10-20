@@ -4514,10 +4514,10 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     if (migrateFrom) {
-        if (qemuBuildIncomingCheckProtocol(priv->qemuCaps, migrateFrom) < 0)
+        if (qemuMigrationCheckIncoming(priv->qemuCaps, migrateFrom) < 0)
             goto error;
 
-        if (!(migrateURI = qemuBuildIncomingURI(migrateFrom, stdin_fd)))
+        if (!(migrateURI = qemuMigrationIncomingURI(migrateFrom, stdin_fd)))
             goto error;
     }
 

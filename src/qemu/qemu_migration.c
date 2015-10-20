@@ -2911,6 +2911,46 @@ qemuDomainMigrateOPDRelocate(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 
+int
+qemuMigrationCheckIncoming(virQEMUCapsPtr qemuCaps,
+                           const char *migrateFrom)
+{
+    if (STRPREFIX(migrateFrom, "rdma")) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("incoming RDMA migration is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+    } else if (!STRPREFIX(migrateFrom, "tcp") &&
+               !STRPREFIX(migrateFrom, "exec") &&
+               !STRPREFIX(migrateFrom, "fd") &&
+               !STRPREFIX(migrateFrom, "unix") &&
+               STRNEQ(migrateFrom, "stdio")) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("unknown migration protocol"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+char *
+qemuMigrationIncomingURI(const char *migrateFrom,
+                         int migrateFd)
+{
+    char *uri = NULL;
+
+    if (STREQ(migrateFrom, "stdio"))
+        ignore_value(virAsprintf(&uri, "fd:%d", migrateFd));
+    else
+        ignore_value(VIR_STRDUP(uri, migrateFrom));
+
+    return uri;
+}
+
+
 /* This is called for outgoing non-p2p migrations when a connection to the
  * client which initiated the migration was closed but we were waiting for it
  * to follow up with the next phase, that is, in between

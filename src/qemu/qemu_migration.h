@@ -199,4 +199,10 @@ void qemuMigrationErrorSave(virQEMUDriverPtr driver,
 void qemuMigrationErrorReport(virQEMUDriverPtr driver,
                               const char *name);
 
+int qemuMigrationCheckIncoming(virQEMUCapsPtr qemuCaps,
+                               const char *migrateFrom);
+
+char *qemuMigrationIncomingURI(const char *migrateFrom,
+                               int migrateFd);
+
 #endif /* __QEMU_MIGRATION_H__ */

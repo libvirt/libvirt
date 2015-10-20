@@ -17,6 +17,7 @@
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"
+# include "qemu/qemu_migration.h"
 # include "datatypes.h"
 # include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
@@ -410,8 +411,8 @@ testCompareXMLToArgvHelper(const void *data)
     char *migrateURI = NULL;
 
     if (info->migrateFrom &&
-        !(migrateURI = qemuBuildIncomingURI(info->migrateFrom,
-                                            info->migrateFd)))
+        !(migrateURI = qemuMigrationIncomingURI(info->migrateFrom,
+                                                info->migrateFd)))
         goto cleanup;
 
     if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",

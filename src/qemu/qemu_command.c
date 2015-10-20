@@ -9088,45 +9088,6 @@ qemuBuildTPMCommandLine(virDomainDefPtr def,
     return 0;
 }
 
-int
-qemuBuildIncomingCheckProtocol(virQEMUCapsPtr qemuCaps,
-                               const char *migrateFrom)
-{
-    if (STRPREFIX(migrateFrom, "rdma")) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("incoming RDMA migration is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-    } else if (!STRPREFIX(migrateFrom, "tcp") &&
-               !STRPREFIX(migrateFrom, "exec") &&
-               !STRPREFIX(migrateFrom, "fd") &&
-               !STRPREFIX(migrateFrom, "unix") &&
-               STRNEQ(migrateFrom, "stdio")) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("unknown migration protocol"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-char *
-qemuBuildIncomingURI(const char *migrateFrom,
-                     int migrateFd)
-{
-    char *uri = NULL;
-
-    if (STREQ(migrateFrom, "stdio"))
-        ignore_value(virAsprintf(&uri, "fd:%d", migrateFd));
-    else
-        ignore_value(VIR_STRDUP(uri, migrateFrom));
-
-    return uri;
-}
-
 
 qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
     .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
