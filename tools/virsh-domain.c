@@ -56,6 +56,7 @@
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "virxml.h"
+#include "virsh-nodedev.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -866,6 +867,10 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_BOOL,
      .help = N_("print XML document rather than attach the interface")
     },
+    {.name = "managed",
+     .type = VSH_OT_BOOL,
+     .help = N_("libvirt will automatically detach/attach the device from/to host")
+    },
     {.name = NULL}
 };
 
@@ -931,6 +936,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool persistent = vshCommandOptBool(cmd, "persistent");
+    bool managed = vshCommandOptBool(cmd, "managed");
 
     VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
 
@@ -983,7 +989,12 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Make XML of interface */
-    virBufferAsprintf(&buf, "<interface type='%s'>\n", type);
+    virBufferAsprintf(&buf, "<interface type='%s'", type);
+
+    if (managed)
+        virBufferAddLit(&buf, " managed='yes'>\n");
+    else
+        virBufferAddLit(&buf, ">\n");
     virBufferAdjustIndent(&buf, 2);
 
     switch (typ) {
@@ -995,6 +1006,26 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         virBufferAsprintf(&buf, "<source dev='%s'/>\n", source);
         break;
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    {
+        struct PCIAddress pciAddr = {0, 0, 0, 0};
+
+        if (str2PCIAddress(source, &pciAddr) < 0) {
+            vshError(ctl, _("cannot parse pci address '%s' for network "
+                            "interface"), source);
+            goto cleanup;
+        }
+
+        virBufferAddLit(&buf, "<source>\n");
+        virBufferAdjustIndent(&buf, 2);
+        virBufferAsprintf(&buf, "<address type='pci' domain='0x%.4x'"
+                          " bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
+                          pciAddr.domain, pciAddr.bus,
+                          pciAddr.slot, pciAddr.function);
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</source>\n");
+        break;
+    }
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -1004,7 +1035,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     case VIR_DOMAIN_NET_TYPE_MCAST:
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
     case VIR_DOMAIN_NET_TYPE_LAST:
         vshError(ctl, _("No support for %s in command 'attach-interface'"),
                  type);

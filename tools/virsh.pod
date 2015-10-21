@@ -2522,6 +2522,9 @@ I<bridge> to indicate connection via a bridge device on the host,
 I<direct> to indicate connection directly to one of the host's network
 interfaces or bridges,
 
+I<hostdev> to indicate connection using a passthrough of PCI device
+on the host.
+
 =back
 
 B<source> indicates the source of the connection.  The source depends
@@ -2534,6 +2537,9 @@ I<network> name of the virtual network,
 I<bridge> the name of the bridge device,
 
 I<direct> the name of the host's interface or bridge,
+
+I<hostdev> the PCI address of the host's interface formatted
+as domain:bus:slot.function.
 
 =back
 
@@ -2564,6 +2570,10 @@ are expressed in kilobytes per second, while I<burst> is expressed in
 kilobytes in a single burst at I<peak> speed as described in the
 Network XML documentation at
 L<http://libvirt.org/formatnetwork.html#elementQoS>.
+
+B<--managed> is usable only for I<hostdev> type and tells libvirt
+that the interface should be managed, which means detached and reattached
+from/to the host by libvirt.
 
 If B<--print-xml> is specified, then the XML of the interface that would be
 attached is printed instead.
