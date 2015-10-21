@@ -518,6 +518,9 @@ mymain(void)
     DO_TEST_DIFFERENT("pci-autoadd-idx");
     DO_TEST_DIFFERENT("pcie-root");
     DO_TEST_DIFFERENT("q35");
+    DO_TEST_DIFFERENT("q35-usb2");
+    DO_TEST_DIFFERENT("q35-usb2-multi");
+    DO_TEST_DIFFERENT("q35-usb2-reorder");
     DO_TEST("pcie-root-port");
     DO_TEST("pcie-root-port-too-many");
     DO_TEST("pcie-switch-upstream-port");

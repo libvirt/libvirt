@@ -2068,6 +2068,47 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
             }
             break;
 
+        case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+            if ((def->controllers[i]->model
+                 == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1) &&
+                (def->controllers[i]->info.type
+                 == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)) {
+                /* Try to assign the first found USB2 controller to
+                 * 00:1D.0 and 2nd to 00:1A.0 (because that is their
+                 * standard location on real Q35 hardware) unless they
+                 * are already taken, but don't insist on it.
+                 *
+                 * (NB: all other controllers at the same index will
+                 * get assigned to the same slot as the UHCI1 when
+                 * addresses are later assigned to all devices.)
+                 */
+                bool assign = false;
+
+                memset(&tmp_addr, 0, sizeof(tmp_addr));
+                tmp_addr.slot = 0x1D;
+                if (!virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
+                    assign = true;
+                } else {
+                    tmp_addr.slot = 0x1A;
+                    if (!virDomainPCIAddressSlotInUse(addrs, &tmp_addr))
+                        assign = true;
+                }
+                if (assign) {
+                    if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
+                                                       flags, false, true) < 0)
+                        goto cleanup;
+                    def->controllers[i]->info.type
+                        = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                    def->controllers[i]->info.addr.pci.domain = 0;
+                    def->controllers[i]->info.addr.pci.bus = 0;
+                    def->controllers[i]->info.addr.pci.slot = tmp_addr.slot;
+                    def->controllers[i]->info.addr.pci.function = 0;
+                    def->controllers[i]->info.addr.pci.multi
+                       = VIR_TRISTATE_SWITCH_ON;
+                }
+            }
+            break;
+
         case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
             if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE &&
                 def->controllers[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
@@ -2541,9 +2582,11 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             bool foundAddr = false;
 
             memset(&tmp_addr, 0, sizeof(tmp_addr));
-            for (j = 0; j < i; j++) {
+            for (j = 0; j < def->ncontrollers; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
-                    def->controllers[j]->idx == def->controllers[i]->idx) {
+                    def->controllers[j]->idx == def->controllers[i]->idx &&
+                    def->controllers[j]->info.type
+                    == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
                     addr = def->controllers[j]->info.addr.pci;
                     foundAddr = true;
                     break;
@@ -2553,6 +2596,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             switch (def->controllers[i]->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
                 addr.function = 7;
+                addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
                 addr.function = 0;
@@ -2560,9 +2604,11 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
                 addr.function = 1;
+                addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
                 addr.function = 2;
+                addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
                 break;
             }
 
@@ -2581,7 +2627,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             }
             /* Finally we can reserve the slot+function */
             if (virDomainPCIAddressReserveAddr(addrs, &addr, flags,
-                                               false, false) < 0)
+                                               false, foundAddr) < 0)
                 goto error;
 
             def->controllers[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
