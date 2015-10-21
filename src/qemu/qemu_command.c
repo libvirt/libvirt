@@ -2538,11 +2538,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
         /* USB2 needs special handling to put all companions in the same slot */
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
             virDevicePCIAddress addr = { 0, 0, 0, 0, false };
+            bool foundAddr = false;
+
             memset(&tmp_addr, 0, sizeof(tmp_addr));
             for (j = 0; j < i; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
                     def->controllers[j]->idx == def->controllers[i]->idx) {
                     addr = def->controllers[j]->info.addr.pci;
+                    foundAddr = true;
                     break;
                 }
             }
@@ -2563,7 +2566,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
                 break;
             }
 
-            if (addr.slot == 0) {
+            if (!foundAddr) {
                 /* This is the first part of the controller, so need
                  * to find a free slot & then reserve a function */
                 if (virDomainPCIAddressGetNextSlot(addrs, &tmp_addr, flags) < 0)
