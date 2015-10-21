@@ -455,19 +455,19 @@ static int str2PCIAddress(const char *str, struct PCIAddress *pciAddr)
 
     domain = (char *)str;
 
-    if (virStrToLong_ui(domain, &bus, 0, &pciAddr->domain) != 0)
+    if (virStrToLong_ui(domain, &bus, 16, &pciAddr->domain) != 0)
         return -1;
 
     bus++;
-    if (virStrToLong_ui(bus, &slot, 0, &pciAddr->bus) != 0)
+    if (virStrToLong_ui(bus, &slot, 16, &pciAddr->bus) != 0)
         return -1;
 
     slot++;
-    if (virStrToLong_ui(slot, &function, 0, &pciAddr->slot) != 0)
+    if (virStrToLong_ui(slot, &function, 16, &pciAddr->slot) != 0)
         return -1;
 
     function++;
-    if (virStrToLong_ui(function, NULL, 0, &pciAddr->function) != 0)
+    if (virStrToLong_ui(function, NULL, 16, &pciAddr->function) != 0)
         return -1;
 
     return 0;
@@ -484,15 +484,15 @@ static int str2SCSIAddress(const char *str, struct SCSIAddress *scsiAddr)
 
     controller = (char *)str;
 
-    if (virStrToLong_uip(controller, &bus, 0, &scsiAddr->controller) != 0)
+    if (virStrToLong_uip(controller, &bus, 10, &scsiAddr->controller) != 0)
         return -1;
 
     bus++;
-    if (virStrToLong_uip(bus, &unit, 0, &scsiAddr->bus) != 0)
+    if (virStrToLong_uip(bus, &unit, 10, &scsiAddr->bus) != 0)
         return -1;
 
     unit++;
-    if (virStrToLong_ullp(unit, NULL, 0, &scsiAddr->unit) != 0)
+    if (virStrToLong_ullp(unit, NULL, 10, &scsiAddr->unit) != 0)
         return -1;
 
     return 0;
@@ -509,15 +509,15 @@ static int str2IDEAddress(const char *str, struct IDEAddress *ideAddr)
 
     controller = (char *)str;
 
-    if (virStrToLong_ui(controller, &bus, 0, &ideAddr->controller) != 0)
+    if (virStrToLong_ui(controller, &bus, 10, &ideAddr->controller) != 0)
         return -1;
 
     bus++;
-    if (virStrToLong_ui(bus, &unit, 0, &ideAddr->bus) != 0)
+    if (virStrToLong_ui(bus, &unit, 10, &ideAddr->bus) != 0)
         return -1;
 
     unit++;
-    if (virStrToLong_ui(unit, NULL, 0, &ideAddr->unit) != 0)
+    if (virStrToLong_ui(unit, NULL, 10, &ideAddr->unit) != 0)
         return -1;
 
     return 0;
@@ -534,15 +534,15 @@ static int str2CCWAddress(const char *str, struct CCWAddress *ccwAddr)
 
     cssid = (char *)str;
 
-    if (virStrToLong_ui(cssid, &ssid, 0, &ccwAddr->cssid) != 0)
+    if (virStrToLong_ui(cssid, &ssid, 16, &ccwAddr->cssid) != 0)
         return -1;
 
     ssid++;
-    if (virStrToLong_ui(ssid, &devno, 0, &ccwAddr->ssid) != 0)
+    if (virStrToLong_ui(ssid, &devno, 16, &ccwAddr->ssid) != 0)
         return -1;
 
     devno++;
-    if (virStrToLong_ui(devno, NULL, 0, &ccwAddr->devno) != 0)
+    if (virStrToLong_ui(devno, NULL, 16, &ccwAddr->devno) != 0)
         return -1;
 
     return 0;
@@ -739,8 +739,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         } else if (STRPREFIX((const char *)target, "hd")) {
             if (diskAddr.type == DISK_ADDR_TYPE_IDE) {
                 virBufferAsprintf(&buf,
-                                  "<address type='drive' controller='%d'"
-                                  " bus='%d' unit='%d' />\n",
+                                  "<address type='drive' controller='%u'"
+                                  " bus='%u' unit='%u' />\n",
                                   diskAddr.addr.ide.controller, diskAddr.addr.ide.bus,
                                   diskAddr.addr.ide.unit);
             } else {
