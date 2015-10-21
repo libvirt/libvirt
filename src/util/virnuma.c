@@ -493,18 +493,41 @@ virNumaGetHugePageInfoPath(char **path,
                            unsigned int page_size,
                            const char *suffix)
 {
+    int ret;
+
     if (node == -1) {
         /* We are aiming at overall system info */
-        return virAsprintf(path,
-                           HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
-                           page_size, suffix ? suffix : "");
+        ret = virAsprintf(path,
+                          HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
+                          page_size, suffix ? suffix : "");
     } else {
         /* We are aiming on specific NUMA node */
-        return virAsprintf(path,
-                           HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
-                           HUGEPAGES_PREFIX "%ukB/%s",
-                           node, page_size, suffix ? suffix : "");
+        ret = virAsprintf(path,
+                          HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
+                          HUGEPAGES_PREFIX "%ukB/%s",
+                          node, page_size, suffix ? suffix : "");
     }
+
+    if (ret >= 0 && !virFileExists(*path)) {
+        ret = -1;
+        if (node != -1) {
+            if (!virNumaNodeIsAvailable(node)) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("NUMA node %d is not available"),
+                               node);
+            } else {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("page size %u is not available on node %d"),
+                               page_size, node);
+            }
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("page size %u is not available"),
+                           page_size);
+        }
+    }
+
+    return ret;
 }
 
 static int
@@ -838,25 +861,6 @@ virNumaSetPagePoolSize(int node,
 
     if (virNumaGetHugePageInfoPath(&nr_path, node, page_size, "nr_hugepages") < 0)
         goto cleanup;
-
-    if (!virFileExists(nr_path)) {
-        if (node != -1) {
-            if (!virNumaNodeIsAvailable(node)) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("NUMA node %d is not available"),
-                               node);
-            } else {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("page size %u is not available on node %d"),
-                               page_size, node);
-            }
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("page size %u is not available"),
-                           page_size);
-        }
-        goto cleanup;
-    }
 
     /* Firstly check, if there's anything for us to do */
     if (virFileReadAll(nr_path, 1024, &nr_buf) < 0)
