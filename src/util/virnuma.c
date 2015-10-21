@@ -836,19 +836,25 @@ virNumaSetPagePoolSize(int node,
         goto cleanup;
     }
 
-    if (node != -1 && !virNumaNodeIsAvailable(node)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("NUMA node %d is not available"),
-                       node);
-        goto cleanup;
-    }
-
     if (virNumaGetHugePageInfoPath(&nr_path, node, page_size, "nr_hugepages") < 0)
         goto cleanup;
 
     if (!virFileExists(nr_path)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("page size or NUMA node not available"));
+        if (node != -1) {
+            if (!virNumaNodeIsAvailable(node)) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("NUMA node %d is not available"),
+                               node);
+            } else {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("page size %u is not available on node %d"),
+                               page_size, node);
+            }
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("page size %u is not available"),
+                           page_size);
+        }
         goto cleanup;
     }
 
