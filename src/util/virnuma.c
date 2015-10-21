@@ -493,44 +493,31 @@ virNumaGetHugePageInfoPath(char **path,
                            unsigned int page_size,
                            const char *suffix)
 {
-
-    int ret = -1;
-
     if (node == -1) {
         /* We are aiming at overall system info */
-        if (page_size) {
-            /* And even on specific huge page size */
-            if (virAsprintf(path,
-                            HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
-                            page_size, suffix ? suffix : "") < 0)
-                goto cleanup;
-        } else {
-            if (VIR_STRDUP(*path, HUGEPAGES_SYSTEM_PREFIX) < 0)
-                goto cleanup;
-        }
-
+        return virAsprintf(path,
+                           HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
+                           page_size, suffix ? suffix : "");
     } else {
         /* We are aiming on specific NUMA node */
-        if (page_size) {
-            /* And even on specific huge page size */
-            if (virAsprintf(path,
-                            HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
-                            HUGEPAGES_PREFIX "%ukB/%s",
-                            node, page_size, suffix ? suffix : "") < 0)
-                goto cleanup;
-        } else {
-            if (virAsprintf(path,
-                            HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",
-                            node) < 0)
-                goto cleanup;
-        }
+        return virAsprintf(path,
+                           HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
+                           HUGEPAGES_PREFIX "%ukB/%s",
+                           node, page_size, suffix ? suffix : "");
     }
-
-    ret = 0;
- cleanup:
-    return ret;
 }
 
+static int
+virNumaGetHugePageInfoDir(char **path, int node)
+{
+    if (node == -1) {
+        return VIR_STRDUP(*path, HUGEPAGES_SYSTEM_PREFIX);
+    } else {
+        return virAsprintf(path,
+                           HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",
+                           node);
+    }
+}
 
 /**
  * virNumaGetHugePageInfo:
@@ -724,7 +711,7 @@ virNumaGetPages(int node,
      * is always shown as used memory. Here, however, we want to report
      * slightly different information. So we take the total memory on a node
      * and subtract memory taken by the huge pages. */
-    if (virNumaGetHugePageInfoPath(&path, node, 0, NULL) < 0)
+    if (virNumaGetHugePageInfoDir(&path, node) < 0)
         goto cleanup;
 
     if (!(dir = opendir(path))) {
