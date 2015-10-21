@@ -90,6 +90,7 @@ typedef enum {
     QEMU_ASYNC_JOB_SAVE,
     QEMU_ASYNC_JOB_DUMP,
     QEMU_ASYNC_JOB_SNAPSHOT,
+    QEMU_ASYNC_JOB_START,
 
     QEMU_ASYNC_JOB_LAST
 } qemuDomainAsyncJob;

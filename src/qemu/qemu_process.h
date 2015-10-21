@@ -58,6 +58,11 @@ qemuProcessIncomingDefPtr qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
                                                     const char *path);
 void qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc);
 
+int qemuProcessBeginJob(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm);
+void qemuProcessEndJob(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm);
+
 typedef enum {
     VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
     VIR_QEMU_PROCESS_START_PAUSED       = 1 << 1,
@@ -67,7 +72,7 @@ typedef enum {
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
-                     int asyncJob,
+                     qemuDomainAsyncJob asyncJob,
                      const char *migrateFrom,
                      int stdin_fd,
                      const char *stdin_path,

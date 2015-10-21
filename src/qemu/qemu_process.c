@@ -3412,6 +3412,10 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
         }
         break;
 
+    case QEMU_ASYNC_JOB_START:
+        /* Already handled in VIR_DOMAIN_PAUSED_STARTING_UP check. */
+        break;
+
     case QEMU_ASYNC_JOB_NONE:
     case QEMU_ASYNC_JOB_LAST:
         break;
@@ -4202,10 +4206,40 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
 }
 
 
+/*
+ * This function starts a new QEMU_ASYNC_JOB_START async job. The user is
+ * responsible for calling qemuProcessEndJob to stop this job and for passing
+ * QEMU_ASYNC_JOB_START as @asyncJob argument to any function requiring this
+ * parameter between qemuProcessBeginJob and qemuProcessEndJob.
+ */
+int
+qemuProcessBeginJob(virQEMUDriverPtr driver,
+                    virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_START) < 0)
+        return -1;
+
+    qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
+    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
+
+    return 0;
+}
+
+
+void
+qemuProcessEndJob(virQEMUDriverPtr driver,
+                  virDomainObjPtr vm)
+{
+    qemuDomainObjEndAsyncJob(driver, vm);
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
-                     int asyncJob,
+                     qemuDomainAsyncJob asyncJob,
                      const char *migrateFrom,
                      int stdin_fd,
                      const char *stdin_path,
