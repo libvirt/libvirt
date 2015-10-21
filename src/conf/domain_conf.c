@@ -17225,6 +17225,14 @@ static bool
 virDomainSerialDefCheckABIStability(virDomainChrDefPtr src,
                                     virDomainChrDefPtr dst)
 {
+    if (src->targetType != dst->targetType) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target serial type %s does not match source %s"),
+                       virDomainChrSerialTargetTypeToString(dst->targetType),
+                       virDomainChrSerialTargetTypeToString(src->targetType));
+        return false;
+    }
+
     if (src->target.port != dst->target.port) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target serial port %d does not match source %d"),
