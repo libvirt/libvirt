@@ -1177,20 +1177,18 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
 
 
 static int
-virPCIDeviceBindToStub(virPCIDevicePtr dev,
-                       const char *stubDriverName)
+virPCIDeviceBindToStub(virPCIDevicePtr dev)
 {
     int result = -1;
     bool reprobe = false;
     char *stubDriverPath = NULL;
     char *driverLink = NULL;
     char *path = NULL; /* reused for different purposes */
-    char *newDriverName = NULL;
+    char *stubDriverName = dev->stubDriver;
     virErrorPtr err = NULL;
 
     if (!(stubDriverPath = virPCIDriverDir(stubDriverName))  ||
-        !(driverLink = virPCIFile(dev->name, "driver")) ||
-        VIR_STRDUP(newDriverName, stubDriverName) < 0)
+        !(driverLink = virPCIFile(dev->name, "driver")))
         goto cleanup;
 
     if (virFileExists(driverLink)) {
@@ -1305,13 +1303,8 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev,
     VIR_FREE(driverLink);
     VIR_FREE(path);
 
-    if (result < 0) {
-        VIR_FREE(newDriverName);
+    if (result < 0)
         virPCIDeviceUnbindFromStub(dev);
-    } else {
-        VIR_FREE(dev->stubDriver);
-        dev->stubDriver = newDriverName;
-    }
 
     if (err)
         virSetError(err);
@@ -1354,7 +1347,7 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
         return -1;
     }
 
-    if (virPCIDeviceBindToStub(dev, dev->stubDriver) < 0)
+    if (virPCIDeviceBindToStub(dev) < 0)
         return -1;
 
     /* Add *a copy of* the dev into list inactiveDevs, if
