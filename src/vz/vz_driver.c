@@ -560,14 +560,14 @@ vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->state = virDomainObjGetState(privdom, NULL);
     info->memory = privdom->def->mem.cur_balloon;
     info->maxMem = virDomainDefGetMemoryActual(privdom->def);
-    info->nrVirtCpu = privdom->def->vcpus;
+    info->nrVirtCpu = virDomainDefGetVcpus(privdom->def);
     info->cpuTime = 0;
 
     if (virDomainObjIsActive(privdom)) {
         unsigned long long vtime;
         size_t i;
 
-        for (i = 0; i < privdom->def->vcpus; ++i) {
+        for (i = 0; i < virDomainDefGetVcpus(privdom->def); ++i) {
             if (prlsdkGetVcpuStats(privdom, i, &vtime) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("cannot read cputime for domain"));
@@ -1374,7 +1374,7 @@ vzDomainGetVcpusFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
         ret = virDomainDefGetVcpusMax(privdom->def);
     else
-        ret = privdom->def->vcpus;
+        ret = virDomainDefGetVcpus(privdom->def);
 
  cleanup:
     if (privdom)

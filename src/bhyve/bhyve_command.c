@@ -232,7 +232,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
 
     /* CPUs */
     virCommandAddArg(cmd, "-c");
-    virCommandAddArgFormat(cmd, "%d", def->vcpus);
+    virCommandAddArgFormat(cmd, "%d", virDomainDefGetVcpus(def));
 
     /* Memory */
     virCommandAddArg(cmd, "-m");

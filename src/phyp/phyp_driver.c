@@ -3525,11 +3525,12 @@ phypBuildLpar(virConnectPtr conn, virDomainDefPtr def)
     if (system_type == HMC)
         virBufferAsprintf(&buf, " -m %s", managed_system);
     virBufferAsprintf(&buf, " -r lpar -p %s -i min_mem=%lld,desired_mem=%lld,"
-                      "max_mem=%lld,desired_procs=%d,virtual_scsi_adapters=%s",
+                      "max_mem=%lld,desired_procs=%u,virtual_scsi_adapters=%s",
                       def->name, def->mem.cur_balloon,
                       def->mem.cur_balloon,
                       virDomainDefGetMemoryInitial(def),
-                      (int) def->vcpus, virDomainDiskGetSource(def->disks[0]));
+                      virDomainDefGetVcpus(def),
+                      virDomainDiskGetSource(def->disks[0]));
     ret = phypExecBuffer(session, &buf, &exit_status, conn, false);
 
     if (exit_status < 0) {

@@ -217,6 +217,7 @@ virDomainDefGetDefaultEmulator;
 virDomainDefGetMemoryActual;
 virDomainDefGetMemoryInitial;
 virDomainDefGetSecurityLabelDef;
+virDomainDefGetVcpus;
 virDomainDefGetVcpusMax;
 virDomainDefHasDeviceAddress;
 virDomainDefHasMemoryHotplug;

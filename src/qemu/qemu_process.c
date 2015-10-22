@@ -2020,11 +2020,11 @@ qemuProcessDetectVcpuPIDs(virQEMUDriverPtr driver,
         return 0;
     }
 
-    if (ncpupids != vm->def->vcpus) {
+    if (ncpupids != virDomainDefGetVcpus(vm->def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("got wrong number of vCPU pids from QEMU monitor. "
                          "got %d, wanted %d"),
-                       ncpupids, vm->def->vcpus);
+                       ncpupids, virDomainDefGetVcpus(vm->def));
         VIR_FREE(cpupids);
         return -1;
     }
@@ -2240,7 +2240,7 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
     int n;
     int ret = -1;
     VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d nvcpupids=%d",
-              def->cputune.nvcpupin, def->vcpus, priv->nvcpupids);
+              def->cputune.nvcpupin, virDomainDefGetVcpus(def), priv->nvcpupids);
     if (!def->cputune.nvcpupin)
         return 0;
 
@@ -2259,7 +2259,7 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
         return 0;
     }
 
-    for (n = 0; n < def->vcpus; n++) {
+    for (n = 0; n < virDomainDefGetVcpus(def); n++) {
         /* set affinity only for existing vcpus */
         if (!(pininfo = virDomainPinFind(def->cputune.vcpupin,
                                          def->cputune.nvcpupin,
@@ -4670,7 +4670,7 @@ qemuProcessLaunch(virConnectPtr conn,
      * either <vcpu> or <numatune> is 'auto'.
      */
     if (virDomainDefNeedsPlacementAdvice(vm->def)) {
-        nodeset = virNumaGetAutoPlacementAdvice(vm->def->vcpus,
+        nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
                                                 virDomainDefGetMemoryActual(vm->def));
         if (!nodeset)
             goto cleanup;

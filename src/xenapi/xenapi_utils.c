@@ -506,7 +506,7 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
 
     if (virDomainDefGetVcpusMax(def) > 0) {
         (*record)->vcpus_max = (int64_t) virDomainDefGetVcpusMax(def);
-        (*record)->vcpus_at_startup = (int64_t) def->vcpus;
+        (*record)->vcpus_at_startup = (int64_t) virDomainDefGetVcpus(def);
     }
     if (def->onPoweroff)
         (*record)->actions_after_shutdown = actionShutdownLibvirt2XenapiEnum(def->onPoweroff);

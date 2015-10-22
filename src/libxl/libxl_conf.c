@@ -647,7 +647,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     if (libxl_cpu_bitmap_alloc(ctx, &b_info->avail_vcpus, b_info->max_vcpus))
         return -1;
     libxl_bitmap_set_none(&b_info->avail_vcpus);
-    for (i = 0; i < def->vcpus; i++)
+    for (i = 0; i < virDomainDefGetVcpus(def); i++)
         libxl_bitmap_set((&b_info->avail_vcpus), i);
 
     if (def->clock.ntimers > 0 &&

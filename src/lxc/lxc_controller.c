@@ -771,7 +771,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
      * either <vcpu> or <numatune> is 'auto'.
      */
     if (virDomainDefNeedsPlacementAdvice(ctrl->def)) {
-        nodeset = virNumaGetAutoPlacementAdvice(ctrl->def->vcpus,
+        nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(ctrl->def),
                                                 ctrl->def->mem.cur_balloon);
         if (!nodeset)
             goto cleanup;

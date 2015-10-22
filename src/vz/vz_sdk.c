@@ -1958,7 +1958,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     if (def->cputune.vcpupin) {
-        for (i = 0; i < def->vcpus; i++) {
+        for (i = 0; i < virDomainDefGetVcpus(def); i++) {
             if (!virBitmapEqual(def->cpumask,
                                 def->cputune.vcpupin[i]->cpumask)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3501,7 +3501,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     pret = PrlVmCfg_SetRamSize(sdkdom, virDomainDefGetMemoryActual(def) >> 10);
     prlsdkCheckRetGoto(pret, error);
 
-    pret = PrlVmCfg_SetCpuCount(sdkdom, def->vcpus);
+    pret = PrlVmCfg_SetCpuCount(sdkdom, virDomainDefGetVcpus(def));
     prlsdkCheckRetGoto(pret, error);
 
     if (!(mask = virBitmapFormat(def->cpumask)))

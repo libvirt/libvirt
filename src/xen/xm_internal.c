@@ -483,7 +483,7 @@ xenXMDomainGetInfo(virConnectPtr conn,
     memset(info, 0, sizeof(virDomainInfo));
     info->maxMem = virDomainDefGetMemoryActual(entry->def);
     info->memory = entry->def->mem.cur_balloon;
-    info->nrVirtCpu = entry->def->vcpus;
+    info->nrVirtCpu = virDomainDefGetVcpus(entry->def);
     info->state = VIR_DOMAIN_SHUTOFF;
     info->cpuTime = 0;
 
@@ -765,7 +765,7 @@ xenXMDomainGetVcpusFlags(virConnectPtr conn,
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
         ret = virDomainDefGetVcpusMax(entry->def);
     else
-        ret = entry->def->vcpus;
+        ret = virDomainDefGetVcpus(entry->def);
 
  cleanup:
     xenUnifiedUnlock(priv);

@@ -7959,7 +7959,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(&buf, "%u", def->vcpus);
+    virBufferAsprintf(&buf, "%u", virDomainDefGetVcpus(def));
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY)) {
         if (virDomainDefHasVcpusOffline(def))

@@ -1540,13 +1540,14 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     if (sched_cpu_shares != NULL) {
+        unsigned int vcpus = virDomainDefGetVcpus(def);
         /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
         if (STRCASEEQ(sched_cpu_shares, "low")) {
-            def->cputune.shares = def->vcpus * 500;
+            def->cputune.shares = vcpus * 500;
         } else if (STRCASEEQ(sched_cpu_shares, "normal")) {
-            def->cputune.shares = def->vcpus * 1000;
+            def->cputune.shares = vcpus * 1000;
         } else if (STRCASEEQ(sched_cpu_shares, "high")) {
-            def->cputune.shares = def->vcpus * 2000;
+            def->cputune.shares = vcpus * 2000;
         } else if (virStrToLong_ul(sched_cpu_shares, NULL, 10,
                                    &def->cputune.shares) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3233,12 +3234,13 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:cputune.shares -> vmx:sched.cpu.shares */
     if (def->cputune.sharesSpecified) {
+        unsigned int vcpus = virDomainDefGetVcpus(def);
         /* See http://www.vmware.com/support/developer/vc-sdk/visdk41pubs/ApiReference/vim.SharesInfo.Level.html */
-        if (def->cputune.shares == def->vcpus * 500) {
+        if (def->cputune.shares == vcpus * 500) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"low\"\n");
-        } else if (def->cputune.shares == def->vcpus * 1000) {
+        } else if (def->cputune.shares == vcpus * 1000) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"normal\"\n");
-        } else if (def->cputune.shares == def->vcpus * 2000) {
+        } else if (def->cputune.shares == vcpus * 2000) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"high\"\n");
         } else {
             virBufferAsprintf(&buffer, "sched.cpu.shares = \"%lu\"\n",

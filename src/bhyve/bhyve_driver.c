@@ -304,7 +304,7 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     info->state = virDomainObjGetState(vm, NULL);
     info->maxMem = virDomainDefGetMemoryActual(vm->def);
-    info->nrVirtCpu = vm->def->vcpus;
+    info->nrVirtCpu = virDomainDefGetVcpus(vm->def);
     ret = 0;
 
  cleanup:

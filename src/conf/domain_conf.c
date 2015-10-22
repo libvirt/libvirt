@@ -1328,6 +1328,13 @@ virDomainDefSetVcpus(virDomainDefPtr def,
 }
 
 
+unsigned int
+virDomainDefGetVcpus(const virDomainDef *def)
+{
+    return def->vcpus;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -14918,7 +14925,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
 
-        if (vcpupin->id >= def->vcpus) {
+        if (vcpupin->id >= virDomainDefGetVcpus(def)) {
             /* To avoid the regression when daemon loading
              * domain confs, we can't simply error out if
              * <vcpupin> nodes greater than current vcpus,
@@ -14936,10 +14943,10 @@ virDomainDefParseXML(xmlDocPtr xml,
      * the policy specified explicitly as def->cpuset.
      */
     if (def->cpumask) {
-        if (VIR_REALLOC_N(def->cputune.vcpupin, def->vcpus) < 0)
+        if (VIR_REALLOC_N(def->cputune.vcpupin, virDomainDefGetVcpus(def)) < 0)
             goto error;
 
-        for (i = 0; i < def->vcpus; i++) {
+        for (i = 0; i < virDomainDefGetVcpus(def); i++) {
             if (virDomainPinIsDuplicate(def->cputune.vcpupin,
                                         def->cputune.nvcpupin,
                                         i))
@@ -17572,10 +17579,10 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         goto error;
     }
 
-    if (src->vcpus != dst->vcpus) {
+    if (virDomainDefGetVcpus(src) != virDomainDefGetVcpus(dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain vCPU count %d does not match source %d"),
-                       dst->vcpus, src->vcpus);
+                       virDomainDefGetVcpus(dst), virDomainDefGetVcpus(src));
         goto error;
     }
     if (virDomainDefGetVcpusMax(src) != virDomainDefGetVcpusMax(dst)) {
@@ -21551,7 +21558,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         VIR_FREE(cpumask);
     }
     if (virDomainDefHasVcpusOffline(def))
-        virBufferAsprintf(buf, " current='%u'", def->vcpus);
+        virBufferAsprintf(buf, " current='%u'", virDomainDefGetVcpus(def));
     virBufferAsprintf(buf, ">%u</vcpu>\n", virDomainDefGetVcpusMax(def));
 
     if (def->niothreadids > 0) {

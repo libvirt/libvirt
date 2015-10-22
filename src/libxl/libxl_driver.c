@@ -1601,7 +1601,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     }
 
     info->state = virDomainObjGetState(vm, NULL);
-    info->nrVirtCpu = vm->def->vcpus;
+    info->nrVirtCpu = virDomainDefGetVcpus(vm->def);
     ret = 0;
 
  cleanup:
@@ -2304,7 +2304,7 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
         ret = virDomainDefGetVcpusMax(def);
     else
-        ret = def->vcpus;
+        ret = virDomainDefGetVcpus(def);
 
  cleanup:
     if (vm)
@@ -2441,8 +2441,8 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     sa_assert(targetDef);
 
     /* Clamp to actual number of vcpus */
-    if (ncpumaps > targetDef->vcpus)
-        ncpumaps = targetDef->vcpus;
+    if (ncpumaps > virDomainDefGetVcpus(targetDef))
+        ncpumaps = virDomainDefGetVcpus(targetDef);
 
     if ((hostcpus = libxl_get_max_cpus(cfg->ctx)) < 0)
         goto cleanup;

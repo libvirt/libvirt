@@ -2659,7 +2659,7 @@ qemuDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    if (VIR_ASSIGN_IS_OVERFLOW(info->nrVirtCpu, vm->def->vcpus)) {
+    if (VIR_ASSIGN_IS_OVERFLOW(info->nrVirtCpu, virDomainDefGetVcpus(vm->def))) {
         virReportError(VIR_ERR_OVERFLOW, "%s", _("cpu count too large"));
         goto cleanup;
     }
@@ -4700,7 +4700,7 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
     size_t i;
     int rc = 1;
     int ret = -1;
-    int oldvcpus = vm->def->vcpus;
+    int oldvcpus = virDomainDefGetVcpus(vm->def);
     int vcpus = oldvcpus;
     pid_t *cpupids = NULL;
     int ncpupids;
@@ -4929,11 +4929,11 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (!qemuDomainAgentAvailable(vm, true))
             goto endjob;
 
-        if (nvcpus > vm->def->vcpus) {
+        if (nvcpus > virDomainDefGetVcpus(vm->def)) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("requested vcpu count is greater than the count "
                              "of enabled vcpus in the domain: %d > %d"),
-                           nvcpus, vm->def->vcpus);
+                           nvcpus, virDomainDefGetVcpus(vm->def));
             goto endjob;
         }
 
@@ -4972,8 +4972,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
         if (persistentDef) {
             /* remove vcpupin entries for vcpus that were unplugged */
-            if (nvcpus < persistentDef->vcpus) {
-                for (i = persistentDef->vcpus - 1; i >= nvcpus; i--)
+            if (nvcpus < virDomainDefGetVcpus(persistentDef)) {
+                for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--)
                     virDomainPinDel(&persistentDef->cputune.vcpupin,
                                     &persistentDef->cputune.nvcpupin,
                                     i);
@@ -5067,17 +5067,17 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (def && vcpu >= def->vcpus) {
+    if (def && vcpu >= virDomainDefGetVcpus(def)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu %d is out of range of live cpu count %d"),
-                       vcpu, def->vcpus);
+                       vcpu, virDomainDefGetVcpus(def));
         goto endjob;
     }
 
-    if (persistentDef && vcpu >= persistentDef->vcpus) {
+    if (persistentDef && vcpu >= virDomainDefGetVcpus(persistentDef)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu %d is out of range of persistent cpu count %d"),
-                       vcpu, persistentDef->vcpus);
+                       vcpu, virDomainDefGetVcpus(persistentDef));
         goto endjob;
     }
 
@@ -5246,8 +5246,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     priv = vm->privateData;
 
     /* Clamp to actual number of vcpus */
-    if (ncpumaps > def->vcpus)
-        ncpumaps = def->vcpus;
+    if (ncpumaps > virDomainDefGetVcpus(def))
+        ncpumaps = virDomainDefGetVcpus(def);
 
     if (ncpumaps < 1)
         goto cleanup;
@@ -5561,7 +5561,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
             ret = virDomainDefGetVcpusMax(def);
         else
-            ret = def->vcpus;
+            ret = virDomainDefGetVcpus(def);
     }
 
 
@@ -10587,7 +10587,7 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
             goto cleanup;
 
         if (*quota > 0)
-            *quota /= vm->def->vcpus;
+            *quota /= virDomainDefGetVcpus(vm->def);
         goto out;
     }
 
@@ -19073,7 +19073,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                               &record->nparams,
                               maxparams,
                               "vcpu.current",
-                              (unsigned) dom->def->vcpus) < 0)
+                              virDomainDefGetVcpus(dom->def)) < 0)
         return -1;
 
     if (virTypedParamsAddUInt(&record->params,
@@ -19083,17 +19083,17 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                               virDomainDefGetVcpusMax(dom->def)) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(cpuinfo, dom->def->vcpus) < 0)
+    if (VIR_ALLOC_N(cpuinfo, virDomainDefGetVcpus(dom->def)) < 0)
         return -1;
 
-    if (qemuDomainHelperGetVcpus(dom, cpuinfo, dom->def->vcpus,
+    if (qemuDomainHelperGetVcpus(dom, cpuinfo, virDomainDefGetVcpus(dom->def),
                                  NULL, 0) < 0) {
         virResetLastError();
         ret = 0; /* it's ok to be silent and go ahead */
         goto cleanup;
     }
 
-    for (i = 0; i < dom->def->vcpus; i++) {
+    for (i = 0; i < virDomainDefGetVcpus(dom->def); i++) {
         snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                  "vcpu.%zu.state", i);
         if (virTypedParamsAddInt(&record->params,
