@@ -1315,6 +1315,13 @@ int
 virDomainDefSetVcpus(virDomainDefPtr def,
                      unsigned int vcpus)
 {
+    if (vcpus > def->maxvcpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("maxvcpus must not be less than current vcpus (%u < %u)"),
+                       vcpus, def->maxvcpus);
+        return -1;
+    }
+
     def->vcpus = vcpus;
 
     return 0;
@@ -14440,13 +14447,6 @@ virDomainVcpuParse(virDomainDefPtr def,
 
     if (virDomainDefSetVcpus(def, vcpus) < 0)
         goto cleanup;
-
-    if (maxvcpus < def->vcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("maxvcpus must not be less than current vcpus "
-                         "(%u < %u)"), maxvcpus, def->vcpus);
-        goto cleanup;
-    }
 
     tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
     if (tmp) {
