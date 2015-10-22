@@ -6873,7 +6873,7 @@ static bool
 cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
-    int count = 0;
+    unsigned int count = 0;
     bool ret = false;
     bool maximum = vshCommandOptBool(cmd, "maximum");
     bool config = vshCommandOptBool(cmd, "config");
@@ -6900,8 +6900,13 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptInt(ctl, cmd, "count", &count) < 0 || count <= 0)
+    if (vshCommandOptUInt(ctl, cmd, "count", &count) < 0)
         goto cleanup;
+
+    if (count == 0) {
+        vshError(ctl, _("Can't set 0 processors for a VM"));
+        goto cleanup;
+    }
 
     /* none of the options were specified */
     if (!current && flags == 0) {
