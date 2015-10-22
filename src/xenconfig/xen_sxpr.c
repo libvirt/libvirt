@@ -1092,6 +1092,7 @@ xenParseSxpr(const struct sexpr *root,
     const char *tmp;
     virDomainDefPtr def;
     int hvm = 0, vmlocaltime;
+    unsigned int vcpus;
 
     if (!(def = virDomainDefNew()))
         goto error;
@@ -1175,9 +1176,13 @@ xenParseSxpr(const struct sexpr *root,
 
     if (virDomainDefSetVcpusMax(def, sexpr_int(root, "domain/vcpus")) < 0)
         goto error;
-    def->vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
-    if (!def->vcpus || virDomainDefGetVcpusMax(def) < def->vcpus)
-        def->vcpus = virDomainDefGetVcpusMax(def);
+
+    vcpus = count_one_bits_l(sexpr_u64(root, "domain/vcpu_avail"));
+    if (!vcpus || virDomainDefGetVcpusMax(def) < vcpus)
+        vcpus = virDomainDefGetVcpusMax(def);
+
+    if (virDomainDefSetVcpus(def, vcpus) < 0)
+        goto error;
 
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL) {

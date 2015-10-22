@@ -708,7 +708,8 @@ xenXMDomainSetVcpusFlags(virConnectPtr conn,
         if (virDomainDefSetVcpusMax(entry->def, vcpus) < 0)
             goto cleanup;
     } else {
-        entry->def->vcpus = vcpus;
+        if (virDomainDefSetVcpus(entry->def, vcpus) < 0)
+            goto cleanup;
     }
 
     /* If this fails, should we try to undo our changes to the

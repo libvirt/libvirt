@@ -877,7 +877,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                                 processorSettingData->data->VirtualQuantity) < 0)
         goto cleanup;
 
-    def->vcpus = processorSettingData->data->VirtualQuantity;
+    if (virDomainDefSetVcpus(def,
+                             processorSettingData->data->VirtualQuantity) < 0)
+        goto cleanup;
+
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     /* FIXME: devices section is totally missing */

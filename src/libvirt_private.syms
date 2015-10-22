@@ -232,6 +232,7 @@ virDomainDefParseString;
 virDomainDefPostParse;
 virDomainDefSetMemoryInitial;
 virDomainDefSetMemoryTotal;
+virDomainDefSetVcpus;
 virDomainDefSetVcpusMax;
 virDomainDeleteConfig;
 virDomainDeviceAddressIsValid;

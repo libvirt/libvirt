@@ -1461,7 +1461,8 @@ virVMXParseConfig(virVMXContext *ctx,
     if (virDomainDefSetVcpusMax(def, numvcpus) < 0)
         goto cleanup;
 
-    def->vcpus = numvcpus;
+    if (virDomainDefSetVcpus(def, numvcpus) < 0)
+        goto cleanup;
 
     /* vmx:sched.cpu.affinity -> def:cpumask */
     /* NOTE: maps to VirtualMachine:config.cpuAffinity.affinitySet */

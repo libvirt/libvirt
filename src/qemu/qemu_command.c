@@ -12712,6 +12712,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     unsigned int cores = 0;
     unsigned int threads = 0;
     unsigned int maxcpus = 0;
+    unsigned int vcpus = 0;
     size_t i;
     int nkws;
     char **kws;
@@ -12726,9 +12727,8 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     for (i = 0; i < nkws; i++) {
         if (vals[i] == NULL) {
             if (i > 0 ||
-                virStrToLong_i(kws[i], &end, 10, &n) < 0 || *end != '\0')
+                virStrToLong_ui(kws[i], &end, 10, &vcpus) < 0 || *end != '\0')
                 goto syntax;
-            dom->vcpus = n;
         } else {
             if (virStrToLong_i(vals[i], &end, 10, &n) < 0 || *end != '\0')
                 goto syntax;
@@ -12746,9 +12746,12 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     }
 
     if (maxcpus == 0)
-        maxcpus = dom->vcpus;
+        maxcpus = vcpus;
 
     if (virDomainDefSetVcpusMax(dom, maxcpus) < 0)
+        goto error;
+
+    if (virDomainDefSetVcpus(dom, vcpus) < 0)
         goto error;
 
     if (sockets && cores && threads) {
@@ -12865,7 +12868,8 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     virDomainDefSetMemoryTotal(def, def->mem.cur_balloon);
     if (virDomainDefSetVcpusMax(def, 1) < 0)
         goto error;
-    def->vcpus = 1;
+    if (virDomainDefSetVcpus(def, 1) < 0)
+        goto error;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
 
     def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;

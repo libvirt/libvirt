@@ -1153,7 +1153,8 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
     if (virDomainDefSetVcpusMax(def, cpuCount) < 0)
         goto cleanup;
 
-    def->vcpus = cpuCount;
+    if (virDomainDefSetVcpus(def, cpuCount) < 0)
+        goto cleanup;
 
     pret = PrlVmCfg_GetCpuMask(sdkdom, NULL, &buflen);
     prlsdkCheckRetGoto(pret, cleanup);

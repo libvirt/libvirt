@@ -3910,7 +3910,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainDefSetVcpusMax(def, CPUCount) < 0)
         goto cleanup;
 
-    def->vcpus = CPUCount;
+    if (virDomainDefSetVcpus(def, CPUCount) < 0)
+        goto cleanup;
 
     /* Skip cpumasklen, cpumask, onReboot, onPoweroff, onCrash */
 
@@ -6067,7 +6068,8 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         if (virDomainDefSetVcpusMax(def->dom, CPUCount) < 0)
             goto cleanup;
 
-        def->dom->vcpus = CPUCount;
+        if (virDomainDefSetVcpus(def->dom, CPUCount) < 0)
+            goto cleanup;
 
         if (vboxSnapshotGetReadWriteDisks(def, snapshot) < 0)
             VIR_DEBUG("Could not get read write disks for snapshot");

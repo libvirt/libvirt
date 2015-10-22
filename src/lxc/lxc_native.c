@@ -1024,7 +1024,8 @@ lxcParseConfigString(const char *config,
     if (virDomainDefSetVcpusMax(vmdef, 1) < 0)
         goto error;
 
-    vmdef->vcpus = 1;
+    if (virDomainDefSetVcpus(vmdef, 1) < 0)
+        goto error;
 
     vmdef->nfss = 0;
     vmdef->os.type = VIR_DOMAIN_OSTYPE_EXE;

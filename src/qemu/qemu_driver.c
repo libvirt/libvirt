@@ -4835,8 +4835,9 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(cpupids);
     VIR_FREE(mem_mask);
-    if (virDomainObjIsActive(vm))
-        vm->def->vcpus = vcpus;
+    if (virDomainObjIsActive(vm) &&
+        virDomainDefSetVcpus(vm->def, vcpus) < 0)
+        ret = -1;
     virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
@@ -4982,7 +4983,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
                     goto endjob;
             } else {
-                persistentDef->vcpus = nvcpus;
+                if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)
+                    goto endjob;
             }
 
             if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)

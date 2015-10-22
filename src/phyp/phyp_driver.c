@@ -3298,7 +3298,8 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainDefSetVcpusMax(&def, vcpus) < 0)
         goto err;
 
-    def.vcpus = vcpus;
+    if (virDomainDefSetVcpus(&def, vcpus) < 0)
+        goto err;
 
     return virDomainDefFormat(&def,
                               virDomainDefFormatConvertXMLFlags(flags));

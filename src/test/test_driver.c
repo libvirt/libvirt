@@ -2375,15 +2375,17 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
         goto cleanup;
     }
 
-    if (def)
-        def->vcpus = nrCpus;
+    if (def &&
+        virDomainDefSetVcpus(def, nrCpus) < 0)
+        goto cleanup;
 
     if (persistentDef) {
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
             if (virDomainDefSetVcpusMax(persistentDef, nrCpus) < 0)
                 goto cleanup;
         } else {
-            persistentDef->vcpus = nrCpus;
+            if (virDomainDefSetVcpus(persistentDef, nrCpus) < 0)
+                goto cleanup;
         }
     }
 

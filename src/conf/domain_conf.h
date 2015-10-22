@@ -2346,6 +2346,7 @@ struct _virDomainDef {
 int virDomainDefSetVcpusMax(virDomainDefPtr def, unsigned int vcpus);
 bool virDomainDefHasVcpusOffline(const virDomainDef *def);
 unsigned int virDomainDefGetVcpusMax(const virDomainDef *def);
+int virDomainDefSetVcpus(virDomainDefPtr def, unsigned int vcpus);
 
 unsigned long long virDomainDefGetMemoryInitial(const virDomainDef *def);
 void virDomainDefSetMemoryTotal(virDomainDefPtr def, unsigned long long size);

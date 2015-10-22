@@ -555,7 +555,8 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
     if (virDomainDefSetVcpusMax(vm->def, d_info.vcpu_max_id + 1))
         goto cleanup;
 
-    vm->def->vcpus = d_info.vcpu_online;
+    if (virDomainDefSetVcpus(vm->def, d_info.vcpu_online) < 0)
+        goto cleanup;
     vm->def->mem.cur_balloon = d_info.current_memkb;
     virDomainDefSetMemoryTotal(vm->def, d_info.max_memkb);
 
@@ -2191,7 +2192,8 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         break;
 
     case VIR_DOMAIN_VCPU_CONFIG:
-        def->vcpus = nvcpus;
+        if (virDomainDefSetVcpus(def, nvcpus) < 0)
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_VCPU_LIVE:
@@ -2201,7 +2203,8 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                              " with libxenlight"), vm->def->id);
             goto endjob;
         }
-        vm->def->vcpus = nvcpus;
+        if (virDomainDefSetVcpus(vm->def, nvcpus) < 0)
+            goto endjob;
         break;
 
     case VIR_DOMAIN_VCPU_LIVE | VIR_DOMAIN_VCPU_CONFIG:
@@ -2211,8 +2214,9 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                              " with libxenlight"), vm->def->id);
             goto endjob;
         }
-        vm->def->vcpus = nvcpus;
-        def->vcpus = nvcpus;
+        if (virDomainDefSetVcpus(vm->def, nvcpus) < 0 ||
+            virDomainDefSetVcpus(def, nvcpus) < 0)
+            goto endjob;
         break;
     }
 

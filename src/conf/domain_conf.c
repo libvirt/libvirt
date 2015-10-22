@@ -1289,7 +1289,7 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
                         unsigned int maxvcpus)
 {
     if (maxvcpus < def->vcpus)
-        def->vcpus = maxvcpus;
+        virDomainDefSetVcpus(def, maxvcpus);
 
     def->maxvcpus = maxvcpus;
 
@@ -1308,6 +1308,16 @@ unsigned int
 virDomainDefGetVcpusMax(const virDomainDef *def)
 {
     return def->maxvcpus;
+}
+
+
+int
+virDomainDefSetVcpus(virDomainDefPtr def,
+                     unsigned int vcpus)
+{
+    def->vcpus = vcpus;
+
+    return 0;
 }
 
 
@@ -14402,6 +14412,7 @@ virDomainVcpuParse(virDomainDefPtr def,
     int n;
     char *tmp = NULL;
     unsigned int maxvcpus;
+    unsigned int vcpus;
     int ret = -1;
 
     if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &maxvcpus)) < 0) {
@@ -14417,15 +14428,18 @@ virDomainVcpuParse(virDomainDefPtr def,
     if (virDomainDefSetVcpusMax(def, maxvcpus) < 0)
         goto cleanup;
 
-    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &def->vcpus)) < 0) {
+    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &vcpus)) < 0) {
         if (n == -2) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("current vcpus count must be an integer"));
             goto cleanup;
         }
 
-        def->vcpus = maxvcpus;
+        vcpus = maxvcpus;
     }
+
+    if (virDomainDefSetVcpus(def, vcpus) < 0)
+        goto cleanup;
 
     if (maxvcpus < def->vcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
