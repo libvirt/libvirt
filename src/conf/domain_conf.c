@@ -1284,14 +1284,32 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 }
 
 
+static void
+virDomainVcpuInfoClear(virDomainVcpuInfoPtr info)
+{
+    if (!info)
+        return;
+}
+
+
 int
 virDomainDefSetVcpusMax(virDomainDefPtr def,
                         unsigned int maxvcpus)
 {
-    if (maxvcpus < def->vcpus)
-        virDomainDefSetVcpus(def, maxvcpus);
+    size_t i;
 
-    def->maxvcpus = maxvcpus;
+    if (def->maxvcpus == maxvcpus)
+        return 0;
+
+    if (def->maxvcpus < maxvcpus) {
+        if (VIR_EXPAND_N(def->vcpus, def->maxvcpus, maxvcpus - def->maxvcpus) < 0)
+            return -1;
+    } else {
+        for (i = maxvcpus; i < def->maxvcpus; i++)
+            virDomainVcpuInfoClear(&def->vcpus[i]);
+
+        VIR_SHRINK_N(def->vcpus, def->maxvcpus, def->maxvcpus - maxvcpus);
+    }
 
     return 0;
 }
@@ -1300,7 +1318,14 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
 bool
 virDomainDefHasVcpusOffline(const virDomainDef *def)
 {
-    return def->vcpus < def->maxvcpus;
+    size_t i;
+
+    for (i = 0; i < def->maxvcpus; i++) {
+        if (!def->vcpus[i].online)
+            return true;
+    }
+
+    return false;
 }
 
 
@@ -1315,6 +1340,8 @@ int
 virDomainDefSetVcpus(virDomainDefPtr def,
                      unsigned int vcpus)
 {
+    size_t i;
+
     if (vcpus > def->maxvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("maxvcpus must not be less than current vcpus (%u < %zu)"),
@@ -1322,7 +1349,11 @@ virDomainDefSetVcpus(virDomainDefPtr def,
         return -1;
     }
 
-    def->vcpus = vcpus;
+    for (i = 0; i < vcpus; i++)
+        def->vcpus[i].online = true;
+
+    for (i = vcpus; i < def->maxvcpus; i++)
+        def->vcpus[i].online = false;
 
     return 0;
 }
@@ -1331,7 +1362,15 @@ virDomainDefSetVcpus(virDomainDefPtr def,
 unsigned int
 virDomainDefGetVcpus(const virDomainDef *def)
 {
-    return def->vcpus;
+    size_t i;
+    unsigned int ret = 0;
+
+    for (i = 0; i < def->maxvcpus; i++) {
+        if (def->vcpus[i].online)
+            ret++;
+    }
+
+    return ret;
 }
 
 
@@ -2358,6 +2397,10 @@ void virDomainDefFree(virDomainDefPtr def)
         return;
 
     virDomainResourceDefFree(def->resource);
+
+    for (i = 0; i < def->maxvcpus; i++)
+        virDomainVcpuInfoClear(&def->vcpus[i]);
+    VIR_FREE(def->vcpus);
 
     /* hostdevs must be freed before nets (or any future "intelligent
      * hostdevs") because the pointer to the hostdev is really

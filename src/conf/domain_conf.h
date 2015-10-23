@@ -2145,6 +2145,14 @@ struct _virDomainCputune {
     virDomainThreadSchedParamPtr iothreadsched;
 };
 
+
+typedef struct _virDomainVcpuInfo virDomainVcpuInfo;
+typedef virDomainVcpuInfo *virDomainVcpuInfoPtr;
+
+struct _virDomainVcpuInfo {
+    bool online;
+};
+
 typedef struct _virDomainBlkiotune virDomainBlkiotune;
 typedef virDomainBlkiotune *virDomainBlkiotunePtr;
 
@@ -2218,7 +2226,7 @@ struct _virDomainDef {
     virDomainBlkiotune blkio;
     virDomainMemtune mem;
 
-    unsigned int vcpus;
+    virDomainVcpuInfoPtr vcpus;
     size_t maxvcpus;
     int placement_mode;
     virBitmapPtr cpumask;
