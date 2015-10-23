@@ -22,6 +22,7 @@ module Libvirt_sanlock =
              | int_entry "host_id"
              | bool_entry "require_lease_for_disks"
              | bool_entry "ignore_readonly_and_shared_disks"
+             | int_entry "io_timeout"
              | str_entry "user"
              | str_entry "group"
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]

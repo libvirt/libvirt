@@ -73,6 +73,7 @@ struct _virLockManagerSanlockDriver {
     int hostID;
     bool autoDiskLease;
     char *autoDiskLeasePath;
+    unsigned int io_timeout;
 
     /* under which permissions does sanlock run */
     uid_t user;
@@ -150,6 +151,10 @@ static int virLockManagerSanlockLoadConfig(const char *configFile)
         driver->requireLeaseForDisks = p->l;
     else
         driver->requireLeaseForDisks = !driver->autoDiskLease;
+
+    p = virConfGetValue(conf, "io_timeout");
+    CHECK_TYPE("io_timeout", VIR_CONF_ULONG);
+    if (p) driver->io_timeout = p->l;
 
     p = virConfGetValue(conf, "user");
     CHECK_TYPE("user", VIR_CONF_STRING);
@@ -338,7 +343,17 @@ static int virLockManagerSanlockSetupLockspace(void)
      * or we can fallback to polling.
      */
  retry:
-    if ((rv = sanlock_add_lockspace(&ls, 0)) < 0) {
+#ifdef HAVE_SANLOCK_ADD_LOCKSPACE_TIMEOUT
+    rv = sanlock_add_lockspace_timeout(&ls, 0, driver->io_timeout);
+#else
+    if (driver->io_timeout) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unable to use io_timeout with this version of sanlock"));
+        goto error;
+    }
+    rv = sanlock_add_lockspace(&ls, 0);
+#endif
+    if (rv < 0) {
         if (-rv == EINPROGRESS && --retries) {
 #ifdef HAVE_SANLOCK_INQ_LOCKSPACE
             /* we have this function which blocks until lockspace change the
@@ -404,6 +419,7 @@ static int virLockManagerSanlockInit(unsigned int version,
     driver->requireLeaseForDisks = true;
     driver->hostID = 0;
     driver->autoDiskLease = false;
+    driver->io_timeout = 0;
     driver->user = (uid_t) -1;
     driver->group = (gid_t) -1;
     if (VIR_STRDUP(driver->autoDiskLeasePath, LOCALSTATEDIR "/lib/libvirt/sanlock") < 0) {

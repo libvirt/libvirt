@@ -46,6 +46,13 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
         [whether sanlock supports sanlock_inq_lockspace])
     fi
 
+    AC_CHECK_LIB([sanlock_client], [sanlock_add_lockspace_timeout],
+                 [sanlock_add_lockspace_timeout=yes], [sanlock_add_lockspace_timeout=no])
+    if test "x$sanlock_add_lockspace_timeout" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_ADD_LOCKSPACE_TIMEOUT], 1,
+        [whether Sanlock supports sanlock_add_lockspace_timeout])
+    fi
+
     CPPFLAGS="$old_cppflags"
     LIBS="$old_libs"
   fi
