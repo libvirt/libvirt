@@ -12861,8 +12861,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                              "supported on this system"));
             goto cleanup;
         }
-        if (virPCIDeviceSetStubDriver(pci, "vfio-pci") < 0)
-            goto cleanup;
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
     } else if (STREQ(driverName, "kvm")) {
         if (!legacy) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -12870,8 +12869,7 @@ qemuNodeDeviceDetachFlags(virNodeDevicePtr dev,
                              "supported on this system"));
             goto cleanup;
         }
-        if (virPCIDeviceSetStubDriver(pci, "pci-stub") < 0)
-            goto cleanup;
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_KVM);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown driver name '%s'"), driverName);

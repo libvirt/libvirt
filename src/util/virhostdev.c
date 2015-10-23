@@ -237,22 +237,13 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         }
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
-        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0) {
-                virObjectUnref(list);
-                return NULL;
-            }
-        } else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
-            if (virPCIDeviceSetStubDriver(dev, "pciback") < 0) {
-                virObjectUnref(list);
-                return NULL;
-            }
-        } else {
-            if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0) {
-                virObjectUnref(list);
-                return NULL;
-            }
-        }
+
+        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_VFIO);
+        else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN)
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_XEN);
+        else
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_KVM);
     }
 
     return list;
@@ -574,7 +565,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
-        bool usesVfio = STREQ(virPCIDeviceGetStubDriver(dev), "vfio-pci");
+        bool usesVfio = (virPCIDeviceGetStubDriver(dev) == VIR_PCI_STUB_DRIVER_VFIO);
         struct virHostdevIsPCINodeDeviceUsedData data = {hostdev_mgr, dom_name,
                                                          usesVfio};
 
@@ -745,7 +736,7 @@ virHostdevReattachPCIDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
     }
 
     /* Wait for device cleanup if it is qemu/kvm */
-    if (STREQ(virPCIDeviceGetStubDriver(dev), "pci-stub")) {
+    if (virPCIDeviceGetStubDriver(dev) == VIR_PCI_STUB_DRIVER_KVM) {
         int retries = 100;
         while (virPCIDeviceWaitForCleanup(dev, "kvm_assigned_device")
                && retries) {
@@ -913,18 +904,14 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
             goto cleanup;
 
         virPCIDeviceSetManaged(dev, hostdev->managed);
-        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-            if (virPCIDeviceSetStubDriver(dev, "vfio-pci") < 0)
-                goto cleanup;
-        } else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN) {
-            if (virPCIDeviceSetStubDriver(dev, "pciback") < 0)
-                goto cleanup;
-        } else {
-            if (virPCIDeviceSetStubDriver(dev, "pci-stub") < 0)
-                goto cleanup;
-
-        }
         virPCIDeviceSetUsedBy(dev, drv_name, dom_name);
+
+        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_VFIO);
+        else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN)
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_XEN);
+        else
+            virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_KVM);
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(dev, hostdev->origstates.states.pci.unbind_from_stub);

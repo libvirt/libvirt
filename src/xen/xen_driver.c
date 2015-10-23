@@ -2366,8 +2366,7 @@ xenUnifiedNodeDeviceDetachFlags(virNodeDevicePtr dev,
         return -1;
 
     if (!driverName) {
-        if (virPCIDeviceSetStubDriver(pci, "pciback") < 0)
-            goto out;
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unknown driver name '%s'"), driverName);

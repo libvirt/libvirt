@@ -5070,8 +5070,7 @@ libxlNodeDeviceDetachFlags(virNodeDevicePtr dev,
         goto cleanup;
 
     if (!driverName || STREQ(driverName, "xen")) {
-        if (virPCIDeviceSetStubDriver(pci, "pciback") < 0)
-            goto cleanup;
+        virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported driver name '%s'"), driverName);

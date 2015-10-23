@@ -55,6 +55,13 @@ VIR_LOG_INIT("util.pci");
 VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
               "", "2.5", "5", "8")
 
+VIR_ENUM_IMPL(virPCIStubDriver, VIR_PCI_STUB_DRIVER_LAST,
+              "none",
+              "pciback", /* XEN */
+              "pci-stub", /* KVM */
+              "vfio-pci", /* VFIO */
+);
+
 struct _virPCIDevice {
     virPCIDeviceAddress address;
 
@@ -71,7 +78,8 @@ struct _virPCIDevice {
     bool          has_flr;
     bool          has_pm_reset;
     bool          managed;
-    char          *stubDriver;
+
+    virPCIStubDriver stubDriver;
 
     /* used by reattach function */
     bool          unbind_from_stub;
@@ -941,7 +949,7 @@ virPCIDeviceReset(virPCIDevicePtr dev,
     if (virPCIDeviceGetDriverPathAndName(dev, &drvPath, &drvName) < 0)
         goto cleanup;
 
-    if (STREQ_NULLABLE(drvName, "vfio-pci")) {
+    if (virPCIStubDriverTypeFromString(drvName) == VIR_PCI_STUB_DRIVER_VFIO) {
         VIR_DEBUG("Device %s is bound to vfio-pci - skip reset",
                   dev->name);
         ret = 0;
@@ -992,13 +1000,22 @@ virPCIDeviceReset(virPCIDevicePtr dev,
 
 
 static int
-virPCIProbeStubDriver(const char *driver)
+virPCIProbeStubDriver(virPCIStubDriver driver)
 {
+    const char *drvname = NULL;
     char *drvpath = NULL;
     bool probed = false;
 
+    if (driver == VIR_PCI_STUB_DRIVER_NONE ||
+        !(drvname = virPCIStubDriverTypeToString(driver))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Attempting to use unknown stub driver"));
+        return -1;
+    }
+
  recheck:
-    if ((drvpath = virPCIDriverDir(driver)) && virFileExists(drvpath)) {
+    if ((drvpath = virPCIDriverDir(drvname)) && virFileExists(drvpath)) {
         /* driver already loaded, return */
         VIR_FREE(drvpath);
         return 0;
@@ -1009,8 +1026,8 @@ virPCIProbeStubDriver(const char *driver)
     if (!probed) {
         char *errbuf = NULL;
         probed = true;
-        if ((errbuf = virKModLoad(driver, true))) {
-            VIR_WARN("failed to load driver %s: %s", driver, errbuf);
+        if ((errbuf = virKModLoad(drvname, true))) {
+            VIR_WARN("failed to load driver %s: %s", drvname, errbuf);
             VIR_FREE(errbuf);
             goto cleanup;
         }
@@ -1022,15 +1039,15 @@ virPCIProbeStubDriver(const char *driver)
     /* If we know failure was because of blacklist, let's report that;
      * otherwise, report a more generic failure message
      */
-    if (virKModIsBlacklisted(driver)) {
+    if (virKModIsBlacklisted(drvname)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s: "
                          "administratively prohibited"),
-                       driver);
+                       drvname);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to load PCI stub module %s"),
-                       driver);
+                       drvname);
     }
 
     return -1;
@@ -1073,13 +1090,6 @@ virPCIDeviceUnbind(virPCIDevicePtr dev)
     return ret;
 }
 
-static const char *virPCIKnownStubs[] = {
-    "pciback",  /* used by xen */
-    "pci-stub", /* used by kvm legacy passthrough */
-    "vfio-pci", /* used by VFIO device assignment */
-    NULL
-};
-
 static int
 virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
 {
@@ -1087,8 +1097,6 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     char *drvdir = NULL;
     char *path = NULL;
     char *driver = NULL;
-    const char **stubTest;
-    bool isStub = false;
 
     /* If the device is currently bound to one of the "well known"
      * stub drivers, then unbind it, otherwise ignore it.
@@ -1105,15 +1113,11 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
         goto remove_slot;
 
     /* If the device isn't bound to a known stub, skip the unbind. */
-    for (stubTest = virPCIKnownStubs; *stubTest != NULL; stubTest++) {
-        if (STREQ(driver, *stubTest)) {
-            isStub = true;
-            VIR_DEBUG("Found stub driver %s", *stubTest);
-            break;
-        }
-    }
-    if (!isStub)
+    if (virPCIStubDriverTypeFromString(driver) < 0 ||
+        virPCIStubDriverTypeFromString(driver) == VIR_PCI_STUB_DRIVER_NONE)
         goto remove_slot;
+
+    VIR_DEBUG("Found stub driver %s", driver);
 
     if (virPCIDeviceUnbind(dev) < 0)
         goto cleanup;
@@ -1183,8 +1187,21 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev)
     char *stubDriverPath = NULL;
     char *driverLink = NULL;
     char *path = NULL; /* reused for different purposes */
-    char *stubDriverName = dev->stubDriver;
+    const char *stubDriverName = NULL;
     virErrorPtr err = NULL;
+
+    /* Check the device is configured to use one of the known stub drivers */
+    if (dev->stubDriver == VIR_PCI_STUB_DRIVER_NONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No stub driver configured for PCI device %s"),
+                       dev->name);
+        return -1;
+    } else if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriver))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown stub driver configured for PCI device %s"),
+                       dev->name);
+        return -1;
+    }
 
     if (!(stubDriverPath = virPCIDriverDir(stubDriverName))  ||
         !(driverLink = virPCIFile(dev->name, "driver")))
@@ -1338,8 +1355,6 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
                    virPCIDeviceList *activeDevs,
                    virPCIDeviceList *inactiveDevs)
 {
-    sa_assert(dev->stubDriver);
-
     if (virPCIProbeStubDriver(dev->stubDriver) < 0)
         return -1;
 
@@ -1622,10 +1637,9 @@ virPCIDeviceCopy(virPCIDevicePtr dev)
 
     /* shallow copy to take care of most attributes */
     *copy = *dev;
-    copy->path = copy->stubDriver = NULL;
+    copy->path = NULL;
     copy->used_by_drvname = copy->used_by_domname = NULL;
     if (VIR_STRDUP(copy->path, dev->path) < 0 ||
-        VIR_STRDUP(copy->stubDriver, dev->stubDriver) < 0 ||
         VIR_STRDUP(copy->used_by_drvname, dev->used_by_drvname) < 0 ||
         VIR_STRDUP(copy->used_by_domname, dev->used_by_domname) < 0) {
         goto error;
@@ -1645,7 +1659,6 @@ virPCIDeviceFree(virPCIDevicePtr dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
     VIR_FREE(dev->path);
-    VIR_FREE(dev->stubDriver);
     VIR_FREE(dev->used_by_drvname);
     VIR_FREE(dev->used_by_domname);
     VIR_FREE(dev);
@@ -1683,14 +1696,13 @@ virPCIDeviceGetManaged(virPCIDevicePtr dev)
     return dev->managed;
 }
 
-int
-virPCIDeviceSetStubDriver(virPCIDevicePtr dev, const char *driver)
+void
+virPCIDeviceSetStubDriver(virPCIDevicePtr dev, virPCIStubDriver driver)
 {
-    VIR_FREE(dev->stubDriver);
-    return VIR_STRDUP(dev->stubDriver, driver);
+    dev->stubDriver = driver;
 }
 
-const char *
+virPCIStubDriver
 virPCIDeviceGetStubDriver(virPCIDevicePtr dev)
 {
     return dev->stubDriver;

@@ -2003,6 +2003,8 @@ virPCIGetVirtualFunctionIndex;
 virPCIGetVirtualFunctionInfo;
 virPCIGetVirtualFunctions;
 virPCIIsVirtualFunction;
+virPCIStubDriverTypeFromString;
+virPCIStubDriverTypeToString;
 
 
 # util/virpidfile.h

@@ -97,9 +97,10 @@ myInit(void)
     }
 
     for (i = 0; i < nhostdevs; i++) {
-        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)) ||
-            virPCIDeviceSetStubDriver(dev[i], "pci-stub") < 0)
+        if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
             goto cleanup;
+
+        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_KVM);
     }
 
     if (VIR_ALLOC(mgr) < 0)
