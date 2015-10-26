@@ -83,6 +83,24 @@ qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
                                              QEMU_DRIVER_NAME, def->name);
 }
 
+int
+qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
+                                     virDomainDefPtr def)
+{
+    if (!def->nhostdevs)
+        return 0;
+
+    if (qemuHostdevUpdateActivePCIDevices(driver, def) < 0)
+        return -1;
+
+    if (qemuHostdevUpdateActiveUSBDevices(driver, def) < 0)
+        return -1;
+
+    if (qemuHostdevUpdateActiveSCSIDevices(driver, def) < 0)
+        return -1;
+
+    return 0;
+}
 
 bool
 qemuHostdevHostSupportsPassthroughVFIO(void)

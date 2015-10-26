@@ -36,6 +36,8 @@ int qemuHostdevUpdateActiveUSBDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
 int qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
                                        virDomainDefPtr def);
+int qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
+                                         virDomainDefPtr def);
 
 int qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
                                  const char *name,
