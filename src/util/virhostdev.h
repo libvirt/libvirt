@@ -125,7 +125,7 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
                                   const char *dom_name)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int
-virHostdevUpdateDomainActiveDevices(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,
                                     const char *driver,
                                     virDomainDefPtr def,
                                     unsigned int flags)

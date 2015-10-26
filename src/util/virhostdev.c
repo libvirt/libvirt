@@ -1704,7 +1704,7 @@ virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
 }
 
 int
-virHostdevUpdateDomainActiveDevices(virHostdevManagerPtr mgr,
+virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,
                                     const char *driver,
                                     virDomainDefPtr def,
                                     unsigned int flags)

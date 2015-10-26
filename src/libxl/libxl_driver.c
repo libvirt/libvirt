@@ -377,7 +377,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     vm->def->id = d_info.domid;
 
     /* Update hostdev state */
-    if (virHostdevUpdateDomainActiveDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+    if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                             vm->def, VIR_HOSTDEV_SP_PCI) < 0)
         goto out;
 

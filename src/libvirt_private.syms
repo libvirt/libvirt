@@ -1534,10 +1534,10 @@ virHostdevReAttachDomainDevices;
 virHostdevReAttachPCIDevices;
 virHostdevReAttachSCSIDevices;
 virHostdevReAttachUSBDevices;
+virHostdevUpdateActiveDomainDevices;
 virHostdevUpdateActivePCIDevices;
 virHostdevUpdateActiveSCSIDevices;
 virHostdevUpdateActiveUSBDevices;
-virHostdevUpdateDomainActiveDevices;
 
 
 # util/viridentity.h
