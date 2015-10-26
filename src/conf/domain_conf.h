@@ -2219,7 +2219,7 @@ struct _virDomainDef {
     virDomainMemtune mem;
 
     unsigned int vcpus;
-    unsigned int maxvcpus;
+    size_t maxvcpus;
     int placement_mode;
     virBitmapPtr cpumask;
 

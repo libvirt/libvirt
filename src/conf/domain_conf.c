@@ -1317,7 +1317,7 @@ virDomainDefSetVcpus(virDomainDefPtr def,
 {
     if (vcpus > def->maxvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("maxvcpus must not be less than current vcpus (%u < %u)"),
+                       _("maxvcpus must not be less than current vcpus (%u < %zu)"),
                        vcpus, def->maxvcpus);
         return -1;
     }
