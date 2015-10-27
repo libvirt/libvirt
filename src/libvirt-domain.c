@@ -3303,7 +3303,7 @@ virDomainMigrateCheckNotLocal(const char *dconnuri)
         goto cleanup;
     if (!tempuri->server || STRPREFIX(tempuri->server, "localhost")) {
         virReportInvalidArg(dconnuri, "%s",
-                            _("Attempt to migrate guest to the same host %s"));
+                            _("Attempt to migrate guest to the same host"));
         goto cleanup;
     }
 
