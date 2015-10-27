@@ -4881,6 +4881,9 @@ qemuDomainSetVcpusAgent(virDomainObjPtr vm,
     if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
         goto cleanup;
 
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto cleanup;
+
     qemuDomainObjEnterAgent(vm);
     ret = qemuAgentSetVCPUs(qemuDomainGetAgent(vm), cpuinfo, ncpuinfo);
     qemuDomainObjExitAgent(vm);
