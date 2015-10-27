@@ -1872,6 +1872,18 @@ qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuDomainGetAgent:
+ * @vm: domain object
+ *
+ * Returns the agent pointer of @vm;
+ */
+qemuAgentPtr
+qemuDomainGetAgent(virDomainObjPtr vm)
+{
+    return (((qemuDomainObjPrivatePtr)(vm->privateData))->agent);
+}
+
 
 /*
  * obj must be locked before calling
