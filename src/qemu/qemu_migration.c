@@ -3912,8 +3912,10 @@ qemuMigrationConfirm(virConnectPtr conn,
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm)) {
-        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
+        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
+            vm->persistent = 0;
+        }
         qemuDomainRemoveInactive(driver, vm);
     }
 
@@ -5405,8 +5407,10 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm) && ret == 0) {
-        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
+        if (flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
+            vm->persistent = 0;
+        }
         qemuDomainRemoveInactive(driver, vm);
     }
 
