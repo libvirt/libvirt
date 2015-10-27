@@ -4853,6 +4853,59 @@ qemuDomainHotplugVcpus(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainSetVcpusAgent(virDomainObjPtr vm,
+                        unsigned int nvcpus)
+{
+    qemuAgentCPUInfoPtr cpuinfo = NULL;
+    int ncpuinfo;
+    int ret = -1;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto cleanup;
+
+    if (nvcpus > virDomainDefGetVcpus(vm->def)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("requested vcpu count is greater than the count "
+                         "of enabled vcpus in the domain: %d > %d"),
+                       nvcpus, virDomainDefGetVcpus(vm->def));
+        goto cleanup;
+    }
+
+    qemuDomainObjEnterAgent(vm);
+    ncpuinfo = qemuAgentGetVCPUs(qemuDomainGetAgent(vm), &cpuinfo);
+    qemuDomainObjExitAgent(vm);
+
+    if (ncpuinfo < 0)
+        goto cleanup;
+
+    if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentSetVCPUs(qemuDomainGetAgent(vm), cpuinfo, ncpuinfo);
+    qemuDomainObjExitAgent(vm);
+
+    if (ret < 0)
+        goto cleanup;
+
+    if (ret < ncpuinfo) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to set state of cpu %d via guest agent"),
+                       cpuinfo[ret-1].id);
+        ret = -1;
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(cpuinfo);
+
+    return ret;
+}
+
+
+static int
 qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                         unsigned int flags)
 {
@@ -4863,8 +4916,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     int ret = -1;
     unsigned int maxvcpus = 0;
     virQEMUDriverConfigPtr cfg = NULL;
-    qemuAgentCPUInfoPtr cpuinfo = NULL;
-    int ncpuinfo;
     qemuDomainObjPrivatePtr priv;
     size_t i;
     virCgroupPtr cgroup_temp = NULL;
@@ -4891,10 +4942,15 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
+    if (flags & VIR_DOMAIN_VCPU_GUEST) {
+        ret = qemuDomainSetVcpusAgent(vm, nvcpus);
+        goto endjob;
+    }
+
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (def && !(flags & VIR_DOMAIN_VCPU_GUEST) && virNumaIsAvailable() &&
+    if (def && virNumaIsAvailable() &&
         virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                                false, &cgroup_temp) < 0)
@@ -4925,71 +4981,33 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_VCPU_GUEST) {
-        if (!qemuDomainAgentAvailable(vm, true))
+    if (def) {
+        if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
             goto endjob;
 
-        if (nvcpus > virDomainDefGetVcpus(vm->def)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("requested vcpu count is greater than the count "
-                             "of enabled vcpus in the domain: %d > %d"),
-                           nvcpus, virDomainDefGetVcpus(vm->def));
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
             goto endjob;
+    }
+
+    if (persistentDef) {
+        /* remove vcpupin entries for vcpus that were unplugged */
+        if (nvcpus < virDomainDefGetVcpus(persistentDef)) {
+            for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--)
+                virDomainPinDel(&persistentDef->cputune.vcpupin,
+                                &persistentDef->cputune.nvcpupin,
+                                i);
         }
 
-        qemuDomainObjEnterAgent(vm);
-        ncpuinfo = qemuAgentGetVCPUs(priv->agent, &cpuinfo);
-        qemuDomainObjExitAgent(vm);
-
-        if (ncpuinfo < 0)
-            goto endjob;
-
-        if (qemuAgentUpdateCPUInfo(nvcpus, cpuinfo, ncpuinfo) < 0)
-            goto endjob;
-
-        qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentSetVCPUs(priv->agent, cpuinfo, ncpuinfo);
-        qemuDomainObjExitAgent(vm);
-
-        if (ret < 0)
-            goto endjob;
-
-        if (ret < ncpuinfo) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to set state of cpu %d via guest agent"),
-                           cpuinfo[ret-1].id);
-            ret = -1;
-            goto endjob;
-        }
-    } else {
-        if (def) {
-            if (qemuDomainHotplugVcpus(driver, vm, nvcpus) < 0)
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+            if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
                 goto endjob;
-
-            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        } else {
+            if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)
                 goto endjob;
         }
 
-        if (persistentDef) {
-            /* remove vcpupin entries for vcpus that were unplugged */
-            if (nvcpus < virDomainDefGetVcpus(persistentDef)) {
-                for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--)
-                    virDomainPinDel(&persistentDef->cputune.vcpupin,
-                                    &persistentDef->cputune.nvcpupin,
-                                    i);
-            }
-
-            if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-                if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
-                    goto endjob;
-            } else {
-                if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)
-                    goto endjob;
-            }
-
-            if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
-                goto endjob;
-        }
+        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+            goto endjob;
     }
 
     ret = 0;
@@ -5006,7 +5024,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    VIR_FREE(cpuinfo);
     VIR_FREE(mem_mask);
     VIR_FREE(all_nodes_str);
     virBitmapFree(all_nodes);
