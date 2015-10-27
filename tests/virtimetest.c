@@ -92,7 +92,7 @@ testTimeLocalOffset(const void *args)
         return -1;
 
     if (data->offset != actual) {
-        VIR_DEBUG("Expect Offset %ld got %ld\n",
+        VIR_DEBUG("Expect Offset %ld got %ld",
                   data->offset, actual);
         return -1;
     }

@@ -681,7 +681,7 @@ static int virFileLoopDeviceOpen(char **dev_name)
     if (virFileLoopDeviceOpenLoopCtl(dev_name, &loop_fd) < 0)
         return -1;
 
-    VIR_DEBUG("Return from loop-control got fd %d\n", loop_fd);
+    VIR_DEBUG("Return from loop-control got fd %d", loop_fd);
 
     if (loop_fd >= 0)
         return loop_fd;

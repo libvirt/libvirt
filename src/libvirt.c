@@ -1125,7 +1125,7 @@ do_open(const char *name,
                   "  server %s\n"
                   "  user %s\n"
                   "  port %d\n"
-                  "  path %s\n",
+                  "  path %s",
                   alias ? alias : name,
                   NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,

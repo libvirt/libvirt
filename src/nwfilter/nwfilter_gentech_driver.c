@@ -540,7 +540,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
             if (rc)
                 break;
         } else if (inc) {
-            VIR_DEBUG("Following filter %s\n", inc->filterref);
+            VIR_DEBUG("Following filter %s", inc->filterref);
             obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);
             if (obj) {
 

@@ -287,7 +287,7 @@ virHashGrow(virHashTablePtr table, size_t size)
     VIR_FREE(oldtable);
 
 #ifdef DEBUG_GROW
-    VIR_DEBUG("virHashGrow : from %d to %d, %ld elems\n", oldsize,
+    VIR_DEBUG("virHashGrow : from %d to %d, %ld elems", oldsize,
               size, nbElem);
 #endif
 

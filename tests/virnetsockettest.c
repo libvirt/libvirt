@@ -105,7 +105,7 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
         break;
     }
 
-    VIR_DEBUG("Choose port %d\n", *freePort);
+    VIR_DEBUG("Choose port %d", *freePort);
 
     ret = 0;
 

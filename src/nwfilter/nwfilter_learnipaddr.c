@@ -413,7 +413,7 @@ learnIPAddressThread(void *arg)
     handle = pcap_open_live(listen_if, BUFSIZ, 0, PKT_TIMEOUT_MS, errbuf);
 
     if (handle == NULL) {
-        VIR_DEBUG("Couldn't open device %s: %s\n", listen_if, errbuf);
+        VIR_DEBUG("Couldn't open device %s: %s", listen_if, errbuf);
         req->status = ENODEV;
         goto done;
     }
@@ -448,13 +448,13 @@ learnIPAddressThread(void *arg)
     filter = virBufferContentAndReset(&buf);
 
     if (pcap_compile(handle, &fp, filter, 1, 0) != 0) {
-        VIR_DEBUG("Couldn't compile filter '%s'.\n", filter);
+        VIR_DEBUG("Couldn't compile filter '%s'", filter);
         req->status = EINVAL;
         goto done;
     }
 
     if (pcap_setfilter(handle, &fp) != 0) {
-        VIR_DEBUG("Couldn't set filter '%s'.\n", filter);
+        VIR_DEBUG("Couldn't set filter '%s'", filter);
         req->status = EINVAL;
         pcap_freecode(&fp);
         goto done;
@@ -626,7 +626,7 @@ learnIPAddressThread(void *arg)
                                                    req->filtername,
                                                    req->filterparams);
             VIR_DEBUG("Result from applying firewall rules on "
-                      "%s with IP addr %s : %d\n", req->ifname, inetaddr, ret);
+                      "%s with IP addr %s : %d", req->ifname, inetaddr, ret);
         }
     } else {
         if (showError)
@@ -638,7 +638,7 @@ learnIPAddressThread(void *arg)
         techdriver->applyDropAllRules(req->ifname);
     }
 
-    VIR_DEBUG("pcap thread terminating for interface %s\n", req->ifname);
+    VIR_DEBUG("pcap thread terminating for interface %s", req->ifname);
 
     virNWFilterUnlockIface(req->ifname);
 

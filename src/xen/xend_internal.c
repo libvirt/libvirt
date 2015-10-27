@@ -507,7 +507,7 @@ xend_op_ext(virConnectPtr xend, const char *path, const char *key, va_list ap)
         return -1;
 
     content = virBufferContentAndReset(&buf);
-    VIR_DEBUG("xend op: %s\n", content);
+    VIR_DEBUG("xend op: %s", content);
     ret = http2unix(xend_post(xend, path, content));
     VIR_FREE(content);
 

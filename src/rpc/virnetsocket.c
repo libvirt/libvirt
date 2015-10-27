@@ -196,7 +196,7 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 
     freeaddrinfo(ai);
 
-    VIR_DEBUG("Protocols: v4 %d v6 %d\n", *hasIPv4, *hasIPv6);
+    VIR_DEBUG("Protocols: v4 %d v6 %d", *hasIPv4, *hasIPv6);
 
     ret = 0;
  cleanup:

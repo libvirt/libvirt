@@ -407,7 +407,7 @@ virProcessKillPainfully(pid_t pid, bool force)
 int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
     size_t i;
-    VIR_DEBUG("Set process affinity on %lld\n", (long long)pid);
+    VIR_DEBUG("Set process affinity on %lld", (long long)pid);
 # ifdef CPU_ALLOC
     /* New method dynamically allocates cpu mask, allowing unlimted cpus */
     int numcpus = 1024;

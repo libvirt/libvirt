@@ -169,14 +169,14 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
     count2 = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
     /* Test normal functionality */
-    VIR_DEBUG("Test 0 hostdevs\n");
+    VIR_DEBUG("Test 0 hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     NULL, 0, 0) < 0)
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
     /* Test unmanaged hostdevs */
-    VIR_DEBUG("Test >=1 unmanaged hostdevs\n");
+    VIR_DEBUG("Test >=1 unmanaged hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     hostdevs, nhostdevs, 0) < 0)
         goto cleanup;
@@ -186,21 +186,21 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
     /* Test conflict */
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
     count2 = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
-    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
     if (!virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                      &hostdevs[0], 1, 0))
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
     CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2);
 
-    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
     if (!virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                      &hostdevs[1], 1, 0))
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
     CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2);
 
-    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
     if (!virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                      &hostdevs[2], 1, 0))
         goto cleanup;
@@ -223,7 +223,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != false) {
-            VIR_DEBUG("invalid test\n");
+            VIR_DEBUG("invalid test");
             return -1;
         }
     }
@@ -231,11 +231,11 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
     count2 = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs\n");
+    VIR_DEBUG("Test 0 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
-    VIR_DEBUG("Test >=1 unmanaged hostdevs\n");
+    VIR_DEBUG("Test >=1 unmanaged hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - 3);
@@ -261,7 +261,7 @@ testVirHostdevPreparePCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
 
     /* Test normal functionality */
-    VIR_DEBUG("Test >=1 hostdevs\n");
+    VIR_DEBUG("Test >=1 hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                      hostdevs, nhostdevs, 0) < 0)
         goto cleanup;
@@ -269,19 +269,19 @@ testVirHostdevPreparePCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 
     /* Test conflict */
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
-    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
     if (!virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                       &hostdevs[0], 1, 0))
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
-    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
     if (!virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                       &hostdevs[1], 1, 0))
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
-    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again\n");
+    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
     if (!virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                       &hostdevs[2], 1, 0))
         goto cleanup;
@@ -303,18 +303,18 @@ testVirHostdevReAttachPCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != true) {
-            VIR_DEBUG("invalid test\n");
+            VIR_DEBUG("invalid test");
             return -1;
         }
     }
 
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs\n");
+    VIR_DEBUG("Test 0 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
-    VIR_DEBUG("Test >=1 hostdevs\n");
+    VIR_DEBUG("Test >=1 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - 3);
@@ -392,13 +392,13 @@ testVirHostdevUpdateActivePCIHostdevs(const void *oaque ATTRIBUTE_UNUSED)
 
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs\n");
+    VIR_DEBUG("Test 0 hostdevs");
     if (virHostdevUpdateActivePCIDevices(mgr, NULL, 0,
                                          drv_name, dom_name) < 0)
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1);
 
-    VIR_DEBUG("Test >=1 hostdevs\n");
+    VIR_DEBUG("Test >=1 hostdevs");
     if (virHostdevUpdateActivePCIDevices(mgr, hostdevs, nhostdevs,
                                          drv_name, dom_name) < 0)
         goto cleanup;
@@ -432,7 +432,7 @@ mymain(void)
 
 # define DO_TEST(fnc)                                   \
     do {                                                \
-        VIR_DEBUG("\nTesting: %s", #fnc);                 \
+        VIR_DEBUG("Testing: %s", #fnc);                 \
         if (virtTestRun(#fnc, fnc, NULL) < 0)           \
             ret = -1;                                   \
     } while (0)
