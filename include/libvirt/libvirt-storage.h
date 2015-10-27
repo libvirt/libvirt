@@ -115,6 +115,7 @@ typedef enum {
 typedef enum {
     VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
     VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
+    VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS = 1 << 1, /* Force removal of volume, even if in use */
 } virStorageVolDeleteFlags;
 
 typedef enum {
