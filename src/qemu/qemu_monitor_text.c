@@ -1136,10 +1136,6 @@ qemuMonitorTextSetBalloon(qemuMonitorPtr mon,
 }
 
 
-/*
- * Returns: 0 if CPU hotplug not supported, +1 if CPU hotplug worked
- * or -1 on failure
- */
 int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 {
     char *cmd;
@@ -1149,22 +1145,23 @@ int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online)
     if (virAsprintf(&cmd, "cpu_set %d %s", cpu, online ? "online" : "offline") < 0)
         return -1;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0) {
-        VIR_FREE(cmd);
-        return -1;
-    }
-    VIR_FREE(cmd);
+    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
     /* If the command failed qemu prints: 'unknown command'
      * No message is printed on success it seems */
     if (strstr(reply, "unknown command:")) {
-        /* Don't set error - it is expected CPU onlining fails on many qemu - caller will handle */
-        ret = 0;
-    } else {
-        ret = 1;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot change vcpu count of this domain"));
+        goto cleanup;
     }
 
+    ret = 0;
+
+ cleanup:
     VIR_FREE(reply);
+    VIR_FREE(cmd);
+
     return ret;
 }
 

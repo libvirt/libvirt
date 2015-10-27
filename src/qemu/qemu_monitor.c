@@ -1955,6 +1955,9 @@ qemuMonitorSetBalloon(qemuMonitorPtr mon,
 }
 
 
+/*
+ * Returns: 0 if CPU modification was successful or -1 on failure
+ */
 int
 qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online)
 {

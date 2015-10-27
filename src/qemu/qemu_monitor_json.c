@@ -2158,10 +2158,6 @@ qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
 }
 
 
-/*
- * Returns: 0 if CPU hotplug not supported, +1 if CPU hotplug worked
- * or -1 on failure
- */
 int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
                           int cpu, bool online)
 {
@@ -2187,10 +2183,6 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
         goto fallback;
     else
         ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    /* this function has non-standard return values, so adapt it */
-    if (ret == 0)
-        ret = 1;
 
  cleanup:
     virJSONValueFree(cmd);

@@ -4698,7 +4698,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
-    int rc = 1;
     int ret = -1;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     int vcpus = oldvcpus;
@@ -4712,10 +4711,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     for (i = vcpus; i < nvcpus; i++) {
         /* Online new CPU */
-        rc = qemuMonitorSetCPU(priv->mon, i, true);
-        if (rc == 0)
-            goto unsupported;
-        if (rc < 0)
+        if (qemuMonitorSetCPU(priv->mon, i, true) < 0)
             goto exit_monitor;
 
         vcpus++;
@@ -4794,14 +4790,11 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     if (virDomainObjIsActive(vm) &&
         virDomainDefSetVcpus(vm->def, vcpus) < 0)
         ret = -1;
-    virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
+    virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", ret == 0);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
     return ret;
 
- unsupported:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("cannot change vcpu count of this domain"));
  exit_monitor:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     goto cleanup;
@@ -4815,7 +4808,6 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
-    int rc = 1;
     int ret = -1;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     int vcpus = oldvcpus;
@@ -4826,10 +4818,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
     for (i = vcpus - 1; i >= nvcpus; i--) {
         /* Offline old CPU */
-        rc = qemuMonitorSetCPU(priv->mon, i, false);
-        if (rc == 0)
-            goto unsupported;
-        if (rc < 0)
+        if (qemuMonitorSetCPU(priv->mon, i, false) < 0)
             goto exit_monitor;
 
         vcpus--;
@@ -4888,12 +4877,9 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     if (virDomainObjIsActive(vm) &&
         virDomainDefSetVcpus(vm->def, vcpus) < 0)
         ret = -1;
-    virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", rc == 1);
+    virDomainAuditVcpu(vm, oldvcpus, nvcpus, "update", ret == 0);
     return ret;
 
- unsupported:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("cannot change vcpu count of this domain"));
  exit_monitor:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     goto cleanup;
