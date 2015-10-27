@@ -1170,7 +1170,7 @@ virtualization capabilities of recent versions of Linux (and other OSes).
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
 Group: Development/Libraries
-Requires: wireshark
+Requires: wireshark >= 1.12.6-4
 Requires: %{name}-client = %{version}-%{release}
 
 %description wireshark
@@ -1561,6 +1561,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 %endif
 %if %{with_wireshark}
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
+mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
+   $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.so
 %endif
 
 # Temporarily get rid of not-installed libvirt-admin.so
@@ -2279,7 +2281,7 @@ exit 0
 
 %if %{with_wireshark}
 %files wireshark
-%{_libdir}/wireshark/plugins/*/libvirt.so
+%{_libdir}/wireshark/plugins/libvirt.so
 %endif
 
 %if %{with_lxc}

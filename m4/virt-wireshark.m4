@@ -28,7 +28,12 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
   dnl Check for system location of wireshark plugins
   if test "x$with_wireshark_dissector" != "xno" ; then
     if test "x$with_ws_plugindir" = "xcheck" ; then
-      ws_plugindir="$libdir/wireshark/plugins/$($PKG_CONFIG --modversion wireshark)"
+      ws_plugindir="$($PKG_CONFIG --variable plugindir wireshark)"
+      if test "x$ws_plugindir" = "x" ; then
+        dnl On some systems the plugindir variable may not be stored within pkg config.
+        dnl Fall back to older style of constructing the plugin dir path.
+        ws_plugindir="$libdir/wireshark/plugins/$($PKG_CONFIG --modversion wireshark)"
+      fi
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
     else
