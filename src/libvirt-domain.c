@@ -4478,7 +4478,7 @@ virDomainMigrateToURI3(virDomainPtr domain,
         dconnuri = NULL;
 
     if (virDomainMigrateUnmanagedParams(domain, dconnuri,
-                                        params, nparams, flags) < -1)
+                                        params, nparams, flags) < 0)
         goto error;
 
     return 0;
