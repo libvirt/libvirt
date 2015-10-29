@@ -96,7 +96,7 @@ VIR_LOG_INIT("util.netdev");
 # define FEATURE_BIT_IS_SET(blocks, index, field)        \
     (FEATURE_WORD(blocks, index, field) & FEATURE_FIELD_FLAG(index))
 #endif
-#define VIR_DAD_WAIT_TIMEOUT 5 /* seconds */
+#define VIR_DAD_WAIT_TIMEOUT 20 /* seconds */
 
 typedef enum {
     VIR_MCAST_TYPE_INDEX_TOKEN,
