@@ -4721,10 +4721,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
         vcpus++;
     }
 
-    /* hotplug succeeded */
-
-    ret = 0;
-
     /* After hotplugging the CPUs we need to re-detect threads corresponding
      * to the virtual CPUs. Some older versions don't provide the thread ID
      * or don't have the "info cpus" command (and they don't support multiple
@@ -4732,12 +4728,12 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
      * fatal */
     if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
         virResetLastError();
+        ret = 0;
         goto exit_monitor;
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
-    }
 
     if (ncpupids != vcpus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4745,7 +4741,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
                          "got %d, wanted %d"),
                        ncpupids, vcpus);
         vcpus = oldvcpus;
-        ret = -1;
         goto cleanup;
     }
 
@@ -4771,15 +4766,12 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
         if (vm->def->cpumask) {
             if (qemuDomainHotplugAddPin(vm->def->cpumask, i,
                                         &vm->def->cputune.vcpupin,
-                                        &vm->def->cputune.nvcpupin) < 0) {
-                ret = -1;
+                                        &vm->def->cputune.nvcpupin) < 0)
                 goto cleanup;
-            }
+
             if (qemuDomainHotplugPinThread(vm->def->cpumask, i, cpupids[i],
-                                           cgroup_vcpu) < 0) {
-                ret = -1;
+                                           cgroup_vcpu) < 0)
                 goto cleanup;
-            }
         }
         virCgroupFree(&cgroup_vcpu);
 
@@ -4793,6 +4785,8 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     VIR_FREE(priv->vcpupids);
     priv->vcpupids = cpupids;
     cpupids = NULL;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(cpupids);
@@ -4841,8 +4835,6 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
         vcpus--;
     }
 
-    ret = 0;
-
     /* After hotplugging the CPUs we need to re-detect threads corresponding
      * to the virtual CPUs. Some older versions don't provide the thread ID
      * or don't have the "info cpus" command (and they don't support multiple
@@ -4850,19 +4842,17 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
      * fatal */
     if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
         virResetLastError();
+        ret = 0;
         goto exit_monitor;
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
-    }
 
     /* check if hotunplug has failed */
     if (ncpupids == oldvcpus) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("qemu didn't unplug the vCPUs properly"));
         vcpus = oldvcpus;
-        ret = -1;
         goto cleanup;
     }
 
@@ -4872,7 +4862,6 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                          "got %d, wanted %d"),
                        ncpupids, vcpus);
         vcpus = oldvcpus;
-        ret = -1;
         goto cleanup;
     }
 
@@ -4891,6 +4880,8 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     VIR_FREE(priv->vcpupids);
     priv->vcpupids = cpupids;
     cpupids = NULL;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(cpupids);
