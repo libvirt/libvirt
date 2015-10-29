@@ -1398,7 +1398,13 @@ virNetDevWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
         VIR_FREE(resp);
     }
     /* Check timeout. */
-    ret = dad ? -1 : 0;
+    if (dad) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Duplicate Address Detection "
+                         "not finished in %d seconds"), VIR_DAD_WAIT_TIMEOUT);
+    } else {
+        ret = 0;
+    }
 
  cleanup:
     VIR_FREE(resp);
