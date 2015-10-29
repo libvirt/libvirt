@@ -341,7 +341,7 @@ testVirPCIDeviceUnbind(const void *opaque)
     if (!dev)
         goto cleanup;
 
-    if (virPCIDeviceUnbind(dev, false) < 0)
+    if (virPCIDeviceUnbind(dev) < 0)
         goto cleanup;
 
     ret = 0;

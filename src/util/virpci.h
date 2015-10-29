@@ -201,7 +201,7 @@ int virPCIDeviceAddressParse(char *address, virPCIDeviceAddressPtr bdf);
 int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  char **pfname, int *vf_index);
 
-int virPCIDeviceUnbind(virPCIDevicePtr dev, bool reprobe);
+int virPCIDeviceUnbind(virPCIDevicePtr dev);
 int virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev,
                                      char **path,
                                      char **name);

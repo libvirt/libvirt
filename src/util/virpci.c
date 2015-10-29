@@ -1037,7 +1037,7 @@ virPCIProbeStubDriver(const char *driver)
 }
 
 int
-virPCIDeviceUnbind(virPCIDevicePtr dev, bool reprobe)
+virPCIDeviceUnbind(virPCIDevicePtr dev)
 {
     char *path = NULL;
     char *drvpath = NULL;
@@ -1063,7 +1063,6 @@ virPCIDeviceUnbind(virPCIDevicePtr dev, bool reprobe)
                                  dev->name, driver);
             goto cleanup;
         }
-        dev->reprobe = reprobe;
     }
 
     ret = 0;
@@ -1116,7 +1115,7 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     if (!isStub)
         goto remove_slot;
 
-    if (virPCIDeviceUnbind(dev, dev->reprobe) < 0)
+    if (virPCIDeviceUnbind(dev) < 0)
         goto cleanup;
     dev->unbind_from_stub = false;
 
@@ -1230,8 +1229,11 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev)
         goto remove_id;
     }
 
-    if (virPCIDeviceUnbind(dev, reprobe) < 0)
+    if (virPCIDeviceUnbind(dev) < 0)
         goto remove_id;
+
+    /* If the device was bound to a driver we'll need to reprobe later */
+    dev->reprobe = reprobe;
 
     /* If the device isn't already bound to pci-stub, try binding it now.
      */
