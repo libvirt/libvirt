@@ -1606,6 +1606,15 @@ qemuMonitorSystemReset(qemuMonitorPtr mon)
 }
 
 
+/**
+ * qemuMonitorGetCPUInfo:
+ * @mon: monitor
+ * @pids: returned array of thread ids corresponding to the vCPUs
+ *
+ * Detects the vCPU thread ids. Returns count of detected vCPUs on success,
+ * 0 if qemu didn't report thread ids (does not report libvirt error),
+ * -1 on error (reports libvirt error).
+ */
 int
 qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                       int **pids)
