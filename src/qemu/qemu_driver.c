@@ -4798,47 +4798,35 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
+    int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-    int vcpus = oldvcpus;
     pid_t *cpupids = NULL;
-    int ncpupids;
+    int ncpupids = 0;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuMonitorSetCPU(priv->mon, vcpu, false) < 0)
-        goto exit_monitor;
+    rc = qemuMonitorSetCPU(priv->mon, vcpu, false);
 
-    vcpus--;
+    if (rc == 0)
+        ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
 
-    /* After hotplugging the CPUs we need to re-detect threads corresponding
-     * to the virtual CPUs. Some older versions don't provide the thread ID
-     * or don't have the "info cpus" command (and they don't support multiple
-     * CPUs anyways), so errors in the re-detection will not be treated
-     * fatal */
-    if ((ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids)) <= 0) {
-        virResetLastError();
-        ret = 0;
-        goto exit_monitor;
-    }
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
+    virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update",
+                       rc == 0 && ncpupids == oldvcpus -1);
+
+    if (rc < 0 || ncpupids < 0)
+        goto cleanup;
+
     /* check if hotunplug has failed */
-    if (ncpupids == oldvcpus) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("qemu didn't unplug the vCPUs properly"));
-        vcpus = oldvcpus;
+    if (ncpupids != oldvcpus - 1) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("qemu didn't unplug vCPU '%u' properly"), vcpu);
         goto cleanup;
     }
 
-    if (ncpupids != vcpus) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("got wrong number of vCPU pids from QEMU monitor. "
-                         "got %d, wanted %d"),
-                       ncpupids, vcpus);
-        vcpus = oldvcpus;
-        goto cleanup;
-    }
+    ignore_value(virDomainDefSetVcpus(vm->def, oldvcpus - 1));
 
     if (qemuDomainDelCgroupForThread(priv->cgroup,
                                      VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
@@ -4858,15 +4846,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FREE(cpupids);
-    if (virDomainObjIsActive(vm) &&
-        virDomainDefSetVcpus(vm->def, vcpus) < 0)
-        ret = -1;
-    virDomainAuditVcpu(vm, oldvcpus, vcpus, "update", ret == 0);
     return ret;
-
- exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    goto cleanup;
 }
 
 
