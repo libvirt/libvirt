@@ -4248,8 +4248,8 @@ int qemuProcessStart(virConnectPtr conn,
                      virDomainObjPtr vm,
                      qemuDomainAsyncJob asyncJob,
                      const char *migrateFrom,
-                     int stdin_fd,
-                     const char *stdin_path,
+                     int migrateFd,
+                     const char *migratePath,
                      virDomainSnapshotObjPtr snapshot,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags)
@@ -4274,10 +4274,10 @@ int qemuProcessStart(virConnectPtr conn,
     char *tmppath = NULL;
     qemuProcessIncomingDefPtr incoming = NULL;
 
-    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s stdin_fd=%d "
-              "stdin_path=%s snapshot=%p vmop=%d flags=0x%x",
+    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s migrateFd=%d "
+              "migratePath=%s snapshot=%p vmop=%d flags=0x%x",
               vm, vm->def->name, vm->def->id, asyncJob, NULLSTR(migrateFrom),
-              stdin_fd, NULLSTR(stdin_path), snapshot, vmop, flags);
+              migrateFd, NULLSTR(migratePath), snapshot, vmop, flags);
 
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
@@ -4602,7 +4602,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     if (migrateFrom) {
         incoming = qemuProcessIncomingDefNew(priv->qemuCaps, migrateFrom,
-                                             stdin_fd, stdin_path);
+                                             migrateFd, migratePath);
         if (!incoming)
             goto error;
     }
@@ -4786,7 +4786,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
-                                      vm->def, stdin_path) < 0)
+                                      vm->def, migratePath) < 0)
         goto error;
 
     /* Security manager labeled all devices, therefore
@@ -4795,7 +4795,7 @@ int qemuProcessStart(virConnectPtr conn,
      * (hidden under qemuProcessStop) we need to restore labels. */
     stop_flags &= ~VIR_QEMU_PROCESS_STOP_NO_RELABEL;
 
-    if (stdin_fd != -1) {
+    if (migrateFd != -1) {
         /* if there's an fd to migrate from, and it's a pipe, put the
          * proper security label on it
          */
@@ -4803,13 +4803,13 @@ int qemuProcessStart(virConnectPtr conn,
 
         VIR_DEBUG("setting security label on pipe used for migration");
 
-        if (fstat(stdin_fd, &stdin_sb) < 0) {
+        if (fstat(migrateFd, &stdin_sb) < 0) {
             virReportSystemError(errno,
-                                 _("cannot stat fd %d"), stdin_fd);
+                                 _("cannot stat fd %d"), migrateFd);
             goto error;
         }
         if (S_ISFIFO(stdin_sb.st_mode) &&
-            virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def, stdin_fd) < 0)
+            virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def, migrateFd) < 0)
             goto error;
     }
 
