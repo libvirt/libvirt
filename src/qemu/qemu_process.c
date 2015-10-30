@@ -4279,7 +4279,7 @@ int qemuProcessStart(virConnectPtr conn,
      */
     VIR_DEBUG("Preparing network devices");
     if (qemuNetworkPrepareDevices(vm->def) < 0)
-       goto error;
+        goto error;
 
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
@@ -4636,9 +4636,8 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting up security labelling");
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
-                                               vm->def, cmd) < 0) {
+                                               vm->def, cmd) < 0)
         goto error;
-    }
 
     virCommandSetOutputFD(cmd, &logfile);
     virCommandSetErrorFD(cmd, &logfile);
