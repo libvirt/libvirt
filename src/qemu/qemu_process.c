@@ -4266,6 +4266,84 @@ qemuProcessStartHook(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessSetupGraphics(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
+    int ret = -1;
+
+    for (i = 0; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            !graphics->data.vnc.autoport) {
+            if (virPortAllocatorSetUsed(driver->remotePorts,
+                                        graphics->data.vnc.port,
+                                        true) < 0)
+                goto cleanup;
+            graphics->data.vnc.portReserved = true;
+
+        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+                   !graphics->data.spice.autoport) {
+            if (graphics->data.spice.port > 0) {
+                if (virPortAllocatorSetUsed(driver->remotePorts,
+                                            graphics->data.spice.port,
+                                            true) < 0)
+                    goto cleanup;
+                graphics->data.spice.portReserved = true;
+            }
+
+            if (graphics->data.spice.tlsPort > 0) {
+                if (virPortAllocatorSetUsed(driver->remotePorts,
+                                            graphics->data.spice.tlsPort,
+                                            true) < 0)
+                    goto cleanup;
+                graphics->data.spice.tlsPortReserved = true;
+            }
+        }
+    }
+
+    for (i = 0; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+            if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
+                goto cleanup;
+        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
+                goto cleanup;
+        }
+
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
+            graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            if (graphics->nListens == 0) {
+                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0)
+                    goto cleanup;
+                graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+                if (VIR_STRDUP(graphics->listens[0].address,
+                               graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
+                               cfg->vncListen : cfg->spiceListen) < 0) {
+                    VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
+                    goto cleanup;
+                }
+                graphics->listens[0].fromConfig = true;
+            } else if (graphics->nListens > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("QEMU does not support multiple listen "
+                                 "addresses for one graphics device."));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4434,72 +4512,9 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(driver, vm);
 
-    for (i = 0; i < vm->def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            !graphics->data.vnc.autoport) {
-            if (virPortAllocatorSetUsed(driver->remotePorts,
-                                        graphics->data.vnc.port,
-                                        true) < 0) {
-                goto error;
-            }
-
-            graphics->data.vnc.portReserved = true;
-
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-                   !graphics->data.spice.autoport) {
-
-            if (graphics->data.spice.port > 0) {
-                if (virPortAllocatorSetUsed(driver->remotePorts,
-                                            graphics->data.spice.port,
-                                            true) < 0)
-                    goto error;
-
-                graphics->data.spice.portReserved = true;
-            }
-
-            if (graphics->data.spice.tlsPort > 0) {
-                if (virPortAllocatorSetUsed(driver->remotePorts,
-                                            graphics->data.spice.tlsPort,
-                                            true) < 0)
-                    goto error;
-
-                graphics->data.spice.tlsPortReserved = true;
-            }
-        }
-    }
-
-    for (i = 0; i < vm->def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
-                goto error;
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
-                goto error;
-        }
-
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-            graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (graphics->nListens == 0) {
-                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0)
-                    goto error;
-                graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
-                if (VIR_STRDUP(graphics->listens[0].address,
-                               graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
-                               cfg->vncListen : cfg->spiceListen) < 0) {
-                    VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
-                    goto error;
-                }
-                graphics->listens[0].fromConfig = true;
-            } else if (graphics->nListens > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("QEMU does not support multiple listen "
-                                 "addresses for one graphics device."));
-                goto error;
-            }
-        }
-    }
+    VIR_DEBUG("Setting up ports for graphics");
+    if (qemuProcessSetupGraphics(driver, vm) < 0)
+        goto error;
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,
