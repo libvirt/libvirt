@@ -195,6 +195,7 @@ virAdmConnectPtr
 virAdmConnectOpen(const char *name, unsigned int flags)
 {
     char *sock_path = NULL;
+    char *alias = NULL;
     virAdmConnectPtr conn = NULL;
     virConfPtr conf = NULL;
 
@@ -203,6 +204,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 
     VIR_DEBUG("flags=%x", flags);
     virResetLastError();
+    virCheckFlags(VIR_CONNECT_NO_ALIASES, NULL);
 
     if (!(conn = virAdmConnectNew()))
         goto error;
@@ -213,7 +215,11 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     if (!name && !(name = virAdmGetDefaultURI(conf)))
         goto error;
 
-    if (!(conn->uri = virURIParse(name)))
+    if ((!(flags & VIR_CONNECT_NO_ALIASES) &&
+         virURIResolveAlias(conf, name, &alias) < 0))
+        goto error;
+
+    if (!(conn->uri = virURIParse(alias ? alias : name)))
         goto error;
 
     if (!(sock_path = getSocketPath(conn->uri)))
@@ -229,6 +235,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 
  cleanup:
     VIR_FREE(sock_path);
+    VIR_FREE(alias);
     virConfFree(conf);
     return conn;
 
