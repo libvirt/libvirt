@@ -4243,6 +4243,29 @@ qemuProcessEndJob(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessStartHook(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     virHookQemuOpType op,
+                     virHookSubopType subop)
+{
+    char *xml;
+    int ret;
+
+    if (!virHookPresent(VIR_HOOK_DRIVER_QEMU))
+        return 0;
+
+    if (!(xml = qemuDomainDefFormatXML(driver, vm->def, 0)))
+        return -1;
+
+    ret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name, op, subop,
+                      NULL, xml, NULL);
+    VIR_FREE(xml);
+
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4338,21 +4361,10 @@ int qemuProcessStart(virConnectPtr conn,
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
     /* Run an early hook to set-up missing devices */
-    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                              VIR_HOOK_QEMU_OP_PREPARE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto error;
-    }
+    if (qemuProcessStartHook(driver, vm,
+                             VIR_HOOK_QEMU_OP_PREPARE,
+                             VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto error;
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
@@ -4655,21 +4667,10 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_FREE(tmppath);
 
     /* now that we know it is about to start call the hook if present */
-    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                              VIR_HOOK_QEMU_OP_START, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto error;
-    }
+    if (qemuProcessStartHook(driver, vm,
+                             VIR_HOOK_QEMU_OP_START,
+                             VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto error;
 
     qemuLogOperation(vm, "starting up", logfile, cmd);
 
@@ -4979,21 +4980,10 @@ int qemuProcessStart(virConnectPtr conn,
         goto error;
 
     /* finally we can call the 'started' hook script if any */
-    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
-        int hookret;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
-                              VIR_HOOK_QEMU_OP_STARTED, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, NULL);
-        VIR_FREE(xml);
-
-        /*
-         * If the script raised an error abort the launch
-         */
-        if (hookret < 0)
-            goto error;
-    }
+    if (qemuProcessStartHook(driver, vm,
+                             VIR_HOOK_QEMU_OP_STARTED,
+                             VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto error;
 
     /* Keep watching qemu log for errors during incoming migration, otherwise
      * unset reporting errors from qemu log. */
