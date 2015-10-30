@@ -224,8 +224,10 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto cleanup;
     }
 
-    if (virStorageBackendUpdateVolInfo(vol, true,
-                                       VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0)
+    /* Allow a volume read failure to ignore or skip this block file */
+    if ((retval = virStorageBackendUpdateVolInfo(vol, true,
+                                                 VIR_STORAGE_VOL_OPEN_DEFAULT,
+                                                 VIR_STORAGE_VOL_READ_NOERROR)) < 0)
         goto cleanup;
 
     if (!(vol->key = virStorageBackendSCSISerial(vol->target.path)))
