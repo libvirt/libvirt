@@ -3370,3 +3370,24 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
     virStoragePoolDefFree(pooldef);
     return ret;
 }
+
+
+/*
+ * virStoragePoolObjFindPoolByUUID
+ * @uuid: The uuid to lookup
+ *
+ * Using the passed @uuid, search the driver pools for a matching uuid.
+ * If found, then lock the pool
+ *
+ * Returns NULL if pool is not found or a locked pool object pointer
+ */
+virStoragePoolObjPtr
+virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
+{
+    virStoragePoolObjPtr pool;
+
+    storageDriverLock();
+    pool = virStoragePoolObjFindByUUID(&driver->pools, uuid);
+    storageDriverUnlock();
+    return pool;
+}

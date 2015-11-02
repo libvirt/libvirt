@@ -57,6 +57,9 @@ int virStorageFileGetMetadata(virStorageSourcePtr src,
 int virStorageTranslateDiskSourcePool(virConnectPtr conn,
                                       virDomainDiskDefPtr def);
 
+virStoragePoolObjPtr virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
+    ATTRIBUTE_NONNULL(1);
+
 virStoragePoolPtr
 storagePoolLookupByTargetPath(virConnectPtr conn,
                               const char *path)
