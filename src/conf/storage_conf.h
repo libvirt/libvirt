@@ -266,7 +266,7 @@ struct _virStoragePoolObj {
 
     char *configFile;
     char *autostartLink;
-    int active;
+    bool active;
     int autostart;
     unsigned int asyncjobs;
 

@@ -205,7 +205,7 @@ storageDriverAutostart(void)
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
-            pool->active = 1;
+            pool->active = true;
         }
         virStoragePoolObjUnlock(pool);
     }
@@ -715,7 +715,7 @@ storagePoolCreateXML(virConnectPtr conn,
         goto cleanup;
     }
     VIR_INFO("Creating storage pool '%s'", pool->def->name);
-    pool->active = 1;
+    pool->active = true;
 
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
@@ -881,7 +881,7 @@ storagePoolCreate(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    pool->active = 1;
+    pool->active = true;
     ret = 0;
 
  cleanup:
@@ -978,7 +978,7 @@ storagePoolDestroy(virStoragePoolPtr obj)
 
     virStoragePoolObjClearVols(pool);
 
-    pool->active = 0;
+    pool->active = false;
 
     if (pool->configFile == NULL) {
         virStoragePoolObjRemove(&driver->pools, pool);
@@ -1100,7 +1100,7 @@ storagePoolRefresh(virStoragePoolPtr obj,
         if (backend->stopPool)
             backend->stopPool(obj->conn, pool);
 
-        pool->active = 0;
+        pool->active = false;
 
         if (pool->configFile == NULL) {
             virStoragePoolObjRemove(&driver->pools, pool);
