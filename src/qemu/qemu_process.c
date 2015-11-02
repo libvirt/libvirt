@@ -4415,6 +4415,39 @@ qemuProcessSetupRawIO(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessSetupBalloon(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob)
+{
+    unsigned long long balloon = vm->def->mem.cur_balloon;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int period;
+    int ret = -1;
+
+    if (!vm->def->memballoon ||
+        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
+        return 0;
+
+    period = vm->def->memballoon->period;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    if (period)
+        qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
+    if (qemuMonitorSetBalloon(priv->mon, balloon) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4961,23 +4994,8 @@ int qemuProcessStart(virConnectPtr conn,
         goto error;
 
     VIR_DEBUG("Setting initial memory amount");
-    if (vm->def->memballoon &&
-        vm->def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        unsigned long long balloon = vm->def->mem.cur_balloon;
-        int period = vm->def->memballoon->period;
-
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            goto error;
-
-        if (period)
-            qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
-
-        if (qemuMonitorSetBalloon(priv->mon, balloon) < 0)
-            goto exit_monitor;
-
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto error;
-    }
+    if (qemuProcessSetupBalloon(driver, vm, asyncJob) < 0)
+        goto error;
 
     /* Since CPUs were not started yet, the balloon could not return the memory
      * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
@@ -5053,10 +5071,6 @@ int qemuProcessStart(virConnectPtr conn,
         qemuMonitorSetDomainLog(priv->mon, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
     goto cleanup;
-
- exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    goto error;
 }
 
 
