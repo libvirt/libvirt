@@ -4448,6 +4448,34 @@ qemuProcessSetupBalloon(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessMakeDir(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   const char *parentDir)
+{
+    char *path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&path, "%s/domain-%s", parentDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (virFileMakePathWithMode(path, 0750) < 0) {
+        virReportSystemError(errno, _("Cannot create directory '%s'"), path);
+        goto cleanup;
+    }
+
+    if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
+                                            vm->def, path) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4475,7 +4503,6 @@ int qemuProcessStart(virConnectPtr conn,
     unsigned int hostdev_flags = 0;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
-    char *tmppath = NULL;
     qemuProcessIncomingDefPtr incoming = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s migrateFd=%d "
@@ -4755,34 +4782,9 @@ int qemuProcessStart(virConnectPtr conn,
      * Create all per-domain directories in order to make sure domain
      * with any possible seclabels can access it.
      */
-    if (virAsprintf(&tmppath, "%s/domain-%s", cfg->libDir, vm->def->name) < 0)
+    if (qemuProcessMakeDir(driver, vm, cfg->libDir) < 0 ||
+        qemuProcessMakeDir(driver, vm, cfg->channelTargetDir) < 0)
         goto error;
-
-    if (virFileMakePathWithMode(tmppath, 0750) < 0) {
-        virReportSystemError(errno, _("Cannot create directory '%s'"), tmppath);
-        goto error;
-    }
-
-    if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
-                                            vm->def, tmppath) < 0)
-        goto error;
-
-    VIR_FREE(tmppath);
-
-    if (virAsprintf(&tmppath, "%s/domain-%s",
-                    cfg->channelTargetDir, vm->def->name) < 0)
-        goto error;
-
-    if (virFileMakePathWithMode(tmppath, 0750) < 0) {
-        virReportSystemError(errno, _("Cannot create directory '%s'"), tmppath);
-        goto error;
-    }
-
-    if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
-                                            vm->def, tmppath) < 0)
-        goto error;
-
-    VIR_FREE(tmppath);
 
     /* now that we know it is about to start call the hook if present */
     if (qemuProcessStartHook(driver, vm,
@@ -5059,7 +5061,6 @@ int qemuProcessStart(virConnectPtr conn,
     virObjectUnref(caps);
     VIR_FREE(nicindexes);
     VIR_FREE(nodeset);
-    VIR_FREE(tmppath);
     qemuProcessIncomingDefFree(incoming);
     return ret;
 
