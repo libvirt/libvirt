@@ -43,7 +43,7 @@ VIR_LOG_INIT("storage.storage_backend_scsi");
 typedef struct _virStoragePoolFCRefreshInfo virStoragePoolFCRefreshInfo;
 typedef virStoragePoolFCRefreshInfo *virStoragePoolFCRefreshInfoPtr;
 struct _virStoragePoolFCRefreshInfo {
-    char *name;
+    char *fchost_name;
     virStoragePoolObjPtr pool;
 };
 
@@ -565,7 +565,7 @@ virStoragePoolFCRefreshDataFree(void *opaque)
 {
     virStoragePoolFCRefreshInfoPtr cbdata = opaque;
 
-    VIR_FREE(cbdata->name);
+    VIR_FREE(cbdata->fchost_name);
     VIR_FREE(cbdata);
 }
 
@@ -593,7 +593,7 @@ static void
 virStoragePoolFCRefreshThread(void *opaque)
 {
     virStoragePoolFCRefreshInfoPtr cbdata = opaque;
-    const char *name = cbdata->name;
+    const char *fchost_name = cbdata->fchost_name;
     virStoragePoolObjPtr pool = cbdata->pool;
     unsigned int host;
     int found = 0;
@@ -606,10 +606,10 @@ virStoragePoolFCRefreshThread(void *opaque)
          * rescan, and find LUN's, then we are happy
          */
         VIR_DEBUG("Attempt FC Refresh for pool='%s' name='%s' tries='%d'",
-                  pool->def->name, name, tries);
+                  pool->def->name, fchost_name, tries);
         virStoragePoolObjLock(pool);
         if (virStoragePoolObjIsActive(pool) &&
-            virGetSCSIHostNumber(name, &host) == 0 &&
+            virGetSCSIHostNumber(fchost_name, &host) == 0 &&
             virStorageBackendSCSITriggerRescan(host) == 0) {
             virStoragePoolObjClearVols(pool);
             found = virStorageBackendSCSIFindLUs(pool, host);
@@ -799,7 +799,7 @@ createVport(virConnectPtr conn,
                                       adapter->data.fchost.wwpn))) {
         if (VIR_ALLOC(cbdata) == 0) {
             cbdata->pool = pool;
-            cbdata->name = name;
+            cbdata->fchost_name = name;
             name = NULL;
 
             if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
