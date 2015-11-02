@@ -4344,6 +4344,65 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessSetupRawIO(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      virCommandPtr cmd ATTRIBUTE_UNUSED)
+{
+    bool rawio = false;
+    size_t i;
+    int ret = -1;
+
+    /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDeviceDef dev;
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+
+        if (disk->rawio == VIR_TRISTATE_BOOL_YES) {
+            rawio = true;
+#ifndef CAP_SYS_RAWIO
+            break;
+#endif
+        }
+
+        dev.type = VIR_DOMAIN_DEVICE_DISK;
+        dev.data.disk = disk;
+        if (qemuAddSharedDevice(driver, &dev, vm->def->name) < 0)
+            goto cleanup;
+
+        if (qemuSetUnprivSGIO(&dev) < 0)
+            goto cleanup;
+    }
+
+    /* If rawio not already set, check hostdevs as well */
+    if (!rawio) {
+        for (i = 0; i < vm->def->nhostdevs; i++) {
+            virDomainHostdevSubsysSCSIPtr scsisrc =
+                &vm->def->hostdevs[i]->source.subsys.u.scsi;
+            if (scsisrc->rawio == VIR_TRISTATE_BOOL_YES) {
+                rawio = true;
+                break;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (rawio) {
+#ifdef CAP_SYS_RAWIO
+        if (ret == 0)
+            virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+#else
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Raw I/O is not supported on this platform"));
+        ret = -1;
+#endif
+    }
+    return ret;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4364,7 +4423,6 @@ int qemuProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     size_t i;
-    bool rawio_set = false;
     char *nodeset = NULL;
     unsigned int stop_flags;
     virQEMUDriverConfigPtr cfg;
@@ -4700,48 +4758,9 @@ int qemuProcessStart(virConnectPtr conn,
     if (cfg->clearEmulatorCapabilities)
         virCommandClearCaps(cmd);
 
-    /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDeviceDef dev;
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-
-        if (vm->def->disks[i]->rawio == VIR_TRISTATE_BOOL_YES) {
-#ifdef CAP_SYS_RAWIO
-            virCommandAllowCap(cmd, CAP_SYS_RAWIO);
-            rawio_set = true;
-#else
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Raw I/O is not supported on this platform"));
-            goto error;
-#endif
-        }
-
-        dev.type = VIR_DOMAIN_DEVICE_DISK;
-        dev.data.disk = disk;
-        if (qemuAddSharedDevice(driver, &dev, vm->def->name) < 0)
-            goto error;
-
-        if (qemuSetUnprivSGIO(&dev) < 0)
-            goto error;
-    }
-
-    /* If rawio not already set, check hostdevs as well */
-    if (!rawio_set) {
-        for (i = 0; i < vm->def->nhostdevs; i++) {
-            virDomainHostdevSubsysSCSIPtr scsisrc =
-                &vm->def->hostdevs[i]->source.subsys.u.scsi;
-            if (scsisrc->rawio == VIR_TRISTATE_BOOL_YES) {
-#ifdef CAP_SYS_RAWIO
-                virCommandAllowCap(cmd, CAP_SYS_RAWIO);
-                break;
-#else
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Raw I/O is not supported on this platform"));
-                goto error;
-#endif
-            }
-        }
-    }
+    VIR_DEBUG("Setting up raw IO");
+    if (qemuProcessSetupRawIO(driver, vm, cmd) < 0)
+        goto error;
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
     virCommandSetMaxProcesses(cmd, cfg->maxProcesses);
