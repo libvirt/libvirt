@@ -919,6 +919,15 @@ sc_require_space_before_label:
 	halt="Top-level labels should be indented by one space"        \
 	  $(_sc_search_regexp)
 
+# Allow for up to three spaces before the label: this is to avoid running
+# into situations where neither this rule nor require_space_before_label
+# would apply, eg. a line matching ^[a-zA-Z0-9]+ :$
+sc_prohibit_space_in_label:
+	@prohibit='^ {0,3}[_a-zA-Z0-9]+ +:$$'                          \
+	in_vc_files='\.[ch]$$'                                         \
+	halt="There should be no space between label name and colon"   \
+	  $(_sc_search_regexp)
+
 # Doesn't catch all cases of mismatched braces across if-else, but it helps
 sc_require_if_else_matching_braces:
 	@prohibit='(  else( if .*\))? {|} else( if .*\))?$$)'		\
