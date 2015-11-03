@@ -268,6 +268,8 @@ LOG_PROTOCOL_GENERATED = \
 		logging/log_protocol.c \
 		$(NULL)
 
+DRIVER_SOURCES += $(LOG_PROTOCOL_GENERATED)
+
 LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 EXTRA_DIST += $(LOG_PROTOCOL) \
 	$(LOG_PROTOCOL_GENERATED)
@@ -289,6 +291,8 @@ LOG_DAEMON_SOURCES = \
 		logging/log_daemon_config.c \
 		logging/log_daemon_dispatch.c \
 		logging/log_daemon_dispatch.h \
+		logging/log_handler.c \
+		logging/log_handler.h \
 		$(NULL)
 
 logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \

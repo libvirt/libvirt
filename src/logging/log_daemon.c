@@ -60,6 +60,7 @@ struct _virLogDaemon {
     virMutex lock;
     virNetDaemonPtr dmn;
     virNetServerPtr srv;
+    virLogHandlerPtr handler;
 };
 
 virLogDaemonPtr logDaemon = NULL;
@@ -114,6 +115,7 @@ virLogDaemonFree(virLogDaemonPtr logd)
     if (!logd)
         return;
 
+    virObjectUnref(logd->handler);
     virMutexDestroy(&logd->lock);
     virObjectUnref(logd->srv);
     virObjectUnref(logd->dmn);
@@ -150,11 +152,21 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         virNetDaemonAddServer(logd->dmn, logd->srv) < 0)
         goto error;
 
+    if (!(logd->handler = virLogHandlerNew(privileged)))
+        goto error;
+
     return logd;
 
  error:
     virLogDaemonFree(logd);
     return NULL;
+}
+
+
+virLogHandlerPtr
+virLogDaemonGetHandler(virLogDaemonPtr daemon)
+{
+    return daemon->handler;
 }
 
 
@@ -189,6 +201,16 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
                                                     virLogDaemonClientPreExecRestart,
                                                     virLogDaemonClientFree,
                                                     (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+        goto error;
+
+    if (!(child = virJSONValueObjectGet(object, "handler"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed daemon data from JSON file"));
+        goto error;
+    }
+
+    if (!(logd->handler = virLogHandlerNewPostExecRestart(child,
+                                                          privileged)))
         goto error;
 
     return logd;
@@ -773,6 +795,15 @@ virLogDaemonPreExecRestart(const char *state_file,
         VIR_FREE(magic);
         goto cleanup;
     }
+
+    if (!(child = virLogHandlerPreExecRestart(logDaemon->handler)))
+        goto cleanup;
+
+    if (virJSONValueObjectAppend(object, "handler", child) < 0) {
+        virJSONValueFree(child);
+        goto cleanup;
+    }
+
 
     if (!(state = virJSONValueToString(object, true)))
         goto cleanup;

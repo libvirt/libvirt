@@ -24,6 +24,7 @@
 # define __VIR_LOG_DAEMON_H__
 
 # include "virthread.h"
+# include "log_handler.h"
 
 typedef struct _virLogDaemon virLogDaemon;
 typedef virLogDaemon *virLogDaemonPtr;
@@ -38,5 +39,7 @@ struct _virLogDaemonClient {
 };
 
 extern virLogDaemonPtr logDaemon;
+
+virLogHandlerPtr virLogDaemonGetHandler(virLogDaemonPtr daemon);
 
 #endif /* __VIR_LOG_DAEMON_H__ */

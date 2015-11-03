@@ -29,9 +29,115 @@
 #include "log_daemon.h"
 #include "log_protocol.h"
 #include "virerror.h"
+#include "virthreadjob.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 VIR_LOG_INIT("logging.log_daemon_dispatch");
 
 #include "log_daemon_dispatch_stubs.h"
+
+static int
+virLogManagerProtocolDispatchDomainOpenLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                               virNetMessagePtr msg,
+                                               virNetMessageErrorPtr rerr,
+                                               virLogManagerProtocolDomainOpenLogFileArgs *args,
+                                               virLogManagerProtocolDomainOpenLogFileRet *ret)
+{
+    int fd = -1;
+    int rv = -1;
+    off_t offset;
+    ino_t inode;
+
+    if ((fd = virLogHandlerDomainOpenLogFile(virLogDaemonGetHandler(logDaemon),
+                                             args->driver,
+                                             (unsigned char *)args->dom.uuid,
+                                             args->dom.name,
+                                             &inode, &offset)) < 0)
+        goto cleanup;
+
+    ret->pos.inode = inode;
+    ret->pos.offset = offset;
+
+    if (virNetMessageAddFD(msg, fd) < 0)
+        goto cleanup;
+
+    rv = 1; /* '1' tells caller we added some FDs */
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
+
+
+static int
+virLogManagerProtocolDispatchDomainGetLogFilePosition(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                                      virNetMessageErrorPtr rerr,
+                                                      virLogManagerProtocolDomainGetLogFilePositionArgs *args,
+                                                      virLogManagerProtocolDomainGetLogFilePositionRet *ret)
+{
+    int rv = -1;
+    off_t offset;
+    ino_t inode;
+
+    if (virLogHandlerDomainGetLogFilePosition(virLogDaemonGetHandler(logDaemon),
+                                              args->driver,
+                                              (unsigned char *)args->dom.uuid,
+                                              args->dom.name,
+                                              &inode, &offset) < 0)
+        goto cleanup;
+
+    ret->pos.inode = inode;
+    ret->pos.offset = offset;
+
+    rv = 0;
+ cleanup:
+
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
+
+
+static int
+virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                               virNetMessageErrorPtr rerr,
+                                               virLogManagerProtocolDomainReadLogFileArgs *args,
+                                               virLogManagerProtocolDomainReadLogFileRet *ret)
+{
+    int rv = -1;
+    char *data;
+
+    if (args->maxlen > VIR_LOG_MANAGER_PROTOCOL_STRING_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Requested data len %zu is larger than maximum %d"),
+                       args->maxlen, VIR_LOG_MANAGER_PROTOCOL_STRING_MAX);
+        goto cleanup;
+    }
+
+    if ((data = virLogHandlerDomainReadLogFile(virLogDaemonGetHandler(logDaemon),
+                                               args->driver,
+                                               (unsigned char *)args->dom.uuid,
+                                               args->dom.name,
+                                               args->pos.inode,
+                                               args->pos.offset,
+                                               args->maxlen)) == NULL)
+        goto cleanup;
+
+    ret->data = data;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
