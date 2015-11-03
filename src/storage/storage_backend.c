@@ -714,6 +714,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                                  _("failed to create %s"), vol->target.path);
             goto cleanup;
         }
+        filecreated = true;
     }
 
     uid = (vol->target.perms->uid != st.st_uid) ? vol->target.perms->uid
@@ -740,6 +741,9 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     ret = 0;
 
  cleanup:
+    if (ret < 0 && filecreated)
+        virFileRemove(vol->target.path, vol->target.perms->uid,
+                      vol->target.perms->gid);
     return ret;
 }
 
