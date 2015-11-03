@@ -216,7 +216,9 @@ DRIVER_SOURCES =							\
 		locking/lock_manager.c locking/lock_manager.h		\
 		locking/lock_driver.h					\
 		locking/lock_driver_nop.h locking/lock_driver_nop.c	\
-		locking/domain_lock.h locking/domain_lock.c
+		locking/domain_lock.h locking/domain_lock.c		\
+		logging/log_manager.c logging/log_manager.h		\
+		$(NULL)
 
 LOCK_DRIVER_SANLOCK_SOURCES = \
 		locking/lock_driver_sanlock.c

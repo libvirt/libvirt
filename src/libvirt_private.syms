@@ -1004,6 +1004,14 @@ virLockManagerPluginUsesState;
 virLockManagerRelease;
 
 
+# logging/log_manager.h
+virLogManagerDomainGetLogFilePosition;
+virLogManagerDomainOpenLogFile;
+virLogManagerDomainReadLogFile;
+virLogManagerFree;
+virLogManagerNew;
+
+
 # nodeinfo.h
 nodeAllocPages;
 nodeCapsInitNUMA;
