@@ -78,3 +78,4 @@ module Test_libvirtd_qemu =
     { "1" = "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd" }
     { "2" = "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd" }
 }
+{ "stdio_handler" = "logd" }

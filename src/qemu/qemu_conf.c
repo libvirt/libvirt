@@ -454,6 +454,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virConfValuePtr p;
     int ret = -1;
     size_t i;
+    char *stdioHandler = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -781,6 +782,23 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_ULONG("max_files", cfg->maxFiles);
 
     GET_VALUE_STR("lock_manager", cfg->lockManagerName);
+    GET_VALUE_STR("stdio_handler", stdioHandler);
+    if (stdioHandler) {
+        if (STREQ(stdioHandler, "logd")) {
+            cfg->stdioLogD = true;
+        } else if (STREQ(stdioHandler, "file")) {
+            cfg->stdioLogD = false;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown stdio handler %s"),
+                           stdioHandler);
+            VIR_FREE(stdioHandler);
+            goto cleanup;
+        }
+        VIR_FREE(stdioHandler);
+    } else {
+        cfg->stdioLogD = true;
+    }
 
     GET_VALUE_ULONG("max_queued", cfg->maxQueuedJobs);
 

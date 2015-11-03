@@ -71,6 +71,7 @@ module Libvirtd_qemu =
                  | bool_entry "set_process_name"
                  | int_entry "max_processes"
                  | int_entry "max_files"
+                 | str_entry "stdio_handler"
 
    let device_entry = bool_entry "mac_filter"
                  | bool_entry "relaxed_acs_check"
