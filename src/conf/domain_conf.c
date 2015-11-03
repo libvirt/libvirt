@@ -1374,6 +1374,21 @@ virDomainDefGetVcpus(const virDomainDef *def)
 }
 
 
+virDomainVcpuInfoPtr
+virDomainDefGetVcpu(virDomainDefPtr def,
+                    unsigned int vcpu)
+{
+    if (vcpu > def->maxvcpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("vCPU '%u' is not present in domain definition"),
+                       vcpu);
+        return NULL;
+    }
+
+    return &def->vcpus[vcpu];
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
