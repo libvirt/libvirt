@@ -3250,7 +3250,7 @@ virNetDevGetFeatures(const char *ifname,
 
     for (i = 0; i < ARRAY_CARDINALITY(cmds); i++) {
         cmd.cmd = cmds[i].cmd;
-        if (virNetDevFeatureAvailable(ifname, &cmd))
+        if (virNetDevFeatureAvailable(ifname, &cmd) == 1)
             ignore_value(virBitmapSetBit(*out, cmds[i].feat));
     }
 
@@ -3274,7 +3274,7 @@ virNetDevGetFeatures(const char *ifname,
     };
 
     cmd.cmd = ETHTOOL_GFLAGS;
-    if (virNetDevFeatureAvailable(ifname, &cmd)) {
+    if (virNetDevFeatureAvailable(ifname, &cmd) == 1) {
         for (j = 0; j < ARRAY_CARDINALITY(flags); j++) {
             if (cmd.data & flags[j].cmd)
                 ignore_value(virBitmapSetBit(*out, flags[j].feat));
@@ -3288,7 +3288,7 @@ virNetDevGetFeatures(const char *ifname,
         return -1;
     g_cmd->cmd = ETHTOOL_GFEATURES;
     g_cmd->size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(ifname, g_cmd))
+    if (virNetDevGFeatureAvailable(ifname, g_cmd) == 1)
         ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_TXUDPTNL));
     VIR_FREE(g_cmd);
 # endif
