@@ -3151,24 +3151,19 @@ static int
 virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
 {
     int ret = -1;
-    int sock = -1;
-    virIfreq ifr;
+    int fd = -1;
+    struct ifreq ifr;
 
-    sock = socket(AF_LOCAL, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        virReportSystemError(errno, "%s", _("Cannot open control socket"));
-        goto cleanup;
-    }
+    /* Ultimately uses AF_PACKET for socket which requires privileged
+     * daemon support.
+     */
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return ret;
 
-    memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, ifname);
     ifr.ifr_data = cmd;
-    ret = ioctl(sock, SIOCETHTOOL, &ifr);
+    ret = ioctl(fd, SIOCETHTOOL, &ifr);
     if (ret != 0) {
         switch (errno) {
-            case EPERM: /* attempt to call SIOCETHTOOL from unprivileged code */
-                VIR_DEBUG("ethtool ioctl: permission denied");
-                break;
             case EINVAL: /* kernel doesn't support SIOCETHTOOL */
                 VIR_DEBUG("ethtool ioctl: invalid request");
                 break;
@@ -3182,8 +3177,7 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
     }
 
  cleanup:
-    if (sock)
-        VIR_FORCE_CLOSE(sock);
+    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
