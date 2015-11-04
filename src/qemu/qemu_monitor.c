@@ -960,6 +960,8 @@ qemuMonitorClose(qemuMonitorPtr mon)
     PROBE(QEMU_MONITOR_CLOSE,
           "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
 
+    qemuMonitorSetDomainLog(mon, -1);
+
     if (mon->fd >= 0) {
         if (mon->watch) {
             virEventRemoveHandle(mon->watch);

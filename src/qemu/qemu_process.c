@@ -5065,8 +5065,6 @@ int qemuProcessStart(virConnectPtr conn,
     /* We jump here if we failed to start the VM for any reason, or
      * if we failed to initialize the now running VM. kill it off and
      * pretend we never started it */
-    if (priv->mon)
-        qemuMonitorSetDomainLog(priv->mon, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stop_flags);
     goto cleanup;
 }
