@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 
+#include "bhyve_domain.h"
 #include "bhyve_monitor.h"
 #include "bhyve_process.h"
 #include "viralloc.h"
@@ -41,7 +42,6 @@ VIR_LOG_INIT("bhyve.bhyve_monitor");
 struct _bhyveMonitor {
     int kq;
     int watch;
-    virDomainObjPtr vm;
     bhyveConnPtr driver;
 };
 
@@ -49,7 +49,9 @@ static void
 bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
 {
     const struct timespec zerowait = { 0, 0 };
-    bhyveMonitorPtr mon = opaque;
+    virDomainObjPtr vm = opaque;
+    bhyveDomainObjPrivatePtr priv = vm->privateData;
+    bhyveMonitorPtr mon = priv->mon;
     struct kevent kev;
     int rc, status;
 
@@ -75,10 +77,10 @@ bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
     }
 
     if (kev.filter == EVFILT_PROC && (kev.fflags & NOTE_EXIT) != 0) {
-        if ((pid_t)kev.ident != mon->vm->pid) {
+        if ((pid_t)kev.ident != vm->pid) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("event from unexpected proc %ju!=%ju"),
-                        (uintmax_t)mon->vm->pid, (uintmax_t)kev.ident);
+                        (uintmax_t)vm->pid, (uintmax_t)kev.ident);
             return;
         }
 
@@ -86,28 +88,28 @@ bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
         if (WIFSIGNALED(status) && WCOREDUMP(status)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Guest %s got signal %d and crashed"),
-                           mon->vm->def->name,
+                           vm->def->name,
                            WTERMSIG(status));
-            virBhyveProcessStop(mon->driver, mon->vm,
+            virBhyveProcessStop(mon->driver, vm,
                                 VIR_DOMAIN_SHUTOFF_CRASHED);
         } else if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) == 0) {
                 /* 0 - reboot */
                 /* TODO: Implementing reboot is a little more complicated. */
                 VIR_INFO("Guest %s rebooted; destroying domain.",
-                         mon->vm->def->name);
-                virBhyveProcessStop(mon->driver, mon->vm,
+                         vm->def->name);
+                virBhyveProcessStop(mon->driver, vm,
                                     VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             } else if (WEXITSTATUS(status) < 3) {
                 /* 1 - shutdown, 2 - halt, 3 - triple fault. others - error */
                 VIR_INFO("Guest %s shut itself down; destroying domain.",
-                         mon->vm->def->name);
-                virBhyveProcessStop(mon->driver, mon->vm,
+                         vm->def->name);
+                virBhyveProcessStop(mon->driver, vm,
                                     VIR_DOMAIN_SHUTOFF_SHUTDOWN);
             } else {
                 VIR_INFO("Guest %s had an error and exited with status %d; destroying domain.",
-                         mon->vm->def->name, WEXITSTATUS(status));
-                virBhyveProcessStop(mon->driver, mon->vm,
+                         vm->def->name, WEXITSTATUS(status));
+                virBhyveProcessStop(mon->driver, vm,
                                     VIR_DOMAIN_SHUTOFF_UNKNOWN);
             }
         }
@@ -117,24 +119,24 @@ bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
 static void
 bhyveMonitorRelease(void *opaque)
 {
-    bhyveMonitorPtr mon = opaque;
+    virDomainObjPtr vm = opaque;
+    bhyveDomainObjPrivatePtr priv = vm->privateData;
+    bhyveMonitorPtr mon = priv->mon;
 
     VIR_FORCE_CLOSE(mon->kq);
-    virObjectUnref(mon->vm);
     VIR_FREE(mon);
 }
 
 bhyveMonitorPtr
 bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
 {
-    bhyveMonitorPtr mon;
+    bhyveMonitorPtr mon = NULL;
     struct kevent kev;
     int rc;
 
     if (VIR_ALLOC(mon) < 0)
         return NULL;
 
-    mon->vm = virObjectRef(vm);
     mon->driver = driver;
 
     mon->kq = kqueue();
@@ -157,7 +159,7 @@ bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver)
                                    VIR_EVENT_HANDLE_ERROR |
                                    VIR_EVENT_HANDLE_HANGUP,
                                    bhyveMonitorIO,
-                                   mon,
+                                   vm,
                                    bhyveMonitorRelease);
     if (mon->watch < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

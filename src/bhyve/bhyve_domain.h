@@ -26,11 +26,15 @@
 # include "domain_addr.h"
 # include "domain_conf.h"
 
+# include "bhyve_monitor.h"
+
 typedef struct _bhyveDomainObjPrivate bhyveDomainObjPrivate;
 typedef bhyveDomainObjPrivate *bhyveDomainObjPrivatePtr;
 struct _bhyveDomainObjPrivate {
     virDomainPCIAddressSetPtr pciaddrs;
     bool persistentAddrs;
+
+    bhyveMonitorPtr mon;
 };
 
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;

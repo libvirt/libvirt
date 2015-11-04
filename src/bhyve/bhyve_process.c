@@ -113,6 +113,7 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     virCommandPtr load_cmd = NULL;
     bhyveConnPtr privconn = conn->privateData;
+    bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1, rc;
 
     if (virAsprintf(&logfile, "%s/%s.log",
@@ -210,7 +211,7 @@ virBhyveProcessStart(virConnectPtr conn,
 
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
-    vm->privateData = bhyveMonitorOpen(vm, driver);
+    priv->mon = bhyveMonitorOpen(vm, driver);
 
     if (virDomainSaveStatus(driver->xmlopt,
                             BHYVE_STATE_DIR,
@@ -257,6 +258,7 @@ virBhyveProcessStop(bhyveConnPtr driver,
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
+    bhyveDomainObjPrivatePtr priv = vm->privateData;
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("VM '%s' not active", vm->def->name);
@@ -270,8 +272,8 @@ virBhyveProcessStop(bhyveConnPtr driver,
         return -1;
     }
 
-    if (vm->privateData != NULL)
-        bhyveMonitorClose((bhyveMonitorPtr)vm->privateData);
+    if ((priv != NULL) && (priv->mon != NULL))
+         bhyveMonitorClose(priv->mon);
 
     /* First, try to kill 'bhyve' process */
     if (virProcessKillPainfully(vm->pid, true) != 0)
@@ -358,6 +360,7 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     int nprocs;
     char **proc_argv;
     char *expected_proctitle = NULL;
+    bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
     if (!virDomainObjIsActive(vm))
@@ -379,7 +382,7 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     if (proc_argv && proc_argv[0]) {
          if (STREQ(expected_proctitle, proc_argv[0])) {
              ret = 0;
-             vm->privateData = bhyveMonitorOpen(vm, data->driver);
+             priv->mon = bhyveMonitorOpen(vm, data->driver);
          }
     }
 
