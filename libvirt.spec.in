@@ -2336,6 +2336,9 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Wed Nov  4 2015 Daniel Veillard <veillard@redhat.com> - 1.2.21-1
+- a number of improvements and bug fixes
+
 * Fri Oct  2 2015 Daniel Veillard <veillard@redhat.com> - 1.2.20-1
 - security fixes for CVE-2015-5247
 - a number of improvements and bug fixes

@@ -16,6 +16,178 @@
     to gauge progress.
     </p>
 
+   <h3>v1.2.21: Nov 04 2015</h3>
+    <ul>
+      <li>Documentation:<br/>
+      docs: event impl. registration before hypervisor connection (Dominik Perpeet),<br/>
+      libvirt-secret: Fix typo (Wei Jiangang),<br/>
+      NEWS: Fix XSLT stylesheet (Andrea Bolognani),<br/>
+      NEWS: Split releases by year (Andrea Bolognani),<br/>
+      NEWS: Unify date format (Andrea Bolognani),<br/>
+      NEWS: Unify section titles (Andrea Bolognani),<br/>
+      NEWS: Add empty lines (Andrea Bolognani),<br/>
+      NEWS: Fix indentation (Andrea Bolognani),<br/>
+      NEWS: Fix newlines (Andrea Bolognani),<br/>
+      NEWS: Fix whitespace (Andrea Bolognani),<br/>
+      NEWS: Organize old entries (Andrea Bolognani),<br/>
+      NEWS: Split old entries (2009) (Andrea Bolognani),<br/>
+      NEWS: Split old entries (2008) (Andrea Bolognani),<br/>
+      NEWS: Split old entries (2006-2007) (Andrea Bolognani),<br/>
+      NEWS: Properly escape &gt; in HTML (Andrea Bolognani),<br/>
+      NEWS: Split off merged sections (Andrea Bolognani),<br/>
+      NEWS: Remove empty sections (Andrea Bolognani),<br/>
+      NEWS: Include description for release 0.7.3 (Andrea Bolognani),<br/>
+      docs: domain: Show canonical pvspinlock XML (Cole Robinson),<br/>
+      docs: Add Cuckoo Sandbox into apps.html (Martin Kletzander)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      Fix virNetDevWaitDadFinish stub (Roman Bogorodskiy),<br/>
+      util: implement virProcessGetStartTime on GNU/kFreeBSD (Pino Toscano),<br/>
+      build: include xdr cflags for libvirt-admin (Eric Blake),<br/>
+      virt-host-validate: disable mntent code on Win32 (Daniel P. Berrange),<br/>
+      src: Remove $(builddir) usage (Andrea Bolognani)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      wireshark: Install to generic plugin directory (Michal Privoznik),<br/>
+      network: wait for DAD to finish for bridge IPv6 addresses (Maxim Perevedentsev),<br/>
+      qemu: Use live autoNodeset when numatune placement is auto (Luyao Huang),<br/>
+      virsh-domain: use correct base for virStrToLong_ui (Pavel Hrdina),<br/>
+      libvirt-domain: fix the error reporting when use the localhost as target uri (Luyao Huang),<br/>
+      qemu: fix migration flags undefinesource cannot work (Luyao Huang),<br/>
+      virsh: Display an error when passing count &lt;= 0 to setvcpus (Luyao Huang),<br/>
+      virtlockd: Don't SIGSEGV on SIGUSR1 (Michal Privoznik),<br/>
+      Close the source fd if the destination qemu exits during tunnelled migration (Shivaprasad G Bhat),<br/>
+      qemu: Fix qemu startup check for QEMU_CAPS_OBJECT_IOTHREAD (John Ferlan),<br/>
+      virsh: Use 'format' argument only when specified (Peter Krempa),<br/>
+      storage: Track successful creation of LV for removal (John Ferlan),<br/>
+      storage: Fix a resource leak in storageVolCreateXML (John Ferlan),<br/>
+      storage: Fix incorrect format for &lt;disk&gt; &lt;auth&gt; XML (John Ferlan),<br/>
+      migration: check dconnuri in p2p mode (Nikolay Shirokovskiy),<br/>
+      qemu: Resolve Coverity FORWARD_NULL (John Ferlan),<br/>
+      libxl: Resolve Coverity FORWARD_NULL (John Ferlan),<br/>
+      tests: eventtest: Fix coverity warning (Cole Robinson),<br/>
+      qemu: migration: Skip few checks while doing offline migration (Peter Krempa),<br/>
+      qemu: Wait until destination QEMU consumes all migration data (Jiri Denemark),<br/>
+      conf: Remove &lt;metadata&gt; elements with no namespace (Peter Krempa),<br/>
+      storage: Adjust calculation of alloc/capacity for disk (John Ferlan),<br/>
+      storage: Prior to creating a volume, refresh the pool (John Ferlan),<br/>
+      virfile: Fix error path for forked virFileRemove (John Ferlan),<br/>
+      rpc: libssh2: Fix regression in ssh host key verification (Peter Krempa),<br/>
+      interface: fail on OOM from virGetInterface() (Laine Stump),<br/>
+      libvirt.spec: fix accidental conditional inclusion of polkit docs (Daniel P. Berrange),<br/>
+      qemu: Use memory-backing-file only when needed (Martin Kletzander)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      util: set max wait for IPv6 DAD to 20 seconds (Laine Stump),<br/>
+      util: set error if DAD is not finished (Luyao Huang),<br/>
+      netlink: add support for multi-part netlink messages. (Maxim Perevedentsev),<br/>
+      rbd: Remove snapshots if the DELETE_WITH_SNAPSHOTS flag has been provided (Wido den Hollander),<br/>
+      bhyve: implement domainGetOSType (Roman Bogorodskiy),<br/>
+      libvirt-domain: fix no error report when p2p migrate fail (Luyao Huang),<br/>
+      conf: Add serial target type to ABI stability check (Luyao Huang),<br/>
+      lock_daemon: Switch to wrapper locking functions (Michal Privoznik),<br/>
+      qemu: hostdev: Introduce qemuHostdevUpdateActiveDomainDevices() (Andrea Bolognani),<br/>
+      qemu: hostdev: Unify naming for qemuHostdevUpdateActive*Devices() (Andrea Bolognani),<br/>
+      qemu: hostdev: Unify naming for qemuHostdevReAttach*Devices() (Andrea Bolognani),<br/>
+      qemu: hostdev: Unify naming for qemuHostdevPrepare*Devices() (Andrea Bolognani),<br/>
+      hostdev: Rename virHostdevUpdateDomainActiveDevices() (Andrea Bolognani),<br/>
+      conf: Fix error message to use correct parameter (John Ferlan),<br/>
+      util: Produce friendlier error message to user (Luyao Huang),<br/>
+      util: Adjust error paths for virNumaSetPagePoolSize (Luyao Huang),<br/>
+      util: split the virNumaGetHugePageInfoPath into separate function (Luyao Huang),<br/>
+      Avoid using !STREQ and !STRNEQ (Ishmanpreet Kaur Khera),<br/>
+      vz: implement some domain API calls (Maxim Nestratov),<br/>
+      vz: implement API calls of nodeGetxxx family (Maxim Nestratov),<br/>
+      vz: implement connectGetMaxVcpus API calls (Maxim Nestratov),<br/>
+      security_dac: Introduce remember/recall APIs (Michal Privoznik),<br/>
+      security_dac: Limit usage of virSecurityDACSetOwnershipInternal (Michal Privoznik),<br/>
+      virSecurityDACRestoreSecurityFileLabel: Pass virSecurityDACDataPtr (Michal Privoznik),<br/>
+      virSecurityDACSetOwnership: Pass virSecurityDACDataPtr (Michal Privoznik),<br/>
+      virSecurityDACSetOwnershipInternal: Don't chown so often (Michal Privoznik),<br/>
+      security_dac: Fix TODO marks (Michal Privoznik),<br/>
+      conf: Optimize the iothreadid initialization (John Ferlan),<br/>
+      qemu: Check for niothreads == 0 in qemuSetupCgroupForIOThreads (John Ferlan),<br/>
+      qemu: Use 'niothreadids' instead of 'iothreads' (John Ferlan),<br/>
+      Fix conficts with HACKING doc (Wei Jiangang),<br/>
+      conf: Refactor the iothreadid initialization (John Ferlan),<br/>
+      tests: make redirects happen in correct order (Wei Jiangang),<br/>
+      storage: Rework error paths for virStorageBackendCreateExecCommand (John Ferlan),<br/>
+      storage: On error rmdir created directory in virDirCreate[NoFork] (John Ferlan),<br/>
+      storage: On error unlink created file in virFileOpen{As|Forked} (John Ferlan),<br/>
+      storage: Remove duplicitous refreshVol in Sheepdog buildVol (John Ferlan),<br/>
+      storage: Remove duplicitous refreshVol in RBD buildVol (John Ferlan),<br/>
+      virt-host-validate: check for IOMMU support (Daniel P. Berrange),<br/>
+      libvirt-domain: Drop virDomainMigrateCheckNotLocal attribute (Michal Privoznik),<br/>
+      virt-host-validate: check for required cgroups (Daniel P. Berrange),<br/>
+      virt-host-validate: distinguish exists vs accessible for devices (Daniel P. Berrange),<br/>
+      virt-host-validate.c: check for kernel namespaces (Daniel P. Berrange),<br/>
+      migration: refactor: introduce parameter checking function (Nikolay Shirokovskiy),<br/>
+      migration: merge all proto branches into single function (Nikolay Shirokovskiy),<br/>
+      migration: refactor: refactor parameter compatibility checks (Nikolay Shirokovskiy),<br/>
+      migration: refactor: extract parameter adaption functions (Nikolay Shirokovskiy),<br/>
+      migration: refactor: introduce params version of unmanaged (Nikolay Shirokovskiy),<br/>
+      migration: refactor: merge direct and p2p into unmanaged (Nikolay Shirokovskiy),<br/>
+      migration: refactor: rename uri parameter to miguri (Nikolay Shirokovskiy),<br/>
+      migration: remove direct migration dependency on version1 of driver (Michal Privoznik),<br/>
+      migration: move implementation check to branches in p2p (Nikolay Shirokovskiy),<br/>
+      migration: refactor: reuse p2p url check (Nikolay Shirokovskiy),<br/>
+      migration: refactor: get rid of use_params p2p_full (Nikolay Shirokovskiy),<br/>
+      virJSONValueArraySize: return ssize_t (Michal Privoznik),<br/>
+      src: Include $(builddir)/util in the header search path (Andrea Bolognani),<br/>
+      storage: Perform some cleanup of calls (John Ferlan),<br/>
+      AUTHORS: Add myself to the list of committers (Andrea Bolognani),<br/>
+      virSecurityManagerNew: Turn array of booleans into flags (Michal Privoznik),<br/>
+      qemu: Fix indentation issue (Andrea Bolognani),<br/>
+      qemu: Remove explicit values from virQEMUCapsFlags (Andrea Bolognani),<br/>
+      qemu: migration: Use migration flags in qemuMigrationIsAllowed (Peter Krempa),<br/>
+      qemu: migration: Drop @def from qemuMigrationIsAllowed (Peter Krempa),<br/>
+      qemu: migration: Split source and destination migration checks (Peter Krempa),<br/>
+      spec: Delete .git after applying patches (Cole Robinson),<br/>
+      tests: qemu: Add aarch64 virtio pci tests (Cole Robinson),<br/>
+      qemu: Make updating stats in qemuMigrationCheckJobStatus optional (Jiri Denemark),<br/>
+      qemu: Introduce flags in qemuMigrationCompleted (Jiri Denemark),<br/>
+      qemu: Copy completed migration stats only on success (Jiri Denemark),<br/>
+      qemu: Always update migration times on destination (Jiri Denemark),<br/>
+      tests: Check GIC-related XMLs in qemuxml2xmltest (Martin Kletzander),<br/>
+      Do not distribute generated virkeymaps.h (Martin Kletzander),<br/>
+      apparmor: differentiate between error and unconfined profiles (Cédric Bosdonnat),<br/>
+      testutils: Drop virtTestResult (Cole Robinson),<br/>
+      tests: eventtest: Open code virtTestResult (Cole Robinson),<br/>
+      tests: sheepdog: Drop use of virtTestResult (Cole Robinson),<br/>
+      testutils: Add coloring to verbose PASS/FAILED output (Cole Robinson),<br/>
+      storage: Introduce virStorageBackendDiskStartPool (John Ferlan),<br/>
+      storage: Add additional errors/checks for disk label (John Ferlan),<br/>
+      storage: Add param to check whether we can write a disk label (John Ferlan),<br/>
+      storage: Refactor disk label checking (John Ferlan),<br/>
+      virfile: Add extra check for direct delete in virFileRemove (John Ferlan),<br/>
+      qemu: Add conditions for qemu-kvm use on ppc64 (Andrea Bolognani),<br/>
+      rpc: libssh2: Add more debugging info (Peter Krempa),<br/>
+      conf: Reuse virDomainDefCheckDuplicateDiskWWN to check disk serial too (Peter Krempa),<br/>
+      qemu: Perform the disk WWN check only on fresh starts (Peter Krempa),<br/>
+      interface: let netcf pre-filter for active vs. inactive (Laine Stump),<br/>
+      interface: re-use name and mac address rather than re-retrieving (Laine Stump),<br/>
+      interface: report correct interface count when not returning list (Laine Stump),<br/>
+      qemu: Add -mem-path even with numa (Martin Kletzander),<br/>
+      qemu: Extract -mem-path building into its own function (Martin Kletzander),<br/>
+      qemu: Move memory size detection to the top of the function (Martin Kletzander),<br/>
+      qemu: Move simplification variable to begining of the function (Martin Kletzander),<br/>
+      qemu: Add test cases for gic-version option (Pavel Fedin),<br/>
+      qemu: Add support for gic-version machine option (Pavel Fedin),<br/>
+      qemu: Introduce QEMU_CAPS_MACH_VIRT_GIC_VERSION capability (Pavel Fedin),<br/>
+      Post-release version bump to 1.2.21 (Martin Kletzander)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      tests: Remove unused nodeinfo test data (Andrea Bolognani),<br/>
+      vz: cleanup (Maxim Nestratov),<br/>
+      vz: remove storage driver as never used (Maxim Nestratov),<br/>
+      vz: remove network driver as never used (Maxim Nestratov)<br/>
+      </li>
+    </ul>
+
     <h3>1.2.20: Oct 02 2015</h3>
     <ul>
       <li>Security:<br/>
