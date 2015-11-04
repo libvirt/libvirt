@@ -3239,7 +3239,8 @@ virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
  * @ifname: name of the interface
  * @out: bitmap of the available virNetDevFeature feature bits
  *
- * Returns 0 on success, -1 on failure.
+ * Returns 0 on success or if called from session mode, -1 on failure.
+ * If called from session mode, an empty bitmap is returned.
  */
 int
 virNetDevGetFeatures(const char *ifname,
@@ -3270,6 +3271,12 @@ virNetDevGetFeatures(const char *ifname,
 
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
+
+    /* Only fetch features if we're privileged, but no need to fail */
+    if (geteuid() != 0) {
+        VIR_DEBUG("ETHTOOL feature bits not available in session mode");
+        return 0;
+    }
 
     for (i = 0; i < ARRAY_CARDINALITY(cmds); i++) {
         cmd.cmd = cmds[i].cmd;
