@@ -106,7 +106,7 @@ int virNetDevClearIPAddress(const char *ifname,
 int virNetDevGetIPAddress(const char *ifname, virSocketAddrPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1);
 
 
 int virNetDevSetMAC(const char *ifname,
