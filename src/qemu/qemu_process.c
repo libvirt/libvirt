@@ -4900,9 +4900,6 @@ int qemuProcessStart(virConnectPtr conn,
         goto error;
     VIR_DEBUG("Handshake complete, child running");
 
-    if (incoming)
-        flags |= VIR_QEMU_PROCESS_START_PAUSED;
-
     if (rv == -1) /* The VM failed to start; tear filters before taps */
         virDomainConfVMNWFilterTeardown(vm);
 
