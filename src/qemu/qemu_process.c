@@ -52,7 +52,6 @@
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "c-ctype.h"
 #include "nodeinfo.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
@@ -1675,76 +1674,6 @@ qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar)
     return off;
 }
 
-typedef int qemuProcessLogHandleOutput(virDomainObjPtr vm,
-                                       const char *output,
-                                       int fd);
-
-/*
- * Returns -1 for error, 0 on success
- */
-static int
-qemuProcessReadLogOutput(virDomainObjPtr vm,
-                         int fd,
-                         char *buf,
-                         size_t buflen,
-                         qemuProcessLogHandleOutput func,
-                         const char *what,
-                         int timeout)
-{
-    int retries = (timeout*10);
-    int got = 0;
-    int ret = -1;
-
-    buf[0] = '\0';
-
-    while (retries) {
-        ssize_t func_ret;
-        bool isdead;
-
-        func_ret = func(vm, buf, fd);
-
-        isdead = kill(vm->pid, 0) == -1 && errno == ESRCH;
-
-        got = qemuProcessReadLog(fd, buf, buflen, got, false);
-        if (got < 0) {
-            virReportSystemError(errno,
-                                 _("Failure while reading %s log output"),
-                                 what);
-            goto cleanup;
-        }
-
-        if (got == buflen-1) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Out of space while reading %s log output: %s"),
-                           what, buf);
-            goto cleanup;
-        }
-
-        if (isdead) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Process exited while reading %s log output: %s"),
-                           what, buf);
-            goto cleanup;
-        }
-
-        if (func_ret <= 0) {
-            ret = func_ret;
-            goto cleanup;
-        }
-
-        usleep(100*1000);
-        retries--;
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Timed out while reading %s log output: %s"),
-                   what, buf);
-
- cleanup:
-    return ret;
-}
-
-
 /*
  * Read domain log and probably overwrite error if there's one in
  * the domain log file. This function exists to cover the small
@@ -1808,54 +1737,6 @@ qemuProcessReadChildErrors(virQEMUDriverPtr driver,
     return ret;
 }
 
-
-/*
- * Look at a chunk of data from the QEMU stdout logs and try to
- * find a TTY device, as indicated by a line like
- *
- * char device redirected to /dev/pts/3
- *
- * Returns -1 for error, 0 success, 1 continue reading
- */
-static int
-qemuProcessExtractTTYPath(const char *haystack,
-                          size_t *offset,
-                          char **path)
-{
-    static const char needle[] = "char device redirected to";
-    char *tmp, *dev;
-
-    VIR_FREE(*path);
-    /* First look for our magic string */
-    if (!(tmp = strstr(haystack + *offset, needle)))
-        return 1;
-    tmp += sizeof(needle);
-    dev = tmp;
-
-    /*
-     * And look for first whitespace character and nul terminate
-     * to mark end of the pty path
-     */
-    while (*tmp) {
-        if (c_isspace(*tmp)) {
-            if (VIR_STRNDUP(*path, dev, tmp - dev) < 0)
-                return -1;
-
-            /* ... now further update offset till we get EOL */
-            *offset = tmp - haystack;
-            return 0;
-        }
-        tmp++;
-    }
-
-    /*
-     * We found a path, but didn't find any whitespace,
-     * so it must be still incomplete - we should at
-     * least see a \n - indicate that we want to carry
-     * on trying again
-     */
-    return 1;
-}
 
 static int
 qemuProcessLookupPTYs(virDomainDefPtr def,
@@ -1950,72 +1831,6 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
                               vm->def->consoles + i, vm->def->nconsoles - i,
                               info) < 0)
         return -1;
-
-    return 0;
-}
-
-static int
-qemuProcessFindCharDevicePTYs(virDomainObjPtr vm,
-                              const char *output,
-                              int fd ATTRIBUTE_UNUSED)
-{
-    size_t offset = 0;
-    int ret;
-    size_t i;
-
-    /* The order in which QEMU prints out the PTY paths is
-       the order in which it procsses its serial and parallel
-       device args. This code must match that ordering.... */
-
-    /* first comes the serial devices */
-    for (i = 0; i < vm->def->nserials; i++) {
-        virDomainChrDefPtr chr = vm->def->serials[i];
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemuProcessExtractTTYPath(output, &offset,
-                                                 &chr->source.data.file.path)) != 0)
-                return ret;
-        }
-    }
-
-    /* then the parallel devices */
-    for (i = 0; i < vm->def->nparallels; i++) {
-        virDomainChrDefPtr chr = vm->def->parallels[i];
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemuProcessExtractTTYPath(output, &offset,
-                                                 &chr->source.data.file.path)) != 0)
-                return ret;
-        }
-    }
-
-    /* then the channel devices */
-    for (i = 0; i < vm->def->nchannels; i++) {
-        virDomainChrDefPtr chr = vm->def->channels[i];
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if ((ret = qemuProcessExtractTTYPath(output, &offset,
-                                                 &chr->source.data.file.path)) != 0)
-                return ret;
-        }
-    }
-
-    for (i = 0; i < vm->def->nconsoles; i++) {
-        virDomainChrDefPtr chr = vm->def->consoles[i];
-        /* For historical reasons, console[0] can be just an alias
-         * for serial[0]; That's why we need to update it as well */
-        if (i == 0 && vm->def->nserials &&
-            chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
-            if ((ret = virDomainChrSourceDefCopy(&chr->source,
-                                                 &((vm->def->serials[0])->source))) != 0)
-                return ret;
-        } else {
-            if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
-                chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
-                if ((ret = qemuProcessExtractTTYPath(output, &offset,
-                                                     &chr->source.data.file.path)) != 0)
-                    return ret;
-            }
-        }
-    }
 
     return 0;
 }
@@ -2140,15 +1955,6 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
         (logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
         return -1;
 
-    if (logfd != -1 && !virQEMUCapsUsedQMP(qemuCaps)) {
-        if (VIR_ALLOC_N(buf, buf_size) < 0)
-            goto closelog;
-
-        if (qemuProcessReadLogOutput(vm, logfd, buf, buf_size,
-                                     qemuProcessFindCharDevicePTYs,
-                                     "console", 30) < 0)
-            goto closelog;
-    }
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
     if (qemuConnectMonitor(driver, vm, asyncJob, logfd) < 0)
@@ -2180,20 +1986,16 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     virHashFree(info);
 
     if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
-        int len;
         /* VM is dead, any other error raised in the interim is probably
          * not as important as the qemu cmdline output */
-        if (virQEMUCapsUsedQMP(qemuCaps)) {
-            if (VIR_ALLOC_N(buf, buf_size) < 0)
-                goto closelog;
-        }
+        if (VIR_ALLOC_N(buf, buf_size) < 0)
+            goto closelog;
 
-        len = strlen(buf);
         /* best effort seek - we need to reset to the original position, so that
          * a possible read of the fd in the monitor code doesn't influence this
          * error delivery option */
         ignore_value(lseek(logfd, pos, SEEK_SET));
-        qemuProcessReadLog(logfd, buf + len, buf_size - len - 1, 0, true);
+        qemuProcessReadLog(logfd, buf, buf_size - 1, 0, true);
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("process exited while connecting to monitor: %s"),
                        buf);

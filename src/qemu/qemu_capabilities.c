@@ -3842,11 +3842,6 @@ virQEMUCapsCacheFree(virQEMUCapsCachePtr cache)
     VIR_FREE(cache);
 }
 
-bool
-virQEMUCapsUsedQMP(virQEMUCapsPtr qemuCaps)
-{
-    return qemuCaps->usedQMP;
-}
 
 bool
 virQEMUCapsSupportsChardev(virDomainDefPtr def,
