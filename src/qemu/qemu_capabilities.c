@@ -1458,6 +1458,13 @@ int virQEMUCapsParseHelpStr(const char *qemu,
 
     *version = (major * 1000 * 1000) + (minor * 1000) + micro;
 
+    if (*version < 12000) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("QEMU version >= 0.12.00 is required, but %d.%d.%d found"),
+                       major, minor, micro);
+        goto cleanup;
+    }
+
     /* Refuse to parse -help output for QEMU releases >= 1.2.0 that should be
      * using QMP probing.
      */

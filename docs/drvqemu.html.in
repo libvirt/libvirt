@@ -8,7 +8,7 @@
 
     <p>
       The libvirt KVM/QEMU driver can manage any QEMU emulator from
-      version 0.8.1 or later. It can also manage Xenner, which
+      version 0.12.0 or later. It can also manage Xenner, which
       provides the same QEMU command line syntax and monitor
       interaction.
     </p>
