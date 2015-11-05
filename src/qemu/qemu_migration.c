@@ -3291,6 +3291,80 @@ qemuMigrationPrepareCleanup(virQEMUDriverPtr driver,
     qemuDomainObjDiscardAsyncJob(driver, vm);
 }
 
+static char *
+qemuMigrationPrepareIncoming(virDomainObjPtr vm,
+                             bool tunnel,
+                             const char *protocol,
+                             const char *listenAddress,
+                             unsigned short port)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *migrateFrom = NULL;
+
+    if (tunnel) {
+        if (VIR_STRDUP(migrateFrom, "stdio") < 0)
+            goto cleanup;
+    } else {
+        bool encloseAddress = false;
+        bool hostIPv6Capable = false;
+        bool qemuIPv6Capable = false;
+        struct addrinfo *info = NULL;
+        struct addrinfo hints = { .ai_flags = AI_ADDRCONFIG,
+                                  .ai_socktype = SOCK_STREAM };
+        const char *incFormat;
+
+        if (getaddrinfo("::", NULL, &hints, &info) == 0) {
+            freeaddrinfo(info);
+            hostIPv6Capable = true;
+        }
+        qemuIPv6Capable = virQEMUCapsGet(priv->qemuCaps,
+                                         QEMU_CAPS_IPV6_MIGRATION);
+
+        if (listenAddress) {
+            if (virSocketAddrNumericFamily(listenAddress) == AF_INET6) {
+                if (!qemuIPv6Capable) {
+                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                                   _("qemu isn't capable of IPv6"));
+                    goto cleanup;
+                }
+                if (!hostIPv6Capable) {
+                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                                   _("host isn't capable of IPv6"));
+                    goto cleanup;
+                }
+                /* IPv6 address must be escaped in brackets on the cmd line */
+                encloseAddress = true;
+            } else {
+                /* listenAddress is a hostname or IPv4 */
+            }
+        } else if (qemuIPv6Capable && hostIPv6Capable) {
+            /* Listen on :: instead of 0.0.0.0 if QEMU understands it
+             * and there is at least one IPv6 address configured
+             */
+            listenAddress = "::";
+            encloseAddress = true;
+        } else {
+            listenAddress = "0.0.0.0";
+        }
+
+        /* QEMU will be started with
+         *   -incoming protocol:[<IPv6 addr>]:port,
+         *   -incoming protocol:<IPv4 addr>:port, or
+         *   -incoming protocol:<hostname>:port
+         */
+        if (encloseAddress)
+            incFormat = "%s:[%s]:%d";
+        else
+            incFormat = "%s:%s:%d";
+        if (virAsprintf(&migrateFrom, incFormat,
+                        protocol, listenAddress, port) < 0)
+            goto cleanup;
+    }
+
+ cleanup:
+    return migrateFrom;
+}
+
 static int
 qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         virConnectPtr dconn,
@@ -3397,75 +3471,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         }
     }
 
-    if (tunnel) {
-        /* QEMU will be started with -incoming stdio
-         * (which qemu_command might convert to exec:cat or fd:n)
-         */
-        if (VIR_STRDUP(migrateFrom, "stdio") < 0)
-            goto cleanup;
-    } else {
-        bool encloseAddress = false;
-        bool hostIPv6Capable = false;
-        bool qemuIPv6Capable = false;
-        virQEMUCapsPtr qemuCaps = NULL;
-        struct addrinfo *info = NULL;
-        struct addrinfo hints = { .ai_flags = AI_ADDRCONFIG,
-                                  .ai_socktype = SOCK_STREAM };
-        const char *incFormat;
-
-        if (getaddrinfo("::", NULL, &hints, &info) == 0) {
-            freeaddrinfo(info);
-            hostIPv6Capable = true;
-        }
-        if (!(qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                    (*def)->emulator,
-                                                    (*def)->os.machine)))
-            goto cleanup;
-
-        qemuIPv6Capable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
-        virObjectUnref(qemuCaps);
-
-        if (listenAddress) {
-            if (virSocketAddrNumericFamily(listenAddress) == AF_INET6) {
-                if (!qemuIPv6Capable) {
-                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                                   _("qemu isn't capable of IPv6"));
-                    goto cleanup;
-                }
-                if (!hostIPv6Capable) {
-                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                                   _("host isn't capable of IPv6"));
-                    goto cleanup;
-                }
-                /* IPv6 address must be escaped in brackets on the cmd line */
-                encloseAddress = true;
-            } else {
-                /* listenAddress is a hostname or IPv4 */
-            }
-        } else if (qemuIPv6Capable && hostIPv6Capable) {
-            /* Listen on :: instead of 0.0.0.0 if QEMU understands it
-             * and there is at least one IPv6 address configured
-             */
-            listenAddress = "::";
-            encloseAddress = true;
-        } else {
-            listenAddress = "0.0.0.0";
-        }
-
-        /* QEMU will be started with
-         *   -incoming protocol:[<IPv6 addr>]:port,
-         *   -incoming protocol:<IPv4 addr>:port, or
-         *   -incoming protocol:<hostname>:port
-         */
-        if (encloseAddress)
-            incFormat = "%s:[%s]:%d";
-        else
-            incFormat = "%s:%s:%d";
-        if (virAsprintf(&migrateFrom, incFormat,
-                        protocol, listenAddress, port) < 0)
-            goto cleanup;
-    }
-
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
@@ -3519,6 +3524,17 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                              _("cannot create pipe for tunnelled migration"));
         goto endjob;
     }
+
+    virObjectUnref(priv->qemuCaps);
+    priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                vm->def->emulator,
+                                                vm->def->os.machine);
+    if (!priv->qemuCaps)
+        goto endjob;
+
+    if (!(migrateFrom = qemuMigrationPrepareIncoming(vm, tunnel, protocol,
+                                                     listenAddress, port)))
+        goto endjob;
 
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming $migrateFrom
