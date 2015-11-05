@@ -865,7 +865,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 {
     virCapsGuestPtr guest;
     bool haskvm = false;
-    bool haskqemu = false;
     virCapsGuestMachinePtr *machines = NULL;
     size_t nmachines = 0;
     int ret = -1;
@@ -879,10 +878,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
          virQEMUCapsGet(qemubinCaps, QEMU_CAPS_ENABLE_KVM) ||
          kvmbin))
         haskvm = true;
-
-    if (virFileExists("/dev/kqemu") &&
-        virQEMUCapsGet(qemubinCaps, QEMU_CAPS_KQEMU))
-        haskqemu = true;
 
     if (virQEMUCapsGetMachineTypesCaps(qemubinCaps, &nmachines, &machines) < 0)
         goto cleanup;
@@ -920,15 +915,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_QEMU,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        goto cleanup;
-
-    if (haskqemu &&
-        virCapabilitiesAddGuestDomain(guest,
-                                      VIR_DOMAIN_VIRT_KQEMU,
                                       NULL,
                                       NULL,
                                       0,
@@ -1103,10 +1089,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
     const char *p;
     const char *fsdev, *netdev;
 
-    if (strstr(help, "-no-kqemu"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_KQEMU);
-    if (strstr(help, "-enable-kqemu"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_KQEMU);
     if (strstr(help, "-no-kvm"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
     if (strstr(help, "-enable-kvm"))

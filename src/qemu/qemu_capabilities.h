@@ -30,10 +30,23 @@
 # include "qemu_monitor.h"
 # include "domain_capabilities.h"
 
-/* Internal flags to keep track of qemu command line capabilities */
+/*
+ * Internal flags to keep track of qemu command line capabilities
+ *
+ * As a general rule these flags must not be deleted / renamed, as
+ * they are serialized in string format into the runtime XML file
+ * for guests, and new libvirt needs to cope with reading flags
+ * defined by old libvirt.
+ *
+ * The exception to this rule is when we drop support for running
+ * with older QEMU versions entirely. When a flag is no longer needed
+ * we temporarily give it an X_ prefix to indicate it should no
+ * longer be used in code. Periodically we can then purge all the
+ * X_ flags and re-group what's left.
+ */
 typedef enum {
     /* 0 */
-    QEMU_CAPS_KQEMU, /* Whether KQEMU is compiled in */
+    X_QEMU_CAPS_KQEMU, /* Whether KQEMU is compiled in */
     QEMU_CAPS_VNC_COLON, /* VNC takes or address + display */
     QEMU_CAPS_NO_REBOOT, /* Is the -no-reboot flag available */
     QEMU_CAPS_DRIVE, /* Is the new -drive arg available */
@@ -86,7 +99,7 @@ typedef enum {
     QEMU_CAPS_PCI_CONFIGFD, /* pci-assign.configfd */
     QEMU_CAPS_NODEFCONFIG, /* -nodefconfig */
     QEMU_CAPS_BOOT_MENU, /* -boot menu=on support */
-    QEMU_CAPS_ENABLE_KQEMU, /* -enable-kqemu flag */
+    X_QEMU_CAPS_ENABLE_KQEMU, /* -enable-kqemu flag */
 
     /* 40 */
     QEMU_CAPS_FSDEV, /* -fstype filesystem passthrough */

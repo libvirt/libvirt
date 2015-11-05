@@ -7707,36 +7707,21 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    bool disableKQEMU = false;
-    bool enableKQEMU = false;
     bool disableKVM = false;
     bool enableKVM = false;
 
     switch (def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = true;
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
             disableKVM = true;
         break;
 
     case VIR_DOMAIN_VIRT_KQEMU:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = true;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KQEMU)) {
-            enableKQEMU = true;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the QEMU binary does not support kqemu"));
-            return -1;
-        }
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("the QEMU binary does not support kqemu"));
         break;
 
     case VIR_DOMAIN_VIRT_KVM:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KQEMU))
-            disableKQEMU = true;
-
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM)) {
             enableKVM = true;
         } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
@@ -7757,10 +7742,6 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
         return -1;
     }
 
-    if (disableKQEMU)
-        virCommandAddArg(cmd, "-no-kqemu");
-    else if (enableKQEMU)
-        virCommandAddArgList(cmd, "-enable-kqemu", "-kernel-kqemu", NULL);
     if (disableKVM)
         virCommandAddArg(cmd, "-no-kvm");
     if (enableKVM)
