@@ -1093,8 +1093,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
     if (strstr(help, "-enable-kvm"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_KVM);
-    if (strstr(help, "-no-reboot"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_REBOOT);
     if (strstr(help, "-name")) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
         if (strstr(help, ",process="))
@@ -3216,7 +3214,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_REBOOT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_UUID);

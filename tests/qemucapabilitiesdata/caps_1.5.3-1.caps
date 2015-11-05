@@ -1,5 +1,4 @@
   <qemuCaps>
-    <flag name='no-reboot'/>
     <flag name='drive'/>
     <flag name='name'/>
     <flag name='uuid'/>

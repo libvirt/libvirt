@@ -86,7 +86,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     virQEMUCapsSetList(extraFlags,
-                       QEMU_CAPS_NO_REBOOT,
                        QEMU_CAPS_NO_ACPI,
                        QEMU_CAPS_LAST);
 

@@ -9774,15 +9774,13 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_REBOOT)) {
-        /* Only add -no-reboot option if each event destroys domain */
-        if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
-            def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
-            (def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY ||
-             def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)) {
-            allowReboot = false;
-            virCommandAddArg(cmd, "-no-reboot");
-        }
+    /* Only add -no-reboot option if each event destroys domain */
+    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+        (def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY ||
+         def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)) {
+        allowReboot = false;
+        virCommandAddArg(cmd, "-no-reboot");
     }
 
     /* If JSON monitor is enabled, we can receive an event

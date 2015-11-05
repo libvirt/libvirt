@@ -292,7 +292,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     monitor_chr.data.nix.listen = true;
 
     virQEMUCapsSetList(extraFlags,
-                       QEMU_CAPS_NO_REBOOT,
                        QEMU_CAPS_NO_ACPI,
                        QEMU_CAPS_LAST);
 
