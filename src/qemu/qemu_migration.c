@@ -1236,6 +1236,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                            _("Unsupported migration cookie feature %s"),
                            str);
             VIR_FREE(str);
+            goto error;
         }
         VIR_FREE(str);
     }
