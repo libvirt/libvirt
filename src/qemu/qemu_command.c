@@ -8210,97 +8210,90 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-            switch (virDomainGraphicsListenGetType(graphics, 0)) {
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+        switch (virDomainGraphicsListenGetType(graphics, 0)) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
+            if (!listenNetwork)
                 break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-                if (!listenNetwork)
-                    break;
-                ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-                if (ret <= -2) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("network-based listen not possible, "
-                                           "network driver not present"));
-                    goto error;
-                }
-                if (ret < 0)
-                    goto error;
-
-                listenAddr = netAddr;
-                /* store the address we found in the <graphics> element so it
-                 * will show up in status. */
-                if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                      listenAddr, -1, false) < 0)
-                    goto error;
-                break;
-            }
-
-            if (!listenAddr)
-                listenAddr = cfg->vncListen;
-
-            escapeAddr = strchr(listenAddr, ':') != NULL;
-            if (escapeAddr)
-                virBufferAsprintf(&opt, "[%s]", listenAddr);
-            else
-                virBufferAdd(&opt, listenAddr, -1);
-            virBufferAsprintf(&opt, ":%d",
-                              graphics->data.vnc.port - 5900);
-
-            VIR_FREE(netAddr);
-        } else {
-            virBufferAsprintf(&opt, "%d",
-                              graphics->data.vnc.port - 5900);
-        }
-    }
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_COLON)) {
-        if (!graphics->data.vnc.socket &&
-            graphics->data.vnc.websocket) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VNC WebSockets are not supported "
-                                     "with this QEMU binary"));
-                    goto error;
-                }
-                virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
-            }
-
-        if (graphics->data.vnc.sharePolicy) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("vnc display sharing policy is not "
-                                 "supported with this QEMU"));
+            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+            if (ret <= -2) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("network-based listen not possible, "
+                                       "network driver not present"));
                 goto error;
             }
+            if (ret < 0)
+                goto error;
 
-            virBufferAsprintf(&opt, ",share=%s",
-                              virDomainGraphicsVNCSharePolicyTypeToString(
+            listenAddr = netAddr;
+            /* store the address we found in the <graphics> element so it
+             * will show up in status. */
+            if (virDomainGraphicsListenSetAddress(graphics, 0,
+                                                  listenAddr, -1, false) < 0)
+                goto error;
+            break;
+        }
+
+        if (!listenAddr)
+            listenAddr = cfg->vncListen;
+
+        escapeAddr = strchr(listenAddr, ':') != NULL;
+        if (escapeAddr)
+            virBufferAsprintf(&opt, "[%s]", listenAddr);
+        else
+            virBufferAdd(&opt, listenAddr, -1);
+        virBufferAsprintf(&opt, ":%d",
+                          graphics->data.vnc.port - 5900);
+
+        VIR_FREE(netAddr);
+    }
+
+    if (!graphics->data.vnc.socket &&
+        graphics->data.vnc.websocket) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("VNC WebSockets are not supported "
+                             "with this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
+    }
+
+    if (graphics->data.vnc.sharePolicy) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc display sharing policy is not "
+                             "supported with this QEMU"));
+            goto error;
+        }
+
+        virBufferAsprintf(&opt, ",share=%s",
+                          virDomainGraphicsVNCSharePolicyTypeToString(
                               graphics->data.vnc.sharePolicy));
-        }
+    }
 
-        if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
-            virBufferAddLit(&opt, ",password");
+    if (graphics->data.vnc.auth.passwd || cfg->vncPassword)
+        virBufferAddLit(&opt, ",password");
 
-        if (cfg->vncTLS) {
-            virBufferAddLit(&opt, ",tls");
-            if (cfg->vncTLSx509verify)
-                virBufferAsprintf(&opt, ",x509verify=%s", cfg->vncTLSx509certdir);
-            else
-                virBufferAsprintf(&opt, ",x509=%s", cfg->vncTLSx509certdir);
-        }
+    if (cfg->vncTLS) {
+        virBufferAddLit(&opt, ",tls");
+        if (cfg->vncTLSx509verify)
+            virBufferAsprintf(&opt, ",x509verify=%s", cfg->vncTLSx509certdir);
+        else
+            virBufferAsprintf(&opt, ",x509=%s", cfg->vncTLSx509certdir);
+    }
 
-        if (cfg->vncSASL) {
-            virBufferAddLit(&opt, ",sasl");
+    if (cfg->vncSASL) {
+        virBufferAddLit(&opt, ",sasl");
 
-            if (cfg->vncSASLdir)
-                virCommandAddEnvPair(cmd, "SASL_CONF_PATH", cfg->vncSASLdir);
+        if (cfg->vncSASLdir)
+            virCommandAddEnvPair(cmd, "SASL_CONF_PATH", cfg->vncSASLdir);
 
-            /* TODO: Support ACLs later */
-        }
+        /* TODO: Support ACLs later */
     }
 
     virCommandAddArg(cmd, "-vnc");

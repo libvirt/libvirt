@@ -1229,9 +1229,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         strstr(help, "sockets="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
 
-    if (version >= 9000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_COLON);
-
     if (is_kvm && (version >= 10000 || kvm_version >= 74))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
 
@@ -3219,7 +3216,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_COLON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_REBOOT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
