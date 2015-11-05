@@ -14290,6 +14290,60 @@ virDomainDefAddController(virDomainDefPtr def, int type, int idx, int model)
 }
 
 
+/**
+ * virDomainDefAddUSBController:
+ * @def:   the domain
+ * @idx:   index for new controller (or -1 for "lowest unused index")
+ * @model: VIR_DOMAIN_CONTROLLER_MODEL_USB_* or -1
+ *
+ * Add a USB controller of the specified model (or default model for
+ * current machinetype if model == -1). If model is ich9-usb-ehci,
+ * also add companion uhci1, uhci2, and uhci3 controllers at the same
+ * index.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virDomainDefAddUSBController(virDomainDefPtr def, int idx, int model)
+{
+    virDomainControllerDefPtr cont; /* this is a *copy* of the DefPtr */
+
+    cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                     idx, model);
+    if (!cont)
+        return -1;
+
+    if (model != VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1)
+        return 0;
+
+    /* When the initial controller is ich9-usb-ehci, also add the
+     * companion controllers
+     */
+
+    idx = cont->idx; /* in case original request was "-1" */
+
+    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1)))
+        return -1;
+    cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+    cont->info.master.usb.startport = 0;
+
+    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2)))
+        return -1;
+    cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+    cont->info.master.usb.startport = 2;
+
+    if (!(cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_USB,
+                                           idx, VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3)))
+        return -1;
+    cont->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+    cont->info.master.usb.startport = 4;
+
+    return 0;
+}
+
+
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,
                                int type,
