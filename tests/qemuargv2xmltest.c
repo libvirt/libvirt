@@ -179,9 +179,6 @@ mymain(void)
     /* This needs <emulator>./qemu.sh</emulator> which doesn't work here.  */
     /*DO_TEST("cpu-kvmclock");*/
 
-    /* Can't roundtrip xenner arch */
-    /*DO_TEST("bootloader");*/
-
     DO_TEST("reboot-timeout-enabled");
     DO_TEST("reboot-timeout-disabled");
 
@@ -238,8 +235,6 @@ mymain(void)
     DO_TEST("nographics-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
-    /* Can't rountrip xenner arch */
-    /*DO_TEST("input-xen");*/
     DO_TEST("misc-acpi");
     DO_TEST("misc-disable-s3");
     DO_TEST("misc-disable-suspends");

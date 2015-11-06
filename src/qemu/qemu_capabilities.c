@@ -1096,10 +1096,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_KVM);
     if (strstr(help, ",process="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME_PROCESS);
-    if (strstr(help, "-xen-domid"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_XEN_DOMID);
-    else if (strstr(help, "-domid"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DOMID);
 
     cache = strstr(help, "cache=");
     if (cache && (p = strchr(cache, ']'))) {

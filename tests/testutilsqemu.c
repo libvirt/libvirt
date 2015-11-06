@@ -315,9 +315,6 @@ virCapsPtr testQemuCapsInit(void)
     virCapsGuestPtr guest;
     virCapsGuestMachinePtr *machines = NULL;
     int nmachines = 0;
-    static const char *const xen_machines[] = {
-        "xenner"
-    };
 
     if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
         return NULL;
@@ -397,16 +394,6 @@ virCapsPtr testQemuCapsInit(void)
                                       NULL,
                                       nmachines,
                                       machines) == NULL)
-        goto cleanup;
-    machines = NULL;
-
-    nmachines = ARRAY_CARDINALITY(xen_machines);
-    if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
-        goto cleanup;
-
-    if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_X86_64,
-                                         "/usr/bin/xenner", NULL,
-                                         nmachines, machines)) == NULL)
         goto cleanup;
     machines = NULL;
 

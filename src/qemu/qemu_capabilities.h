@@ -55,7 +55,7 @@ typedef enum {
     /* 5 */
     X_QEMU_CAPS_NAME, /* Is the -name flag available */
     X_QEMU_CAPS_UUID, /* Is the -uuid flag available */
-    QEMU_CAPS_DOMID, /* Xenner: -domid flag available */
+    X_QEMU_CAPS_DOMID, /* Xenner: -domid flag available */
     QEMU_CAPS_VNET_HDR,
     QEMU_CAPS_MIGRATE_KVM_STDIO, /* avoid kvm tcp migration bug */
 
@@ -74,7 +74,7 @@ typedef enum {
     QEMU_CAPS_DRIVE_SERIAL, /* -driver serial=  available */
 
     /* 20 */
-    QEMU_CAPS_XEN_DOMID, /* -xen-domid */
+    X_QEMU_CAPS_XEN_DOMID, /* -xen-domid */
     QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
     QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
     QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */

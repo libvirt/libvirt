@@ -9464,16 +9464,10 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
         def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
         def->os.type == VIR_DOMAIN_OSTYPE_LINUX) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_XEN_DOMID)) {
-            virCommandAddArg(cmd, "-xen-attach");
-            virCommandAddArg(cmd, "-xen-domid");
-            virCommandAddArgFormat(cmd, "%d", def->id);
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("qemu emulator '%s' does not support xen"),
-                           def->emulator);
-            goto error;
-        }
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu emulator '%s' does not support xen"),
+                       def->emulator);
+        goto error;
     }
 
     if ((def->os.smbios_mode != VIR_DOMAIN_SMBIOS_NONE) &&
@@ -12916,15 +12910,10 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     if (!(path = last_component(def->emulator)))
         goto error;
 
-    if (strstr(path, "xenner")) {
+    def->os.type = VIR_DOMAIN_OSTYPE_HVM;
+    if (strstr(path, "kvm")) {
         def->virtType = VIR_DOMAIN_VIRT_KVM;
-        def->os.type = VIR_DOMAIN_OSTYPE_XEN;
-    } else {
-        def->os.type = VIR_DOMAIN_OSTYPE_HVM;
-        if (strstr(path, "kvm")) {
-            def->virtType = VIR_DOMAIN_VIRT_KVM;
-            def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
-        }
+        def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
     }
 
     if (def->virtType == VIR_DOMAIN_VIRT_KVM)
