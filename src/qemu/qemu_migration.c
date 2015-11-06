@@ -4359,15 +4359,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         break;
 
     case MIGRATION_DEST_UNIX:
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
-            ret = qemuMonitorMigrateToUnix(priv->mon, migrate_flags,
-                                           spec->dest.unix_socket.file);
-        } else {
-            const char *args[] = {
-                "nc", "-U", spec->dest.unix_socket.file, NULL
-            };
-            ret = qemuMonitorMigrateToCommand(priv->mon, migrate_flags, args);
-        }
+        ret = qemuMonitorMigrateToUnix(priv->mon, migrate_flags,
+                                       spec->dest.unix_socket.file);
         break;
 
     case MIGRATION_DEST_FD:
@@ -4562,8 +4555,7 @@ static int doNativeMigrate(virQEMUDriverPtr driver,
         }
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-        STRNEQ(uribits->scheme, "rdma"))
+    if (STRNEQ(uribits->scheme, "rdma"))
         spec.destType = MIGRATION_DEST_CONNECT_HOST;
     else
         spec.destType = MIGRATION_DEST_HOST;
@@ -4600,11 +4592,11 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
                            size_t nmigrate_disks,
                            const char **migrate_disks)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virNetSocketPtr sock = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int fds[2] = { -1, -1 };
 
     VIR_DEBUG("driver=%p, vm=%p, st=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -4613,53 +4605,24 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
               cookieout, cookieoutlen, flags, resource,
               NULLSTR(graphicsuri), nmigrate_disks, migrate_disks);
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX) &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Source qemu is too old to support tunnelled migration"));
-        virObjectUnref(cfg);
-        return -1;
-    }
-
     spec.fwdType = MIGRATION_FWD_STREAM;
     spec.fwd.stream = st;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
-        int fds[2];
 
-        spec.destType = MIGRATION_DEST_FD;
-        spec.dest.fd.qemu = -1;
-        spec.dest.fd.local = -1;
+    spec.destType = MIGRATION_DEST_FD;
+    spec.dest.fd.qemu = -1;
+    spec.dest.fd.local = -1;
 
-        if (pipe2(fds, O_CLOEXEC) == 0) {
-            spec.dest.fd.qemu = fds[1];
-            spec.dest.fd.local = fds[0];
-        }
-        if (spec.dest.fd.qemu == -1 ||
-            virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                              spec.dest.fd.qemu) < 0) {
-            virReportSystemError(errno, "%s",
-                        _("cannot create pipe for tunnelled migration"));
-            goto cleanup;
-        }
-    } else {
-        spec.destType = MIGRATION_DEST_UNIX;
-        spec.dest.unix_socket.sock = -1;
-        spec.dest.unix_socket.file = NULL;
-
-        if (virAsprintf(&spec.dest.unix_socket.file,
-                        "%s/qemu.tunnelmigrate.src.%s",
-                        cfg->libDir, vm->def->name) < 0)
-            goto cleanup;
-
-        if (virNetSocketNewListenUNIX(spec.dest.unix_socket.file, 0700,
-                                      cfg->user, cfg->group,
-                                      &sock) < 0 ||
-            virNetSocketListen(sock, 1) < 0)
-            goto cleanup;
-
-        spec.dest.unix_socket.sock = virNetSocketGetFD(sock);
+    if (pipe2(fds, O_CLOEXEC) == 0) {
+        spec.dest.fd.qemu = fds[1];
+        spec.dest.fd.local = fds[0];
+    }
+    if (spec.dest.fd.qemu == -1 ||
+        virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
+                                          spec.dest.fd.qemu) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot create pipe for tunnelled migration"));
+        goto cleanup;
     }
 
     ret = qemuMigrationRun(driver, vm, cookiein, cookieinlen, cookieout,
@@ -5943,8 +5906,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return -1;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-        (!compressor || pipe(pipeFD) == 0)) {
+    if ((!compressor || pipe(pipeFD) == 0)) {
         /* All right! We can use fd migration, which means that qemu
          * doesn't have to open() the file, so while we still have to
          * grant SELinux access, we can do it on fd and avoid cleanup
@@ -5983,8 +5945,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (!compressor) {
         const char *args[] = { "cat", NULL };
 
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD) &&
-            priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+        if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
             rc = qemuMonitorMigrateToFd(priv->mon,
                                         QEMU_MONITOR_MIGRATE_BACKGROUND,
                                         fd);

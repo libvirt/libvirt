@@ -1081,7 +1081,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 static int
 virQEMUCapsComputeCmdFlags(const char *help,
                            unsigned int version,
-                           unsigned int kvm_version,
                            virQEMUCapsPtr qemuCaps,
                            bool check_yajl ATTRIBUTE_UNUSED)
 {
@@ -1234,33 +1233,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (strstr(help, "-machine"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
-
-    /*
-     * Handling of -incoming arg with varying features
-     *  -incoming tcp    (kvm >= 79, qemu >= 0.10.0)
-     *  -incoming exec   (kvm >= 80, qemu >= 0.10.0)
-     *  -incoming unix   (qemu >= 0.12.0)
-     *  -incoming fd     (qemu >= 0.12.0)
-     *  -incoming stdio  (all earlier kvm)
-     *
-     * NB, there was a pre-kvm-79 'tcp' support, but it
-     * was broken, because it blocked the monitor console
-     * while waiting for data, so pretend it doesn't exist
-     */
-    if (version >= 10000) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC);
-        if (version >= 12000) {
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX);
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD);
-        }
-    } else if (kvm_version >= 79) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP);
-        if (kvm_version >= 80)
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC);
-    } else if (kvm_version > 0) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_KVM_STDIO);
-    }
 
     if (version >= 10000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);
@@ -1444,7 +1416,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
         goto cleanup;
     }
 
-    if (virQEMUCapsComputeCmdFlags(help, *version, *kvm_version,
+    if (virQEMUCapsComputeCmdFlags(help, *version,
                                    qemuCaps, check_yajl) < 0)
         goto cleanup;
 
@@ -3200,15 +3172,12 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_BALLOON);
@@ -3225,7 +3194,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_NONE);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA);

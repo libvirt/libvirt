@@ -11064,18 +11064,9 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    /* Migration is very annoying due to wildly varying syntax &
-     * capabilities over time of KVM / QEMU codebases.
-     */
     if (migrateFrom) {
         virCommandAddArg(cmd, "-incoming");
         if (STRPREFIX(migrateFrom, "tcp")) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("TCP migration is not supported with "
-                                       "this QEMU binary"));
-                goto error;
-            }
             virCommandAddArg(cmd, migrateFrom);
         } else if (STRPREFIX(migrateFrom, "rdma")) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
@@ -11086,45 +11077,14 @@ qemuBuildCommandLine(virConnectPtr conn,
             }
             virCommandAddArg(cmd, migrateFrom);
         } else if (STREQ(migrateFrom, "stdio")) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
-                virCommandAddArgFormat(cmd, "fd:%d", migrateFd);
-                virCommandPassFD(cmd, migrateFd, 0);
-            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
-                virCommandAddArg(cmd, "exec:cat");
-                virCommandSetInputFD(cmd, migrateFd);
-            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_KVM_STDIO)) {
-                virCommandAddArg(cmd, migrateFrom);
-                virCommandSetInputFD(cmd, migrateFd);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("STDIO migration is not supported "
-                                       "with this QEMU binary"));
-                goto error;
-            }
+            virCommandAddArgFormat(cmd, "fd:%d", migrateFd);
+            virCommandPassFD(cmd, migrateFd, 0);
         } else if (STRPREFIX(migrateFrom, "exec")) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("EXEC migration is not supported "
-                                       "with this QEMU binary"));
-                goto error;
-            }
             virCommandAddArg(cmd, migrateFrom);
         } else if (STRPREFIX(migrateFrom, "fd")) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_FD)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("FD migration is not supported "
-                                       "with this QEMU binary"));
-                goto error;
-            }
             virCommandAddArg(cmd, migrateFrom);
             virCommandPassFD(cmd, migrateFd, 0);
         } else if (STRPREFIX(migrateFrom, "unix")) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_UNIX)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("UNIX migration is not supported "
-                                       "with this QEMU binary"));
-                goto error;
-            }
             virCommandAddArg(cmd, migrateFrom);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,

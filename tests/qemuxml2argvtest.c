@@ -1253,16 +1253,13 @@ mymain(void)
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_ROMBAR);
 
-    DO_TEST_FULL("restore-v1", "stdio", 7, 0, QEMU_CAPS_MIGRATE_KVM_STDIO);
-    DO_TEST_FULL("restore-v2", "stdio", 7, 0, QEMU_CAPS_MIGRATE_QEMU_EXEC);
-    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, QEMU_CAPS_MIGRATE_QEMU_EXEC);
-    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, QEMU_CAPS_MIGRATE_QEMU_FD);
-    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, QEMU_CAPS_MIGRATE_QEMU_FD);
-    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0,
-            QEMU_CAPS_MIGRATE_QEMU_TCP);
+    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, NONE);
+    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, NONE);
+    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, NONE);
+    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, NONE);
 
     DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0,
-                       QEMU_CAPS_MIGRATE_KVM_STDIO, QEMU_CAPS_NUMA,
+                       QEMU_CAPS_NUMA,
                        QEMU_CAPS_OBJECT_MEMORY_RAM);
 
     DO_TEST("qemu-ns", NONE);

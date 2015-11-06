@@ -1,13 +1,10 @@
   <qemuCaps>
-    <flag name='migrate-qemu-tcp'/>
-    <flag name='migrate-qemu-exec'/>
     <flag name='drive-cache-v2'/>
     <flag name='drive-format'/>
     <flag name='vga'/>
     <flag name='0.10'/>
     <flag name='mem-path'/>
     <flag name='drive-serial'/>
-    <flag name='migrate-qemu-unix'/>
     <flag name='chardev'/>
     <flag name='enable-kvm'/>
     <flag name='monitor-json'/>
@@ -29,7 +26,6 @@
     <flag name='vga-qxl'/>
     <flag name='spice'/>
     <flag name='vga-none'/>
-    <flag name='migrate-qemu-fd'/>
     <flag name='boot-index'/>
     <flag name='hda-duplex'/>
     <flag name='drive-aio'/>

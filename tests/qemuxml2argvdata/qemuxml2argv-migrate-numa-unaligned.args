@@ -28,4 +28,4 @@ host-nodes=5,host-nodes=7,policy=bind \
 -net none \
 -serial none \
 -parallel none \
--incoming stdio
+-incoming fd:7

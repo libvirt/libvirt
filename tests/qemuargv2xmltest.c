@@ -275,7 +275,6 @@ mymain(void)
 
     DO_TEST("nosharepages");
 
-    DO_TEST("restore-v1");
     DO_TEST("restore-v2");
     DO_TEST("migrate");
 

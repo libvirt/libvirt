@@ -57,11 +57,11 @@ typedef enum {
     X_QEMU_CAPS_UUID, /* Is the -uuid flag available */
     X_QEMU_CAPS_DOMID, /* Xenner: -domid flag available */
     X_QEMU_CAPS_VNET_HDR,
-    QEMU_CAPS_MIGRATE_KVM_STDIO, /* avoid kvm tcp migration bug */
+    X_QEMU_CAPS_MIGRATE_KVM_STDIO, /* avoid kvm tcp migration bug */
 
     /* 10 */
-    QEMU_CAPS_MIGRATE_QEMU_TCP, /* have qemu tcp migration */
-    QEMU_CAPS_MIGRATE_QEMU_EXEC, /* have qemu exec migration */
+    X_QEMU_CAPS_MIGRATE_QEMU_TCP, /* have qemu tcp migration */
+    X_QEMU_CAPS_MIGRATE_QEMU_EXEC, /* have qemu exec migration */
     QEMU_CAPS_DRIVE_CACHE_V2, /* cache= flag wanting new v2 values */
     QEMU_CAPS_KVM, /* Whether KVM is enabled by default */
     QEMU_CAPS_DRIVE_FORMAT, /* Is -drive format= avail */
@@ -75,7 +75,7 @@ typedef enum {
 
     /* 20 */
     X_QEMU_CAPS_XEN_DOMID, /* -xen-domid */
-    QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
+    X_QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
     QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
     QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
     QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
@@ -112,7 +112,7 @@ typedef enum {
     QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */
     QEMU_CAPS_SPICE, /* Is -spice avail */
     QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
-    QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */
+    X_QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */
     QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
 
     /* 50 */
