@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -smp 2,maxcpus=6,sockets=6,cores=1,threads=1 \
 -object iothread,id=iothread1 \
 -object iothread,id=iothread2 \
+-uuid 4d92ec27-9ebf-400b-ae91-20c71c647c19 \
 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \

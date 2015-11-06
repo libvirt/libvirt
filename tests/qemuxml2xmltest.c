@@ -114,7 +114,6 @@ static const char testStatusXMLPrefix[] =
 "    <vcpu pid='3803519'/>\n"
 "  </vcpus>\n"
 "  <qemuCaps>\n"
-"    <flag name='uuid'/>\n"
 "    <flag name='vnet-hdr'/>\n"
 "    <flag name='qxl.vgamem_mb'/>\n"
 "    <flag name='qxl-vga.vgamem_mb'/>\n"

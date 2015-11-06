@@ -1,5 +1,6 @@
 <domain type='kvm'>
   <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219100</memory>
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static'>4</vcpu>

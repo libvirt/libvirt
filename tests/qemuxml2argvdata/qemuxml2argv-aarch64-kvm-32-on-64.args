@@ -11,6 +11,7 @@ QEMU_AUDIO_DRV=none \
 -cpu host,aarch64=off \
 -m 1024 \
 -smp 1 \
+-uuid 496d7ea8-9739-544b-4ebd-ef08be936e6a \
 -nographic \
 -nodefconfig \
 -nodefaults \

@@ -16,6 +16,7 @@ mem-path=/dev/hugepages2M/libvirt/qemu,size=268435456 \
 -object memory-backend-file,id=ram-node1,prealloc=yes,\
 mem-path=/dev/hugepages2M/libvirt/qemu,size=805306368 \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
+-uuid ef1bdff4-27f3-4e85-a807-5fb4d58463cc \
 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \

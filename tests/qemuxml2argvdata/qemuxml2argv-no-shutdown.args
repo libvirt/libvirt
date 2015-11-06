@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 -M pc \
 -m 214 \
 -smp 1 \
+-uuid 496898a6-e6ff-f7c8-5dc2-3cf410945ee9 \
 -nographic \
 -nodefconfig \
 -nodefaults \

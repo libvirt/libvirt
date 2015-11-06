@@ -1,5 +1,6 @@
 <domain type='qemu'>
   <name>test</name>
+  <uuid>8c273d77-39b0-47c4-9714-6dddcad56b88</uuid>
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
   <os>

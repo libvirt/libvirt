@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -bios /usr/share/seabios/bios.bin \
 -m 3907 \
 -smp 1 \
+-uuid 04872dc1-e1de-434b-ab21-e3e80e416349 \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \

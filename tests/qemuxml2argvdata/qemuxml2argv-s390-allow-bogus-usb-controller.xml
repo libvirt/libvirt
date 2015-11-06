@@ -1,5 +1,6 @@
 <domain type='qemu'>
   <name>test</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory>219100</memory>
   <currentMemory>219100</currentMemory>
   <os>

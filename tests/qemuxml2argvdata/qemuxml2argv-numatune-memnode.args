@@ -19,6 +19,7 @@ policy=bind \
 -object memory-backend-ram,id=ram-node2,size=24578621440,host-nodes=1-2,\
 host-nodes=5,host-nodes=7,policy=bind \
 -numa node,nodeid=2,cpus=28,cpus=30-31,memdev=ram-node2 \
+-uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \

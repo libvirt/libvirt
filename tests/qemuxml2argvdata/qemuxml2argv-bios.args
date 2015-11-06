@@ -11,6 +11,7 @@ QEMU_AUDIO_DRV=none \
 -bios /usr/share/seabios/bios.bin \
 -m 1024 \
 -smp 1 \
+-uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
 -nographic \
 -nodefaults \
 -device sga \

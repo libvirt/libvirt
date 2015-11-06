@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 -M pseries \
 -m 512 \
 -smp 1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \

@@ -11,6 +11,7 @@ QEMU_AUDIO_DRV=spice \
 -enable-kvm \
 -m 4096 \
 -smp 4 \
+-uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \

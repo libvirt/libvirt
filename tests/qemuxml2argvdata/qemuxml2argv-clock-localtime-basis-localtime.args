@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 -M pc \
 -m 214 \
 -smp 1 \
+-uuid 1c15a1f6-f4f0-4d3c-9002-667ddb458736 \
 -nographic \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -rtc base=2009-02-14T00:01:30 \
