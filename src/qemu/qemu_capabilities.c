@@ -1088,6 +1088,7 @@ virQEMUCapsComputeCmdFlags(const char *help,
 {
     const char *p;
     const char *fsdev, *netdev;
+    const char *cache;
 
     if (strstr(help, "-no-kvm"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
@@ -1104,29 +1105,27 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_XEN_DOMID);
     else if (strstr(help, "-domid"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DOMID);
-    if (strstr(help, "-drive")) {
-        const char *cache = strstr(help, "cache=");
 
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE);
-        if (cache && (p = strchr(cache, ']'))) {
-            if (memmem(cache, p - cache, "on|off", sizeof("on|off") - 1) == NULL)
-                virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);
-            if (memmem(cache, p - cache, "directsync", sizeof("directsync") - 1))
-                virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
-            if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
-                virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
-        }
-        if (strstr(help, "format="))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
-        if (strstr(help, "readonly="))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
-        if (strstr(help, "aio=threads|native"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);
-        if (strstr(help, "copy-on-read=on|off"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ);
-        if (strstr(help, "bps="))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
+    cache = strstr(help, "cache=");
+    if (cache && (p = strchr(cache, ']'))) {
+        if (memmem(cache, p - cache, "on|off", sizeof("on|off") - 1) == NULL)
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);
+        if (memmem(cache, p - cache, "directsync", sizeof("directsync") - 1))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
+        if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     }
+    if (strstr(help, "format="))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
+    if (strstr(help, "readonly="))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
+    if (strstr(help, "aio=threads|native"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);
+    if (strstr(help, "copy-on-read=on|off"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ);
+    if (strstr(help, "bps="))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
+
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");
 
@@ -3214,7 +3213,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_UUID);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
@@ -3933,8 +3931,7 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
     VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                              VIR_DOMAIN_LOADER_TYPE_ROM);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
         VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                                  VIR_DOMAIN_LOADER_TYPE_PFLASH);
 
@@ -4018,8 +4015,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC))
         VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
                                  VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);

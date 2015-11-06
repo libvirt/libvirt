@@ -1,5 +1,4 @@
   <qemuCaps>
-    <flag name='drive'/>
     <flag name='name'/>
     <flag name='uuid'/>
     <flag name='vnet-hdr'/>

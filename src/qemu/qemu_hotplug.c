@@ -1967,8 +1967,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     bool teardowncgroup = false;
     bool teardownlabel = false;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE) ||
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
         !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("SCSI passthrough is not supported by this version of qemu"));

@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot d \
 -usb \
--cdrom /dev/cdrom \
+-drive file=/dev/cdrom,if=ide,media=cdrom,bus=1,unit=0 \
 -net none \
 -serial none \
 -parallel none

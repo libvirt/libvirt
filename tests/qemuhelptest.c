@@ -152,7 +152,6 @@ mymain(void)
     DO_TEST_FULL(name, version, is_kvm, kvm_version, VIR_ERR_OK, __VA_ARGS__)
 
     DO_TEST("qemu-0.12.1", 12001, 0, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
@@ -186,7 +185,6 @@ mymain(void)
             QEMU_CAPS_CPU_HOST,
             QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.1.2-rhel60", 12001, 1, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
@@ -247,7 +245,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.3", 12003, 1, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
@@ -288,7 +285,6 @@ mymain(void)
             QEMU_CAPS_CPU_HOST,
             QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.13.0", 13000, 1, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
@@ -361,7 +357,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
             QEMU_CAPS_VNET_HDR,
@@ -429,7 +424,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.1.2-rhel62-beta", 12001, 1, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
             QEMU_CAPS_VNET_HDR,
@@ -505,7 +499,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
@@ -596,7 +589,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
-            QEMU_CAPS_DRIVE,
             QEMU_CAPS_NAME,
             QEMU_CAPS_UUID,
             QEMU_CAPS_MIGRATE_QEMU_TCP,

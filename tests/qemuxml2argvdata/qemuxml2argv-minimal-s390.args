@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
--hda /dev/HostVG/QEMUGuest1 \
+-drive file=/dev/HostVG/QEMUGuest1,if=virtio \
 -net none \
 -serial none \
 -parallel none

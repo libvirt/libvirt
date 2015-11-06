@@ -29,7 +29,7 @@ mem-path=/dev/hugepages1G/libvirt/qemu,size=1073741824,host-nodes=3,policy=bind 
 -no-acpi \
 -boot c \
 -usb \
--hda /dev/HostVG/QEMUGuest1 \
+-drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0 \
 -net none \
 -serial none \
 -parallel none

@@ -16,7 +16,7 @@ TZ=Europe/Paris \
 -no-acpi \
 -boot c \
 -usb \
--hda /dev/HostVG/QEMUGuest1 \
+-drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0 \
 -net none \
 -serial none \
 -parallel none

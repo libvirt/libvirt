@@ -14,8 +14,8 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot a \
 -usb \
--hda /dev/HostVG/QEMUGuest1 \
--fda /tmp/firmware.img \
+-drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0 \
+-drive file=/tmp/firmware.img,if=floppy,unit=0 \
 -net none \
 -serial none \
 -parallel none
