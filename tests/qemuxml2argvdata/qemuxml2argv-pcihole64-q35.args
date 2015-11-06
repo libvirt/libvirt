@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/libexec/qemu-kvm \
+-name q35-test \
 -S \
 -M q35 \
 -m 2048 \

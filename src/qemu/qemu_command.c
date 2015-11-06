@@ -9313,15 +9313,13 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     virCommandAddEnvPassCommon(cmd);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME)) {
-        virCommandAddArg(cmd, "-name");
-        if (cfg->setProcessName &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS)) {
-            virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
-                                   def->name, def->name);
-        } else {
-            virCommandAddArg(cmd, def->name);
-        }
+    virCommandAddArg(cmd, "-name");
+    if (cfg->setProcessName &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS)) {
+        virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
+                               def->name, def->name);
+    } else {
+        virCommandAddArg(cmd, def->name);
     }
 
     if (!standalone)

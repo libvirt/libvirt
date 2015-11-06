@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
+-name armtest \
 -S \
 -M virt \
 -cpu host,aarch64=off \

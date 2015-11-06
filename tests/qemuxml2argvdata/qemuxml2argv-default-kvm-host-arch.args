@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/kvm \
+-name kvm \
 -S \
 -machine pc,accel=kvm \
 -m 4096 \

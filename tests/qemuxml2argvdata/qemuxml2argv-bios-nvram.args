@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
+-name test-bios \
 -S \
 -M pc \
 -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on \

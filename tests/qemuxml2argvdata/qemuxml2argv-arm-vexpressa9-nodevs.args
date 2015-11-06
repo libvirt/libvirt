@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-arm \
+-name armtest \
 -S \
 -M vexpress-a9 \
 -m 1024 \

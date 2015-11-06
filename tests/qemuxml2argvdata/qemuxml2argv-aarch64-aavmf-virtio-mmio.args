@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
+-name aarch64test \
 -S \
 -M virt \
 -cpu cortex-a53 \

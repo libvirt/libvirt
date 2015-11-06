@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
+-name dummy2 \
 -S \
 -M pc-q35-2.3 \
 -m 128 \

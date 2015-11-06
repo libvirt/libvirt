@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-kvm \
+-name QEMUGuest1 \
 -S \
 -M pc \
 -cpu Haswell,-rtm,-hle \

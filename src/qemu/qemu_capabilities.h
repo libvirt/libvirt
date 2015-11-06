@@ -53,7 +53,7 @@ typedef enum {
     QEMU_CAPS_DRIVE_BOOT, /* Does -drive support boot=on */
 
     /* 5 */
-    QEMU_CAPS_NAME, /* Is the -name flag available */
+    X_QEMU_CAPS_NAME, /* Is the -name flag available */
     QEMU_CAPS_UUID, /* Is the -uuid flag available */
     QEMU_CAPS_DOMID, /* Xenner: -domid flag available */
     QEMU_CAPS_VNET_HDR,

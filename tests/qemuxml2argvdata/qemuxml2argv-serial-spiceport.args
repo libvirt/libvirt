@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu \
+-name QEMUGuest1 \
 -S \
 -M pc \
 -m 214 \

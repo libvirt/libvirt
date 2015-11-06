@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
+-name qemu-host \
 -S \
 -machine pc-0.11,accel=tcg \
 -m 4096 \

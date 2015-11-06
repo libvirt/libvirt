@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/kvm \
+-name QEMUGuest \
 -S \
 -M pc \
 -m 24105 \

@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-kvm \
+-name lots-of-disks \
 -S \
 -M pc-i440fx-1.4 \
 -cpu qemu64,-kvmclock \

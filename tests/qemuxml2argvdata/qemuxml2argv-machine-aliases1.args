@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
+-name QEMUGuest1 \
 -S \
 -M pc-0.11 \
 -m 214 \

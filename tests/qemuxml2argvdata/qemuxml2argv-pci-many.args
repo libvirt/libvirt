@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/libexec/qemu-kvm \
+-name fdr-br \
 -S \
 -M pc-1.2 \
 -m 2048 \

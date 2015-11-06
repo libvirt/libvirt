@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
+-name fedora \
 -S \
 -M pc-i440fx-2.3 \
 -m size=1048576k,slots=16,maxmem=1099511627776k \

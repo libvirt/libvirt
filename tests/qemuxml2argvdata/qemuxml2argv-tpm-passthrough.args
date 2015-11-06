@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
+-name TPM-VM \
 -S \
 -M pc-0.12 \
 -m 2048 \

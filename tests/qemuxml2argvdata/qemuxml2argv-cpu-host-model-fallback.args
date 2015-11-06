@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
+-name QEMUGuest1 \
 -S \
 -M pc \
 -cpu Penryn,+xtpr,+tm2,+est,+vmx,+ds_cpl,+monitor,+pbe,+tm,+ht,+ss,+acpi,+ds,\

@@ -584,10 +584,10 @@ mymain(void)
     unsetenv("QEMU_AUDIO_DRV");
     unsetenv("SDL_AUDIODRIVER");
 
-    DO_TEST("minimal", QEMU_CAPS_NAME);
+    DO_TEST("minimal", NONE);
     DO_TEST_PARSE_ERROR("minimal-no-memory", NONE);
-    DO_TEST("minimal-msg-timestamp", QEMU_CAPS_NAME, QEMU_CAPS_MSG_TIMESTAMP);
-    DO_TEST("minimal-s390", QEMU_CAPS_NAME);
+    DO_TEST("minimal-msg-timestamp", QEMU_CAPS_MSG_TIMESTAMP);
+    DO_TEST("minimal-s390", NONE);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
     DO_TEST("machine-core-on", QEMU_CAPS_MACHINE_OPT,
@@ -997,7 +997,7 @@ mymain(void)
     DO_TEST("misc-enable-s4", QEMU_CAPS_DISABLE_S4);
     DO_TEST_FAILURE("misc-enable-s4", NONE);
     DO_TEST("misc-no-reboot", NONE);
-    DO_TEST("misc-uuid", QEMU_CAPS_NAME, QEMU_CAPS_UUID);
+    DO_TEST("misc-uuid", QEMU_CAPS_UUID);
     DO_TEST_PARSE_ERROR("vhost_queues-invalid", NONE);
     DO_TEST("net-vhostuser", QEMU_CAPS_DEVICE, QEMU_CAPS_NETDEV);
     DO_TEST("net-vhostuser-multiq",
@@ -1054,7 +1054,7 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEPORT);
-    DO_TEST("serial-spiceport-nospice", QEMU_CAPS_NAME);
+    DO_TEST("serial-spiceport-nospice", NONE);
 
     DO_TEST("parallel-tcp", NONE);
     DO_TEST("console-compat", NONE);
@@ -1317,14 +1317,14 @@ mymain(void)
     DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
     driver.caps->host.cpu = cpuDefault;
 
-    DO_TEST("memtune", QEMU_CAPS_NAME);
-    DO_TEST("memtune-unlimited", QEMU_CAPS_NAME);
-    DO_TEST("blkiotune", QEMU_CAPS_NAME);
-    DO_TEST("blkiotune-device", QEMU_CAPS_NAME);
-    DO_TEST("cputune", QEMU_CAPS_NAME);
-    DO_TEST("cputune-zero-shares", QEMU_CAPS_NAME);
-    DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", QEMU_CAPS_NAME);
-    DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", QEMU_CAPS_NAME);
+    DO_TEST("memtune", NONE);
+    DO_TEST("memtune-unlimited", NONE);
+    DO_TEST("blkiotune", NONE);
+    DO_TEST("blkiotune-device", NONE);
+    DO_TEST("cputune", NONE);
+    DO_TEST("cputune-zero-shares", NONE);
+    DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", NONE);
+    DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", NONE);
     DO_TEST("cputune-numatune", QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_KVM,
             QEMU_CAPS_OBJECT_IOTHREAD,
@@ -1354,9 +1354,9 @@ mymain(void)
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
     DO_TEST("numad-static-memory-auto-vcpu", NONE);
-    DO_TEST("blkdeviotune", QEMU_CAPS_NAME, QEMU_CAPS_DEVICE,
+    DO_TEST("blkdeviotune", QEMU_CAPS_DEVICE,
             QEMU_CAPS_DRIVE_IOTUNE);
-    DO_TEST("blkdeviotune-max", QEMU_CAPS_NAME, QEMU_CAPS_DEVICE,
+    DO_TEST("blkdeviotune-max", QEMU_CAPS_DEVICE,
             QEMU_CAPS_DRIVE_IOTUNE,
             QEMU_CAPS_DRIVE_IOTUNE_MAX);
 
@@ -1370,18 +1370,18 @@ mymain(void)
             QEMU_CAPS_CHARDEV, QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_NO_SHUTDOWN);
 
-    DO_TEST("seclabel-dynamic", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-dynamic-baselabel", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-dynamic-override", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-dynamic-labelskip", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-dynamic-relabel", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-static", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-static-relabel", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-static-labelskip", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-none", QEMU_CAPS_NAME);
-    DO_TEST("seclabel-dac-none", QEMU_CAPS_NAME);
-    DO_TEST_PARSE_ERROR("seclabel-multiple", QEMU_CAPS_NAME);
-    DO_TEST_PARSE_ERROR("seclabel-device-duplicates", QEMU_CAPS_NAME);
+    DO_TEST("seclabel-dynamic", NONE);
+    DO_TEST("seclabel-dynamic-baselabel", NONE);
+    DO_TEST("seclabel-dynamic-override", NONE);
+    DO_TEST("seclabel-dynamic-labelskip", NONE);
+    DO_TEST("seclabel-dynamic-relabel", NONE);
+    DO_TEST("seclabel-static", NONE);
+    DO_TEST("seclabel-static-relabel", NONE);
+    DO_TEST("seclabel-static-labelskip", NONE);
+    DO_TEST("seclabel-none", NONE);
+    DO_TEST("seclabel-dac-none", NONE);
+    DO_TEST_PARSE_ERROR("seclabel-multiple", NONE);
+    DO_TEST_PARSE_ERROR("seclabel-device-duplicates", NONE);
 
     DO_TEST("pseries-basic",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);

@@ -1094,11 +1094,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
     if (strstr(help, "-enable-kvm"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ENABLE_KVM);
-    if (strstr(help, "-name")) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
-        if (strstr(help, ",process="))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME_PROCESS);
-    }
+    if (strstr(help, ",process="))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME_PROCESS);
     if (strstr(help, "-uuid"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_UUID);
     if (strstr(help, "-xen-domid"))
@@ -3213,7 +3210,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_UUID);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP);

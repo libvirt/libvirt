@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/libexec/qemu-kvm \
+-name hotplug \
 -S \
 -M pc \
 -m 4096 \

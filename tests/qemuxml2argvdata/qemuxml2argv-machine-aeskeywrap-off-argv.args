@@ -5,6 +5,7 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
+-name QEMUGuest1 \
 -S \
 -machine s390-ccw-virtio,accel=tcg,aes-key-wrap=off \
 -m 214 \

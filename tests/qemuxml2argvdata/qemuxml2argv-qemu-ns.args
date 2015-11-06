@@ -7,6 +7,7 @@ QEMU_AUDIO_DRV=none \
 NS=ns \
 BAR='' \
 /usr/bin/qemu \
+-name QEMUGuest1 \
 -S \
 -M pc \
 -m 214 \
