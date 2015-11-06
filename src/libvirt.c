@@ -908,82 +908,6 @@ virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
     return -1;
 }
 
-#define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
-
-
-static int
-virConnectOpenFindURIAliasMatch(virConfValuePtr value, const char *alias,
-                                char **uri)
-{
-    virConfValuePtr entry;
-    size_t alias_len;
-
-    if (value->type != VIR_CONF_LIST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expected a list for 'uri_aliases' config parameter"));
-        return -1;
-    }
-
-    entry = value->list;
-    alias_len = strlen(alias);
-    while (entry) {
-        char *offset;
-        size_t safe;
-
-        if (entry->type != VIR_CONF_STRING) {
-            virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                           _("Expected a string for 'uri_aliases' config parameter list entry"));
-            return -1;
-        }
-
-        if (!(offset = strchr(entry->str, '='))) {
-            virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"),
-                            entry->str);
-            return -1;
-        }
-
-        safe  = strspn(entry->str, URI_ALIAS_CHARS);
-        if (safe < (offset - entry->str)) {
-            virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Malformed 'uri_aliases' config entry '%s', aliases may only contain 'a-Z, 0-9, _, -'"),
-                            entry->str);
-            return -1;
-        }
-
-        if (alias_len == (offset - entry->str) &&
-            STREQLEN(entry->str, alias, alias_len)) {
-            VIR_DEBUG("Resolved alias '%s' to '%s'",
-                      alias, offset+1);
-            return VIR_STRDUP(*uri, offset+1);
-        }
-
-        entry = entry->next;
-    }
-
-    VIR_DEBUG("No alias found for '%s', passing through to drivers",
-              alias);
-    return 0;
-}
-
-
-static int
-virConnectOpenResolveURIAlias(virConfPtr conf,
-                              const char *alias, char **uri)
-{
-    int ret = -1;
-    virConfValuePtr value = NULL;
-
-    *uri = NULL;
-
-    if ((value = virConfGetValue(conf, "uri_aliases")))
-        ret = virConnectOpenFindURIAliasMatch(value, alias, uri);
-    else
-        ret = 0;
-
-    return ret;
-}
-
 
 static int
 virConnectGetDefaultURI(virConfPtr conf,
@@ -1059,7 +983,7 @@ do_open(const char *name,
             name = "xen:///";
 
         if (!(flags & VIR_CONNECT_NO_ALIASES) &&
-            virConnectOpenResolveURIAlias(conf, name, &alias) < 0)
+            virURIResolveAlias(conf, name, &alias) < 0)
             goto failed;
 
         if (!(ret->uri = virURIParse(alias ? alias : name))) {

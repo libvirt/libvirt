@@ -2344,6 +2344,7 @@ virURIFormat;
 virURIFormatParams;
 virURIFree;
 virURIParse;
+virURIResolveAlias;
 
 
 # util/virusb.h
