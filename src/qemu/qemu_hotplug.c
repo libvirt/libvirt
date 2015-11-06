@@ -1254,7 +1254,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     bool teardowncgroup = false;
     bool teardownlabel = false;
     int backend;
-    unsigned long long memKB;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
@@ -1279,20 +1278,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
             goto error;
         }
 
-        /* VFIO requires all of the guest's memory to be locked
-         * resident (plus an additional 1GiB to cover IO space). During
-         * hotplug, the guest's memory may already be locked, but it
-         * doesn't hurt to "change" the limit to the same value.
-         * NB: the domain's memory tuning parameters are stored as
-         * Kibibytes, but virProcessSetMaxMemLock expects the value in
-         * bytes.
-         */
-        if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
-            memKB = vm->def->mem.hard_limit;
-        else
-            memKB = virDomainDefGetMemoryActual(vm->def) + (1024 * 1024);
-
-        virProcessSetMaxMemLock(vm->pid, memKB * 1024);
+        /* setup memory locking limits, that are necessary for VFIO */
+        virProcessSetMaxMemLock(vm->pid, qemuDomainGetMlockLimitBytes(vm->def));
         break;
 
     default:

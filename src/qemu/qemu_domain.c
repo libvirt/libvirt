@@ -3616,3 +3616,30 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
 
     return 0;
 }
+
+
+/**
+ * qemuDomainGetMlockLimitBytes:
+ *
+ * @def: domain definition
+ *
+ * Returns the size of the memory in bytes that needs to be set as
+ * RLIMIT_MEMLOCK for purpose of VFIO device passthrough.
+ * If a mem.hard_limit is set, then that value is preferred; otherwise, the
+ * value returned may depend upon the architecture or devices present.
+ */
+unsigned long long
+qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
+{
+    unsigned long long memKB;
+
+    /* VFIO requires all of the guest's memory to be locked resident, plus some
+     * amount for IO space. Alex Williamson suggested adding 1GiB for IO space
+     * just to be safe (some finer tuning might be nice, though). */
+    if (virMemoryLimitIsSet(def->mem.hard_limit))
+        memKB = def->mem.hard_limit;
+    else
+        memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
+
+    return memKB << 10;
+}

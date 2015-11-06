@@ -11447,22 +11447,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
     }
 
-    if (mlock) {
-        unsigned long long memKB;
-
-        /* VFIO requires all of the guest's memory to be
-         * locked resident, plus some amount for IO
-         * space. Alex Williamson suggested adding 1GiB for IO
-         * space just to be safe (some finer tuning might be
-         * nice, though).
-         */
-        if (virMemoryLimitIsSet(def->mem.hard_limit))
-            memKB = def->mem.hard_limit;
-        else
-            memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
-
-        virCommandSetMaxMemLock(cmd, memKB * 1024);
-    }
+    if (mlock)
+        virCommandSetMaxMemLock(cmd, qemuDomainGetMlockLimitBytes(def));
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
         cfg->logTimestamp)
