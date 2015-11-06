@@ -11566,7 +11566,10 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
                    const char *target,
                    virshUpdateDiskXMLType type)
 {
+    xmlNodePtr tmp = NULL;
     xmlNodePtr source = NULL;
+    xmlNodePtr target_node = NULL;
+    xmlNodePtr text_node = NULL;
     char *device_type = NULL;
     char *ret = NULL;
     char *startupPolicy = NULL;
@@ -11583,9 +11586,31 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
     }
 
     /* find the current source subelement */
-    for (source = disk_node->children; source; source = source->next) {
-        if (source->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(source->name, BAD_CAST "source"))
+    for (tmp = disk_node->children; tmp; tmp = tmp->next) {
+        /*
+         * Save the last text node before the <target/>.  The
+         * reasoning behind this is that the target node will be
+         * present in this case and also has a proper indentation.
+         */
+        if (!target_node && tmp->type == XML_TEXT_NODE)
+            text_node = tmp;
+
+        /*
+         * We need only element nodes from now on.
+         */
+        if (tmp->type != XML_ELEMENT_NODE)
+            continue;
+
+        if (xmlStrEqual(tmp->name, BAD_CAST "source"))
+            source = tmp;
+
+        if (xmlStrEqual(tmp->name, BAD_CAST "target"))
+            target_node = tmp;
+
+        /*
+         * We've found all we needed.
+         */
+        if (source && target_node)
             break;
     }
 
@@ -11637,7 +11662,22 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
         if (startupPolicy)
             xmlNewProp(source, BAD_CAST "startupPolicy", BAD_CAST startupPolicy);
-        xmlAddChild(disk_node, source);
+
+        /*
+         * So that the output XML looks nice in case anyone calls
+         * 'change-media' with '--print-xml', let's attach the source
+         * before target...
+         */
+        xmlAddPrevSibling(target_node, source);
+
+        /*
+         * ... and duplicate the text node doing the indentation just
+         * so it's more easily readable.  And don't make it fatal.
+         */
+        if ((tmp = xmlCopyNode(text_node, 0))) {
+            if (!xmlAddPrevSibling(target_node, tmp))
+                xmlFreeNode(tmp);
+        }
     }
 
     if (!(ret = virXMLNodeToString(NULL, disk_node))) {
