@@ -1081,7 +1081,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
 static int
 virQEMUCapsComputeCmdFlags(const char *help,
                            unsigned int version,
-                           bool is_kvm,
                            unsigned int kvm_version,
                            virQEMUCapsPtr qemuCaps,
                            bool check_yajl ATTRIBUTE_UNUSED)
@@ -1216,9 +1215,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         strstr(help, "threads=") &&
         strstr(help, "sockets="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
-
-    if (is_kvm && (version >= 10000 || kvm_version >= 74))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
 
     if (strstr(help, ",vhost="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);
@@ -1448,7 +1444,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
         goto cleanup;
     }
 
-    if (virQEMUCapsComputeCmdFlags(help, *version, *is_kvm, *kvm_version,
+    if (virQEMUCapsComputeCmdFlags(help, *version, *kvm_version,
                                    qemuCaps, check_yajl) < 0)
         goto cleanup;
 
@@ -3204,7 +3200,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNET_HDR);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_TCP);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MIGRATE_QEMU_EXEC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);

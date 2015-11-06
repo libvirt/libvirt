@@ -228,7 +228,6 @@ char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
 int qemuNetworkIfaceConnect(virDomainDefPtr def,
                             virQEMUDriverPtr driver,
                             virDomainNetDefPtr net,
-                            virQEMUCapsPtr qemuCaps,
                             int *tapfd,
                             size_t *tapfdSize)
     ATTRIBUTE_NONNULL(2);
@@ -236,7 +235,6 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
 int qemuPhysIfaceConnect(virDomainDefPtr def,
                          virQEMUDriverPtr driver,
                          virDomainNetDefPtr net,
-                         virQEMUCapsPtr qemuCaps,
                          virNetDevVPortProfileOp vmop);
 
 int qemuOpenVhostNet(virDomainDefPtr def,

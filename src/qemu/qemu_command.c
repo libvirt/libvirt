@@ -219,7 +219,6 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @driver: pointer to the driver instance
  * @net: pointer to the VM's interface description with direct device type
- * @qemuCaps: flags for qemu
  * @vmop: VM operation type
  *
  * Returns a filedescriptor on success or -1 in case of error.
@@ -228,7 +227,6 @@ int
 qemuPhysIfaceConnect(virDomainDefPtr def,
                      virQEMUDriverPtr driver,
                      virDomainNetDefPtr net,
-                     virQEMUCapsPtr qemuCaps,
                      virNetDevVPortProfileOp vmop)
 {
     int rc;
@@ -237,8 +235,7 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNET_HDR) &&
-        net->model && STREQ(net->model, "virtio"))
+    if (net->model && STREQ(net->model, "virtio"))
         vnet_hdr = 1;
 
     rc = virNetDevMacVLanCreateWithVPortProfile(
@@ -367,7 +364,6 @@ int
 qemuNetworkIfaceConnect(virDomainDefPtr def,
                         virQEMUDriverPtr driver,
                         virDomainNetDefPtr net,
-                        virQEMUCapsPtr qemuCaps,
                         int *tapfd,
                         size_t *tapfdSize)
 {
@@ -402,10 +398,8 @@ qemuNetworkIfaceConnect(virDomainDefPtr def,
         template_ifname = true;
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNET_HDR) &&
-        net->model && STREQ(net->model, "virtio")) {
+    if (net->model && STREQ(net->model, "virtio"))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
-    }
 
     if (virQEMUDriverIsPrivileged(driver)) {
         if (virNetDevTapCreateInBridgePort(brname, &net->ifname, &net->mac,
@@ -8749,15 +8743,13 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
         if (qemuNetworkIfaceConnect(def, driver, net,
-                                    qemuCaps, tapfd,
-                                    &tapfdSize) < 0)
+                                    tapfd, &tapfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0)
             goto cleanup;
         tapfdSize = 1;
-        tapfd[0] = qemuPhysIfaceConnect(def, driver, net,
-                                        qemuCaps, vmop);
+        tapfd[0] = qemuPhysIfaceConnect(def, driver, net, vmop);
         if (tapfd[0] < 0)
             goto cleanup;
     }

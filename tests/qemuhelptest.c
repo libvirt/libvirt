@@ -183,7 +183,6 @@ mymain(void)
             QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.12.1.2-rhel60", 12001, 1, 0,
             QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_VNET_HDR,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
             QEMU_CAPS_MIGRATE_QEMU_EXEC,
             QEMU_CAPS_DRIVE_CACHE_V2,
@@ -241,7 +240,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.3", 12003, 1, 0,
             QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_VNET_HDR,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
             QEMU_CAPS_MIGRATE_QEMU_EXEC,
             QEMU_CAPS_DRIVE_CACHE_V2,
@@ -279,7 +277,6 @@ mymain(void)
             QEMU_CAPS_VNC);
     DO_TEST("qemu-kvm-0.13.0", 13000, 1, 0,
             QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_VNET_HDR,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
             QEMU_CAPS_MIGRATE_QEMU_EXEC,
             QEMU_CAPS_DRIVE_CACHE_V2,
@@ -347,7 +344,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.1.2-rhel61", 12001, 1, 0,
-            QEMU_CAPS_VNET_HDR,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
             QEMU_CAPS_MIGRATE_QEMU_EXEC,
             QEMU_CAPS_DRIVE_CACHE_V2,
@@ -412,7 +408,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.1.2-rhel62-beta", 12001, 1, 0,
-            QEMU_CAPS_VNET_HDR,
             QEMU_CAPS_MIGRATE_QEMU_TCP,
             QEMU_CAPS_MIGRATE_QEMU_EXEC,
             QEMU_CAPS_DRIVE_CACHE_V2,

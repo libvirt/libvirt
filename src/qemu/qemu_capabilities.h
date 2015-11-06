@@ -56,7 +56,7 @@ typedef enum {
     X_QEMU_CAPS_NAME, /* Is the -name flag available */
     X_QEMU_CAPS_UUID, /* Is the -uuid flag available */
     X_QEMU_CAPS_DOMID, /* Xenner: -domid flag available */
-    QEMU_CAPS_VNET_HDR,
+    X_QEMU_CAPS_VNET_HDR,
     QEMU_CAPS_MIGRATE_KVM_STDIO, /* avoid kvm tcp migration bug */
 
     /* 10 */
