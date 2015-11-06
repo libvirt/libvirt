@@ -4156,6 +4156,52 @@ qemuLogOperation(virDomainObjPtr vm,
     goto cleanup;
 }
 
+
+void
+qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
+{
+    if (!inc)
+        return;
+
+    VIR_FREE(inc->launchURI);
+    VIR_FREE(inc);
+}
+
+
+/*
+ * This function does not copy @path, the caller is responsible for keeping
+ * the @path pointer valid during the lifetime of the allocated
+ * qemuProcessIncomingDef structure.
+ */
+qemuProcessIncomingDefPtr
+qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
+                          const char *migrateFrom,
+                          int fd,
+                          const char *path)
+{
+    qemuProcessIncomingDefPtr inc = NULL;
+
+    if (qemuMigrationCheckIncoming(qemuCaps, migrateFrom) < 0)
+        return NULL;
+
+    if (VIR_ALLOC(inc) < 0)
+        return NULL;
+
+    inc->launchURI = qemuMigrationIncomingURI(migrateFrom, fd);
+    if (!inc->launchURI)
+        goto error;
+
+    inc->fd = fd;
+    inc->path = path;
+
+    return inc;
+
+ error:
+    qemuProcessIncomingDefFree(inc);
+    return NULL;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4185,7 +4231,7 @@ int qemuProcessStart(virConnectPtr conn,
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
     char *tmppath = NULL;
-    char *migrateURI = NULL;
+    qemuProcessIncomingDefPtr incoming = NULL;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d migrateFrom=%s stdin_fd=%d "
               "stdin_path=%s snapshot=%p vmop=%d flags=0x%x",
@@ -4514,25 +4560,25 @@ int qemuProcessStart(virConnectPtr conn,
     }
 
     if (migrateFrom) {
-        if (qemuMigrationCheckIncoming(priv->qemuCaps, migrateFrom) < 0)
-            goto error;
-
-        if (!(migrateURI = qemuMigrationIncomingURI(migrateFrom, stdin_fd)))
+        incoming = qemuProcessIncomingDefNew(priv->qemuCaps, migrateFrom,
+                                             stdin_fd, stdin_path);
+        if (!incoming)
             goto error;
     }
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
                                      priv->monJSON, priv->qemuCaps,
-                                     migrateURI, snapshot, vmop,
+                                     incoming ? incoming->launchURI : NULL,
+                                     snapshot, vmop,
                                      &buildCommandLineCallbacks, false,
                                      qemuCheckFips(),
                                      priv->autoNodeset,
                                      &nnicindexes, &nicindexes)))
         goto error;
 
-    if (migrateFrom && stdin_fd != -1)
-        virCommandPassFD(cmd, stdin_fd, 0);
+    if (incoming && incoming->fd != -1)
+        virCommandPassFD(cmd, incoming->fd, 0);
 
     /*
      * Create all per-domain directories in order to make sure domain
@@ -4731,7 +4777,7 @@ int qemuProcessStart(virConnectPtr conn,
         goto error;
     VIR_DEBUG("Handshake complete, child running");
 
-    if (migrateFrom)
+    if (incoming)
         flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
     if (rv == -1) /* The VM failed to start; tear filters before taps */
@@ -4852,7 +4898,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* Since CPUs were not started yet, the balloon could not return the memory
      * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
      * and friends return the correct size in case they can't grab the job */
-    if (!migrateFrom && !snapshot &&
+    if (!incoming && !snapshot &&
         qemuProcessRefreshBalloonState(driver, vm, asyncJob) < 0)
         goto error;
 
@@ -4873,7 +4919,7 @@ int qemuProcessStart(virConnectPtr conn,
         }
     } else {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                             migrateFrom ?
+                             incoming ?
                              VIR_DOMAIN_PAUSED_MIGRATION :
                              VIR_DOMAIN_PAUSED_USER);
     }
@@ -4905,7 +4951,7 @@ int qemuProcessStart(virConnectPtr conn,
 
     /* Keep watching qemu log for errors during incoming migration, otherwise
      * unset reporting errors from qemu log. */
-    if (!migrateFrom)
+    if (!incoming)
         qemuMonitorSetDomainLog(priv->mon, -1);
 
     ret = 0;
@@ -4918,7 +4964,7 @@ int qemuProcessStart(virConnectPtr conn,
     VIR_FREE(nicindexes);
     VIR_FREE(nodeset);
     VIR_FREE(tmppath);
-    VIR_FREE(migrateURI);
+    qemuProcessIncomingDefFree(incoming);
     return ret;
 
  error:

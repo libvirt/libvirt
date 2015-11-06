@@ -44,6 +44,20 @@ void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);
 
 int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
 
+typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;
+typedef qemuProcessIncomingDef *qemuProcessIncomingDefPtr;
+struct _qemuProcessIncomingDef {
+    char *launchURI; /* used as a parameter for -incoming command line option */
+    int fd; /* for fd:N URI */
+    const char *path; /* path associated with fd */
+};
+
+qemuProcessIncomingDefPtr qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
+                                                    const char *migrateFrom,
+                                                    int fd,
+                                                    const char *path);
+void qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc);
+
 typedef enum {
     VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
     VIR_QEMU_PROCESS_START_PAUSED       = 1 << 1,
