@@ -1,7 +1,7 @@
 /*
  * domain_conf.c: domain XML processing
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -13336,6 +13336,18 @@ virDomainControllerFind(virDomainDefPtr def,
 }
 
 
+static int
+virDomainControllerFindUnusedIndex(virDomainDefPtr def, int type)
+{
+    int idx = 0;
+
+    while (virDomainControllerFind(def, type, idx) >= 0)
+        idx++;
+
+    return idx;
+}
+
+
 const char *
 virDomainControllerAliasFind(virDomainDefPtr def,
                              int type, int idx)
@@ -14255,33 +14267,44 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 }
 
 
+static virDomainControllerDefPtr
+virDomainDefAddController(virDomainDefPtr def, int type, int idx, int model)
+{
+    virDomainControllerDefPtr cont;
+
+    if (!(cont = virDomainControllerDefNew(type)))
+        return NULL;
+
+    if (idx < 0)
+        idx = virDomainControllerFindUnusedIndex(def, type);
+
+    cont->idx = idx;
+    cont->model = model;
+
+    if (VIR_APPEND_ELEMENT_COPY(def->controllers, def->ncontrollers, cont) < 0) {
+        VIR_FREE(cont);
+        return NULL;
+    }
+
+    return cont;
+}
+
+
 int
 virDomainDefMaybeAddController(virDomainDefPtr def,
                                int type,
                                int idx,
                                int model)
 {
-    size_t i;
-    virDomainControllerDefPtr cont;
+    /* skip if a specific index was given and it is already
+     * in use for that type of controller
+     */
+    if (idx >= 0 && virDomainControllerFind(def, type, idx) >= 0)
+        return 0;
 
-    for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type == type &&
-            def->controllers[i]->idx == idx)
-            return 0;
-    }
-
-    if (!(cont = virDomainControllerDefNew(type)))
-        return -1;
-
-    cont->idx = idx;
-    cont->model = model;
-
-    if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, cont) < 0) {
-        VIR_FREE(cont);
-        return -1;
-    }
-
-    return 1;
+    if (virDomainDefAddController(def, type, idx, model))
+        return 1;
+    return -1;
 }
 
 
