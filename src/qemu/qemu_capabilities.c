@@ -1097,8 +1097,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     cache = strstr(help, "cache=");
     if (cache && (p = strchr(cache, ']'))) {
-        if (memmem(cache, p - cache, "on|off", sizeof("on|off") - 1) == NULL)
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);
         if (memmem(cache, p - cache, "directsync", sizeof("directsync") - 1))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
         if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
@@ -3172,7 +3170,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);

@@ -398,9 +398,6 @@ mymain(void)
     DO_TEST("floppy-drive-fat");
     DO_TEST("disk-drive-fat");
     DO_TEST("disk-drive-fmt-qcow");
-    DO_TEST("disk-drive-cache-v1-wt");
-    DO_TEST("disk-drive-cache-v1-wb");
-    DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-drive-copy-on-read");
     DO_TEST("disk-drive-network-nbd");
     DO_TEST("disk-drive-network-nbd-export");

@@ -193,12 +193,6 @@ mymain(void)
     DO_TEST("disk-drive-boot-disk");
     DO_TEST("disk-drive-boot-cdrom");
     DO_TEST("disk-drive-fmt-qcow");
-    /* Can't roundtrip  shareable+cache mode option */
-    /*DO_TEST("disk-drive-shared");*/
-    /* Can't roundtrip v1 writethrough option */
-    /*DO_TEST("disk-drive-cache-v1-wt");*/
-    DO_TEST("disk-drive-cache-v1-wb");
-    DO_TEST("disk-drive-cache-v1-none");
     DO_TEST("disk-drive-error-policy-stop");
     DO_TEST("disk-drive-error-policy-enospace");
     DO_TEST("disk-drive-error-policy-wreport-rignore");

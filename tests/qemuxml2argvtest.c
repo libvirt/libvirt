@@ -766,12 +766,6 @@ mymain(void)
             QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-shared",
             QEMU_CAPS_DRIVE_FORMAT, QEMU_CAPS_DRIVE_SERIAL);
-    DO_TEST("disk-drive-cache-v1-wt",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v1-wb",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v1-none",
-            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-error-policy-stop",
             QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-error-policy-enospace",
@@ -779,19 +773,16 @@ mymain(void)
     DO_TEST("disk-drive-error-policy-wreport-rignore",
             QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wt",
-            QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-wb",
-            QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-v2-none",
-            QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-directsync",
-            QEMU_CAPS_DRIVE_CACHE_V2,
             QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-cache-unsafe",
-            QEMU_CAPS_DRIVE_CACHE_V2,
             QEMU_CAPS_DRIVE_CACHE_UNSAFE, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-copy-on-read",
-            QEMU_CAPS_DRIVE_CACHE_V2,
             QEMU_CAPS_DRIVE_COPY_ON_READ, QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-drive-network-nbd",
             QEMU_CAPS_DRIVE_FORMAT);
@@ -883,7 +874,7 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_ICH9_AHCI);
     DO_TEST("disk-aio",
             QEMU_CAPS_DRIVE_AIO,
-            QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST("disk-source-pool",
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-source-pool-mode",
@@ -900,7 +891,7 @@ mymain(void)
             QEMU_CAPS_DRIVE_DISCARD,
             QEMU_CAPS_DEVICE);
     DO_TEST("disk-snapshot",
-            QEMU_CAPS_DRIVE_CACHE_V2, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_FORMAT);
     DO_TEST_FAILURE("disk-same-targets",
                     QEMU_CAPS_DEVICE, QEMU_CAPS_SCSI_LSI,
                     QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);

@@ -1,5 +1,4 @@
   <qemuCaps>
-    <flag name='drive-cache-v2'/>
     <flag name='drive-format'/>
     <flag name='vga'/>
     <flag name='0.10'/>

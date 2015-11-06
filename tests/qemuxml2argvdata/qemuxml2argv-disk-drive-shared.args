@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=qcow2,\
-serial=XYZXYZXYZYXXYZYZYXYZY,cache=off \
+serial=XYZXYZXYZYXXYZYZYXYZY,cache=none \
 -drive file=/dev/HostVG/QEMUGuest2,if=ide,media=cdrom,bus=1,unit=0,format=raw \
 -net none \
 -serial none \

@@ -85,16 +85,7 @@ VIR_ENUM_IMPL(virDomainDiskQEMUBus, VIR_DOMAIN_DISK_BUS_LAST,
               "sd")
 
 
-VIR_ENUM_DECL(qemuDiskCacheV1)
 VIR_ENUM_DECL(qemuDiskCacheV2)
-
-VIR_ENUM_IMPL(qemuDiskCacheV1, VIR_DOMAIN_DISK_CACHE_LAST,
-              "default",
-              "off",
-              "off",  /* writethrough not supported, so for safety, disable */
-              "on",   /* Old 'on' was equivalent to 'writeback' */
-              "off",  /* directsync not supported, for safety, disable */
-              "off"); /* unsafe not supported, for safety, disable */
 
 VIR_ENUM_IMPL(qemuDiskCacheV2, VIR_DOMAIN_DISK_CACHE_LAST,
               "default",
@@ -3903,24 +3894,20 @@ qemuBuildDriveStr(virConnectPtr conn,
     if (disk->cachemode) {
         const char *mode = NULL;
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_V2)) {
-            mode = qemuDiskCacheV2TypeToString(disk->cachemode);
+        mode = qemuDiskCacheV2TypeToString(disk->cachemode);
 
-            if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disk cache mode 'directsync' is not "
-                                 "supported by this QEMU"));
-                goto error;
-            } else if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disk cache mode 'unsafe' is not "
-                                 "supported by this QEMU"));
-                goto error;
-            }
-        } else {
-            mode = qemuDiskCacheV1TypeToString(disk->cachemode);
+        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'directsync' is not "
+                             "supported by this QEMU"));
+            goto error;
+        } else if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
+                   !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'unsafe' is not "
+                             "supported by this QEMU"));
+            goto error;
         }
 
         if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
@@ -3935,7 +3922,7 @@ qemuBuildDriveStr(virConnectPtr conn,
 
         virBufferAsprintf(&opt, ",cache=%s", mode);
     } else if (disk->src->shared && !disk->src->readonly) {
-        virBufferAddLit(&opt, ",cache=off");
+        virBufferAddLit(&opt, ",cache=none");
     }
 
     if (disk->copy_on_read) {
