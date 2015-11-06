@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -drive file=/dev/disk/by-path/ip-192.168.44.1:\
 3260-iscsi-iqn.2011-02.lan.hdserver:hydrar-desktop.win7vm-lun-0,if=ide,bus=0,\
-unit=0 \
+unit=0,format=raw \
 -net none \
 -serial none \
 -parallel none

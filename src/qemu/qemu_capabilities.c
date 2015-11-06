@@ -1102,8 +1102,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     }
-    if (strstr(help, "format="))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
     if (strstr(help, "readonly="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
     if (strstr(help, "aio=threads|native"))
@@ -3170,7 +3168,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
@@ -3880,9 +3877,8 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
     VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
                              VIR_DOMAIN_LOADER_TYPE_ROM);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_FORMAT))
-        VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
-                                 VIR_DOMAIN_LOADER_TYPE_PFLASH);
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
+                             VIR_DOMAIN_LOADER_TYPE_PFLASH);
 
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))

@@ -656,7 +656,7 @@ mymain(void)
 
     DO_TEST("bios", QEMU_CAPS_DEVICE, QEMU_CAPS_SGA);
     DO_TEST("bios-nvram", QEMU_CAPS_DEVICE,
-            QEMU_CAPS_DRIVE_FORMAT, QEMU_CAPS_DRIVE_READONLY);
+            QEMU_CAPS_DRIVE_READONLY);
     DO_TEST("clock-utc", QEMU_CAPS_NODEFCONFIG);
     DO_TEST("clock-localtime", NONE);
     DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
@@ -754,66 +754,50 @@ mymain(void)
     DO_TEST("disk-drive-boot-cdrom",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("floppy-drive-fat",
-            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-fat",
-            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-readonly-disk",
             QEMU_CAPS_DRIVE_READONLY,
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-drive-readonly-no-device",
             QEMU_CAPS_DRIVE_READONLY, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-drive-fmt-qcow",
-            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-shared",
-            QEMU_CAPS_DRIVE_FORMAT, QEMU_CAPS_DRIVE_SERIAL);
+            QEMU_CAPS_DRIVE_SERIAL);
     DO_TEST("disk-drive-error-policy-stop",
-            QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_MONITOR_JSON);
     DO_TEST("disk-drive-error-policy-enospace",
-            QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_MONITOR_JSON);
     DO_TEST("disk-drive-error-policy-wreport-rignore",
-            QEMU_CAPS_MONITOR_JSON, QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v2-wt",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v2-wb",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-cache-v2-none",
-            QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_MONITOR_JSON);
+    DO_TEST("disk-drive-cache-v2-wt", NONE);
+    DO_TEST("disk-drive-cache-v2-wb", NONE);
+    DO_TEST("disk-drive-cache-v2-none", NONE);
     DO_TEST("disk-drive-cache-directsync",
-            QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
     DO_TEST("disk-drive-cache-unsafe",
-            QEMU_CAPS_DRIVE_CACHE_UNSAFE, QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     DO_TEST("disk-drive-copy-on-read",
-            QEMU_CAPS_DRIVE_COPY_ON_READ, QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-nbd",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-nbd-export",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-nbd-ipv6",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-nbd-ipv6-export",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-nbd-unix",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-iscsi",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-iscsi-auth",
-            QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_COPY_ON_READ);
+    DO_TEST("disk-drive-network-nbd", NONE);
+    DO_TEST("disk-drive-network-nbd-export", NONE);
+    DO_TEST("disk-drive-network-nbd-ipv6", NONE);
+    DO_TEST("disk-drive-network-nbd-ipv6-export", NONE);
+    DO_TEST("disk-drive-network-nbd-unix", NONE);
+    DO_TEST("disk-drive-network-iscsi", NONE);
+    DO_TEST("disk-drive-network-iscsi-auth", NONE);
     DO_TEST("disk-drive-network-iscsi-lun",
-            QEMU_CAPS_DEVICE, QEMU_CAPS_DRIVE_FORMAT,
+            QEMU_CAPS_DEVICE,
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_BLK_SG_IO, QEMU_CAPS_SCSI_BLOCK);
-    DO_TEST("disk-drive-network-gluster",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-rbd",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-sheepdog",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-rbd-auth",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST("disk-drive-network-rbd-ipv6",
-            QEMU_CAPS_DRIVE_FORMAT);
-    DO_TEST_FAILURE("disk-drive-network-rbd-no-colon",
-                    QEMU_CAPS_DRIVE_FORMAT);
+    DO_TEST("disk-drive-network-gluster", NONE);
+    DO_TEST("disk-drive-network-rbd", NONE);
+    DO_TEST("disk-drive-network-sheepdog", NONE);
+    DO_TEST("disk-drive-network-rbd-auth", NONE);
+    DO_TEST("disk-drive-network-rbd-ipv6", NONE);
+    DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
     DO_TEST("disk-drive-no-boot",
             QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
@@ -873,8 +857,7 @@ mymain(void)
             QEMU_CAPS_DEVICE,
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_ICH9_AHCI);
     DO_TEST("disk-aio",
-            QEMU_CAPS_DRIVE_AIO,
-            QEMU_CAPS_DRIVE_FORMAT);
+            QEMU_CAPS_DRIVE_AIO);
     DO_TEST("disk-source-pool",
             QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-source-pool-mode",
@@ -890,8 +873,7 @@ mymain(void)
     DO_TEST("disk-drive-discard",
             QEMU_CAPS_DRIVE_DISCARD,
             QEMU_CAPS_DEVICE);
-    DO_TEST("disk-snapshot",
-            QEMU_CAPS_DRIVE_FORMAT);
+    DO_TEST("disk-snapshot", NONE);
     DO_TEST_FAILURE("disk-same-targets",
                     QEMU_CAPS_DEVICE, QEMU_CAPS_SCSI_LSI,
                     QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);

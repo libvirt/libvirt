@@ -64,7 +64,7 @@ typedef enum {
     X_QEMU_CAPS_MIGRATE_QEMU_EXEC, /* have qemu exec migration */
     X_QEMU_CAPS_DRIVE_CACHE_V2, /* cache= flag wanting new v2 values */
     QEMU_CAPS_KVM, /* Whether KVM is enabled by default */
-    QEMU_CAPS_DRIVE_FORMAT, /* Is -drive format= avail */
+    X_QEMU_CAPS_DRIVE_FORMAT, /* Is -drive format= avail */
 
     /* 15 */
     QEMU_CAPS_VGA, /* Is -vga avail */
