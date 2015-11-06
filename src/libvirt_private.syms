@@ -2047,6 +2047,19 @@ virRandomGenerateWWN;
 virRandomInt;
 
 
+# util/virrotatingfile.h
+virRotatingFileReaderConsume;
+virRotatingFileReaderFree;
+virRotatingFileReaderNew;
+virRotatingFileReaderSeek;
+virRotatingFileWriterAppend;
+virRotatingFileWriterFree;
+virRotatingFileWriterGetINode;
+virRotatingFileWriterGetOffset;
+virRotatingFileWriterGetPath;
+virRotatingFileWriterNew;
+
+
 # util/virscsi.h
 virSCSIDeviceFileIterate;
 virSCSIDeviceFree;

@@ -172,6 +172,7 @@ test_programs = virshtest sockettest \
 	virkeycodetest \
 	virlockspacetest \
 	virlogtest \
+	virrotatingfiletest \
 	virstringtest \
 	virportallocatortest \
 	sysinfotest \
@@ -1099,6 +1100,11 @@ virpolkittest_SOURCES = \
 	virpolkittest.c testutils.h testutils.c
 virpolkittest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virpolkittest_LDADD = $(LDADDS) $(DBUS_LIBS)
+
+virrotatingfiletest_SOURCES = \
+	virrotatingfiletest.c testutils.h testutils.c
+virrotatingfiletest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virrotatingfiletest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c

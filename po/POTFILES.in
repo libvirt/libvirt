@@ -214,6 +214,7 @@ src/util/virpolkit.c
 src/util/virportallocator.c
 src/util/virprocess.c
 src/util/virrandom.c
+src/util/virrotatingfile.c
 src/util/virsexpr.c
 src/util/virscsi.c
 src/util/virsocketaddr.c
