@@ -483,5 +483,6 @@ int qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
                                       virDomainObjPtr vm);
 
 unsigned long long qemuDomainGetMlockLimitBytes(virDomainDefPtr def);
+bool qemuDomainRequiresMlock(virDomainDefPtr def);
 
 #endif /* __QEMU_DOMAIN_H__ */

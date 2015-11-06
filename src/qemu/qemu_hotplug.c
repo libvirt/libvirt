@@ -1768,6 +1768,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
     bool fix_balloon = false;
+    bool mlock = false;
     int id;
     int ret = -1;
 
@@ -1802,16 +1803,26 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    mlock = qemuDomainRequiresMlock(vm->def);
+
+    if (mlock &&
+        virProcessSetMaxMemLock(vm->pid,
+                                qemuDomainGetMlockLimitBytes(vm->def)) < 0) {
+        mlock = false;
+        virJSONValueFree(props);
+        goto removedef;
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAddObject(priv->mon, backendType, objalias, props) < 0)
-        goto removedef;
+        goto exit_monitor;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
         virErrorPtr err = virSaveLastError();
         ignore_value(qemuMonitorDelObject(priv->mon, objalias));
         virSetError(err);
         virFreeError(err);
-        goto removedef;
+        goto exit_monitor;
     }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
@@ -1845,16 +1856,26 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     virDomainMemoryDefFree(mem);
     return ret;
 
- removedef:
+ exit_monitor:
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         mem = NULL;
         goto audit;
     }
 
+ removedef:
     if ((id = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
         mem = virDomainMemoryRemove(vm->def, id);
     else
         mem = NULL;
+
+    /* reset the mlock limit */
+    if (mlock) {
+        virErrorPtr err = virSaveLastError();
+        ignore_value(virProcessSetMaxMemLock(vm->pid,
+                                             qemuDomainGetMlockLimitBytes(vm->def)));
+        virSetError(err);
+        virFreeError(err);
+    }
 
     goto audit;
 }
@@ -2947,6 +2968,12 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
         virDomainMemoryRemove(vm->def, idx);
 
     virDomainMemoryDefFree(mem);
+
+    /* decrease the mlock limit after memory unplug if necessary */
+    if (qemuDomainRequiresMlock(vm->def))
+        ignore_value(virProcessSetMaxMemLock(vm->pid,
+                                             qemuDomainGetMlockLimitBytes(vm->def)));
+
     return 0;
 }
 

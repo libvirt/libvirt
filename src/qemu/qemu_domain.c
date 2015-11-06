@@ -3643,3 +3643,30 @@ qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
 
     return memKB << 10;
 }
+
+
+/**
+ * @def: domain definition
+ *
+ * Returns ture if the locked memory limit needs to be set or updated due to
+ * configuration or passthrough devices.
+ * */
+bool
+qemuDomainRequiresMlock(virDomainDefPtr def)
+{
+    size_t i;
+
+    if (def->mem.locked)
+        return true;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr dev = def->hostdevs[i];
+
+        if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+            return true;
+    }
+
+    return false;
+}
