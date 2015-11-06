@@ -3237,8 +3237,7 @@ virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
  * This function gets the nic offloads features available for ifname
  *
  * @ifname: name of the interface
- * @features: network device feature structures
- * @nfeatures: number of features available
+ * @out: bitmap of the available virNetDevFeature feature bits
  *
  * Returns 0 on success, -1 on failure.
  */
