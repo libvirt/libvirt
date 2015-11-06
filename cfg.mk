@@ -1068,7 +1068,7 @@ _autogen:
 
 # regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
-syntax-check: $(top_srcdir)/HACKING bracket-spacing-check
+syntax-check: $(top_srcdir)/HACKING bracket-spacing-check test-wrap-argv
 endif
 
 bracket-spacing-check:
@@ -1076,6 +1076,20 @@ bracket-spacing-check:
 	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
 	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
 	    exit 1; }
+
+test-wrap-argv:
+	$(AM_V_GEN)files=`$(VC_LIST) | grep -E '\.(ldargs|args)'`; \
+	for file in $$files ; \
+	do \
+	    $(PERL) $(top_srcdir)/tests/test-wrap-argv.pl $$file > $${file}-t ; \
+	    diff $$file $${file}-t; \
+	    res=$$? ; \
+	    rm $${file}-t ; \
+	    test $$res == 0 || { \
+	      echo "$(ME): Incorrect line wrapping in $$file." 1>&2; \
+              echo "$(ME): Use test-wrap-argv.pl to wrap test data files" 1>&2; \
+	      exit 1; } \
+	done
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check: \

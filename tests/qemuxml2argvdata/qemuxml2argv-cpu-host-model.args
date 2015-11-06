@@ -2,11 +2,13 @@ LC_ALL=C \
 PATH=/bin \
 HOME=/home/test \
 USER=test \
-LOGNAME=test QEMU_AUDIO_DRV=none \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
 -S \
 -M pc \
--cpu core2duo,+lahf_lm,+xtpr,+cx16,+tm2,+est,+vmx,+ds_cpl,+pbe,+tm,+ht,+ss,+acpi,+ds \
+-cpu core2duo,+lahf_lm,+xtpr,+cx16,+tm2,+est,+vmx,+ds_cpl,+pbe,+tm,+ht,+ss,+acpi,\
++ds \
 -m 214 \
 -smp 6 \
 -nographic \

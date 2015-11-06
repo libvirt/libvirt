@@ -1,30 +1,153 @@
-iptables -A FJ-vnet0 -p tcp --source 1.1.1.1 -m dscp --dscp 1 --sport 80 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FP-vnet0 -p tcp --destination 1.1.1.1 -m dscp --dscp 1 --dport 80 \
--m state --state ESTABLISHED -j ACCEPT
-iptables -A HJ-vnet0 -p tcp --source 1.1.1.1 -m dscp --dscp 1 --sport 80 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FJ-vnet0 -p tcp --source 1.1.1.1 -m dscp --dscp 1 --sport 90 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FP-vnet0 -p tcp --destination 1.1.1.1 -m dscp --dscp 1 --dport 90 \
--m state --state ESTABLISHED -j ACCEPT
-iptables -A HJ-vnet0 -p tcp --source 1.1.1.1 -m dscp --dscp 1 --sport 90 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FJ-vnet0 -p udp --source 2.2.2.2 -m dscp --dscp 2 --sport 80 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FP-vnet0 -p udp --destination 2.2.2.2 -m dscp --dscp 2 --dport 80 \
--m state --state ESTABLISHED -j ACCEPT
-iptables -A HJ-vnet0 -p udp --source 2.2.2.2 -m dscp --dscp 2 --sport 80 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FJ-vnet0 -p udp --source 2.2.2.2 -m dscp --dscp 2 --sport 90 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FP-vnet0 -p udp --destination 2.2.2.2 -m dscp --dscp 2 --dport 90 \
--m state --state ESTABLISHED -j ACCEPT
-iptables -A HJ-vnet0 -p udp --source 2.2.2.2 -m dscp --dscp 2 --sport 90 \
--m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FJ-vnet0 -p sctp --source 2.2.2.2 -m dscp --dscp 3 --sport 80 \
---dport 1100 -m state --state NEW,ESTABLISHED -j RETURN
-iptables -A FP-vnet0 -p sctp --destination 2.2.2.2 -m dscp --dscp 3 \
---dport 80 --sport 1100 -m state --state ESTABLISHED -j ACCEPT
-iptables -A HJ-vnet0 -p sctp --source 2.2.2.2 -m dscp --dscp 3 --sport 80 \
---dport 1100 -m state --state NEW,ESTABLISHED -j RETURN
+iptables \
+-A FJ-vnet0 \
+-p tcp \
+--source 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--sport 80 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p tcp \
+--destination 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--dport 80 \
+-m state \
+--state ESTABLISHED \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p tcp \
+--source 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--sport 80 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p tcp \
+--source 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--sport 90 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p tcp \
+--destination 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--dport 90 \
+-m state \
+--state ESTABLISHED \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p tcp \
+--source 1.1.1.1 \
+-m dscp \
+--dscp 1 \
+--sport 90 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p udp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--sport 80 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p udp \
+--destination 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--dport 80 \
+-m state \
+--state ESTABLISHED \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p udp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--sport 80 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p udp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--sport 90 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p udp \
+--destination 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--dport 90 \
+-m state \
+--state ESTABLISHED \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p udp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 2 \
+--sport 90 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p sctp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 3 \
+--sport 80 \
+--dport 1100 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p sctp \
+--destination 2.2.2.2 \
+-m dscp \
+--dscp 3 \
+--dport 80 \
+--sport 1100 \
+-m state \
+--state ESTABLISHED \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p sctp \
+--source 2.2.2.2 \
+-m dscp \
+--dscp 3 \
+--sport 80 \
+--dport 1100 \
+-m state \
+--state NEW,ESTABLISHED \
+-j RETURN

@@ -1,2 +1,5 @@
-/usr/local/sbin/grub-bhyve --root hd0,msdos1 --device-map '<device.map>' \
---memory 214 --cons-dev /dev/nmdm0A bhyve
+/usr/local/sbin/grub-bhyve \
+--root hd0,msdos1 \
+--device-map '<device.map>' \
+--memory 214 \
+--cons-dev /dev/nmdm0A bhyve

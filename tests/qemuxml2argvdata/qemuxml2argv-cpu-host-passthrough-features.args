@@ -3,8 +3,7 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
-QEMU_AUD\
-IO_DRV=none \
+QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
 -S \
 -M pc \

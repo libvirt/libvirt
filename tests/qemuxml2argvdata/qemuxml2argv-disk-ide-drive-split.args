@@ -1,6 +1,21 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/qemu -S -M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
 -drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-1 \
 -device ide-cd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -drive file=/tmp/idedisk.img,if=none,id=drive-ide0-0-2 \

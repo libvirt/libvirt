@@ -1,8 +1,22 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/qemu -S \
--M pc -m 214 -smp 1 -nographic -nodefconfig -nodefaults \
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-nographic \
+-nodefconfig \
+-nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline -no-acpi -boot c -usb \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c \
+-usb \
 -device usb-hub,id=hub0,bus=usb.0,port=1 \
 -device usb-hub,id=hub1,bus=usb.0,port=1.2 \
 -device usb-mouse,id=input0,bus=usb.0,port=1.1 \

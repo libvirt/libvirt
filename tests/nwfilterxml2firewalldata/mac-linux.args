@@ -1,8 +1,24 @@
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--p 0x806 -j ACCEPT
-ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
--p 0x800 -j ACCEPT
-ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
--p 0x600 -j ACCEPT
-ebtables -t nat -A libvirt-P-vnet0 -d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
--p 0xffff -j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-p 0x806 \
+-j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x800 \
+-j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x600 \
+-j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0xffff \
+-j ACCEPT

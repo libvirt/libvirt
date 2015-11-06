@@ -1,3 +1,9 @@
-/usr/sbin/bhyve -c 1 -m 214 -u -H -P -s 0:0,hostbridge \
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
 -s 3:0,virtio-net,faketapdev,mac=52:54:00:22:ee:11 \
 -s 2:0,ahci-hd,/tmp/freebsd.img bhyve

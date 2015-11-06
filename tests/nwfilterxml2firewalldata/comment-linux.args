@@ -1,49 +1,201 @@
-ebtables -t nat -A libvirt-P-vnet0 -p 0x1234 -j ACCEPT
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p ipv4 --ip-source 10.1.2.3/32 \
---ip-destination 10.1.2.3/32 --ip-protocol 17 --ip-source-port 291:564 \
---ip-destination-port 13398:17767 --ip-tos 0x32 -j ACCEPT
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:fe \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:80 -p ipv6 --ip6-source ::10.1.2.3/22 \
---ip6-destination ::10.1.2.3/113 --ip6-protocol 6 --ip6-source-port 273:400 \
---ip6-destination-port 13107:65535 -j ACCEPT
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x806 --arp-htype 18 --arp-opcode 1 \
---arp-ptype 0x56 --arp-mac-src 01:02:03:04:05:06 --arp-mac-dst 0a:0b:0c:0d:0e:0f \
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-p 0x1234 \
 -j ACCEPT
-iptables -A FJ-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
---destination 10.1.2.3/32 -m dscp --dscp 34 --sport 291:400 --dport 564:1092 -m state \
---state NEW,ESTABLISHED -m comment --comment 'udp rule' -j RETURN
-iptables -A FP-vnet0 -p udp --source 10.1.2.3/32 -m dscp --dscp 34 \
---dport 291:400 --sport 564:1092 -m state --state ESTABLISHED -m comment \
---comment 'udp rule' -j ACCEPT
-iptables -A HJ-vnet0 -p udp -m mac --mac-source 01:02:03:04:05:06 \
---destination 10.1.2.3/32 -m dscp --dscp 34 --sport 291:400 --dport 564:1092 -m state \
---state NEW,ESTABLISHED -m comment --comment 'udp rule' -j RETURN
-ip6tables -A FJ-vnet0 -p tcp --destination a:b:c::/128 -m dscp --dscp 57 \
---dport 32:33 --sport 256:4369 -m state --state ESTABLISHED -m comment \
---comment 'tcp/ipv6 rule' -j RETURN
-ip6tables -A FP-vnet0 -p tcp -m mac --mac-source 01:02:03:04:05:06 \
---source a:b:c::/128 -m dscp --dscp 57 --sport 32:33 --dport 256:4369 -m state \
---state NEW,ESTABLISHED -m comment --comment 'tcp/ipv6 rule' -j ACCEPT
-ip6tables -A HJ-vnet0 -p tcp --destination a:b:c::/128 -m dscp --dscp 57 \
---dport 32:33 --sport 256:4369 -m state --state ESTABLISHED -m comment \
---comment 'tcp/ipv6 rule' -j RETURN
-ip6tables -A FJ-vnet0 -p udp -m state --state ESTABLISHED -m comment \
---comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' -j RETURN
-ip6tables -A FP-vnet0 -p udp -m state --state NEW,ESTABLISHED -m comment \
---comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' -j ACCEPT
-ip6tables -A HJ-vnet0 -p udp -m state --state ESTABLISHED -m comment \
---comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' -j RETURN
-ip6tables -A FJ-vnet0 -p sctp -m state --state ESTABLISHED -m comment \
---comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' -j RETURN
-ip6tables -A FP-vnet0 -p sctp -m state --state NEW,ESTABLISHED -m comment \
---comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' -j ACCEPT
-ip6tables -A HJ-vnet0 -p sctp -m state --state ESTABLISHED -m comment \
---comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' -j RETURN
-ip6tables -A FJ-vnet0 -p ah -m state --state ESTABLISHED -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' -j RETURN
-ip6tables -A FP-vnet0 -p ah -m state --state NEW,ESTABLISHED -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' -j ACCEPT
-ip6tables -A HJ-vnet0 -p ah -m state --state ESTABLISHED -m comment \
---comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' -j RETURN
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p ipv4 \
+--ip-source 10.1.2.3/32 \
+--ip-destination 10.1.2.3/32 \
+--ip-protocol 17 \
+--ip-source-port 291:564 \
+--ip-destination-port 13398:17767 \
+--ip-tos 0x32 \
+-j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:fe \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:80 \
+-p ipv6 \
+--ip6-source ::10.1.2.3/22 \
+--ip6-destination ::10.1.2.3/113 \
+--ip6-protocol 6 \
+--ip6-source-port 273:400 \
+--ip6-destination-port 13107:65535 \
+-j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x806 \
+--arp-htype 18 \
+--arp-opcode 1 \
+--arp-ptype 0x56 \
+--arp-mac-src 01:02:03:04:05:06 \
+--arp-mac-dst 0a:0b:0c:0d:0e:0f \
+-j ACCEPT
+iptables \
+-A FJ-vnet0 \
+-p udp \
+-m mac \
+--mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 \
+-m dscp \
+--dscp 34 \
+--sport 291:400 \
+--dport 564:1092 \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment 'udp rule' \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p udp \
+--source 10.1.2.3/32 \
+-m dscp \
+--dscp 34 \
+--dport 291:400 \
+--sport 564:1092 \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'udp rule' \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p udp \
+-m mac \
+--mac-source 01:02:03:04:05:06 \
+--destination 10.1.2.3/32 \
+-m dscp \
+--dscp 34 \
+--sport 291:400 \
+--dport 564:1092 \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment 'udp rule' \
+-j RETURN
+ip6tables \
+-A FJ-vnet0 \
+-p tcp \
+--destination a:b:c::/128 \
+-m dscp \
+--dscp 57 \
+--dport 32:33 \
+--sport 256:4369 \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'tcp/ipv6 rule' \
+-j RETURN
+ip6tables \
+-A FP-vnet0 \
+-p tcp \
+-m mac \
+--mac-source 01:02:03:04:05:06 \
+--source a:b:c::/128 \
+-m dscp \
+--dscp 57 \
+--sport 32:33 \
+--dport 256:4369 \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment 'tcp/ipv6 rule' \
+-j ACCEPT
+ip6tables \
+-A HJ-vnet0 \
+-p tcp \
+--destination a:b:c::/128 \
+-m dscp \
+--dscp 57 \
+--dport 32:33 \
+--sport 256:4369 \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'tcp/ipv6 rule' \
+-j RETURN
+ip6tables \
+-A FJ-vnet0 \
+-p udp \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
+-j RETURN
+ip6tables \
+-A FP-vnet0 \
+-p udp \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
+-j ACCEPT
+ip6tables \
+-A HJ-vnet0 \
+-p udp \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
+-j RETURN
+ip6tables \
+-A FJ-vnet0 \
+-p sctp \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
+-j RETURN
+ip6tables \
+-A FP-vnet0 \
+-p sctp \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
+-j ACCEPT
+ip6tables \
+-A HJ-vnet0 \
+-p sctp \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
+-j RETURN
+ip6tables \
+-A FJ-vnet0 \
+-p ah \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
+-f ${tmp}' \
+-j RETURN
+ip6tables \
+-A FP-vnet0 \
+-p ah \
+-m state \
+--state NEW,ESTABLISHED \
+-m comment \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
+-f ${tmp}' \
+-j ACCEPT
+ip6tables \
+-A HJ-vnet0 \
+-p ah \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm \
+-f ${tmp}' \
+-j RETURN

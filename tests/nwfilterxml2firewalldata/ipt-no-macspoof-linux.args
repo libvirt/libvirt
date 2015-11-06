@@ -1,2 +1,12 @@
-iptables -A FP-vnet0 -p all -m mac '!' --mac-source 12:34:56:78:9a:bc -j DROP
-iptables -A FP-vnet0 -p all -m mac '!' --mac-source aa:aa:aa:aa:aa:aa -j DROP
+iptables \
+-A FP-vnet0 \
+-p all \
+-m mac '!' \
+--mac-source 12:34:56:78:9a:bc \
+-j DROP
+iptables \
+-A FP-vnet0 \
+-p all \
+-m mac '!' \
+--mac-source aa:aa:aa:aa:aa:aa \
+-j DROP

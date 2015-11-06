@@ -1,20 +1,77 @@
-iptables -A FJ-vnet0 -p all -m state --state ESTABLISHED,RELATED -m comment \
---comment 'out: existing and related (ftp) connections' -j RETURN
-iptables -A HJ-vnet0 -p all -m state --state ESTABLISHED,RELATED -m comment \
---comment 'out: existing and related (ftp) connections' -j RETURN
-iptables -A FP-vnet0 -p all -m state --state ESTABLISHED -m comment \
---comment 'in: existing connections' -j ACCEPT
-iptables -A FP-vnet0 -p tcp --dport 21:22 -m state --state NEW -m comment \
---comment 'in: ftp and ssh' -j ACCEPT
-iptables -A FP-vnet0 -p icmp -m state --state NEW -m comment \
---comment 'in: icmp' -j ACCEPT
-iptables -A FJ-vnet0 -p udp --dport 53 -m state --state NEW -m comment \
---comment 'out: DNS lookups' -j RETURN
-iptables -A HJ-vnet0 -p udp --dport 53 -m state --state NEW -m comment \
---comment 'out: DNS lookups' -j RETURN
-iptables -A FJ-vnet0 -p all -m comment \
---comment 'inout: drop all non-accepted traffic' -j DROP
-iptables -A FP-vnet0 -p all -m comment \
---comment 'inout: drop all non-accepted traffic' -j DROP
-iptables -A HJ-vnet0 -p all -m comment \
---comment 'inout: drop all non-accepted traffic' -j DROP
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED,RELATED \
+-m comment \
+--comment 'out: existing and related (ftp) connections' \
+-j RETURN
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED,RELATED \
+-m comment \
+--comment 'out: existing and related (ftp) connections' \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m comment \
+--comment 'in: existing connections' \
+-j ACCEPT
+iptables \
+-A FP-vnet0 \
+-p tcp \
+--dport 21:22 \
+-m state \
+--state NEW \
+-m comment \
+--comment 'in: ftp and ssh' \
+-j ACCEPT
+iptables \
+-A FP-vnet0 \
+-p icmp \
+-m state \
+--state NEW \
+-m comment \
+--comment 'in: icmp' \
+-j ACCEPT
+iptables \
+-A FJ-vnet0 \
+-p udp \
+--dport 53 \
+-m state \
+--state NEW \
+-m comment \
+--comment 'out: DNS lookups' \
+-j RETURN
+iptables \
+-A HJ-vnet0 \
+-p udp \
+--dport 53 \
+-m state \
+--state NEW \
+-m comment \
+--comment 'out: DNS lookups' \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m comment \
+--comment 'inout: drop all non-accepted traffic' \
+-j DROP
+iptables \
+-A FP-vnet0 \
+-p all \
+-m comment \
+--comment 'inout: drop all non-accepted traffic' \
+-j DROP
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m comment \
+--comment 'inout: drop all non-accepted traffic' \
+-j DROP

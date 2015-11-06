@@ -1,1 +1,4 @@
-/fizz_buzz_bazz -X -Y -Z
+/fizz_buzz_bazz \
+-X \
+-Y \
+-Z

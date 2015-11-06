@@ -1,5 +1,14 @@
-LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
-/usr/bin/qemu -S -M pc -m 4096 -smp 4 \
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-S \
+-M pc \
+-m 4096 \
+-smp 4 \
 -object memory-backend-file,id=ram-node0,prealloc=yes,\
 mem-path=/dev/hugepages1G/libvirt/qemu,size=1073741824,host-nodes=0-3,\
 policy=bind \
@@ -13,8 +22,14 @@ mem-path=/dev/hugepages1G/libvirt/qemu,size=1073741824,host-nodes=0-3,\
 policy=bind \
 -numa node,nodeid=2,cpus=2,memdev=ram-node2 \
 -object memory-backend-file,id=ram-node3,prealloc=yes,\
-mem-path=/dev/hugepages1G/libvirt/qemu,size=1073741824,host-nodes=3,\
-policy=bind \
+mem-path=/dev/hugepages1G/libvirt/qemu,size=1073741824,host-nodes=3,policy=bind \
 -numa node,nodeid=3,cpus=3,memdev=ram-node3 \
--nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c -usb \
--hda /dev/HostVG/QEMUGuest1 -net none -serial none -parallel none
+-nographic \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-hda /dev/HostVG/QEMUGuest1 \
+-net none \
+-serial none \
+-parallel none

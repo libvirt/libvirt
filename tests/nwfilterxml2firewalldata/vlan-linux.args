@@ -1,14 +1,56 @@
-ebtables -t nat -A libvirt-J-vnet0 -d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--s aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-id 291 -j CONTINUE
-ebtables -t nat -A libvirt-P-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-id 291 -j CONTINUE
-ebtables -t nat -A libvirt-J-vnet0 -d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--s aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-id 1234 -j RETURN
-ebtables -t nat -A libvirt-P-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-id 1234 -j RETURN
-ebtables -t nat -A libvirt-P-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-id 291 -j DROP
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-encap 2054 -j DROP
-ebtables -t nat -A libvirt-J-vnet0 -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff -p 0x8100 --vlan-encap 4660 -j ACCEPT
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-s aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-id 291 \
+-j CONTINUE
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-id 291 \
+-j CONTINUE
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-d 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-s aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-id 1234 \
+-j RETURN
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-id 1234 \
+-j RETURN
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-id 291 \
+-j DROP
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-encap 2054 \
+-j DROP
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d aa:bb:cc:dd:ee:ff/ff:ff:ff:ff:ff:ff \
+-p 0x8100 \
+--vlan-encap 4660 \
+-j ACCEPT

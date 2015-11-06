@@ -1,36 +1,144 @@
-iptables -A FJ-vnet0 -p all -m state --state NEW,ESTABLISHED -m set \
---match-set tck_test src,dst -j RETURN
-iptables -A FP-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src -j ACCEPT
-iptables -A HJ-vnet0 -p all -m state --state NEW,ESTABLISHED -m set \
---match-set tck_test src,dst -j RETURN
-iptables -A FP-vnet0 -p all -m set --match-set tck_test src,dst -m comment \
---comment in+NONE -j ACCEPT
-iptables -A FJ-vnet0 -p all -m set --match-set tck_test src,dst -m comment \
---comment out+NONE -j RETURN
-iptables -A HJ-vnet0 -p all -m set --match-set tck_test src,dst -m comment \
---comment out+NONE -j RETURN
-iptables -A FJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src,dst -j RETURN
-iptables -A FP-vnet0 -p all -m state --state NEW,ESTABLISHED -m set \
---match-set tck_test src,dst,src -j ACCEPT
-iptables -A HJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src,dst -j RETURN
-iptables -A FJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src,dst -j RETURN
-iptables -A FP-vnet0 -p all -m state --state NEW,ESTABLISHED -m set \
---match-set tck_test src,dst,src -j ACCEPT
-iptables -A HJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src,dst -j RETURN
-iptables -A FJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src -j RETURN
-iptables -A FP-vnet0 -p all -m state --state NEW,ESTABLISHED -m set \
---match-set tck_test src,dst -j ACCEPT
-iptables -A HJ-vnet0 -p all -m state --state ESTABLISHED -m set \
---match-set tck_test dst,src -j RETURN
-iptables -A FJ-vnet0 -p all -m set --match-set tck_test dst,src -m comment \
---comment inout -j RETURN
-iptables -A FP-vnet0 -p all -m set --match-set tck_test src,dst -m comment \
---comment inout -j ACCEPT
-iptables -A HJ-vnet0 -p all -m set --match-set tck_test dst,src -m comment \
---comment inout -j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m state \
+--state NEW,ESTABLISHED \
+-m set \
+--match-set tck_test src,dst \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m state \
+--state NEW,ESTABLISHED \
+-m set \
+--match-set tck_test src,dst \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m set \
+--match-set tck_test src,dst \
+-m comment \
+--comment in+NONE \
+-j ACCEPT
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m set \
+--match-set tck_test src,dst \
+-m comment \
+--comment out+NONE \
+-j RETURN
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m set \
+--match-set tck_test src,dst \
+-m comment \
+--comment out+NONE \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src,dst \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m state \
+--state NEW,ESTABLISHED \
+-m set \
+--match-set tck_test src,dst,src \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src,dst \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src,dst \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m state \
+--state NEW,ESTABLISHED \
+-m set \
+--match-set tck_test src,dst,src \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src,dst \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m state \
+--state NEW,ESTABLISHED \
+-m set \
+--match-set tck_test src,dst \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m state \
+--state ESTABLISHED \
+-m set \
+--match-set tck_test dst,src \
+-j RETURN
+iptables \
+-A FJ-vnet0 \
+-p all \
+-m set \
+--match-set tck_test dst,src \
+-m comment \
+--comment inout \
+-j RETURN
+iptables \
+-A FP-vnet0 \
+-p all \
+-m set \
+--match-set tck_test src,dst \
+-m comment \
+--comment inout \
+-j ACCEPT
+iptables \
+-A HJ-vnet0 \
+-p all \
+-m set \
+--match-set tck_test dst,src \
+-m comment \
+--comment inout \
+-j RETURN

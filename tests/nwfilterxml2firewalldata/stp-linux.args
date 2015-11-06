@@ -1,18 +1,58 @@
-ebtables -t nat -F J-vnet0-stp-xyz
-ebtables -t nat -X J-vnet0-stp-xyz
-ebtables -t nat -N J-vnet0-stp-xyz
-ebtables -t nat -A libvirt-J-vnet0 -d 01:80:c2:00:00:00 -j J-vnet0-stp-xyz
-ebtables -t nat -F P-vnet0-stp-xyz
-ebtables -t nat -X P-vnet0-stp-xyz
-ebtables -t nat -N P-vnet0-stp-xyz
-ebtables -t nat -A libvirt-P-vnet0 -d 01:80:c2:00:00:00 -j P-vnet0-stp-xyz
-ebtables -t nat -A P-vnet0-stp-xyz -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d 01:80:c2:00:00:00 --stp-type 18 --stp-flags 68 -j CONTINUE
-ebtables -t nat -A J-vnet0-stp-xyz -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d 01:80:c2:00:00:00 --stp-root-pri 4660:9029 \
+ebtables \
+-t nat \
+-F J-vnet0-stp-xyz
+ebtables \
+-t nat \
+-X J-vnet0-stp-xyz
+ebtables \
+-t nat \
+-N J-vnet0-stp-xyz
+ebtables \
+-t nat \
+-A libvirt-J-vnet0 \
+-d 01:80:c2:00:00:00 \
+-j J-vnet0-stp-xyz
+ebtables \
+-t nat \
+-F P-vnet0-stp-xyz
+ebtables \
+-t nat \
+-X P-vnet0-stp-xyz
+ebtables \
+-t nat \
+-N P-vnet0-stp-xyz
+ebtables \
+-t nat \
+-A libvirt-P-vnet0 \
+-d 01:80:c2:00:00:00 \
+-j P-vnet0-stp-xyz
+ebtables \
+-t nat \
+-A P-vnet0-stp-xyz \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d 01:80:c2:00:00:00 \
+--stp-type 18 \
+--stp-flags 68 \
+-j CONTINUE
+ebtables \
+-t nat \
+-A J-vnet0-stp-xyz \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d 01:80:c2:00:00:00 \
+--stp-root-pri 4660:9029 \
 --stp-root-addr 06:05:04:03:02:01/ff:ff:ff:ff:ff:ff \
---stp-root-cost 287454020:573785173 -j RETURN
-ebtables -t nat -A P-vnet0-stp-xyz -s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
--d 01:80:c2:00:00:00 --stp-sender-prio 4660 --stp-sender-addr 06:05:04:03:02:01 \
---stp-port 123:234 --stp-msg-age 5544:5555 --stp-max-age 7777:8888 \
---stp-hello-time 12345:12346 --stp-forward-delay 54321:65432 -j DROP
+--stp-root-cost 287454020:573785173 \
+-j RETURN
+ebtables \
+-t nat \
+-A P-vnet0-stp-xyz \
+-s 01:02:03:04:05:06/ff:ff:ff:ff:ff:ff \
+-d 01:80:c2:00:00:00 \
+--stp-sender-prio 4660 \
+--stp-sender-addr 06:05:04:03:02:01 \
+--stp-port 123:234 \
+--stp-msg-age 5544:5555 \
+--stp-max-age 7777:8888 \
+--stp-hello-time 12345:12346 \
+--stp-forward-delay 54321:65432 \
+-j DROP
