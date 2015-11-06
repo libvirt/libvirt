@@ -3166,13 +3166,13 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
     ret = ioctl(sock, SIOCETHTOOL, &ifr);
     if (ret != 0) {
         switch (errno) {
-            case EPERM:
+            case EPERM: /* attempt to call SIOCETHTOOL from unprivileged code */
                 VIR_DEBUG("ethtool ioctl: permission denied");
                 break;
-            case EINVAL:
+            case EINVAL: /* kernel doesn't support SIOCETHTOOL */
                 VIR_DEBUG("ethtool ioctl: invalid request");
                 break;
-            case EOPNOTSUPP:
+            case EOPNOTSUPP: /* kernel doesn't support specific feature */
                 VIR_DEBUG("ethtool ioctl: request not supported");
                 break;
             default:
