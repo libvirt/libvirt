@@ -12022,6 +12022,9 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 }
             } else if (STREQ(values[i], "scsi")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
+            } else if (STREQ(values[i], "floppy")) {
+                def->bus = VIR_DOMAIN_DISK_BUS_FDC;
+                def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
             } else if (STREQ(values[i], "virtio")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_VIRTIO;
             } else if (STREQ(values[i], "xen")) {
@@ -12191,6 +12194,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         ignore_value(VIR_STRDUP(def->dst, "vda"));
     } else if (def->bus == VIR_DOMAIN_DISK_BUS_XEN) {
         ignore_value(VIR_STRDUP(def->dst, "xvda"));
+    } else if (def->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+        ignore_value(VIR_STRDUP(def->dst, "fda"));
     } else {
         ignore_value(VIR_STRDUP(def->dst, "hda"));
     }
