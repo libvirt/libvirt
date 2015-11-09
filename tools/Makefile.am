@@ -71,12 +71,12 @@ sbin_SCRIPTS = virt-sanlock-cleanup
 DISTCLEANFILES += virt-sanlock-cleanup
 endif WITH_SANLOCK
 
-if WITH_LXC
+if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 bin_PROGRAMS += virt-login-shell
-else ! WITH_LXC
+else ! WITH_LOGIN_SHELL
 EXTRA_DIST += virt-login-shell.conf
-endif ! WITH_LXC
+endif ! WITH_LOGIN_SHELL
 
 
 dist_man1_MANS = \
@@ -85,11 +85,11 @@ dist_man1_MANS = \
 		virt-xml-validate.1 \
 		virsh.1 \
 		virt-admin.1
-if WITH_LXC
+if WITH_LOGIN_SHELL
 dist_man1_MANS += virt-login-shell.1
-else ! WITH_LXC
+else ! WITH_LOGIN_SHELL
 EXTRA_DIST += virt-login-shell.1
-endif ! WITH_LXC
+endif ! WITH_LOGIN_SHELL
 if WITH_SANLOCK
 dist_man8_MANS = virt-sanlock-cleanup.8
 endif WITH_SANLOCK

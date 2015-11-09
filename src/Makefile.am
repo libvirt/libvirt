@@ -2283,7 +2283,7 @@ libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 # have a RPC client for local UNIX socket access only. We use
 # the ../config-post.h header to disable all external deps that
 # we don't want
-if WITH_LXC
+if WITH_SETUID_RPC_CLIENT
 noinst_LTLIBRARIES += libvirt-setuid-rpc-client.la
 
 libvirt_setuid_rpc_client_la_SOURCES = 		\
@@ -2360,7 +2360,7 @@ libvirt_setuid_rpc_client_la_CFLAGS =		\
 		$(SECDRIVER_CFLAGS)		\
 		$(XDR_CFLAGS)			\
 		$(NULL)
-endif WITH_LXC
+endif WITH_SETUID_RPC_CLIENT
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =

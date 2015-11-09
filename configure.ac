@@ -1086,6 +1086,14 @@ fi
 AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
 
 dnl
+dnl Check for virt-login-shell
+dnl
+
+LIBVIRT_CHECK_LOGIN_SHELL
+
+AM_CONDITIONAL([WITH_SETUID_RPC_CLIENT], [test "$with_lxc$with_login_shell" != "nono"])
+
+dnl
 dnl Checks for the Parallels driver
 dnl
 
@@ -2985,6 +2993,7 @@ AC_MSG_NOTICE([      Init script: $with_init_script])
 AC_MSG_NOTICE([Char device locks: $with_chrdev_lock_files])
 AC_MSG_NOTICE([   Default Editor: $DEFAULT_EDITOR])
 AC_MSG_NOTICE([     Loader/NVRAM: $with_loader_nvram])
+AC_MSG_NOTICE([ virt-login-shell: $with_login_shell])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Developer Tools])
 AC_MSG_NOTICE([])
