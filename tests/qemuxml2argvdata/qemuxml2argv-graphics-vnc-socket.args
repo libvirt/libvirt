@@ -19,4 +19,5 @@ QEMU_AUDIO_DRV=none \
 -net none \
 -serial none \
 -parallel none \
--vnc unix:/tmp/foo.socket
+-vnc unix:/tmp/foo.socket \
+-vga cirrus

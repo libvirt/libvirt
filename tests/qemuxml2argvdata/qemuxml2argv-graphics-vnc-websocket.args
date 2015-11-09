@@ -18,4 +18,5 @@ QEMU_AUDIO_DRV=none \
 -net none \
 -serial none \
 -parallel none \
--vnc 127.0.0.1:0,websocket=5700
+-vnc 127.0.0.1:0,websocket=5700 \
+-vga cirrus

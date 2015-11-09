@@ -10590,7 +10590,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                 virCommandAddArg(cmd, str);
                 VIR_FREE(str);
             }
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA)) {
+        } else {
             if (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_XEN) {
                 /* nothing - vga has no effect on Xen pvfb */
             } else {
@@ -10708,40 +10708,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                     goto error;
                 }
             }
-        } else {
-
-            switch (def->videos[0]->type) {
-            case VIR_DOMAIN_VIDEO_TYPE_VGA:
-                virCommandAddArg(cmd, "-std-vga");
-                break;
-
-            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-                virCommandAddArg(cmd, "-vmwarevga");
-                break;
-
-            case VIR_DOMAIN_VIDEO_TYPE_XEN:
-            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-                /* No special args - this is the default */
-                break;
-
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("video type %s is not supported with this QEMU"),
-                               virDomainVideoTypeToString(def->videos[0]->type));
-                goto error;
-            }
-
-            if (def->nvideos > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("only one video card is currently supported"));
-                goto error;
-            }
         }
 
     } else {
         /* If we have -device, then we set -nodefault already */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_NONE))
             virCommandAddArgList(cmd, "-vga", "none", NULL);
     }

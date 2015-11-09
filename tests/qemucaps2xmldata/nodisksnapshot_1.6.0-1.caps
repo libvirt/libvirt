@@ -1,5 +1,4 @@
   <qemuCaps>
-    <flag name='vga'/>
     <flag name='0.10'/>
     <flag name='mem-path'/>
     <flag name='drive-serial'/>

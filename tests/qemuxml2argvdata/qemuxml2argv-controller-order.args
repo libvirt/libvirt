@@ -37,6 +37,7 @@ id=drive-ide0-1-0,format=raw \
 id=channel0,name=com.redhat.spice.0 \
 -device usb-tablet,id=input0 \
 -spice port=0,addr=0.0.0.0 \
+-vga cirrus \
 -device intel-hda,id=sound0,bus=pci.0,addr=0x4 \
 -device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 \
 -device usb-host,hostbus=14,hostaddr=6,id=hostdev0 \

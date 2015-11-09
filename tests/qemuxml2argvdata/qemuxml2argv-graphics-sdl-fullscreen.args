@@ -20,4 +20,5 @@ DISPLAY=:0.1 \
 -net none \
 -serial none \
 -parallel none \
--full-screen
+-full-screen \
+-vga cirrus
