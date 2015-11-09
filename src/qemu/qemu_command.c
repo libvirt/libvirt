@@ -845,6 +845,9 @@ static int qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
     case VIR_DOMAIN_DISK_BUS_SD:
         ret = virAsprintf(&dev_name, "sd%d", devid);
         break;
+    case VIR_DOMAIN_DISK_BUS_USB:
+        ret = virAsprintf(&dev_name, "usb%d", devid);
+        break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported disk name mapping for bus '%s'"),
