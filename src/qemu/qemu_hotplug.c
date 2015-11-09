@@ -1279,7 +1279,10 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         }
 
         /* setup memory locking limits, that are necessary for VFIO */
-        virProcessSetMaxMemLock(vm->pid, qemuDomainGetMlockLimitBytes(vm->def));
+        if (virProcessSetMaxMemLock(vm->pid,
+                                    qemuDomainGetMlockLimitBytes(vm->def)) < 0)
+            goto error;
+
         break;
 
     default:
