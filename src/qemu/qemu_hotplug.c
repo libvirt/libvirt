@@ -908,12 +908,6 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_NET_ADD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("installed qemu version does not support host_net_add"));
-        goto cleanup;
-    }
-
     /* Currently nothing besides TAP devices supports multiqueue. */
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
@@ -998,8 +992,7 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NET_NAME) ||
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
             goto cleanup;
     }

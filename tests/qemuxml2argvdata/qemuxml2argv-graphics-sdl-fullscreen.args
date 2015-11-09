@@ -21,4 +21,5 @@ DISPLAY=:0.1 \
 -serial none \
 -parallel none \
 -full-screen \
+-sdl \
 -vga cirrus

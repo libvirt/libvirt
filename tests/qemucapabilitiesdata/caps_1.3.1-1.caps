@@ -1,5 +1,4 @@
   <qemuCaps>
-    <flag name='0.10'/>
     <flag name='mem-path'/>
     <flag name='drive-serial'/>
     <flag name='chardev'/>

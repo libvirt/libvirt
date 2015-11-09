@@ -72,7 +72,6 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 
     /* for attach & detach qemu must support -device */
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE);
-    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NET_NAME);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     if (event)

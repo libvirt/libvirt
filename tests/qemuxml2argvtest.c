@@ -910,8 +910,8 @@ mymain(void)
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
 
-    DO_TEST("graphics-sdl", NONE);
-    DO_TEST("graphics-sdl-fullscreen", NONE);
+    DO_TEST("graphics-sdl", QEMU_CAPS_SDL);
+    DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_SDL);
     DO_TEST("nographics", NONE);
     DO_TEST("nographics-vga",
             QEMU_CAPS_VGA_NONE);
@@ -988,7 +988,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-eth", NONE);
     DO_TEST("net-eth-ifname", NONE);
-    DO_TEST("net-eth-names", QEMU_CAPS_NET_NAME);
+    DO_TEST("net-eth-names", NONE);
     DO_TEST("net-client", NONE);
     DO_TEST("net-server", NONE);
     DO_TEST("net-mcast", NONE);

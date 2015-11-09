@@ -17,7 +17,8 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
--net nic,macaddr=52:54:00:8c:b9:05,vlan=0,model=rtl8139 \
--net socket,udp=192.168.10.1:5555,localaddr=192.168.10.1:5556,vlan=0 \
+-net nic,macaddr=52:54:00:8c:b9:05,vlan=0,model=rtl8139,name=net0 \
+-net socket,udp=192.168.10.1:5555,localaddr=192.168.10.1:5556,vlan=0,\
+name=hostnet0 \
 -serial none \
 -parallel none

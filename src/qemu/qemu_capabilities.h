@@ -68,7 +68,7 @@ typedef enum {
 
     /* 15 */
     X_QEMU_CAPS_VGA, /* Is -vga avail */
-    QEMU_CAPS_0_10, /* features added in qemu-0.10.0 or later */
+    X_QEMU_CAPS_0_10, /* features added in qemu-0.10.0 or later */
     QEMU_CAPS_PCIDEVICE, /* PCI device assignment supported */
     QEMU_CAPS_MEM_PATH, /* mmap'ped guest backing supported */
     QEMU_CAPS_DRIVE_SERIAL, /* -driver serial=  available */
@@ -327,10 +327,6 @@ typedef enum {
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
-
-/* Aliases for some of the capabilities defined above */
-# define QEMU_CAPS_NET_NAME QEMU_CAPS_0_10 /* -net ...,name=str */
-# define QEMU_CAPS_HOST_NET_ADD QEMU_CAPS_0_10 /* host_net_add command */
 
 typedef struct _virQEMUCaps virQEMUCaps;
 typedef virQEMUCaps *virQEMUCapsPtr;

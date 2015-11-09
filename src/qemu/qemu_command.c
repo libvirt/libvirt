@@ -1164,17 +1164,14 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (qemuAssignDeviceDiskAlias(def, def->disks[i], qemuCaps) < 0)
             return -1;
     }
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NET_NAME) ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        for (i = 0; i < def->nnets; i++) {
-            /* type='hostdev' interfaces are also on the hostdevs list,
-             * and will have their alias assigned with other hostdevs.
-             */
-            if (virDomainNetGetActualType(def->nets[i])
-                != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-                qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0) {
-                return -1;
-            }
+    for (i = 0; i < def->nnets; i++) {
+        /* type='hostdev' interfaces are also on the hostdevs list,
+         * and will have their alias assigned with other hostdevs.
+         */
+        if (virDomainNetGetActualType(def->nets[i])
+            != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0) {
+            return -1;
         }
     }
 
@@ -8514,8 +8511,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 {
     switch ((virDomainGraphicsType) graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("sdl not supported by '%s'"), def->emulator);
             return -1;
@@ -8538,8 +8534,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
         /* New QEMU has this flag to let us explicitly ask for
          * SDL graphics. This is better than relying on the
          * default, since the default changes :-( */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL))
-            virCommandAddArg(cmd, "-sdl");
+        virCommandAddArg(cmd, "-sdl");
 
         break;
 
@@ -10551,11 +10546,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_0_10) && sdl + vnc + spice > 1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only 1 graphics device is supported"));
-        goto error;
-    }
     if (sdl > 1 || vnc > 1 || spice > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only 1 graphics device of each type "
@@ -12991,6 +12981,11 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 virDomainGraphicsDefFree(vnc);
                 goto error;
             }
+        } else if (STREQ(arg, "-sdl")) {
+            virDomainGraphicsDefPtr sdl;
+            if (VIR_ALLOC(sdl) < 0)
+                goto error;
+            sdl->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
         } else if (STREQ(arg, "-m")) {
             int mem;
             WANT_VALUE();

@@ -1227,9 +1227,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (strstr(help, "-machine"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_OPT);
 
-    if (version >= 10000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);
-
     if (version >= 11000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO);
 
@@ -3165,7 +3162,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_0_10);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
