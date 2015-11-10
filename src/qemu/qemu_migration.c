@@ -3291,14 +3291,16 @@ qemuMigrationPrepareCleanup(virQEMUDriverPtr driver,
     qemuDomainObjDiscardAsyncJob(driver, vm);
 }
 
-static char *
+static qemuProcessIncomingDefPtr
 qemuMigrationPrepareIncoming(virDomainObjPtr vm,
                              bool tunnel,
                              const char *protocol,
                              const char *listenAddress,
-                             unsigned short port)
+                             unsigned short port,
+                             int fd)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuProcessIncomingDefPtr inc = NULL;
     char *migrateFrom = NULL;
 
     if (tunnel) {
@@ -3361,8 +3363,11 @@ qemuMigrationPrepareIncoming(virDomainObjPtr vm,
             goto cleanup;
     }
 
+    inc = qemuProcessIncomingDefNew(priv->qemuCaps, migrateFrom, fd, NULL);
+
  cleanup:
-    return migrateFrom;
+    VIR_FREE(migrateFrom);
+    return inc;
 }
 
 static int
@@ -3393,8 +3398,11 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     char *xmlout = NULL;
     unsigned int cookieFlags;
     virCapsPtr caps = NULL;
-    char *migrateFrom = NULL;
+    qemuProcessIncomingDefPtr incoming = NULL;
     bool taint_hook = false;
+    bool stopProcess = false;
+    bool relabel = false;
+    int rv;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -3528,28 +3536,26 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
-    virObjectUnref(priv->qemuCaps);
-    priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                vm->def->emulator,
-                                                vm->def->os.machine);
-    if (!priv->qemuCaps)
+    if (qemuProcessInit(driver, vm, true) < 0)
         goto stopjob;
+    stopProcess = true;
 
-    if (!(migrateFrom = qemuMigrationPrepareIncoming(vm, tunnel, protocol,
-                                                     listenAddress, port)))
+    if (!(incoming = qemuMigrationPrepareIncoming(vm, tunnel, protocol,
+                                                  listenAddress, port,
+                                                  dataFD[0])))
         goto stopjob;
+    dataFD[0] = -1; /* the FD is now owned by incoming */
 
-    /* Start the QEMU daemon, with the same command-line arguments plus
-     * -incoming $migrateFrom
-     */
-    if (qemuProcessStart(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
-                         migrateFrom, dataFD[0], NULL, NULL,
-                         VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
-                         VIR_QEMU_PROCESS_START_PAUSED |
-                         VIR_QEMU_PROCESS_START_AUTODESTROY) < 0) {
-        virDomainAuditStart(vm, "migrated", false);
+    rv = qemuProcessLaunch(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                           incoming, NULL,
+                           VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
+                           VIR_QEMU_PROCESS_START_AUTODESTROY);
+    if (rv < 0) {
+        if (rv == -2)
+            relabel = true;
         goto stopjob;
     }
+    relabel = true;
 
     if (tunnel) {
         if (virFDStreamOpen(st, dataFD[1]) < 0) {
@@ -3594,6 +3600,15 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         VIR_DEBUG("Received no lockstate");
     }
 
+    if (incoming->deferredURI &&
+        qemuMigrationRunIncoming(driver, vm, incoming->deferredURI,
+                                 QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stopjob;
+
+    if (qemuProcessFinishStartup(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                                 false, VIR_DOMAIN_PAUSED_MIGRATION) < 0)
+        goto stopjob;
+
  done:
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout,
                                 cookieoutlen, cookieFlags) < 0) {
@@ -3625,7 +3640,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(migrateFrom);
+    qemuProcessIncomingDefFree(incoming);
     VIR_FREE(xmlout);
     VIR_FORCE_CLOSE(dataFD[0]);
     VIR_FORCE_CLOSE(dataFD[1]);
@@ -3645,10 +3660,12 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     return ret;
 
  stopjob:
-    if (vm->def->id != -1) {
+    if (stopProcess) {
+        unsigned int stopFlags = VIR_QEMU_PROCESS_STOP_MIGRATED;
+        if (!relabel)
+            stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
         virDomainAuditStart(vm, "migrated", false);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                        VIR_QEMU_PROCESS_STOP_MIGRATED);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
     }
 
     qemuMigrationJobFinish(driver, vm);
