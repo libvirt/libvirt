@@ -4476,6 +4476,90 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuProcessInit:
+ *
+ * Prepares the domain up to the point when priv->qemuCaps is initialized. The
+ * function calls qemuProcessStop when needed.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuProcessInit(virQEMUDriverPtr driver,
+                virDomainObjPtr vm,
+                bool migration)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virCapsPtr caps = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int stopFlags;
+    int ret = -1;
+
+    VIR_DEBUG("vm=%p name=%s id=%d migration=%d",
+              vm, vm->def->name, vm->def->id, migration);
+
+    VIR_DEBUG("Beginning VM startup process");
+
+    if (virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("VM is already active"));
+        goto cleanup;
+    }
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto stop;
+
+    /* Some things, paths, ... are generated here and we want them to persist.
+     * Fill them in prior to setting the domain def as transient. */
+    VIR_DEBUG("Generating paths");
+
+    if (qemuPrepareNVRAM(cfg, vm, migration) < 0)
+        goto stop;
+
+    /* Do this upfront, so any part of the startup process can add
+     * runtime state to vm->def that won't be persisted. This let's us
+     * report implicit runtime defaults in the XML, like vnc listen/socket
+     */
+    VIR_DEBUG("Setting current domain def as transient");
+    if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
+        goto stop;
+
+    vm->def->id = qemuDriverAllocateID(driver);
+    qemuDomainSetFakeReboot(driver, vm, false);
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
+
+    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
+        driver->inhibitCallback(true, driver->inhibitOpaque);
+
+    /* Run an early hook to set-up missing devices */
+    if (qemuProcessStartHook(driver, vm,
+                             VIR_HOOK_QEMU_OP_PREPARE,
+                             VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto stop;
+
+    VIR_DEBUG("Determining emulator version");
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
+        goto stop;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    virObjectUnref(caps);
+    return ret;
+
+ stop:
+    stopFlags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
+    if (migration)
+        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
+    goto cleanup;
+}
+
+
 int qemuProcessStart(virConnectPtr conn,
                      virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -4498,7 +4582,7 @@ int qemuProcessStart(virConnectPtr conn,
     size_t i;
     char *nodeset = NULL;
     unsigned int stop_flags;
-    virQEMUDriverConfigPtr cfg;
+    virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     unsigned int hostdev_flags = 0;
     size_t nnicindexes = 0;
@@ -4515,6 +4599,9 @@ int qemuProcessStart(virConnectPtr conn,
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
                   VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
+
+    if (qemuProcessInit(driver, vm, !!migrateFrom))
+        goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -4534,51 +4621,7 @@ int qemuProcessStart(virConnectPtr conn,
     /* We don't increase cfg's reference counter here. */
     hookData.cfg = cfg;
 
-    VIR_DEBUG("Beginning VM startup process");
-
-    if (virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("VM is already active"));
-        virObjectUnref(cfg);
-        return -1;
-    }
-
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto error;
-
-    /* Some things, paths, ... are generated here and we want them to persist.
-     * Fill them in prior to setting the domain def as transient. */
-    VIR_DEBUG("Generating paths");
-
-    if (qemuPrepareNVRAM(cfg, vm, !!migrateFrom) < 0)
-        goto error;
-
-    /* Do this upfront, so any part of the startup process can add
-     * runtime state to vm->def that won't be persisted. This let's us
-     * report implicit runtime defaults in the XML, like vnc listen/socket
-     */
-    VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
-        goto error;
-
-    vm->def->id = qemuDriverAllocateID(driver);
-    qemuDomainSetFakeReboot(driver, vm, false);
-    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
-
-    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
-
-    /* Run an early hook to set-up missing devices */
-    if (qemuProcessStartHook(driver, vm,
-                             VIR_HOOK_QEMU_OP_PREPARE,
-                             VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto error;
-
-    VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator,
-                                                      vm->def->os.machine)))
         goto error;
 
     /* network devices must be "prepared" before hostdevs, because
