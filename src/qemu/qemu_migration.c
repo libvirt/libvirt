@@ -3522,7 +3522,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         (pipe(dataFD) < 0 || virSetCloseExec(dataFD[1]) < 0)) {
         virReportSystemError(errno, "%s",
                              _("cannot create pipe for tunnelled migration"));
-        goto endjob;
+        goto stopjob;
     }
 
     virObjectUnref(priv->qemuCaps);
@@ -3530,11 +3530,11 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                                 vm->def->emulator,
                                                 vm->def->os.machine);
     if (!priv->qemuCaps)
-        goto endjob;
+        goto stopjob;
 
     if (!(migrateFrom = qemuMigrationPrepareIncoming(vm, tunnel, protocol,
                                                      listenAddress, port)))
-        goto endjob;
+        goto stopjob;
 
     /* Start the QEMU daemon, with the same command-line arguments plus
      * -incoming $migrateFrom
@@ -3545,14 +3545,14 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                          VIR_QEMU_PROCESS_START_PAUSED |
                          VIR_QEMU_PROCESS_START_AUTODESTROY) < 0) {
         virDomainAuditStart(vm, "migrated", false);
-        goto endjob;
+        goto stopjob;
     }
 
     if (tunnel) {
         if (virFDStreamOpen(st, dataFD[1]) < 0) {
             virReportSystemError(errno, "%s",
                                  _("cannot pass pipe for tunnelled migration"));
-            goto stop;
+            goto stopjob;
         }
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
@@ -3560,17 +3560,17 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (qemuMigrationSetCompression(driver, vm,
                                     flags & VIR_MIGRATE_COMPRESSED,
                                     QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto stop;
+        goto stopjob;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
-        goto stop;
+        goto stopjob;
     }
 
     if (qemuMigrationSetPinAll(driver, vm,
                                flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto stop;
+        goto stopjob;
 
     if (mig->lockState) {
         VIR_DEBUG("Received lockstate %s", mig->lockState);
@@ -3593,7 +3593,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         if (qemuMigrationStartNBDServer(driver, vm, listenAddress,
                                         nmigrate_disks, migrate_disks) < 0) {
             /* error already reported */
-            goto endjob;
+            goto stopjob;
         }
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
@@ -3608,7 +3608,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (qemuDomainCleanupAdd(vm, qemuMigrationPrepareCleanup) < 0)
-        goto endjob;
+        goto stopjob;
 
     if (!(flags & VIR_MIGRATE_OFFLINE)) {
         virDomainAuditStart(vm, "migrated", true);
@@ -3647,12 +3647,13 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     virNWFilterUnlockFilterUpdates();
     return ret;
 
- stop:
-    virDomainAuditStart(vm, "migrated", false);
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                    VIR_QEMU_PROCESS_STOP_MIGRATED);
+ stopjob:
+    if (vm->def->id != -1) {
+        virDomainAuditStart(vm, "migrated", false);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                        VIR_QEMU_PROCESS_STOP_MIGRATED);
+    }
 
- endjob:
     qemuMigrationJobFinish(driver, vm);
     goto cleanup;
 }
