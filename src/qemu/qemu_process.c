@@ -5065,6 +5065,53 @@ qemuProcessLaunch(virConnectPtr conn,
 }
 
 
+/**
+ * qemuProcessFinishStartup:
+ *
+ * Finish starting a new domain.
+ */
+int
+qemuProcessFinishStartup(virConnectPtr conn,
+                         virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuDomainAsyncJob asyncJob,
+                         bool startCPUs,
+                         virDomainPausedReason pausedReason)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+
+    if (startCPUs) {
+        VIR_DEBUG("Starting domain CPUs");
+        if (qemuProcessStartCPUs(driver, vm, conn,
+                                 VIR_DOMAIN_RUNNING_BOOTED,
+                                 asyncJob) < 0) {
+            if (!virGetLastError())
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("resume operation failed"));
+            goto cleanup;
+        }
+    } else {
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, pausedReason);
+    }
+
+    VIR_DEBUG("Writing domain status to disk");
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        goto cleanup;
+
+    if (qemuProcessStartHook(driver, vm,
+                             VIR_HOOK_QEMU_OP_STARTED,
+                             VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 int
 qemuProcessStart(virConnectPtr conn,
                  virQEMUDriverPtr driver,
@@ -5077,7 +5124,6 @@ qemuProcessStart(virConnectPtr conn,
                  virNetDevVPortProfileOp vmop,
                  unsigned int flags)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuProcessIncomingDefPtr incoming = NULL;
     unsigned int stopFlags;
@@ -5120,31 +5166,11 @@ qemuProcessStart(virConnectPtr conn,
         qemuMigrationRunIncoming(driver, vm, incoming->deferredURI, asyncJob) < 0)
         goto stop;
 
-    if (!(flags & VIR_QEMU_PROCESS_START_PAUSED)) {
-        VIR_DEBUG("Starting domain CPUs");
-        /* Allow the CPUS to start executing */
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_BOOTED,
-                                 asyncJob) < 0) {
-            if (virGetLastError() == NULL)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("resume operation failed"));
-            goto stop;
-        }
-    } else {
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                             incoming ?
-                             VIR_DOMAIN_PAUSED_MIGRATION :
-                             VIR_DOMAIN_PAUSED_USER);
-    }
-
-    VIR_DEBUG("Writing domain status to disk");
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        goto stop;
-
-    if (qemuProcessStartHook(driver, vm,
-                             VIR_HOOK_QEMU_OP_STARTED,
-                             VIR_HOOK_SUBOP_BEGIN) < 0)
+    if (qemuProcessFinishStartup(conn, driver, vm, asyncJob,
+                                 !(flags & VIR_QEMU_PROCESS_START_PAUSED),
+                                 incoming ?
+                                 VIR_DOMAIN_PAUSED_MIGRATION :
+                                 VIR_DOMAIN_PAUSED_USER) < 0)
         goto stop;
 
     /* Keep watching qemu log for errors during incoming migration, otherwise
@@ -5155,7 +5181,6 @@ qemuProcessStart(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cfg);
     qemuProcessIncomingDefFree(incoming);
     return ret;
 
