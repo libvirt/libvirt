@@ -12759,6 +12759,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     qemuDomainCmdlineDefPtr cmd = NULL;
     virDomainDiskDefPtr disk = NULL;
     const char *ceph_args = qemuFindEnv(progenv, "CEPH_ARGS");
+    bool have_sdl = false;
 
     if (pidfile)
         *pidfile = NULL;
@@ -12982,10 +12983,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
                 goto error;
             }
         } else if (STREQ(arg, "-sdl")) {
-            virDomainGraphicsDefPtr sdl;
-            if (VIR_ALLOC(sdl) < 0)
-                goto error;
-            sdl->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
+            have_sdl = true;
         } else if (STREQ(arg, "-m")) {
             int mem;
             WANT_VALUE();
@@ -13672,7 +13670,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
         VIR_FREE(capsdata);
     }
 
-    if (!nographics && def->ngraphics == 0) {
+    if (!nographics && (def->ngraphics == 0 || have_sdl)) {
         virDomainGraphicsDefPtr sdl;
         const char *display = qemuFindEnv(progenv, "DISPLAY");
         const char *xauth = qemuFindEnv(progenv, "XAUTHORITY");
