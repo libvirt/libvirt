@@ -85,6 +85,15 @@ int qemuProcessInit(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     bool migration);
 
+int qemuProcessLaunch(virConnectPtr conn,
+                      virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      qemuDomainAsyncJob asyncJob,
+                      qemuProcessIncomingDefPtr incoming,
+                      virDomainSnapshotObjPtr snapshot,
+                      virNetDevVPortProfileOp vmop,
+                      unsigned int flags);
+
 typedef enum {
     VIR_QEMU_PROCESS_STOP_MIGRATED      = 1 << 0,
     VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,
