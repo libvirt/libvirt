@@ -3418,6 +3418,9 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                              "make sense"));
             goto cleanup;
         }
+        cookieFlags = 0;
+    } else {
+        cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS;
     }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -3572,6 +3575,16 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
 
+    if (mig->nbd &&
+        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        if (qemuMigrationStartNBDServer(driver, vm, listenAddress,
+                                        nmigrate_disks, migrate_disks) < 0) {
+            goto stopjob;
+        }
+        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
+    }
+
     if (mig->lockState) {
         VIR_DEBUG("Received lockstate %s", mig->lockState);
         VIR_FREE(priv->lockState);
@@ -3582,22 +3595,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
  done:
-    if (flags & VIR_MIGRATE_OFFLINE)
-        cookieFlags = 0;
-    else
-        cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS;
-
-    if (mig->nbd &&
-        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
-        if (qemuMigrationStartNBDServer(driver, vm, listenAddress,
-                                        nmigrate_disks, migrate_disks) < 0) {
-            /* error already reported */
-            goto stopjob;
-        }
-        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-    }
-
     if (qemuMigrationBakeCookie(mig, driver, vm, cookieout,
                                 cookieoutlen, cookieFlags) < 0) {
         /* We could tear down the whole guest here, but
