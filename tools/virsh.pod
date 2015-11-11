@@ -2507,51 +2507,79 @@ Likewise, I<--shareable> is an alias for I<--mode shareable>.
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--target target>] [I<--mac mac>] [I<--script script>] [I<--model model>]
 [I<--inbound average,peak,burst,floor>] [I<--outbound average,peak,burst>]
-[I<--print-xml>]
+[I<--managed>] [I<--print-xml>]
 
-Attach a new network interface to the domain.  I<type> can be
-I<network> to indicate connection via a libvirt virtual network, or
-I<bridge> to indicate connection via a bridge device on the host, or
+Attach a new network interface to the domain.
+
+B<type> can be one of the:
+
+=over 4
+
+I<network> to indicate connection via a libvirt virtual network,
+
+I<bridge> to indicate connection via a bridge device on the host,
+
 I<direct> to indicate connection directly to one of the host's network
-interfaces or bridges.  I<source> indicates the source of the
-connection (the name of a network, or of a bridge device, or the
-host's network interfaces or bridges).  I<target> is used to specify
-the tap/macvtap device to be used to connect the domain to the
-source. Names starting with 'vnet' are considered as auto-generated
-and are blanked out/regenerated each time the interface is attached.
-I<mac> specifies the MAC address of the network interface; if a MAC
+interfaces or bridges,
+
+=back
+
+B<source> indicates the source of the connection.  The source depends
+on the type of the interface:
+
+=over 4
+
+I<network> name of the virtual network,
+
+I<bridge> the name of the bridge device,
+
+I<direct> the name of the host's interface or bridge,
+
+=back
+
+B<--target> is used to specify the tap/macvtap device to be used to
+connect the domain to the source.  Names starting with 'vnet' are
+considered as auto-generated and are blanked out/regenerated each
+time the interface is attached.
+
+B<--mac> specifies the MAC address of the network interface; if a MAC
 address is not given, a new address will be automatically generated
 (and stored in the persistent configuration if "--config" is given on
-the commandline).  I<script> is used to specify a path to a custom
-script to be called while attaching to a bridge - this will be called
-instead of the default script not in addition to it; --script is valid
-only for interfaces of type I<bridge> and only for Xen domains.
-I<model> specifies the network device model to be presented to the
-domain.  I<inbound> and I<outbound> control the bandwidth of the
-interface. At least one from the I<average>, I<floor> pair must be
-specified. The other two I<peak> and I<burst> are optional, so
+the command line).
+
+B<--script> is used to specify a path to a custom script to be called
+while attaching to a bridge - this will be called instead of the default
+script not in addition to it.  This is valid only for interfaces of
+I<bridge> type and only for Xen domains.
+
+B<--model> specifies the network device model to be presented to the
+domain.
+
+B<--inbound> and B<--outbound> control the bandwidth of the
+interface.  At least one from the I<average>, I<floor> pair must be
+specified.  The other two I<peak> and I<burst> are optional, so
 "average,peak", "average,,burst", "average,,,floor", "average" and
-",,,floor" are also legal. Values for I<average>, I<floor> and I<peak>
+",,,floor" are also legal.  Values for I<average>, I<floor> and I<peak>
 are expressed in kilobytes per second, while I<burst> is expressed in
 kilobytes in a single burst at I<peak> speed as described in the
 Network XML documentation at
 L<http://libvirt.org/formatnetwork.html#elementQoS>.
 
-If I<--print-xml> is specified, then the XML of the interface that would be
+If B<--print-xml> is specified, then the XML of the interface that would be
 attached is printed instead.
 
-If I<--live> is specified, affect a running domain.
-If I<--config> is specified, affect the next startup of a persistent domain.
-If I<--current> is specified, affect the current domain state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is
-exclusive. When no flag is specified legacy API is used whose behavior depends
-on the hypervisor driver.
+If B<--live> is specified, affect a running domain.
+If B<--config> is specified, affect the next startup of a persistent domain.
+If B<--current> is specified, affect the current domain state.
+Both B<--live> and B<--config> flags may be given, but B<--current> is
+exclusive.  When no flag is specified legacy API is used whose behavior
+depends on the hypervisor driver.
 
-For compatibility purposes, I<--persistent> behaves like I<--config> for
-an offline domain, and like I<--live> I<--config> for a running domain.
+For compatibility purposes, B<--persistent> behaves like B<--config> for
+an offline domain, and like B<--live> B<--config> for a running domain.
 
 B<Note>: the optional target value is the name of a device to be created
-as the back-end on the node. If not provided a device named "vnetN" or "vifN"
+as the back-end on the node.  If not provided a device named "vnetN" or "vifN"
 will be created automatically.
 
 =item B<detach-device> I<domain> I<FILE>
