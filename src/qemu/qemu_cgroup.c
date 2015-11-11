@@ -1018,16 +1018,11 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     /*
      * If CPU cgroup controller is not initialized here, then we need
      * neither period nor quota settings.  And if CPUSET controller is
-     * not initialized either, then there's nothing to do anyway.
+     * not initialized either, then there's nothing to do anyway. CPU pinning
+     * will be set via virProcessSetAffinity.
      */
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-    /* We are trying to setup cgroups for CPU pinning, which can also be done
-     * with virProcessSetAffinity, thus the lack of cgroups is not fatal here.
-     */
-    if (priv->cgroup == NULL)
         return 0;
 
     if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
@@ -1129,9 +1124,6 @@ qemuSetupCgroupForEmulator(virDomainObjPtr vm)
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (priv->cgroup == NULL)
-        return 0; /* Not supported, so claim success */
-
     if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            true, &cgroup_emulator) < 0)
         goto cleanup;
@@ -1200,12 +1192,6 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
      */
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-    /* We are trying to setup cgroups for CPU pinning, which can also be done
-     * with virProcessSetAffinity, thus the lack of cgroups is not fatal here.
-     */
-    if (priv->cgroup == NULL)
         return 0;
 
     if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
