@@ -3639,14 +3639,18 @@ qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
 {
     unsigned long long memKB;
 
+    /* prefer the hard limit */
+    if (virMemoryLimitIsSet(def->mem.hard_limit)) {
+        memKB = def->mem.hard_limit;
+        goto done;
+    }
+
     /* VFIO requires all of the guest's memory to be locked resident, plus some
      * amount for IO space. Alex Williamson suggested adding 1GiB for IO space
      * just to be safe (some finer tuning might be nice, though). */
-    if (virMemoryLimitIsSet(def->mem.hard_limit))
-        memKB = def->mem.hard_limit;
-    else
-        memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
+    memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
 
+ done:
     return memKB << 10;
 }
 
