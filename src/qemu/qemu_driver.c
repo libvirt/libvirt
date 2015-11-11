@@ -19917,10 +19917,6 @@ static int qemuDomainRename(virDomainPtr dom,
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
-    int logfile = -1;
-    char ebuf[1024];
-    char *timestamp;
-    char *rename_log_msg = NULL;
     char *new_dom_name = NULL;
     char *old_dom_name = NULL;
     char *old_dom_cfg_file = NULL;
@@ -19986,11 +19982,6 @@ static int qemuDomainRename(virDomainPtr dom,
     if (VIR_STRDUP(new_dom_name, new_name) < 0)
         goto endjob;
 
-    if (virAsprintf(&rename_log_msg, ": domain %s has been renamed to %s\n",
-                    vm->def->name, new_name) < 0) {
-        goto endjob;
-    }
-
     if (!(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
                                                  vm->def->name))) {
         goto endjob;
@@ -19998,9 +19989,6 @@ static int qemuDomainRename(virDomainPtr dom,
 
     if (virDomainObjListRenameAddNew(driver->domains, vm, new_name) < 0)
         goto endjob;
-
-    if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0)
-        goto rollback;
 
     event_old = virDomainEventLifecycleNewFromObj(vm,
                                             VIR_DOMAIN_EVENT_UNDEFINED,
@@ -20029,17 +20017,6 @@ static int qemuDomainRename(virDomainPtr dom,
                                               VIR_DOMAIN_EVENT_DEFINED,
                                               VIR_DOMAIN_EVENT_DEFINED_RENAMED);
 
-    /* Write message to the log. */
-    if ((timestamp = virTimeStringNow()) != NULL) {
-        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-            safewrite(logfile, rename_log_msg,
-                      strlen(rename_log_msg)) < 0) {
-            VIR_WARN("Unable to write timestamp to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
-        }
-        VIR_FREE(timestamp);
-    }
-
     /* Success, domain has been renamed. */
     ret = 0;
 
@@ -20047,15 +20024,10 @@ static int qemuDomainRename(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (VIR_CLOSE(logfile) < 0) {
-        VIR_WARN("Unable to close logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-    }
     virDomainObjEndAPI(&vm);
     VIR_FREE(old_dom_cfg_file);
     VIR_FREE(old_dom_name);
     VIR_FREE(new_dom_name);
-    VIR_FREE(rename_log_msg);
     qemuDomainEventQueue(driver, event_old);
     qemuDomainEventQueue(driver, event_new);
     virObjectUnref(cfg);
