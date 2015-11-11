@@ -1428,7 +1428,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
     size_t i, v;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (priv->vcpupids == NULL) {
+    if (!qemuDomainHasVcpuPids(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cpu affinity is not supported"));
         return -1;
@@ -5118,7 +5118,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     }
 
     if (def) {
-        if (priv->vcpupids == NULL) {
+        if (!qemuDomainHasVcpuPids(vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
             goto endjob;
@@ -10287,21 +10287,18 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     if (period == 0 && quota == 0)
         return 0;
 
-    /* If we does not know VCPU<->PID mapping or all vcpu runs in the same
-     * thread, we cannot control each vcpu. So we only modify cpu bandwidth
-     * when each vcpu has a separated thread.
-     */
-    if (priv->nvcpupids != 0 && priv->vcpupids[0] != vm->pid) {
-        for (i = 0; i < priv->nvcpupids; i++) {
-            if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
-                                   false, &cgroup_vcpu) < 0)
-                goto cleanup;
+    if (!qemuDomainHasVcpuPids(vm))
+        return 0;
 
-            if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
-                goto cleanup;
+    for (i = 0; i < priv->nvcpupids; i++) {
+        if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
+                               false, &cgroup_vcpu) < 0)
+            goto cleanup;
 
-            virCgroupFree(&cgroup_vcpu);
-        }
+        if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
+            goto cleanup;
+
+        virCgroupFree(&cgroup_vcpu);
     }
 
     return 0;
@@ -10604,7 +10601,7 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
     int ret = -1;
 
     priv = vm->privateData;
-    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
+    if (!qemuDomainHasVcpuPids(vm)) {
         /* We do not create sub dir for each vcpu */
         rc = qemuGetVcpuBWLive(priv->cgroup, period, quota);
         if (rc < 0)

@@ -4116,3 +4116,18 @@ qemuDomainRequiresMlock(virDomainDefPtr def)
 
     return false;
 }
+
+
+/**
+ * qemuDomainHasVcpuPids:
+ * @vm: Domain object
+ *
+ * Returns true if we were able to successfully detect vCPU pids for the VM.
+ */
+bool
+qemuDomainHasVcpuPids(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    return priv->nvcpupids > 0;
+}

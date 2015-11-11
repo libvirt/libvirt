@@ -2239,12 +2239,13 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
     virDomainPinDefPtr pininfo;
     int n;
     int ret = -1;
-    VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d nvcpupids=%d",
-              def->cputune.nvcpupin, virDomainDefGetVcpus(def), priv->nvcpupids);
+    VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d hasVcpupids=%d",
+              def->cputune.nvcpupin, virDomainDefGetVcpus(def),
+              qemuDomainHasVcpuPids(vm));
     if (!def->cputune.nvcpupin)
         return 0;
 
-    if (priv->vcpupids == NULL) {
+    if (!qemuDomainHasVcpuPids(vm)) {
         /* If any CPU has custom affinity that differs from the
          * VM default affinity, we must reject it
          */

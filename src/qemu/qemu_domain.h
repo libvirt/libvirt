@@ -505,4 +505,6 @@ int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        virQEMUCapsPtr qemuCaps,
                                        const virDomainMemoryDef *mem);
 
+bool qemuDomainHasVcpuPids(virDomainObjPtr vm);
+
 #endif /* __QEMU_DOMAIN_H__ */

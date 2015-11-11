@@ -1025,12 +1025,9 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
-        /* If we don't know VCPU<->PID mapping or all vcpu runs in the same
-         * thread, we cannot control each vcpu.
-         */
+    /* If vCPU<->pid mapping is missing we can't do vCPU pinning */
+    if (!qemuDomainHasVcpuPids(vm))
         return 0;
-    }
 
     if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
         mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
