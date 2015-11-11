@@ -4168,6 +4168,7 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
         return;
 
     VIR_FREE(inc->launchURI);
+    VIR_FREE(inc->deferredURI);
     VIR_FREE(inc);
 }
 
@@ -4194,6 +4195,12 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
     inc->launchURI = qemuMigrationIncomingURI(migrateFrom, fd);
     if (!inc->launchURI)
         goto error;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_INCOMING_DEFER)) {
+        inc->deferredURI = inc->launchURI;
+        if (VIR_STRDUP(inc->launchURI, "defer") < 0)
+            goto error;
+    }
 
     inc->fd = fd;
     inc->path = path;
@@ -4938,6 +4945,11 @@ int qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Detecting actual memory size for video device");
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
+        goto error;
+
+    if (incoming &&
+        incoming->deferredURI &&
+        qemuMigrationRunIncoming(driver, vm, incoming->deferredURI, asyncJob) < 0)
         goto error;
 
     if (!(flags & VIR_QEMU_PROCESS_START_PAUSED)) {

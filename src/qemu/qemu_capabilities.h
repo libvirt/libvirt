@@ -325,6 +325,9 @@ typedef enum {
     QEMU_CAPS_DEVICE_VIRTIO_NET, /* -device virtio-net-* */
     QEMU_CAPS_MACH_VIRT_GIC_VERSION, /* -machine virt,gic-version */
 
+    /* 200 */
+    QEMU_CAPS_INCOMING_DEFER, /* -incoming defer and migrate_incoming */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

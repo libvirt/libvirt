@@ -299,6 +299,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "e1000",
               "virtio-net",
               "gic-version",
+
+              "incoming-defer", /* 200 */
     );
 
 
@@ -1458,6 +1460,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
+    { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

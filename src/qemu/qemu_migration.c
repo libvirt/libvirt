@@ -2951,6 +2951,42 @@ qemuMigrationIncomingURI(const char *migrateFrom,
 }
 
 
+int
+qemuMigrationRunIncoming(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         const char *uri,
+                         qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+    int rv;
+
+    VIR_DEBUG("Setting up incoming migration with URI %s", uri);
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rv = qemuMonitorMigrateIncoming(priv->mon, uri);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
+        goto cleanup;
+
+    if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
+        /* qemuMigrationWaitForDestCompletion is called from the Finish phase */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (qemuMigrationWaitForDestCompletion(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 /* This is called for outgoing non-p2p migrations when a connection to the
  * client which initiated the migration was closed but we were waiting for it
  * to follow up with the next phase, that is, in between

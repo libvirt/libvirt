@@ -205,4 +205,9 @@ int qemuMigrationCheckIncoming(virQEMUCapsPtr qemuCaps,
 char *qemuMigrationIncomingURI(const char *migrateFrom,
                                int migrateFd);
 
+int qemuMigrationRunIncoming(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             const char *uri,
+                             qemuDomainAsyncJob asyncJob);
+
 #endif /* __QEMU_MIGRATION_H__ */
