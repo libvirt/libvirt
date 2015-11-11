@@ -507,6 +507,7 @@ mymain(void)
     DO_TEST_DIFFERENT("usb-redir-filter");
     DO_TEST_DIFFERENT("usb-redir-filter-version");
     DO_TEST("blkdeviotune");
+    DO_TEST_DIFFERENT("controller-usb-order");
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
     DO_TEST_FULL("seclabel-dynamic-override", false, WHEN_INACTIVE);

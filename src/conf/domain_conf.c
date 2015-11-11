@@ -13412,6 +13412,14 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                  * new controller, then new controller should go here
                  * */
                 insertAt = idx;
+            } else if (controller->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_NONE &&
+                       current->info.mastertype != VIR_DOMAIN_CONTROLLER_MASTER_NONE &&
+                       current->idx == controller->idx) {
+                /* If bus matches and index matches and new controller is
+                 * master and current isn't a master, then new controller
+                 * should go here to be placed before its companion
+                 */
+                insertAt = idx;
             } else if (insertAt == -1) {
                 /* Last controller with match bus is before the
                  * new controller, then put new controller just after
