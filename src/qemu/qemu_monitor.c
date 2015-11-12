@@ -94,9 +94,10 @@ struct _qemuMonitor {
     char *balloonpath;
     bool ballooninit;
 
-    /* Log file fd of the qemu process to dig for usable info */
-    int logfd;
-    off_t logpos;
+    /* Log file context of the qemu process to dig for usable info */
+    qemuMonitorReportDomainLogError logFunc;
+    void *logOpaque;
+    virFreeCallback logDestroy;
 };
 
 /**
@@ -315,7 +316,6 @@ qemuMonitorDispose(void *obj)
     VIR_FREE(mon->buffer);
     virJSONValueFree(mon->options);
     VIR_FREE(mon->balloonpath);
-    VIR_FORCE_CLOSE(mon->logfd);
 }
 
 
@@ -706,18 +706,17 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
     }
 
     if (error || eof) {
-        if (hangup && mon->logfd != -1) {
+        if (hangup && mon->logFunc != NULL) {
             /* Check if an error message from qemu is available and if so, use
              * it to overwrite the actual message. It's done only in early
              * startup phases or during incoming migration when the message
              * from qemu is certainly more interesting than a
              * "connection reset by peer" message.
              */
-            qemuProcessReportLogError(mon->logfd,
-                                      mon->logpos,
-                                      _("early end of file from monitor, "
-                                        "possible problem"));
-            VIR_FORCE_CLOSE(mon->logfd);
+            mon->logFunc(mon,
+                         _("early end of file from monitor, "
+                           "possible problem"),
+                         mon->logOpaque);
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
@@ -802,7 +801,6 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     if (!(mon = virObjectLockableNew(qemuMonitorClass)))
         return NULL;
 
-    mon->logfd = -1;
     if (virCondInit(&mon->notify) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize monitor condition"));
@@ -924,7 +922,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
     PROBE(QEMU_MONITOR_CLOSE,
           "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
 
-    qemuMonitorSetDomainLog(mon, -1, -1);
+    qemuMonitorSetDomainLog(mon, NULL, NULL, NULL);
 
     if (mon->fd >= 0) {
         if (mon->watch) {
@@ -3657,21 +3655,22 @@ qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
  * early startup errors of qemu.
  *
  * @mon: Monitor object to set the log file reading on
- * @logfd: File descriptor of the already open log file
- * @pos: position to read errors from
+ * @func: the callback to report errors
+ * @opaque: data to pass to @func
+ * @destroy: optional callback to free @opaque
  */
-int
-qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd, off_t pos)
+void
+qemuMonitorSetDomainLog(qemuMonitorPtr mon,
+                        qemuMonitorReportDomainLogError func,
+                        void *opaque,
+                        virFreeCallback destroy)
 {
-    VIR_FORCE_CLOSE(mon->logfd);
-    if (logfd >= 0 &&
-        (mon->logfd = dup(logfd)) < 0) {
-        virReportSystemError(errno, "%s", _("failed to duplicate log fd"));
-        return -1;
-    }
-    mon->logpos = pos;
+    if (mon->logDestroy && mon->logOpaque)
+        mon->logDestroy(mon->logOpaque);
 
-    return 0;
+    mon->logFunc = func;
+    mon->logOpaque = opaque;
+    mon->logDestroy = destroy;
 }
 
 

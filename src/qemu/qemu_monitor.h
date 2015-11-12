@@ -892,7 +892,13 @@ int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
 int qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
                                 char ***aliases);
 
-int qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd, off_t pos);
+typedef void (*qemuMonitorReportDomainLogError)(qemuMonitorPtr mon,
+                                                const char *msg,
+                                                void *opaque);
+void qemuMonitorSetDomainLog(qemuMonitorPtr mon,
+                             qemuMonitorReportDomainLogError func,
+                             void *opaque,
+                             virFreeCallback destroy);
 
 int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
                            virArch arch,

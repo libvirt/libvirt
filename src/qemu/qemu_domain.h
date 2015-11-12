@@ -366,9 +366,7 @@ int qemuDomainLogContextWrite(qemuDomainLogContextPtr ctxt,
 ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
                                  char **msg);
 int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt);
-int qemuDomainLogContextGetReadFD(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt);
-off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
 

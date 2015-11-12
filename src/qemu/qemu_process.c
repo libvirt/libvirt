@@ -1544,9 +1544,22 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainMigrationStatus = qemuProcessHandleMigrationStatus,
 };
 
+static void
+qemuProcessMonitorReportLogError(qemuMonitorPtr mon,
+                                 const char *msg,
+                                 void *opaque);
+
+
+static void
+qemuProcessMonitorLogFree(void *opaque)
+{
+    qemuDomainLogContextPtr logCtxt = opaque;
+    qemuDomainLogContextFree(logCtxt);
+}
+
 static int
 qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
-                   int logfd, off_t pos)
+                   qemuDomainLogContextPtr logCtxt)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -1572,8 +1585,13 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                           &monitorCallbacks,
                           driver);
 
-    if (mon && logfd != -1 && pos != -1)
-        ignore_value(qemuMonitorSetDomainLog(mon, logfd, pos));
+    if (mon && logCtxt) {
+        qemuDomainLogContextRef(logCtxt);
+        qemuMonitorSetDomainLog(mon,
+                                qemuProcessMonitorReportLogError,
+                                logCtxt,
+                                qemuProcessMonitorLogFree);
+    }
 
     virObjectLock(vm);
     virObjectUnref(vm);
@@ -1626,37 +1644,22 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
 
 /**
  * qemuProcessReadLog: Read log file of a qemu VM
- * @fd: File descriptor of the log file
- * @off: Offset to start reading from
+ * @logCtxt: the domain log context
  * @msg: pointer to buffer to store the read messages in
  *
  * Reads log of a qemu VM. Skips messages not produced by qemu or irrelevant
  * messages. Returns returns 0 on success or -1 on error
  */
 static int
-qemuProcessReadLog(int fd, off_t offset, char **msg)
+qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
 {
     char *buf;
-    size_t buflen = 1024 * 128;
     ssize_t got;
     char *eol;
     char *filter_next;
 
-    /* Best effort jump to start of messages */
-    ignore_value(lseek(fd, offset, SEEK_SET));
-
-    if (VIR_ALLOC_N(buf, buflen) < 0)
+    if ((got = qemuDomainLogContextRead(logCtxt, &buf)) < 0)
         return -1;
-
-    got = saferead(fd, buf, buflen - 1);
-    if (got <= 0) {
-        VIR_FREE(buf);
-        virReportSystemError(errno, "%s",
-                             _("Unable to read from log file"));
-        return -1;
-    }
-
-    buf[got] = '\0';
 
     /* Filter out debug messages from intermediate libvirt process */
     filter_next = buf;
@@ -1674,24 +1677,24 @@ qemuProcessReadLog(int fd, off_t offset, char **msg)
     }
     filter_next = NULL; /* silence false coverity warning */
 
-    if (buf[got - 1] == '\n') {
+    if (got > 0 &&
+        buf[got - 1] == '\n') {
         buf[got - 1] = '\0';
         got--;
     }
-    VIR_SHRINK_N(buf, buflen, buflen - got - 1);
+    ignore_value(VIR_REALLOC_N_QUIET(buf, got + 1));
     *msg = buf;
     return 0;
 }
 
 
-int
-qemuProcessReportLogError(int logfd,
-                          off_t offset,
+static int
+qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
                           const char *msgprefix)
 {
     char *logmsg = NULL;
 
-    if (qemuProcessReadLog(logfd, offset, &logmsg) < 0)
+    if (qemuProcessReadLog(logCtxt, &logmsg) < 0)
         return -1;
 
     virResetLastError();
@@ -1699,6 +1702,16 @@ qemuProcessReportLogError(int logfd,
                    _("%s: %s"), msgprefix, logmsg);
     VIR_FREE(logmsg);
     return 0;
+}
+
+
+static void
+qemuProcessMonitorReportLogError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                 const char *msg,
+                                 void *opaque)
+{
+    qemuDomainLogContextPtr logCtxt = opaque;
+    qemuProcessReportLogError(logCtxt, msg);
 }
 
 
@@ -1911,16 +1924,9 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
     int ret = -1;
     virHashTablePtr info = NULL;
     qemuDomainObjPrivatePtr priv;
-    int logfd = -1;
-    off_t pos = -1;
-
-    if (logCtxt) {
-        logfd = qemuDomainLogContextGetReadFD(logCtxt);
-        pos = qemuDomainLogContextGetPosition(logCtxt);
-    }
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(driver, vm, asyncJob, logfd, pos) < 0)
+    if (qemuConnectMonitor(driver, vm, asyncJob, logCtxt) < 0)
         goto cleanup;
 
     /* Try to get the pty path mappings again via the monitor. This is much more
@@ -1948,8 +1954,8 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
  cleanup:
     virHashFree(info);
 
-    if (pos != (off_t)-1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
-        qemuProcessReportLogError(logfd, pos,
+    if (logCtxt && kill(vm->pid, 0) == -1 && errno == ESRCH) {
+        qemuProcessReportLogError(logCtxt,
                                   _("process exited while connecting to monitor"));
         ret = -1;
     }
@@ -3516,7 +3522,7 @@ qemuProcessReconnect(void *opaque)
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, -1, -1) < 0)
+    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, NULL) < 0)
         goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -4826,12 +4832,8 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
         /* Read errors from child that occurred between fork and exec. */
-        int logfd = qemuDomainLogContextGetReadFD(logCtxt);
-        off_t pos = qemuDomainLogContextGetPosition(logCtxt);
-        if (logfd >= 0) {
-            qemuProcessReportLogError(logfd, pos,
-                                      _("Process exited prior to exec"));
-        }
+        qemuProcessReportLogError(logCtxt,
+                                  _("Process exited prior to exec"));
         goto cleanup;
     }
 
@@ -5116,7 +5118,7 @@ qemuProcessStart(virConnectPtr conn,
     /* Keep watching qemu log for errors during incoming migration, otherwise
      * unset reporting errors from qemu log. */
     if (!incoming)
-        qemuMonitorSetDomainLog(priv->mon, -1, -1);
+        qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
 
     ret = 0;
 
@@ -5131,7 +5133,7 @@ qemuProcessStart(virConnectPtr conn,
     if (migrateFrom)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (priv->mon)
-        qemuMonitorSetDomainLog(priv->mon, -1, -1);
+        qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
     goto cleanup;
 }

@@ -2410,21 +2410,9 @@ int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt)
 }
 
 
-int qemuDomainLogContextGetReadFD(qemuDomainLogContextPtr ctxt)
-{
-    return ctxt->readfd;
-}
-
-
 void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt)
 {
     ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END);
-}
-
-
-off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt)
-{
-    return ctxt->pos;
 }
 
 

@@ -140,10 +140,6 @@ int qemuProcessAutoDestroyRemove(virQEMUDriverPtr driver,
 bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm);
 
-int qemuProcessReportLogError(int fd,
-                              off_t offset,
-                              const char *msgprefix);
-
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParamPtr sp);
 
