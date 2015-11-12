@@ -10312,16 +10312,13 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
 }
 
 static int
-qemuSetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
-                             unsigned long long period, long long quota)
+qemuSetEmulatorBandwidthLive(virCgroupPtr cgroup,
+                             unsigned long long period,
+                             long long quota)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_emulator = NULL;
 
     if (period == 0 && quota == 0)
-        return 0;
-
-    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid)
         return 0;
 
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
@@ -10500,7 +10497,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
-                if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
+                if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
                                                        value_ul, 0)))
                     goto endjob;
 
@@ -10521,7 +10518,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
             if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
-                if ((rc = qemuSetEmulatorBandwidthLive(vm, priv->cgroup,
+                if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
                                                        0, value_l)))
                     goto endjob;
 
@@ -10636,29 +10633,19 @@ qemuGetVcpusBWLive(virDomainObjPtr vm,
 }
 
 static int
-qemuGetEmulatorBandwidthLive(virDomainObjPtr vm, virCgroupPtr cgroup,
-                             unsigned long long *period, long long *quota)
+qemuGetEmulatorBandwidthLive(virCgroupPtr cgroup,
+                             unsigned long long *period,
+                             long long *quota)
 {
     virCgroupPtr cgroup_emulator = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
-    int rc;
     int ret = -1;
-
-    priv = vm->privateData;
-    if (priv->nvcpupids == 0 || priv->vcpupids[0] == vm->pid) {
-        /* We don't create sub dir for each vcpu */
-        *period = 0;
-        *quota = 0;
-        return 0;
-    }
 
     /* get period and quota for emulator */
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_emulator) < 0)
         goto cleanup;
 
-    rc = qemuGetVcpuBWLive(cgroup_emulator, period, quota);
-    if (rc < 0)
+    if (qemuGetVcpuBWLive(cgroup_emulator, period, quota) < 0)
         goto cleanup;
 
     ret = 0;
@@ -10748,7 +10735,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (*nparams > 3 && cpu_bw_status) {
-        rc = qemuGetEmulatorBandwidthLive(vm, priv->cgroup, &emulator_period,
+        rc = qemuGetEmulatorBandwidthLive(priv->cgroup, &emulator_period,
                                           &emulator_quota);
         if (rc != 0)
             goto cleanup;
