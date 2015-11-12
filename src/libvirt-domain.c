@@ -1882,8 +1882,9 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
  * to Domain0 i.e. the domain where the application runs.
  * This function may require privileged access to the hypervisor.
  *
- * This command only changes the runtime configuration of the domain,
- * so can only be called on an active domain.
+ * This command is hypervisor-specific for whether active, persistent,
+ * or both configurations are changed; for more control, use
+ * virDomainSetMemoryFlags().
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
