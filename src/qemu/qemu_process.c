@@ -1909,16 +1909,18 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           int asyncJob,
                           virQEMUCapsPtr qemuCaps,
-                          off_t pos)
+                          qemuDomainLogContextPtr logCtxt)
 {
     int ret = -1;
     virHashTablePtr info = NULL;
     qemuDomainObjPrivatePtr priv;
     int logfd = -1;
+    off_t pos = -1;
 
-    if (pos != (off_t)-1 &&
-        (logfd = qemuDomainOpenLog(driver, vm)) < 0)
-        goto cleanup;
+    if (logCtxt) {
+        logfd = qemuDomainLogContextGetReadFD(logCtxt);
+        pos = qemuDomainLogContextGetPosition(logCtxt);
+    }
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
     if (qemuConnectMonitor(driver, vm, asyncJob, logfd, pos) < 0)
@@ -1954,9 +1956,6 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                                   _("process exited while connecting to monitor"));
         ret = -1;
     }
-
-
-    VIR_FORCE_CLOSE(logfd);
 
     return ret;
 }
@@ -4532,9 +4531,8 @@ qemuProcessLaunch(virConnectPtr conn,
 {
     int ret = -1;
     int rv;
-    off_t pos = -1;
-    char ebuf[1024];
     int logfile = -1;
+    qemuDomainLogContextPtr logCtxt = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
@@ -4647,8 +4645,10 @@ qemuProcessLaunch(virConnectPtr conn,
     }
 
     VIR_DEBUG("Creating domain log file");
-    if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
+    if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
+                                            QEMU_DOMAIN_LOG_CONTEXT_MODE_START)))
         goto cleanup;
+    logfile = qemuDomainLogContextGetWriteFD(logCtxt);
 
     if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         VIR_DEBUG("Checking for KVM availability");
@@ -4782,11 +4782,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainObjCheckTaint(driver, vm, logfile);
 
-    if ((pos = lseek(logfile, 0, SEEK_END)) < 0) {
-        VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-        pos = 0;
-    }
+    qemuDomainLogContextMarkPosition(logCtxt);
 
     VIR_DEBUG("Clear emulator capabilities: %d",
               cfg->clearEmulatorCapabilities);
@@ -4840,11 +4836,11 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
         /* Read errors from child that occurred between fork and exec. */
-        int logfd = qemuDomainOpenLog(driver, vm);
+        int logfd = qemuDomainLogContextGetReadFD(logCtxt);
+        off_t pos = qemuDomainLogContextGetPosition(logCtxt);
         if (logfd >= 0) {
             qemuProcessReportLogError(logfd, pos,
                                       _("Process exited prior to exec"));
-            VIR_FORCE_CLOSE(logfd);
         }
         goto cleanup;
     }
@@ -4910,7 +4906,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, asyncJob, priv->qemuCaps, pos) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, asyncJob, priv->qemuCaps, logCtxt) < 0)
         goto cleanup;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -5010,7 +5006,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FORCE_CLOSE(logfile);
+    qemuDomainLogContextFree(logCtxt);
     virObjectUnref(cfg);
     virObjectUnref(caps);
     VIR_FREE(nicindexes);
@@ -5193,11 +5189,11 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainDefPtr def;
     virNetDevVPortProfilePtr vport = NULL;
     size_t i;
-    int logfile = -1;
     char *timestamp;
     char *tmppath = NULL;
     char ebuf[1024];
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainLogContextPtr logCtxt = NULL;
 
     VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu flags=%x",
               vm, vm->def->name, vm->def->id,
@@ -5226,12 +5222,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* Wake up anything waiting on domain condition */
     virDomainObjBroadcast(vm);
 
-    if ((logfile = qemuDomainCreateLog(driver, vm, true)) < 0) {
-        /* To not break the normal domain shutdown process, skip the
-         * timestamp log writing if failed on opening log file. */
-        VIR_WARN("Unable to open logfile: %s",
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
-    } else {
+    if ((logCtxt = qemuDomainLogContextNew(driver, vm,
+                                           QEMU_DOMAIN_LOG_CONTEXT_MODE_STOP))) {
+        int logfile = qemuDomainLogContextGetWriteFD(logCtxt);
         if ((timestamp = virTimeStringNow()) != NULL) {
             if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
                 safewrite(logfile, SHUTDOWN_POSTFIX,
@@ -5242,10 +5235,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
             VIR_FREE(timestamp);
         }
-
-        if (VIR_CLOSE(logfile) < 0)
-             VIR_WARN("Unable to close logfile: %s",
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+        qemuDomainLogContextFree(logCtxt);
     }
 
     /* Clear network bandwidth */
@@ -5506,6 +5496,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     size_t i;
     char ebuf[1024];
     int logfile = -1;
+    qemuDomainLogContextPtr logCtxt = NULL;
     char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool running = true;
@@ -5600,8 +5591,10 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto error;
 
     VIR_DEBUG("Creating domain log file");
-    if ((logfile = qemuDomainCreateLog(driver, vm, false)) < 0)
+    if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
+                                            QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH)))
         goto error;
+    logfile = qemuDomainLogContextGetWriteFD(logCtxt);
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
@@ -5630,22 +5623,20 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
             goto error;
     }
 
-    if ((timestamp = virTimeStringNow()) == NULL) {
+    if ((timestamp = virTimeStringNow()) == NULL)
         goto error;
-    } else {
-        if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-            safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
-            VIR_WARN("Unable to write timestamp to logfile: %s",
-                     virStrerror(errno, ebuf, sizeof(ebuf)));
-        }
 
-        VIR_FREE(timestamp);
+    if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
+        safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
+        VIR_WARN("Unable to write timestamp to logfile: %s",
+                 virStrerror(errno, ebuf, sizeof(ebuf)));
     }
+    VIR_FREE(timestamp);
 
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logfile);
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, -1) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, NULL) < 0)
         goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -5723,7 +5714,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
             goto error;
     }
 
-    VIR_FORCE_CLOSE(logfile);
+    qemuDomainLogContextFree(logCtxt);
     VIR_FREE(seclabel);
     VIR_FREE(sec_managers);
     virObjectUnref(cfg);
@@ -5740,7 +5731,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (active && virAtomicIntDecAndTest(&driver->nactive) &&
         driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
-    VIR_FORCE_CLOSE(logfile);
+    qemuDomainLogContextFree(logCtxt);
     VIR_FREE(seclabel);
     VIR_FREE(sec_managers);
     if (seclabelgen)

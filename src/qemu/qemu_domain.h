@@ -372,8 +372,6 @@ off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
 
-int qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm, bool append);
-int qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm);
 int qemuDomainAppendLog(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         int logFD,

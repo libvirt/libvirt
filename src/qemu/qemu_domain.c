@@ -2434,108 +2434,29 @@ void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
 }
 
 
-static int
-qemuDomainOpenLogHelper(virQEMUDriverConfigPtr cfg,
-                        virDomainObjPtr vm,
-                        int oflags,
-                        mode_t mode)
-{
-    char *logfile;
-    int fd = -1;
-    bool trunc = false;
-
-    if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
-        return -1;
-
-    /* To make SELinux happy we always need to open in append mode.
-     * So we fake O_TRUNC by calling ftruncate after open instead
-     */
-    if (oflags & O_TRUNC) {
-        oflags &= ~O_TRUNC;
-        oflags |= O_APPEND;
-        trunc = true;
-    }
-
-    if ((fd = open(logfile, oflags, mode)) < 0) {
-        virReportSystemError(errno, _("failed to create logfile %s"),
-                             logfile);
-        goto cleanup;
-    }
-    if (virSetCloseExec(fd) < 0) {
-        virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
-                             logfile);
-        VIR_FORCE_CLOSE(fd);
-        goto cleanup;
-    }
-    if (trunc &&
-        ftruncate(fd, 0) < 0) {
-        virReportSystemError(errno, _("failed to truncate %s"),
-                             logfile);
-        VIR_FORCE_CLOSE(fd);
-        goto cleanup;
-    }
-
- cleanup:
-    VIR_FREE(logfile);
-    return fd;
-}
-
-
-int
-qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                    bool append)
-{
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int oflags;
-    int ret;
-
-    oflags = O_CREAT | O_WRONLY;
-    /* Only logrotate files in /var/log, so only append if running privileged */
-    if (virQEMUDriverIsPrivileged(driver) || append)
-        oflags |= O_APPEND;
-    else
-        oflags |= O_TRUNC;
-
-    ret = qemuDomainOpenLogHelper(cfg, vm, oflags, S_IRUSR | S_IWUSR);
-    virObjectUnref(cfg);
-    return ret;
-}
-
-
-int
-qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm)
-{
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int fd;
-
-    fd = qemuDomainOpenLogHelper(cfg, vm, O_RDONLY, 0);
-    virObjectUnref(cfg);
-    if (fd < 0)
-        return -1;
-
-    return fd;
-}
-
-
 int qemuDomainAppendLog(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         int logFD,
                         const char *fmt, ...)
 {
-    int fd = logFD;
     va_list argptr;
     char *message = NULL;
     int ret = -1;
+    qemuDomainLogContextPtr logCtxt = NULL;
 
     va_start(argptr, fmt);
 
-    if ((fd == -1) &&
-        (fd = qemuDomainCreateLog(driver, obj, true)) < 0)
-        goto cleanup;
+    if (logFD == -1) {
+        logCtxt = qemuDomainLogContextNew(driver, obj,
+                                          QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH);
+        if (!logCtxt)
+            goto cleanup;
+        logFD = qemuDomainLogContextGetWriteFD(logCtxt);
+    }
 
     if (virVasprintf(&message, fmt, argptr) < 0)
         goto cleanup;
-    if (safewrite(fd, message, strlen(message)) < 0) {
+    if (safewrite(logFD, message, strlen(message)) < 0) {
         virReportSystemError(errno, _("Unable to write to domain logfile %s"),
                              obj->def->name);
         goto cleanup;
@@ -2546,8 +2467,7 @@ int qemuDomainAppendLog(virQEMUDriverPtr driver,
  cleanup:
     va_end(argptr);
 
-    if (fd != logFD)
-        VIR_FORCE_CLOSE(fd);
+    qemuDomainLogContextFree(logCtxt);
 
     VIR_FREE(message);
     return ret;
