@@ -4082,40 +4082,33 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
 static void
 qemuLogOperation(virDomainObjPtr vm,
                  const char *msg,
-                 int logfd,
-                 virCommandPtr cmd)
+                 virCommandPtr cmd,
+                 qemuDomainLogContextPtr logCtxt)
 {
     char *timestamp;
-    char *logline;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int qemuVersion = virQEMUCapsGetVersion(priv->qemuCaps);
     const char *package = virQEMUCapsGetPackage(priv->qemuCaps);
-    char ebuf[1024];
 
     if ((timestamp = virTimeStringNow()) == NULL)
-        goto error;
+        goto cleanup;
 
-    if (virAsprintf(&logline, "%s: %s %s, qemu version: %d.%d.%d%s\n",
-                    timestamp, msg, VIR_LOG_VERSION_STRING,
-                    (qemuVersion / 1000000) % 1000, (qemuVersion / 1000) % 1000, qemuVersion % 1000,
-                    package ? package : "") < 0)
-        goto error;
+    if (qemuDomainLogContextWrite(logCtxt, "%s: %s %s, qemu version: %d.%d.%d%s\n",
+                                  timestamp, msg, VIR_LOG_VERSION_STRING,
+                                  (qemuVersion / 1000000) % 1000,
+                                  (qemuVersion / 1000) % 1000,
+                                  qemuVersion % 1000,
+                                  package ? package : "") < 0)
+        goto cleanup;
 
-    if (safewrite(logfd, logline, strlen(logline)) < 0)
-        goto error;
-
-    if (cmd)
-        virCommandWriteArgLog(cmd, logfd);
+    if (cmd) {
+        char *args = virCommandToString(cmd);
+        qemuDomainLogContextWrite(logCtxt, "%s\n", args);
+        VIR_FREE(args);
+    }
 
  cleanup:
     VIR_FREE(timestamp);
-    VIR_FREE(logline);
-    return;
-
- error:
-    VIR_WARN("Unable to write banner to logfile: %s",
-             virStrerror(errno, ebuf, sizeof(ebuf)));
-    goto cleanup;
 }
 
 
@@ -4778,7 +4771,7 @@ qemuProcessLaunch(virConnectPtr conn,
                              VIR_HOOK_SUBOP_BEGIN) < 0)
         goto cleanup;
 
-    qemuLogOperation(vm, "starting up", logfile, cmd);
+    qemuLogOperation(vm, "starting up", cmd, logCtxt);
 
     qemuDomainObjCheckTaint(driver, vm, logCtxt);
 
