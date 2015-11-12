@@ -9134,7 +9134,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     int usbcontroller = 0;
     int actualSerials = 0;
     bool usblegacy = false;
-    bool mlock = false;
     int contOrder[] = {
         /*
          * List of controller types that we add commandline args for,
@@ -9302,7 +9301,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgFormat(cmd, "mlock=%s",
                                def->mem.locked ? "on" : "off");
     }
-    mlock = def->mem.locked;
 
     virCommandAddArg(cmd, "-smp");
     if (!(smp = qemuBuildSmpArgStr(def, qemuCaps)))
@@ -10867,9 +10865,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                                      "supported by this version of qemu"));
                     goto error;
                 }
-                /* VFIO requires all of the guest's memory to be locked
-                 * resident */
-                mlock = true;
             }
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
@@ -11096,7 +11091,9 @@ qemuBuildCommandLine(virConnectPtr conn,
             goto error;
     }
 
-    if (mlock)
+    /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
+     * significant amount of memory, so we need to set the limit accordingly */
+    if (qemuDomainRequiresMlock(def))
         virCommandSetMaxMemLock(cmd, qemuDomainGetMlockLimitBytes(def));
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
