@@ -2318,37 +2318,15 @@ qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
 
 int
-qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm, off_t pos)
+qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int fd;
-    off_t off;
-    int whence;
 
     fd = qemuDomainOpenLogHelper(cfg, vm, O_RDONLY, 0);
     virObjectUnref(cfg);
     if (fd < 0)
         return -1;
-
-    if (pos < 0) {
-        off = 0;
-        whence = SEEK_END;
-    } else {
-        off = pos;
-        whence = SEEK_SET;
-    }
-
-    if (lseek(fd, off, whence) < 0) {
-        if (whence == SEEK_END)
-            virReportSystemError(errno,
-                                 _("unable to seek to end of log for %s"),
-                                 vm->def->name);
-        else
-            virReportSystemError(errno,
-                                 _("unable to seek to %lld from start for %s"),
-                                 (long long)off, vm->def->name);
-        VIR_FORCE_CLOSE(fd);
-    }
 
     return fd;
 }

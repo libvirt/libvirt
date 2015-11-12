@@ -892,7 +892,7 @@ int qemuMonitorDetachCharDev(qemuMonitorPtr mon,
 int qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
                                 char ***aliases);
 
-int qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd);
+int qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd, off_t pos);
 
 int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
                            virArch arch,

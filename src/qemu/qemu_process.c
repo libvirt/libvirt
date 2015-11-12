@@ -1549,7 +1549,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
 
 static int
 qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
-                   int logfd)
+                   int logfd, off_t pos)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -1575,8 +1575,8 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                           &monitorCallbacks,
                           driver);
 
-    if (mon)
-        ignore_value(qemuMonitorSetDomainLog(mon, logfd));
+    if (mon && logfd != -1 && pos != -1)
+        ignore_value(qemuMonitorSetDomainLog(mon, logfd, pos));
 
     virObjectLock(vm);
     virObjectUnref(vm);
@@ -1630,111 +1630,78 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
 /**
  * qemuProcessReadLog: Read log file of a qemu VM
  * @fd: File descriptor of the log file
- * @buf: buffer to store the read messages
- * @buflen: allocated space available in @buf
  * @off: Offset to start reading from
- * @skipchar: Skip messages about created character devices
+ * @msg: pointer to buffer to store the read messages in
  *
  * Reads log of a qemu VM. Skips messages not produced by qemu or irrelevant
- * messages. Returns length of the message stored in @buf, or -1 on error.
- */
-int
-qemuProcessReadLog(int fd, char *buf, int buflen, int off, bool skipchar)
-{
-    char *filter_next = buf;
-    ssize_t bytes;
-    char *eol;
-
-    while (off < buflen - 1) {
-        bytes = saferead(fd, buf + off, buflen - off - 1);
-        if (bytes < 0)
-            return -1;
-
-        off += bytes;
-        buf[off] = '\0';
-
-        if (bytes == 0)
-            break;
-
-        /* Filter out debug messages from intermediate libvirt process */
-        while ((eol = strchr(filter_next, '\n'))) {
-            *eol = '\0';
-            if (virLogProbablyLogMessage(filter_next) ||
-                (skipchar &&
-                 STRPREFIX(filter_next, "char device redirected to"))) {
-                memmove(filter_next, eol + 1, off - (eol - buf));
-                off -= eol + 1 - filter_next;
-            } else {
-                filter_next = eol + 1;
-                *eol = '\n';
-            }
-        }
-    }
-
-    return off;
-}
-
-/*
- * Read domain log and probably overwrite error if there's one in
- * the domain log file. This function exists to cover the small
- * window between fork() and exec() during which child may fail
- * by libvirt's hand, e.g. placing onto a NUMA node failed.
+ * messages. Returns returns 0 on success or -1 on error
  */
 static int
-qemuProcessReadChildErrors(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           off_t originalOff)
+qemuProcessReadLog(int fd, off_t offset, char **msg)
 {
-    int ret = -1;
-    int logfd;
-    off_t off = 0;
-    ssize_t bytes;
-    char buf[1024] = {0};
-    char *eol, *filter_next = buf;
+    char *buf;
+    size_t buflen = 1024 * 128;
+    ssize_t got;
+    char *eol;
+    char *filter_next;
 
-    if ((logfd = qemuDomainOpenLog(driver, vm, originalOff)) < 0)
-        goto cleanup;
+    /* Best effort jump to start of messages */
+    ignore_value(lseek(fd, offset, SEEK_SET));
 
-    while (off < sizeof(buf) - 1) {
-        bytes = saferead(logfd, buf + off, sizeof(buf) - off - 1);
-        if (bytes < 0) {
-            VIR_WARN("unable to read from log file: %s",
-                     virStrerror(errno, buf, sizeof(buf)));
-            goto cleanup;
-        }
+    if (VIR_ALLOC_N(buf, buflen) < 0)
+        return -1;
 
-        off += bytes;
-        buf[off] = '\0';
-
-        if (bytes == 0)
-            break;
-
-        while ((eol = strchr(filter_next, '\n'))) {
-            *eol = '\0';
-            if (STRPREFIX(filter_next, "libvirt: ")) {
-                filter_next = eol + 1;
-                *eol = '\n';
-                break;
-            } else {
-                memmove(filter_next, eol + 1, off - (eol - buf));
-                off -= eol + 1 - filter_next;
-            }
-        }
+    got = saferead(fd, buf, buflen - 1);
+    if (got <= 0) {
+        VIR_FREE(buf);
+        virReportSystemError(errno, "%s",
+                             _("Unable to read from log file"));
+        return -1;
     }
 
-    if (off > 0) {
-        /* Found an error in the log. Report it */
-        virResetLastError();
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Process exited prior to exec: %s"),
-                       buf);
+    buf[got] = '\0';
+
+    /* Filter out debug messages from intermediate libvirt process */
+    filter_next = buf;
+    while ((eol = strchr(filter_next, '\n'))) {
+        *eol = '\0';
+        if (virLogProbablyLogMessage(filter_next) ||
+            STRPREFIX(filter_next, "char device redirected to")) {
+            size_t skip = (eol + 1) - filter_next;
+            memmove(filter_next, eol + 1, (got - skip) + 1);
+            got -= skip;
+        } else {
+            filter_next = eol + 1;
+            *eol = '\n';
+        }
     }
+    filter_next = NULL; /* silence false coverity warning */
 
-    ret = 0;
+    if (buf[got - 1] == '\n') {
+        buf[got - 1] = '\0';
+        got--;
+    }
+    VIR_SHRINK_N(buf, buflen, buflen - got - 1);
+    *msg = buf;
+    return 0;
+}
 
- cleanup:
-    VIR_FORCE_CLOSE(logfd);
-    return ret;
+
+int
+qemuProcessReportLogError(int logfd,
+                          off_t offset,
+                          const char *msgprefix)
+{
+    char *logmsg = NULL;
+
+    if (qemuProcessReadLog(logfd, offset, &logmsg) < 0)
+        return -1;
+
+    virResetLastError();
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("%s: %s"), msgprefix, logmsg);
+    VIR_FREE(logmsg);
+    return 0;
 }
 
 
@@ -1944,20 +1911,17 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virQEMUCapsPtr qemuCaps,
                           off_t pos)
 {
-    char *buf = NULL;
-    size_t buf_size = 4096; /* Plenty of space to get startup greeting */
-    int logfd = -1;
     int ret = -1;
     virHashTablePtr info = NULL;
     qemuDomainObjPrivatePtr priv;
+    int logfd = -1;
 
-    if (pos != -1 &&
-        (logfd = qemuDomainOpenLog(driver, vm, pos)) < 0)
-        return -1;
-
+    if (pos != (off_t)-1 &&
+        (logfd = qemuDomainOpenLog(driver, vm)) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(driver, vm, asyncJob, logfd) < 0)
+    if (qemuConnectMonitor(driver, vm, asyncJob, logfd, pos) < 0)
         goto cleanup;
 
     /* Try to get the pty path mappings again via the monitor. This is much more
@@ -1985,31 +1949,14 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
  cleanup:
     virHashFree(info);
 
-    if (pos != -1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
-        /* VM is dead, any other error raised in the interim is probably
-         * not as important as the qemu cmdline output */
-        if (VIR_ALLOC_N(buf, buf_size) < 0)
-            goto closelog;
-
-        /* best effort seek - we need to reset to the original position, so that
-         * a possible read of the fd in the monitor code doesn't influence this
-         * error delivery option */
-        ignore_value(lseek(logfd, pos, SEEK_SET));
-        qemuProcessReadLog(logfd, buf, buf_size - 1, 0, true);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("process exited while connecting to monitor: %s"),
-                       buf);
+    if (pos != (off_t)-1 && kill(vm->pid, 0) == -1 && errno == ESRCH) {
+        qemuProcessReportLogError(logfd, pos,
+                                  _("process exited while connecting to monitor"));
         ret = -1;
     }
 
- closelog:
-    if (VIR_CLOSE(logfd) < 0) {
-        char ebuf[1024];
-        VIR_WARN("Unable to close logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-    }
 
-    VIR_FREE(buf);
+    VIR_FORCE_CLOSE(logfd);
 
     return ret;
 }
@@ -3573,7 +3520,7 @@ qemuProcessReconnect(void *opaque)
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, -1) < 0)
+    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, -1, -1) < 0)
         goto error;
 
     /* Failure to connect to agent shouldn't be fatal */
@@ -4835,9 +4782,11 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainObjCheckTaint(driver, vm, logfile);
 
-    if ((pos = lseek(logfile, 0, SEEK_END)) < 0)
+    if ((pos = lseek(logfile, 0, SEEK_END)) < 0) {
         VIR_WARN("Unable to seek to end of logfile: %s",
                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        pos = 0;
+    }
 
     VIR_DEBUG("Clear emulator capabilities: %d",
               cfg->clearEmulatorCapabilities);
@@ -4891,7 +4840,12 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Waiting for handshake from child");
     if (virCommandHandshakeWait(cmd) < 0) {
         /* Read errors from child that occurred between fork and exec. */
-        qemuProcessReadChildErrors(driver, vm, pos);
+        int logfd = qemuDomainOpenLog(driver, vm);
+        if (logfd >= 0) {
+            qemuProcessReportLogError(logfd, pos,
+                                      _("Process exited prior to exec"));
+            VIR_FORCE_CLOSE(logfd);
+        }
         goto cleanup;
     }
 
@@ -5176,7 +5130,7 @@ qemuProcessStart(virConnectPtr conn,
     /* Keep watching qemu log for errors during incoming migration, otherwise
      * unset reporting errors from qemu log. */
     if (!incoming)
-        qemuMonitorSetDomainLog(priv->mon, -1);
+        qemuMonitorSetDomainLog(priv->mon, -1, -1);
 
     ret = 0;
 
@@ -5190,6 +5144,8 @@ qemuProcessStart(virConnectPtr conn,
         stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
     if (migrateFrom)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
+    if (priv->mon)
+        qemuMonitorSetDomainLog(priv->mon, -1, -1);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
     goto cleanup;
 }

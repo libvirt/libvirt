@@ -96,6 +96,7 @@ struct _qemuMonitor {
 
     /* Log file fd of the qemu process to dig for usable info */
     int logfd;
+    off_t logpos;
 };
 
 /**
@@ -386,38 +387,6 @@ qemuMonitorOpenPty(const char *monitor)
     }
 
     return monfd;
-}
-
-
-/* Get a possible error from qemu's log. This function closes the
- * corresponding log fd */
-static char *
-qemuMonitorGetErrorFromLog(qemuMonitorPtr mon)
-{
-    int len;
-    char *logbuf = NULL;
-    int orig_errno = errno;
-
-    if (mon->logfd < 0)
-        return NULL;
-
-    if (VIR_ALLOC_N_QUIET(logbuf, 4096) < 0)
-        goto error;
-
-    if ((len = qemuProcessReadLog(mon->logfd, logbuf, 4096 - 1, 0, true)) <= 0)
-        goto error;
-
-    while (len > 0 && logbuf[len - 1] == '\n')
-        logbuf[--len] = '\0';
-
- cleanup:
-    errno = orig_errno;
-    VIR_FORCE_CLOSE(mon->logfd);
-    return logbuf;
-
- error:
-    VIR_FREE(logbuf);
-    goto cleanup;
 }
 
 
@@ -737,25 +706,20 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
     }
 
     if (error || eof) {
-        if (hangup) {
+        if (hangup && mon->logfd != -1) {
             /* Check if an error message from qemu is available and if so, use
              * it to overwrite the actual message. It's done only in early
              * startup phases or during incoming migration when the message
              * from qemu is certainly more interesting than a
              * "connection reset by peer" message.
              */
-            char *qemuMessage;
-
-            if ((qemuMessage = qemuMonitorGetErrorFromLog(mon))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("early end of file from monitor: "
-                                 "possible problem:\n%s"),
-                               qemuMessage);
-                virCopyLastError(&mon->lastError);
-                virResetLastError();
-            }
-
-            VIR_FREE(qemuMessage);
+            qemuProcessReportLogError(mon->logfd,
+                                      mon->logpos,
+                                      _("early end of file from monitor, "
+                                        "possible problem"));
+            VIR_FORCE_CLOSE(mon->logfd);
+            virCopyLastError(&mon->lastError);
+            virResetLastError();
         }
 
         if (mon->lastError.code != VIR_ERR_OK) {
@@ -960,7 +924,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
     PROBE(QEMU_MONITOR_CLOSE,
           "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
 
-    qemuMonitorSetDomainLog(mon, -1);
+    qemuMonitorSetDomainLog(mon, -1, -1);
 
     if (mon->fd >= 0) {
         if (mon->watch) {
@@ -3694,9 +3658,10 @@ qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
  *
  * @mon: Monitor object to set the log file reading on
  * @logfd: File descriptor of the already open log file
+ * @pos: position to read errors from
  */
 int
-qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd)
+qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd, off_t pos)
 {
     VIR_FORCE_CLOSE(mon->logfd);
     if (logfd >= 0 &&
@@ -3704,6 +3669,7 @@ qemuMonitorSetDomainLog(qemuMonitorPtr mon, int logfd)
         virReportSystemError(errno, "%s", _("failed to duplicate log fd"));
         return -1;
     }
+    mon->logpos = pos;
 
     return 0;
 }

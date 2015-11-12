@@ -351,7 +351,7 @@ void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
 
 
 int qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm, bool append);
-int qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm, off_t pos);
+int qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm);
 int qemuDomainAppendLog(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         int logFD,
