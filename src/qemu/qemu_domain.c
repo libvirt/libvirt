@@ -4131,3 +4131,23 @@ qemuDomainHasVcpuPids(virDomainObjPtr vm)
 
     return priv->nvcpupids > 0;
 }
+
+
+/**
+ * qemuDomainGetVcpuPid:
+ * @vm: domain object
+ * @vcpu: cpu id
+ *
+ * Returns the vCPU pid. If @vcpu is offline or out of range 0 is returned.
+ */
+pid_t
+qemuDomainGetVcpuPid(virDomainObjPtr vm,
+                     unsigned int vcpu)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (vcpu >= priv->nvcpupids)
+        return 0;
+
+    return priv->vcpupids[vcpu];
+}

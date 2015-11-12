@@ -1043,7 +1043,8 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             goto cleanup;
 
         /* move the thread for vcpu to sub dir */
-        if (virCgroupAddTask(cgroup_vcpu, priv->vcpupids[i]) < 0)
+        if (virCgroupAddTask(cgroup_vcpu,
+                             qemuDomainGetVcpuPid(vm, i)) < 0)
             goto cleanup;
 
         if (period || quota) {

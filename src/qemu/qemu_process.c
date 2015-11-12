@@ -2234,7 +2234,6 @@ qemuProcessSetLinkStates(virQEMUDriverPtr driver,
 static int
 qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     virDomainPinDefPtr pininfo;
     int n;
@@ -2267,7 +2266,7 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
                                          n)))
             continue;
 
-        if (virProcessSetAffinity(priv->vcpupids[n],
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, n),
                                   pininfo->cpumask) < 0) {
             goto cleanup;
         }
@@ -2355,7 +2354,7 @@ qemuProcessSetSchedulers(virDomainObjPtr vm)
     size_t i = 0;
 
     for (i = 0; i < priv->nvcpupids; i++) {
-        if (qemuProcessSetSchedParams(i, priv->vcpupids[i],
+        if (qemuProcessSetSchedParams(i, qemuDomainGetVcpuPid(vm, i),
                                       vm->def->cputune.nvcpusched,
                                       vm->def->cputune.vcpusched) < 0)
             return -1;

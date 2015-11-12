@@ -1449,7 +1449,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                                        &(info[i].cpu),
                                        NULL,
                                        vm->pid,
-                                       priv->vcpupids[i]) < 0) {
+                                       qemuDomainGetVcpuPid(vm, i)) < 0) {
                     virReportSystemError(errno, "%s",
                                          _("cannot get vCPU placement & pCPU time"));
                     return -1;
@@ -1462,7 +1462,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm, virVcpuInfoPtr info, int maxinfo,
                 unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, v);
                 virBitmapPtr map = NULL;
 
-                if (!(map = virProcessGetAffinity(priv->vcpupids[v])))
+                if (!(map = virProcessGetAffinity(qemuDomainGetVcpuPid(vm, v))))
                     return -1;
 
                 virBitmapToDataBuf(map, cpumap, maplen);
@@ -5156,7 +5156,8 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                 goto endjob;
             }
         } else {
-            if (virProcessSetAffinity(priv->vcpupids[vcpu], pcpumap) < 0) {
+            if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu),
+                                      pcpumap) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("failed to set cpu affinity for vcpu %d"),
                                vcpu);
