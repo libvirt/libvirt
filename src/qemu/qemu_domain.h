@@ -245,6 +245,9 @@ struct qemuProcessEvent {
     void *data;
 };
 
+typedef struct _qemuDomainLogContext qemuDomainLogContext;
+typedef qemuDomainLogContext *qemuDomainLogContextPtr;
+
 const char *qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                             int phase);
 int qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
@@ -349,6 +352,25 @@ void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
                                 virDomainNetDefPtr net,
                                 int logFD);
 
+typedef enum {
+    QEMU_DOMAIN_LOG_CONTEXT_MODE_START,
+    QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH,
+    QEMU_DOMAIN_LOG_CONTEXT_MODE_STOP,
+} qemuDomainLogContextMode;
+
+qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
+                                                virDomainObjPtr vm,
+                                                qemuDomainLogContextMode mode);
+int qemuDomainLogContextWrite(qemuDomainLogContextPtr ctxt,
+                              const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
+                                 char **msg);
+int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt);
+int qemuDomainLogContextGetReadFD(qemuDomainLogContextPtr ctxt);
+void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt);
+off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt);
+void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
+void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
 
 int qemuDomainCreateLog(virQEMUDriverPtr driver, virDomainObjPtr vm, bool append);
 int qemuDomainOpenLog(virQEMUDriverPtr driver, virDomainObjPtr vm);

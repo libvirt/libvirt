@@ -40,6 +40,7 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virthreadjob.h"
+#include "viratomic.h"
 
 #include "storage/storage_driver.h"
 
@@ -76,6 +77,13 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
               "start",
 );
 
+
+struct _qemuDomainLogContext {
+    int refs;
+    int writefd;
+    int readfd;
+    off_t pos;
+};
 
 const char *
 qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
@@ -2246,6 +2254,183 @@ void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
      */
     if (net->script != NULL)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logFD);
+}
+
+
+qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
+                                                virDomainObjPtr vm,
+                                                qemuDomainLogContextMode mode)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainLogContextPtr ctxt = NULL;
+    char *logfile = NULL;
+
+    if (VIR_ALLOC(ctxt) < 0)
+        goto error;
+
+    ctxt->writefd = -1;
+    ctxt->readfd = -1;
+    virAtomicIntSet(&ctxt->refs, 1);
+
+    if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
+        goto error;
+
+    if ((ctxt->writefd = open(logfile, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
+        virReportSystemError(errno, _("failed to create logfile %s"),
+                             logfile);
+        goto error;
+    }
+    if (virSetCloseExec(ctxt->writefd) < 0) {
+        virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
+                             logfile);
+        goto error;
+    }
+
+    /* For unprivileged startup we must truncate the file since
+     * we can't rely on logrotate. We don't use O_TRUNC since
+     * it is better for SELinux policy if we truncate afterwards */
+    if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START &&
+        !virQEMUDriverIsPrivileged(driver) &&
+        ftruncate(ctxt->writefd, 0) < 0) {
+        virReportSystemError(errno, _("failed to truncate %s"),
+                             logfile);
+        goto error;
+    }
+
+    if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START) {
+        if ((ctxt->readfd = open(logfile, O_RDONLY, S_IRUSR | S_IWUSR)) < 0) {
+            virReportSystemError(errno, _("failed to open logfile %s"),
+                                 logfile);
+            goto error;
+        }
+        if (virSetCloseExec(ctxt->readfd) < 0) {
+            virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
+                                 logfile);
+            goto error;
+        }
+
+        if ((ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END)) < 0) {
+            virReportSystemError(errno, _("failed to seek in log file %s"),
+                                 logfile);
+            goto error;
+        }
+    }
+
+    virObjectUnref(cfg);
+    return ctxt;
+
+ error:
+    virObjectUnref(cfg);
+    qemuDomainLogContextFree(ctxt);
+    return NULL;
+}
+
+
+int qemuDomainLogContextWrite(qemuDomainLogContextPtr ctxt,
+                              const char *fmt, ...)
+{
+    va_list argptr;
+    char *message = NULL;
+    int ret = -1;
+
+    va_start(argptr, fmt);
+
+    if (virVasprintf(&message, fmt, argptr) < 0)
+        goto cleanup;
+    if (lseek(ctxt->writefd, 0, SEEK_END) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to see to end of domain logfile"));
+        goto cleanup;
+    }
+    if (safewrite(ctxt->writefd, message, strlen(message)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to write to domain logfile"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    va_end(argptr);
+    VIR_FREE(message);
+    return ret;
+}
+
+
+ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
+                                 char **msg)
+{
+    char *buf;
+    size_t buflen = 1024 * 128;
+    ssize_t got;
+
+    /* Best effort jump to start of messages */
+    ignore_value(lseek(ctxt->readfd, ctxt->pos, SEEK_SET));
+
+    if (VIR_ALLOC_N(buf, buflen) < 0)
+        return -1;
+
+    got = saferead(ctxt->readfd, buf, buflen - 1);
+    if (got < 0) {
+        VIR_FREE(buf);
+        virReportSystemError(errno, "%s",
+                             _("Unable to read from log file"));
+        return -1;
+    }
+
+    buf[got] = '\0';
+
+    ignore_value(VIR_REALLOC_N_QUIET(buf, got + 1));
+    *msg = buf;
+
+    return got;
+}
+
+
+int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt)
+{
+    return ctxt->writefd;
+}
+
+
+int qemuDomainLogContextGetReadFD(qemuDomainLogContextPtr ctxt)
+{
+    return ctxt->readfd;
+}
+
+
+void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt)
+{
+    ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END);
+}
+
+
+off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt)
+{
+    return ctxt->pos;
+}
+
+
+void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt)
+{
+    virAtomicIntInc(&ctxt->refs);
+}
+
+
+void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
+{
+    bool lastRef;
+
+    if (!ctxt)
+        return;
+
+    lastRef = virAtomicIntDecAndTest(&ctxt->refs);
+    if (!lastRef)
+        return;
+
+    VIR_FORCE_CLOSE(ctxt->writefd);
+    VIR_FORCE_CLOSE(ctxt->readfd);
+    VIR_FREE(ctxt);
 }
 
 
