@@ -77,9 +77,6 @@
 
 VIR_LOG_INIT("qemu.qemu_process");
 
-#define ATTACH_POSTFIX ": attaching\n"
-#define SHUTDOWN_POSTFIX ": shutting down\n"
-
 /**
  * qemuProcessRemoveDomainStatus
  *
@@ -5184,7 +5181,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     size_t i;
     char *timestamp;
     char *tmppath = NULL;
-    char ebuf[1024];
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr logCtxt = NULL;
 
@@ -5217,15 +5213,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     if ((logCtxt = qemuDomainLogContextNew(driver, vm,
                                            QEMU_DOMAIN_LOG_CONTEXT_MODE_STOP))) {
-        int logfile = qemuDomainLogContextGetWriteFD(logCtxt);
         if ((timestamp = virTimeStringNow()) != NULL) {
-            if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-                safewrite(logfile, SHUTDOWN_POSTFIX,
-                          strlen(SHUTDOWN_POSTFIX)) < 0) {
-                VIR_WARN("Unable to write timestamp to logfile: %s",
-                         virStrerror(errno, ebuf, sizeof(ebuf)));
-            }
-
+            qemuDomainLogContextWrite(logCtxt, "%s: shutting down\n", timestamp);
             VIR_FREE(timestamp);
         }
         qemuDomainLogContextFree(logCtxt);
@@ -5487,8 +5476,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
                       bool monJSON)
 {
     size_t i;
-    char ebuf[1024];
-    int logfile = -1;
     qemuDomainLogContextPtr logCtxt = NULL;
     char *timestamp;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -5587,7 +5574,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
                                             QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH)))
         goto error;
-    logfile = qemuDomainLogContextGetWriteFD(logCtxt);
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
@@ -5619,11 +5605,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if ((timestamp = virTimeStringNow()) == NULL)
         goto error;
 
-    if (safewrite(logfile, timestamp, strlen(timestamp)) < 0 ||
-        safewrite(logfile, ATTACH_POSTFIX, strlen(ATTACH_POSTFIX)) < 0) {
-        VIR_WARN("Unable to write timestamp to logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-    }
+    qemuDomainLogContextWrite(logCtxt, "%s: attaching\n", timestamp);
     VIR_FREE(timestamp);
 
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logCtxt);
