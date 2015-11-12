@@ -766,6 +766,10 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
             return -1;
         }
     }
+
+    VIR_DEBUG("Locked memory for process %lld limited to %llu bytes",
+              (long long int) pid, bytes);
+
     return 0;
 }
 #else /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
