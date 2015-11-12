@@ -4780,7 +4780,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuLogOperation(vm, "starting up", logfile, cmd);
 
-    qemuDomainObjCheckTaint(driver, vm, logfile);
+    qemuDomainObjCheckTaint(driver, vm, logCtxt);
 
     qemuDomainLogContextMarkPosition(logCtxt);
 
@@ -5633,7 +5633,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     VIR_FREE(timestamp);
 
-    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logfile);
+    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logCtxt);
 
     VIR_DEBUG("Waiting for monitor to show up");
     if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, NULL) < 0)

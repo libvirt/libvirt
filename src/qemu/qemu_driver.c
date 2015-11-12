@@ -7706,7 +7706,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
+        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainAttachDeviceDiskLive(dom->conn, driver, vm, dev);
         if (!ret) {
             alias = dev->data.disk->info.alias;
@@ -7730,7 +7730,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        qemuDomainObjCheckNetTaint(driver, vm, dev->data.net, -1);
+        qemuDomainObjCheckNetTaint(driver, vm, dev->data.net, NULL);
         ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
                                         dev->data.net);
         if (!ret) {
@@ -7740,7 +7740,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, -1);
+        qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, NULL);
         ret = qemuDomainAttachHostDevice(dom->conn, driver, vm,
                                          dev->data.hostdev);
         if (!ret) {
@@ -7988,7 +7988,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, -1);
+        qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainChangeDiskLive(conn, vm, dev, driver, force);
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -15823,7 +15823,7 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 
     priv = vm->privateData;
 
-    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_MONITOR, -1);
+    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_MONITOR, NULL);
 
     hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
 

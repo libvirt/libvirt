@@ -334,23 +334,23 @@ char *qemuDomainDefFormatLive(virQEMUDriverPtr driver,
 void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         virDomainTaintFlags taint,
-                        int logFD);
+                        qemuDomainLogContextPtr logCtxt);
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
-                             int logFD);
+                             qemuDomainLogContextPtr logCtxt);
 void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainObjPtr obj,
                                  virDomainDiskDefPtr disk,
-                                 int logFD);
+                                 qemuDomainLogContextPtr logCtxt);
 void qemuDomainObjCheckHostdevTaint(virQEMUDriverPtr driver,
                                     virDomainObjPtr obj,
                                     virDomainHostdevDefPtr disk,
-                                    int logFD);
+                                    qemuDomainLogContextPtr logCtxt);
 void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,
                                 virDomainNetDefPtr net,
-                                int logFD);
+                                qemuDomainLogContextPtr logCtxt);
 
 typedef enum {
     QEMU_DOMAIN_LOG_CONTEXT_MODE_START,
@@ -371,11 +371,6 @@ void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt);
 off_t qemuDomainLogContextGetPosition(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
-
-int qemuDomainAppendLog(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        int logFD,
-                        const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(4, 5);
 
 const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 

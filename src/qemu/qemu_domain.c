@@ -2128,9 +2128,10 @@ qemuDomainDefFormatLive(virQEMUDriverPtr driver,
 void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         virDomainTaintFlags taint,
-                        int logFD)
+                        qemuDomainLogContextPtr logCtxt)
 {
     virErrorPtr orig_err = NULL;
+    bool closeLog = false;
 
     if (virDomainObjTaint(obj, taint)) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2146,11 +2147,27 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
          * preserve original error, and clear any error that
          * is raised */
         orig_err = virSaveLastError();
-        if (qemuDomainAppendLog(driver, obj, logFD,
-                                "Domain id=%d is tainted: %s\n",
-                                obj->def->id,
-                                virDomainTaintTypeToString(taint)) < 0)
+        if (logCtxt == NULL) {
+            logCtxt = qemuDomainLogContextNew(driver, obj,
+                                              QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH);
+            if (!logCtxt) {
+                if (orig_err) {
+                    virSetError(orig_err);
+                    virFreeError(orig_err);
+                }
+                VIR_WARN("Unable to open domainlog");
+                return;
+            }
+            closeLog = true;
+        }
+
+        if (qemuDomainLogContextWrite(logCtxt,
+                                      "Domain id=%d is tainted: %s\n",
+                                      obj->def->id,
+                                      virDomainTaintTypeToString(taint)) < 0)
             virResetLastError();
+        if (closeLog)
+            qemuDomainLogContextFree(logCtxt);
         if (orig_err) {
             virSetError(orig_err);
             virFreeError(orig_err);
@@ -2161,7 +2178,7 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 
 void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              virDomainObjPtr obj,
-                             int logFD)
+                             qemuDomainLogContextPtr logCtxt)
 {
     size_t i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -2171,32 +2188,32 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
         (!cfg->clearEmulatorCapabilities ||
          cfg->user == 0 ||
          cfg->group == 0))
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logCtxt);
 
     if (priv->hookRun)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOOK, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOOK, logCtxt);
 
     if (obj->def->namespaceData) {
         qemuDomainCmdlineDefPtr qemucmd = obj->def->namespaceData;
         if (qemucmd->num_args || qemucmd->num_env)
-            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logFD);
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
     }
 
     if (obj->def->cpu && obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOST_CPU, logCtxt);
 
     for (i = 0; i < obj->def->ndisks; i++)
-        qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logFD);
+        qemuDomainObjCheckDiskTaint(driver, obj, obj->def->disks[i], logCtxt);
 
     for (i = 0; i < obj->def->nhostdevs; i++)
         qemuDomainObjCheckHostdevTaint(driver, obj, obj->def->hostdevs[i],
-                                       logFD);
+                                       logCtxt);
 
     for (i = 0; i < obj->def->nnets; i++)
-        qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logFD);
+        qemuDomainObjCheckNetTaint(driver, obj, obj->def->nets[i], logCtxt);
 
     if (obj->def->os.dtb)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_DTB, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_DTB, logCtxt);
 
     virObjectUnref(cfg);
 }
@@ -2205,24 +2222,24 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
 void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainObjPtr obj,
                                  virDomainDiskDefPtr disk,
-                                 int logFD)
+                                 qemuDomainLogContextPtr logCtxt)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int format = virDomainDiskGetFormat(disk);
 
     if ((!format || format == VIR_STORAGE_FILE_AUTO) &&
         cfg->allowDiskFormatProbing)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logCtxt);
 
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
-                           logFD);
+                           logCtxt);
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
         virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
         disk->src->path)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,
-                           logFD);
+                           logCtxt);
 
     virObjectUnref(cfg);
 }
@@ -2231,21 +2248,21 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
 void qemuDomainObjCheckHostdevTaint(virQEMUDriverPtr driver,
                                     virDomainObjPtr obj,
                                     virDomainHostdevDefPtr hostdev,
-                                    int logFD)
+                                    qemuDomainLogContextPtr logCtxt)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
         scsisrc->rawio == VIR_TRISTATE_BOOL_YES)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
-                               logFD);
+                               logCtxt);
 }
 
 
 void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,
                                 virDomainNetDefPtr net,
-                                int logFD)
+                                qemuDomainLogContextPtr logCtxt)
 {
     /* script is only useful for NET_TYPE_ETHERNET (qemu) and
      * NET_TYPE_BRIDGE (xen), but could be (incorrectly) specified for
@@ -2253,7 +2270,7 @@ void qemuDomainObjCheckNetTaint(virQEMUDriverPtr driver,
      * the soup, so it should taint the domain.
      */
     if (net->script != NULL)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logFD);
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_SHELL_SCRIPTS, logCtxt);
 }
 
 
@@ -2433,45 +2450,6 @@ void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
     VIR_FREE(ctxt);
 }
 
-
-int qemuDomainAppendLog(virQEMUDriverPtr driver,
-                        virDomainObjPtr obj,
-                        int logFD,
-                        const char *fmt, ...)
-{
-    va_list argptr;
-    char *message = NULL;
-    int ret = -1;
-    qemuDomainLogContextPtr logCtxt = NULL;
-
-    va_start(argptr, fmt);
-
-    if (logFD == -1) {
-        logCtxt = qemuDomainLogContextNew(driver, obj,
-                                          QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH);
-        if (!logCtxt)
-            goto cleanup;
-        logFD = qemuDomainLogContextGetWriteFD(logCtxt);
-    }
-
-    if (virVasprintf(&message, fmt, argptr) < 0)
-        goto cleanup;
-    if (safewrite(logFD, message, strlen(message)) < 0) {
-        virReportSystemError(errno, _("Unable to write to domain logfile %s"),
-                             obj->def->name);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    va_end(argptr);
-
-    qemuDomainLogContextFree(logCtxt);
-
-    VIR_FREE(message);
-    return ret;
-}
 
 /* Locate an appropriate 'qemu-img' binary.  */
 const char *
