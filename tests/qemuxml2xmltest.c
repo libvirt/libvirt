@@ -632,6 +632,7 @@ mymain(void)
 
     DO_TEST("video-virtio-gpu-device");
     DO_TEST("video-virtio-gpu-virgl");
+    DO_TEST("virtio-input");
 
     qemuTestDriverFree(&driver);
 

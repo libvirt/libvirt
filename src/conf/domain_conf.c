@@ -550,7 +550,8 @@ VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
               "ps2",
               "usb",
               "xen",
-              "parallels")
+              "parallels",
+              "virtio")
 
 VIR_ENUM_IMPL(virDomainGraphics, VIR_DOMAIN_GRAPHICS_TYPE_LAST,
               "sdl",
@@ -22399,7 +22400,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
 
     for (n = 0; n < def->ninputs; n++)
-        if (def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB &&
+        if ((def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB ||
+             def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) &&
             virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
             goto error;
 

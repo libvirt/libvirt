@@ -3592,6 +3592,7 @@
             <value>ps2</value>
             <value>usb</value>
             <value>xen</value>
+            <value>virtio</value>
           </choice>
         </attribute>
       </optional>

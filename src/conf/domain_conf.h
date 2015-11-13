@@ -1297,6 +1297,7 @@ typedef enum {
     VIR_DOMAIN_INPUT_BUS_USB,
     VIR_DOMAIN_INPUT_BUS_XEN,
     VIR_DOMAIN_INPUT_BUS_PARALLELS, /* pseudo device for VNC in containers */
+    VIR_DOMAIN_INPUT_BUS_VIRTIO,
 
     VIR_DOMAIN_INPUT_BUS_LAST
 } virDomainInputBus;

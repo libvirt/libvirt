@@ -4801,6 +4801,9 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;input type='mouse' bus='usb'/&gt;
     &lt;input type='keyboard' bus='usb'/&gt;
+    &lt;input type='mouse' bus='virtio'/&gt;
+    &lt;input type='keyboard' bus='virtio'/&gt;
+    &lt;input type='tablet' bus='virtio'/&gt;
   &lt;/devices&gt;
   ...</pre>
 
@@ -4812,7 +4815,8 @@ qemu-kvm -net nic,model=? /dev/null
         The tablet provides absolute cursor movement,
         while the mouse uses relative movement. The optional
         <code>bus</code> attribute can be used to refine the exact device type.
-        It takes values "xen" (paravirtualized), "ps2" and "usb".</dd>
+        It takes values "xen" (paravirtualized), "ps2" and "usb" or
+        (<span class="since">since 1.3.0</span>) "virtio".</dd>
     </dl>
 
     <p>
