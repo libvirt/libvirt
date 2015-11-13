@@ -148,6 +148,7 @@ virDomainCapsNew;
 
 # conf/domain_conf.h
 virBlkioDeviceArrayClear;
+virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;

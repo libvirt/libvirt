@@ -23,6 +23,23 @@ static const char* diskNames[] = {
     "sdia", "sdib", "sdic", "sdid", "sdie", "sdif", "sdig", "sdih", "sdii", "sdij", "sdik", "sdil", "sdim", "sdin", "sdio", "sdip", "sdiq", "sdir", "sdis", "sdit", "sdiu", "sdiv", "sdiw", "sdix", "sdiy", "sdiz"
 };
 
+struct testDiskName
+{
+    const char *name;
+    int idx;
+    int partition;
+};
+
+static struct testDiskName diskNamesPart[] = {
+    {"sda0",          0,           0},
+    {"sdb10",         1,          10},
+    {"sdc2147483647", 2,  2147483647},
+};
+
+static const char* diskNamesInvalid[] = {
+    "sda00", "sda01", "sdb-1"
+};
+
 static int
 testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
 {
@@ -73,6 +90,44 @@ testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
     }
 
     VIR_FREE(diskName);
+
+    return 0;
+}
+
+
+
+static int
+testDiskNameParse(const void *data ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    int idx;
+    int partition;
+    struct testDiskName *disk = NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(diskNamesPart); ++i) {
+        disk = &diskNamesPart[i];
+        if (virDiskNameParse(disk->name, &idx, &partition))
+            return -1;
+
+        if (disk->idx != idx) {
+            VIR_TEST_DEBUG("\nExpect [%d]\n", disk->idx);
+            VIR_TEST_DEBUG("Actual [%d]\n", idx);
+            return -1;
+        }
+
+        if (disk->partition != partition) {
+            VIR_TEST_DEBUG("\nExpect [%d]\n", disk->partition);
+            VIR_TEST_DEBUG("Actual [%d]\n", partition);
+            return -1;
+        }
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(diskNamesInvalid); ++i) {
+        if (!virDiskNameParse(diskNamesInvalid[i], &idx, &partition)) {
+            VIR_TEST_DEBUG("Should Fail [%s]\n", diskNamesInvalid[i]);
+            return -1;
+        }
+    }
 
     return 0;
 }
@@ -220,6 +275,7 @@ mymain(void)
 
     DO_TEST(IndexToDiskName);
     DO_TEST(DiskNameToIndex);
+    DO_TEST(DiskNameParse);
     DO_TEST(ParseVersionString);
     DO_TEST(RoundValueToPowerOfTwo);
     DO_TEST(OverflowCheckMacro);

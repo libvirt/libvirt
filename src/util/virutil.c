@@ -537,14 +537,17 @@ const char *virEnumToString(const char *const*types,
 }
 
 /* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
- * into the corresponding index (e.g. sda => 0, hdz => 25, vdaa => 26)
- * Note that any trailing string of digits is simply ignored.
+ * into the corresponding index and partition number
+ * (e.g. sda0 => (0,0), hdz2 => (25,2), vdaa12 => (26,12))
  * @param name The name of the device
- * @return name's index, or -1 on failure
+ * @param disk The disk index to be returned
+ * @param partition The partition index to be returned
+ * @return 0 on success, or -1 on failure
  */
-int virDiskNameToIndex(const char *name)
+int virDiskNameParse(const char *name, int *disk, int *partition)
 {
     const char *ptr = NULL;
+    char *rem;
     int idx = 0;
     static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
     size_t i;
@@ -572,6 +575,36 @@ int virDiskNameToIndex(const char *name)
     size_t n_digits = strspn(ptr, "0123456789");
     if (ptr[n_digits] != '\0')
         return -1;
+
+    *disk = idx;
+
+    /* Convert trailing digits into our partition index */
+    if (partition) {
+        *partition = 0;
+
+        /* Shouldn't start by zero */
+        if (n_digits > 1 && *ptr == '0')
+            return -1;
+
+        if (n_digits && virStrToLong_i(ptr, &rem, 10, partition) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+/* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
+ * into the corresponding index (e.g. sda => 0, hdz => 25, vdaa => 26)
+ * Note that any trailing string of digits is simply ignored.
+ * @param name The name of the device
+ * @return name's index, or -1 on failure
+ */
+int virDiskNameToIndex(const char *name)
+{
+    int idx;
+
+    if (virDiskNameParse(name, &idx, NULL))
+        idx = -1;
 
     return idx;
 }
