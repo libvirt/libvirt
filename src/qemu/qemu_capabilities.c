@@ -303,6 +303,10 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "incoming-defer", /* 200 */
               "virtio-gpu",
               "virtio-gpu.virgl",
+              "virtio-keyboard",
+              "virtio-mouse",
+
+              "virtio-tablet", /* 205 */
     );
 
 
@@ -1547,6 +1551,12 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-net-device", QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "virtio-gpu-pci", QEMU_CAPS_DEVICE_VIRTIO_GPU },
     { "virtio-gpu-device", QEMU_CAPS_DEVICE_VIRTIO_GPU },
+    { "virtio-keyboard-device", QEMU_CAPS_VIRTIO_KEYBOARD },
+    { "virtio-keyboard-pci", QEMU_CAPS_VIRTIO_KEYBOARD },
+    { "virtio-mouse-device", QEMU_CAPS_VIRTIO_MOUSE },
+    { "virtio-mouse-pci", QEMU_CAPS_VIRTIO_MOUSE },
+    { "virtio-tablet-device", QEMU_CAPS_VIRTIO_TABLET },
+    { "virtio-tablet-pci", QEMU_CAPS_VIRTIO_TABLET },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

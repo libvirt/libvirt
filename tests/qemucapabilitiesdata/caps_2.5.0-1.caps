@@ -164,4 +164,7 @@
     <flag name='incoming-defer'/>
     <flag name='virtio-gpu'/>
     <flag name='virtio-gpu.virgl'/>
+    <flag name='virtio-keyboard'/>
+    <flag name='virtio-mouse'/>
+    <flag name='virtio-tablet'/>
   </qemuCaps>
