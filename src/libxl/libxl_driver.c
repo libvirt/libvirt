@@ -4877,6 +4877,57 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     return ret;
 }
 
+static int
+libxlDomainGetJobStats(virDomainPtr dom,
+                       int *type,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       unsigned int flags)
+{
+    libxlDomainObjPrivatePtr priv;
+    virDomainObjPtr vm;
+    virDomainJobInfoPtr jobInfo;
+    int ret = -1;
+    int maxparams = 0;
+
+    /* VIR_DOMAIN_JOB_STATS_COMPLETED not supported yet */
+    virCheckFlags(0, -1);
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetJobStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+    jobInfo = priv->job.current;
+    if (!priv->job.active) {
+        *type = VIR_DOMAIN_JOB_NONE;
+        *params = NULL;
+        *nparams = 0;
+        ret = 0;
+        goto cleanup;
+    }
+
+    /* In libxl we don't have an estimated completion time
+     * thus we always set to unbounded and update time
+     * for the active job. */
+    if (libxlDomainJobUpdateTime(&priv->job) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddULLong(params, nparams, &maxparams,
+                                VIR_DOMAIN_JOB_TIME_ELAPSED,
+                                jobInfo->timeElapsed) < 0)
+        goto cleanup;
+
+    *type = jobInfo->type;
+    ret = 0;
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
 
 static int
 libxlConnectDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
@@ -5472,6 +5523,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
     .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
     .domainGetJobInfo = libxlDomainGetJobInfo, /* 1.3.1 */
+    .domainGetJobStats = libxlDomainGetJobStats, /* 1.3.1 */
     .domainMemoryStats = libxlDomainMemoryStats, /* 1.3.0 */
     .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.3.0 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
