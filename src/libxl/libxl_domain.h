@@ -53,6 +53,8 @@ struct libxlDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     enum libxlDomainJob active;         /* Currently running job */
     int owner;                          /* Thread which set current job */
+    unsigned long long started;         /* When the job started */
+    virDomainJobInfoPtr current;        /* Statistics for the current job */
 };
 
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
@@ -86,6 +88,10 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver,
 bool
 libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
                      virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
+
+int
+libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
     ATTRIBUTE_RETURN_CHECK;
 
 void
