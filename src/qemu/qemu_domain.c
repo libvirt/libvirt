@@ -3796,7 +3796,7 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
  * @def: domain definition
  *
  * Returns the size of the memory in bytes that needs to be set as
- * RLIMIT_MEMLOCK for purpose of VFIO device passthrough.
+ * RLIMIT_MEMLOCK for the QEMU process.
  * If a mem.hard_limit is set, then that value is preferred; otherwise, the
  * value returned may depend upon the architecture or devices present.
  */
@@ -3808,6 +3808,84 @@ qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
     /* prefer the hard limit */
     if (virMemoryLimitIsSet(def->mem.hard_limit)) {
         memKB = def->mem.hard_limit;
+        goto done;
+    }
+
+    if (ARCH_IS_PPC64(def->os.arch)) {
+        unsigned long long maxMemory;
+        unsigned long long memory;
+        unsigned long long baseLimit;
+        unsigned long long passthroughLimit;
+        size_t nPCIHostBridges;
+        size_t i;
+        bool usesVFIO = false;
+
+        /* TODO: Detect at runtime once we start using more than just
+         *       the default PCI Host Bridge */
+        nPCIHostBridges = 1;
+
+        for (i = 0; i < def->nhostdevs; i++) {
+            virDomainHostdevDefPtr dev = def->hostdevs[i];
+
+            if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                usesVFIO = true;
+                break;
+            }
+        }
+
+        memory = virDomainDefGetMemoryActual(def);
+
+        if (def->mem.max_memory)
+            maxMemory = def->mem.max_memory;
+        else
+            maxMemory = memory;
+
+        /* baseLimit := maxMemory / 128                                  (a)
+         *              + 4 MiB * #PHBs + 8 MiB                          (b)
+         *
+         * (a) is the hash table
+         *
+         * (b) is accounting for the 32-bit DMA window - it could be either the
+         * KVM accelerated TCE tables for emulated devices, or the VFIO
+         * userspace view. The 4 MiB per-PHB (including the default one) covers
+         * a 2GiB DMA window: default is 1GiB, but it's possible it'll be
+         * increased to help performance. The 8 MiB extra should be plenty for
+         * the TCE table index for any reasonable number of PHBs and several
+         * spapr-vlan or spapr-vscsi devices (512kB + a tiny bit each) */
+        baseLimit = maxMemory / 128 +
+                    4096 * nPCIHostBridges +
+                    8192;
+
+        /* passthroughLimit := max( 2 GiB * #PHBs,                       (c)
+         *                          memory                               (d)
+         *                          + memory * 1/512 * #PHBs + 8 MiB )   (e)
+         *
+         * (c) is the pre-DDW VFIO DMA window accounting. We're allowing 2 GiB
+         * rather than 1 GiB
+         *
+         * (d) is the with-DDW (and memory pre-registration and related
+         * features) DMA window accounting - assuming that we only account RAM
+         * once, even if mapped to multiple PHBs
+         *
+         * (e) is the with-DDW userspace view and overhead for the 64-bit DMA
+         * window. This is based a bit on expected guest behaviour, but there
+         * really isn't a way to completely avoid that. We assume the guest
+         * requests a 64-bit DMA window (per PHB) just big enough to map all
+         * its RAM. 4 kiB page size gives the 1/512; it will be less with 64
+         * kiB pages, less still if the guest is mapped with hugepages (unlike
+         * the default 32-bit DMA window, DDW windows can use large IOMMU
+         * pages). 8 MiB is for second and further level overheads, like (b) */
+        passthroughLimit = MAX(2 * 1024 * 1024 * nPCIHostBridges,
+                               memory +
+                               memory / 512 * nPCIHostBridges + 8192);
+
+        if (usesVFIO)
+            memKB = baseLimit + passthroughLimit;
+        else
+            memKB = baseLimit;
+
         goto done;
     }
 
