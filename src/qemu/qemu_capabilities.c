@@ -307,6 +307,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-mouse",
 
               "virtio-tablet", /* 205 */
+              "virtio-input-host",
     );
 
 
@@ -1557,6 +1558,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-mouse-pci", QEMU_CAPS_VIRTIO_MOUSE },
     { "virtio-tablet-device", QEMU_CAPS_VIRTIO_TABLET },
     { "virtio-tablet-pci", QEMU_CAPS_VIRTIO_TABLET },
+    { "virtio-input-host-device", QEMU_CAPS_VIRTIO_INPUT_HOST },
+    { "virtio-input-host-pci", QEMU_CAPS_VIRTIO_INPUT_HOST },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
