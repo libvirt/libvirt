@@ -1287,6 +1287,12 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
         }
     }
 
+    for (i = 0; i < def->ninputs; i++) {
+        if (def->inputs[i]->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+            def->inputs[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->inputs[i]->info.type = type;
+    }
+
     for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type ==
              VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL ||
@@ -2684,7 +2690,14 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
     for (i = 0; i < def->ninputs; i++) {
-        /* Nada - none are PCI based (yet) */
+        if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO)
+            continue;
+        if (def->inputs[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            continue;
+
+        if (virDomainPCIAddressReserveNextSlot(addrs,
+                                               &def->inputs[i]->info, flags) < 0)
+            goto error;
     }
     for (i = 0; i < def->nparallels; i++) {
         /* Nada - none are PCI based (yet) */
@@ -5709,6 +5722,67 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
                        _("nvram address type must be spaprvio"));
         goto error;
     }
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+static char *
+qemuBuildVirtioInputDevStr(virDomainDefPtr def,
+                           virDomainInputDefPtr dev,
+                           virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *suffix;
+
+    if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        suffix = "-pci";
+    } else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
+        suffix = "-device";
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported address type %s for virtio input device"),
+                       virDomainDeviceAddressTypeToString(dev->info.type));
+        goto error;
+    }
+
+    switch ((virDomainInputType) dev->type) {
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_MOUSE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-mouse is not supported by this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "virtio-mouse%s,id=%s", suffix, dev->info.alias);
+        break;
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TABLET)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-tablet is not supported by this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "virtio-tablet%s,id=%s", suffix, dev->info.alias);
+        break;
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_KEYBOARD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-keyboard is not supported by this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "virtio-keyboard%s,id=%s", suffix, dev->info.alias);
+        break;
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        break;
+    }
+
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+        goto error;
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -10497,6 +10571,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                         break;
                 }
             }
+        } else if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+            char *optstr;
+            virCommandAddArg(cmd, "-device");
+            if (!(optstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
+                goto error;
+            virCommandAddArg(cmd, optstr);
+            VIR_FREE(optstr);
         }
     }
 

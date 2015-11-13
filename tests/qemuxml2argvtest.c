@@ -1758,6 +1758,9 @@ mymain(void)
     DO_TEST("qemu-ns-commandline-ns0", NONE);
     DO_TEST("qemu-ns-commandline-ns1", NONE);
 
+    DO_TEST("virtio-input", QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_KEYBOARD,
+            QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
