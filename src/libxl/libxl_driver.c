@@ -4752,6 +4752,74 @@ libxlDomainGetCPUStats(virDomainPtr dom,
     return ret;
 }
 
+#define LIBXL_SET_MEMSTAT(TAG, VAL) \
+        if (i < nr_stats) { \
+            stats[i].tag = TAG; \
+            stats[i].val = VAL; \
+            i++; \
+        }
+
+static int
+libxlDomainMemoryStats(virDomainPtr dom,
+                       virDomainMemoryStatPtr stats,
+                       unsigned int nr_stats,
+                       unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    virDomainObjPtr vm;
+    libxl_dominfo d_info;
+    unsigned mem, maxmem;
+    size_t i = 0;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (libxl_domain_info(cfg->ctx, &d_info, vm->def->id) != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("libxl_domain_info failed for domain '%d'"),
+                       vm->def->id);
+        goto endjob;
+    }
+    mem = d_info.current_memkb;
+    maxmem = d_info.max_memkb;
+
+    LIBXL_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON, mem);
+    LIBXL_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_AVAILABLE, maxmem);
+
+    ret = i;
+
+    libxl_dominfo_dispose(&d_info);
+
+ endjob:
+    if (!libxlDomainObjEndJob(driver, vm)) {
+        virObjectUnlock(vm);
+        vm = NULL;
+    }
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+#undef LIBXL_SET_MEMSTAT
+
 static int
 libxlConnectDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
                                    virConnectDomainEventGenericCallback callback,
@@ -5345,6 +5413,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
 #endif
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
     .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
+    .domainMemoryStats = libxlDomainMemoryStats, /* 1.2.22 */
     .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.2.22 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
     .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
