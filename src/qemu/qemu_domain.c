@@ -3917,8 +3917,9 @@ qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
 /**
  * @def: domain definition
  *
- * Returns ture if the locked memory limit needs to be set or updated due to
- * configuration or passthrough devices.
+ * Returns true if the locked memory limit needs to be set or updated because
+ * of domain configuration, VFIO passthrough devices or architecture-specific
+ * requirements.
  * */
 bool
 qemuDomainRequiresMlock(virDomainDefPtr def)
@@ -3926,6 +3927,10 @@ qemuDomainRequiresMlock(virDomainDefPtr def)
     size_t i;
 
     if (def->mem.locked)
+        return true;
+
+    /* ppc64 domains need to lock some memory even when VFIO is not used */
+    if (ARCH_IS_PPC64(def->os.arch))
         return true;
 
     for (i = 0; i < def->nhostdevs; i++) {
