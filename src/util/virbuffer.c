@@ -186,8 +186,6 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
 void
 virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
 {
-    unsigned int needSize;
-
     if (!toadd)
         return;
 
@@ -200,8 +198,7 @@ virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
         goto done;
     }
 
-    needSize = buf->use + toadd->use;
-    if (virBufferGrow(buf, needSize - buf->use) < 0)
+    if (virBufferGrow(buf, toadd->use) < 0)
         goto done;
 
     memcpy(&buf->content[buf->use], toadd->content, toadd->use);
