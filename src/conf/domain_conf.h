@@ -1288,6 +1288,7 @@ typedef enum {
     VIR_DOMAIN_INPUT_TYPE_MOUSE,
     VIR_DOMAIN_INPUT_TYPE_TABLET,
     VIR_DOMAIN_INPUT_TYPE_KBD,
+    VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH,
 
     VIR_DOMAIN_INPUT_TYPE_LAST
 } virDomainInputType;
@@ -1305,6 +1306,9 @@ typedef enum {
 struct _virDomainInputDef {
     int type;
     int bus;
+    struct {
+        char *evdev;
+    } source;
     virDomainDeviceInfo info;
 };
 

@@ -4804,14 +4804,18 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;input type='mouse' bus='virtio'/&gt;
     &lt;input type='keyboard' bus='virtio'/&gt;
     &lt;input type='tablet' bus='virtio'/&gt;
+    &lt;input type='passthrough' bus='virtio'&gt;
+      &lt;source evdev='/dev/input/event1/&gt;
+    &lt;/input&gt;
   &lt;/devices&gt;
   ...</pre>
 
     <dl>
       <dt><code>input</code></dt>
       <dd>The <code>input</code> element has one mandatory attribute,
-        the <code>type</code> whose value can be 'mouse', 'tablet' or
-        (<span class="since">since 1.2.2</span>) 'keyboard'.
+        the <code>type</code> whose value can be 'mouse', 'tablet',
+        (<span class="since">since 1.2.2</span>) 'keyboard' or
+        (<span class="since">since 1.3.0</span>) 'passthrough'.
         The tablet provides absolute cursor movement,
         while the mouse uses relative movement. The optional
         <code>bus</code> attribute can be used to refine the exact device type.
@@ -4824,6 +4828,10 @@ qemu-kvm -net nic,model=? /dev/null
       sub-element <code>&lt;address&gt;</code> which can tie the
       device to a particular PCI
       slot, <a href="#elementsAddress">documented above</a>.
+
+      For type <code>passthrough</code>, the mandatory sub-element <code>source</code>
+      must have an <code>evdev</code> attribute containing the absolute path to the
+      event device passed through to guests. (KVM only)
     </p>
 
     <h4><a name="elementsHub">Hub devices</a></h4>

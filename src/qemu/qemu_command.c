@@ -5777,6 +5777,8 @@ qemuBuildVirtioInputDevStr(virDomainDefPtr def,
         }
         virBufferAsprintf(&buf, "virtio-keyboard%s,id=%s", suffix, dev->info.alias);
         break;
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        /* TBD */
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         break;
     }

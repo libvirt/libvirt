@@ -3579,23 +3579,40 @@
 
   <define name="input">
     <element name="input">
-      <attribute name="type">
-        <choice>
-          <value>tablet</value>
-          <value>mouse</value>
-          <value>keyboard</value>
-        </choice>
-      </attribute>
-      <optional>
-        <attribute name="bus">
-          <choice>
-            <value>ps2</value>
-            <value>usb</value>
-            <value>xen</value>
+      <choice>
+        <group>
+          <attribute name="type">
+            <choice>
+              <value>tablet</value>
+              <value>mouse</value>
+              <value>keyboard</value>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="bus">
+              <choice>
+                <value>ps2</value>
+                <value>usb</value>
+                <value>xen</value>
+                <value>virtio</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>passthrough</value>
+          </attribute>
+          <attribute name="bus">
             <value>virtio</value>
-          </choice>
-        </attribute>
-      </optional>
+          </attribute>
+          <element name="source">
+            <attribute name="evdev">
+              <ref name="absFilePath"/>
+            </attribute>
+          </element>
+        </group>
+      </choice>
       <optional>
         <ref name="alias"/>
       </optional>

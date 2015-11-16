@@ -544,7 +544,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
               "tablet",
-              "keyboard")
+              "keyboard",
+              "passthrough")
 
 VIR_ENUM_IMPL(virDomainInputBus, VIR_DOMAIN_INPUT_BUS_LAST,
               "ps2",
@@ -1416,6 +1417,7 @@ void virDomainInputDefFree(virDomainInputDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def->source.evdev);
     VIR_FREE(def);
 }
 
@@ -10262,14 +10264,19 @@ virDomainPanicDefParseXML(xmlNodePtr node)
 static virDomainInputDefPtr
 virDomainInputDefParseXML(const virDomainDef *dom,
                           xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
+    xmlNodePtr save = ctxt->node;
     virDomainInputDefPtr def;
+    char *evdev = NULL;
     char *type = NULL;
     char *bus = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    ctxt->node = node;
 
     type = virXMLPropString(node, "type");
     bus = virXMLPropString(node, "bus");
@@ -10377,10 +10384,20 @@ virDomainInputDefParseXML(const virDomainDef *dom,
         goto error;
     }
 
+    if ((evdev = virXPathString("string(./source/@evdev)", ctxt)))
+        def->source.evdev = virFileSanitizePath(evdev);
+    if (def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH && !def->source.evdev) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing evdev path for input device passthrough"));
+        goto error;
+    }
+
  cleanup:
+    VIR_FREE(evdev);
     VIR_FREE(type);
     VIR_FREE(bus);
 
+    ctxt->node = save;
     return def;
 
  error:
@@ -12737,8 +12754,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
-        if (!(dev->data.input = virDomainInputDefParseXML(def,
-                                                          node, flags)))
+        if (!(dev->data.input = virDomainInputDefParseXML(def, node,
+                                                          ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -16115,6 +16132,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainInputDefPtr input = virDomainInputDefParseXML(def,
                                                                nodes[i],
+                                                               ctxt,
                                                                flags);
         if (!input)
             goto error;
@@ -20961,9 +20979,11 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<input type='%s' bus='%s'",
                       type, bus);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) ||
+        def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<source evdev='%s'/>\n", def->source.evdev);
         if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
