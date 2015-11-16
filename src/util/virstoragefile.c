@@ -1846,7 +1846,8 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
         VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
         VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
-        VIR_STRDUP(ret->compat, src->compat) < 0)
+        VIR_STRDUP(ret->compat, src->compat) < 0 ||
+        VIR_STRDUP(ret->redundancy, src->redundancy) < 0)
         goto error;
 
     if (src->nhosts) {
@@ -2040,6 +2041,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->volume);
     VIR_FREE(def->snapshot);
     VIR_FREE(def->configFile);
+    VIR_FREE(def->redundancy);
     virStorageSourcePoolDefFree(def->srcpool);
     VIR_FREE(def->driverName);
     virBitmapFree(def->features);

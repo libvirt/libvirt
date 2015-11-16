@@ -51,43 +51,52 @@ virStorageBackendSheepdogParseNodeInfo(virStoragePoolDefPtr pool,
      * node id/total, size, used, use%, [total vdi size]
      *
      * example output:
-     * 0 15245667872 117571104 0%
-     * Total 15245667872 117571104 0% 20972341
+     * 0 425814278144 4871131136 420943147008 1%
+     * Total 2671562256384 32160083968 2639402172416 1% 75161927680
      */
-
-    const char *p, *next;
+    char **lines = NULL;
+    char **cells = NULL;
+    size_t i;
+    int ret = -1;
 
     pool->allocation = pool->capacity = pool->available = 0;
 
-    p = output;
-    do {
-        char *end;
+    lines = virStringSplit(output, "\n", 0);
+    if (lines == NULL)
+        goto cleanup;
 
-        if ((next = strchr(p, '\n')))
-            ++next;
-        else
-            break;
+    for (i = 0; lines[i]; i++) {
+        char *line = lines[i];
+        if (line == NULL)
+            goto cleanup;
 
-        if (!STRPREFIX(p, "Total "))
+        if (!STRPREFIX(line, "Total "))
             continue;
 
-        p = p + 6;
+        virStringStripControlChars(line);
+        virTrimSpaces(line, NULL);
+        if ((cells = virStringSplit(line, " ", 0)) == NULL)
+            continue;
 
-        if (virStrToLong_ull(p, &end, 10, &pool->capacity) < 0)
-            break;
+        if (virStringListLength(cells) < 3) {
+            goto cleanup;
+        }
 
-        if ((p = end + 1) > next)
-            break;
+        if (virStrToLong_ull(cells[1], NULL, 10, &pool->capacity) < 0)
+            goto cleanup;
 
-        if (virStrToLong_ull(p, &end, 10, &pool->allocation) < 0)
-            break;
+        if (virStrToLong_ull(cells[2], NULL, 10, &pool->allocation) < 0)
+            goto cleanup;
 
         pool->available = pool->capacity - pool->allocation;
-        return 0;
+        ret = 0;
+        break;
+    }
 
-    } while ((p = next));
-
-    return -1;
+ cleanup:
+    virStringFreeList(lines);
+    virStringFreeList(cells);
+    return ret;
 }
 
 void
@@ -275,6 +284,10 @@ virStorageBackendSheepdogBuildVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "create", vol->name, NULL);
     virCommandAddArgFormat(cmd, "%llu", vol->target.capacity);
+
+    if(NULL != vol->target.redundancy)
+        virCommandAddArgList(cmd, "-c", vol->target.redundancy, NULL);
+
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -291,60 +304,78 @@ virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
                                       char *output)
 {
     /* fields:
-     * current/clone/snapshot, name, id, size, used, shared, creation time, vdi id, [tag]
+     * current/clone/snapshot, name, id, size, used, shared, creation time, vdi id, redundancy, [tag], size shift
      *
      * example output:
-     * s test 1 10 0 0 1336556634 7c2b25
-     * s test 2 10 0 0 1336557203 7c2b26
-     * = test 3 10 0 0 1336557216 7c2b27
+     * s test 1 10 0 0 1336556634 7c2b25 1 tt 22
+     * s test 2 10 0 0 1336557203 7c2b26 2 zz 22
+     * = 39865 0 21474836480 247463936 1337982976 1447516646 47d187 2  22
+     * = test 3 10 0 0 1336557216 7c2b27 3 xx 22
      */
-
-    int id;
-    const char *p, *next;
+    char **lines = NULL;
+    char **cells = NULL;
+    size_t i;
+    int ret = -1;
 
     vol->target.allocation = vol->target.capacity = 0;
+    vol->target.redundancy = NULL;
 
-    p = output;
-    do {
-        char *end;
+    lines = virStringSplit(output, "\n", 0);
+    if (lines == NULL)
+        goto cleanup;
 
-        if ((next = strchr(p, '\n')))
-            ++next;
+    for (i = 0; lines[i]; i++) {
+        char *line = lines[i];
+        if (line == NULL)
+            break;
 
-        /* ignore snapshots */
-        if (*p != '=')
+        if (!STRPREFIX(line, "= "))
             continue;
 
-        /* skip space */
-        if (p + 2 < next)
-            p += 2;
+        /* skip = and space */
+        if (*(line + 2) != '\0')
+            line += 2;
         else
-            return -1;
+            continue;
 
         /* skip name */
-        while (*p != '\0' && *p != ' ') {
-            if (*p == '\\')
-                ++p;
-            ++p;
+        while (*line != '\0' && *line != ' ') {
+            if (*line == '\\')
+                ++line;
+            ++line;
         }
 
-        if (virStrToLong_i(p, &end, 10, &id) < 0)
-            return -1;
+        /* skip space */
+        if (*(line + 1) != '\0')
+            line += 1;
+        else
+            continue;
 
-        p = end + 1;
+        virStringStripControlChars(line);
+        virTrimSpaces(line, NULL);
+        if ((cells = virStringSplit(line, " ", 0)) == NULL)
+            continue;
 
-        if (virStrToLong_ull(p, &end, 10, &vol->target.capacity) < 0)
-            return -1;
+        if (virStringListLength(cells) < 5)
+            continue;
 
-        p = end + 1;
+        if ((ret = virStrToLong_ull(cells[1], NULL, 10, &vol->target.capacity)) < 0)
+            goto cleanup;
 
-        if (virStrToLong_ull(p, &end, 10, &vol->target.allocation) < 0)
-            return -1;
+        if ((ret = virStrToLong_ull(cells[2], NULL, 10, &vol->target.allocation)) < 0)
+            goto cleanup;
 
-        return 0;
-    } while ((p = next));
+        if ((ret = VIR_STRDUP(vol->target.redundancy, cells[6])) < 0)
+            goto cleanup;
 
-    return -1;
+        ret = 0;
+        break;
+    }
+
+ cleanup:
+    virStringFreeList(lines);
+    virStringFreeList(cells);
+    return ret;
 }
 
 static int

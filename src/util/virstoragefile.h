@@ -282,6 +282,8 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
+    /* redundancy level, may be used by sheepdog or ceph */
+    char *redundancy;
 };
 
 
