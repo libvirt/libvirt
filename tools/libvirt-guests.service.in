@@ -13,6 +13,7 @@ ExecStop=@libexecdir@/libvirt-guests.sh stop
 Type=oneshot
 RemainAfterExit=yes
 StandardOutput=journal+console
+TimeoutStopSec=0
 
 [Install]
 WantedBy=multi-user.target
