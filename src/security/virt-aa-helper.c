@@ -1127,7 +1127,10 @@ get_files(vahControl * ctl)
                 ctl->def->fss[i]->src) {
             virDomainFSDefPtr fs = ctl->def->fss[i];
 
-            if (vah_add_path(&buf, fs->src, fs->readonly ? "r" : "rw", true) != 0)
+            /* We don't need to add deny rw rules for readonly mounts,
+             * this can only lead to troubles when mounting / readonly.
+             */
+            if (vah_add_path(&buf, fs->src, "rw", true) != 0)
                 goto cleanup;
         }
     }
