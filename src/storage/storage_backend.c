@@ -1484,9 +1484,18 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
      * sockets, which we already filtered; but using it prevents a
      * TOCTTOU race.  However, later on we will want to read() the
      * header from this fd, and virFileRead* routines require a
-     * blocking fd, so fix it up after verifying we avoided a
-     * race.  */
-    if ((fd = open(path, O_RDONLY|O_NONBLOCK|O_NOCTTY)) < 0) {
+     * blocking fd, so fix it up after verifying we avoided a race.
+     *
+     * Use of virFileOpenAs allows this path to open a file using
+     * the uid and gid as it was created in order to open. Since this
+     * path is not using O_CREAT or O_TMPFILE, mode is meaningless.
+     * Opening under user/group is especially important in an NFS
+     * root-squash environment. If the target path isn't on shared
+     * file system, the open will fail in the OPEN_FORK path.
+     */
+    if ((fd = virFileOpenAs(path, O_RDONLY|O_NONBLOCK|O_NOCTTY,
+                            0, sb->st_uid, sb->st_gid,
+                            VIR_FILE_OPEN_NOFORK|VIR_FILE_OPEN_FORK)) < 0) {
         if ((errno == ENOENT || errno == ELOOP) &&
             S_ISLNK(sb->st_mode) && noerror) {
             VIR_WARN("ignoring dangling symlink '%s'", path);
