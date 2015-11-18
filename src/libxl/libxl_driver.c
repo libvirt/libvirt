@@ -4816,10 +4816,8 @@ libxlDomainMemoryStats(virDomainPtr dom,
     libxl_dominfo_dispose(&d_info);
 
  endjob:
-    if (!libxlDomainObjEndJob(driver, vm)) {
-        virObjectUnlock(vm);
+    if (!libxlDomainObjEndJob(driver, vm))
         vm = NULL;
-    }
 
  cleanup:
     if (vm)
