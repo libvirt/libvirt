@@ -4648,18 +4648,21 @@ libxlDomainGetTotalCPUStats(libxlDriverPrivatePtr driver,
                             virTypedParameterPtr params,
                             unsigned int nparams)
 {
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDriverConfigPtr cfg;
     libxl_dominfo d_info;
     int ret = -1;
 
     if (nparams == 0)
         return LIBXL_NB_TOTAL_CPU_STAT_PARAM;
 
+    libxl_dominfo_init(&d_info);
+    cfg = libxlDriverConfigGet(driver);
+
     if (libxl_domain_info(cfg->ctx, &d_info, vm->def->id) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("libxl_domain_info failed for domain '%d'"),
                        vm->def->id);
-        return ret;
+        goto cleanup;
     }
 
     if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
@@ -4670,6 +4673,7 @@ libxlDomainGetTotalCPUStats(libxlDriverPrivatePtr driver,
 
  cleanup:
     libxl_dominfo_dispose(&d_info);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4684,7 +4688,7 @@ libxlDomainGetPerCPUStats(libxlDriverPrivatePtr driver,
     libxl_vcpuinfo *vcpuinfo;
     int maxcpu, hostcpus;
     size_t i;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDriverConfigPtr cfg;
     int ret = -1;
 
     if (nparams == 0 && ncpus != 0)
@@ -4692,12 +4696,13 @@ libxlDomainGetPerCPUStats(libxlDriverPrivatePtr driver,
     else if (nparams == 0)
         return vm->def->maxvcpus;
 
+    cfg = libxlDriverConfigGet(driver);
     if ((vcpuinfo = libxl_list_vcpu(cfg->ctx, vm->def->id, &maxcpu,
                                     &hostcpus)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to list vcpus for domain '%d' with libxenlight"),
                        vm->def->id);
-        return ret;
+        goto cleanup;
     }
 
     for (i = start_cpu; i < maxcpu && i < ncpus; ++i) {
@@ -4710,7 +4715,9 @@ libxlDomainGetPerCPUStats(libxlDriverPrivatePtr driver,
     ret = nparams;
 
  cleanup:
-    libxl_vcpuinfo_list_free(vcpuinfo, maxcpu);
+    if (vcpuinfo)
+        libxl_vcpuinfo_list_free(vcpuinfo, maxcpu);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -4766,7 +4773,7 @@ libxlDomainMemoryStats(virDomainPtr dom,
                        unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDriverConfigPtr cfg;
     virDomainObjPtr vm;
     libxl_dominfo d_info;
     unsigned mem, maxmem;
@@ -4774,6 +4781,8 @@ libxlDomainMemoryStats(virDomainPtr dom,
     int ret = -1;
 
     virCheckFlags(0, -1);
+
+    cfg = libxlDriverConfigGet(driver);
 
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
@@ -4815,6 +4824,7 @@ libxlDomainMemoryStats(virDomainPtr dom,
  cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virObjectUnref(cfg);
     return ret;
 }
 
