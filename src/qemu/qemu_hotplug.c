@@ -1269,17 +1269,26 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
                              "supported by this version of qemu"));
             goto error;
         }
-
-        /* setup memory locking limits, that are necessary for VFIO */
-        if (virProcessSetMaxMemLock(vm->pid,
-                                    qemuDomainGetMlockLimitBytes(vm->def)) < 0)
-            goto error;
-
         break;
 
     default:
         break;
     }
+
+    /* Temporarily add the hostdev to the domain definition. This is needed
+     * because qemuDomainRequiresMlock() and qemuDomainGetMlockLimitBytes()
+     * require the hostdev to be already part of the domain definition, but
+     * other functions like qemuAssignDeviceHostdevAlias() used below expect
+     * it *not* to be there. A better way to handle this would be nice */
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    if (qemuDomainRequiresMlock(vm->def)) {
+        if (virProcessSetMaxMemLock(vm->pid,
+                                    qemuDomainGetMlockLimitBytes(vm->def)) < 0) {
+            vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
+            goto error;
+        }
+    }
+    vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
 
     if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
         goto error;
