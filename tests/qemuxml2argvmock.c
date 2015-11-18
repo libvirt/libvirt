@@ -24,8 +24,12 @@
 #include "virnuma.h"
 #include "virmock.h"
 #include "virutil.h"
+#include "virstring.h"
+#include "virtpm.h"
 #include <time.h>
 #include <unistd.h>
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 long virGetSystemPageSize(void)
 {
@@ -59,3 +63,14 @@ virNumaNodeIsAvailable(int node)
     return node >= 0 && node <= virNumaGetMaxNode();
 }
 #endif /* WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET */
+
+char *
+virTPMCreateCancelPath(const char *devpath)
+{
+    char *path;
+    (void)devpath;
+
+    ignore_value(VIR_STRDUP(path, "/sys/class/misc/tpm0/device/cancel"));
+
+    return path;
+}
