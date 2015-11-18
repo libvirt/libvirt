@@ -26,6 +26,8 @@
 
 #include "virstring.h"
 #include "virerror.h"
+#include "viralloc.h"
+#include "virfile.h"
 #include "virtpm.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -41,14 +43,27 @@ virTPMCreateCancelPath(const char *devpath)
 {
     char *path = NULL;
     const char *dev;
+    const char *prefix[] = {"misc/", "tpm/"};
+    size_t i;
 
     if (devpath) {
         dev = strrchr(devpath, '/');
         if (dev) {
             dev++;
-            if (virAsprintf(&path, "/sys/class/misc/%s/device/cancel",
-                            dev) < 0)
-                goto cleanup;
+            for (i = 0; i < ARRAY_CARDINALITY(prefix); i++) {
+                if (virAsprintf(&path, "/sys/class/%s%s/device/cancel",
+                                prefix[i], dev) < 0)
+                     goto cleanup;
+
+                if (virFileExists(path))
+                    break;
+
+                VIR_FREE(path);
+            }
+            if (!path)
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("No usable sysfs TPM cancel file could be "
+                                 "found"));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("TPM device path %s is invalid"), devpath);
