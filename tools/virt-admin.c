@@ -300,6 +300,56 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     return !!priv->conn;
 }
 
+
+/* ---------------
+ * Command srv-list
+ * ---------------
+ */
+
+static const vshCmdInfo info_srv_list[] = {
+    {.name = "help",
+     .data = N_("list available servers on a daemon")
+    },
+    {.name = "desc",
+     .data = N_("List all manageable servers on a daemon.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    int nsrvs = 0;
+    size_t i;
+    bool ret = false;
+    const char *uri = NULL;
+    virAdmServerPtr *srvs = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    /* Obtain a list of available servers on the daemon */
+    if ((nsrvs = virAdmConnectListServers(priv->conn, &srvs, 0)) < 0) {
+        uri = virAdmConnectGetURI(priv->conn);
+        vshError(ctl, _("failed to obtain list of available servers from %s"),
+                 NULLSTR(uri));
+        goto cleanup;
+    }
+
+    printf(" %-5s %-15s\n", "Id", "Name");
+    printf("---------------\n");
+    for (i = 0; i < nsrvs; i++)
+        vshPrint(ctl, " %-5zu %-15s\n", i, virAdmServerGetName(srvs[i]));
+
+    ret = true;
+ cleanup:
+    if (srvs) {
+        for (i = 0; i < nsrvs; i++)
+            virAdmServerFree(srvs[i]);
+        VIR_FREE(srvs);
+    }
+
+    return ret;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -592,8 +642,19 @@ static const vshCmdDef vshAdmCmds[] = {
     {.name = NULL}
 };
 
+static const vshCmdDef monitoringCmds[] = {
+    {.name = "srv-list",
+     .handler = cmdSrvList,
+     .opts = NULL,
+     .info = info_srv_list,
+     .flags = 0
+    },
+    {.name = NULL}
+};
+
 static const vshCmdGrp cmdGroups[] = {
     {"Virt-admin itself", "virt-admin", vshAdmCmds},
+    {"Monitoring commands", "monitor", monitoringCmds},
     {NULL, NULL, NULL}
 };
 
