@@ -2015,7 +2015,7 @@ virDomainSetMemoryStatsPeriod(virDomainPtr domain, int period,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "peroid=%d, flags=%x", period, flags);
+    VIR_DOMAIN_DEBUG(domain, "period=%d, flags=%x", period, flags);
 
     virResetLastError();
 
