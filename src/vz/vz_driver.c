@@ -923,6 +923,13 @@ static int vzDomainShutdown(virDomainPtr domain)
     return prlsdkDomainChangeState(domain, prlsdkStop);
 }
 
+static int vzDomainReboot(virDomainPtr domain,
+                          unsigned int flags)
+{
+    virCheckFlags(0, -1);
+    return prlsdkDomainChangeState(domain, prlsdkRestart);
+}
+
 static int vzDomainIsActive(virDomainPtr domain)
 {
     virDomainObjPtr dom = NULL;
@@ -1486,6 +1493,7 @@ static virHypervisorDriver vzDriver = {
     .domainShutdown = vzDomainShutdown, /* 0.10.0 */
     .domainCreate = vzDomainCreate,    /* 0.10.0 */
     .domainCreateWithFlags = vzDomainCreateWithFlags, /* 1.2.10 */
+    .domainReboot = vzDomainReboot, /* 1.2.22 */
     .domainDefineXML = vzDomainDefineXML,      /* 0.10.0 */
     .domainDefineXMLFlags = vzDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = vzDomainUndefine, /* 1.2.10 */

@@ -41,6 +41,7 @@ PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkPause(PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkResume(PRL_HANDLE sdkdom);
 PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom);
+PRL_RESULT prlsdkRestart(PRL_HANDLE sdkdom);
 
 typedef PRL_RESULT (*prlsdkChangeStateFunc)(PRL_HANDLE sdkdom);
 int

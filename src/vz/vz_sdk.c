@@ -1831,6 +1831,14 @@ PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom)
     return waitJob(job);
 }
 
+PRL_RESULT prlsdkRestart(PRL_HANDLE sdkdom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_Restart(sdkdom);
+    return waitJob(job);
+}
+
 int
 prlsdkDomainChangeStateLocked(vzConnPtr privconn,
                               virDomainObjPtr dom,
