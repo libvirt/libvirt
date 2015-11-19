@@ -149,11 +149,9 @@ qemuTeardownDiskCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupChrSourceCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                         virDomainChrSourceDefPtr dev,
-                         void *opaque)
+qemuSetupChrSourceCgroup(virDomainObjPtr vm,
+                         virDomainChrSourceDefPtr dev)
 {
-    virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
 
@@ -171,25 +169,25 @@ qemuSetupChrSourceCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuSetupChardevCgroup(virDomainDefPtr def,
+qemuSetupChardevCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
                        virDomainChrDefPtr dev,
                        void *opaque)
 {
-    return qemuSetupChrSourceCgroup(def, &dev->source, opaque);
+    virDomainObjPtr vm = opaque;
+
+    return qemuSetupChrSourceCgroup(vm, &dev->source);
 }
 
 
 static int
-qemuSetupTPMCgroup(virDomainDefPtr def,
-                   virDomainTPMDefPtr dev,
-                   void *opaque)
+qemuSetupTPMCgroup(virDomainObjPtr vm)
 {
     int ret = 0;
+    virDomainTPMDefPtr dev = vm->def->tpm;
 
     switch (dev->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        ret = qemuSetupChrSourceCgroup(def, &dev->data.passthrough.source,
-                                       opaque);
+        ret = qemuSetupChrSourceCgroup(vm, &dev->data.passthrough.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -585,10 +583,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                                vm) < 0)
         goto cleanup;
 
-    if (vm->def->tpm &&
-        (qemuSetupTPMCgroup(vm->def,
-                            vm->def->tpm,
-                            vm) < 0))
+    if (vm->def->tpm && qemuSetupTPMCgroup(vm) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
