@@ -87,7 +87,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    virBitmapPtr nodeset,
                                    size_t *nnicindexes,
                                    int **nicindexes)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(10);
 
 /* Generate '-device' string for chardev device */
 int
