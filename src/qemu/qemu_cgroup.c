@@ -150,20 +150,20 @@ qemuTeardownDiskCgroup(virDomainObjPtr vm,
 
 static int
 qemuSetupChrSourceCgroup(virDomainObjPtr vm,
-                         virDomainChrSourceDefPtr dev)
+                         virDomainChrSourceDefPtr source)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
 
-    if (dev->type != VIR_DOMAIN_CHR_TYPE_DEV)
+    if (source->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
-    VIR_DEBUG("Process path '%s' for device", dev->data.file.path);
+    VIR_DEBUG("Process path '%s' for device", source->data.file.path);
 
-    ret = virCgroupAllowDevicePath(priv->cgroup, dev->data.file.path,
+    ret = virCgroupAllowDevicePath(priv->cgroup, source->data.file.path,
                                    VIR_CGROUP_DEVICE_RW);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
-                             dev->data.file.path, "rw", ret == 0);
+                             source->data.file.path, "rw", ret == 0);
 
     return ret;
 }
