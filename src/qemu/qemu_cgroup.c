@@ -239,7 +239,7 @@ qemuSetupHostSCSIDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 int
-qemuSetupHostdevCGroup(virDomainObjPtr vm,
+qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
 {
     int ret = -1;
@@ -592,7 +592,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
         goto cleanup;
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuSetupHostdevCGroup(vm, vm->def->hostdevs[i]) < 0)
+        if (qemuSetupHostdevCgroup(vm, vm->def->hostdevs[i]) < 0)
             goto cleanup;
     }
 

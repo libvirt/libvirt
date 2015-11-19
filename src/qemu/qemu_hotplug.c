@@ -1290,7 +1290,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     }
     vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
 
-    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+    if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto error;
     teardowncgroup = true;
 
@@ -1899,7 +1899,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
 
     added = true;
 
-    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+    if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
     teardowncgroup = true;
 
@@ -1994,7 +1994,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
         return -1;
     }
 
-    if (qemuSetupHostdevCGroup(vm, hostdev) < 0)
+    if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
     teardowncgroup = true;
 
