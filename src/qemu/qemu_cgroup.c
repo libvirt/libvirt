@@ -198,6 +198,26 @@ qemuSetupTPMCgroup(virDomainObjPtr vm)
 
 
 static int
+qemuSetupInputCgroup(virDomainObjPtr vm,
+                     virDomainInputDefPtr dev)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
+        ret = virCgroupAllowDevicePath(priv->cgroup, dev->source.evdev,
+                                       VIR_CGROUP_DEVICE_RW);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", dev->source.evdev, "rw", ret == 0);
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
 qemuSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
                              const char *path,
                              void *opaque)
@@ -588,6 +608,11 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuSetupHostdevCgroup(vm, vm->def->hostdevs[i]) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ninputs; i++) {
+        if (qemuSetupInputCgroup(vm, vm->def->inputs[i]) < 0)
             goto cleanup;
     }
 
