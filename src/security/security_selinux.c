@@ -1056,6 +1056,64 @@ virSecuritySELinuxRestoreSecurityFileLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecuritySELinuxSetInputLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr def,
+                                virDomainInputDefPtr input)
+{
+    virSecurityLabelDefPtr seclabel;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
+        return 0;
+
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        if (virSecuritySELinuxSetFilecon(mgr, input->source.evdev,
+                                         seclabel->imagelabel) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecuritySELinuxRestoreInputLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr def,
+                                    virDomainInputDefPtr input)
+{
+    int rc = 0;
+    virSecurityLabelDefPtr seclabel;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (seclabel == NULL)
+        return 0;
+
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        rc = virSecuritySELinuxRestoreSecurityFileLabel(mgr,
+                                                        input->source.evdev);
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        break;
+    }
+
+    return rc;
+}
+
+
+static int
 virSecuritySELinuxSetSecurityTPMFileLabel(virSecurityManagerPtr mgr,
                                           virDomainDefPtr def,
                                           virDomainTPMDefPtr tpm)
@@ -1954,6 +2012,12 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
                                                           NULL) < 0)
             rc = -1;
     }
+
+    for (i = 0; i < def->ninputs; i++) {
+        if (virSecuritySELinuxRestoreInputLabel(mgr, def, def->inputs[i]) < 0)
+            rc = -1;
+    }
+
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
 
@@ -2346,6 +2410,12 @@ virSecuritySELinuxSetSecurityAllLabel(virSecurityManagerPtr mgr,
                                                       NULL) < 0)
             return -1;
     }
+
+    for (i = 0; i < def->ninputs; i++) {
+        if (virSecuritySELinuxSetInputLabel(mgr, def, def->inputs[i]) < 0)
+            return -1;
+    }
+
     if (def->tpm) {
         if (virSecuritySELinuxSetSecurityTPMFileLabel(mgr, def,
                                                       def->tpm) < 0)
