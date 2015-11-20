@@ -547,7 +547,7 @@ virSecurityDACSetSecurityHostdevLabelHelper(const char *file,
     uid_t user;
     gid_t group;
 
-    if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL))
+    if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
     return virSecurityDACSetOwnership(priv, NULL, file, user, group);
@@ -1305,7 +1305,7 @@ virSecurityDACSetChildProcessLabel(virSecurityManagerPtr mgr,
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
 
-    if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL))
+    if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
     VIR_DEBUG("Setting child to drop privileges to %u:%u",
