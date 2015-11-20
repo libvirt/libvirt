@@ -5778,7 +5778,14 @@ qemuBuildVirtioInputDevStr(virDomainDefPtr def,
         virBufferAsprintf(&buf, "virtio-keyboard%s,id=%s", suffix, dev->info.alias);
         break;
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-        /* TBD */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_INPUT_HOST)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio-input-host is not supported by this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "virtio-input-host%s,id=%s,evdev=", suffix, dev->info.alias);
+        virBufferEscape(&buf, ',', ",", "%s", dev->source.evdev);
+        break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         break;
     }

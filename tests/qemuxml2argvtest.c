@@ -1760,6 +1760,7 @@ mymain(void)
 
     DO_TEST("virtio-input", QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_KEYBOARD,
             QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET);
+    DO_TEST("virtio-input-passthrough", QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_INPUT_HOST);
 
     qemuTestDriverFree(&driver);
 
