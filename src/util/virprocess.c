@@ -725,15 +725,19 @@ int virProcessSetNamespaces(size_t nfdlist,
 
 #if HAVE_PRLIMIT
 static int
-virProcessPrLimit(pid_t pid, int resource, struct rlimit *rlim)
+virProcessPrLimit(pid_t pid,
+                  int resource,
+                  const struct rlimit *new_limit,
+                  struct rlimit *old_limit)
 {
-    return prlimit(pid, resource, rlim, NULL);
+    return prlimit(pid, resource, new_limit, old_limit);
 }
 #elif HAVE_SETRLIMIT
 static int
 virProcessPrLimit(pid_t pid ATTRIBUTE_UNUSED,
                   int resource ATTRIBUTE_UNUSED,
-                  struct rlimit *rlim ATTRIBUTE_UNUSED)
+                  const struct rlimit *new_limit ATTRIBUTE_UNUSED,
+                  struct rlimit *old_limit ATTRIBUTE_UNUSED)
 {
     errno = ENOSYS;
     return -1;
@@ -758,7 +762,7 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
             return -1;
         }
     } else {
-        if (virProcessPrLimit(pid, RLIMIT_MEMLOCK, &rlim) < 0) {
+        if (virProcessPrLimit(pid, RLIMIT_MEMLOCK, &rlim, NULL) < 0) {
             virReportSystemError(errno,
                                  _("cannot limit locked memory "
                                    "of process %lld to %llu"),
@@ -803,7 +807,7 @@ virProcessSetMaxProcesses(pid_t pid, unsigned int procs)
             return -1;
         }
     } else {
-        if (virProcessPrLimit(pid, RLIMIT_NPROC, &rlim) < 0) {
+        if (virProcessPrLimit(pid, RLIMIT_NPROC, &rlim, NULL) < 0) {
             virReportSystemError(errno,
                                  _("cannot limit number of subprocesses "
                                    "of process %lld to %u"),
@@ -851,7 +855,7 @@ virProcessSetMaxFiles(pid_t pid, unsigned int files)
             return -1;
         }
     } else {
-        if (virProcessPrLimit(pid, RLIMIT_NOFILE, &rlim) < 0) {
+        if (virProcessPrLimit(pid, RLIMIT_NOFILE, &rlim, NULL) < 0) {
             virReportSystemError(errno,
                                  _("cannot limit number of open files "
                                    "of process %lld to %u"),
