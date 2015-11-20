@@ -820,7 +820,12 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
     if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
         goto error;
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0 ||
@@ -1036,7 +1041,12 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
                                             &mem_mask, -1) < 0)
         goto cleanup;
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+
+        if (!vcpu->online)
+            continue;
+
         virCgroupFree(&cgroup_vcpu);
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                true, &cgroup_vcpu) < 0)
