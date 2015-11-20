@@ -788,6 +788,51 @@ virProcessSetMaxMemLock(pid_t pid ATTRIBUTE_UNUSED, unsigned long long bytes)
 }
 #endif /* ! (HAVE_SETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
+#if HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)
+int
+virProcessGetMaxMemLock(pid_t pid,
+                        unsigned long long *bytes)
+{
+    struct rlimit rlim;
+
+    if (!bytes)
+        return 0;
+
+    if (pid == 0) {
+        if (getrlimit(RLIMIT_MEMLOCK, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 "%s",
+                                 _("cannot get locked memory limit"));
+            return -1;
+        }
+    } else {
+        if (virProcessPrLimit(pid, RLIMIT_MEMLOCK, NULL, &rlim) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot get locked memory limit "
+                                   "of process %lld"),
+                                 (long long int) pid);
+            return -1;
+        }
+    }
+
+    /* virProcessSetMaxMemLock() sets both rlim_cur and rlim_max to the
+     * same value, so we can retrieve just rlim_max here */
+    *bytes = rlim.rlim_max;
+
+    return 0;
+}
+#else /* ! (HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
+int
+virProcessGetMaxMemLock(pid_t pid ATTRIBUTE_UNUSED,
+                        unsigned long long *bytes)
+{
+    if (!bytes)
+        return 0;
+
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return -1;
+}
+#endif /* ! (HAVE_GETRLIMIT && defined(RLIMIT_MEMLOCK)) */
 
 #if HAVE_SETRLIMIT && defined(RLIMIT_NPROC)
 int

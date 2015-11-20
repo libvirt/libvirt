@@ -76,6 +76,8 @@ int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes);
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
 
+int virProcessGetMaxMemLock(pid_t pid, unsigned long long *bytes);
+
 /* Callback to run code within the mount namespace tied to the given
  * pid.  This function must use only async-signal-safe functions, as
  * it gets run after a fork of a multi-threaded process.  The return

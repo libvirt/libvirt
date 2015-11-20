@@ -2040,6 +2040,7 @@ virPortAllocatorSetUsed;
 virProcessAbort;
 virProcessExitWithStatus;
 virProcessGetAffinity;
+virProcessGetMaxMemLock;
 virProcessGetNamespaces;
 virProcessGetPids;
 virProcessGetStartTime;
