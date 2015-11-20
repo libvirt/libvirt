@@ -1177,7 +1177,7 @@ virSecuritySELinuxRestoreSecurityTPMFileLabelInt(virSecurityManagerPtr mgr,
 
         if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
             if (virSecuritySELinuxRestoreSecurityFileLabel(mgr,
-                                  cancel_path) < 0)
+                                                           cancel_path) < 0)
                 rc = -1;
             VIR_FREE(cancel_path);
         }
@@ -1691,14 +1691,14 @@ virSecuritySELinuxRestoreSecurityHostdevSubsysLabel(virSecurityManagerPtr mgr,
                              scsihostsrc->target, scsihostsrc->unit,
                              dev->readonly, dev->shareable);
 
-            if (!scsi)
-                goto done;
+        if (!scsi)
+            goto done;
 
-            ret = virSCSIDeviceFileIterate(scsi, virSecuritySELinuxRestoreSecuritySCSILabel, mgr);
-            virSCSIDeviceFree(scsi);
+        ret = virSCSIDeviceFileIterate(scsi, virSecuritySELinuxRestoreSecuritySCSILabel, mgr);
+        virSCSIDeviceFree(scsi);
 
-            break;
-       }
+        break;
+    }
 
     default:
         ret = 0;
