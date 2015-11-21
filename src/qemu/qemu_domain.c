@@ -3724,6 +3724,16 @@ qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
 }
 
 
+bool
+qemuDomainMachineHasBuiltinIDE(const virDomainDef *def)
+{
+    return qemuDomainMachineIsI440FX(def) ||
+        STREQ(def->os.machine, "malta") ||
+        STREQ(def->os.machine, "sun4u") ||
+        STREQ(def->os.machine, "g3beige");
+}
+
+
 /**
  * qemuDomainUpdateCurrentMemorySize:
  *

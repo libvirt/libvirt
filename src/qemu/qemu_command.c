@@ -1054,11 +1054,12 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
          */
         return virAsprintf(&controller->info.alias, "pci.%d", controller->idx);
     } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE) {
-        /* for any machine based on I440FX, the first (and currently
-         * only) IDE controller is an integrated controller hardcoded
-         * with id "ide"
+        /* for any machine based on e.g. I440FX or G3Beige, the
+         * first (and currently only) IDE controller is an integrated
+         * controller hardcoded with id "ide"
          */
-        if (qemuDomainMachineIsI440FX(domainDef) && controller->idx == 0)
+        if (qemuDomainMachineHasBuiltinIDE(domainDef) &&
+            controller->idx == 0)
             return VIR_STRDUP(controller->info.alias, "ide");
     } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
         /* for any Q35 machine, the first SATA controller is the
@@ -4914,14 +4915,15 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
-        /* Since we currently only support the integrated IDE controller
-         * on 440fx, if we ever get to here, it's because some other
-         * machinetype had an IDE controller specified, or a 440fx had
-         * multiple ide controllers.
+        /* Since we currently only support the integrated IDE
+         * controller on various boards, if we ever get to here, it's
+         * because some other machinetype had an IDE controller
+         * specified, or one with a single IDE contraller had multiple
+         * ide controllers specified.
          */
-        if (qemuDomainMachineIsI440FX(domainDef))
+        if (qemuDomainMachineHasBuiltinIDE(domainDef))
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only a single IDE controller is unsupported "
+                           _("Only a single IDE controller is supported "
                              "for this machine type"));
         else
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -9900,9 +9902,9 @@ qemuBuildCommandLine(virConnectPtr conn,
                     cont->idx == 0 && qemuDomainMachineIsQ35(def))
                         continue;
 
-                /* first IDE controller on i440fx machines is implicit */
+                /* first IDE controller is implicit on various machines */
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
-                    cont->idx == 0 && qemuDomainMachineIsI440FX(def))
+                    cont->idx == 0 && qemuDomainMachineHasBuiltinIDE(def))
                         continue;
 
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
