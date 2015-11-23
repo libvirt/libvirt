@@ -163,9 +163,10 @@ int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
                                  virPCIDeviceAddressPtr **virt_fns,
-                                 size_t *n_vfname)
+                                 size_t *n_vfname,
+                                 unsigned int *max_vfs)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevLinkDump(const char *ifname, int ifindex,
                       void **nlData, struct nlattr **tb,

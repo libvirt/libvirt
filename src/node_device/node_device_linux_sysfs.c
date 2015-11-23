@@ -150,6 +150,7 @@ nodeDeviceSysfsGetPCISRIOVCaps(const char *sysfsPath,
        VIR_FREE(data->pci_dev.virtual_functions[i]);
     VIR_FREE(data->pci_dev.virtual_functions);
     data->pci_dev.num_virtual_functions = 0;
+    data->pci_dev.max_virtual_functions = 0;
     data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
     data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
@@ -157,11 +158,13 @@ nodeDeviceSysfsGetPCISRIOVCaps(const char *sysfsPath,
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
     ret = virPCIGetVirtualFunctions(sysfsPath, &data->pci_dev.virtual_functions,
-                                    &data->pci_dev.num_virtual_functions);
+                                    &data->pci_dev.num_virtual_functions,
+                                    &data->pci_dev.max_virtual_functions);
     if (ret < 0)
         return ret;
 
-    if (data->pci_dev.num_virtual_functions > 0)
+    if (data->pci_dev.num_virtual_functions > 0 ||
+        data->pci_dev.max_virtual_functions > 0)
         data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
 
     return ret;

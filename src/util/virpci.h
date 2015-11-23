@@ -1,7 +1,7 @@
 /*
  * virpci.h: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009, 2011-2014 Red Hat, Inc.
+ * Copyright (C) 2009, 2011-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -171,7 +171,8 @@ int virPCIGetPhysicalFunction(const char *sysfs_path,
 
 int virPCIGetVirtualFunctions(const char *sysfs_path,
                               virPCIDeviceAddressPtr **virtual_functions,
-                              size_t *num_virtual_functions);
+                              size_t *num_virtual_functions,
+                              unsigned int *max_virtual_functions);
 
 int virPCIIsVirtualFunction(const char *vf_sysfs_device_link);
 

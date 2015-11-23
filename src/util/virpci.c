@@ -1,7 +1,7 @@
 /*
  * virpci.c: helper APIs for managing host PCI devices
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2015 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2514,18 +2514,36 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 int
 virPCIGetVirtualFunctions(const char *sysfs_path,
                           virPCIDeviceAddressPtr **virtual_functions,
-                          size_t *num_virtual_functions)
+                          size_t *num_virtual_functions,
+                          unsigned int *max_virtual_functions)
 {
     int ret = -1;
     size_t i;
     char *device_link = NULL;
     virPCIDeviceAddress *config_addr = NULL;
+    char *totalvfs_file = NULL, *totalvfs_str = NULL;
 
     VIR_DEBUG("Attempting to get SR IOV virtual functions for device"
               "with sysfs path '%s'", sysfs_path);
 
     *virtual_functions = NULL;
     *num_virtual_functions = 0;
+    *max_virtual_functions = 0;
+
+    if (virAsprintf(&totalvfs_file, "%s/sriov_totalvfs", sysfs_path) < 0)
+       goto error;
+    if (virFileExists(totalvfs_file)) {
+        char *end = NULL; /* so that terminating \n doesn't create error */
+
+        if (virFileReadAll(totalvfs_file, 16, &totalvfs_str) < 0)
+            goto error;
+        if (virStrToLong_ui(totalvfs_str, &end, 10, max_virtual_functions) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unrecognized value in %s: %s"),
+                           totalvfs_file, totalvfs_str);
+            goto error;
+        }
+    }
 
     do {
         /* look for virtfn%d links until one isn't found */
@@ -2553,6 +2571,8 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
  cleanup:
     VIR_FREE(device_link);
     VIR_FREE(config_addr);
+    VIR_FREE(totalvfs_file);
+    VIR_FREE(totalvfs_str);
     return ret;
 
  error:
@@ -2594,6 +2614,7 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
     int ret = -1;
     size_t i;
     size_t num_virt_fns = 0;
+    unsigned int max_virt_fns = 0;
     virPCIDeviceAddressPtr vf_bdf = NULL;
     virPCIDeviceAddressPtr *virt_fns = NULL;
 
@@ -2602,7 +2623,7 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
         return ret;
 
     if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
-                                  &num_virt_fns) < 0) {
+                                  &num_virt_fns, &max_virt_fns) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Error getting physical function's '%s' "
                          "virtual_functions"), pf_sysfs_device_link);
@@ -2738,7 +2759,8 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
 int
 virPCIGetVirtualFunctions(const char *sysfs_path ATTRIBUTE_UNUSED,
                           virPCIDeviceAddressPtr **virtual_functions ATTRIBUTE_UNUSED,
-                          size_t *num_virtual_functions ATTRIBUTE_UNUSED)
+                          size_t *num_virtual_functions ATTRIBUTE_UNUSED,
+                          unsigned int *max_virtual_functions ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;

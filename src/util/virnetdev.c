@@ -1802,7 +1802,8 @@ int
 virNetDevGetVirtualFunctions(const char *pfname,
                              char ***vfname,
                              virPCIDeviceAddressPtr **virt_fns,
-                             size_t *n_vfname)
+                             size_t *n_vfname,
+                             unsigned int *max_vfs)
 {
     int ret = -1;
     size_t i;
@@ -1812,12 +1813,13 @@ virNetDevGetVirtualFunctions(const char *pfname,
 
     *virt_fns = NULL;
     *n_vfname = 0;
+    *max_vfs = 0;
 
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return ret;
 
     if (virPCIGetVirtualFunctions(pf_sysfs_device_link, virt_fns,
-                                  n_vfname) < 0)
+                                  n_vfname, max_vfs) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(*vfname, *n_vfname) < 0)
@@ -1987,7 +1989,8 @@ int
 virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              char ***vfname ATTRIBUTE_UNUSED,
                              virPCIDeviceAddressPtr **virt_fns ATTRIBUTE_UNUSED,
-                             size_t *n_vfname ATTRIBUTE_UNUSED)
+                             size_t *n_vfname ATTRIBUTE_UNUSED,
+                             unsigned int *max_vfs ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual functions on this platform"));
