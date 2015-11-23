@@ -728,6 +728,17 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         }
     }
 
+    if ((vm->def->nnets)) {
+        size_t i;
+
+        for (i = 0; i < vm->def->nnets; i++) {
+            virDomainNetDefPtr net = vm->def->nets[i];
+
+            if (STRPREFIX(net->ifname, "vif"))
+                VIR_FREE(net->ifname);
+        }
+    }
+
     if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) > 0) {
         if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
             VIR_DEBUG("Failed to remove domain XML for %s", vm->def->name);
@@ -887,6 +898,31 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
     libxl_event_free(ctx, ev);
 }
 
+/*
+ * Create interface names for the network devices in parameter def.
+ * Names are created with the pattern 'vif<domid>.<devid><suffix>'.
+ * devid is extracted from the network devices in the d_config
+ * parameter. User-provided interface names are skipped.
+ */
+static void
+libxlDomainCreateIfaceNames(virDomainDefPtr def, libxl_domain_config *d_config)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets && i < d_config->num_nics; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        libxl_device_nic *x_nic = &d_config->nics[i];
+        const char *suffix =
+            x_nic->nictype != LIBXL_NIC_TYPE_VIF ? "-emu" : "";
+
+        if (net->ifname)
+            continue;
+
+        ignore_value(virAsprintf(&net->ifname, "vif%d.%d%s",
+                                 def->id, x_nic->devid, suffix));
+    }
+}
+
 
 /*
  * Start a domain through libxenlight.
@@ -1027,6 +1063,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
         goto cleanup_dom;
 
+    libxlDomainCreateIfaceNames(vm->def, &d_config);
 
     if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
         goto cleanup_dom;
