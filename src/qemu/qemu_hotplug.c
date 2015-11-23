@@ -1282,17 +1282,14 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     }
 
     /* Temporarily add the hostdev to the domain definition. This is needed
-     * because qemuDomainRequiresMlock() and qemuDomainGetMlockLimitBytes()
-     * require the hostdev to be already part of the domain definition, but
-     * other functions like qemuAssignDeviceHostdevAlias() used below expect
-     * it *not* to be there. A better way to handle this would be nice */
+     * because qemuDomainAdjustMaxMemLock() requires the hostdev to be already
+     * part of the domain definition, but other functions like
+     * qemuAssignDeviceHostdevAlias() used below expect it *not* to be there.
+     * A better way to handle this would be nice */
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-    if (qemuDomainRequiresMlock(vm->def)) {
-        if (virProcessSetMaxMemLock(vm->pid,
-                                    qemuDomainGetMlockLimitBytes(vm->def)) < 0) {
-            vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
-            goto error;
-        }
+    if (qemuDomainAdjustMaxMemLock(vm) < 0) {
+        vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
+        goto error;
     }
     vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
 
@@ -1778,7 +1775,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
     bool fix_balloon = false;
-    bool mlock = false;
     int id;
     int ret = -1;
 
@@ -1810,12 +1806,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    mlock = qemuDomainRequiresMlock(vm->def);
-
-    if (mlock &&
-        virProcessSetMaxMemLock(vm->pid,
-                                qemuDomainGetMlockLimitBytes(vm->def)) < 0) {
-        mlock = false;
+    if (qemuDomainAdjustMaxMemLock(vm) < 0) {
         virJSONValueFree(props);
         goto removedef;
     }
@@ -1876,13 +1867,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         mem = NULL;
 
     /* reset the mlock limit */
-    if (mlock) {
-        virErrorPtr err = virSaveLastError();
-        ignore_value(virProcessSetMaxMemLock(vm->pid,
-                                             qemuDomainGetMlockLimitBytes(vm->def)));
-        virSetError(err);
-        virFreeError(err);
-    }
+    virErrorPtr err = virSaveLastError();
+    ignore_value(qemuDomainAdjustMaxMemLock(vm));
+    virSetError(err);
+    virFreeError(err);
 
     goto audit;
 }
@@ -2976,9 +2964,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
     virDomainMemoryDefFree(mem);
 
     /* decrease the mlock limit after memory unplug if necessary */
-    if (qemuDomainRequiresMlock(vm->def))
-        ignore_value(virProcessSetMaxMemLock(vm->pid,
-                                             qemuDomainGetMlockLimitBytes(vm->def)));
+    ignore_value(qemuDomainAdjustMaxMemLock(vm));
 
     return 0;
 }
