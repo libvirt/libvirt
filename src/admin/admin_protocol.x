@@ -36,6 +36,9 @@ const ADMIN_STRING_MAX = 4194304;
 /* Upper limit on list of servers */
 const ADMIN_SERVER_LIST_MAX = 16384;
 
+/* Upper limit on number of threadpool parameters */
+const ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX = 32;
+
 /* A long string, which may NOT be NULL. */
 typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 
@@ -98,6 +101,15 @@ struct admin_connect_lookup_server_ret {
     admin_nonnull_server srv;
 };
 
+struct admin_server_get_threadpool_parameters_args {
+    admin_nonnull_server srv;
+    unsigned int flags;
+};
+
+struct admin_server_get_threadpool_parameters_ret {
+    admin_typed_param params<ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX>;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -143,5 +155,10 @@ enum admin_procedure {
     /**
       * @generate: both
       */
-    ADMIN_PROC_CONNECT_LOOKUP_SERVER = 5
+    ADMIN_PROC_CONNECT_LOOKUP_SERVER = 5,
+
+    /**
+     * @generate: none
+     */
+    ADMIN_PROC_SERVER_GET_THREADPOOL_PARAMETERS = 6
 };

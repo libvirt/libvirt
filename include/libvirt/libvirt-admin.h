@@ -171,6 +171,12 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
 
 # define VIR_THREADPOOL_JOB_QUEUE_DEPTH "jobQueueDepth"
 
+/* Tunables for a server workerpool */
+int virAdmServerGetThreadPoolParameters(virAdmServerPtr srv,
+                                        virTypedParameterPtr *params,
+                                        int *nparams,
+                                        unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

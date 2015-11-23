@@ -22,6 +22,7 @@
 
 #include <config.h>
 #include <rpc/rpc.h>
+#include "virtypedparam.h"
 #include "admin_protocol.h"
 
 typedef struct _remoteAdminPriv remoteAdminPriv;
@@ -54,6 +55,11 @@ get_nonnull_server(virAdmConnectPtr conn, admin_nonnull_server server)
     return virAdmGetServer(conn, server.name);
 }
 
+static void
+make_nonnull_server(admin_nonnull_server *srv_dst, virAdmServerPtr srv_src)
+{
+    srv_dst->name = srv_src->name;
+}
 
 static int
 callFull(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
@@ -223,4 +229,41 @@ remoteAdminPrivNew(const char *sock_path)
  error:
     virObjectUnref(priv);
     return NULL;
+}
+
+static int
+remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
+                                         virTypedParameterPtr *params,
+                                         int *nparams,
+                                         unsigned int flags)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = srv->conn->privateData;
+    admin_server_get_threadpool_parameters_args args;
+    admin_server_get_threadpool_parameters_ret ret;
+
+    args.flags = flags;
+    make_nonnull_server(&args.srv, srv);
+
+    memset(&ret, 0, sizeof(ret));
+    virObjectLock(priv);
+
+    if (call(srv->conn, 0, ADMIN_PROC_SERVER_GET_THREADPOOL_PARAMETERS,
+             (xdrproc_t)xdr_admin_server_get_threadpool_parameters_args, (char *) &args,
+             (xdrproc_t)xdr_admin_server_get_threadpool_parameters_ret, (char *) &ret) == -1)
+        goto cleanup;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+    xdr_free((xdrproc_t)xdr_admin_server_get_threadpool_parameters_ret, (char *) &ret);
+
+ cleanup:
+    virObjectUnlock(priv);
+    return rv;
 }

@@ -674,3 +674,50 @@ virAdmConnectLookupServer(virAdmConnectPtr conn,
         virDispatchError(NULL);
     return ret;
 }
+
+/**
+ * virAdmServerGetThreadPoolParameters:
+ * @srv: a valid server object reference
+ * @params: pointer to a list of typed parameters which will be allocated
+ *          to store all returned parameters
+ * @nparams: pointer which will hold the number of params returned in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Retrieves threadpool parameters from @srv. Upon successful completion,
+ * @params will be allocated automatically to hold all returned data, setting
+ * @nparams accordingly.
+ * When extracting parameters from @params, following search keys are
+ * supported:
+ *      VIR_THREADPOOL_WORKERS_MIN
+ *      VIR_THREADPOOL_WORKERS_MAX
+ *      VIR_THREADPOOL_WORKERS_PRIORITY
+ *      VIR_THREADPOOL_WORKERS_FREE
+ *      VIR_THREADPOOL_WORKERS_CURRENT
+ *
+ * Returns 0 on success, -1 in case of an error.
+ */
+int
+virAdmServerGetThreadPoolParameters(virAdmServerPtr srv,
+                                    virTypedParameterPtr *params,
+                                    int *nparams,
+                                    unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("srv=%p, params=%p, nparams=%p, flags=%x",
+              srv, params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckAdmServerReturn(srv, -1);
+    virCheckNonNullArgGoto(params, error);
+
+    if ((ret = remoteAdminServerGetThreadPoolParameters(srv, params, nparams,
+                                                        flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
