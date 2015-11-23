@@ -112,6 +112,7 @@ typedef struct _virNodeDevCapData {
             virPCIDeviceAddressPtr physical_function;
             virPCIDeviceAddressPtr *virtual_functions;
             size_t num_virtual_functions;
+            unsigned int max_virtual_functions;
             unsigned int flags;
             virPCIDeviceAddressPtr *iommuGroupDevices;
             size_t nIommuGroupDevices;

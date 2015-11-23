@@ -108,7 +108,16 @@
                 the type is <code>virtual_functions</code>, then this
                 device is an SRIOV PF, and the capability element will
                 have a list of <code>address</code> subelements, one
-                for each VF on this PF.
+                for each VF on this PF. If the host system supports
+                reporting it (via the "sriov_maxvfs" file in the
+                device's sysfs directory) the capability element will
+                also have an attribute named <code>maxCount</code>
+                which is the maximum number of SRIOV VFs supported by
+                this device, which could be higher than the number of
+                VFs that are curently active <span class="since">since
+                1.3.0</span>; in this case, even if there are
+                currently no active VFs the virtual_functions
+                capabililty will still be shown.
               </dd>
               <dt><code>numa</code></dt>
               <dd>

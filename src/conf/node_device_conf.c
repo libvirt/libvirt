@@ -361,19 +361,27 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                 virBufferAddLit(&buf, "</capability>\n");
             }
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION) {
-                virBufferAddLit(&buf, "<capability type='virt_functions'>\n");
-                virBufferAdjustIndent(&buf, 2);
-                for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
-                    virBufferAsprintf(&buf,
-                                      "<address domain='0x%.4x' bus='0x%.2x' "
-                                      "slot='0x%.2x' function='0x%.1x'/>\n",
-                                      data->pci_dev.virtual_functions[i]->domain,
-                                      data->pci_dev.virtual_functions[i]->bus,
-                                      data->pci_dev.virtual_functions[i]->slot,
-                                      data->pci_dev.virtual_functions[i]->function);
+                virBufferAddLit(&buf, "<capability type='virt_functions'");
+                if (data->pci_dev.max_virtual_functions)
+                    virBufferAsprintf(&buf, " maxCount='%u'",
+                                      data->pci_dev.max_virtual_functions);
+                if (data->pci_dev.num_virtual_functions == 0) {
+                    virBufferAddLit(&buf, "/>\n");
+                } else {
+                    virBufferAddLit(&buf, ">\n");
+                    virBufferAdjustIndent(&buf, 2);
+                    for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
+                        virBufferAsprintf(&buf,
+                                          "<address domain='0x%.4x' bus='0x%.2x' "
+                                          "slot='0x%.2x' function='0x%.1x'/>\n",
+                                          data->pci_dev.virtual_functions[i]->domain,
+                                          data->pci_dev.virtual_functions[i]->bus,
+                                          data->pci_dev.virtual_functions[i]->slot,
+                                          data->pci_dev.virtual_functions[i]->function);
+                    }
+                    virBufferAdjustIndent(&buf, -2);
+                    virBufferAddLit(&buf, "</capability>\n");
                 }
-                virBufferAdjustIndent(&buf, -2);
-                virBufferAddLit(&buf, "</capability>\n");
             }
             if (data->pci_dev.nIommuGroupDevices) {
                 virBufferAsprintf(&buf, "<iommuGroup number='%d'>\n",
