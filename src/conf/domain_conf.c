@@ -3747,6 +3747,28 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
     return ret;
 }
 
+static int
+virDomainDefRejectDuplicatePanics(virDomainDefPtr def)
+{
+    bool exists[VIR_DOMAIN_PANIC_MODEL_LAST];
+    size_t i;
+
+    for (i = 0; i < VIR_DOMAIN_PANIC_MODEL_LAST; i++)
+         exists[i] = false;
+
+    for (i = 0; i < def->npanics; i++) {
+        virDomainPanicModel model = def->panics[i]->model;
+        if (exists[model]) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Multiple panic devices with model '%s'"),
+                           virDomainPanicModelTypeToString(model));
+            return -1;
+        }
+        exists[model] = true;
+    }
+
+    return 0;
+}
 
 /**
  * virDomainDefMetadataSanitize:
@@ -3974,6 +3996,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     }
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
+        return -1;
+
+    if (virDomainDefRejectDuplicatePanics(def) < 0)
         return -1;
 
     /* verify settings of guest timers */
