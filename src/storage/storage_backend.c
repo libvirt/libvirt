@@ -1389,6 +1389,14 @@ static struct diskType const disk_types[] = {
 };
 
 
+/*
+ * virStorageBackendDetectBlockVolFormatFD
+ * @target: target definition ptr of volume to update
+ * @fd: fd of storage volume to update,
+ * @readflags: unused
+ *
+ * Returns 0 for success, -1 on a legitimate error condition
+ */
 static int
 virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
                                         int fd,
@@ -1578,6 +1586,17 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
     return fd;
 }
 
+/*
+ * virStorageBackendUpdateVolTargetInfo
+ * @target: target definition ptr of volume to update
+ * @withBlockVolFormat: true if caller determined a block file
+ * @openflags: various VolOpenCheckMode flags to handle errors on open
+ * @readflags: unused
+ *
+ * Returns 0 for success, -1 on a legitimate error condition, and -2
+ * if the openflags used VIR_STORAGE_VOL_OPEN_NOERROR and some sort of
+ * open error occurred. It is up to the caller to handle.
+ */
 int
 virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
                                      bool withBlockVolFormat,
@@ -1636,6 +1655,17 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
     return ret;
 }
 
+/*
+ * virStorageBackendUpdateVolInfo
+ * @vol: Pointer to a volume storage definition
+ * @withBlockVolFormat: true if the caller determined a block file
+ * @openflags: various VolOpenCheckMode flags to handle errors on open
+ * @readflags: unused
+ *
+ * Returns 0 for success, -1 on a legitimate error condition, and -2
+ * if the openflags used VIR_STORAGE_VOL_OPEN_NOERROR and some sort of
+ * open error occurred. It is up to the caller to handle.
+ */
 int
 virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                bool withBlockVolFormat,
