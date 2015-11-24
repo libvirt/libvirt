@@ -921,7 +921,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (vol->target.backingStore) {
             ignore_value(virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,
                                                               false,
-                                                              VIR_STORAGE_VOL_OPEN_DEFAULT));
+                                                              VIR_STORAGE_VOL_OPEN_DEFAULT, 0));
             /* If this failed, the backing file is currently unavailable,
              * the capacity, allocation, owner, group and mode are unknown.
              * An error message was raised, but we just continue. */
@@ -1245,7 +1245,7 @@ virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
 
     /* Refresh allocation / capacity / permissions info in case its changed */
     ret = virStorageBackendUpdateVolInfo(vol, false,
-                                         VIR_STORAGE_VOL_FS_OPEN_FLAGS);
+                                         VIR_STORAGE_VOL_FS_OPEN_FLAGS, 0);
     if (ret < 0)
         return ret;
 

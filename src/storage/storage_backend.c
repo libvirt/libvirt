@@ -1391,7 +1391,8 @@ static struct diskType const disk_types[] = {
 
 static int
 virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
-                                        int fd)
+                                        int fd,
+                                        unsigned int readflags ATTRIBUTE_UNUSED)
 {
     size_t i;
     off_t start;
@@ -1580,7 +1581,8 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
 int
 virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
                                      bool withBlockVolFormat,
-                                     unsigned int openflags)
+                                     unsigned int openflags,
+                                     unsigned int readflags)
 {
     int ret, fd = -1;
     struct stat sb;
@@ -1622,7 +1624,8 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
     }
 
     if (withBlockVolFormat) {
-        if ((ret = virStorageBackendDetectBlockVolFormatFD(target, fd)) < 0)
+        if ((ret = virStorageBackendDetectBlockVolFormatFD(target, fd,
+                                                           readflags)) < 0)
             goto cleanup;
     }
 
@@ -1636,20 +1639,22 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 int
 virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                bool withBlockVolFormat,
-                               unsigned int openflags)
+                               unsigned int openflags,
+                               unsigned int readflags)
 {
     int ret;
 
     if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
                                                     withBlockVolFormat,
-                                                    openflags)) < 0)
+                                                    openflags, readflags)) < 0)
         return ret;
 
     if (vol->target.backingStore &&
         (ret = virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,
                                                     withBlockVolFormat,
                                                     VIR_STORAGE_VOL_OPEN_DEFAULT |
-                                                    VIR_STORAGE_VOL_OPEN_NOERROR) < 0))
+                                                    VIR_STORAGE_VOL_OPEN_NOERROR,
+                                                    readflags) < 0))
         return ret;
 
     return 0;

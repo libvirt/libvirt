@@ -192,10 +192,12 @@ int virStorageBackendVolOpen(const char *path, struct stat *sb,
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    bool withBlockVolFormat,
-                                   unsigned int openflags);
+                                   unsigned int openflags,
+                                   unsigned int readflags);
 int virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
                                          bool withBlockVolFormat,
-                                         unsigned int openflags);
+                                         unsigned int openflags,
+                                         unsigned int readflags);
 int virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                            int fd,
                                            struct stat *sb);

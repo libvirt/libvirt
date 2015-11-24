@@ -154,14 +154,15 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
     if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
         if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT |
-                                           VIR_STORAGE_VOL_OPEN_NOERROR) == -1)
+                                           VIR_STORAGE_VOL_OPEN_NOERROR,
+                                           0) == -1)
             return -1;
         vol->target.allocation = 0;
         vol->target.capacity =
             (vol->source.extents[0].end - vol->source.extents[0].start);
     } else {
         if (virStorageBackendUpdateVolInfo(vol, false,
-                                           VIR_STORAGE_VOL_OPEN_DEFAULT) < 0)
+                                           VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0)
             return -1;
     }
 
