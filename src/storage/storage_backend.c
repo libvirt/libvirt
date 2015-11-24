@@ -1444,6 +1444,10 @@ virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
         }
     }
 
+    if (target->format == VIR_STORAGE_POOL_DISK_UNKNOWN)
+        VIR_DEBUG("cannot determine the target format for '%s'",
+                  target->path);
+
     return 0;
 }
 
