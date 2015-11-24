@@ -338,7 +338,7 @@ static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-struct testScopeData {
+struct testNameData {
     const char *name;
     const char *expected;
 };
@@ -346,11 +346,34 @@ struct testScopeData {
 static int
 testScopeName(const void *opaque)
 {
-    const struct testScopeData *data = opaque;
+    const struct testNameData *data = opaque;
     int ret = -1;
     char *actual = NULL;
 
     if (!(actual = virSystemdMakeScopeName(data->name, "lxc")))
+        goto cleanup;
+
+    if (STRNEQ(actual, data->expected)) {
+        fprintf(stderr, "Expected '%s' but got '%s'\n",
+                data->expected, actual);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+static int
+testMachineName(const void *opaque)
+{
+    const struct testNameData *data = opaque;
+    int ret = -1;
+    char *actual = NULL;
+
+    if (!(actual = virSystemdMakeMachineName(data->name, "qemu", true)))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {
@@ -471,7 +494,7 @@ mymain(void)
 
 # define TEST_SCOPE(name, unitname)                                     \
     do {                                                                \
-        struct testScopeData data = {                                   \
+        struct testNameData data = {                                    \
             name, unitname                                              \
         };                                                              \
         if (virtTestRun("Test scopename", testScopeName, &data) < 0)    \
@@ -482,6 +505,22 @@ mymain(void)
     TEST_SCOPE("demo-name", "machine-lxc\\x2ddemo\\x2dname.scope");
     TEST_SCOPE("demo!name", "machine-lxc\\x2ddemo\\x21name.scope");
     TEST_SCOPE(".demo", "machine-lxc\\x2d\\x2edemo.scope");
+    TEST_SCOPE("bull💩", "machine-lxc\\x2dbull\\xf0\\x9f\\x92\\xa9.scope");
+
+# define TEST_MACHINE(name, machinename)                                \
+    do {                                                                \
+        struct testNameData data = {                                    \
+            name, machinename                                           \
+        };                                                              \
+        if (virtTestRun("Test scopename", testMachineName, &data) < 0)  \
+            ret = -1;                                                   \
+    } while (0)
+
+    TEST_MACHINE("demo", "qemu-demo");
+    TEST_MACHINE("demo-name", "qemu-demo\\x2dname");
+    TEST_MACHINE("demo!name", "qemu-demo\\x21name");
+    TEST_MACHINE(".demo", "qemu-\\x2edemo");
+    TEST_MACHINE("bull\U0001f4a9", "qemu-bull\\xf0\\x9f\\x92\\xa9");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function)                        \
     do {                                                                \
