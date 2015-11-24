@@ -1393,14 +1393,17 @@ static struct diskType const disk_types[] = {
  * virStorageBackendDetectBlockVolFormatFD
  * @target: target definition ptr of volume to update
  * @fd: fd of storage volume to update,
- * @readflags: unused
+ * @readflags: VolReadErrorMode flags to handle read error after open
+ *             is successful, but read is not.
  *
- * Returns 0 for success, -1 on a legitimate error condition
+ * Returns 0 for success, -1 on a legitimate error condition, -2 if
+ * the read error is desired to be ignored (along with appropriate
+ * VIR_WARN of the issue).
  */
 static int
 virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
                                         int fd,
-                                        unsigned int readflags ATTRIBUTE_UNUSED)
+                                        unsigned int readflags)
 {
     size_t i;
     off_t start;
@@ -1419,10 +1422,16 @@ virStorageBackendDetectBlockVolFormatFD(virStorageSourcePtr target,
     }
     bytes = saferead(fd, buffer, sizeof(buffer));
     if (bytes < 0) {
-        virReportSystemError(errno,
-                             _("cannot read beginning of file '%s'"),
-                             target->path);
-        return -1;
+        if (readflags & VIR_STORAGE_VOL_READ_NOERROR) {
+            VIR_WARN("ignoring failed saferead of file '%s'",
+                     target->path);
+            return -2;
+        } else {
+            virReportSystemError(errno,
+                                 _("cannot read beginning of file '%s'"),
+                                 target->path);
+            return -1;
+        }
     }
 
     for (i = 0; disk_types[i].part_table_type != -1; i++) {
@@ -1591,11 +1600,13 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
  * @target: target definition ptr of volume to update
  * @withBlockVolFormat: true if caller determined a block file
  * @openflags: various VolOpenCheckMode flags to handle errors on open
- * @readflags: unused
+ * @readflags: VolReadErrorMode flags to handle read error after open
+ *             is successful, but read is not.
  *
  * Returns 0 for success, -1 on a legitimate error condition, and -2
  * if the openflags used VIR_STORAGE_VOL_OPEN_NOERROR and some sort of
- * open error occurred. It is up to the caller to handle.
+ * open error occurred. It is up to the caller to handle. A -2 may also
+ * be returned if the caller passed a readflagsflag.
  */
 int
 virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
@@ -1630,8 +1641,16 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
         }
 
         if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
-            virReportSystemError(errno, _("cannot read header '%s'"), target->path);
-            ret = -1;
+            if (readflags & VIR_STORAGE_VOL_READ_NOERROR) {
+                VIR_WARN("ignoring failed header read for '%s'",
+                         target->path);
+                ret = -2;
+            } else {
+                virReportSystemError(errno,
+                                     _("cannot read header '%s'"),
+                                     target->path);
+                ret = -1;
+            }
             goto cleanup;
         }
 
@@ -1663,7 +1682,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
  * @vol: Pointer to a volume storage definition
  * @withBlockVolFormat: true if the caller determined a block file
  * @openflags: various VolOpenCheckMode flags to handle errors on open
- * @readflags: unused
+ * @readflags: various VolReadErrorMode flags to handle errors on read
  *
  * Returns 0 for success, -1 on a legitimate error condition, and -2
  * if the openflags used VIR_STORAGE_VOL_OPEN_NOERROR and some sort of

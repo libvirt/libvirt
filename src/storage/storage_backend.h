@@ -179,6 +179,15 @@ enum {
     VIR_STORAGE_VOL_OPEN_DIR     = 1 << 4, /* directories okay */
 };
 
+/* VolReadErrorMode flags
+ * If flag is present, then operation won't cause fatal error for
+ * specified operation, rather a VIR_WARN will be issued and a -2 returned
+ * for function call
+ */
+enum {
+    VIR_STORAGE_VOL_READ_NOERROR    = 1 << 0, /* ignore *read errors */
+};
+
 # define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_REG      |\
                                        VIR_STORAGE_VOL_OPEN_BLOCK)
 
