@@ -4,7 +4,7 @@ virtlockd - libvirt lock management daemon
 
 =head1 SYNOPSIS
 
-B<virtlockd> [ -dv ] [ -f config_file ] [ -p pid_file ]
+B<virtlockd> [ -dvV ] [ -t timeout] [ -f config_file ] [ -p pid_file ]
 
 B<virtlockd> --version
 
@@ -37,6 +37,11 @@ Run as a daemon and write PID file.
 =item B<-f, --config> I<FILE>
 
 Use this configuration file, overriding the default value.
+
+=item B<-t, --timeout> I<SECONDS>
+
+Automatically shutdown after I<SECONDS> have elapsed with
+no active client or lock.
 
 =item B<-p, --pid-file> I<FILE>
 

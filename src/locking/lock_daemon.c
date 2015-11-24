@@ -118,6 +118,7 @@ virLockDaemonFree(virLockDaemonPtr lockd)
     if (!lockd)
         return;
 
+    virMutexDestroy(&lockd->lock);
     virObjectUnref(lockd->dmn);
     virHashFree(lockd->lockspaces);
     virLockSpaceFree(lockd->defaultLockspace);
@@ -410,6 +411,7 @@ virLockDaemonUnixSocketPaths(bool privileged,
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
+            VIR_FREE(rundir);
             umask(old_umask);
             goto error;
         }
@@ -516,6 +518,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
 
                 old_umask = umask(077);
                 if (virFileMakePath(logdir) < 0) {
+                    VIR_FREE(logdir);
                     umask(old_umask);
                     goto error;
                 }
@@ -1187,7 +1190,7 @@ int main(int argc, char **argv) {
         int c;
         char *tmp;
 
-        c = getopt_long(argc, argv, "ldf:p:t:vVh", opts, &optidx);
+        c = getopt_long(argc, argv, "df:p:t:vVh", opts, &optidx);
 
         if (c == -1)
             break;
@@ -1321,6 +1324,7 @@ int main(int argc, char **argv) {
         VIR_ERROR(_("unable to create rundir %s: %s"), run_dir,
                   virStrerror(errno, ebuf, sizeof(ebuf)));
         ret = VIR_LOCK_DAEMON_ERR_RUNDIR;
+        umask(old_umask);
         goto cleanup;
     }
     umask(old_umask);

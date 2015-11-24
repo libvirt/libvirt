@@ -166,6 +166,7 @@ static char *virLockManagerLockDaemonPath(bool privileged)
             return NULL;
         }
 
+        VIR_FREE(rundir);
     }
     return path;
 }
