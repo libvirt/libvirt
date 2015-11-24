@@ -5421,8 +5421,8 @@ static virHypervisorDriver libxlHypervisorDriver = {
 #endif
     .nodeGetFreeMemory = libxlNodeGetFreeMemory, /* 0.9.0 */
     .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
-    .domainMemoryStats = libxlDomainMemoryStats, /* 1.2.22 */
-    .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.2.22 */
+    .domainMemoryStats = libxlDomainMemoryStats, /* 1.3.0 */
+    .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.3.0 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
     .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
