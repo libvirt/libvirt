@@ -30,9 +30,16 @@ typedef struct _virLogHandler virLogHandler;
 typedef virLogHandler *virLogHandlerPtr;
 
 
-virLogHandlerPtr virLogHandlerNew(bool privileged);
+typedef void (*virLogHandlerShutdownInhibitor)(bool inhibit,
+                                               void *opaque);
+
+virLogHandlerPtr virLogHandlerNew(bool privileged,
+                                  virLogHandlerShutdownInhibitor inhibitor,
+                                  void *opaque);
 virLogHandlerPtr virLogHandlerNewPostExecRestart(virJSONValuePtr child,
-                                                 bool privileged);
+                                                 bool privileged,
+                                                 virLogHandlerShutdownInhibitor inhibitor,
+                                                 void *opaque);
 
 void virLogHandlerFree(virLogHandlerPtr handler);
 

@@ -124,6 +124,17 @@ virLogDaemonFree(virLogDaemonPtr logd)
 }
 
 
+static void
+virLogDaemonInhibitor(bool inhibit, void *opaque)
+{
+    virLogDaemonPtr daemon = opaque;
+
+    if (inhibit)
+        virNetDaemonAddShutdownInhibition(daemon->dmn);
+    else
+        virNetDaemonRemoveShutdownInhibition(daemon->dmn);
+}
+
 static virLogDaemonPtr
 virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
 {
@@ -152,7 +163,9 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         virNetDaemonAddServer(logd->dmn, logd->srv) < 0)
         goto error;
 
-    if (!(logd->handler = virLogHandlerNew(privileged)))
+    if (!(logd->handler = virLogHandlerNew(privileged,
+                                           virLogDaemonInhibitor,
+                                           logd)))
         goto error;
 
     return logd;
@@ -210,7 +223,9 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     }
 
     if (!(logd->handler = virLogHandlerNewPostExecRestart(child,
-                                                          privileged)))
+                                                          privileged,
+                                                          virLogDaemonInhibitor,
+                                                          logd)))
         goto error;
 
     return logd;

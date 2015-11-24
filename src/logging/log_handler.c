@@ -59,6 +59,9 @@ struct _virLogHandler {
     bool privileged;
     virLogHandlerLogFilePtr *files;
     size_t nfiles;
+
+    virLogHandlerShutdownInhibitor inhibitor;
+    void *opaque;
 };
 
 static virClassPtr virLogHandlerClass;
@@ -165,13 +168,16 @@ virLogHandlerDomainLogFileEvent(int watch,
     return;
 
  error:
+    handler->inhibitor(false, handler->opaque);
     virLogHandlerLogFileClose(handler, logfile);
     virObjectUnlock(handler);
 }
 
 
 virLogHandlerPtr
-virLogHandlerNew(bool privileged)
+virLogHandlerNew(bool privileged,
+                 virLogHandlerShutdownInhibitor inhibitor,
+                 void *opaque)
 {
     virLogHandlerPtr handler;
 
@@ -182,6 +188,8 @@ virLogHandlerNew(bool privileged)
         goto error;
 
     handler->privileged = privileged;
+    handler->inhibitor = inhibitor;
+    handler->opaque = opaque;
 
     return handler;
 
@@ -191,13 +199,16 @@ virLogHandlerNew(bool privileged)
 
 
 static virLogHandlerLogFilePtr
-virLogHandlerLogFilePostExecRestart(virJSONValuePtr object)
+virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
+                                    virJSONValuePtr object)
 {
     virLogHandlerLogFilePtr file;
     const char *path;
 
     if (VIR_ALLOC(file) < 0)
         return NULL;
+
+    handler->inhibitor(true, handler->opaque);
 
     if ((path = virJSONValueObjectGetString(object, "path")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -226,6 +237,7 @@ virLogHandlerLogFilePostExecRestart(virJSONValuePtr object)
     return file;
 
  error:
+    handler->inhibitor(false, handler->opaque);
     virLogHandlerLogFileFree(file);
     return NULL;
 }
@@ -233,14 +245,18 @@ virLogHandlerLogFilePostExecRestart(virJSONValuePtr object)
 
 virLogHandlerPtr
 virLogHandlerNewPostExecRestart(virJSONValuePtr object,
-                                bool privileged)
+                                bool privileged,
+                                virLogHandlerShutdownInhibitor inhibitor,
+                                void *opaque)
 {
     virLogHandlerPtr handler;
     virJSONValuePtr files;
     ssize_t n;
     size_t i;
 
-    if (!(handler = virLogHandlerNew(privileged)))
+    if (!(handler = virLogHandlerNew(privileged,
+                                     inhibitor,
+                                     opaque)))
         return NULL;
 
     if (!(files = virJSONValueObjectGet(object, "files"))) {
@@ -259,7 +275,7 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
         virLogHandlerLogFilePtr file;
         virJSONValuePtr child = virJSONValueArrayGet(files, i);
 
-        if (!(file = virLogHandlerLogFilePostExecRestart(child)))
+        if (!(file = virLogHandlerLogFilePostExecRestart(handler, child)))
             goto error;
 
         if (VIR_APPEND_ELEMENT_COPY(handler->files, handler->nfiles, file) < 0)
@@ -290,8 +306,10 @@ virLogHandlerDispose(void *obj)
     virLogHandlerPtr handler = obj;
     size_t i;
 
-    for (i = 0; i < handler->nfiles; i++)
+    for (i = 0; i < handler->nfiles; i++) {
+        handler->inhibitor(false, handler->opaque);
         virLogHandlerLogFileFree(handler->files[i]);
+    }
     VIR_FREE(handler->files);
 }
 
@@ -340,6 +358,8 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     char *path;
 
     virObjectLock(handler);
+
+    handler->inhibitor(true, handler->opaque);
 
     if (!(path = virLogHandlerGetLogFilePathForDomain(handler,
                                                       driver,
@@ -400,6 +420,7 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     VIR_FREE(path);
     VIR_FORCE_CLOSE(pipefd[0]);
     VIR_FORCE_CLOSE(pipefd[1]);
+    handler->inhibitor(false, handler->opaque);
     virLogHandlerLogFileFree(file);
     virObjectUnlock(handler);
     return -1;
