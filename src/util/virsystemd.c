@@ -119,16 +119,20 @@ char *virSystemdMakeMachineName(const char *name,
 {
     char *machinename = NULL;
     char *username = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
     if (privileged) {
-        if (virAsprintf(&machinename, "%s-%s", drivername, name) < 0)
-            goto cleanup;
+        virBufferAsprintf(&buf, "%s-", drivername);
     } else {
         if (!(username = virGetUserName(geteuid())))
             goto cleanup;
-        if (virAsprintf(&machinename, "%s-%s-%s", username, drivername, name) < 0)
-            goto cleanup;
+
+        virBufferAsprintf(&buf, "%s-%s-", username, drivername);
     }
 
+    virSystemdEscapeName(&buf, name);
+
+    machinename = virBufferContentAndReset(&buf);
  cleanup:
     VIR_FREE(username);
 
