@@ -2045,7 +2045,17 @@ struct _virDomainIdMapDef {
 };
 
 
+typedef enum {
+    VIR_DOMAIN_PANIC_MODEL_DEFAULT,
+    VIR_DOMAIN_PANIC_MODEL_ISA,
+    VIR_DOMAIN_PANIC_MODEL_PSERIES,
+    VIR_DOMAIN_PANIC_MODEL_HYPERV,
+
+    VIR_DOMAIN_PANIC_MODEL_LAST
+} virDomainPanicModel;
+
 struct _virDomainPanicDef {
+    int model; /* virDomainPanicModel */
     virDomainDeviceInfo info;
 };
 
@@ -3060,6 +3070,7 @@ VIR_ENUM_DECL(virDomainMemballoonModel)
 VIR_ENUM_DECL(virDomainSmbiosMode)
 VIR_ENUM_DECL(virDomainWatchdogModel)
 VIR_ENUM_DECL(virDomainWatchdogAction)
+VIR_ENUM_DECL(virDomainPanicModel)
 VIR_ENUM_DECL(virDomainVideo)
 VIR_ENUM_DECL(virDomainHostdevMode)
 VIR_ENUM_DECL(virDomainHostdevSubsys)

@@ -5361,6 +5361,15 @@
   <define name="panic">
     <element name="panic">
       <optional>
+        <attribute name="model">
+          <choice>
+            <value>isa</value>
+            <value>pseries</value>
+            <value>hyperv</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="address"/>
       </optional>
     </element>

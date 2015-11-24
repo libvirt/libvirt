@@ -6152,19 +6152,33 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
   ...
   &lt;devices&gt;
-    &lt;panic&gt;
+    &lt;panic model='isa'&gt;
       &lt;address type='isa' iobase='0x505'/&gt;
     &lt;/panic&gt;
   &lt;/devices&gt;
   ...
 </pre>
   <dl>
+    <dt><code>model</code></dt>
+      <dd>
+        <p>
+          The optional <code>model</code> attribute specifies what type
+          of panic device is provided. The panic model used when this attribute
+          is missing depends on the hypervisor and guest arch.
+        </p>
+        <ul>
+          <li>'isa' &mdash; for ISA pvpanic device</li>
+          <li>'pseries' &mdash; default and valid only for pSeries guests.</li>
+          <li>'hyperv' &mdash; for Hyper-V crash CPU feature.
+            <span class="since">Since 1.3.0, QEMU and KVM only</span></li>
+        </ul>
+      </dd>
     <dt><code>address</code></dt>
     <dd>
       <p>
         address of panic. The default ioport is 0x505. Most users
         don't need to specify an address, and doing so is forbidden
-        altogether for pSeries guests.
+        altogether for pseries and hyperv models.
       </p>
     </dd>
   </dl>

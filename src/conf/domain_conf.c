@@ -525,6 +525,12 @@ VIR_ENUM_IMPL(virDomainWatchdogAction, VIR_DOMAIN_WATCHDOG_ACTION_LAST,
               "none",
               "inject-nmi")
 
+VIR_ENUM_IMPL(virDomainPanicModel, VIR_DOMAIN_PANIC_MODEL_LAST,
+              "default",
+              "isa",
+              "pseries",
+              "hyperv")
+
 VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vga",
               "cirrus",
@@ -10197,6 +10203,7 @@ static virDomainPanicDefPtr
 virDomainPanicDefParseXML(xmlNodePtr node)
 {
     virDomainPanicDefPtr panic;
+    char *model = NULL;
 
     if (VIR_ALLOC(panic) < 0)
         return NULL;
@@ -10204,10 +10211,22 @@ virDomainPanicDefParseXML(xmlNodePtr node)
     if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, 0) < 0)
         goto error;
 
+    model = virXMLPropString(node, "model");
+    if (model != NULL &&
+        (panic->model = virDomainPanicModelTypeFromString(model)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown panic model '%s'"), model);
+        goto error;
+    }
+
+ cleanup:
+    VIR_FREE(model);
     return panic;
+
  error:
     virDomainPanicDefFree(panic);
-    return NULL;
+    panic = NULL;
+    goto cleanup;
 }
 
 /* Parse the XML definition for an input device */
@@ -17627,6 +17646,14 @@ virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
         return false;
     }
 
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target panic model '%s' does not match source '%s'"),
+                       virDomainPanicModelTypeToString(dst->model),
+                       virDomainPanicModelTypeToString(src->model));
+        return false;
+    }
+
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
@@ -20613,6 +20640,11 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     int indent = virBufferGetIndent(buf, false);
 
     virBufferAddLit(buf, "<panic");
+
+    if (def->model)
+        virBufferAsprintf(buf, " model='%s'",
+                          virDomainPanicModelTypeToString(def->model));
+
     virBufferAdjustIndent(&childrenBuf, indent + 2);
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
         return -1;
