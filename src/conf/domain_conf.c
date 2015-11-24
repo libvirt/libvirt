@@ -17613,8 +17613,8 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
 }
 
 static bool
-virDomainPanicCheckABIStability(virDomainPanicDefPtr src,
-                                virDomainPanicDefPtr dst)
+virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
+                                   virDomainPanicDefPtr dst)
 {
     if (!src && !dst)
         return true;
@@ -17685,13 +17685,6 @@ virDomainTPMDefCheckABIStability(virDomainTPMDefPtr src,
         return false;
     }
 
-    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
-}
-
-static bool
-virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
-                                   virDomainPanicDefPtr dst)
-{
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
@@ -18112,7 +18105,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         if (!virDomainRNGDefCheckABIStability(src->rngs[i], dst->rngs[i]))
             goto error;
 
-    if (!virDomainPanicCheckABIStability(src->panic, dst->panic))
+    if (!virDomainPanicDefCheckABIStability(src->panic, dst->panic))
         goto error;
 
     if (src->nshmems != dst->nshmems) {
@@ -18134,16 +18127,6 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Either both target and source domains or none of "
                          "them must have TPM device present"));
-        goto error;
-    }
-
-    if (src->panic && dst->panic) {
-        if (!virDomainPanicDefCheckABIStability(src->panic, dst->panic))
-            goto error;
-    } else if (src->panic || dst->panic) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Either both target and source domains or none of "
-                         "them must have PANIC device present"));
         goto error;
     }
 
