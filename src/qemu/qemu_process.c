@@ -5017,7 +5017,7 @@ int qemuProcessStart(virConnectPtr conn,
         /* Allow the CPUS to start executing */
         if (qemuProcessStartCPUs(driver, vm, conn,
                                  VIR_DOMAIN_RUNNING_BOOTED,
-                                 QEMU_ASYNC_JOB_NONE) < 0) {
+                                 asyncJob) < 0) {
             if (virGetLastError() == NULL)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("resume operation failed"));
