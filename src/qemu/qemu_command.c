@@ -7577,14 +7577,16 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
         }
     }
 
-    if (def->panic &&
-        def->panic->model == VIR_DOMAIN_PANIC_MODEL_HYPERV) {
-        if (!have_cpu) {
-            virBufferAdd(&buf, default_model, -1);
-            have_cpu = true;
-        }
+    for (i = 0; i < def->npanics; i++) {
+        if (def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_HYPERV) {
+            if (!have_cpu) {
+                virBufferAdd(&buf, default_model, -1);
+                have_cpu = true;
+            }
 
-        virBufferAddLit(&buf, ",hv_crash");
+            virBufferAddLit(&buf, ",hv_crash");
+            break;
+        }
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
@@ -11059,8 +11061,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
     }
 
-    if (def->panic) {
-        switch ((virDomainPanicModel) def->panic->model) {
+    for (i = 0; i < def->npanics; i++) {
+        switch ((virDomainPanicModel) def->panics[i]->model) {
         case VIR_DOMAIN_PANIC_MODEL_HYPERV:
             /* Panic with model 'hyperv' is not a device, it should
              * be configured in cpu commandline. The address
@@ -11071,7 +11073,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                  "panic device of model 'hyperv'"));
                 goto error;
             }
-            if (def->panic->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            if (def->panics[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("setting the panic device address is not "
                                  "supported for model 'hyperv'"));
@@ -11090,7 +11092,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                                  "of model 'pseries'"));
                 goto error;
             }
-            if (def->panic->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            if (def->panics[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("setting the panic device address is not "
                                  "supported for model 'pseries'"));
@@ -11106,11 +11108,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            switch (def->panic->info.type) {
+            switch (def->panics[i]->info.type) {
             case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
                 virCommandAddArg(cmd, "-device");
                 virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
-                                       def->panic->info.addr.isa.iobase);
+                                       def->panics[i]->info.addr.isa.iobase);
                 break;
 
             case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
@@ -12480,12 +12482,22 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                     goto cleanup;
             }
         } else if (STREQ(tokens[i], "hv_crash")) {
-            virDomainPanicDefPtr panic;
-            if (VIR_ALLOC(panic) < 0)
-                goto cleanup;
+            size_t j;
+            for (j = 0; j < dom->npanics; j++) {
+                 if (dom->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_HYPERV)
+                     break;
+            }
 
-            panic->model = VIR_DOMAIN_PANIC_MODEL_HYPERV;
-            dom->panic = panic;
+            if (j == dom->npanics) {
+                virDomainPanicDefPtr panic;
+                if (VIR_ALLOC(panic) < 0 ||
+                    VIR_APPEND_ELEMENT_COPY(dom->panics,
+                                            dom->npanics, panic) < 0) {
+                    VIR_FREE(panic);
+                    goto cleanup;
+                }
+                panic->model = VIR_DOMAIN_PANIC_MODEL_HYPERV;
+            }
         } else if (STRPREFIX(tokens[i], "hv_")) {
             const char *token = tokens[i] + 3; /* "hv_" */
             const char *feature, *value;

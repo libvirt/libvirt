@@ -2316,6 +2316,9 @@ struct _virDomainDef {
     size_t nmems;
     virDomainMemoryDefPtr *mems;
 
+    size_t npanics;
+    virDomainPanicDefPtr *panics;
+
     /* Only 1 */
     virDomainWatchdogDefPtr watchdog;
     virDomainMemballoonDefPtr memballoon;
@@ -2324,7 +2327,6 @@ struct _virDomainDef {
     virCPUDefPtr cpu;
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
-    virDomainPanicDefPtr panic;
 
     void *namespaceData;
     virDomainXMLNamespace ns;

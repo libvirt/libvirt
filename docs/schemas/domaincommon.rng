@@ -4044,9 +4044,9 @@
         <optional>
           <ref name="nvram"/>
         </optional>
-        <optional>
+        <zeroOrMore>
           <ref name="panic"/>
-        </optional>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>

@@ -6152,6 +6152,7 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
   ...
   &lt;devices&gt;
+    &lt;panic model='hyperv'/&gt;
     &lt;panic model='isa'&gt;
       &lt;address type='isa' iobase='0x505'/&gt;
     &lt;/panic&gt;

@@ -1178,12 +1178,23 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
         goto cleanup;
 
-    if (addPanicDevice && !def->panic) {
-        virDomainPanicDefPtr panic;
-        if (VIR_ALLOC(panic) < 0)
-            goto cleanup;
+    if (addPanicDevice) {
+        size_t j;
+        for (j = 0; j < def->npanics; j++) {
+            if (def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT ||
+                def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_PSERIES)
+                break;
+        }
 
-        def->panic = panic;
+        if (j == def->npanics) {
+            virDomainPanicDefPtr panic;
+            if (VIR_ALLOC(panic) < 0 ||
+                VIR_APPEND_ELEMENT_COPY(def->panics,
+                                        def->npanics, panic) < 0) {
+                VIR_FREE(panic);
+                goto cleanup;
+            }
+        }
     }
 
     ret = 0;

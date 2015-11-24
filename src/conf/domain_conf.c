@@ -2538,7 +2538,9 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainTPMDefFree(def->tpm);
 
-    virDomainPanicDefFree(def->panic);
+    for (i = 0; i < def->npanics; i++)
+        virDomainPanicDefFree(def->panics[i]);
+    VIR_FREE(def->panics);
 
     VIR_FREE(def->idmap.uidmap);
     VIR_FREE(def->idmap.gidmap);
@@ -3617,10 +3619,10 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
         if (cb(def, &device, &def->tpm->info, opaque) < 0)
             return -1;
     }
-    if (def->panic) {
-        device.type = VIR_DOMAIN_DEVICE_PANIC;
-        device.data.panic = def->panic;
-        if (cb(def, &device, &def->panic->info, opaque) < 0)
+    device.type = VIR_DOMAIN_DEVICE_PANIC;
+    for (i = 0; i < def->npanics; i++) {
+        device.data.panic = def->panics[i];
+        if (cb(def, &device, &def->panics[i]->info, opaque) < 0)
             return -1;
     }
 
@@ -16406,23 +16408,19 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* analysis of the panic devices */
-    def->panic = NULL;
     if ((n = virXPathNodeSet("./devices/panic", ctxt, &nodes)) < 0)
         goto error;
-    if (n > 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("only a single panic device is supported"));
+    if (n && VIR_ALLOC_N(def->panics, n) < 0)
         goto error;
-    }
-    if (n > 0) {
+    for (i = 0; i < n; i++) {
         virDomainPanicDefPtr panic =
-            virDomainPanicDefParseXML(nodes[0]);
+            virDomainPanicDefParseXML(nodes[i]);
         if (!panic)
             goto error;
 
-        def->panic = panic;
-        VIR_FREE(nodes);
+        def->panics[def->npanics++] = panic;
     }
+    VIR_FREE(nodes);
 
     /* analysis of the shmem devices */
     if ((n = virXPathNodeSet("./devices/shmem", ctxt, &nodes)) < 0)
@@ -17635,17 +17633,6 @@ static bool
 virDomainPanicDefCheckABIStability(virDomainPanicDefPtr src,
                                    virDomainPanicDefPtr dst)
 {
-    if (!src && !dst)
-        return true;
-
-    if (!src || !dst) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain panic device count '%d' "
-                         "does not match source count '%d'"),
-                       src ? 1 : 0, dst ? 1 : 0);
-        return false;
-    }
-
     if (src->model != dst->model) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target panic model '%s' does not match source '%s'"),
@@ -18132,8 +18119,17 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         if (!virDomainRNGDefCheckABIStability(src->rngs[i], dst->rngs[i]))
             goto error;
 
-    if (!virDomainPanicDefCheckABIStability(src->panic, dst->panic))
+    if (src->npanics != dst->npanics) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain panic device count %zu "
+                         "does not match source %zu"), dst->npanics, src->npanics);
         goto error;
+    }
+
+    for (i = 0; i < src->npanics; i++) {
+        if (!virDomainPanicDefCheckABIStability(src->panics[i], dst->panics[i]))
+            goto error;
+    }
 
     if (src->nshmems != dst->nshmems) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -22451,9 +22447,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->nvram)
         virDomainNVRAMDefFormat(buf, def->nvram, flags);
 
-    if (def->panic &&
-        virDomainPanicDefFormat(buf, def->panic) < 0)
-        goto error;
+    for (n = 0; n < def->npanics; n++)
+        if (virDomainPanicDefFormat(buf, def->panics[n]) < 0)
+            goto error;
 
     for (n = 0; n < def->nshmems; n++)
         if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)

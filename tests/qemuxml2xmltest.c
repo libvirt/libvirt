@@ -594,6 +594,7 @@ mymain(void)
     DO_TEST_DIFFERENT("panic");
     DO_TEST("panic-isa");
     DO_TEST("panic-pseries");
+    DO_TEST("panic-double");
     DO_TEST("panic-no-address");
 
     DO_TEST_DIFFERENT("disk-backing-chains");
