@@ -37,6 +37,6 @@
       <model type='cirrus' vram='16384' heads='1'/>
     </video>
     <memballoon model='none'/>
-    <panic/>
+    <panic model='pseries'/>
   </devices>
 </domain>

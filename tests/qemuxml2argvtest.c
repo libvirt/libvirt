@@ -692,6 +692,7 @@ mymain(void)
 
     DO_TEST("hyperv", NONE);
     DO_TEST("hyperv-off", NONE);
+    DO_TEST("hyperv-panic", NONE);
 
     DO_TEST("kvm-features", NONE);
     DO_TEST("kvm-features-off", NONE);

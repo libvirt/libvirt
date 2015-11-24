@@ -1350,6 +1350,15 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_PANIC &&
+        dev->data.panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT) {
+        if (ARCH_IS_PPC64(def->os.arch) &&
+            STRPREFIX(def->os.machine, "pseries"))
+            dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_PSERIES;
+        else
+            dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
+    }
+
     ret = 0;
 
  cleanup:

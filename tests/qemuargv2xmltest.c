@@ -261,6 +261,7 @@ mymain(void)
     DO_TEST("smp");
 
     DO_TEST("hyperv");
+    DO_TEST("hyperv-panic");
 
     DO_TEST("kvm-features");
 

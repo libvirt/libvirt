@@ -535,7 +535,7 @@ mymain(void)
 
     DO_TEST("pseries-nvram");
     DO_TEST_DIFFERENT("pseries-panic-missing");
-    DO_TEST("pseries-panic-no-address");
+    DO_TEST_DIFFERENT("pseries-panic-no-address");
 
     /* These tests generate different XML */
     DO_TEST_DIFFERENT("balloon-device-auto");
@@ -591,7 +591,7 @@ mymain(void)
     DO_TEST("pcihole64-none");
     DO_TEST("pcihole64-q35");
 
-    DO_TEST("panic");
+    DO_TEST_DIFFERENT("panic");
     DO_TEST("panic-isa");
     DO_TEST("panic-pseries");
     DO_TEST("panic-no-address");
