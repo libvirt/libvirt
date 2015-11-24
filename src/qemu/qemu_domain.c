@@ -3964,7 +3964,7 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
 
 
 /**
- * qemuDomainGetMlockLimitBytes:
+ * qemuDomainGetMemLockLimitBytes:
  *
  * @def: domain definition
  *
@@ -3974,7 +3974,7 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
  * value returned may depend upon the architecture or devices present.
  */
 unsigned long long
-qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
+qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
 {
     unsigned long long memKB;
 
@@ -4095,7 +4095,7 @@ qemuDomainGetMlockLimitBytes(virDomainDefPtr def)
  * requirements.
  * */
 bool
-qemuDomainRequiresMlock(virDomainDefPtr def)
+qemuDomainRequiresMemLock(virDomainDefPtr def)
 {
     size_t i;
 
@@ -4138,7 +4138,7 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
     unsigned long long bytes = 0;
     int ret = -1;
 
-    if (qemuDomainRequiresMlock(vm->def)) {
+    if (qemuDomainRequiresMemLock(vm->def)) {
         /* If this is the first time adjusting the limit, save the current
          * value so that we can restore it once memory locking is no longer
          * required. Failing to obtain the current limit is not a critical
@@ -4147,7 +4147,7 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
             if (virProcessGetMaxMemLock(vm->pid, &(vm->original_memlock)) < 0)
                 vm->original_memlock = 0;
         }
-        bytes = qemuDomainGetMlockLimitBytes(vm->def);
+        bytes = qemuDomainGetMemLockLimitBytes(vm->def);
     } else {
         /* Once memory locking is no longer required, we can restore the
          * original, usually very low, limit */

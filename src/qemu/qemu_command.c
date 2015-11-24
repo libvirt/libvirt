@@ -11287,8 +11287,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
      * significant amount of memory, so we need to set the limit accordingly */
-    if (qemuDomainRequiresMlock(def))
-        virCommandSetMaxMemLock(cmd, qemuDomainGetMlockLimitBytes(def));
+    if (qemuDomainRequiresMemLock(def))
+        virCommandSetMaxMemLock(cmd, qemuDomainGetMemLockLimitBytes(def));
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MSG_TIMESTAMP) &&
         cfg->logTimestamp)

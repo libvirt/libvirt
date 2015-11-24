@@ -498,8 +498,8 @@ bool qemuDomainMachineHasBuiltinIDE(const virDomainDef *def);
 int qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
                                       virDomainObjPtr vm);
 
-unsigned long long qemuDomainGetMlockLimitBytes(virDomainDefPtr def);
-bool qemuDomainRequiresMlock(virDomainDefPtr def);
+unsigned long long qemuDomainGetMemLockLimitBytes(virDomainDefPtr def);
+bool qemuDomainRequiresMemLock(virDomainDefPtr def);
 int qemuDomainAdjustMaxMemLock(virDomainObjPtr vm);
 
 int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
