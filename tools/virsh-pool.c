@@ -33,6 +33,13 @@
 #include "conf/storage_conf.h"
 #include "virstring.h"
 
+#define VSH_POOL_OPT_COMMON                                   \
+    {.name = "pool",                                          \
+     .type = VSH_OT_DATA,                                     \
+     .flags = VSH_OFLAG_REQ,                                  \
+     .help = N_("pool name or uuid")                          \
+    }                                                         \
+
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags)
@@ -85,11 +92,8 @@ static const vshCmdInfo info_pool_autostart[] = {
 };
 
 static const vshCmdOptDef opts_pool_autostart[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = "disable",
      .type = VSH_OT_BOOL,
      .help = N_("disable autostarting")
@@ -500,11 +504,8 @@ static const vshCmdInfo info_pool_build[] = {
 };
 
 static const vshCmdOptDef opts_pool_build[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = "no-overwrite",
      .type = VSH_OT_BOOL,
      .help = N_("do not overwrite an existing pool of this type")
@@ -559,11 +560,8 @@ static const vshCmdInfo info_pool_destroy[] = {
 };
 
 static const vshCmdOptDef opts_pool_destroy[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -602,11 +600,8 @@ static const vshCmdInfo info_pool_delete[] = {
 };
 
 static const vshCmdOptDef opts_pool_delete[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -645,11 +640,8 @@ static const vshCmdInfo info_pool_refresh[] = {
 };
 
 static const vshCmdOptDef opts_pool_refresh[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -688,11 +680,8 @@ static const vshCmdInfo info_pool_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_pool_dumpxml[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
@@ -1542,11 +1531,8 @@ static const vshCmdInfo info_pool_info[] = {
 };
 
 static const vshCmdOptDef opts_pool_info[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1622,11 +1608,8 @@ static const vshCmdInfo info_pool_name[] = {
 };
 
 static const vshCmdOptDef opts_pool_name[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1657,11 +1640,8 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("name or uuid of the inactive pool")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1700,11 +1680,8 @@ static const vshCmdInfo info_pool_undefine[] = {
 };
 
 static const vshCmdOptDef opts_pool_undefine[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1743,11 +1720,8 @@ static const vshCmdInfo info_pool_uuid[] = {
 };
 
 static const vshCmdOptDef opts_pool_uuid[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1783,11 +1757,8 @@ static const vshCmdInfo info_pool_edit[] = {
 };
 
 static const vshCmdOptDef opts_pool_edit[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VSH_POOL_OPT_COMMON,
+
     {.name = NULL}
 };
 
