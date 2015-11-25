@@ -301,6 +301,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "gic-version",
 
               "incoming-defer", /* 200 */
+              "virtio-gpu",
     );
 
 
@@ -1543,6 +1544,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-net-ccw", QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "virtio-net-s390", QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "virtio-net-device", QEMU_CAPS_DEVICE_VIRTIO_NET },
+    { "virtio-gpu-pci", QEMU_CAPS_DEVICE_VIRTIO_GPU },
+    { "virtio-gpu-device", QEMU_CAPS_DEVICE_VIRTIO_GPU },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {

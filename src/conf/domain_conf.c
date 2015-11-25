@@ -538,7 +538,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "xen",
               "vbox",
               "qxl",
-              "parallels")
+              "parallels",
+              "virtio")
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",

@@ -327,6 +327,7 @@ typedef enum {
 
     /* 200 */
     QEMU_CAPS_INCOMING_DEFER, /* -incoming defer and migrate_incoming */
+    QEMU_CAPS_DEVICE_VIRTIO_GPU, /* -device virtio-gpu-* & virtio-vga */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

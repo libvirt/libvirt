@@ -2921,6 +2921,7 @@
                 <value>vmvga</value>
                 <value>xen</value>
                 <value>vbox</value>
+                <value>virtio</value>
               </choice>
             </attribute>
             <group>

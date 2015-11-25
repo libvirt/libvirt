@@ -630,6 +630,8 @@ mymain(void)
     DO_TEST("memory-hotplug-dimm");
     DO_TEST("net-udp");
 
+    DO_TEST("video-virtio-gpu-device");
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

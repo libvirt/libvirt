@@ -5153,8 +5153,9 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           The <code>model</code> element has a mandatory <code>type</code>
           attribute which takes the value "vga", "cirrus", "vmvga", "xen",
-          "vbox", or "qxl" (<span class="since">since 0.8.6</span>) depending
-          on the hypervisor features available.
+          "vbox", "qxl" (<span class="since">since 0.8.6</span>) or
+          "virtio" (<span class="since">since 1.3.0</span>)
+          depending on the hypervisor features available.
         </p>
         <p>
           You can provide the amount of video memory in kibibytes (blocks of

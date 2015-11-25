@@ -104,7 +104,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* no arg needed for xen */
               "", /* don't support vbox */
               "qxl",
-              "" /* don't support parallels */);
+              "", /* don't support parallels */
+              "" /* no need for virtio */);
 
 VIR_ENUM_DECL(qemuDeviceVideo)
 
@@ -115,7 +116,8 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* no device for xen */
               "", /* don't support vbox */
               "qxl-vga",
-              "" /* don't support parallels */);
+              "", /* don't support parallels */
+              "virtio-vga");
 
 VIR_ENUM_DECL(qemuSoundCodec)
 
@@ -10510,8 +10512,10 @@ qemuBuildCommandLine(virConnectPtr conn,
              (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
              (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)))
-           ) {
+                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)) ||
+             (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))
+            ) {
             for (i = 0; i < def->nvideos; i++) {
                 char *str;
                 virCommandAddArg(cmd, "-device");
