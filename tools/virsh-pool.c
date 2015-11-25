@@ -61,6 +61,74 @@
      .help = N_("overwrite any existing data")                    \
     }                                                             \
 
+#define VSH_POOL_X_AS_OPT_COMMON                                       \
+    {.name = "name",                                                   \
+     .type = VSH_OT_DATA,                                              \
+     .flags = VSH_OFLAG_REQ,                                           \
+     .help = N_("name of the pool")                                    \
+    },                                                                 \
+    {.name = "type",                                                   \
+     .type = VSH_OT_DATA,                                              \
+     .flags = VSH_OFLAG_REQ,                                           \
+     .help = N_("type of the pool")                                    \
+    },                                                                 \
+    {.name = "print-xml",                                              \
+     .type = VSH_OT_BOOL,                                              \
+     .help = N_("print XML document, but don't define/create")         \
+    },                                                                 \
+    {.name = "source-host",                                            \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("source-host for underlying storage")                  \
+    },                                                                 \
+    {.name = "source-path",                                            \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("source path for underlying storage")                  \
+    },                                                                 \
+    {.name = "source-dev",                                             \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("source device for underlying storage")                \
+    },                                                                 \
+    {.name = "source-name",                                            \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("source name for underlying storage")                  \
+    },                                                                 \
+    {.name = "target",                                                 \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("target for underlying storage")                       \
+    },                                                                 \
+    {.name = "source-format",                                          \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("format for underlying storage")                       \
+    },                                                                 \
+    {.name = "auth-type",                                              \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("auth type to be used for underlying storage")         \
+    },                                                                 \
+    {.name = "auth-username",                                          \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("auth username to be used for underlying storage")     \
+    },                                                                 \
+    {.name = "secret-usage",                                           \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("auth secret usage to be used for underlying storage") \
+    },                                                                 \
+    {.name = "adapter-name",                                           \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("adapter name to be used for underlying storage")      \
+    },                                                                 \
+    {.name = "adapter-wwnn",                                           \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("adapter wwnn to be used for underlying storage")      \
+    },                                                                 \
+    {.name = "adapter-wwpn",                                           \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("adapter wwpn to be used for underlying storage")      \
+    },                                                                 \
+    {.name = "adapter-parent",                                         \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("adapter parent to be used for underlying storage")    \
+    }                                                                  \
+
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags)
@@ -200,76 +268,9 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
-/*
- * XML Building helper for pool-define-as and pool-create-as
- */
-static const vshCmdOptDef opts_pool_X_as[] = {
-    {.name = "name",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("name of the pool")
-    },
-    {.name = "type",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("type of the pool")
-    },
-    {.name = "print-xml",
-     .type = VSH_OT_BOOL,
-     .help = N_("print XML document, but don't define/create")
-    },
-    {.name = "source-host",
-     .type = VSH_OT_STRING,
-     .help = N_("source-host for underlying storage")
-    },
-    {.name = "source-path",
-     .type = VSH_OT_STRING,
-     .help = N_("source path for underlying storage")
-    },
-    {.name = "source-dev",
-     .type = VSH_OT_STRING,
-     .help = N_("source device for underlying storage")
-    },
-    {.name = "source-name",
-     .type = VSH_OT_STRING,
-     .help = N_("source name for underlying storage")
-    },
-    {.name = "target",
-     .type = VSH_OT_STRING,
-     .help = N_("target for underlying storage")
-    },
-    {.name = "source-format",
-     .type = VSH_OT_STRING,
-     .help = N_("format for underlying storage")
-    },
-    {.name = "auth-type",
-     .type = VSH_OT_STRING,
-     .help = N_("auth type to be used for underlying storage")
-    },
-    {.name = "auth-username",
-     .type = VSH_OT_STRING,
-     .help = N_("auth username to be used for underlying storage")
-    },
-    {.name = "secret-usage",
-     .type = VSH_OT_STRING,
-     .help = N_("auth secret usage to be used for underlying storage")
-    },
-    {.name = "adapter-name",
-     .type = VSH_OT_STRING,
-     .help = N_("adapter name to be used for underlying storage")
-    },
-    {.name = "adapter-wwnn",
-     .type = VSH_OT_STRING,
-     .help = N_("adapter wwnn to be used for underlying storage")
-    },
-    {.name = "adapter-wwpn",
-     .type = VSH_OT_STRING,
-     .help = N_("adapter wwpn to be used for underlying storage")
-    },
-    {.name = "adapter-parent",
-     .type = VSH_OT_STRING,
-     .help = N_("adapter parent to be used for underlying storage")
-    },
+static const vshCmdOptDef opts_pool_define_as[] = {
+    VSH_POOL_X_AS_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -380,6 +381,12 @@ static const vshCmdInfo info_pool_create_as[] = {
     {.name = "desc",
      .data = N_("Create a pool.")
     },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_pool_create_as[] = {
+    VSH_POOL_X_AS_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -1850,7 +1857,7 @@ const vshCmdDef storagePoolCmds[] = {
     },
     {.name = "pool-create-as",
      .handler = cmdPoolCreateAs,
-     .opts = opts_pool_X_as,
+     .opts = opts_pool_create_as,
      .info = info_pool_create_as,
      .flags = 0
     },
@@ -1862,7 +1869,7 @@ const vshCmdDef storagePoolCmds[] = {
     },
     {.name = "pool-define-as",
      .handler = cmdPoolDefineAs,
-     .opts = opts_pool_X_as,
+     .opts = opts_pool_define_as,
      .info = info_pool_define_as,
      .flags = 0
     },
