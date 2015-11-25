@@ -57,7 +57,6 @@ typedef enum {
 # endif
 } virStoragePoolState;
 
-
 typedef enum {
     VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch */
     VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize */
@@ -70,6 +69,23 @@ typedef enum {
     VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
     VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) */
 } virStoragePoolDeleteFlags;
+
+typedef enum {
+    VIR_STORAGE_POOL_CREATE_NORMAL = 0,
+
+    /* Create the pool and perform pool build without any flags */
+    VIR_STORAGE_POOL_CREATE_WITH_BUILD = 1 << 0,
+
+    /* Create the pool and perform pool build using the
+     * VIR_STORAGE_POOL_BUILD_OVERWRITE flag. This is mutually
+     * exclusive to VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE */
+    VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE = 1 << 1,
+
+    /* Create the pool and perform pool build using the
+     * VIR_STORAGE_POOL_BUILD_NO_OVERWRITE flag. This is mutually
+     * exclusive to VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE */
+    VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE = 1 << 2,
+} virStoragePoolCreateFlags;
 
 typedef struct _virStoragePoolInfo virStoragePoolInfo;
 

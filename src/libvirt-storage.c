@@ -505,7 +505,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
  * virStoragePoolCreateXML:
  * @conn: pointer to hypervisor connection
  * @xmlDesc: XML description for new pool
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStoragePoolCreateFlags
  *
  * Create a new storage based on its XML description. The
  * pool is not persistent, so its definition will disappear
@@ -670,7 +670,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
 /**
  * virStoragePoolCreate:
  * @pool: pointer to storage pool
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStoragePoolCreateFlags
  *
  * Starts an inactive storage pool
  *

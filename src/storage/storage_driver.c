@@ -671,8 +671,14 @@ storagePoolCreateXML(virConnectPtr conn,
     virStoragePoolPtr ret = NULL;
     virStorageBackendPtr backend;
     char *stateFile = NULL;
+    unsigned int build_flags = 0;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
+                  VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE, NULL);
+
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_STORAGE_POOL_BUILD_OVERWRITE,
+                            VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, NULL);
 
     storageDriverLock();
     if (!(def = virStoragePoolDefParseString(xml)))
@@ -693,6 +699,22 @@ storagePoolCreateXML(virConnectPtr conn,
     if (!(pool = virStoragePoolObjAssignDef(&driver->pools, def)))
         goto cleanup;
     def = NULL;
+
+    if (backend->buildPool) {
+        if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE)
+            build_flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
+        else if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE)
+            build_flags |= VIR_STORAGE_POOL_BUILD_NO_OVERWRITE;
+
+        if (build_flags ||
+            (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD)) {
+            if (backend->buildPool(conn, pool, build_flags) < 0) {
+                virStoragePoolObjRemove(&driver->pools, pool);
+                pool = NULL;
+                goto cleanup;
+            }
+        }
+    }
 
     if (backend->startPool &&
         backend->startPool(conn, pool) < 0) {
@@ -845,8 +867,14 @@ storagePoolCreate(virStoragePoolPtr obj,
     virStorageBackendPtr backend;
     int ret = -1;
     char *stateFile = NULL;
+    unsigned int build_flags = 0;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
+                  VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE, -1);
+
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_STORAGE_POOL_BUILD_OVERWRITE,
+                            VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, -1);
 
     if (!(pool = virStoragePoolObjFromStoragePool(obj)))
         return -1;
@@ -862,6 +890,22 @@ storagePoolCreate(virStoragePoolPtr obj,
                        _("storage pool '%s' is already active"),
                        pool->def->name);
         goto cleanup;
+    }
+
+    if (backend->buildPool) {
+        if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE)
+            build_flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
+        else if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE)
+            build_flags |= VIR_STORAGE_POOL_BUILD_NO_OVERWRITE;
+
+        if (build_flags ||
+            (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD)) {
+            if (backend->buildPool(obj->conn, pool, build_flags) < 0) {
+                virStoragePoolObjRemove(&driver->pools, pool);
+                pool = NULL;
+                goto cleanup;
+            }
+        }
     }
 
     VIR_INFO("Starting up storage pool '%s'", pool->def->name);
