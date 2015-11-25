@@ -3181,8 +3181,15 @@ specified or it's been determined that the disk doesn't already have one,
 by the pool source format type or "dos" if not specified for the pool.
 
 =item B<pool-create> I<file>
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
 
 Create and start a pool object from the XML I<file>.
+
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] perform a
+B<pool-build> after creation in order to remove the need for a
+follow-up command to build the pool. The I<--overwrite> and
+I<--no-overwrite> flags follow the same rules as B<pool-build>. If
+just I<--build> is provided, then B<pool-build> is called with no flags.
 
 =item B<pool-create-as> I<name> I<type> [I<--print-xml>]
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
@@ -3190,6 +3197,7 @@ Create and start a pool object from the XML I<file>.
 [I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
 [[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
 [I<--adapter-parent parent>]]
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
 
 
 Create and start a pool object I<name> from the raw parameters.  If
@@ -3233,6 +3241,12 @@ the wwnn and wwpn to be used for the fc_host adapter type pool. The parent
 optionally provides the name of the scsi_hostN node device to be used for
 the vHBA.
 
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] perform a
+B<pool-build> after creation in order to remove the need for a
+follow-up command to build the pool. The I<--overwrite> and
+I<--no-overwrite> flags follow the same rules as B<pool-build>. If
+just I<--build> is provided, then B<pool-build> is called with no flags.
+
 =item B<pool-define> I<file>
 
 Define an inactive persistent storage pool or modify an existing persistent one
@@ -3250,7 +3264,8 @@ I<--print-xml> is specified, then print the XML of the pool object
 without defining the pool.  Otherwise, the pool has the specified
 I<type>.
 
-Use the same arguments as B<pool-create-as>.
+Use the same arguments as B<pool-create-as>, except for the I<--build>,
+I<--overwrite>, and I<--no-overwrite> options.
 
 =item B<pool-destroy> I<pool-or-uuid>
 
@@ -3326,8 +3341,16 @@ Convert the I<uuid> to a pool name.
 Refresh the list of volumes contained in I<pool>.
 
 =item B<pool-start> I<pool-or-uuid>
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
 
 Start the storage I<pool>, which is previously defined but inactive.
+
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] perform a
+B<pool-build> prior to B<pool-start> to ensure the pool environment is
+in an expected state rather than needing to run the build command prior
+to startup. The I<--overwrite> and I<--no-overwrite> flags follow the
+same rules as B<pool-build>. If just I<--build> is provided, then
+B<pool-build> is called with no flags.
 
 B<Note>: A storage pool that relies on remote resources such as an
 "iscsi" or a (v)HBA backed "scsi" pool may need to be refreshed multiple

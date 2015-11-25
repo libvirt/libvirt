@@ -47,6 +47,13 @@
      .help = N_("file containing an XML pool description")    \
     }                                                         \
 
+#define VSH_POOL_BUILD_OPT_COMMON                             \
+    {.name = "build",                                         \
+     .type = VSH_OT_BOOL,                                     \
+     .flags = 0,                                              \
+     .help = N_("build the pool as normal")                   \
+    }                                                         \
+
 #define VSH_POOL_NO_OVERWRITE_OPT_COMMON                          \
     {.name = "no-overwrite",                                      \
      .type = VSH_OT_BOOL,                                         \
@@ -235,6 +242,9 @@ static const vshCmdInfo info_pool_create[] = {
 
 static const vshCmdOptDef opts_pool_create[] = {
     VSH_POOL_FILE_OPT_COMMON,
+    VSH_POOL_BUILD_OPT_COMMON,
+    VSH_POOL_NO_OVERWRITE_OPT_COMMON,
+    VSH_POOL_OVERWRITE_OPT_COMMON,
 
     {.name = NULL}
 };
@@ -246,15 +256,33 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = true;
     char *buffer;
+    bool build;
+    bool overwrite;
+    bool no_overwrite;
+    unsigned int flags = 0;
     virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
+    build = vshCommandOptBool(cmd, "build");
+    overwrite = vshCommandOptBool(cmd, "overwrite");
+    no_overwrite = vshCommandOptBool(cmd, "no-overwrite");
+
+    VSH_EXCLUSIVE_OPTIONS_EXPR("overwrite", overwrite,
+                               "no-overwrite", no_overwrite);
+
+    if (build)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD;
+    if (overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE;
+    if (no_overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE;
+
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    pool = virStoragePoolCreateXML(priv->conn, buffer, 0);
+    pool = virStoragePoolCreateXML(priv->conn, buffer, flags);
     VIR_FREE(buffer);
 
     if (pool != NULL) {
@@ -386,6 +414,9 @@ static const vshCmdInfo info_pool_create_as[] = {
 
 static const vshCmdOptDef opts_pool_create_as[] = {
     VSH_POOL_X_AS_OPT_COMMON,
+    VSH_POOL_BUILD_OPT_COMMON,
+    VSH_POOL_NO_OVERWRITE_OPT_COMMON,
+    VSH_POOL_OVERWRITE_OPT_COMMON,
 
     {.name = NULL}
 };
@@ -397,7 +428,25 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *name;
     char *xml;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
+    bool build;
+    bool overwrite;
+    bool no_overwrite;
+    unsigned int flags = 0;
     virshControlPtr priv = ctl->privData;
+
+    build = vshCommandOptBool(cmd, "build");
+    overwrite = vshCommandOptBool(cmd, "overwrite");
+    no_overwrite = vshCommandOptBool(cmd, "no-overwrite");
+
+    VSH_EXCLUSIVE_OPTIONS_EXPR("overwrite", overwrite,
+                               "no-overwrite", no_overwrite);
+
+    if (build)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD;
+    if (overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE;
+    if (no_overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE;
 
     if (!virshBuildPoolXML(ctl, cmd, &name, &xml))
         return false;
@@ -406,7 +455,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s", xml);
         VIR_FREE(xml);
     } else {
-        pool = virStoragePoolCreateXML(priv->conn, xml, 0);
+        pool = virStoragePoolCreateXML(priv->conn, xml, flags);
         VIR_FREE(xml);
 
         if (pool != NULL) {
@@ -1657,6 +1706,9 @@ static const vshCmdInfo info_pool_start[] = {
 
 static const vshCmdOptDef opts_pool_start[] = {
     VSH_POOL_OPT_COMMON,
+    VSH_POOL_BUILD_OPT_COMMON,
+    VSH_POOL_NO_OVERWRITE_OPT_COMMON,
+    VSH_POOL_OVERWRITE_OPT_COMMON,
 
     {.name = NULL}
 };
@@ -1667,11 +1719,29 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     bool ret = true;
     const char *name = NULL;
+    bool build;
+    bool overwrite;
+    bool no_overwrite;
+    unsigned int flags = 0;
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", &name)))
          return false;
 
-    if (virStoragePoolCreate(pool, 0) == 0) {
+    build = vshCommandOptBool(cmd, "build");
+    overwrite = vshCommandOptBool(cmd, "overwrite");
+    no_overwrite = vshCommandOptBool(cmd, "no-overwrite");
+
+    VSH_EXCLUSIVE_OPTIONS_EXPR("overwrite", overwrite,
+                               "no-overwrite", no_overwrite);
+
+    if (build)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD;
+    if (overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE;
+    if (no_overwrite)
+        flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE;
+
+    if (virStoragePoolCreate(pool, flags) == 0) {
         vshPrint(ctl, _("Pool %s started\n"), name);
     } else {
         vshError(ctl, _("Failed to start pool %s"), name);
