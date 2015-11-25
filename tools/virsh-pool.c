@@ -47,6 +47,20 @@
      .help = N_("file containing an XML pool description")    \
     }                                                         \
 
+#define VSH_POOL_NO_OVERWRITE_OPT_COMMON                          \
+    {.name = "no-overwrite",                                      \
+     .type = VSH_OT_BOOL,                                         \
+     .flags = 0,                                                  \
+     .help = N_("do not overwrite an existing pool of this type") \
+    }                                                             \
+
+#define VSH_POOL_OVERWRITE_OPT_COMMON                             \
+    {.name = "overwrite",                                         \
+     .type = VSH_OT_BOOL,                                         \
+     .flags = 0,                                                  \
+     .help = N_("overwrite any existing data")                    \
+    }                                                             \
+
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags)
@@ -506,15 +520,9 @@ static const vshCmdInfo info_pool_build[] = {
 
 static const vshCmdOptDef opts_pool_build[] = {
     VSH_POOL_OPT_COMMON,
+    VSH_POOL_NO_OVERWRITE_OPT_COMMON,
+    VSH_POOL_OVERWRITE_OPT_COMMON,
 
-    {.name = "no-overwrite",
-     .type = VSH_OT_BOOL,
-     .help = N_("do not overwrite an existing pool of this type")
-    },
-    {.name = "overwrite",
-     .type = VSH_OT_BOOL,
-     .help = N_("overwrite any existing data")
-    },
     {.name = NULL}
 };
 
