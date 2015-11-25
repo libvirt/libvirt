@@ -2320,7 +2320,7 @@ static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
         return -1;
     }
 
-    if (v->accel != NULL && (v->accel->support2d || v->accel->support3d)) {
+    if (v->accel != NULL && (v->accel->accel2d || v->accel->accel3d)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("vz driver doesn't support "
                          "setting video acceleration parameters."));

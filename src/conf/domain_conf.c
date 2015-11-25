@@ -12007,41 +12007,41 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
     xmlNodePtr cur;
     virDomainVideoAccelDefPtr def;
-    char *support3d = NULL;
-    char *support2d = NULL;
+    char *accel3d = NULL;
+    char *accel2d = NULL;
 
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!support3d && !support2d &&
+            if (!accel3d && !accel2d &&
                 xmlStrEqual(cur->name, BAD_CAST "acceleration")) {
-                support3d = virXMLPropString(cur, "accel3d");
-                support2d = virXMLPropString(cur, "accel2d");
+                accel3d = virXMLPropString(cur, "accel3d");
+                accel2d = virXMLPropString(cur, "accel2d");
             }
         }
         cur = cur->next;
     }
 
-    if (!support3d && !support2d)
+    if (!accel3d && !accel2d)
         return NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (support3d) {
-        if (STREQ(support3d, "yes"))
-            def->support3d = true;
+    if (accel3d) {
+        if (STREQ(accel3d, "yes"))
+            def->accel3d = true;
         else
-            def->support3d = false;
-        VIR_FREE(support3d);
+            def->accel3d = false;
+        VIR_FREE(accel3d);
     }
 
-    if (support2d) {
-        if (STREQ(support2d, "yes"))
-            def->support2d = true;
+    if (accel2d) {
+        if (STREQ(accel2d, "yes"))
+            def->accel2d = true;
         else
-            def->support2d = false;
-        VIR_FREE(support2d);
+            def->accel2d = false;
+        VIR_FREE(accel2d);
     }
 
     return def;
@@ -17212,17 +17212,17 @@ virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
     }
 
     if (src->accel) {
-        if (src->accel->support2d != dst->accel->support2d) {
+        if (src->accel->accel2d != dst->accel->accel2d) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target video card 2d accel %u does not match source %u"),
-                           dst->accel->support2d, src->accel->support2d);
+                           dst->accel->accel2d, src->accel->accel2d);
             return false;
         }
 
-        if (src->accel->support3d != dst->accel->support3d) {
+        if (src->accel->accel3d != dst->accel->accel3d) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target video card 3d accel %u does not match source %u"),
-                           dst->accel->support3d, src->accel->support3d);
+                           dst->accel->accel3d, src->accel->accel3d);
             return false;
         }
     }
@@ -20874,9 +20874,9 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
 {
     virBufferAsprintf(buf, "<acceleration accel3d='%s'",
-                      def->support3d ? "yes" : "no");
+                      def->accel3d ? "yes" : "no");
     virBufferAsprintf(buf, " accel2d='%s'",
-                      def->support2d ? "yes" : "no");
+                      def->accel2d ? "yes" : "no");
     virBufferAddLit(buf, "/>\n");
 }
 
