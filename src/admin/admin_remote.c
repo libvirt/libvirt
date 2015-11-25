@@ -48,7 +48,7 @@ remoteAdminPrivDispose(void *opaque)
 
 
 static int
-callFull(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
+callFull(virAdmDaemonPtr dmn ATTRIBUTE_UNUSED,
          remoteAdminPrivPtr priv,
          int *fdin,
          size_t fdinlen,
@@ -86,7 +86,7 @@ callFull(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-call(virAdmConnectPtr conn,
+call(virAdmDaemonPtr dmn,
      unsigned int flags,
      int proc_nr,
      xdrproc_t args_filter, char *args,
@@ -94,7 +94,7 @@ call(virAdmConnectPtr conn,
 {
     virCheckFlags(0, -1);
 
-    return callFull(conn, conn->privateData,
+    return callFull(dmn, dmn->privateData,
                     NULL, 0, NULL, NULL, proc_nr,
                     args_filter, args, ret_filter, ret);
 }
@@ -106,14 +106,14 @@ remoteAdminClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
                            int reason,
                            void *opaque)
 {
-    virAdmConnectCloseCallbackDataPtr cbdata = opaque;
+    virAdmDaemonCloseCallbackDataPtr cbdata = opaque;
 
     virObjectLock(cbdata);
 
     if (cbdata->callback) {
         VIR_DEBUG("Triggering connection close callback %p reason=%d, opaque=%p",
                   cbdata->callback, reason, cbdata->opaque);
-        cbdata->callback(cbdata->conn, reason, cbdata->opaque);
+        cbdata->callback(cbdata->dmn, reason, cbdata->opaque);
 
         if (cbdata->freeCallback)
             cbdata->freeCallback(cbdata->opaque);
@@ -124,11 +124,11 @@ remoteAdminClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
+remoteAdminDaemonOpen(virAdmDaemonPtr dmn, unsigned int flags)
 {
     int rv = -1;
-    remoteAdminPrivPtr priv = conn->privateData;
-    admin_connect_open_args args;
+    remoteAdminPrivPtr priv = dmn->privateData;
+    admin_daemon_open_args args;
 
     virObjectLock(priv);
 
@@ -140,13 +140,13 @@ remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
         virResetLastError();
     }
 
-    virObjectRef(conn->closeCallback);
+    virObjectRef(dmn->closeCallback);
     virNetClientSetCloseCallback(priv->client, remoteAdminClientCloseFunc,
-                                 conn->closeCallback,
+                                 dmn->closeCallback,
                                  virObjectFreeCallback);
 
-    if (call(conn, 0, ADMIN_PROC_CONNECT_OPEN,
-             (xdrproc_t)xdr_admin_connect_open_args, (char *)&args,
+    if (call(dmn, 0, ADMIN_PROC_DAEMON_OPEN,
+             (xdrproc_t)xdr_admin_daemon_open_args, (char *)&args,
              (xdrproc_t)xdr_void, (char *)NULL) == -1) {
         goto done;
     }
@@ -159,14 +159,14 @@ remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
 }
 
 static int
-remoteAdminConnectClose(virAdmConnectPtr conn)
+remoteAdminDaemonClose(virAdmDaemonPtr dmn)
 {
     int rv = -1;
-    remoteAdminPrivPtr priv = conn->privateData;
+    remoteAdminPrivPtr priv = dmn->privateData;
 
     virObjectLock(priv);
 
-    if (call(conn, 0, ADMIN_PROC_CONNECT_CLOSE,
+    if (call(dmn, 0, ADMIN_PROC_DAEMON_CLOSE,
              (xdrproc_t)xdr_void, (char *)NULL,
              (xdrproc_t)xdr_void, (char *)NULL) == -1) {
         goto done;
@@ -184,10 +184,10 @@ remoteAdminConnectClose(virAdmConnectPtr conn)
 static void
 remoteAdminPrivFree(void *opaque)
 {
-    virAdmConnectPtr conn = opaque;
+    virAdmDaemonPtr dmn = opaque;
 
-    remoteAdminConnectClose(conn);
-    virObjectUnref(conn->privateData);
+    remoteAdminDaemonClose(dmn);
+    virObjectUnref(dmn->privateData);
 }
 
 static remoteAdminPrivPtr

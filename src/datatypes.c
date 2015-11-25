@@ -59,11 +59,11 @@ static void virStreamDispose(void *obj);
 static void virStorageVolDispose(void *obj);
 static void virStoragePoolDispose(void *obj);
 
-virClassPtr virAdmConnectClass;
-virClassPtr virAdmConnectCloseCallbackDataClass;
+virClassPtr virAdmDaemonClass;
+virClassPtr virAdmDaemonCloseCallbackDataClass;
 
-static void virAdmConnectDispose(void *obj);
-static void virAdmConnectCloseCallbackDataDispose(void *obj);
+static void virAdmDaemonDispose(void *obj);
+static void virAdmDaemonCloseCallbackDataDispose(void *obj);
 
 static int
 virDataTypesOnceInit(void)
@@ -92,8 +92,8 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virStorageVol);
     DECLARE_CLASS(virStoragePool);
 
-    DECLARE_CLASS_LOCKABLE(virAdmConnect);
-    DECLARE_CLASS_LOCKABLE(virAdmConnectCloseCallbackData);
+    DECLARE_CLASS_LOCKABLE(virAdmDaemon);
+    DECLARE_CLASS_LOCKABLE(virAdmDaemonCloseCallbackData);
 
 #undef DECLARE_CLASS_COMMON
 #undef DECLARE_CLASS_LOCKABLE
@@ -814,18 +814,18 @@ virDomainSnapshotDispose(void *obj)
 }
 
 
-virAdmConnectPtr
-virAdmConnectNew(void)
+virAdmDaemonPtr
+virAdmDaemonNew(void)
 {
-    virAdmConnectPtr ret;
+    virAdmDaemonPtr ret;
 
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    if (!(ret = virObjectLockableNew(virAdmConnectClass)))
+    if (!(ret = virObjectLockableNew(virAdmDaemonClass)))
         return NULL;
 
-    if (!(ret->closeCallback = virObjectLockableNew(virAdmConnectCloseCallbackDataClass)))
+    if (!(ret->closeCallback = virObjectLockableNew(virAdmDaemonCloseCallbackDataClass)))
         goto error;
 
     return ret;
@@ -836,21 +836,21 @@ virAdmConnectNew(void)
 }
 
 static void
-virAdmConnectDispose(void *obj)
+virAdmDaemonDispose(void *obj)
 {
-    virAdmConnectPtr conn = obj;
+    virAdmDaemonPtr dmn = obj;
 
-    if (conn->privateDataFreeFunc)
-        conn->privateDataFreeFunc(conn);
+    if (dmn->privateDataFreeFunc)
+        dmn->privateDataFreeFunc(dmn);
 
-    virURIFree(conn->uri);
-    virObjectUnref(conn->closeCallback);
+    virURIFree(dmn->uri);
+    virObjectUnref(dmn->closeCallback);
 }
 
 static void
-virAdmConnectCloseCallbackDataDispose(void *obj)
+virAdmDaemonCloseCallbackDataDispose(void *obj)
 {
-    virAdmConnectCloseCallbackDataPtr cb_data = obj;
+    virAdmDaemonCloseCallbackDataPtr cb_data = obj;
 
     virObjectLock(cb_data);
 

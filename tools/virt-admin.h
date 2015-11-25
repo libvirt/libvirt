@@ -39,7 +39,8 @@ typedef vshAdmControl *vshAdmControlPtr;
  * adminControl
  */
 struct _vshAdmControl {
-    virAdmConnectPtr conn;      /* connection to a daemon's admin server */
+    virAdmDaemonPtr dmn;      /* remote daemon */
+    char *name;
     bool wantReconnect;
 };
 

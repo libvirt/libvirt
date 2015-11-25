@@ -198,7 +198,7 @@ virshReconnect(vshControl *ctl)
                                   "disconnect from the hypervisor"));
     }
 
-    priv->conn = virshConnect(ctl, ctl->connname, priv->readonly);
+    priv->conn = virshConnect(ctl, priv->connname, priv->readonly);
 
     if (!priv->conn) {
         if (disconnected)
@@ -275,18 +275,18 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
         priv->conn = NULL;
     }
 
-    VIR_FREE(ctl->connname);
+    VIR_FREE(priv->connname);
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
-    ctl->connname = vshStrdup(ctl, name);
+    priv->connname = vshStrdup(ctl, name);
 
     priv->useGetInfo = false;
     priv->useSnapshotOld = false;
     priv->blockJobNoBytes = false;
     priv->readonly = ro;
 
-    priv->conn = virshConnect(ctl, ctl->connname, priv->readonly);
+    priv->conn = virshConnect(ctl, priv->connname, priv->readonly);
 
     if (!priv->conn) {
         vshError(ctl, "%s", _("Failed to connect to the hypervisor"));
@@ -398,7 +398,7 @@ virshInit(vshControl *ctl)
                                                 NULL)) < 0)
         return false;
 
-    if (ctl->connname) {
+    if (priv->connname) {
         virshReconnect(ctl);
         /* Connecting to a named connection must succeed, but we delay
          * connecting to the default connection until we need it
@@ -430,7 +430,7 @@ virshDeinit(vshControl *ctl)
     virshControlPtr priv = ctl->privData;
 
     vshDeinit(ctl);
-    VIR_FREE(ctl->connname);
+    VIR_FREE(priv->connname);
     if (priv->conn) {
         int ret;
         virConnectUnregisterCloseCallback(priv->conn, virshCatchDisconnect);
@@ -706,8 +706,8 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
     while ((arg = getopt_long(argc, argv, "+:c:d:e:hk:K:l:qrtvV", opt, &longindex)) != -1) {
         switch (arg) {
         case 'c':
-            VIR_FREE(ctl->connname);
-            ctl->connname = vshStrdup(ctl, optarg);
+            VIR_FREE(priv->connname);
+            priv->connname = vshStrdup(ctl, optarg);
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
@@ -934,7 +934,7 @@ main(int argc, char **argv)
     virFileActivateDirOverride(argv[0]);
 
     if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
-        ctl->connname = vshStrdup(ctl, defaultConn);
+        virshCtl.connname = vshStrdup(ctl, defaultConn);
 
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);

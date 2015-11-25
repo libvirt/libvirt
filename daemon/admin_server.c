@@ -79,11 +79,11 @@ remoteAdmClientInitHook(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
 /* Functions */
 static int
-adminDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
-                         virNetServerClientPtr client,
-                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                         virNetMessageErrorPtr rerr,
-                         struct admin_connect_open_args *args)
+adminDispatchDaemonOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
+                        virNetServerClientPtr client,
+                        virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                        virNetMessageErrorPtr rerr,
+                        struct admin_daemon_open_args *args)
 {
     unsigned int flags;
     struct daemonAdmClientPrivate *priv =
@@ -105,18 +105,18 @@ adminDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchConnectClose(virNetServerPtr server ATTRIBUTE_UNUSED,
-                          virNetServerClientPtr client,
-                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                          virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED)
+adminDispatchDaemonClose(virNetServerPtr server ATTRIBUTE_UNUSED,
+                         virNetServerClientPtr client,
+                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                         virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED)
 {
     virNetServerClientDelayedClose(client);
     return 0;
 }
 
 static int
-adminConnectGetLibVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
-                          unsigned long long *libVer)
+adminDaemonGetVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                      unsigned long long *libVer)
 {
     if (libVer)
         *libVer = LIBVIR_VERSION_NUMBER;
