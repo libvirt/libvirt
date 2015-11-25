@@ -40,6 +40,13 @@
      .help = N_("pool name or uuid")                          \
     }                                                         \
 
+#define VSH_POOL_FILE_OPT_COMMON                              \
+    {.name = "file",                                          \
+     .type = VSH_OT_DATA,                                     \
+     .flags = VSH_OFLAG_REQ,                                  \
+     .help = N_("file containing an XML pool description")    \
+    }                                                         \
+
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags)
@@ -145,11 +152,8 @@ static const vshCmdInfo info_pool_create[] = {
 };
 
 static const vshCmdOptDef opts_pool_create[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML pool description")
-    },
+    VSH_POOL_FILE_OPT_COMMON,
+
     {.name = NULL}
 };
 
@@ -410,11 +414,8 @@ static const vshCmdInfo info_pool_define[] = {
 };
 
 static const vshCmdOptDef opts_pool_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML pool description")
-    },
+    VSH_POOL_FILE_OPT_COMMON,
+
     {.name = NULL}
 };
 
