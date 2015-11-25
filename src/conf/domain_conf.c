@@ -12007,8 +12007,9 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
     xmlNodePtr cur;
     virDomainVideoAccelDefPtr def;
-    char *accel3d = NULL;
     char *accel2d = NULL;
+    char *accel3d = NULL;
+    int val;
 
     cur = node->children;
     while (cur != NULL) {
@@ -12026,24 +12027,29 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
         return NULL;
 
     if (VIR_ALLOC(def) < 0)
-        return NULL;
+        goto cleanup;
 
     if (accel3d) {
-        if (STREQ(accel3d, "yes"))
-            def->accel3d = true;
-        else
-            def->accel3d = false;
-        VIR_FREE(accel3d);
+        if ((val = virTristateBoolTypeFromString(accel3d)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown accel3d value '%s'"), accel3d);
+            goto cleanup;
+        }
+        def->accel3d = val;
     }
 
     if (accel2d) {
-        if (STREQ(accel2d, "yes"))
-            def->accel2d = true;
-        else
-            def->accel2d = false;
-        VIR_FREE(accel2d);
+        if ((val = virTristateBoolTypeFromString(accel2d)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown accel2d value '%s'"), accel2d);
+            goto cleanup;
+        }
+        def->accel2d = val;
     }
 
+ cleanup:
+    VIR_FREE(accel2d);
+    VIR_FREE(accel3d);
     return def;
 }
 
@@ -20873,10 +20879,15 @@ static void
 virDomainVideoAccelDefFormat(virBufferPtr buf,
                              virDomainVideoAccelDefPtr def)
 {
-    virBufferAsprintf(buf, "<acceleration accel3d='%s'",
-                      def->accel3d ? "yes" : "no");
-    virBufferAsprintf(buf, " accel2d='%s'",
-                      def->accel2d ? "yes" : "no");
+    virBufferAddLit(buf, "<acceleration");
+    if (def->accel3d) {
+        virBufferAsprintf(buf, " accel3d='%s'",
+                          virTristateBoolTypeToString(def->accel3d));
+    }
+    if (def->accel2d) {
+        virBufferAsprintf(buf, " accel2d='%s'",
+                          virTristateBoolTypeToString(def->accel2d));
+    }
     virBufferAddLit(buf, "/>\n");
 }
 

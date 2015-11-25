@@ -1382,8 +1382,8 @@ typedef enum {
 typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
 typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 struct _virDomainVideoAccelDef {
-    bool accel3d;
-    bool accel2d;
+    int accel2d; /* enum virTristateBool */
+    int accel3d; /* enum virTristateBool */
 };
 
 

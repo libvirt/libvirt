@@ -1553,11 +1553,15 @@ vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
                                        VIR_DIV_UP(def->videos[0]->vram, 1024));
         gVBoxAPI.UIMachine.SetMonitorCount(machine, def->videos[0]->heads);
         if (def->videos[0]->accel) {
-            gVBoxAPI.UIMachine.SetAccelerate3DEnabled(machine,
-                                                      def->videos[0]->accel->accel3d);
-            if (gVBoxAPI.accelerate2DVideo)
+            if (def->videos[0]->accel->accel3d) {
+                gVBoxAPI.UIMachine.SetAccelerate3DEnabled(machine,
+                    def->videos[0]->accel->accel3d == VIR_TRISTATE_BOOL_YES);
+            }
+            if (def->videos[0]->accel->accel2d &&
+                gVBoxAPI.accelerate2DVideo) {
                 gVBoxAPI.UIMachine.SetAccelerate2DVideoEnabled(machine,
-                                                               def->videos[0]->accel->accel2d);
+                    def->videos[0]->accel->accel2d == VIR_TRISTATE_BOOL_YES);
+            }
         } else {
             gVBoxAPI.UIMachine.SetAccelerate3DEnabled(machine, 0);
             if (gVBoxAPI.accelerate2DVideo)
@@ -3277,8 +3281,10 @@ vboxDumpVideo(virDomainDefPtr def, vboxGlobalData *data ATTRIBUTE_UNUSED,
             def->videos[0]->vram            = VRAMSize * 1024;
             def->videos[0]->heads           = monitorCount;
             if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
-                def->videos[0]->accel->accel3d = accelerate3DEnabled;
-                def->videos[0]->accel->accel2d = accelerate2DEnabled;
+                def->videos[0]->accel->accel3d = accelerate3DEnabled ?
+                    VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+                def->videos[0]->accel->accel2d = accelerate2DEnabled ?
+                    VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
             }
         }
     }
