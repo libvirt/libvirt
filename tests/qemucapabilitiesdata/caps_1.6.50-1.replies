@@ -1924,6 +1924,14 @@
 }
 
 {
+    "id": "libvirt-32",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'virtio-gpu-pci' not found"
+    }
+}
+
+{
     "return": [
         {
             "name": "xenpv",
@@ -2017,7 +2025,7 @@
             "cpu-max": 1
         }
     ],
-    "id": "libvirt-32"
+    "id": "libvirt-33"
 }
 
 {
@@ -2095,7 +2103,7 @@
             "name": "qemu64"
         }
     ],
-    "id": "libvirt-33"
+    "id": "libvirt-34"
 }
 
 {
@@ -2103,12 +2111,6 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-34"
-}
-
-{
-    "return": [
-    ],
     "id": "libvirt-35"
 }
 
@@ -2116,6 +2118,12 @@
     "return": [
     ],
     "id": "libvirt-36"
+}
+
+{
+    "return": [
+    ],
+    "id": "libvirt-37"
 }
 
 {
@@ -2703,7 +2711,7 @@
             "option": "drive"
         }
     ],
-    "id": "libvirt-37"
+    "id": "libvirt-38"
 }
 
 {
@@ -2725,5 +2733,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-38"
+    "id": "libvirt-39"
 }

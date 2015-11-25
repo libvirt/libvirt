@@ -163,4 +163,5 @@
     <flag name='virtio-net'/>
     <flag name='incoming-defer'/>
     <flag name='virtio-gpu'/>
+    <flag name='virtio-gpu.virgl'/>
   </qemuCaps>

@@ -1598,6 +1598,14 @@
 }
 
 {
+    "id": "libvirt-31",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'virtio-gpu-pci' not found"
+    }
+}
+
+{
     "return": [
         {
             "name": "xenpv"
@@ -1641,7 +1649,7 @@
             "name": "none"
         }
     ],
-    "id": "libvirt-31"
+    "id": "libvirt-32"
 }
 
 {
@@ -1713,7 +1721,7 @@
             "name": "Opteron_G4"
         }
     ],
-    "id": "libvirt-32"
+    "id": "libvirt-33"
 }
 
 {
@@ -1721,11 +1729,11 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-33"
+    "id": "libvirt-34"
 }
 
 {
-    "id": "libvirt-34",
+    "id": "libvirt-35",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-models has not been found"
@@ -1733,7 +1741,7 @@
 }
 
 {
-    "id": "libvirt-35",
+    "id": "libvirt-36",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-types has not been found"
@@ -1741,7 +1749,7 @@
 }
 
 {
-    "id": "libvirt-36",
+    "id": "libvirt-37",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-command-line-options has not been found"
@@ -1755,5 +1763,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-37"
+    "id": "libvirt-38"
 }

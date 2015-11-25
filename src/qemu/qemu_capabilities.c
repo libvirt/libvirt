@@ -302,6 +302,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "incoming-defer", /* 200 */
               "virtio-gpu",
+              "virtio-gpu.virgl",
     );
 
 
@@ -1631,6 +1632,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
+    { "virgl", QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1684,6 +1689,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxl) },
     { "qxl-vga", virQEMUCapsObjectPropsQxlVga,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxlVga) },
+    { "virtio-gpu-pci", virQEMUCapsObjectPropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
 };
 
 

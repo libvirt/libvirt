@@ -631,6 +631,7 @@ mymain(void)
     DO_TEST("net-udp");
 
     DO_TEST("video-virtio-gpu-device");
+    DO_TEST("video-virtio-gpu-virgl");
 
     qemuTestDriverFree(&driver);
 
