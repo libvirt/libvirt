@@ -118,8 +118,9 @@ virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server ATTRIBUTE_
 
     if (args->maxlen > VIR_LOG_MANAGER_PROTOCOL_STRING_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Requested data len %zu is larger than maximum %d"),
-                       args->maxlen, VIR_LOG_MANAGER_PROTOCOL_STRING_MAX);
+                       _("Requested data len %llu is larger than maximum %d"),
+                       (unsigned long long)args->maxlen,
+                       VIR_LOG_MANAGER_PROTOCOL_STRING_MAX);
         goto cleanup;
     }
 

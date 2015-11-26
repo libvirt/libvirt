@@ -57,8 +57,9 @@ static int testRotatingFileWriterAssertOneFileSize(const char *filename,
             fprintf(stderr, "File %s should not exist\n", filename);
             return -1;
         } else if (sb.st_size != size) {
-            fprintf(stderr, "File %s should be %zu bytes not %zu\n",
-                    filename, size, sb.st_size);
+            fprintf(stderr, "File %s should be %llu bytes not %llu\n",
+                    filename, (unsigned long long)size,
+                    (unsigned long long)sb.st_size);
             return -1;
         } else {
             return 0;
