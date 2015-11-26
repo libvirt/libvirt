@@ -2425,6 +2425,9 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
                                       qemuMonitorMigrationStatsPtr stats)
 {
     virJSONValuePtr ret;
+    virJSONValuePtr ram;
+    virJSONValuePtr disk;
+    virJSONValuePtr comp;
     const char *statusstr;
     int rc;
     double mbps;
@@ -2464,10 +2467,18 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
                                          &stats->setup_time) == 0)
         stats->setup_time_set = true;
 
-    if (stats->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE ||
-        stats->status == QEMU_MONITOR_MIGRATION_STATUS_CANCELLING ||
-        stats->status == QEMU_MONITOR_MIGRATION_STATUS_COMPLETED) {
-        virJSONValuePtr ram = virJSONValueObjectGetObject(ret, "ram");
+    switch ((qemuMonitorMigrationStatus) stats->status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
+    case QEMU_MONITOR_MIGRATION_STATUS_LAST:
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
+        ram = virJSONValueObjectGetObject(ret, "ram");
         if (!ram) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("migration was active, but no RAM info was set"));
@@ -2510,7 +2521,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
         ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
                                                       &stats->ram_normal_bytes));
 
-        virJSONValuePtr disk = virJSONValueObjectGetObject(ret, "disk");
+        disk = virJSONValueObjectGetObject(ret, "disk");
         if (disk) {
             rc = virJSONValueObjectGetNumberUlong(disk, "transferred",
                                                   &stats->disk_transferred);
@@ -2546,7 +2557,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
             }
         }
 
-        virJSONValuePtr comp = virJSONValueObjectGetObject(ret, "xbzrle-cache");
+        comp = virJSONValueObjectGetObject(ret, "xbzrle-cache");
         if (comp) {
             stats->xbzrle_set = true;
             rc = virJSONValueObjectGetNumberUlong(comp, "cache-size",
@@ -2594,6 +2605,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
                 return -1;
             }
         }
+        break;
     }
 
     return 0;

@@ -455,7 +455,7 @@ int qemuMonitorGetMigrationCacheSize(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
                                      unsigned long long cacheSize);
 
-enum {
+typedef enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
     QEMU_MONITOR_MIGRATION_STATUS_SETUP,
     QEMU_MONITOR_MIGRATION_STATUS_ACTIVE,
@@ -465,14 +465,14 @@ enum {
     QEMU_MONITOR_MIGRATION_STATUS_CANCELLED,
 
     QEMU_MONITOR_MIGRATION_STATUS_LAST
-};
+} qemuMonitorMigrationStatus;
 
 VIR_ENUM_DECL(qemuMonitorMigrationStatus)
 
 typedef struct _qemuMonitorMigrationStats qemuMonitorMigrationStats;
 typedef qemuMonitorMigrationStats *qemuMonitorMigrationStatsPtr;
 struct _qemuMonitorMigrationStats {
-    int status;
+    int status; /* qemuMonitorMigrationStatus */
     unsigned long long total_time;
     /* total or expected depending on status */
     bool downtime_set;
