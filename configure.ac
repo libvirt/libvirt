@@ -2789,7 +2789,7 @@ AC_CONFIG_FILES([\
         src/libvirt-lxc.pc \
         libvirt.spec mingw-libvirt.spec \
         po/Makefile.in \
-        include/libvirt/Makefile include/libvirt/libvirt.h \
+        include/libvirt/Makefile include/libvirt/libvirt-common.h \
         daemon/Makefile \
         tools/Makefile \
         tests/Makefile \

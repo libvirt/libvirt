@@ -87,7 +87,7 @@
 /gnulib/lib/*
 /gnulib/m4/*
 /gnulib/tests/*
-/include/libvirt/libvirt.h
+/include/libvirt/libvirt-common.h
 /libtool
 /libvirt-*.tar.gz
 /libvirt-[0-9]*

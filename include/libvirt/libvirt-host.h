@@ -29,24 +29,6 @@
 # endif
 
 
-/*
- * virFreeCallback:
- * @opaque: opaque user data provided at registration
- *
- * Type for a callback cleanup function to be paired with a callback.  This
- * function will be called as a final chance to clean up the @opaque
- * registered with the primary callback, at the time when the primary
- * callback is deregistered.
- *
- * It is forbidden to call any other libvirt APIs from an
- * implementation of this callback, since it can be invoked
- * from a context which is not re-entrant safe. Failure to
- * abide by this requirement may lead to application deadlocks
- * or crashes.
- */
-typedef void (*virFreeCallback)(void *opaque);
-
-
 /**
  * virConnect:
  *
@@ -755,18 +737,6 @@ char *                  virConnectGetSysinfo    (virConnectPtr conn,
 int virConnectSetKeepAlive(virConnectPtr conn,
                            int interval,
                            unsigned int count);
-
-typedef enum {
-    VIR_CONNECT_CLOSE_REASON_ERROR     = 0, /* Misc I/O error */
-    VIR_CONNECT_CLOSE_REASON_EOF       = 1, /* End-of-file from server */
-    VIR_CONNECT_CLOSE_REASON_KEEPALIVE = 2, /* Keepalive timer triggered */
-    VIR_CONNECT_CLOSE_REASON_CLIENT    = 3, /* Client requested it */
-
-# ifdef VIR_ENUM_SENTINELS
-    VIR_CONNECT_CLOSE_REASON_LAST
-# endif
-} virConnectCloseReason;
-
 /**
  * virConnectCloseFunc:
  * @conn: virConnect connection

@@ -30,6 +30,9 @@
 extern "C" {
 # endif
 
+# define __VIR_ADMIN_H_INCLUDES__
+# include <libvirt/libvirt-common.h>
+# undef __VIR_ADMIN_H_INCLUDES__
 
 /**
  * virAdmConnect:

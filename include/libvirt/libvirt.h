@@ -32,63 +32,8 @@
 extern "C" {
 # endif
 
-# ifndef VIR_DEPRECATED
-  /* The feature is present in gcc-3.1 and newer.  */
-#  if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
-#   define VIR_DEPRECATED __attribute__((__deprecated__))
-#  else
-#   define VIR_DEPRECATED /* nothing */
-#  endif
-# endif /* VIR_DEPRECATED */
-
-# ifdef WIN32
-#  ifdef LIBVIRT_STATIC
-#   define VIR_EXPORT_VAR extern
-#  else
-#   ifdef IN_LIBVIRT
-#    define VIR_EXPORT_VAR __declspec(dllexport)
-#   else
-#    define VIR_EXPORT_VAR __declspec(dllimport) extern
-#   endif
-#  endif
-# else
-#  define VIR_EXPORT_VAR extern
-# endif
-
-/* General note - in the header files, any linear enumeration which
- * might be expanded in the future has an optional *_LAST value that
- * gives the size of the enum at the time of compilation, if the user
- * defines VIR_ENUM_SENTINELS.  Enumerations for bit values do not
- * have a *_LAST value, but additional bits may be defined.  */
-
-/* library versioning */
-
-/**
- * LIBVIR_VERSION_NUMBER:
- *
- * Macro providing the version of the library as
- * version * 1,000,000 + minor * 1000 + micro
- */
-
-# define LIBVIR_VERSION_NUMBER @LIBVIRT_VERSION_NUMBER@
-
-/**
- * LIBVIR_CHECK_VERSION:
- * @major: major component of the version number
- * @minor: minor component of the version number
- * @micro: micro component of the version number
- *
- * Macro for developers to easily check what version of the library
- * their code is compiling against.
- * e.g.
- *   #if LIBVIR_CHECK_VERSION(1,1,3)
- *     // some code that only works in 1.1.3 and newer
- *   #endif
- */
-# define LIBVIR_CHECK_VERSION(major, minor, micro) \
-    ((major) * 1000000 + (minor) * 1000 + (micro) <= LIBVIR_VERSION_NUMBER)
-
 # define __VIR_LIBVIRT_H_INCLUDES__
+# include <libvirt/libvirt-common.h>
 # include <libvirt/libvirt-host.h>
 # include <libvirt/libvirt-domain.h>
 # include <libvirt/libvirt-domain-snapshot.h>
