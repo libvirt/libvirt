@@ -711,8 +711,14 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
 
         if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            reason = VIR_DOMAIN_PAUSED_MIGRATION;
-            detail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+            if (priv->job.current->stats.status ==
+                        QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY) {
+                reason = VIR_DOMAIN_PAUSED_POSTCOPY;
+                detail = VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY;
+            } else {
+                reason = VIR_DOMAIN_PAUSED_MIGRATION;
+                detail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+            }
         }
 
         VIR_DEBUG("Transitioned guest %s to paused state, reason %s",

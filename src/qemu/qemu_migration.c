@@ -2471,6 +2471,7 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
     case QEMU_MONITOR_MIGRATION_STATUS_LAST:
         break;
@@ -2588,6 +2589,7 @@ enum qemuMigrationCompletedFlags {
     QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR = (1 << 0),
     QEMU_MIGRATION_COMPLETED_CHECK_STORAGE  = (1 << 1),
     QEMU_MIGRATION_COMPLETED_UPDATE_STATS   = (1 << 2),
+    QEMU_MIGRATION_COMPLETED_POSTCOPY       = (1 << 3),
 };
 
 /**
@@ -2629,6 +2631,20 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         goto error;
     }
 
+    /* In case of postcopy the source considers migration completed at the
+     * moment it switched from active to postcopy-active state. The destination
+     * will continue waiting until the migrate state changes to completed.
+     */
+    if (flags & QEMU_MIGRATION_COMPLETED_POSTCOPY &&
+        jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED &&
+        jobInfo->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY) {
+        VIR_DEBUG("Migration switched to post-copy");
+        if (updateStats &&
+            qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
+            goto error;
+        return 1;
+    }
+
     if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED)
         return 1;
     else
@@ -2662,9 +2678,11 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-    unsigned int flags = QEMU_MIGRATION_COMPLETED_UPDATE_STATS;
+    unsigned int flags;
     int rv;
 
+    flags = QEMU_MIGRATION_COMPLETED_UPDATE_STATS |
+            QEMU_MIGRATION_COMPLETED_POSTCOPY;
     if (abort_on_error)
         flags |= QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR;
     if (storage)
@@ -2703,9 +2721,11 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 static int
 qemuMigrationWaitForDestCompletion(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   qemuDomainAsyncJob asyncJob)
+                                   qemuDomainAsyncJob asyncJob,
+                                   bool postcopy)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned int flags = 0;
     int rv;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT))
@@ -2713,7 +2733,11 @@ qemuMigrationWaitForDestCompletion(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Waiting for incoming migration to complete");
 
-    while ((rv = qemuMigrationCompleted(driver, vm, asyncJob, NULL, 0)) != 1) {
+    if (postcopy)
+        flags = QEMU_MIGRATION_COMPLETED_POSTCOPY;
+
+    while ((rv = qemuMigrationCompleted(driver, vm, asyncJob,
+                                        NULL, flags)) != 1) {
         if (rv < 0 || virDomainObjWait(vm) < 0)
             return -1;
     }
@@ -2915,7 +2939,7 @@ qemuMigrationRunIncoming(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuMigrationWaitForDestCompletion(driver, vm, asyncJob) < 0)
+    if (qemuMigrationWaitForDestCompletion(driver, vm, asyncJob, false) < 0)
         goto cleanup;
 
     ret = 0;
@@ -3918,6 +3942,19 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
 
     /* Update times with the values sent by the destination daemon */
     if (mig->jobInfo && jobInfo) {
+        int reason;
+
+        /* We need to refresh migration statistics after a completed post-copy
+         * migration since priv->job.completed contains obsolete data from the
+         * time we switched to post-copy mode.
+         */
+        if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+            reason == VIR_DOMAIN_PAUSED_POSTCOPY &&
+            qemuMigrationFetchJobStatus(driver, vm,
+                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                        jobInfo) < 0)
+            VIR_WARN("Could not refresh migration statistics");
+
         qemuDomainJobInfoUpdateTime(jobInfo);
         jobInfo->timeDeltaSet = mig->jobInfo->timeDeltaSet;
         jobInfo->timeDelta = mig->jobInfo->timeDelta;
@@ -4328,6 +4365,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+    bool inPostCopy = false;
     int rc;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
@@ -4516,6 +4554,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     else if (rc == -1)
         goto cleanup;
 
+    if (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY)
+        inPostCopy = true;
+
     /* When migration completed, QEMU will have paused the CPUs for us.
      * Wait for the STOP event to be processed or explicitly stop CPUs
      * (for old QEMU which does not send events) to release the lock state.
@@ -4525,15 +4566,12 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             priv->signalStop = true;
             rc = virDomainObjWait(vm);
             priv->signalStop = false;
-            if (rc < 0) {
-                priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
-                goto cleanup;
-            }
+            if (rc < 0)
+                goto cancelPostCopy;
         }
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
                qemuMigrationSetOffline(driver, vm) < 0) {
-        priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
-        goto cleanup;
+        goto cancelPostCopy;
     }
     if (priv->job.completed)
         priv->job.completed->stopped = priv->job.current->stopped;
@@ -4564,7 +4602,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         ignore_value(virTimeMillisNow(&priv->job.completed->sent));
     }
 
-    if (priv->job.current->type == VIR_DOMAIN_JOB_UNBOUNDED)
+    if (priv->job.current->type == VIR_DOMAIN_JOB_UNBOUNDED && !inPostCopy)
         priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
@@ -4604,6 +4642,13 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         }
     }
     goto cleanup;
+
+ cancelPostCopy:
+    priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
+    if (inPostCopy)
+        goto cancel;
+    else
+        goto cleanup;
 }
 
 /* Perform migration using QEMU's native migrate support,
@@ -5778,6 +5823,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     virObjectEventPtr event;
     int rc;
     qemuDomainJobInfoPtr jobInfo = NULL;
+    bool inPostCopy = false;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -5883,7 +5929,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
      * before starting guest CPUs.
      */
     if (qemuMigrationWaitForDestCompletion(driver, vm,
-                                           QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
+                                           QEMU_ASYNC_JOB_MIGRATION_IN,
+                                           !!(flags & VIR_MIGRATE_POSTCOPY)) < 0) {
         /* There's not much we can do for v2 protocol since the
          * original domain on the source host is already gone.
          */
@@ -5891,13 +5938,17 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             goto endjob;
     }
 
+    if (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY)
+        inPostCopy = true;
+
     if (!(flags & VIR_MIGRATE_PAUSED)) {
         /* run 'cont' on the destination, which allows migration on qemu
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
          * older qemu's, but it also doesn't hurt anything there
          */
         if (qemuProcessStartCPUs(driver, vm, dconn,
-                                 VIR_DOMAIN_RUNNING_MIGRATED,
+                                 inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
+                                            : VIR_DOMAIN_RUNNING_MIGRATED,
                                  QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
             if (virGetLastError() == NULL)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -5918,6 +5969,13 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             if (v3proto)
                 goto endjob;
         }
+
+        if (inPostCopy) {
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                        VIR_DOMAIN_EVENT_RESUMED,
+                                        VIR_DOMAIN_EVENT_RESUMED_POSTCOPY);
+            qemuDomainEventQueue(driver, event);
+        }
     }
 
     if (mig->jobInfo) {
@@ -5931,6 +5989,19 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
         qemuDomainJobInfoUpdateTime(jobInfo);
         qemuDomainJobInfoUpdateDowntime(jobInfo);
+    }
+
+    if (inPostCopy) {
+        if (qemuMigrationWaitForDestCompletion(driver, vm,
+                                               QEMU_ASYNC_JOB_MIGRATION_IN,
+                                               false) < 0) {
+            goto endjob;
+        }
+        if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+            virDomainObjSetState(vm,
+                                 VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_MIGRATED);
+        }
     }
 
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
@@ -5975,6 +6046,12 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
                                     QEMU_MIGRATION_COOKIE_STATS) < 0)
             VIR_WARN("Unable to encode migration cookie");
+
+        /* Remove completed stats for post-copy, everything but timing fields
+         * is obsolete anyway.
+         */
+        if (inPostCopy)
+            VIR_FREE(priv->job.completed);
     }
 
     qemuMigrationJobFinish(driver, vm);

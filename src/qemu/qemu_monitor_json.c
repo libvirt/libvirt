@@ -2548,6 +2548,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
         ram = virJSONValueObjectGetObject(ret, "ram");
