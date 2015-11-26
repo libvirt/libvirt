@@ -1107,36 +1107,38 @@ static void virNetServerClientDispatchRead(virNetServerClientPtr client)
 
         /* Now figure out if we need to read more data to get some
          * file descriptors */
-        if (msg->header.type == VIR_NET_CALL_WITH_FDS &&
-            virNetMessageDecodeNumFDs(msg) < 0) {
-            virNetMessageQueueServe(&client->rx);
-            virNetMessageFree(msg);
-            client->wantClose = true;
-            return; /* Error */
-        }
-
-        /* Try getting the file descriptors (may fail if blocking) */
-        for (i = msg->donefds; i < msg->nfds; i++) {
-            int rv;
-            if ((rv = virNetSocketRecvFD(client->sock, &(msg->fds[i]))) < 0) {
+        if (msg->header.type == VIR_NET_CALL_WITH_FDS) {
+            if (msg->nfds == 0 &&
+                virNetMessageDecodeNumFDs(msg) < 0) {
                 virNetMessageQueueServe(&client->rx);
                 virNetMessageFree(msg);
                 client->wantClose = true;
+                return; /* Error */
+            }
+
+            /* Try getting the file descriptors (may fail if blocking) */
+            for (i = msg->donefds; i < msg->nfds; i++) {
+                int rv;
+                if ((rv = virNetSocketRecvFD(client->sock, &(msg->fds[i]))) < 0) {
+                    virNetMessageQueueServe(&client->rx);
+                    virNetMessageFree(msg);
+                    client->wantClose = true;
+                    return;
+                }
+                if (rv == 0) /* Blocking */
+                    break;
+                msg->donefds++;
+            }
+
+            /* Need to poll() until FDs arrive */
+            if (msg->donefds < msg->nfds) {
+                /* Because DecodeHeader/NumFDs reset bufferOffset, we
+                 * put it back to what it was, so everything works
+                 * again next time we run this method
+                 */
+                client->rx->bufferOffset = client->rx->bufferLength;
                 return;
             }
-            if (rv == 0) /* Blocking */
-                break;
-            msg->donefds++;
-        }
-
-        /* Need to poll() until FDs arrive */
-        if (msg->donefds < msg->nfds) {
-            /* Because DecodeHeader/NumFDs reset bufferOffset, we
-             * put it back to what it was, so everything works
-             * again next time we run this method
-             */
-            client->rx->bufferOffset = client->rx->bufferLength;
-            return;
         }
 
         /* Definitely finished reading, so remove from queue */
