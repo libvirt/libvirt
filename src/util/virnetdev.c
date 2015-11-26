@@ -1316,7 +1316,10 @@ virNetDevParseDadStatus(struct nlmsghdr *nlh, int len,
     struct rtattr *rtattr_ptr;
     size_t i;
     struct in6_addr *addr;
+
+    VIR_WARNINGS_NO_CAST_ALIGN
     for (; NLMSG_OK(nlh, len); nlh = NLMSG_NEXT(nlh, len)) {
+    VIR_WARNINGS_RESET
         if (NLMSG_PAYLOAD(nlh, 0) < sizeof(struct ifaddrmsg)) {
             /* Message without payload is the last one. */
             break;
@@ -1329,9 +1332,11 @@ virNetDevParseDadStatus(struct nlmsghdr *nlh, int len,
         }
 
         ifaddrmsg_len = IFA_PAYLOAD(nlh);
+        VIR_WARNINGS_NO_CAST_ALIGN
         rtattr_ptr = (struct rtattr *) IFA_RTA(ifaddrmsg_ptr);
         for (; RTA_OK(rtattr_ptr, ifaddrmsg_len);
             rtattr_ptr = RTA_NEXT(rtattr_ptr, ifaddrmsg_len)) {
+            VIR_WARNINGS_RESET
             if (RTA_PAYLOAD(rtattr_ptr) != sizeof(struct in6_addr)) {
                 /* No address: ignore. */
                 continue;
