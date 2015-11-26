@@ -116,7 +116,7 @@ struct _qemuDomainJobInfo {
                             destination. */
     bool timeDeltaSet;
     /* Raw values from QEMU */
-    qemuMonitorMigrationStatus status;
+    qemuMonitorMigrationStats stats;
 };
 
 struct qemuDomainJobObj {

@@ -2103,15 +2103,15 @@ qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
-                              qemuMonitorMigrationStatusPtr status)
+qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
+                             qemuMonitorMigrationStatsPtr stats)
 {
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json)
-        return qemuMonitorJSONGetMigrationStatus(mon, status);
+        return qemuMonitorJSONGetMigrationStats(mon, stats);
     else
-        return qemuMonitorTextGetMigrationStatus(mon, status);
+        return qemuMonitorTextGetMigrationStats(mon, stats);
 }
 
 

@@ -1507,7 +1507,7 @@ qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    priv->job.current->status.status = status;
+    priv->job.current->stats.status = status;
     virDomainObjBroadcast(vm);
 
  cleanup:

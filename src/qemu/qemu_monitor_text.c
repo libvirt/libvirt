@@ -1353,15 +1353,15 @@ int qemuMonitorTextSetMigrationDowntime(qemuMonitorPtr mon,
 #define MIGRATION_DISK_REMAINING_PREFIX "remaining disk: "
 #define MIGRATION_DISK_TOTAL_PREFIX "total disk: "
 
-int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationStatusPtr status)
+int qemuMonitorTextGetMigrationStats(qemuMonitorPtr mon,
+                                     qemuMonitorMigrationStatsPtr stats)
 {
     char *reply;
     char *tmp;
     char *end;
     int ret = -1;
 
-    memset(status, 0, sizeof(*status));
+    memset(stats, 0, sizeof(*stats));
 
     if (qemuMonitorHMPCommand(mon, "info migrate", &reply) < 0)
         return -1;
@@ -1376,14 +1376,14 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
         }
         *end = '\0';
 
-        status->status = qemuMonitorMigrationStatusTypeFromString(tmp);
-        if (status->status < 0) {
+        stats->status = qemuMonitorMigrationStatusTypeFromString(tmp);
+        if (stats->status < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected migration status in %s"), reply);
             goto cleanup;
         }
 
-        if (status->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE) {
+        if (stats->status == QEMU_MONITOR_MIGRATION_STATUS_ACTIVE) {
             tmp = end + 1;
 
             if (!(tmp = strstr(tmp, MIGRATION_TRANSFER_PREFIX)))
@@ -1391,82 +1391,82 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
             tmp += strlen(MIGRATION_TRANSFER_PREFIX);
 
             if (virStrToLong_ull(tmp, &end, 10,
-                                 &status->ram_transferred) < 0) {
+                                 &stats->ram_transferred) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse migration data transferred "
                                  "statistic %s"), tmp);
                 goto cleanup;
             }
-            status->ram_transferred *= 1024;
+            stats->ram_transferred *= 1024;
             tmp = end;
 
             if (!(tmp = strstr(tmp, MIGRATION_REMAINING_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_REMAINING_PREFIX);
 
-            if (virStrToLong_ull(tmp, &end, 10, &status->ram_remaining) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, &stats->ram_remaining) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse migration data remaining "
                                  "statistic %s"), tmp);
                 goto cleanup;
             }
-            status->ram_remaining *= 1024;
+            stats->ram_remaining *= 1024;
             tmp = end;
 
             if (!(tmp = strstr(tmp, MIGRATION_TOTAL_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_TOTAL_PREFIX);
 
-            if (virStrToLong_ull(tmp, &end, 10, &status->ram_total) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, &stats->ram_total) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse migration data total "
                                  "statistic %s"), tmp);
                 goto cleanup;
             }
-            status->ram_total *= 1024;
+            stats->ram_total *= 1024;
             tmp = end;
 
             /*
-             * Check for Optional Disk Migration status
+             * Check for Optional Disk Migration stats
              */
             if (!(tmp = strstr(tmp, MIGRATION_DISK_TRANSFER_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_DISK_TRANSFER_PREFIX);
 
             if (virStrToLong_ull(tmp, &end, 10,
-                                 &status->disk_transferred) < 0) {
+                                 &stats->disk_transferred) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse disk migration data "
                                  "transferred statistic %s"), tmp);
                 goto cleanup;
             }
-            status->disk_transferred *= 1024;
+            stats->disk_transferred *= 1024;
             tmp = end;
 
             if (!(tmp = strstr(tmp, MIGRATION_DISK_REMAINING_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_DISK_REMAINING_PREFIX);
 
-            if (virStrToLong_ull(tmp, &end, 10, &status->disk_remaining) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, &stats->disk_remaining) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse disk migration data remaining "
                                  "statistic %s"), tmp);
                 goto cleanup;
             }
-            status->disk_remaining *= 1024;
+            stats->disk_remaining *= 1024;
             tmp = end;
 
             if (!(tmp = strstr(tmp, MIGRATION_DISK_TOTAL_PREFIX)))
                 goto done;
             tmp += strlen(MIGRATION_DISK_TOTAL_PREFIX);
 
-            if (virStrToLong_ull(tmp, &end, 10, &status->disk_total) < 0) {
+            if (virStrToLong_ull(tmp, &end, 10, &stats->disk_total) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse disk migration data total "
                                  "statistic %s"), tmp);
                 goto cleanup;
             }
-            status->disk_total *= 1024;
+            stats->disk_total *= 1024;
         }
     }
 
@@ -1476,7 +1476,7 @@ int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
  cleanup:
     VIR_FREE(reply);
     if (ret < 0)
-        memset(status, 0, sizeof(*status));
+        memset(stats, 0, sizeof(*stats));
     return ret;
 }
 

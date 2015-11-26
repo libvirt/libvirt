@@ -469,9 +469,9 @@ enum {
 
 VIR_ENUM_DECL(qemuMonitorMigrationStatus)
 
-typedef struct _qemuMonitorMigrationStatus qemuMonitorMigrationStatus;
-typedef qemuMonitorMigrationStatus *qemuMonitorMigrationStatusPtr;
-struct _qemuMonitorMigrationStatus {
+typedef struct _qemuMonitorMigrationStats qemuMonitorMigrationStats;
+typedef qemuMonitorMigrationStats *qemuMonitorMigrationStatsPtr;
+struct _qemuMonitorMigrationStats {
     int status;
     unsigned long long total_time;
     /* total or expected depending on status */
@@ -507,8 +507,8 @@ struct _qemuMonitorMigrationStatus {
     unsigned long long xbzrle_overflow;
 };
 
-int qemuMonitorGetMigrationStatus(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationStatusPtr status);
+int qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
+                                 qemuMonitorMigrationStatsPtr stats);
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,

@@ -103,8 +103,8 @@ int qemuMonitorTextSetMigrationSpeed(qemuMonitorPtr mon,
 int qemuMonitorTextSetMigrationDowntime(qemuMonitorPtr mon,
                                         unsigned long long downtime);
 
-int qemuMonitorTextGetMigrationStatus(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationStatusPtr status);
+int qemuMonitorTextGetMigrationStats(qemuMonitorPtr mon,
+                                     qemuMonitorMigrationStatsPtr stats);
 
 int qemuMonitorTextMigrate(qemuMonitorPtr mon,
                            unsigned int flags,

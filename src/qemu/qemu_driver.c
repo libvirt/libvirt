@@ -13042,7 +13042,7 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         fetch = false;
 
     /* Do not ask QEMU if migration is not even running yet  */
-    if (!priv->job.current || !priv->job.current->status.status)
+    if (!priv->job.current || !priv->job.current->stats.status)
         fetch = false;
 
     if (fetch &&

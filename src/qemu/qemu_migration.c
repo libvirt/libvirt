@@ -699,7 +699,7 @@ static void
 qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
                                        qemuDomainJobInfoPtr jobInfo)
 {
-    qemuMonitorMigrationStatus *status = &jobInfo->status;
+    qemuMonitorMigrationStats *stats = &jobInfo->stats;
 
     virBufferAddLit(buf, "<statistics>\n");
     virBufferAdjustIndent(buf, 2);
@@ -716,69 +716,69 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_TIME_REMAINING,
                       jobInfo->timeRemaining);
-    if (status->downtime_set)
+    if (stats->downtime_set)
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_DOWNTIME,
-                          status->downtime);
-    if (status->setup_time_set)
+                          stats->downtime);
+    if (stats->setup_time_set)
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_SETUP_TIME,
-                          status->setup_time);
+                          stats->setup_time);
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_TOTAL,
-                      status->ram_total);
+                      stats->ram_total);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_PROCESSED,
-                      status->ram_transferred);
+                      stats->ram_transferred);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_REMAINING,
-                      status->ram_remaining);
+                      stats->ram_remaining);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_MEMORY_BPS,
-                      status->ram_bps);
+                      stats->ram_bps);
 
-    if (status->ram_duplicate_set) {
+    if (stats->ram_duplicate_set) {
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_MEMORY_CONSTANT,
-                          status->ram_duplicate);
+                          stats->ram_duplicate);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_MEMORY_NORMAL,
-                          status->ram_normal);
+                          stats->ram_normal);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
-                          status->ram_normal_bytes);
+                          stats->ram_normal_bytes);
     }
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_TOTAL,
-                      status->disk_total);
+                      stats->disk_total);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_PROCESSED,
-                      status->disk_transferred);
+                      stats->disk_transferred);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_REMAINING,
-                      status->disk_remaining);
+                      stats->disk_remaining);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_BPS,
-                      status->disk_bps);
+                      stats->disk_bps);
 
-    if (status->xbzrle_set) {
+    if (stats->xbzrle_set) {
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_COMPRESSION_CACHE,
-                          status->xbzrle_cache_size);
+                          stats->xbzrle_cache_size);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_COMPRESSION_BYTES,
-                          status->xbzrle_bytes);
+                          stats->xbzrle_bytes);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_COMPRESSION_PAGES,
-                          status->xbzrle_pages);
+                          stats->xbzrle_pages);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
-                          status->xbzrle_cache_miss);
+                          stats->xbzrle_cache_miss);
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
-                          status->xbzrle_overflow);
+                          stats->xbzrle_overflow);
     }
 
     virBufferAdjustIndent(buf, -2);
@@ -1053,7 +1053,7 @@ static qemuDomainJobInfoPtr
 qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 {
     qemuDomainJobInfoPtr jobInfo = NULL;
-    qemuMonitorMigrationStatus *status;
+    qemuMonitorMigrationStats *stats;
     xmlNodePtr save_ctxt = ctxt->node;
 
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
@@ -1062,7 +1062,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     if (VIR_ALLOC(jobInfo) < 0)
         goto cleanup;
 
-    status = &jobInfo->status;
+    stats = &jobInfo->stats;
     jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
 
     virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);
@@ -1077,49 +1077,49 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
                       ctxt, &jobInfo->timeRemaining);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_DOWNTIME "[1])",
-                          ctxt, &status->downtime) == 0)
-        status->downtime_set = true;
+                          ctxt, &stats->downtime) == 0)
+        stats->downtime_set = true;
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_SETUP_TIME "[1])",
-                          ctxt, &status->setup_time) == 0)
-        status->setup_time_set = true;
+                          ctxt, &stats->setup_time) == 0)
+        stats->setup_time_set = true;
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_TOTAL "[1])",
-                      ctxt, &status->ram_total);
+                      ctxt, &stats->ram_total);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_PROCESSED "[1])",
-                      ctxt, &status->ram_transferred);
+                      ctxt, &stats->ram_transferred);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_REMAINING "[1])",
-                      ctxt, &status->ram_remaining);
+                      ctxt, &stats->ram_remaining);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_BPS "[1])",
-                      ctxt, &status->ram_bps);
+                      ctxt, &stats->ram_bps);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_CONSTANT "[1])",
-                          ctxt, &status->ram_duplicate) == 0)
-        status->ram_duplicate_set = true;
+                          ctxt, &stats->ram_duplicate) == 0)
+        stats->ram_duplicate_set = true;
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_NORMAL "[1])",
-                      ctxt, &status->ram_normal);
+                      ctxt, &stats->ram_normal);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES "[1])",
-                      ctxt, &status->ram_normal_bytes);
+                      ctxt, &stats->ram_normal_bytes);
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_TOTAL "[1])",
-                      ctxt, &status->disk_total);
+                      ctxt, &stats->disk_total);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_PROCESSED "[1])",
-                      ctxt, &status->disk_transferred);
+                      ctxt, &stats->disk_transferred);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_REMAINING "[1])",
-                      ctxt, &status->disk_remaining);
+                      ctxt, &stats->disk_remaining);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_BPS "[1])",
-                      ctxt, &status->disk_bps);
+                      ctxt, &stats->disk_bps);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_CACHE "[1])",
-                          ctxt, &status->xbzrle_cache_size) == 0)
-        status->xbzrle_set = true;
+                          ctxt, &stats->xbzrle_cache_size) == 0)
+        stats->xbzrle_set = true;
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_BYTES "[1])",
-                      ctxt, &status->xbzrle_bytes);
+                      ctxt, &stats->xbzrle_bytes);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_PAGES "[1])",
-                      ctxt, &status->xbzrle_pages);
+                      ctxt, &stats->xbzrle_pages);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES "[1])",
-                      ctxt, &status->xbzrle_cache_miss);
+                      ctxt, &stats->xbzrle_cache_miss);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW "[1])",
-                      ctxt, &status->xbzrle_overflow);
+                      ctxt, &stats->xbzrle_overflow);
 
  cleanup:
     ctxt->node = save_ctxt;
@@ -2518,7 +2518,7 @@ qemuMigrationWaitForSpice(virDomainObjPtr vm)
 static void
 qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 {
-    switch (jobInfo->status.status) {
+    switch (jobInfo->stats.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
         jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
         break;
@@ -2555,8 +2555,8 @@ qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    memset(&jobInfo->status, 0, sizeof(jobInfo->status));
-    rv = qemuMonitorGetMigrationStatus(priv->mon, &jobInfo->status);
+    memset(&jobInfo->stats, 0, sizeof(jobInfo->stats));
+    rv = qemuMonitorGetMigrationStats(priv->mon, &jobInfo->stats);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         return -1;

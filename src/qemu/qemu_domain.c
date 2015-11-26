@@ -262,8 +262,8 @@ qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfoPtr jobInfo)
         return 0;
     }
 
-    jobInfo->status.downtime = now - jobInfo->stopped;
-    jobInfo->status.downtime_set = true;
+    jobInfo->stats.downtime = now - jobInfo->stopped;
+    jobInfo->stats.downtime_set = true;
     return 0;
 }
 
@@ -275,13 +275,13 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
     info->timeElapsed = jobInfo->timeElapsed;
     info->timeRemaining = jobInfo->timeRemaining;
 
-    info->memTotal = jobInfo->status.ram_total;
-    info->memRemaining = jobInfo->status.ram_remaining;
-    info->memProcessed = jobInfo->status.ram_transferred;
+    info->memTotal = jobInfo->stats.ram_total;
+    info->memRemaining = jobInfo->stats.ram_remaining;
+    info->memProcessed = jobInfo->stats.ram_transferred;
 
-    info->fileTotal = jobInfo->status.disk_total;
-    info->fileRemaining = jobInfo->status.disk_remaining;
-    info->fileProcessed = jobInfo->status.disk_transferred;
+    info->fileTotal = jobInfo->stats.disk_total;
+    info->fileRemaining = jobInfo->stats.disk_remaining;
+    info->fileProcessed = jobInfo->stats.disk_transferred;
 
     info->dataTotal = info->memTotal + info->fileTotal;
     info->dataRemaining = info->memRemaining + info->fileRemaining;
@@ -296,7 +296,7 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                           virTypedParameterPtr *params,
                           int *nparams)
 {
-    qemuMonitorMigrationStatus *status = &jobInfo->status;
+    qemuMonitorMigrationStats *stats = &jobInfo->stats;
     virTypedParameterPtr par = NULL;
     int maxpar = 0;
     int npar = 0;
@@ -319,103 +319,103 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 jobInfo->timeRemaining) < 0)
         goto error;
 
-    if (status->downtime_set &&
+    if (stats->downtime_set &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DOWNTIME,
-                                status->downtime) < 0)
+                                stats->downtime) < 0)
         goto error;
 
-    if (status->downtime_set &&
+    if (stats->downtime_set &&
         jobInfo->timeDeltaSet &&
-        status->downtime > jobInfo->timeDelta &&
+        stats->downtime > jobInfo->timeDelta &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DOWNTIME_NET,
-                                status->downtime - jobInfo->timeDelta) < 0)
+                                stats->downtime - jobInfo->timeDelta) < 0)
         goto error;
 
-    if (status->setup_time_set &&
+    if (stats->setup_time_set &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_SETUP_TIME,
-                                status->setup_time) < 0)
+                                stats->setup_time) < 0)
         goto error;
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_TOTAL,
-                                status->ram_total +
-                                status->disk_total) < 0 ||
+                                stats->ram_total +
+                                stats->disk_total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_PROCESSED,
-                                status->ram_transferred +
-                                status->disk_transferred) < 0 ||
+                                stats->ram_transferred +
+                                stats->disk_transferred) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_REMAINING,
-                                status->ram_remaining +
-                                status->disk_remaining) < 0)
+                                stats->ram_remaining +
+                                stats->disk_remaining) < 0)
         goto error;
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_MEMORY_TOTAL,
-                                status->ram_total) < 0 ||
+                                stats->ram_total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_MEMORY_PROCESSED,
-                                status->ram_transferred) < 0 ||
+                                stats->ram_transferred) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_MEMORY_REMAINING,
-                                status->ram_remaining) < 0)
+                                stats->ram_remaining) < 0)
         goto error;
 
-    if (status->ram_bps &&
+    if (stats->ram_bps &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_MEMORY_BPS,
-                                status->ram_bps) < 0)
+                                stats->ram_bps) < 0)
         goto error;
 
-    if (status->ram_duplicate_set) {
+    if (stats->ram_duplicate_set) {
         if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_MEMORY_CONSTANT,
-                                    status->ram_duplicate) < 0 ||
+                                    stats->ram_duplicate) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_MEMORY_NORMAL,
-                                    status->ram_normal) < 0 ||
+                                    stats->ram_normal) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES,
-                                    status->ram_normal_bytes) < 0)
+                                    stats->ram_normal_bytes) < 0)
             goto error;
     }
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_TOTAL,
-                                status->disk_total) < 0 ||
+                                stats->disk_total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_PROCESSED,
-                                status->disk_transferred) < 0 ||
+                                stats->disk_transferred) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_REMAINING,
-                                status->disk_remaining) < 0)
+                                stats->disk_remaining) < 0)
         goto error;
 
-    if (status->disk_bps &&
+    if (stats->disk_bps &&
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_BPS,
-                                status->disk_bps) < 0)
+                                stats->disk_bps) < 0)
         goto error;
 
-    if (status->xbzrle_set) {
+    if (stats->xbzrle_set) {
         if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_COMPRESSION_CACHE,
-                                    status->xbzrle_cache_size) < 0 ||
+                                    stats->xbzrle_cache_size) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_COMPRESSION_BYTES,
-                                    status->xbzrle_bytes) < 0 ||
+                                    stats->xbzrle_bytes) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_COMPRESSION_PAGES,
-                                    status->xbzrle_pages) < 0 ||
+                                    stats->xbzrle_pages) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES,
-                                    status->xbzrle_cache_miss) < 0 ||
+                                    stats->xbzrle_cache_miss) < 0 ||
             virTypedParamsAddULLong(&par, &npar, &maxpar,
                                     VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW,
-                                    status->xbzrle_overflow) < 0)
+                                    stats->xbzrle_overflow) < 0)
             goto error;
     }
 
