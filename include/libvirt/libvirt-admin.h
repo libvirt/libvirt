@@ -56,6 +56,9 @@ int virAdmConnectClose(virAdmConnectPtr conn);
 
 int virAdmConnectRef(virAdmConnectPtr conn);
 
+int virAdmGetVersion(unsigned long long *libVer);
+
+
 # ifdef __cplusplus
 }
 # endif

@@ -386,3 +386,37 @@ virAdmConnectRef(virAdmConnectPtr conn)
 
     return 0;
 }
+
+/**
+ * virAdmGetVersion:
+ * @libVer: where to store the library version
+ *
+ * Provides version information. @libVer is the version of the library and will
+ * allways be set unless an error occurs in which case an error code and a
+ * generic message will be returned. @libVer format is as follows:
+ * major * 1,000,000 + minor * 1,000 + release.
+ *
+ * NOTE: To get the remote side library version use virAdmConnectGetLibVersion
+ * instead.
+ *
+ * Returns 0 on success, -1 in case of an error.
+ */
+int
+virAdmGetVersion(unsigned long long *libVer)
+{
+    if (virAdmInitialize() < 0)
+        goto error;
+
+    VIR_DEBUG("libVer=%p", libVer);
+
+    virResetLastError();
+    if (!libVer)
+        goto error;
+    *libVer = LIBVIR_VERSION_NUMBER;
+
+    return 0;
+
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
