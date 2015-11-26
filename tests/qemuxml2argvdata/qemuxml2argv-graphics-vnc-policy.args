@@ -19,5 +19,5 @@ QEMU_AUDIO_DRV=none \
 -net none \
 -serial none \
 -parallel none \
--vnc 127.0.0.1:59630,share=allow-exclusive \
+-vnc '[::]:59630,share=allow-exclusive' \
 -vga cirrus

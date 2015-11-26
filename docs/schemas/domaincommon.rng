@@ -5221,9 +5221,10 @@
     </data>
   </define>
   <define name="addrIPorName">
-    <data type="string">
-      <param name="pattern">(([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9])|(([0-9a-fA-F]+|:)+[0-9a-fA-F]+)|([a-zA-Z0-9_\.\+\-]*)</param>
-    </data>
+    <choice>
+      <ref name="ipAddr"/>
+      <ref name="dnsName"/>
+    </choice>
   </define>
   <define name="usbIdDefault">
     <data type="string">
