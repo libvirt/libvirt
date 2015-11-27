@@ -1062,6 +1062,11 @@ virnetdevmock_la_LIBADD = $(GNULIB_LIBS) \
 					   ../src/libvirt.la
 virnetdevmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 
+virrotatingfiletest_SOURCES = \
+	virrotatingfiletest.c testutils.h testutils.c
+virrotatingfiletest_CFLAGS = $(AM_CFLAGS)
+virrotatingfiletest_LDADD = $(LDADDS)
+
 if WITH_LINUX
 virusbtest_SOURCES = \
 	virusbtest.c testutils.h testutils.c
@@ -1100,11 +1105,6 @@ virpolkittest_SOURCES = \
 	virpolkittest.c testutils.h testutils.c
 virpolkittest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virpolkittest_LDADD = $(LDADDS) $(DBUS_LIBS)
-
-virrotatingfiletest_SOURCES = \
-	virrotatingfiletest.c testutils.h testutils.c
-virrotatingfiletest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virrotatingfiletest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 virsystemdtest_SOURCES = \
 	virsystemdtest.c testutils.h testutils.c
