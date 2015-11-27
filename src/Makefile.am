@@ -2464,9 +2464,7 @@ EXTRA_DIST += \
 	locking/lockd.conf \
 	locking/libvirt_lockd.aug \
 	locking/test_libvirt_lockd.aug.in \
-	logging/virtlogd.sysconf \
-	logging/libvirt_logd.aug \
-	logging/test_libvirt_logd.aug.in
+	logging/virtlogd.sysconf
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
