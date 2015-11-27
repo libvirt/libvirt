@@ -384,6 +384,14 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
     }
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE,
+                                stats->ram_dirty_rate) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_MEMORY_ITERATION,
+                                stats->ram_iteration) < 0)
+        goto error;
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_TOTAL,
                                 stats->disk_total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,

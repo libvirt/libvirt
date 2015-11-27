@@ -2724,6 +2724,25 @@ int virDomainAbortJob(virDomainPtr dom);
  */
 # define VIR_DOMAIN_JOB_MEMORY_BPS               "memory_bps"
 
+/** VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE:
+ *
+ * virDomainGetJobStats field: number of memory pages dirtied by the guest
+ * per second, as VIR_TYPED_PARAM_ULLONG. This statistics makes sense only
+ * when live migration is running.
+ */
+# define VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE        "memory_dirty_rate"
+
+/**
+ * VIR_DOMAIN_JOB_MEMORY_ITERATION:
+ *
+ * virDomainGetJobStats field: current iteration over domain's memory
+ * during live migration, as VIR_TYPED_PARAM_ULLONG. This is set to zero
+ * when memory starts to be transferred and the value is increased by one
+ * every time a new iteration is started to transfer memory pages dirtied
+ * since the last iteration.
+ */
+# define VIR_DOMAIN_JOB_MEMORY_ITERATION         "memory_iteration"
+
 /**
  * VIR_DOMAIN_JOB_DISK_TOTAL:
  *

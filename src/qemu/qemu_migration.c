@@ -751,6 +751,13 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE,
+                      stats->ram_dirty_rate);
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
+                      VIR_DOMAIN_JOB_MEMORY_ITERATION,
+                      stats->ram_iteration);
+
+    virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_DISK_TOTAL,
                       stats->disk_total);
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
@@ -1099,6 +1106,11 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
                       ctxt, &stats->ram_normal);
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES "[1])",
                       ctxt, &stats->ram_normal_bytes);
+
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE "[1])",
+                      ctxt, &stats->ram_dirty_rate);
+    virXPathULongLong("string(./" VIR_DOMAIN_JOB_MEMORY_ITERATION "[1])",
+                      ctxt, &stats->ram_iteration);
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_DISK_TOTAL "[1])",
                       ctxt, &stats->disk_total);
