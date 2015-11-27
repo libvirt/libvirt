@@ -40,6 +40,6 @@ struct _virLogDaemonClient {
 
 extern virLogDaemonPtr logDaemon;
 
-virLogHandlerPtr virLogDaemonGetHandler(virLogDaemonPtr daemon);
+virLogHandlerPtr virLogDaemonGetHandler(virLogDaemonPtr dmn);
 
 #endif /* __VIR_LOG_DAEMON_H__ */

@@ -127,12 +127,12 @@ virLogDaemonFree(virLogDaemonPtr logd)
 static void
 virLogDaemonInhibitor(bool inhibit, void *opaque)
 {
-    virLogDaemonPtr daemon = opaque;
+    virLogDaemonPtr dmn = opaque;
 
     if (inhibit)
-        virNetDaemonAddShutdownInhibition(daemon->dmn);
+        virNetDaemonAddShutdownInhibition(dmn->dmn);
     else
-        virNetDaemonRemoveShutdownInhibition(daemon->dmn);
+        virNetDaemonRemoveShutdownInhibition(dmn->dmn);
 }
 
 static virLogDaemonPtr
@@ -177,9 +177,9 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
 
 
 virLogHandlerPtr
-virLogDaemonGetHandler(virLogDaemonPtr daemon)
+virLogDaemonGetHandler(virLogDaemonPtr dmn)
 {
-    return daemon->handler;
+    return dmn->handler;
 }
 
 
