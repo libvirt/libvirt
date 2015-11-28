@@ -28,5 +28,6 @@
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
+    <memballoon model='xen'/>
   </devices>
 </domain>

@@ -31,5 +31,6 @@
     <graphics type='vnc' port='5925' autoport='no' listen='127.0.0.1' passwd='123poi'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>
+    <memballoon model='xen'/>
   </devices>
 </domain>

@@ -43,8 +43,12 @@ typedef enum {
 int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id);
 int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion, int *id);
 
-virDomainDefPtr xenParseSxprString(const char *sexpr, int xendConfigVersion,
-                                   char *tty, int vncport);
+virDomainDefPtr xenParseSxprString(const char *sexpr,
+                                   int xendConfigVersion,
+                                   char *tty,
+                                   int vncport,
+                                   virCapsPtr caps,
+                                   virDomainXMLOptionPtr xmlopt);
 
 virDomainDefPtr xenParseSxpr(const struct sexpr *root, int xendConfigVersion,
                              const char *cpus, char *tty, int vncport);

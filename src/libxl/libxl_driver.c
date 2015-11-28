@@ -2587,6 +2587,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
             goto cleanup;
         if (!(def = xenParseXL(conf,
                                cfg->caps,
+                               driver->xmlopt,
                                cfg->verInfo->xen_version_major)))
             goto cleanup;
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
@@ -2595,14 +2596,17 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
 
         if (!(def = xenParseXM(conf,
                                cfg->verInfo->xen_version_major,
-                               cfg->caps)))
+                               cfg->caps,
+                               driver->xmlopt)))
             goto cleanup;
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_SEXPR)) {
         /* only support latest xend config format */
         if (!(def = xenParseSxprString(nativeConfig,
                                        XEND_CONFIG_VERSION_3_1_0,
                                        NULL,
-                                       -1))) {
+                                       -1,
+                                       cfg->caps,
+                                       driver->xmlopt))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("parsing sxpr config failed"));
             goto cleanup;

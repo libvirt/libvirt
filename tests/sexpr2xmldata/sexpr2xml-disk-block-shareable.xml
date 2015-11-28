@@ -29,5 +29,6 @@
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>
+    <memballoon model='xen'/>
   </devices>
 </domain>

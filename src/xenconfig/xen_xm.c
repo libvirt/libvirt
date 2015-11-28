@@ -469,7 +469,8 @@ xenParseXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 virDomainDefPtr
 xenParseXM(virConfPtr conf,
            int xendConfigVersion,
-           virCapsPtr caps)
+           virCapsPtr caps,
+           virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr def = NULL;
 
@@ -490,6 +491,10 @@ xenParseXM(virConfPtr conf,
 
     if (xenParseXMInputDevs(conf, def) < 0)
          goto cleanup;
+
+    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                              xmlopt) < 0)
+        goto cleanup;
 
     return def;
 

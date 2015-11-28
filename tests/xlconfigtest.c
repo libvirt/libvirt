@@ -113,7 +113,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     if (!(conf = virConfReadMem(xmcfgData, strlen(xmcfgData), 0)))
         goto fail;
 
-    if (!(def = xenParseXL(conf, caps, xendConfigVersion)))
+    if (!(def = xenParseXL(conf, caps, xmlopt, xendConfigVersion)))
         goto fail;
 
     if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE |

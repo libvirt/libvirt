@@ -139,7 +139,7 @@ xenXMConfigReadFile(virConnectPtr conn, const char *filename)
     if (!(conf = virConfReadFile(filename, 0)))
         return NULL;
 
-    def = xenParseXM(conf, priv->xendConfigVersion, priv->caps);
+    def = xenParseXM(conf, priv->xendConfigVersion, priv->caps, priv->xmlopt);
     virConfFree(conf);
 
     return def;

@@ -1645,7 +1645,8 @@ xenUnifiedConnectDomainXMLFromNative(virConnectPtr conn,
         if (!conf)
             goto cleanup;
 
-        def = xenParseXM(conf, priv->xendConfigVersion, priv->caps);
+        def = xenParseXM(conf, priv->xendConfigVersion,
+                         priv->caps, priv->xmlopt);
     } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
         if (xenGetDomIdFromSxprString(config, priv->xendConfigVersion, &id) < 0)
             goto cleanup;
@@ -1654,7 +1655,7 @@ xenUnifiedConnectDomainXMLFromNative(virConnectPtr conn,
         vncport = xenStoreDomainGetVNCPort(conn, id);
         xenUnifiedUnlock(priv);
         def = xenParseSxprString(config, priv->xendConfigVersion, tty,
-                                       vncport);
+                                 vncport, priv->caps, priv->xmlopt);
     }
     if (!def)
         goto cleanup;

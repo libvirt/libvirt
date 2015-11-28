@@ -27,7 +27,9 @@
 # include "domain_conf.h"
 # include "xen_common.h"
 
-virDomainDefPtr xenParseXL(virConfPtr conn, virCapsPtr caps,
+virDomainDefPtr xenParseXL(virConfPtr conn,
+                           virCapsPtr caps,
+                           virDomainXMLOptionPtr xmlopt,
                            int xendConfigVersion);
 virConfPtr xenFormatXL(virDomainDefPtr def,
                        virConnectPtr, int xendConfigVersion);

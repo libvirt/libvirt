@@ -17,6 +17,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static virCapsPtr caps;
+static virDomainXMLOptionPtr xmlopt;
 
 static int
 testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
@@ -53,7 +54,8 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
   vncport = xenStoreDomainGetVNCPort(conn, id);
   xenUnifiedUnlock(&priv);
 
-  if (!(def = xenParseSxprString(sexprData, xendConfigVersion, tty, vncport)))
+  if (!(def = xenParseSxprString(sexprData, xendConfigVersion,
+                                 tty, vncport, caps, xmlopt)))
       goto fail;
 
   if (!virDomainDefCheckABIStability(def, def)) {
@@ -115,6 +117,11 @@ mymain(void)
 
     if (!(caps = testXenCapsInit()))
         return EXIT_FAILURE;
+
+    if (!(xmlopt = xenDomainXMLConfInit())) {
+        virObjectUnref(caps);
+        return EXIT_FAILURE;
+    }
 
 #define DO_TEST(in, out, version)                                      \
     do {                                                               \
@@ -186,6 +193,7 @@ mymain(void)
     DO_TEST("boot-grub", "boot-grub", 1);
 
     virObjectUnref(caps);
+    virObjectUnref(xmlopt);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

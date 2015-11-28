@@ -24,12 +24,14 @@
       <driver name='phy'/>
       <source dev='/dev/HostVG/XenGuest2'/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/root/boot.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <interface type='bridge'>
       <mac address='00:16:3e:66:92:9c'/>
@@ -41,5 +43,6 @@
     <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'>
       <listen type='address' address='127.0.0.1'/>
     </graphics>
+    <memballoon model='xen'/>
   </devices>
 </domain>

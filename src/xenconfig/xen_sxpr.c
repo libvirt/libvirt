@@ -1491,7 +1491,11 @@ xenParseSxpr(const struct sexpr *root,
  */
 virDomainDefPtr
 xenParseSxprString(const char *sexpr,
-                         int xendConfigVersion, char *tty, int vncport)
+                   int xendConfigVersion,
+                   char *tty,
+                   int vncport,
+                   virCapsPtr caps,
+                   virDomainXMLOptionPtr xmlopt)
 {
     struct sexpr *root = string2sexpr(sexpr);
     virDomainDefPtr def;
@@ -1499,8 +1503,16 @@ xenParseSxprString(const char *sexpr,
     if (!root)
         return NULL;
 
-    def = xenParseSxpr(root, xendConfigVersion, NULL, tty, vncport);
+    if (!(def = xenParseSxpr(root, xendConfigVersion, NULL, tty, vncport)))
+        goto cleanup;
 
+    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                              xmlopt) < 0) {
+        virDomainDefFree(def);
+        def = NULL;
+    }
+
+ cleanup:
     sexpr_free(root);
 
     return def;

@@ -34,5 +34,6 @@
         <address domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
       </source>
     </hostdev>
+    <memballoon model='xen'/>
   </devices>
 </domain>

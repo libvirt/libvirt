@@ -28,8 +28,10 @@
       <source dev='/dev/zvol/dsk/export/s10u4-root'/>
       <backingStore/>
       <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <input type='mouse' bus='ps2'/>
     <graphics type='vnc' port='-1' keymap='en-us'/>
+    <memballoon model='xen'/>
   </devices>
 </domain>
