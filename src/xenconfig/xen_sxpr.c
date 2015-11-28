@@ -1262,6 +1262,8 @@ xenParseSxpr(const struct sexpr *root,
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = sexpr_int(root, "domain/image/hvm/hpet");
             timer->tickpolicy = -1;
+            timer->mode = -1;
+            timer->track = -1;
 
             def->clock.ntimers = 1;
             def->clock.timers[0] = timer;

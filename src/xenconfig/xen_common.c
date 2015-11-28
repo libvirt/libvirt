@@ -553,6 +553,8 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = val;
             timer->tickpolicy = -1;
+            timer->mode = -1;
+            timer->track = -1;
 
             def->clock.ntimers = 1;
             def->clock.timers[0] = timer;
