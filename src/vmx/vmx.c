@@ -1276,6 +1276,7 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
 virDomainDefPtr
 virVMXParseConfig(virVMXContext *ctx,
                   virDomainXMLOptionPtr xmlopt,
+                  virCapsPtr caps,
                   const char *vmx)
 {
     bool success = false;
@@ -1810,6 +1811,10 @@ virVMXParseConfig(virVMXContext *ctx,
         def->ns = *virDomainXMLOptionGetNamespace(xmlopt);
         def->namespaceData = namespaceData;
     }
+
+    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                              xmlopt) < 0)
+        goto cleanup;
 
     success = true;
 

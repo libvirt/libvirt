@@ -78,7 +78,7 @@ testCompareFiles(const char *vmx, const char *xml)
     if (virtTestLoadFile(vmx, &vmxData) < 0)
         goto cleanup;
 
-    if (!(def = virVMXParseConfig(&ctx, xmlopt, vmxData)))
+    if (!(def = virVMXParseConfig(&ctx, xmlopt, caps, vmxData)))
         goto cleanup;
 
     if (!virDomainDefCheckABIStability(def, def)) {

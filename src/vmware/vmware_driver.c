@@ -1035,7 +1035,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
 
-    def = virVMXParseConfig(&ctx, driver->xmlopt, nativeConfig);
+    def = virVMXParseConfig(&ctx, driver->xmlopt, driver->caps, nativeConfig);
 
     if (def != NULL)
         xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);

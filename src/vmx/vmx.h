@@ -82,6 +82,7 @@ char *virVMXConvertToUTF8(const char *encoding, const char *string);
 
 virDomainDefPtr virVMXParseConfig(virVMXContext *ctx,
                                   virDomainXMLOptionPtr xmlopt,
+                                  virCapsPtr caps,
                                   const char *vmx);
 
 int virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def);
