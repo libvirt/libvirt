@@ -443,7 +443,12 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
         size_t towrite = len;
         bool forceRollover = false;
 
-        if ((file->entry->pos + towrite) > file->maxlen) {
+        if (file->entry->pos > file->maxlen) {
+            /* If existing file is for some reason larger then max length we
+             * won't write to this file anymore, but we rollover this file.*/
+            forceRollover = true;
+            towrite = 0;
+        } else if ((file->entry->pos + towrite) > file->maxlen) {
             towrite = file->maxlen - file->entry->pos;
 
             /*

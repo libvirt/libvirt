@@ -515,6 +515,48 @@ static int testRotatingFileWriterRolloverLineBreak(const void *data ATTRIBUTE_UN
 }
 
 
+static int testRotatingFileWriterLargeFile(const void *data ATTRIBUTE_UNUSED)
+{
+    virRotatingFileWriterPtr file;
+    int ret = -1;
+    const char *buf = "The quick brown fox jumps over the lazy dog\n"
+        "The wizard quickly jinxed the gnomes before they vaporized\n";
+
+    if (testRotatingFileInitFiles(200,
+                                  (off_t)-1,
+                                  (off_t)-1) < 0)
+        return -1;
+
+    file = virRotatingFileWriterNew(FILENAME,
+                                    160,
+                                    2,
+                                    false,
+                                    0700);
+    if (!file)
+        goto cleanup;
+
+    if (testRotatingFileWriterAssertFileSizes(200,
+                                              (off_t)-1,
+                                              (off_t)-1) < 0)
+        goto cleanup;
+
+    virRotatingFileWriterAppend(file, buf, strlen(buf));
+
+    if (testRotatingFileWriterAssertFileSizes(103,
+                                              200,
+                                              (off_t)-1) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virRotatingFileWriterFree(file);
+    unlink(FILENAME);
+    unlink(FILENAME0);
+    unlink(FILENAME1);
+    return ret;
+}
+
+
 static int testRotatingFileReaderOne(const void *data ATTRIBUTE_UNUSED)
 {
     virRotatingFileReaderPtr file;
@@ -679,6 +721,9 @@ mymain(void)
         ret = -1;
 
     if (virtTestRun("Rotating file write rollover line break", testRotatingFileWriterRolloverLineBreak, NULL) < 0)
+        ret = -1;
+
+    if (virtTestRun("Rotating file write to file larger then maxlen", testRotatingFileWriterLargeFile, NULL) < 0)
         ret = -1;
 
     if (virtTestRun("Rotating file read one", testRotatingFileReaderOne, NULL) < 0)
