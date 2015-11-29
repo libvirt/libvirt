@@ -5,8 +5,13 @@
 #ifdef WITH_LXC
 
 # include "lxc/lxc_native.h"
+# include "lxc/lxc_conf.h"
+# include "testutilslxc.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
+
+static virCapsPtr caps;
+static virDomainXMLOptionPtr xmlopt;
 
 static int
 blankProblemElements(char *data)
@@ -30,7 +35,7 @@ testCompareXMLToConfigFiles(const char *xml,
     if (virtTestLoadFile(configfile, &config) < 0)
         goto fail;
 
-    vmdef = lxcParseConfigString(config);
+    vmdef = lxcParseConfigString(config, caps, xmlopt);
     if ((vmdef && expectError) || (!vmdef && !expectError))
         goto fail;
 
@@ -93,6 +98,14 @@ mymain(void)
 {
     int ret = EXIT_SUCCESS;
 
+    if (!(caps = testLXCCapsInit()))
+        return EXIT_FAILURE;
+
+    if (!(xmlopt = lxcDomainXMLConfInit())) {
+        virObjectUnref(caps);
+        return EXIT_FAILURE;
+    }
+
 # define DO_TEST(name, expectError)                         \
     do {                                                    \
         const struct testInfo info = { name, expectError }; \
@@ -114,6 +127,9 @@ mymain(void)
     DO_TEST("cputune", false);
     DO_TEST("cpusettune", false);
     DO_TEST("blkiotune", false);
+
+    virObjectUnref(xmlopt);
+    virObjectUnref(caps);
 
     return ret;
 }

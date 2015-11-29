@@ -27,6 +27,8 @@
 
 # define LXC_CONFIG_FORMAT "lxc-tools"
 
-virDomainDefPtr lxcParseConfigString(const char *config);
+virDomainDefPtr lxcParseConfigString(const char *config,
+                                     virCapsPtr caps,
+                                     virDomainXMLOptionPtr xmlopt);
 
 #endif /* __LXC_NATIVE_H__ */

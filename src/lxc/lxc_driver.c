@@ -1055,6 +1055,8 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
 {
     char *xml = NULL;
     virDomainDefPtr def = NULL;
+    virLXCDriverPtr driver = conn->privateData;
+    virCapsPtr caps = virLXCDriverGetCapabilities(driver, false);
 
     virCheckFlags(0, NULL);
 
@@ -1067,12 +1069,13 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(def = lxcParseConfigString(nativeConfig)))
+    if (!(def = lxcParseConfigString(nativeConfig, caps, driver->xmlopt)))
         goto cleanup;
 
     xml = virDomainDefFormat(def, 0);
 
  cleanup:
+    virObjectUnref(caps);
     virDomainDefFree(def);
     return xml;
 }

@@ -2,7 +2,7 @@
   <name>migrate_test</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>1048576</memory>
-  <currentMemory unit='KiB'>0</currentMemory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
   <memtune>
     <hard_limit unit='KiB'>1048576</hard_limit>
     <soft_limit unit='KiB'>131072</soft_limit>
@@ -23,6 +23,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
+    <emulator>/usr/libexec/libvirt_lxc</emulator>
     <filesystem type='mount' accessmode='passthrough'>
       <source dir='/var/lib/lxc/migrate_test/rootfs'/>
       <target dir='/'/>

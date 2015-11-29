@@ -991,7 +991,9 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
 }
 
 virDomainDefPtr
-lxcParseConfigString(const char *config)
+lxcParseConfigString(const char *config,
+                     virCapsPtr caps,
+                     virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr vmdef = NULL;
     virConfPtr properties = NULL;
@@ -1087,6 +1089,10 @@ lxcParseConfigString(const char *config)
 
     /* lxc.cap.drop */
     lxcSetCapDrop(vmdef, properties);
+
+    if (virDomainDefPostParse(vmdef, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                              xmlopt) < 0)
+        goto cleanup;
 
     goto cleanup;
 

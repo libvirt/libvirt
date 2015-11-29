@@ -659,7 +659,7 @@ lxcxml2xmltest_SOURCES = \
 lxcxml2xmltest_LDADD = $(lxc_LDADDS)
 
 lxcconf2xmltest_SOURCES = \
-	lxcconf2xmltest.c \
+	lxcconf2xmltest.c testutilslxc.c testutilslxc.h \
 	testutils.c testutils.h
 lxcconf2xmltest_LDADD = $(lxc_LDADDS)
 else ! WITH_LXC
