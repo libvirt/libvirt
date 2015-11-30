@@ -33,7 +33,7 @@ typedef virRotatingFileReader *virRotatingFileReaderPtr;
 virRotatingFileWriterPtr virRotatingFileWriterNew(const char *path,
                                                   off_t maxlen,
                                                   size_t maxbackup,
-                                                  bool truncate,
+                                                  bool trunc,
                                                   mode_t mode);
 
 virRotatingFileReaderPtr virRotatingFileReaderNew(const char *path,

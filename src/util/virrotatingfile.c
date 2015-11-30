@@ -219,7 +219,7 @@ virRotatingFileWriterDelete(virRotatingFileWriterPtr file)
  * @path: the base path for files
  * @maxlen: the maximum number of bytes to write before rollover
  * @maxbackup: number of backup files to keep when rolling over
- * @truncate: whether to truncate the current files when opening
+ * @trunc: whether to truncate the current files when opening
  * @mode: the file mode to use for creating new files
  *
  * Create a new object for writing data to a file with
@@ -235,7 +235,7 @@ virRotatingFileWriterPtr
 virRotatingFileWriterNew(const char *path,
                          off_t maxlen,
                          size_t maxbackup,
-                         bool truncate,
+                         bool trunc,
                          mode_t mode)
 {
     virRotatingFileWriterPtr file;
@@ -257,7 +257,7 @@ virRotatingFileWriterNew(const char *path,
     file->maxbackup = maxbackup;
     file->maxlen = maxlen;
 
-    if (truncate &&
+    if (trunc &&
         virRotatingFileWriterDelete(file) < 0)
         goto error;
 
