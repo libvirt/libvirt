@@ -181,6 +181,7 @@ MAINTAINERCLEANFILES += util/virkeymaps.h
 
 util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 		$(srcdir)/util/virkeycode-mapgen.py
+	$(MKDIR_P) util/
 	$(AM_V_GEN)$(PYTHON) $(srcdir)/util/virkeycode-mapgen.py \
 	  <$(srcdir)/util/keymaps.csv >util/virkeymaps.h
 
