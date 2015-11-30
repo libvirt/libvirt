@@ -180,6 +180,7 @@ char *qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
 /* Current, best practice */
 char *qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                                 virDomainHostdevDefPtr dev,
+                                int bootIndex,
                                 const char *configfd,
                                 virQEMUCapsPtr qemuCaps);
 

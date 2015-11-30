@@ -1327,8 +1327,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
             goto error;
         }
 
-        if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, configfd_name,
-                                                 priv->qemuCaps)))
+        if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, 0,
+                                                 configfd_name, priv->qemuCaps)))
             goto error;
 
         qemuDomainObjEnterMonitor(driver, vm);

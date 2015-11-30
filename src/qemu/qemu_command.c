@@ -6084,6 +6084,7 @@ qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
 char *
 qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                           virDomainHostdevDefPtr dev,
+                          int bootIndex, /* used iff dev->info->bootIndex == 0 */
                           const char *configfd,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -6126,7 +6127,9 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
                       pcisrc->addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
+        bootIndex = dev->info->bootIndex;
+    if (bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%d", bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
@@ -9291,7 +9294,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     char *boot_order_str = NULL, *boot_opts_str = NULL;
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
     char *fdc_opts_str = NULL;
-    int bootCD = 0, bootFloppy = 0, bootDisk = 0;
+    int bootCD = 0, bootFloppy = 0, bootDisk = 0, bootHostdevNet = 0;
+
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",
@@ -10279,6 +10283,16 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
 
             last_good_net = i;
+            /* if this interface is a type='hostdev' interface and we
+             * haven't yet added a "bootindex" parameter to an
+             * emulated network device, save the bootindex - hostdev
+             * interface commandlines will be built later on when we
+             * cycle through all the hostdevs, and we'll use it then.
+             */
+            if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+                bootHostdevNet == 0) {
+                bootHostdevNet = bootNet;
+            }
             bootNet = 0;
         }
     }
@@ -11005,6 +11019,16 @@ qemuBuildCommandLine(virConnectPtr conn,
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *configfd_name = NULL;
+                int bootIndex = hostdev->info->bootIndex;
+
+                /* bootNet will be non-0 if boot order was set and no other
+                 * net devices were encountered
+                 */
+                if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+                    bootIndex == 0) {
+                    bootIndex = bootHostdevNet;
+                    bootHostdevNet = 0;
+                }
                 if ((backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
                     int configfd = qemuOpenPCIConfig(hostdev);
@@ -11020,7 +11044,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                     }
                 }
                 virCommandAddArg(cmd, "-device");
-                devstr = qemuBuildPCIHostdevDevStr(def, hostdev, configfd_name, qemuCaps);
+                devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex,
+                                                   configfd_name, qemuCaps);
                 VIR_FREE(configfd_name);
                 if (!devstr)
                     goto error;
