@@ -1873,7 +1873,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
 
     /* construct filter flags */
-    if (vshCommandOptBool(cmd, "inactive"))
+    if (vshCommandOptBool(cmd, "inactive") ||
+        vshCommandOptBool(cmd, "state-shutoff"))
         flags = VIR_CONNECT_LIST_DOMAINS_INACTIVE;
 
     if (vshCommandOptBool(cmd, "all"))
