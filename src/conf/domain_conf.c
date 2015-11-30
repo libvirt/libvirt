@@ -3845,7 +3845,7 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
     int next_unit = 0;
     unsigned controller = 0;
     size_t i;
-    int ret = -1;
+    int ret;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
@@ -3864,16 +3864,13 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    /* If failed to find any VIR_DOMAIN_CONTROLLER_TYPE_SCSI or any space
-     * on existing VIR_DOMAIN_CONTROLLER_TYPE_SCSI controller(s), then
-     * try to add a new controller resulting in placement of this entry
-     * as unit=0
+    /* NB: Do not attempt calling virDomainDefMaybeAddController to
+     * automagically add a "new" controller. Doing so will result in
+     * qemuDomainFindOrCreateSCSIDiskController "finding" the controller
+     * in the domain def list and thus not hotplugging the controller as
+     * well as the hostdev in the event that there are either no SCSI
+     * controllers defined or there was no space on an existing one.
      */
-    if (ret == -1 &&
-        virDomainDefMaybeAddController((virDomainDefPtr) def,
-                                           VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                           controller, -1) < 0)
-        return -1;
 
     hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
     hostdev->info->addr.drive.controller = controller;
@@ -15965,6 +15962,15 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
 
         def->hostdevs[def->nhostdevs++] = hostdev;
+
+        /* For a domain definition, we need to check if the controller
+         * for this hostdev exists yet and if not add it. This cannot be
+         * done during virDomainHostdevAssignAddress (as part of device
+         * post processing) because that will result in the failure to
+         * load the controller during hostdev hotplug.
+         */
+        if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
+            goto error;
     }
     VIR_FREE(nodes);
 
