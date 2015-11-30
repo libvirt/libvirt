@@ -19,6 +19,7 @@
 virincdir = $(includedir)/libvirt
 
 virinc_HEADERS = libvirt.h		\
+		 libvirt-common.h	\
 		 libvirt-domain.h \
 		 libvirt-domain-snapshot.h \
 		 libvirt-event.h \
