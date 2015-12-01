@@ -2117,6 +2117,10 @@ libvirt_admin.syms: libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt_admin.syms
 
+# admin/admin_remote.c is being included in libvirt-admin.c, so we
+# need to include it in the dist
+EXTRA_DIST += admin/admin_remote.c
+
 lib_LTLIBRARIES += libvirt-admin.la
 libvirt_admin_la_SOURCES = \
 		libvirt-admin.c			\
