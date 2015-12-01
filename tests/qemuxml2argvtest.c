@@ -1660,6 +1660,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("shmem-msi-only", NONE);
     DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
 
+    DO_TEST_FAILURE("memory-align-fail", NONE);
     DO_TEST_FAILURE("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
     DO_TEST_FAILURE("memory-hotplug", NONE);
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
