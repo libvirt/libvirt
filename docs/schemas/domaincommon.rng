@@ -5218,9 +5218,7 @@
   </define>
   <!-- Memory as an attribute is in KiB, no way to express a unit -->
   <define name="memoryKB">
-    <data type="unsignedInt">
-      <param name="pattern">[0-9]+</param>
-    </data>
+    <data type="unsignedLong"/>
   </define>
   <define name="domainName">
     <data type="string">
