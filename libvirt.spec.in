@@ -1569,6 +1569,7 @@ mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt-admin.so
 rm -f $RPM_BUILD_ROOT%{_bindir}/virt-admin
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/virt-admin.1*
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libvirt-admin.conf
 
 %if %{with_network}
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
