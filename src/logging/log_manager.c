@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include "configmake.h"
-
 #include "log_manager.h"
 #include "log_protocol.h"
 #include "viralloc.h"
@@ -33,6 +31,7 @@
 #include "virfile.h"
 
 #include "rpc/virnetclient.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_LOGGING
 
