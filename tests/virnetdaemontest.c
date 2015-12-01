@@ -26,7 +26,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
-#ifdef HAVE_SOCKETPAIR
+#if defined(HAVE_SOCKETPAIR) && defined(WITH_YAJL)
 static virNetServerPtr
 testCreateServer(const char *host, int family)
 {
