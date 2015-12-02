@@ -1531,8 +1531,8 @@ to the I<uri> namespace is displayed instead of being modified.
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
 [I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>] [I<--postcopy>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>]
-[I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
-[I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
+[I<dname>] [I<--timeout> B<seconds> [I<--timeout-suspend> | I<--timeout-postcopy>]]
+[I<--xml> B<file>] [I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1582,9 +1582,14 @@ the destination to supply a larger set of changes to any host-specific
 portions of the domain XML, such as accounting for naming differences
 between source and destination in accessing underlying storage.
 
-I<--timeout> B<seconds> forces guest to suspend when live migration exceeds
-that many seconds, and
-then the migration will complete offline. It can only be used with I<--live>.
+I<--timeout> B<seconds> tells virsh to run a specified action when live
+migration exceeds that many seconds.  It can only be used with I<--live>.
+If I<--timeout-suspend> is specified, the domain will be suspended after
+the timeout and the migration will complete offline; this is the default
+if no I<--timeout-*> option is specified on the command line.  When
+I<--timeout-postcopy> is used, virsh will switch migration from pre-copy
+to post-copy upon timeout; migration has to be started with I<--postcopy>
+option for this to work.
 
 Running migration can be canceled by interrupting virsh (usually using
 C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.

@@ -9661,7 +9661,16 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "timeout",
      .type = VSH_OT_INT,
-     .help = N_("force guest to suspend if live migration exceeds timeout (in seconds)")
+     .help = N_("run action specified by --timeout-* option (suspend by "
+                "default) if live migration exceeds timeout (in seconds)")
+    },
+    {.name = "timeout-suspend",
+     .type = VSH_OT_BOOL,
+     .help = N_("suspend the guest after timeout")
+    },
+    {.name = "timeout-postcopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("switch to post-copy after timeout")
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
@@ -9851,14 +9860,35 @@ doMigrate(void *opaque)
     goto out;
 }
 
+typedef enum {
+    VIRSH_MIGRATE_TIMEOUT_DEFAULT,
+    VIRSH_MIGRATE_TIMEOUT_SUSPEND,
+    VIRSH_MIGRATE_TIMEOUT_POSTCOPY,
+} virshMigrateTimeoutAction;
+
 static void
-virshMigrationTimeout(vshControl *ctl,
-                      virDomainPtr dom,
-                      void *opaque ATTRIBUTE_UNUSED)
+virshMigrateTimeout(vshControl *ctl,
+                    virDomainPtr dom,
+                    void *opaque)
 {
-    vshDebug(ctl, VSH_ERR_DEBUG, "suspending the domain, "
-             "since migration timed out\n");
-    virDomainSuspend(dom);
+    virshMigrateTimeoutAction action = *(virshMigrateTimeoutAction *) opaque;
+
+    switch (action) {
+    case VIRSH_MIGRATE_TIMEOUT_DEFAULT: /* unreachable */
+    case VIRSH_MIGRATE_TIMEOUT_SUSPEND:
+        vshDebug(ctl, VSH_ERR_DEBUG,
+                 "migration timed out; suspending domain\n");
+        if (virDomainSuspend(dom) < 0)
+            vshDebug(ctl, VSH_ERR_INFO, "suspending domain failed\n");
+        break;
+
+    case VIRSH_MIGRATE_TIMEOUT_POSTCOPY:
+        vshDebug(ctl, VSH_ERR_DEBUG,
+                 "migration timed out; switching to post-copy\n");
+        if (virDomainMigrateStartPostCopy(dom, 0) < 0)
+            vshDebug(ctl, VSH_ERR_INFO, "switching to post-copy failed\n");
+        break;
+    }
 }
 
 static bool
@@ -9870,10 +9900,12 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     bool verbose = false;
     bool functionReturn = false;
     int timeout = 0;
+    virshMigrateTimeoutAction timeoutAction = VIRSH_MIGRATE_TIMEOUT_DEFAULT;
     bool live_flag = false;
     virshCtrlData data = { .dconn = NULL };
 
     VSH_EXCLUSIVE_OPTIONS("live", "offline");
+    VSH_EXCLUSIVE_OPTIONS("timeout-suspend", "timeout-postcopy");
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9888,6 +9920,19 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     } else if (timeout > 0 && !live_flag) {
         vshError(ctl, "%s",
                  _("migrate: Unexpected timeout for offline migration"));
+        goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "timeout-suspend"))
+        timeoutAction = VIRSH_MIGRATE_TIMEOUT_SUSPEND;
+    if (vshCommandOptBool(cmd, "timeout-postcopy"))
+        timeoutAction = VIRSH_MIGRATE_TIMEOUT_POSTCOPY;
+    if (timeout > 0) {
+        if (timeoutAction == VIRSH_MIGRATE_TIMEOUT_DEFAULT)
+            timeoutAction = VIRSH_MIGRATE_TIMEOUT_SUSPEND;
+    } else if (timeoutAction) {
+        vshError(ctl, "%s",
+                 _("migrate: Unexpected --timeout-* option without --timeout"));
         goto cleanup;
     }
 
@@ -9921,7 +9966,8 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
                         &data) < 0)
         goto cleanup;
     functionReturn = virshWatchJob(ctl, dom, verbose, p[0], timeout,
-                                   virshMigrationTimeout, NULL, _("Migration"));
+                                   virshMigrateTimeout,
+                                   &timeoutAction, _("Migration"));
 
     virThreadJoin(&workerThread);
 
