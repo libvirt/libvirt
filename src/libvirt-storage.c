@@ -1684,7 +1684,7 @@ virStorageVolUpload(virStorageVolPtr vol,
 /**
  * virStorageVolDelete:
  * @vol: pointer to storage volume
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virStorageVolDeleteFlags
  *
  * Delete the storage volume from the pool
  *
