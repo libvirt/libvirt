@@ -513,6 +513,9 @@ static int virStorageBackendRBDDeleteVol(virConnectPtr conn,
     ptr.cluster = NULL;
     ptr.ioctx = NULL;
 
+    virCheckFlags(VIR_STORAGE_VOL_DELETE_ZEROED |
+                  VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS, -1);
+
     VIR_DEBUG("Removing RBD image %s/%s", pool->def->source.name, vol->name);
 
     if (flags & VIR_STORAGE_VOL_DELETE_ZEROED)
