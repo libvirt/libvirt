@@ -2295,7 +2295,9 @@ Output the device used for the TTY console of the domain. If the information
 is not available the processes will provide an exit code of 1.
 
 =item B<undefine> I<domain> [I<--managed-save>] [I<--snapshots-metadata>]
-[I<--nvram>] [ {I<--storage> B<volumes> | I<--remove-all-storage>} I<--wipe-storage>]
+[I<--nvram>]
+[ {I<--storage> B<volumes> | I<--remove-all-storage> [I<--delete-snapshots>]}
+I<--wipe-storage>]
 
 Undefine a domain. If the domain is running, this converts it to a
 transient domain, without stopping it. If the domain is inactive,
@@ -2329,6 +2331,11 @@ Example: --storage vda,/path/to/storage.img
 
 The I<--remove-all-storage> flag specifies that all of the domain's storage
 volumes should be deleted.
+
+The I<--delete-snapshots> flag specifies that any snapshots associated with
+the storage volume should be deleted as well. Requires the
+I<--remove-all-storage> flag to be provided. Not all storage drivers
+support this option, presently only rbd.
 
 The flag I<--wipe-storage> specifies that the storage volumes should be
 wiped before removal.
@@ -3461,11 +3468,16 @@ where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
 
 =item B<vol-delete> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+[I<--delete-snapshots>]
 
 Delete a given volume.
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
 is in.
 I<vol-name-or-key-or-path> is the name or key or path of the volume to delete.
+
+The I<--delete-snapshots> flag specifies that any snapshots associated with
+the storage volume should be deleted as well. Not all storage drivers
+support this option, presently only rbd.
 
 =item B<vol-upload> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
 [I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>

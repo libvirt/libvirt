@@ -887,6 +887,11 @@ static const vshCmdOptDef opts_vol_delete[] = {
      .type = VSH_OT_STRING,
      .help = N_("pool name or uuid")
     },
+    {.name = "delete-snapshots",
+     .type = VSH_OT_BOOL,
+     .help = N_("delete snapshots associated with volume (must be "
+                "supported by storage driver)")
+    },
     {.name = NULL}
 };
 
@@ -896,11 +901,16 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
     virStorageVolPtr vol;
     bool ret = true;
     const char *name;
+    bool delete_snapshots = vshCommandOptBool(cmd, "delete-snapshots");
+    unsigned int flags = 0;
 
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", &name)))
         return false;
 
-    if (virStorageVolDelete(vol, 0) == 0) {
+    if (delete_snapshots)
+        flags |= VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS;
+
+    if (virStorageVolDelete(vol, flags) == 0) {
         vshPrint(ctl, _("Vol %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete vol %s"), name);

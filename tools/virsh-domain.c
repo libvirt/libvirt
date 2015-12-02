@@ -3674,6 +3674,11 @@ static const vshCmdOptDef opts_undefine[] = {
      .type = VSH_OT_BOOL,
      .help = N_("remove all associated storage volumes (use with caution)")
     },
+    {.name = "delete-snapshots",
+     .type = VSH_OT_BOOL,
+     .help = N_("delete snapshots associated with volume(s), requires "
+                "--remove-all-storage (must be supported by storage driver)")
+    },
     {.name = "wipe-storage",
      .type = VSH_OT_BOOL,
      .help = N_("wipe data on the removed volumes")
@@ -3703,11 +3708,13 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     /* Flags to attempt.  */
     unsigned int flags = 0;
+    unsigned int vol_flags = 0;
     /* User-requested actions.  */
     bool managed_save = vshCommandOptBool(cmd, "managed-save");
     bool snapshots_metadata = vshCommandOptBool(cmd, "snapshots-metadata");
     bool wipe_storage = vshCommandOptBool(cmd, "wipe-storage");
     bool remove_all_storage = vshCommandOptBool(cmd, "remove-all-storage");
+    bool delete_snapshots = vshCommandOptBool(cmd, "delete-snapshots");
     bool nvram = vshCommandOptBool(cmd, "nvram");
     /* Positive if these items exist.  */
     int has_managed_save = 0;
@@ -3736,6 +3743,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     size_t j;
     virshControlPtr priv = ctl->privData;
 
+    VSH_REQUIRE_OPTION("delete-snapshots", "remove-all-storage");
+
     ignore_value(vshCommandOptStringQuiet(ctl, cmd, "storage", &vol_string));
 
     if (!(vol_string || remove_all_storage) && wipe_storage) {
@@ -3744,6 +3753,9 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                    "'--remove-all-storage'"));
         return false;
     }
+
+    if (delete_snapshots)
+        vol_flags |= VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS;
 
     if (managed_save) {
         flags |= VIR_DOMAIN_UNDEFINE_MANAGED_SAVE;
@@ -4011,7 +4023,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             }
 
             /* delete the volume */
-            if (virStorageVolDelete(vols[i].vol, 0) < 0) {
+            if (virStorageVolDelete(vols[i].vol, vol_flags) < 0) {
                 vshError(ctl, _("Failed to remove storage volume '%s'(%s)"),
                          vols[i].target, vols[i].source);
                 ret = false;
