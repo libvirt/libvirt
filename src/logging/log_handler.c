@@ -30,6 +30,7 @@
 #include "virstring.h"
 #include "virlog.h"
 #include "virrotatingfile.h"
+#include "viruuid.h"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -51,6 +52,10 @@ struct _virLogHandlerLogFile {
     virRotatingFileWriterPtr file;
     int watch;
     int pipefd; /* Read from QEMU via this */
+
+    char *driver;
+    unsigned char domuuid[VIR_UUID_BUFLEN];
+    char *domname;
 };
 
 struct _virLogHandler {
@@ -93,6 +98,9 @@ virLogHandlerLogFileFree(virLogHandlerLogFilePtr file)
 
     if (file->watch != -1)
         virEventRemoveHandle(file->watch);
+
+    VIR_FREE(file->driver);
+    VIR_FREE(file->domname);
     VIR_FREE(file);
 }
 
@@ -204,6 +212,8 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
 {
     virLogHandlerLogFilePtr file;
     const char *path;
+    const char *domuuid;
+    const char *tmp;
 
     if (VIR_ALLOC(file) < 0)
         return NULL;
@@ -212,7 +222,34 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
 
     if ((path = virJSONValueObjectGetString(object, "path")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing file path in JSON document"));
+                       _("Missing 'path' field in JSON document"));
+        goto error;
+    }
+
+    if ((tmp = virJSONValueObjectGetString(object, "driver")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing 'driver' in JSON document"));
+        goto error;
+    }
+    if (VIR_STRDUP(file->driver, tmp) < 0)
+        goto error;
+
+    if ((tmp = virJSONValueObjectGetString(object, "domname")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing 'domname' in JSON document"));
+        goto error;
+    }
+    if (VIR_STRDUP(file->domname, tmp) < 0)
+        goto error;
+
+    if ((domuuid = virJSONValueObjectGetString(object, "domuuid")) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing 'domuuid' in JSON document"));
+        goto error;
+    }
+    if (virUUIDParse(domuuid, file->domuuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed 'domuuid' in JSON document"));
         goto error;
     }
 
@@ -225,7 +262,7 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
 
     if (virJSONValueObjectGetNumberInt(object, "pipefd", &file->pipefd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing file pipefd in JSON document"));
+                       _("Missing 'pipefd' in JSON document"));
         goto error;
     }
     if (virSetInherit(file->pipefd, false) < 0) {
@@ -347,7 +384,7 @@ virLogHandlerGetLogFilePathForDomain(virLogHandlerPtr handler,
 int
 virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                const char *driver,
-                               const unsigned char *domuuid ATTRIBUTE_UNUSED,
+                               const unsigned char *domuuid,
                                const char *domname,
                                ino_t *inode,
                                off_t *offset)
@@ -388,6 +425,10 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     file->watch = -1;
     file->pipefd = pipefd[0];
     pipefd[0] = -1;
+    memcpy(file->domuuid, domuuid, VIR_UUID_BUFLEN);
+    if (VIR_STRDUP(file->driver, driver) < 0 ||
+        VIR_STRDUP(file->domname, domname) < 0)
+        goto error;
 
     if ((file->file = virRotatingFileWriterNew(path,
                                                DEFAULT_FILE_SIZE,
@@ -531,6 +572,7 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
     virJSONValuePtr ret = virJSONValueNewObject();
     virJSONValuePtr files;
     size_t i;
+    char domuuid[VIR_UUID_STRING_BUFLEN];
 
     if (!ret)
         return NULL;
@@ -559,6 +601,18 @@ virLogHandlerPreExecRestart(virLogHandlerPtr handler)
 
         if (virJSONValueObjectAppendString(file, "path",
                                            virRotatingFileWriterGetPath(handler->files[i]->file)) < 0)
+            goto error;
+
+        if (virJSONValueObjectAppendString(file, "driver",
+                                           handler->files[i]->driver) < 0)
+            goto error;
+
+        if (virJSONValueObjectAppendString(file, "domname",
+                                           handler->files[i]->domname) < 0)
+            goto error;
+
+        virUUIDFormat(handler->files[i]->domuuid, domuuid);
+        if (virJSONValueObjectAppendString(file, "domuuid", domuuid) < 0)
             goto error;
 
         if (virSetInherit(handler->files[i]->pipefd, true) < 0) {
