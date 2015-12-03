@@ -222,7 +222,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshCommandOptString(ctl, cmd, "allocation", &allocationStr) > 0 &&
+    if (vshCommandOptStringQuiet(ctl, cmd, "allocation", &allocationStr) > 0 &&
         virshVolSize(allocationStr, &allocation) < 0) {
         vshError(ctl, _("Malformed size %s"), allocationStr);
         goto cleanup;

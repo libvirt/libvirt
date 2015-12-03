@@ -270,8 +270,8 @@ int vshCommandOptUL(vshControl *ctl, const vshCmd *cmd,
 int vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
                         const char *name, unsigned long *value)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
-int vshCommandOptString(vshControl *ctl, const vshCmd *cmd,
-                        const char *name, const char **value)
+int vshCommandOptStringQuiet(vshControl *ctl, const vshCmd *cmd,
+                             const char *name, const char **value)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 int vshCommandOptStringReq(vshControl *ctl, const vshCmd *cmd,
                            const char *name, const char **value)

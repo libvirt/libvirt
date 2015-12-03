@@ -944,21 +944,21 @@ vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
 }
 
 /**
- * vshCommandOptString:
+ * vshCommandOptStringQuiet:
  * @ctl virtshell control structure
  * @cmd command reference
  * @name option name
  * @value result
  *
- * Returns option as STRING
+ * Returns option as STRING. On error -1 is returned but no error is set.
  * Return value:
  * >0 if option found and valid (@value updated)
  * 0 if option not found and not required (@value untouched)
  * <0 in all other cases (@value untouched)
  */
 int
-vshCommandOptString(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
-                    const char *name, const char **value)
+vshCommandOptStringQuiet(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+                         const char *name, const char **value)
 {
     vshCmdOpt *arg;
     int ret;
@@ -2793,7 +2793,7 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
  {
     const char *name = NULL;
 
-    if (vshCommandOptString(ctl, cmd, "command", &name) <= 0) {
+    if (vshCommandOptStringQuiet(ctl, cmd, "command", &name) <= 0) {
         const vshCmdGrp *grp;
         const vshCmdDef *def;
 
@@ -2857,7 +2857,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (vshCommandOptString(ctl, cmd, "dir", &dir) <= 0)
+    if (vshCommandOptStringQuiet(ctl, cmd, "dir", &dir) <= 0)
         dir = dir_malloced = virGetUserDirectory();
     if (!dir)
         dir = "/";

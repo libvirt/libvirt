@@ -1622,7 +1622,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             goto save_error;
     }
 
-    rv = vshCommandOptString(ctl, cmd, "device-weights", &device_weight);
+    rv = vshCommandOptStringQuiet(ctl, cmd, "device-weights", &device_weight);
     if (rv < 0) {
         vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
@@ -1633,7 +1633,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             goto save_error;
     }
 
-    rv = vshCommandOptString(ctl, cmd, "device-read-iops-sec", &device_riops);
+    rv = vshCommandOptStringQuiet(ctl, cmd, "device-read-iops-sec", &device_riops);
     if (rv < 0) {
         vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
@@ -1644,7 +1644,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             goto save_error;
     }
 
-    rv = vshCommandOptString(ctl, cmd, "device-write-iops-sec", &device_wiops);
+    rv = vshCommandOptStringQuiet(ctl, cmd, "device-write-iops-sec", &device_wiops);
     if (rv < 0) {
         vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
@@ -1655,7 +1655,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             goto save_error;
     }
 
-    rv = vshCommandOptString(ctl, cmd, "device-read-bytes-sec", &device_rbps);
+    rv = vshCommandOptStringQuiet(ctl, cmd, "device-read-bytes-sec", &device_rbps);
     if (rv < 0) {
         vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
@@ -1666,7 +1666,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
             goto save_error;
     }
 
-    rv = vshCommandOptString(ctl, cmd, "device-write-bytes-sec", &device_wbps);
+    rv = vshCommandOptStringQuiet(ctl, cmd, "device-write-bytes-sec", &device_wbps);
     if (rv < 0) {
         vshError(ctl, "%s", _("Unable to parse string parameter"));
         goto cleanup;
@@ -3736,7 +3736,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     size_t j;
     virshControlPtr priv = ctl->privData;
 
-    ignore_value(vshCommandOptString(ctl, cmd, "storage", &vol_string));
+    ignore_value(vshCommandOptStringQuiet(ctl, cmd, "storage", &vol_string));
 
     if (!(vol_string || remove_all_storage) && wipe_storage) {
         vshError(ctl,
@@ -4115,7 +4115,7 @@ cmdStartGetFDs(vshControl *ctl,
     *nfdsret = 0;
     *fdsret = NULL;
 
-    if (vshCommandOptString(ctl, cmd, "pass-fds", &fdopt) <= 0)
+    if (vshCommandOptStringQuiet(ctl, cmd, "pass-fds", &fdopt) <= 0)
         return 0;
 
     if (!(fdlist = virStringSplit(fdopt, ",", -1))) {
@@ -5310,7 +5310,7 @@ doDump(void *opaque)
             goto out;
         }
 
-        if (vshCommandOptString(ctl, cmd, "format", &format) > 0) {
+        if (vshCommandOptStringQuiet(ctl, cmd, "format", &format) > 0) {
             if (STREQ(format, "kdump-zlib")) {
                 dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB;
             } else if (STREQ(format, "kdump-lzo")) {
@@ -8359,7 +8359,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(ctl, cmd, "codeset", &codeset_option) <= 0)
+    if (vshCommandOptStringQuiet(ctl, cmd, "codeset", &codeset_option) <= 0)
         codeset_option = "linux";
 
     if (vshCommandOptUInt(ctl, cmd, "holdtime", &holdtime) < 0)
@@ -8775,7 +8775,7 @@ virshMemtuneGetSize(vshControl *ctl, const vshCmd *cmd,
     const char *str;
     char *end;
 
-    ret = vshCommandOptString(ctl, cmd, name, &str);
+    ret = vshCommandOptStringQuiet(ctl, cmd, name, &str);
     if (ret <= 0)
         return ret;
     if (virStrToLong_ll(str, &end, 10, value) < 0)

@@ -398,7 +398,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     virshNodeDeviceListPtr list = NULL;
     int cap_type = -1;
 
-    ignore_value(vshCommandOptString(ctl, cmd, "cap", &cap_str));
+    ignore_value(vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str));
 
     if (cap_str) {
         if (tree) {
@@ -615,7 +615,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "device", &name) < 0)
         return false;
 
-    ignore_value(vshCommandOptString(ctl, cmd, "driver", &driverName));
+    ignore_value(vshCommandOptStringQuiet(ctl, cmd, "driver", &driverName));
 
     if (!(device = virNodeDeviceLookupByName(priv->conn, name))) {
         vshError(ctl, _("Could not find matching device '%s'"), name);
