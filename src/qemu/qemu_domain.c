@@ -2360,13 +2360,15 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
         }
     }
 
+ cleanup:
     virObjectUnref(cfg);
+    VIR_FREE(logfile);
     return ctxt;
 
  error:
-    virObjectUnref(cfg);
     qemuDomainLogContextFree(ctxt);
-    return NULL;
+    ctxt = NULL;
+    goto cleanup;
 }
 
 
