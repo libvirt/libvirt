@@ -224,18 +224,17 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
 {
     int rc;
     char *res_ifname = NULL;
-    int vnet_hdr = 0;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
 
     if (net->model && STREQ(net->model, "virtio"))
-        vnet_hdr = 1;
+        macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
 
     rc = virNetDevMacVLanCreateWithVPortProfile(
         net->ifname, &net->mac,
         virDomainNetGetActualDirectDev(net),
         virDomainNetGetActualDirectMode(net),
-        vnet_hdr, def->uuid,
+        def->uuid,
         virDomainNetGetActualVirtPortProfile(net),
         &res_ifname,
         vmop, cfg->stateDir,

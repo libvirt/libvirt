@@ -727,7 +727,6 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
  * @macaddress: The MAC address for the macvtap device
  * @linkdev: The interface name of the NIC to connect to the external bridge
  * @mode: int describing the mode for 'bridge', 'vepa', 'private' or 'passthru'.
- * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
  * @vmuuid: The UUID of the VM the macvtap belongs to
  * @virtPortProfile: pointer to object holding the virtual port profile data
  * @res_ifname: Pointer to a string pointer where the actual name of the
@@ -743,7 +742,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
                                            virNetDevMacVLanMode mode,
-                                           int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char **res_ifname,
@@ -764,6 +762,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     const char *cr_ifname = NULL;
     int ret;
     int vf = -1;
+    bool vnet_hdr = flags & VIR_NETDEV_MACVLAN_VNET_HDR;
 
     macvtapMode = modeMap[mode];
 
@@ -1017,7 +1016,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
-                                           int vnet_hdr ATTRIBUTE_UNUSED,
                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,

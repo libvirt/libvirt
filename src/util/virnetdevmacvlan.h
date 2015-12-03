@@ -46,6 +46,8 @@ typedef enum {
    VIR_NETDEV_MACVLAN_CREATE_WITH_TAP = 1 << 0,
    /* Bring the interface up */
    VIR_NETDEV_MACVLAN_CREATE_IFUP     = 1 << 1,
+   /* Enable VNET_HDR */
+   VIR_NETDEV_MACVLAN_VNET_HDR          = 1 << 2,
 } virNetDevMacVLanCreateFlags;
 
 int virNetDevMacVLanCreate(const char *ifname,
@@ -64,7 +66,6 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
                                            virNetDevMacVLanMode mode,
-                                           int vnet_hdr,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char **res_ifname,
