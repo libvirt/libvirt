@@ -2275,11 +2275,11 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "path", &path) < 0)
         return false;
-    if (vshCommandOptString(ctl, cmd, "dest", &dest) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "dest", &dest) < 0)
         return false;
-    if (vshCommandOptString(ctl, cmd, "xml", &xml) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "xml", &xml) < 0)
         return false;
-    if (vshCommandOptString(ctl, cmd, "format", &format) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "format", &format) < 0)
         return false;
     /* XXX: Parse bandwidth as scaled input, rather than forcing
      * MiB/s, and either reject negative input or treat it as 0 rather
@@ -9146,7 +9146,7 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     data.count = 0;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
-    if (vshCommandOptString(ctl, cmd, "event", &event) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "event", &event) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "domain"))
@@ -12368,7 +12368,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (eventName) {
         for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
