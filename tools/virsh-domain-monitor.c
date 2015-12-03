@@ -2243,9 +2243,9 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptString(ctl, cmd, "interface", &ifacestr) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "interface", &ifacestr) < 0)
         goto cleanup;
-    if (vshCommandOptString(ctl, cmd, "source", &sourcestr) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
         goto cleanup;
 
     if (sourcestr) {

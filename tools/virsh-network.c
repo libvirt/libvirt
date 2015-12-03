@@ -1262,7 +1262,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
         return true;
     }
 
-    if (vshCommandOptString(ctl, cmd, "event", &eventName) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
         vshError(ctl, "%s", _("either --list or event type is required"));
@@ -1372,7 +1372,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     virNetworkPtr network = NULL;
 
-    if (vshCommandOptString(ctl, cmd, "mac", &mac) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         return false;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, &name)))
