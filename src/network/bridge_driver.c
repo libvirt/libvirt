@@ -3648,8 +3648,15 @@ networkGetDHCPLeases(virNetworkPtr network,
     virNetworkDHCPLeasePtr lease = NULL;
     virNetworkDHCPLeasePtr *leases_ret = NULL;
     virNetworkObjPtr obj;
+    virMacAddr mac_addr;
 
     virCheckFlags(0, -1);
+
+    /* only to check if the MAC is valid */
+    if (mac && virMacAddrParse(mac, &mac_addr) < 0) {
+        virReportError(VIR_ERR_INVALID_MAC, "%s", mac);
+        return -1;
+    }
 
     if (!(obj = networkObjFromNetwork(network)))
         return -1;
