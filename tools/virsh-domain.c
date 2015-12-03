@@ -7116,10 +7116,8 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptUInt(ctl, cmd, "iothread", &iothread_id) < 0)
         goto cleanup;
 
-    if (vshCommandOptString(ctl, cmd, "cpulist", &cpulist) < 0) {
-        vshError(ctl, "%s", _("iothreadpin: invalid cpulist."));
+    if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0)
         goto cleanup;
-    }
 
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0)
         goto cleanup;
