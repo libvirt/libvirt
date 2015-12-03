@@ -229,8 +229,7 @@ static int
 getrealpath(char **newpath,
             const char *path)
 {
-    if (!fakesysfsdir)
-        init_env();
+    init_env();
 
     if (STRPREFIX(path, PCI_SYSFS_PREFIX)) {
         if (virAsprintfQuiet(newpath, "%s/%s",
