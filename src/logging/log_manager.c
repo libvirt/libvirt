@@ -156,6 +156,7 @@ virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
                                const char *driver,
                                const unsigned char *domuuid,
                                const char *domname,
+                               const char *path,
                                unsigned int flags,
                                ino_t *inode,
                                off_t *offset)
@@ -172,6 +173,7 @@ virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
     args.driver = (char *)driver;
     memcpy(args.dom.uuid, domuuid, VIR_UUID_BUFLEN);
     args.dom.name = (char *)domname;
+    args.path = (char *)path;
     args.flags = flags;
 
     if (virNetClientProgramCall(mgr->program,
@@ -211,9 +213,7 @@ virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
 
 int
 virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
-                                      const char *driver,
-                                      const unsigned char *domuuid,
-                                      const char *domname,
+                                      const char *path,
                                       unsigned int flags,
                                       ino_t *inode,
                                       off_t *offset)
@@ -225,9 +225,7 @@ virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    args.driver = (char *)driver;
-    memcpy(args.dom.uuid, domuuid, VIR_UUID_BUFLEN);
-    args.dom.name = (char *)domname;
+    args.path = (char *)path;
     args.flags = flags;
 
     if (virNetClientProgramCall(mgr->program,
@@ -250,9 +248,7 @@ virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
 
 char *
 virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
-                               const char *driver,
-                               const unsigned char *domuuid,
-                               const char *domname,
+                               const char *path,
                                ino_t inode,
                                off_t offset,
                                size_t maxlen,
@@ -267,9 +263,7 @@ virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    args.driver = (char *)driver;
-    memcpy(args.dom.uuid, domuuid, VIR_UUID_BUFLEN);
-    args.dom.name = (char *)domname;
+    args.path = (char *)path;
     args.flags = flags;
     args.pos.inode = inode;
     args.pos.offset = offset;

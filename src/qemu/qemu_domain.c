@@ -85,8 +85,7 @@ struct _qemuDomainLogContext {
     int readfd; /* Only used if manager == NULL */
     off_t pos;
     ino_t inode; /* Only used if manager != NULL */
-    unsigned char uuid[VIR_UUID_BUFLEN]; /* Only used if manager != NULL */
-    char *name; /* Only used if manager != NULL */
+    char *path;
     virLogManagerPtr manager;
 };
 
@@ -2285,7 +2284,6 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr ctxt = NULL;
-    char *logfile = NULL;
 
     if (VIR_ALLOC(ctxt) < 0)
         goto error;
@@ -2295,37 +2293,33 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     ctxt->readfd = -1;
     virAtomicIntSet(&ctxt->refs, 1);
 
+    if (virAsprintf(&ctxt->path, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
+        goto error;
+
     if (cfg->stdioLogD) {
         ctxt->manager = virLogManagerNew(virQEMUDriverIsPrivileged(driver));
         if (!ctxt->manager)
             goto error;
 
-        if (VIR_STRDUP(ctxt->name, vm->def->name) < 0)
-            goto error;
-
-        memcpy(ctxt->uuid, vm->def->uuid, VIR_UUID_BUFLEN);
-
         ctxt->writefd = virLogManagerDomainOpenLogFile(ctxt->manager,
                                                        "qemu",
                                                        vm->def->uuid,
                                                        vm->def->name,
+                                                       ctxt->path,
                                                        0,
                                                        &ctxt->inode,
                                                        &ctxt->pos);
         if (ctxt->writefd < 0)
             goto error;
     } else {
-        if (virAsprintf(&logfile, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
-            goto error;
-
-        if ((ctxt->writefd = open(logfile, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
+        if ((ctxt->writefd = open(ctxt->path, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
             virReportSystemError(errno, _("failed to create logfile %s"),
-                                 logfile);
+                                 ctxt->path);
             goto error;
         }
         if (virSetCloseExec(ctxt->writefd) < 0) {
             virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
-                                 logfile);
+                                 ctxt->path);
             goto error;
         }
 
@@ -2336,33 +2330,32 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
             !virQEMUDriverIsPrivileged(driver) &&
             ftruncate(ctxt->writefd, 0) < 0) {
             virReportSystemError(errno, _("failed to truncate %s"),
-                                 logfile);
+                                 ctxt->path);
             goto error;
         }
 
         if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START) {
-            if ((ctxt->readfd = open(logfile, O_RDONLY, S_IRUSR | S_IWUSR)) < 0) {
+            if ((ctxt->readfd = open(ctxt->path, O_RDONLY, S_IRUSR | S_IWUSR)) < 0) {
                 virReportSystemError(errno, _("failed to open logfile %s"),
-                                     logfile);
+                                     ctxt->path);
                 goto error;
             }
             if (virSetCloseExec(ctxt->readfd) < 0) {
                 virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
-                                     logfile);
+                                     ctxt->path);
                 goto error;
             }
         }
 
         if ((ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END)) < 0) {
             virReportSystemError(errno, _("failed to seek in log file %s"),
-                                 logfile);
+                                 ctxt->path);
             goto error;
         }
     }
 
  cleanup:
     virObjectUnref(cfg);
-    VIR_FREE(logfile);
     return ctxt;
 
  error:
@@ -2415,9 +2408,7 @@ ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
     size_t buflen;
     if (ctxt->manager) {
         buf = virLogManagerDomainReadLogFile(ctxt->manager,
-                                             "qemu",
-                                             ctxt->uuid,
-                                             ctxt->name,
+                                             ctxt->path,
                                              ctxt->inode,
                                              ctxt->pos,
                                              1024 * 128,
@@ -2466,9 +2457,7 @@ void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt)
 {
     if (ctxt->manager)
         virLogManagerDomainGetLogFilePosition(ctxt->manager,
-                                              "qemu",
-                                              ctxt->uuid,
-                                              ctxt->name,
+                                              ctxt->path,
                                               0,
                                               &ctxt->inode,
                                               &ctxt->pos);
@@ -2497,7 +2486,7 @@ void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
         return;
 
     virLogManagerFree(ctxt->manager);
-    VIR_FREE(ctxt->name);
+    VIR_FREE(ctxt->path);
     VIR_FORCE_CLOSE(ctxt->writefd);
     VIR_FORCE_CLOSE(ctxt->readfd);
     VIR_FREE(ctxt);

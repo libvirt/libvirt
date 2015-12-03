@@ -35,6 +35,7 @@ typedef struct virLogManagerProtocolLogFilePosition virLogManagerProtocolLogFile
 struct virLogManagerProtocolDomainOpenLogFileArgs {
     virLogManagerProtocolNonNullString driver;
     virLogManagerProtocolDomain dom;
+    virLogManagerProtocolNonNullString path;
     unsigned int flags;
 };
 
@@ -43,8 +44,7 @@ struct virLogManagerProtocolDomainOpenLogFileRet {
 };
 
 struct virLogManagerProtocolDomainGetLogFilePositionArgs {
-    virLogManagerProtocolNonNullString driver;
-    virLogManagerProtocolDomain dom;
+    virLogManagerProtocolNonNullString path;
     unsigned int flags;
 };
 
@@ -53,8 +53,7 @@ struct virLogManagerProtocolDomainGetLogFilePositionRet {
 };
 
 struct virLogManagerProtocolDomainReadLogFileArgs {
-    virLogManagerProtocolNonNullString driver;
-    virLogManagerProtocolDomain dom;
+    virLogManagerProtocolNonNullString path;
     virLogManagerProtocolLogFilePosition pos;
     unsigned hyper maxlen;
     unsigned int flags;

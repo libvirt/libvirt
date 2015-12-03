@@ -351,58 +351,22 @@ virLogHandlerDispose(void *obj)
 }
 
 
-static char *
-virLogHandlerGetLogFilePathForDomain(virLogHandlerPtr handler,
-                                     const char *driver,
-                                     const unsigned char *domuuid ATTRIBUTE_UNUSED,
-                                     const char *domname)
-{
-    char *path;
-    if (handler->privileged) {
-        if (virAsprintf(&path,
-                        LOCALSTATEDIR "/log/libvirt/%s/%s.log",
-                        driver, domname) < 0)
-            return NULL;
-    } else {
-        char *cachedir;
-
-        cachedir = virGetUserCacheDirectory();
-        if (!cachedir)
-            return NULL;
-
-        if (virAsprintf(&path,
-                        "%s/%s/log/%s.log", cachedir, driver, domname) < 0) {
-            VIR_FREE(cachedir);
-            return NULL;
-        }
-
-    }
-    return path;
-}
-
-
 int
 virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                const char *driver,
                                const unsigned char *domuuid,
                                const char *domname,
+                               const char *path,
                                ino_t *inode,
                                off_t *offset)
 {
     size_t i;
     virLogHandlerLogFilePtr file = NULL;
     int pipefd[2] = { -1, -1 };
-    char *path;
 
     virObjectLock(handler);
 
     handler->inhibitor(true, handler->opaque);
-
-    if (!(path = virLogHandlerGetLogFilePathForDomain(handler,
-                                                      driver,
-                                                      domuuid,
-                                                      domname)))
-        goto error;
 
     for (i = 0; i < handler->nfiles; i++) {
         if (STREQ(virRotatingFileWriterGetPath(handler->files[i]->file),
@@ -449,8 +413,6 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
         goto error;
     }
 
-    VIR_FREE(path);
-
     *inode = virRotatingFileWriterGetINode(file->file);
     *offset = virRotatingFileWriterGetOffset(file->file);
 
@@ -458,7 +420,6 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     return pipefd[1];
 
  error:
-    VIR_FREE(path);
     VIR_FORCE_CLOSE(pipefd[0]);
     VIR_FORCE_CLOSE(pipefd[1]);
     handler->inhibitor(false, handler->opaque);
@@ -470,24 +431,15 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
 
 int
 virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
-                                      const char *driver,
-                                      const unsigned char *domuuid,
-                                      const char *domname,
+                                      const char *path,
                                       ino_t *inode,
                                       off_t *offset)
 {
-    char *path;
     virLogHandlerLogFilePtr file = NULL;
     int ret = -1;
     size_t i;
 
     virObjectLock(handler);
-
-    if (!(path = virLogHandlerGetLogFilePathForDomain(handler,
-                                                      driver,
-                                                      domuuid,
-                                                      domname)))
-        goto cleanup;
 
     for (i = 0; i < handler->nfiles; i++) {
         if (STREQ(virRotatingFileWriterGetPath(handler->files[i]->file),
@@ -499,8 +451,8 @@ virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
 
     if (!file) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No open log file for domain %s"),
-                       domname);
+                       _("No open log file %s"),
+                       path);
         goto cleanup;
     }
 
@@ -510,7 +462,6 @@ virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
     ret = 0;
 
  cleanup:
-    VIR_FREE(path);
     virObjectUnlock(handler);
     return ret;
 }
@@ -518,25 +469,16 @@ virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
 
 char *
 virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
-                               const char *driver,
-                               const unsigned char *domuuid,
-                               const char *domname,
+                               const char *path,
                                ino_t inode,
                                off_t offset,
                                size_t maxlen)
 {
-    char *path;
     virRotatingFileReaderPtr file = NULL;
     char *data = NULL;
     ssize_t got;
 
     virObjectLock(handler);
-
-    if (!(path = virLogHandlerGetLogFilePathForDomain(handler,
-                                                      driver,
-                                                      domuuid,
-                                                      domname)))
-        goto error;
 
     if (!(file = virRotatingFileReaderNew(path, DEFAULT_MAX_BACKUP)))
         goto error;
@@ -554,11 +496,9 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
 
     virRotatingFileReaderFree(file);
     virObjectUnlock(handler);
-    VIR_FREE(path);
     return data;
 
  error:
-    VIR_FREE(path);
     VIR_FREE(data);
     virRotatingFileReaderFree(file);
     virObjectUnlock(handler);
