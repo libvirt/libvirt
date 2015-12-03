@@ -959,6 +959,10 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         VIR_FREE(managed_save_path);
     }
 
+    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt,
+                                    vm, true) < 0)
+        goto cleanup;
+
     if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
                                cfg->ctx, &d_config) < 0)
         goto cleanup;
