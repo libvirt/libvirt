@@ -31,6 +31,8 @@
 # include <sys/stat.h>
 # include <stdarg.h>
 # include "testutilslxc.h"
+# include "virstring.h"
+# include "virfile.h"
 
 static int (*realopen)(const char *path, int flags, ...);
 static FILE *(*realfopen)(const char *path, const char *mode);
@@ -45,6 +47,7 @@ static int (*realmkdir)(const char *path, mode_t mode);
  * when passed as an arg to asprintf()
  * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
  */
+char *fakerootdir;
 char *fakesysfsdir;
 const char *fakedevicedir0 = FAKEDEVDIR0;
 const char *fakedevicedir1 = FAKEDEVDIR1;
@@ -414,11 +417,20 @@ static void init_syms(void)
 
 static void init_sysfs(void)
 {
-    if (fakesysfsdir)
+    if (fakerootdir && fakesysfsdir)
         return;
 
-    if (!(fakesysfsdir = getenv("LIBVIRT_FAKE_SYSFS_DIR"))) {
+    if (!(fakerootdir = getenv("LIBVIRT_FAKE_SYSFS_DIR"))) {
         fprintf(stderr, "Missing LIBVIRT_FAKE_SYSFS_DIR env variable\n");
+        abort();
+    }
+
+    if (virAsprintfQuiet(&fakesysfsdir, "%s%s",
+                         fakerootdir, SYSFS_PREFIX) < 0)
+        abort();
+
+    if (virFileMakePath(fakesysfsdir) < 0) {
+        fprintf(stderr, "Cannot create %s\n", fakesysfsdir);
         abort();
     }
 
