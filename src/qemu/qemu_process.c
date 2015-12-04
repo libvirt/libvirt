@@ -4091,16 +4091,19 @@ qemuLogOperation(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int qemuVersion = virQEMUCapsGetVersion(priv->qemuCaps);
     const char *package = virQEMUCapsGetPackage(priv->qemuCaps);
+    char *hostname = virGetHostname();
 
     if ((timestamp = virTimeStringNow()) == NULL)
         goto cleanup;
 
-    if (qemuDomainLogContextWrite(logCtxt, "%s: %s %s, qemu version: %d.%d.%d%s\n",
+    if (qemuDomainLogContextWrite(logCtxt,
+                                  "%s: %s %s, qemu version: %d.%d.%d%s, hostname: %s\n",
                                   timestamp, msg, VIR_LOG_VERSION_STRING,
                                   (qemuVersion / 1000000) % 1000,
                                   (qemuVersion / 1000) % 1000,
                                   qemuVersion % 1000,
-                                  package ? package : "") < 0)
+                                  package ? package : "",
+                                  hostname ? hostname : "") < 0)
         goto cleanup;
 
     if (cmd) {
@@ -4110,6 +4113,7 @@ qemuLogOperation(virDomainObjPtr vm,
     }
 
  cleanup:
+    VIR_FREE(hostname);
     VIR_FREE(timestamp);
 }
 
