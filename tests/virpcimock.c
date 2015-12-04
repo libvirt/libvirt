@@ -49,6 +49,7 @@ static DIR * (*realopendir)(const char *name);
  * when passed as an arg to virAsprintf()
  * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
  */
+char *fakerootdir;
 char *fakesysfsdir;
 
 # define PCI_SYSFS_PREFIX "/sys/bus/pci/"
@@ -800,11 +801,18 @@ init_syms(void)
 static void
 init_env(void)
 {
-    if (fakesysfsdir)
+    if (fakerootdir && fakesysfsdir)
         return;
 
-    if (!(fakesysfsdir = getenv("LIBVIRT_FAKE_SYSFS_DIR")))
+    if (!(fakerootdir = getenv("LIBVIRT_FAKE_SYSFS_DIR")))
         ABORT("Missing LIBVIRT_FAKE_SYSFS_DIR env variable\n");
+
+    if (virAsprintfQuiet(&fakesysfsdir, "%s%s",
+                         fakerootdir, PCI_SYSFS_PREFIX) < 0)
+        ABORT_OOM();
+
+    if (virFileMakePath(fakesysfsdir) < 0)
+        ABORT("Unable to create: %s", fakesysfsdir);
 
     make_file(fakesysfsdir, "drivers_probe", NULL, -1);
 
