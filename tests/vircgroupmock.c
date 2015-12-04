@@ -67,9 +67,9 @@ const char *fakedevicedir1 = FAKEDEVDIR1;
  *
  * In any open/acces/mkdir calls we look at path and if
  * it starts with /not/really/sys/fs/cgroup, we rewrite
- * the path to point at a temporary directory referred
- * to by LIBVIRT_FAKE_SYSFS_DIR env variable that is
- * set by the main test suite
+ * the path to point at a subdirectory of the temporary
+ * directory referred to by LIBVIRT_FAKE_ROOT_DIR env
+ * variable that is set by the main test suite
  *
  * In mkdir() calls, we simulate the cgroups behaviour
  * whereby creating the directory auto-creates a bunch
@@ -420,8 +420,8 @@ static void init_sysfs(void)
     if (fakerootdir && fakesysfsdir)
         return;
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_SYSFS_DIR"))) {
-        fprintf(stderr, "Missing LIBVIRT_FAKE_SYSFS_DIR env variable\n");
+    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+        fprintf(stderr, "Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
         abort();
     }
 

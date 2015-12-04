@@ -350,25 +350,25 @@ testVirPCIDeviceUnbind(const void *opaque)
     return ret;
 }
 
-# define FAKESYSFSDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
+# define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
 mymain(void)
 {
     int ret = 0;
-    char *fakesysfsdir;
+    char *fakerootdir;
 
-    if (VIR_STRDUP_QUIET(fakesysfsdir, FAKESYSFSDIRTEMPLATE) < 0) {
+    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         VIR_TEST_DEBUG("Out of memory\n");
         abort();
     }
 
-    if (!mkdtemp(fakesysfsdir)) {
-        VIR_TEST_DEBUG("Cannot create fakesysfsdir");
+    if (!mkdtemp(fakerootdir)) {
+        VIR_TEST_DEBUG("Cannot create fakerootdir");
         abort();
     }
 
-    setenv("LIBVIRT_FAKE_SYSFS_DIR", fakesysfsdir, 1);
+    setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
 # define DO_TEST(fnc)                                   \
     do {                                                \
@@ -445,9 +445,9 @@ mymain(void)
     DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
-        virFileDeleteTree(fakesysfsdir);
+        virFileDeleteTree(fakerootdir);
 
-    VIR_FREE(fakesysfsdir);
+    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

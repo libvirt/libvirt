@@ -71,7 +71,7 @@ char *fakesysfsdir;
  * The plan:
  *
  * Mock some file handling functions. Redirect them into a stub tree passed via
- * LIBVIRT_FAKE_SYSFS_DIR env variable. All files and links within stub tree is
+ * LIBVIRT_FAKE_ROOT_DIR env variable. All files and links within stub tree is
  * created by us. There are some actions that we must take if some special
  * files are written to. Here's the list of files we watch:
  *
@@ -804,8 +804,8 @@ init_env(void)
     if (fakerootdir && fakesysfsdir)
         return;
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_SYSFS_DIR")))
-        ABORT("Missing LIBVIRT_FAKE_SYSFS_DIR env variable\n");
+    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
+        ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
 
     if (virAsprintfQuiet(&fakesysfsdir, "%s%s",
                          fakerootdir, PCI_SYSFS_PREFIX) < 0)
