@@ -286,10 +286,9 @@ virNetDevMacVLanTapOpen(const char *ifname,
 
 /**
  * virNetDevMacVLanTapSetup:
- * @tapfd: file descriptor of the macvtap tap
- * @vnet_hdr: 1 to enable IFF_VNET_HDR, 0 to disable it
- *
- * Returns 0 on success, -1 in case of fatal error, error code otherwise.
+ * @tapfd: array of file descriptors of the macvtap tap
+ * @tapfdSize: number of file descriptors in @tapfd
+ * @vnet_hdr: whether to enable or disable IFF_VNET_HDR
  *
  * Turn the IFF_VNET_HDR flag, if requested and available, make sure
  * it's off in the other cases.
@@ -297,47 +296,52 @@ virNetDevMacVLanTapOpen(const char *ifname,
  * be turned off for some reason. This is reported with -1. Other fatal
  * error is not being able to read the interface flags. In that case the
  * macvtap device should not be used.
+ *
+ * Returns 0 on success, -1 in case of fatal error, error code otherwise.
  */
 static int
-virNetDevMacVLanTapSetup(int tapfd, int vnet_hdr)
+virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
 {
     unsigned int features;
     struct ifreq ifreq;
     short new_flags = 0;
     int rc_on_fail = 0;
     const char *errmsg = NULL;
+    size_t i;
 
-    memset(&ifreq, 0, sizeof(ifreq));
+    for (i = 0; i < tapfdSize; i++) {
+        memset(&ifreq, 0, sizeof(ifreq));
 
-    if (ioctl(tapfd, TUNGETIFF, &ifreq) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("cannot get interface flags on macvtap tap"));
-        return -1;
-    }
-
-    new_flags = ifreq.ifr_flags;
-
-    if ((ifreq.ifr_flags & IFF_VNET_HDR) && !vnet_hdr) {
-        new_flags = ifreq.ifr_flags & ~IFF_VNET_HDR;
-        rc_on_fail = -1;
-        errmsg = _("cannot clean IFF_VNET_HDR flag on macvtap tap");
-    } else if ((ifreq.ifr_flags & IFF_VNET_HDR) == 0 && vnet_hdr) {
-        if (ioctl(tapfd, TUNGETFEATURES, &features) < 0) {
+        if (ioctl(tapfd[i], TUNGETIFF, &ifreq) < 0) {
             virReportSystemError(errno, "%s",
-                   _("cannot get feature flags on macvtap tap"));
+                                 _("cannot get interface flags on macvtap tap"));
             return -1;
         }
-        if ((features & IFF_VNET_HDR)) {
-            new_flags = ifreq.ifr_flags | IFF_VNET_HDR;
-            errmsg = _("cannot set IFF_VNET_HDR flag on macvtap tap");
-        }
-    }
 
-    if (new_flags != ifreq.ifr_flags) {
-        ifreq.ifr_flags = new_flags;
-        if (ioctl(tapfd, TUNSETIFF, &ifreq) < 0) {
-            virReportSystemError(errno, "%s", errmsg);
-            return rc_on_fail;
+        new_flags = ifreq.ifr_flags;
+
+        if ((ifreq.ifr_flags & IFF_VNET_HDR) && !vnet_hdr) {
+            new_flags = ifreq.ifr_flags & ~IFF_VNET_HDR;
+            rc_on_fail = -1;
+            errmsg = _("cannot clean IFF_VNET_HDR flag on macvtap tap");
+        } else if ((ifreq.ifr_flags & IFF_VNET_HDR) == 0 && vnet_hdr) {
+            if (ioctl(tapfd[i], TUNGETFEATURES, &features) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("cannot get feature flags on macvtap tap"));
+                return -1;
+            }
+            if ((features & IFF_VNET_HDR)) {
+                new_flags = ifreq.ifr_flags | IFF_VNET_HDR;
+                errmsg = _("cannot set IFF_VNET_HDR flag on macvtap tap");
+            }
+        }
+
+        if (new_flags != ifreq.ifr_flags) {
+            ifreq.ifr_flags = new_flags;
+            if (ioctl(tapfd[i], TUNSETIFF, &ifreq) < 0) {
+                virReportSystemError(errno, "%s", errmsg);
+                return rc_on_fail;
+            }
         }
     }
 
@@ -848,7 +852,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         if (virNetDevMacVLanTapOpen(cr_ifname, &rc, 1, 10) < 0)
             goto disassociate_exit;
 
-        if (virNetDevMacVLanTapSetup(rc, vnet_hdr) < 0) {
+        if (virNetDevMacVLanTapSetup(&rc, 1, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
