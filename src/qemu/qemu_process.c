@@ -2380,10 +2380,14 @@ qemuProcessSetSchedParams(int id,
 static int
 qemuProcessSetSchedulers(virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i = 0;
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
         if (qemuProcessSetSchedParams(i, qemuDomainGetVcpuPid(vm, i),
                                       vm->def->cputune.nvcpusched,
                                       vm->def->cputune.vcpusched) < 0)
