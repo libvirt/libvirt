@@ -1625,16 +1625,19 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 
         if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
             virReportSystemError(errno, _("cannot seek to start of '%s'"), target->path);
+            ret = -1;
             goto cleanup;
         }
 
         if ((len = virFileReadHeaderFD(fd, len, &buf)) < 0) {
             virReportSystemError(errno, _("cannot read header '%s'"), target->path);
+            ret = -1;
             goto cleanup;
         }
 
         if (!(meta = virStorageFileGetMetadataFromBuf(target->path, buf, len, target->format,
                                                       NULL))) {
+            ret = -1;
             goto cleanup;
         }
 
