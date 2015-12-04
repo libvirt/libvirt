@@ -262,8 +262,6 @@ mymain(void)
         goto cleanup;
     }
 
-    setenv("LIBVIRT_FAKE_SYSFS_DIR", fakesysfsdir, 1);
-
     if (init_scsihost_sysfs(fakesysfsdir) < 0) {
         fprintf(stderr, "Failed to create fakesysfs='%s'\n", fakesysfsdir);
         goto cleanup;
