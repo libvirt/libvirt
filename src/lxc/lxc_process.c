@@ -349,6 +349,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             &res_ifname,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
             cfg->stateDir,
+            NULL, 0,
             macvlan_create_flags) < 0)
         goto cleanup;
 

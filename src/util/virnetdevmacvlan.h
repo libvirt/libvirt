@@ -71,9 +71,11 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmop,
                                            char *stateDir,
+                                           int *tapfd,
+                                           size_t tapfdSize,
                                            unsigned int flags)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
-    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(12) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,

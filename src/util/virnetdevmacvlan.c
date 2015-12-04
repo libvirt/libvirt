@@ -727,11 +727,15 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
  * @res_ifname: Pointer to a string pointer where the actual name of the
  *     interface will be stored into if everything succeeded. It is up
  *     to the caller to free the string.
+ * @tapfd: array of file descriptor return value for the new tap device
+ * @tapfdSize: number of file descriptors in @tapfd
  * @flags: OR of virNetDevMacVLanCreateFlags.
  *
- * Returns file descriptor of the tap device in case of success with
- * @flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP, otherwise returns 0; returns
- * -1 on error.
+ * Creates a macvlan device. Optionally, if flags &
+ * VIR_NETDEV_MACVLAN_CREATE_WITH_TAP is set, @tapfd is populated with FDs of
+ * tap devices up to @tapfdSize.
+ *
+ * Return 0 on success, -1 on error.
  */
 int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            const virMacAddr *macaddress,
@@ -742,6 +746,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmOp,
                                            char *stateDir,
+                                           int *tapfd,
+                                           size_t tapfdSize,
                                            unsigned int flags)
 {
     const char *type = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
@@ -853,10 +859,10 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(cr_ifname, &rc, 1, 10) < 0)
+        if (virNetDevMacVLanTapOpen(cr_ifname, tapfd, tapfdSize, 10) < 0)
             goto disassociate_exit;
 
-        if (virNetDevMacVLanTapSetup(&rc, 1, vnet_hdr, false) < 0) {
+        if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr, tapfdSize > 0) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
@@ -892,6 +898,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
                                                    linkdev,
                                                    vf,
                                                    vmOp));
+    while (tapfdSize--)
+        VIR_FORCE_CLOSE(tapfd[tapfdSize]);
 
  link_del_exit:
     ignore_value(virNetDevMacVLanDelete(cr_ifname));
@@ -1016,6 +1024,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
                                            char *stateDir ATTRIBUTE_UNUSED,
+                                           int *tapfd ATTRIBUTE_UNUSED,
+                                           size_t tapfdSize ATTRIBUTE_UNUSED,
                                            unsigned int unused_flags ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

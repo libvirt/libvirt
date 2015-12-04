@@ -230,15 +230,18 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
     if (net->model && STREQ(net->model, "virtio"))
         macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
 
-    rc = virNetDevMacVLanCreateWithVPortProfile(
-        net->ifname, &net->mac,
-        virDomainNetGetActualDirectDev(net),
-        virDomainNetGetActualDirectMode(net),
-        def->uuid,
-        virDomainNetGetActualVirtPortProfile(net),
-        &res_ifname,
-        vmop, cfg->stateDir,
-        macvlan_create_flags);
+    if (virNetDevMacVLanCreateWithVPortProfile(net->ifname,
+                                               &net->mac,
+                                               virDomainNetGetActualDirectDev(net),
+                                               virDomainNetGetActualDirectMode(net),
+                                               def->uuid,
+                                               virDomainNetGetActualVirtPortProfile(net),
+                                               &res_ifname,
+                                               vmop, cfg->stateDir,
+                                               &rc, 1,
+                                               macvlan_create_flags) < 0)
+        return -1;
+
     if (rc >= 0) {
         virDomainAuditNetDevice(def, net, res_ifname, true);
         VIR_FREE(net->ifname);
