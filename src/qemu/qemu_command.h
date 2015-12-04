@@ -232,6 +232,8 @@ int qemuNetworkIfaceConnect(virDomainDefPtr def,
 int qemuPhysIfaceConnect(virDomainDefPtr def,
                          virQEMUDriverPtr driver,
                          virDomainNetDefPtr net,
+                         int *tapfd,
+                         size_t tapfdSize,
                          virNetDevVPortProfileOp vmop);
 
 int qemuOpenVhostNet(virDomainDefPtr def,

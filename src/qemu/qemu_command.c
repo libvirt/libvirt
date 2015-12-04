@@ -212,17 +212,21 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @driver: pointer to the driver instance
  * @net: pointer to the VM's interface description with direct device type
+ * @tapfd: array of file descriptor return value for the new device
+ * @tapfdSize: number of file descriptors in @tapfd
  * @vmop: VM operation type
  *
- * Returns a filedescriptor on success or -1 in case of error.
+ * Returns 0 on success or -1 in case of error.
  */
 int
 qemuPhysIfaceConnect(virDomainDefPtr def,
                      virQEMUDriverPtr driver,
                      virDomainNetDefPtr net,
+                     int *tapfd,
+                     size_t tapfdSize,
                      virNetDevVPortProfileOp vmop)
 {
-    int rc;
+    int ret = -1;
     char *res_ifname = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
@@ -238,18 +242,22 @@ qemuPhysIfaceConnect(virDomainDefPtr def,
                                                virDomainNetGetActualVirtPortProfile(net),
                                                &res_ifname,
                                                vmop, cfg->stateDir,
-                                               &rc, 1,
+                                               tapfd, tapfdSize,
                                                macvlan_create_flags) < 0)
-        return -1;
+        goto cleanup;
 
-    if (rc >= 0) {
-        virDomainAuditNetDevice(def, net, res_ifname, true);
-        VIR_FREE(net->ifname);
-        net->ifname = res_ifname;
+    virDomainAuditNetDevice(def, net, res_ifname, true);
+    VIR_FREE(net->ifname);
+    net->ifname = res_ifname;
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        while (tapfdSize--)
+            VIR_FORCE_CLOSE(tapfd[tapfdSize]);
     }
-
     virObjectUnref(cfg);
-    return rc;
+    return ret;
 }
 
 
@@ -8746,7 +8754,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     /* Currently nothing besides TAP devices supports multiqueue. */
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+          actualType == VIR_DOMAIN_NET_TYPE_DIRECT)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Multiqueue network is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
@@ -8791,11 +8800,17 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                                     tapfd, &tapfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        if (VIR_ALLOC(tapfd) < 0 || VIR_ALLOC(tapfdName) < 0)
+        tapfdSize = net->driver.virtio.queues;
+        if (!tapfdSize)
+            tapfdSize = 1;
+
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
+            VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
             goto cleanup;
-        tapfdSize = 1;
-        tapfd[0] = qemuPhysIfaceConnect(def, driver, net, vmop);
-        if (tapfd[0] < 0)
+
+        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
+
+        if (qemuPhysIfaceConnect(def, driver, net, tapfd, tapfdSize, vmop) < 0)
             goto cleanup;
     }
 
