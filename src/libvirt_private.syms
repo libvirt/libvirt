@@ -2393,6 +2393,7 @@ virGetGroupID;
 virGetGroupList;
 virGetGroupName;
 virGetHostname;
+virGetHostnameQuiet;
 virGetListenFDs;
 virGetSCSIHostNameByParentaddr;
 virGetSCSIHostNumber;

@@ -94,7 +94,7 @@ static int virLogNbFilters;
  * after filtering, multiple output can be used simultaneously
  */
 struct _virLogOutput {
-    bool logVersion;
+    bool logInitMessage;
     void *data;
     virLogOutputFunc f;
     virLogCloseFunc c;
@@ -402,7 +402,7 @@ virLogDefineOutput(virLogOutputFunc f,
         goto cleanup;
     }
     ret = virLogNbOutputs++;
-    virLogOutputs[ret].logVersion = true;
+    virLogOutputs[ret].logInitMessage = true;
     virLogOutputs[ret].f = f;
     virLogOutputs[ret].c = c;
     virLogOutputs[ret].data = data;
@@ -450,6 +450,32 @@ virLogVersionString(const char **rawmsg,
 {
     *rawmsg = VIR_LOG_VERSION_STRING;
     return virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, VIR_LOG_VERSION_STRING);
+}
+
+/* Similar to virGetHostname() but avoids use of error
+ * reporting APIs or logging APIs, to prevent recursion
+ */
+static int
+virLogHostnameString(const char **rawmsg,
+                     char **msg)
+{
+    char *hostname = virGetHostnameQuiet();
+    char *hoststr;
+
+    if (!hostname)
+        return -1;
+
+    if (virAsprintfQuiet(&hoststr, "hostname: %s", hostname) < 0) {
+        VIR_FREE(hostname);
+        return -1;
+    }
+
+    if (virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr) < 0) {
+        VIR_FREE(hoststr);
+        return -1;
+    }
+    *rawmsg = hoststr;
+    return 0;
 }
 
 
@@ -533,7 +559,7 @@ virLogVMessage(virLogSourcePtr source,
                const char *fmt,
                va_list vargs)
 {
-    static bool logVersionStderr = true;
+    static bool logInitMessageStderr = true;
     char *str = NULL;
     char *msg = NULL;
     char timestamp[VIR_TIME_STRING_BUFLEN];
@@ -583,16 +609,22 @@ virLogVMessage(virLogSourcePtr source,
      */
     for (i = 0; i < virLogNbOutputs; i++) {
         if (priority >= virLogOutputs[i].priority) {
-            if (virLogOutputs[i].logVersion) {
-                const char *rawver;
-                char *ver = NULL;
-                if (virLogVersionString(&rawver, &ver) >= 0)
+            if (virLogOutputs[i].logInitMessage) {
+                const char *rawinitmsg;
+                char *initmsg = NULL;
+                if (virLogVersionString(&rawinitmsg, &initmsg) >= 0)
                     virLogOutputs[i].f(&virLogSelf, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
-                                       timestamp, NULL, 0, rawver, ver,
+                                       timestamp, NULL, 0, rawinitmsg, initmsg,
                                        virLogOutputs[i].data);
-                VIR_FREE(ver);
-                virLogOutputs[i].logVersion = false;
+                VIR_FREE(initmsg);
+                if (virLogHostnameString(&rawinitmsg, &initmsg) >= 0)
+                    virLogOutputs[i].f(&virLogSelf, VIR_LOG_INFO,
+                                       __FILE__, __LINE__, __func__,
+                                       timestamp, NULL, 0, rawinitmsg, initmsg,
+                                       virLogOutputs[i].data);
+                VIR_FREE(initmsg);
+                virLogOutputs[i].logInitMessage = false;
             }
             virLogOutputs[i].f(source, priority,
                                filename, linenr, funcname,
@@ -601,16 +633,22 @@ virLogVMessage(virLogSourcePtr source,
         }
     }
     if (virLogNbOutputs == 0) {
-        if (logVersionStderr) {
-            const char *rawver;
-            char *ver = NULL;
-            if (virLogVersionString(&rawver, &ver) >= 0)
+        if (logInitMessageStderr) {
+            const char *rawinitmsg;
+            char *initmsg = NULL;
+            if (virLogVersionString(&rawinitmsg, &initmsg) >= 0)
                 virLogOutputToFd(&virLogSelf, VIR_LOG_INFO,
                                  __FILE__, __LINE__, __func__,
-                                 timestamp, NULL, 0, rawver, ver,
+                                 timestamp, NULL, 0, rawinitmsg, initmsg,
                                  (void *) STDERR_FILENO);
-            VIR_FREE(ver);
-            logVersionStderr = false;
+            VIR_FREE(initmsg);
+            if (virLogHostnameString(&rawinitmsg, &initmsg) >= 0)
+                virLogOutputToFd(&virLogSelf, VIR_LOG_INFO,
+                                 __FILE__, __LINE__, __func__,
+                                 timestamp, NULL, 0, rawinitmsg, initmsg,
+                                 (void *) STDERR_FILENO);
+            VIR_FREE(initmsg);
+            logInitMessageStderr = false;
         }
         virLogOutputToFd(source, priority,
                          filename, linenr, funcname,

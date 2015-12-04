@@ -662,16 +662,18 @@ char *virIndexToDiskName(int idx, const char *prefix)
  *         we got from getaddrinfo().  Return the value from gethostname()
  *         and hope for the best.
  */
-char *virGetHostname(void)
+static char *
+virGetHostnameImpl(bool quiet)
 {
     int r;
-    char hostname[HOST_NAME_MAX+1], *result;
+    char hostname[HOST_NAME_MAX+1], *result = NULL;
     struct addrinfo hints, *info;
 
     r = gethostname(hostname, sizeof(hostname));
     if (r == -1) {
-        virReportSystemError(errno,
-                             "%s", _("failed to determine host name"));
+        if (!quiet)
+            virReportSystemError(errno,
+                                 "%s", _("failed to determine host name"));
         return NULL;
     }
     NUL_TERMINATE(hostname);
@@ -683,7 +685,7 @@ char *virGetHostname(void)
          * string as-is; it's up to callers to check whether "localhost"
          * is allowed.
          */
-        ignore_value(VIR_STRDUP(result, hostname));
+        ignore_value(VIR_STRDUP_QUIET(result, hostname));
         goto cleanup;
     }
 
@@ -696,9 +698,10 @@ char *virGetHostname(void)
     hints.ai_family = AF_UNSPEC;
     r = getaddrinfo(hostname, NULL, &hints, &info);
     if (r != 0) {
-        VIR_WARN("getaddrinfo failed for '%s': %s",
-                 hostname, gai_strerror(r));
-        ignore_value(VIR_STRDUP(result, hostname));
+        if (!quiet)
+            VIR_WARN("getaddrinfo failed for '%s': %s",
+                     hostname, gai_strerror(r));
+        ignore_value(VIR_STRDUP_QUIET(result, hostname));
         goto cleanup;
     }
 
@@ -711,15 +714,31 @@ char *virGetHostname(void)
          * localhost.  Ignore the canonicalized name and just return the
          * original hostname
          */
-        ignore_value(VIR_STRDUP(result, hostname));
+        ignore_value(VIR_STRDUP_QUIET(result, hostname));
     else
         /* Caller frees this string. */
-        ignore_value(VIR_STRDUP(result, info->ai_canonname));
+        ignore_value(VIR_STRDUP_QUIET(result, info->ai_canonname));
 
     freeaddrinfo(info);
 
  cleanup:
+    if (!result)
+        virReportOOMError();
     return result;
+}
+
+
+char *
+virGetHostname(void)
+{
+    return virGetHostnameImpl(false);
+}
+
+
+char *
+virGetHostnameQuiet(void)
+{
+    return virGetHostnameImpl(true);
 }
 
 

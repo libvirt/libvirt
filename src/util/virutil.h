@@ -132,6 +132,7 @@ static inline int pthread_sigmask(int how,
 # endif
 
 char *virGetHostname(void);
+char *virGetHostnameQuiet(void);
 
 char *virGetUserDirectory(void);
 char *virGetUserDirectoryByUID(uid_t uid);
