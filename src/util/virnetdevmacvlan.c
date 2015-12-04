@@ -226,20 +226,26 @@ int virNetDevMacVLanDelete(const char *ifname)
 
 /**
  * virNetDevMacVLanTapOpen:
- * Open the macvtap's tap device.
  * @ifname: Name of the macvtap interface
+ * @tapfd: array of file descriptor return value for the new macvtap device
+ * @tapfdSize: number of file descriptors in @tapfd
  * @retries : Number of retries in case udev for example may need to be
  *            waited for to create the tap chardev
- * Returns negative value in case of error, the file descriptor otherwise.
+ *
+ * Open the macvtap's tap device, possibly multiple times if @tapfdSize > 1.
+ *
+ * Returns 0 on success, -1 otherwise.
  */
-static
-int virNetDevMacVLanTapOpen(const char *ifname,
-                            int retries)
+static int
+virNetDevMacVLanTapOpen(const char *ifname,
+                        int *tapfd,
+                        size_t tapfdSize,
+                        int retries)
 {
     int ret = -1;
     int ifindex;
     char *tapname = NULL;
-    int tapfd;
+    size_t i = 0;
 
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
@@ -247,25 +253,32 @@ int virNetDevMacVLanTapOpen(const char *ifname,
     if (virAsprintf(&tapname, "/dev/tap%d", ifindex) < 0)
         goto cleanup;
 
-    while (1) {
-        /* may need to wait for udev to be done */
-        tapfd = open(tapname, O_RDWR);
-        if (tapfd < 0 && retries > 0) {
-            retries--;
-            usleep(20000);
-            continue;
+    for (i = 0; i < tapfdSize; i++) {
+        int fd = -1;
+
+        while (fd < 0) {
+            if ((fd = open(tapname, O_RDWR)) >= 0) {
+                tapfd[i] = fd;
+            } else if (retries-- > 0) {
+                /* may need to wait for udev to be done */
+                usleep(20000);
+            } else {
+                /* However, if haven't succeeded, quit. */
+                virReportSystemError(errno,
+                                     _("cannot open macvtap tap device %s"),
+                                     tapname);
+                goto cleanup;
+            }
         }
-        break;
     }
 
-    if (tapfd < 0) {
-        virReportSystemError(errno,
-                             _("cannot open macvtap tap device %s"),
-                             tapname);
-        goto cleanup;
-    }
-    ret = tapfd;
+    ret = 0;
+
  cleanup:
+    if (ret < 0) {
+        while (i--)
+            VIR_FORCE_CLOSE(tapfd[i]);
+    }
     VIR_FREE(tapname);
     return ret;
 }
@@ -832,7 +845,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if ((rc = virNetDevMacVLanTapOpen(cr_ifname, 10)) < 0)
+        if (virNetDevMacVLanTapOpen(cr_ifname, &rc, 1, 10) < 0)
             goto disassociate_exit;
 
         if (virNetDevMacVLanTapSetup(rc, vnet_hdr) < 0) {
