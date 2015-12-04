@@ -5,7 +5,7 @@
 #
 ### BEGIN INIT INFO
 # Provides: libvirtd
-# Required-Start: $network messagebus
+# Required-Start: $network messagebus virtlogd
 # Should-Start: $named
 # Should-Start: xend
 # Should-Start: avahi-daemon
