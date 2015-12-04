@@ -357,12 +357,15 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                const unsigned char *domuuid,
                                const char *domname,
                                const char *path,
+                               unsigned int flags,
                                ino_t *inode,
                                off_t *offset)
 {
     size_t i;
     virLogHandlerLogFilePtr file = NULL;
     int pipefd[2] = { -1, -1 };
+
+    virCheckFlags(0, -1);
 
     virObjectLock(handler);
 
@@ -432,12 +435,15 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
 int
 virLogHandlerDomainGetLogFilePosition(virLogHandlerPtr handler,
                                       const char *path,
+                                      unsigned int flags,
                                       ino_t *inode,
                                       off_t *offset)
 {
     virLogHandlerLogFilePtr file = NULL;
     int ret = -1;
     size_t i;
+
+    virCheckFlags(0, -1);
 
     virObjectLock(handler);
 
@@ -472,11 +478,14 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
                                const char *path,
                                ino_t inode,
                                off_t offset,
-                               size_t maxlen)
+                               size_t maxlen,
+                               unsigned int flags)
 {
     virRotatingFileReaderPtr file = NULL;
     char *data = NULL;
     ssize_t got;
+
+    virCheckFlags(0, NULL);
 
     virObjectLock(handler);
 
