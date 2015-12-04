@@ -108,7 +108,7 @@ virRotatingFileWriterEntryNew(const char *path,
     if (VIR_ALLOC(entry) < 0)
         return NULL;
 
-    if ((entry->fd = open(path, O_CREAT|O_APPEND|O_WRONLY, mode)) < 0) {
+    if ((entry->fd = open(path, O_CREAT|O_APPEND|O_WRONLY|O_CLOEXEC, mode)) < 0) {
         virReportSystemError(errno,
                              _("Unable to open file: %s"), path);
         goto error;
@@ -151,7 +151,7 @@ virRotatingFileReaderEntryNew(const char *path)
     if (VIR_ALLOC(entry) < 0)
         return NULL;
 
-    if ((entry->fd = open(path, O_RDONLY)) < 0) {
+    if ((entry->fd = open(path, O_RDONLY|O_CLOEXEC)) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno,
                                  _("Unable to open file: %s"), path);
