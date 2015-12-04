@@ -237,40 +237,15 @@ int virNetDevMacVLanTapOpen(const char *ifname,
                             int retries)
 {
     int ret = -1;
-    FILE *file = NULL;
-    char *path;
     int ifindex;
-    char tapname[50];
+    char *tapname = NULL;
     int tapfd;
 
-    if (virNetDevSysfsFile(&path, ifname, "ifindex") < 0)
+    if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
 
-    file = fopen(path, "r");
-
-    if (!file) {
-        virReportSystemError(errno,
-                             _("cannot open macvtap file %s to determine "
-                               "interface index"), path);
+    if (virAsprintf(&tapname, "/dev/tap%d", ifindex) < 0)
         goto cleanup;
-    }
-
-    if (fscanf(file, "%d", &ifindex) != 1) {
-        virReportSystemError(errno,
-                             "%s", _("cannot determine macvtap's tap device "
-                             "interface index"));
-        goto cleanup;
-    }
-
-    VIR_FORCE_FCLOSE(file);
-
-    if (snprintf(tapname, sizeof(tapname),
-                 "/dev/tap%d", ifindex) >= sizeof(tapname)) {
-        virReportSystemError(errno,
-                             "%s",
-                             _("internal buffer for tap device is too small"));
-        goto cleanup;
-    }
 
     while (1) {
         /* may need to wait for udev to be done */
@@ -291,8 +266,7 @@ int virNetDevMacVLanTapOpen(const char *ifname,
     }
     ret = tapfd;
  cleanup:
-    VIR_FREE(path);
-    VIR_FORCE_FCLOSE(file);
+    VIR_FREE(tapname);
     return ret;
 }
 
