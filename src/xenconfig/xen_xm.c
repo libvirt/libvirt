@@ -104,8 +104,7 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseXMDisk(virConfPtr conf, virDomainDefPtr def,
-               int xendConfigVersion ATTRIBUTE_UNUSED)
+xenParseXMDisk(virConfPtr conf, virDomainDefPtr def)
 {
     virDomainDiskDefPtr disk = NULL;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
@@ -281,9 +280,7 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def,
 
 static int
 xenFormatXMDisk(virConfValuePtr list,
-                virDomainDiskDefPtr disk,
-                int hvm ATTRIBUTE_UNUSED,
-                int xendConfigVersion ATTRIBUTE_UNUSED)
+                virDomainDiskDefPtr disk)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
@@ -362,11 +359,10 @@ xenFormatXMDisk(virConfValuePtr list,
 
 
 static int
-xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
+xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def)
 {
     virConfValuePtr diskVal = NULL;
     size_t i = 0;
-    int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
     if (VIR_ALLOC(diskVal) < 0)
         goto cleanup;
@@ -378,8 +374,7 @@ xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
             continue;
 
-        if (xenFormatXMDisk(diskVal, def->disks[i],
-                            hvm, xendConfigVersion) < 0)
+        if (xenFormatXMDisk(diskVal, def->disks[i]) < 0)
             goto cleanup;
     }
 
@@ -436,7 +431,6 @@ xenParseXMInputDevs(virConfPtr conf, virDomainDefPtr def)
  */
 virDomainDefPtr
 xenParseXM(virConfPtr conf,
-           int xendConfigVersion,
            virCapsPtr caps,
            virDomainXMLOptionPtr xmlopt)
 {
@@ -448,13 +442,13 @@ xenParseXM(virConfPtr conf,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseConfigCommon(conf, def, caps, xendConfigVersion) < 0)
+    if (xenParseConfigCommon(conf, def, caps) < 0)
         goto cleanup;
 
     if (xenParseXMOS(conf, def) < 0)
          goto cleanup;
 
-    if (xenParseXMDisk(conf, def, xendConfigVersion) < 0)
+    if (xenParseXMDisk(conf, def) < 0)
          goto cleanup;
 
     if (xenParseXMInputDevs(conf, def) < 0)
@@ -584,21 +578,20 @@ verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
  */
 virConfPtr
 xenFormatXM(virConnectPtr conn,
-            virDomainDefPtr def,
-            int xendConfigVersion)
+            virDomainDefPtr def)
 {
     virConfPtr conf = NULL;
 
     if (!(conf = virConfNew()))
         goto cleanup;
 
-    if (xenFormatConfigCommon(conf, def, conn, xendConfigVersion) < 0)
+    if (xenFormatConfigCommon(conf, def, conn) < 0)
         goto cleanup;
 
     if (xenFormatXMOS(conf, def) < 0)
         goto cleanup;
 
-    if (xenFormatXMDisks(conf, def, xendConfigVersion) < 0)
+    if (xenFormatXMDisks(conf, def) < 0)
         goto cleanup;
 
     if (xenFormatXMInputDevs(conf, def) < 0)

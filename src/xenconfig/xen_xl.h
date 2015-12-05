@@ -29,9 +29,8 @@
 
 virDomainDefPtr xenParseXL(virConfPtr conn,
                            virCapsPtr caps,
-                           virDomainXMLOptionPtr xmlopt,
-                           int xendConfigVersion);
-virConfPtr xenFormatXL(virDomainDefPtr def,
-                       virConnectPtr, int xendConfigVersion);
+                           virDomainXMLOptionPtr xmlopt);
+
+virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
 
 #endif /* __VIR_XEN_XL_H__ */

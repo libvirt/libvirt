@@ -73,7 +73,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
         goto fail;
     }
 
-    if (!(conf = xenFormatXM(conn, def, 4)))
+    if (!(conf = xenFormatXM(conn, def)))
         goto fail;
 
     if (virConfWriteMem(gotxmcfgData, &wrote, conf) < 0)
@@ -120,8 +120,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     if (!(conf = virConfReadMem(xmcfgData, strlen(xmcfgData), 0)))
         goto fail;
 
-    if (!(def = xenParseXM(conf, priv.xendConfigVersion,
-                           caps, xmlopt)))
+    if (!(def = xenParseXM(conf, caps, xmlopt)))
         goto fail;
 
     if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))

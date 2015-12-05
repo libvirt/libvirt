@@ -54,12 +54,11 @@ int xenConfigCopyStringOpt(virConfPtr conf,
 
 int xenParseConfigCommon(virConfPtr conf,
                          virDomainDefPtr def,
-                         virCapsPtr caps,
-                         int xendConfigVersion);
+                         virCapsPtr caps);
 
 int xenFormatConfigCommon(virConfPtr conf,
                           virDomainDefPtr def,
-                          virConnectPtr conn,
-                          int xendConfigVersion);
+                          virConnectPtr conn);
+
 
 #endif /* __VIR_XEN_COMMON_H__ */

@@ -2595,15 +2595,13 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
             goto cleanup;
         if (!(def = xenParseXL(conf,
                                cfg->caps,
-                               driver->xmlopt,
-                               cfg->verInfo->xen_version_major)))
+                               driver->xmlopt)))
             goto cleanup;
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
         if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
             goto cleanup;
 
         if (!(def = xenParseXM(conf,
-                               cfg->verInfo->xen_version_major,
                                cfg->caps,
                                driver->xmlopt)))
             goto cleanup;
@@ -2659,10 +2657,10 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
 
     if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XL)) {
-        if (!(conf = xenFormatXL(def, conn, cfg->verInfo->xen_version_major)))
+        if (!(conf = xenFormatXL(def, conn)))
             goto cleanup;
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
-        if (!(conf = xenFormatXM(conn, def, cfg->verInfo->xen_version_major)))
+        if (!(conf = xenFormatXM(conn, def)))
             goto cleanup;
     } else {
 

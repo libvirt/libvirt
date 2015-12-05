@@ -1645,8 +1645,7 @@ xenUnifiedConnectDomainXMLFromNative(virConnectPtr conn,
         if (!conf)
             goto cleanup;
 
-        def = xenParseXM(conf, priv->xendConfigVersion,
-                         priv->caps, priv->xmlopt);
+        def = xenParseXM(conf, priv->caps, priv->xmlopt);
     } else if (STREQ(format, XEN_CONFIG_FORMAT_SEXPR)) {
         if (xenGetDomIdFromSxprString(config, priv->xendConfigVersion, &id) < 0)
             goto cleanup;
@@ -1700,7 +1699,7 @@ xenUnifiedConnectDomainXMLToNative(virConnectPtr conn,
 
     if (STREQ(format, XEN_CONFIG_FORMAT_XM)) {
         int len = MAX_CONFIG_SIZE;
-        conf = xenFormatXM(conn, def, priv->xendConfigVersion);
+        conf = xenFormatXM(conn, def);
         if (!conf)
             goto cleanup;
 

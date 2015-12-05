@@ -1017,8 +1017,7 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 int
 xenParseConfigCommon(virConfPtr conf,
                      virDomainDefPtr def,
-                     virCapsPtr caps,
-                     int xendConfigVersion ATTRIBUTE_UNUSED)
+                     virCapsPtr caps)
 {
     if (xenParseGeneralMeta(conf, def, caps) < 0)
         return -1;
@@ -1761,8 +1760,7 @@ xenFormatVif(virConfPtr conf,
 int
 xenFormatConfigCommon(virConfPtr conf,
                       virDomainDefPtr def,
-                      virConnectPtr conn,
-                      int xendConfigVersion ATTRIBUTE_UNUSED)
+                      virConnectPtr conn)
 {
     if (xenFormatGeneralMeta(conf, def) < 0)
         return -1;
