@@ -43,7 +43,7 @@ static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;
 
 static int
-testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
+testCompareParseXML(const char *xmcfg, const char *xml)
 {
     char *gotxmcfgData = NULL;
     virConfPtr conf = NULL;
@@ -60,7 +60,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     if (!conn) goto fail;
 
     /* Many puppies died to bring you this code. */
-    priv.xendConfigVersion = xendConfigVersion;
+    priv.xendConfigVersion = 4;
     priv.caps = caps;
     conn->privateData = &priv;
 
@@ -73,7 +73,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
         goto fail;
     }
 
-    if (!(conf = xenFormatXM(conn, def, xendConfigVersion)))
+    if (!(conf = xenFormatXM(conn, def, 4)))
         goto fail;
 
     if (virConfWriteMem(gotxmcfgData, &wrote, conf) < 0)
@@ -96,7 +96,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
 }
 
 static int
-testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
+testCompareFormatXML(const char *xmcfg, const char *xml)
 {
     char *xmcfgData = NULL;
     char *gotxml = NULL;
@@ -113,7 +113,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
         goto fail;
 
     /* Many puppies died to bring you this code. */
-    priv.xendConfigVersion = xendConfigVersion;
+    priv.xendConfigVersion = 4;
     priv.caps = caps;
     conn->privateData = &priv;
 
@@ -146,7 +146,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
 
 struct testInfo {
     const char *name;
-    int version;
     int mode;
 };
 
@@ -166,9 +165,9 @@ testCompareHelper(const void *data)
         goto cleanup;
 
     if (info->mode == 0)
-        result = testCompareParseXML(cfg, xml, info->version);
+        result = testCompareParseXML(cfg, xml);
     else
-        result = testCompareFormatXML(cfg, xml, info->version);
+        result = testCompareFormatXML(cfg, xml);
 
  cleanup:
     VIR_FREE(xml);
@@ -190,66 +189,66 @@ mymain(void)
     if (!(xmlopt = xenDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-#define DO_TEST_PARSE(name, version)                                    \
+#define DO_TEST_PARSE(name)                                             \
     do {                                                                \
-        struct testInfo info0 = { name, version, 0 };                   \
+        struct testInfo info0 = { name, 0 };                            \
         if (virtTestRun("Xen XM-2-XML Parse  " name,                    \
                         testCompareHelper, &info0) < 0)                 \
             ret = -1;                                                   \
     } while (0)
 
 
-#define DO_TEST_FORMAT(name, version)                                   \
+#define DO_TEST_FORMAT(name)                                            \
     do {                                                                \
-        struct testInfo info1 = { name, version, 1 };                   \
+        struct testInfo info1 = { name, 1 };                            \
         if (virtTestRun("Xen XM-2-XML Format " name,                    \
                         testCompareHelper, &info1) < 0)                 \
             ret = -1;                                                   \
     } while (0)
 
 
-#define DO_TEST(name, version)                                          \
+#define DO_TEST(name)                                                   \
     do {                                                                \
-        DO_TEST_PARSE(name, version);                                   \
-        DO_TEST_FORMAT(name, version);                                  \
+        DO_TEST_PARSE(name);                                            \
+        DO_TEST_FORMAT(name);                                           \
     } while (0)
 
-    DO_TEST("paravirt-new-pvfb", 3);
-    DO_TEST("paravirt-new-pvfb-vncdisplay", 3);
-    DO_TEST("paravirt-net-e1000", 3);
-    DO_TEST("paravirt-net-vifname", 3);
-    DO_TEST("paravirt-vcpu", 2);
-    DO_TEST("fullvirt-new-cdrom", 2);
-    DO_TEST("fullvirt-utc", 2);
-    DO_TEST("fullvirt-localtime", 2);
-    DO_TEST("fullvirt-usbtablet", 2);
-    DO_TEST("fullvirt-usbmouse", 2);
-    DO_TEST("fullvirt-serial-file", 2);
-    DO_TEST("fullvirt-serial-dev-2-ports", 2);
-    DO_TEST("fullvirt-serial-dev-2nd-port", 2);
-    DO_TEST("fullvirt-serial-null", 2);
-    DO_TEST("fullvirt-serial-pipe", 2);
-    DO_TEST("fullvirt-serial-pty", 2);
-    DO_TEST("fullvirt-serial-stdio", 2);
-    DO_TEST("fullvirt-serial-tcp", 2);
-    DO_TEST("fullvirt-serial-tcp-telnet", 2);
-    DO_TEST("fullvirt-serial-udp", 2);
-    DO_TEST("fullvirt-serial-unix", 2);
+    DO_TEST("paravirt-new-pvfb");
+    DO_TEST("paravirt-new-pvfb-vncdisplay");
+    DO_TEST("paravirt-net-e1000");
+    DO_TEST("paravirt-net-vifname");
+    DO_TEST("paravirt-vcpu");
+    DO_TEST("fullvirt-new-cdrom");
+    DO_TEST("fullvirt-utc");
+    DO_TEST("fullvirt-localtime");
+    DO_TEST("fullvirt-usbtablet");
+    DO_TEST("fullvirt-usbmouse");
+    DO_TEST("fullvirt-serial-file");
+    DO_TEST("fullvirt-serial-dev-2-ports");
+    DO_TEST("fullvirt-serial-dev-2nd-port");
+    DO_TEST("fullvirt-serial-null");
+    DO_TEST("fullvirt-serial-pipe");
+    DO_TEST("fullvirt-serial-pty");
+    DO_TEST("fullvirt-serial-stdio");
+    DO_TEST("fullvirt-serial-tcp");
+    DO_TEST("fullvirt-serial-tcp-telnet");
+    DO_TEST("fullvirt-serial-udp");
+    DO_TEST("fullvirt-serial-unix");
 
-    DO_TEST("fullvirt-force-hpet", 2);
-    DO_TEST("fullvirt-force-nohpet", 2);
+    DO_TEST("fullvirt-force-hpet");
+    DO_TEST("fullvirt-force-nohpet");
 
-    DO_TEST("fullvirt-parallel-tcp", 2);
+    DO_TEST("fullvirt-parallel-tcp");
 
-    DO_TEST("fullvirt-sound", 2);
+    DO_TEST("fullvirt-sound");
 
-    DO_TEST("fullvirt-net-netfront", 2);
+    DO_TEST("fullvirt-net-netfront");
 
-    DO_TEST_FORMAT("fullvirt-default-feature", 2);
+    DO_TEST_FORMAT("fullvirt-default-feature");
 
-    DO_TEST("escape-paths", 2);
-    DO_TEST("no-source-cdrom", 2);
-    DO_TEST("pci-devs", 2);
+    DO_TEST("escape-paths");
+    DO_TEST("no-source-cdrom");
+    DO_TEST("pci-devs");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

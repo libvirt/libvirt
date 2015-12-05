@@ -46,7 +46,7 @@ static virDomainXMLOptionPtr xmlopt;
  * parses the xml, creates a domain def and compare with equivalent xm config
  */
 static int
-testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
+testCompareParseXML(const char *xmcfg, const char *xml)
 {
     char *gotxmcfgData = NULL;
     virConfPtr conf = NULL;
@@ -70,7 +70,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
         goto fail;
     }
 
-    if (!(conf = xenFormatXL(def, conn,  xendConfigVersion)))
+    if (!(conf = xenFormatXL(def, conn, 4)))
         goto fail;
 
     if (virConfWriteMem(gotxmcfgData, &wrote, conf) < 0)
@@ -95,7 +95,7 @@ testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion)
  * parses the xl config, develops domain def and compares with equivalent xm config
  */
 static int
-testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
+testCompareFormatXML(const char *xmcfg, const char *xml)
 {
     char *xmcfgData = NULL;
     char *gotxml = NULL;
@@ -113,7 +113,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
     if (!(conf = virConfReadMem(xmcfgData, strlen(xmcfgData), 0)))
         goto fail;
 
-    if (!(def = xenParseXL(conf, caps, xmlopt, xendConfigVersion)))
+    if (!(def = xenParseXL(conf, caps, xmlopt, 4)))
         goto fail;
 
     if (!(gotxml = virDomainDefFormat(def, VIR_DOMAIN_XML_INACTIVE |
@@ -139,7 +139,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion)
 
 struct testInfo {
     const char *name;
-    int version;
     int mode;
 };
 
@@ -158,9 +157,9 @@ testCompareHelper(const void *data)
         goto cleanup;
 
     if (info->mode == 0)
-        result = testCompareParseXML(cfg, xml, info->version);
+        result = testCompareParseXML(cfg, xml);
     else
-        result = testCompareFormatXML(cfg, xml, info->version);
+        result = testCompareFormatXML(cfg, xml);
 
  cleanup:
     VIR_FREE(xml);
@@ -181,10 +180,10 @@ mymain(void)
     if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
-#define DO_TEST(name, version)                                          \
+#define DO_TEST(name)                                                   \
     do {                                                                \
-        struct testInfo info0 = { name, version, 0 };                   \
-        struct testInfo info1 = { name, version, 1 };                   \
+        struct testInfo info0 = { name, 0 };                            \
+        struct testInfo info1 = { name, 1 };                            \
         if (virtTestRun("Xen XM-2-XML Parse  " name,                    \
                         testCompareHelper, &info0) < 0)                 \
             ret = -1;                                                   \
@@ -193,15 +192,15 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-    DO_TEST("new-disk", 3);
-    DO_TEST("spice", 3);
-    DO_TEST("spice-features", 3);
+    DO_TEST("new-disk");
+    DO_TEST("spice");
+    DO_TEST("spice-features");
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
-    DO_TEST("fullvirt-multiusb", 3);
+    DO_TEST("fullvirt-multiusb");
 #endif
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
-    DO_TEST("fullvirt-direct-kernel-boot", 3);
+    DO_TEST("fullvirt-direct-kernel-boot");
 #endif
 
     virObjectUnref(caps);

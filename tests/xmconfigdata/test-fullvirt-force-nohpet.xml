@@ -14,7 +14,7 @@
     <apic/>
     <pae/>
   </features>
-  <clock offset='utc' adjustment='reset'>
+  <clock offset='variable' adjustment='0' basis='utc'>
     <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
