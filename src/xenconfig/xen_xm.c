@@ -104,9 +104,9 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
+xenParseXMDisk(virConfPtr conf, virDomainDefPtr def,
+               int xendConfigVersion ATTRIBUTE_UNUSED)
 {
-    const char *str = NULL;
     virDomainDiskDefPtr disk = NULL;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virConfValuePtr list = virConfGetValue(conf, "disk");
@@ -271,29 +271,6 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
         }
     }
 
-    if (hvm && xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-        if (xenConfigGetString(conf, "cdrom", &str, NULL) < 0)
-            goto cleanup;
-        if (str) {
-            if (!(disk = virDomainDiskDefNew(NULL)))
-                goto cleanup;
-
-            virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
-            disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-            if (virDomainDiskSetDriver(disk, "file") < 0)
-                goto cleanup;
-            if (virDomainDiskSetSource(disk, str) < 0)
-                goto cleanup;
-            if (VIR_STRDUP(disk->dst, "hdc") < 0)
-                goto cleanup;
-            disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->src->readonly = true;
-
-            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
-                goto cleanup;
-        }
-    }
-
     return 0;
 
  cleanup:
@@ -305,8 +282,8 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
 static int
 xenFormatXMDisk(virConfValuePtr list,
                 virDomainDiskDefPtr disk,
-                int hvm,
-                int xendConfigVersion)
+                int hvm ATTRIBUTE_UNUSED,
+                int xendConfigVersion ATTRIBUTE_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
@@ -343,8 +320,6 @@ xenFormatXMDisk(virConfValuePtr list,
         virBufferAdd(&buf, src, -1);
     }
     virBufferAddLit(&buf, ",");
-    if (hvm && xendConfigVersion == XEND_CONFIG_VERSION_3_0_2)
-        virBufferAddLit(&buf, "ioemu:");
 
     virBufferAdd(&buf, disk->dst, -1);
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
@@ -400,13 +375,6 @@ xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def, int xendConfigVersion)
     diskVal->list = NULL;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2 &&
-            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            def->disks[i]->dst &&
-            STREQ(def->disks[i]->dst, "hdc")) {
-            continue;
-        }
-
         if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
             continue;
 
