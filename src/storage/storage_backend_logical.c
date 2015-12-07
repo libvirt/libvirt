@@ -414,10 +414,16 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     return -1;
 }
 
-static char *
-virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                        const char *srcSpec ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
+/*
+ * @sourceList: Pointer to a storage pool source list
+ *
+ * Use the pvs command to fill the list of pv_name and vg_name associated
+ * into the passed sourceList.
+ *
+ * Returns 0 if successful, -1 and sets error on failure
+ */
+static int
+virStorageBackendLogicalGetPoolSources(virStoragePoolSourceListPtr sourceList)
 {
     /*
      * # pvs --noheadings -o pv_name,vg_name
@@ -431,11 +437,7 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         2
     };
     virCommandPtr cmd;
-    char *retval = NULL;
-    virStoragePoolSourceList sourceList;
-    size_t i;
-
-    virCheckFlags(0, NULL);
+    int ret = -1;
 
     /*
      * NOTE: ignoring errors here; this is just to "touch" any logical volumes
@@ -447,20 +449,38 @@ virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
         VIR_WARN("Failure when running vgscan to refresh physical volumes");
     virCommandFree(cmd);
 
-    memset(&sourceList, 0, sizeof(sourceList));
-    sourceList.type = VIR_STORAGE_POOL_LOGICAL;
-
     cmd = virCommandNewArgList(PVS,
                                "--noheadings",
                                "-o", "pv_name,vg_name",
                                NULL);
     if (virCommandRunRegex(cmd, 1, regexes, vars,
                            virStorageBackendLogicalFindPoolSourcesFunc,
-                           &sourceList, "pvs") < 0) {
-        virCommandFree(cmd);
-        return NULL;
-    }
+                           sourceList, "pvs") < 0)
+        goto cleanup;
+    ret = 0;
+
+ cleanup:
     virCommandFree(cmd);
+    return ret;
+}
+
+
+static char *
+virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        const char *srcSpec ATTRIBUTE_UNUSED,
+                                        unsigned int flags)
+{
+    virStoragePoolSourceList sourceList;
+    size_t i;
+    char *retval = NULL;
+
+    virCheckFlags(0, NULL);
+
+    memset(&sourceList, 0, sizeof(sourceList));
+    sourceList.type = VIR_STORAGE_POOL_LOGICAL;
+
+    if (virStorageBackendLogicalGetPoolSources(&sourceList) < 0)
+        goto cleanup;
 
     retval = virStoragePoolSourceListFormat(&sourceList);
     if (retval == NULL) {
