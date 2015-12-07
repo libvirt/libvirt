@@ -1779,6 +1779,25 @@ if [ "$1" -ge "1" ]; then
 fi
     %endif
 
+# In upgrade scenario we must explicitly enable virtlockd/virtlogd
+# sockets, if libvirtd is already enabled and start them if
+# libvirtd is running, otherwise you'll get failures to start
+# guests
+%triggerpostun daemon -- libvirt-daemon < 1.3.0
+if [ $1 -ge 1 ] ; then
+    %if %{with_systemd}
+        /bin/systemctl is-enabled libvirtd.service 1>/dev/null 2>&1 &&
+            /bin/systemctl enable virtlogd.socket || :
+        /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1 &&
+            /bin/systemctl start virtlogd.socket || :
+    %else
+        /sbin/chkconfig libvirtd 1>/dev/null 2>&1 &&
+            /bin/chkconfig virtlogd on || :
+        /sbin/service libvirtd status 1>/dev/null 2>&1 &&
+            /bin/service virtlogd start || :
+    %endif
+fi
+
     %if %{with_network}
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
