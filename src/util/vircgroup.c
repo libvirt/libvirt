@@ -3189,6 +3189,26 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
 }
 
 
+/**
+ * virCgroupGetPercpuStats:
+ * @cgroup: cgroup data structure
+ * @params: typed parameter array where data is returned
+ * @nparams: cardinality of @params
+ * @start_cpu: offset of physical CPU to get data for
+ * @ncpus: number of physical CPUs to get data for
+ * @nvcpupids: number of vCPU threads for a domain (actual number of vcpus)
+ *
+ * This function is the worker that retrieves data in the appropriate format
+ * for the terribly designed 'virDomainGetCPUStats' API. Sharing semantics with
+ * the API, this function has two modes of operation depending on magic settings
+ * of the input arguments. Please refer to docs of 'virDomainGetCPUStats' for
+ * the usage patterns of the similarly named arguments.
+ *
+ * @nvcpupids determines the count of active vcpu threads for the vm. If the
+ * threads could not be detected the percpu data is skipped.
+ *
+ * Please DON'T use this function anywhere else.
+ */
 int
 virCgroupGetPercpuStats(virCgroupPtr group,
                         virTypedParameterPtr params,
@@ -3197,7 +3217,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                         unsigned int ncpus,
                         unsigned int nvcpupids)
 {
-    int rv = -1;
+    int ret = -1;
     size_t i;
     int need_cpus, total_cpus;
     char *pos;
@@ -3218,12 +3238,13 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
     /* To parse account file, we need to know how many cpus are present.  */
     if (!(cpumap = nodeGetPresentCPUBitmap(NULL)))
-        return rv;
+        return -1;
 
     total_cpus = virBitmapSize(cpumap);
 
+    /* return total number of cpus */
     if (ncpus == 0) {
-        rv = total_cpus;
+        ret = total_cpus;
         goto cleanup;
     }
 
@@ -3261,34 +3282,35 @@ virCgroupGetPercpuStats(virCgroupPtr group,
             goto cleanup;
     }
 
-    if (nvcpupids == 0 || param_idx + 1 >= nparams)
-        goto success;
     /* return percpu vcputime in index 1 */
-    param_idx++;
+    param_idx = 1;
 
-    if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
-        goto cleanup;
-    if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, need_cpus,
-                                  cpumap) < 0)
-        goto cleanup;
-
-    for (i = start_cpu; i < need_cpus; i++) {
-        if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
-                                            param_idx],
-                                    VIR_DOMAIN_CPU_STATS_VCPUTIME,
-                                    VIR_TYPED_PARAM_ULLONG,
-                                    sum_cpu_time[i]) < 0)
+    if (nvcpupids > 0 && param_idx < nparams) {
+        if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
             goto cleanup;
+        if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, need_cpus,
+                                      cpumap) < 0)
+            goto cleanup;
+
+        for (i = start_cpu; i < need_cpus; i++) {
+            if (virTypedParameterAssign(&params[(i - start_cpu) * nparams +
+                                                param_idx],
+                                        VIR_DOMAIN_CPU_STATS_VCPUTIME,
+                                        VIR_TYPED_PARAM_ULLONG,
+                                        sum_cpu_time[i]) < 0)
+                goto cleanup;
+        }
+
+        param_idx++;
     }
 
- success:
-    rv = param_idx + 1;
+    ret = param_idx;
 
  cleanup:
     virBitmapFree(cpumap);
     VIR_FREE(sum_cpu_time);
     VIR_FREE(buf);
-    return rv;
+    return ret;
 }
 
 
