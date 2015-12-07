@@ -7264,7 +7264,6 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     int max_id, cpu = 0, show_count = -1, nparams = 0, stats_per_cpu;
     size_t i, j;
     bool show_total = false, show_per_cpu = false;
-    unsigned int flags = 0;
     bool ret = false;
     int rv = 0;
 
@@ -7303,7 +7302,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto do_show_total;
 
     /* get number of cpus on the node */
-    if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, flags)) < 0)
+    if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0)) < 0)
         goto failed_stats;
     if (show_count < 0 || show_count > max_id) {
         if (show_count > max_id)
@@ -7312,7 +7311,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* get percpu information */
-    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, flags)) < 0)
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0)) < 0)
         goto failed_stats;
 
     if (!nparams) {
@@ -7328,7 +7327,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     while (show_count) {
         int ncpus = MIN(show_count, 128);
 
-        if (virDomainGetCPUStats(dom, params, nparams, cpu, ncpus, flags) < 0)
+        if (virDomainGetCPUStats(dom, params, nparams, cpu, ncpus, 0) < 0)
             goto failed_stats;
 
         for (i = 0; i < ncpus; i++) {
@@ -7352,7 +7351,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
  do_show_total:
     /* get supported num of parameter for total statistics */
-    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, flags)) < 0)
+    if ((nparams = virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0)) < 0)
         goto failed_stats;
 
     if (!nparams) {
@@ -7365,7 +7364,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
     /* passing start_cpu == -1 gives us domain's total status */
     if ((stats_per_cpu = virDomainGetCPUStats(dom, params, nparams,
-                                              -1, 1, flags)) < 0)
+                                              -1, 1, 0)) < 0)
         goto failed_stats;
 
     vshPrint(ctl, _("Total:\n"));
