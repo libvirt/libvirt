@@ -418,6 +418,7 @@ virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
 static int
 virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 {
+    int ret = -1;
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
@@ -426,18 +427,21 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
         virReportSystemError(errno,
                              _("cannot read mount list '%s'"),
                              _PATH_MOUNTED);
-        return -1;
+        goto cleanup;
     }
 
     while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
         if (STREQ(ent.mnt_dir, pool->def->target.path)) {
-            VIR_FORCE_FCLOSE(mtab);
-            return 1;
+            ret = 1;
+            goto cleanup;
         }
     }
 
+    ret = 0;
+
+ cleanup:
     VIR_FORCE_FCLOSE(mtab);
-    return 0;
+    return ret;
 }
 
 /**
