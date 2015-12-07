@@ -18081,7 +18081,6 @@ qemuDomainGetCPUStats(virDomainPtr domain,
 {
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    bool isActive;
     qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -18094,8 +18093,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     if (virDomainGetCPUStatsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    isActive = virDomainObjIsActive(vm);
-    if (!isActive) {
+    if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
         goto cleanup;

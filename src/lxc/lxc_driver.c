@@ -5704,8 +5704,7 @@ lxcDomainGetCPUStats(virDomainPtr dom,
         ret = virCgroupGetPercpuStats(priv->cgroup, params,
                                       nparams, start_cpu, ncpus, 0);
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virObjectUnlock(vm);
     return ret;
 }
 
