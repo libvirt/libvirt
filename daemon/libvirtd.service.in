@@ -22,3 +22,5 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
+Also=virtlockd.socket
+Also=virtlogd.socket
