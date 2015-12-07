@@ -419,6 +419,7 @@ static int
 virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
 {
     int ret = -1;
+    char *src = NULL;
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
@@ -431,16 +432,23 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
     }
 
     while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
-        if (STREQ(ent.mnt_dir, pool->def->target.path)) {
+        if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
+            goto cleanup;
+
+        if (STREQ(ent.mnt_dir, pool->def->target.path) &&
+            STREQ(ent.mnt_fsname, src)) {
             ret = 1;
             goto cleanup;
         }
+
+        VIR_FREE(src);
     }
 
     ret = 0;
 
  cleanup:
     VIR_FORCE_FCLOSE(mtab);
+    VIR_FREE(src);
     return ret;
 }
 
