@@ -1374,6 +1374,30 @@ virDomainDefGetVcpus(const virDomainDef *def)
 }
 
 
+/**
+ * virDomainDefGetOnlineVcpumap:
+ * @def: domain definition
+ *
+ * Returns a bitmap representing state of individual vcpus.
+ */
+virBitmapPtr
+virDomainDefGetOnlineVcpumap(const virDomainDef *def)
+{
+    virBitmapPtr ret = NULL;
+    size_t i;
+
+    if (!(ret = virBitmapNew(def->maxvcpus)))
+        return NULL;
+
+    for (i = 0; i < def->maxvcpus; i++) {
+        if (def->vcpus[i].online)
+            ignore_value(virBitmapSetBit(ret, i));
+    }
+
+    return ret;
+}
+
+
 virDomainVcpuInfoPtr
 virDomainDefGetVcpu(virDomainDefPtr def,
                     unsigned int vcpu)

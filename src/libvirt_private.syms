@@ -217,6 +217,7 @@ virDomainDefFree;
 virDomainDefGetDefaultEmulator;
 virDomainDefGetMemoryActual;
 virDomainDefGetMemoryInitial;
+virDomainDefGetOnlineVcpumap;
 virDomainDefGetSecurityLabelDef;
 virDomainDefGetVcpu;
 virDomainDefGetVcpus;

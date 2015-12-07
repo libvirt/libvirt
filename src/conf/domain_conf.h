@@ -2358,6 +2358,7 @@ bool virDomainDefHasVcpusOffline(const virDomainDef *def);
 unsigned int virDomainDefGetVcpusMax(const virDomainDef *def);
 int virDomainDefSetVcpus(virDomainDefPtr def, unsigned int vcpus);
 unsigned int virDomainDefGetVcpus(const virDomainDef *def);
+virBitmapPtr virDomainDefGetOnlineVcpumap(const virDomainDef *def);
 virDomainVcpuInfoPtr virDomainDefGetVcpu(virDomainDefPtr def, unsigned int vcpu)
     ATTRIBUTE_RETURN_CHECK;
 
