@@ -7237,12 +7237,31 @@ static const vshCmdOptDef opts_cpu_stats[] = {
     {.name = NULL}
 };
 
+static void
+vshCPUStatsPrintField(vshControl *ctl,
+                      virTypedParameterPtr param)
+{
+    vshPrint(ctl, "\t%-12s ", param->field);
+    if ((STREQ(param->field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
+         STREQ(param->field, VIR_DOMAIN_CPU_STATS_USERTIME) ||
+         STREQ(param->field, VIR_DOMAIN_CPU_STATS_SYSTEMTIME)) &&
+        param->type == VIR_TYPED_PARAM_ULLONG) {
+        vshPrint(ctl, "%9lld.%09lld seconds\n",
+                 param->value.ul / 1000000000,
+                 param->value.ul % 1000000000);
+    } else {
+        char *s = vshGetTypedParamValue(ctl, param);
+        vshPrint(ctl, "%s\n", s);
+        VIR_FREE(s);
+    }
+}
+
 static bool
 cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     virTypedParameterPtr params = NULL;
-    int pos, max_id, cpu = 0, show_count = -1, nparams = 0, stats_per_cpu;
+    int max_id, cpu = 0, show_count = -1, nparams = 0, stats_per_cpu;
     size_t i, j;
     bool show_total = false, show_per_cpu = false;
     unsigned int flags = 0;
@@ -7317,21 +7336,8 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
                 continue;
             vshPrint(ctl, "CPU%zu:\n", cpu + i);
 
-            for (j = 0; j < nparams; j++) {
-                pos = i * nparams + j;
-                vshPrint(ctl, "\t%-12s ", params[pos].field);
-                if ((STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
-                     STREQ(params[pos].field, VIR_DOMAIN_CPU_STATS_VCPUTIME)) &&
-                    params[j].type == VIR_TYPED_PARAM_ULLONG) {
-                    vshPrint(ctl, "%9lld.%09lld seconds\n",
-                             params[pos].value.ul / 1000000000,
-                             params[pos].value.ul % 1000000000);
-                } else {
-                    char *s = vshGetTypedParamValue(ctl, &params[pos]);
-                    vshPrint(ctl, _("%s\n"), s);
-                    VIR_FREE(s);
-                }
-            }
+            for (j = 0; j < nparams; j++)
+                vshCPUStatsPrintField(ctl, params + (i * nparams + j));
         }
         cpu += ncpus;
         show_count -= ncpus;
@@ -7363,21 +7369,8 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
         goto failed_stats;
 
     vshPrint(ctl, _("Total:\n"));
-    for (i = 0; i < stats_per_cpu; i++) {
-        vshPrint(ctl, "\t%-12s ", params[i].field);
-        if ((STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
-             STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_USERTIME) ||
-             STREQ(params[i].field, VIR_DOMAIN_CPU_STATS_SYSTEMTIME)) &&
-            params[i].type == VIR_TYPED_PARAM_ULLONG) {
-            vshPrint(ctl, "%9lld.%09lld seconds\n",
-                     params[i].value.ul / 1000000000,
-                     params[i].value.ul % 1000000000);
-        } else {
-            char *s = vshGetTypedParamValue(ctl, &params[i]);
-            vshPrint(ctl, "%s\n", s);
-            VIR_FREE(s);
-        }
-    }
+    for (i = 0; i < stats_per_cpu; i++)
+        vshCPUStatsPrintField(ctl, params + i);
 
     ret = true;
 
