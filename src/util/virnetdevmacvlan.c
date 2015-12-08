@@ -289,24 +289,26 @@ virNetDevMacVLanTapOpen(const char *ifname,
  * @tapfd: array of file descriptors of the macvtap tap
  * @tapfdSize: number of file descriptors in @tapfd
  * @vnet_hdr: whether to enable or disable IFF_VNET_HDR
+ * @multiqueue: whether to enable or disable IFF_MULTI_QUEUE
  *
- * Turn the IFF_VNET_HDR flag, if requested and available, make sure
- * it's off in the other cases.
+ * Turn on the IFF_VNET_HDR flag if requested and available, but make sure it's
+ * off otherwise. Similarly, turn on IFF_MULTI_QUEUE if requested, but if it
+ * can't be set, consider it a fatal error (rather than ignoring as with
+ * @vnet_hdr).
+ *
  * A fatal error is defined as the VNET_HDR flag being set but it cannot
  * be turned off for some reason. This is reported with -1. Other fatal
  * error is not being able to read the interface flags. In that case the
  * macvtap device should not be used.
  *
- * Returns 0 on success, -1 in case of fatal error, error code otherwise.
+ * Returns 0 on success, -1 in case of fatal error.
  */
 static int
-virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
+virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr, bool multiqueue)
 {
     unsigned int features;
     struct ifreq ifreq;
     short new_flags = 0;
-    int rc_on_fail = 0;
-    const char *errmsg = NULL;
     size_t i;
 
     for (i = 0; i < tapfdSize; i++) {
@@ -320,27 +322,29 @@ virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
 
         new_flags = ifreq.ifr_flags;
 
-        if ((ifreq.ifr_flags & IFF_VNET_HDR) && !vnet_hdr) {
-            new_flags = ifreq.ifr_flags & ~IFF_VNET_HDR;
-            rc_on_fail = -1;
-            errmsg = _("cannot clean IFF_VNET_HDR flag on macvtap tap");
-        } else if ((ifreq.ifr_flags & IFF_VNET_HDR) == 0 && vnet_hdr) {
+        if (vnet_hdr) {
             if (ioctl(tapfd[i], TUNGETFEATURES, &features) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("cannot get feature flags on macvtap tap"));
                 return -1;
             }
-            if ((features & IFF_VNET_HDR)) {
-                new_flags = ifreq.ifr_flags | IFF_VNET_HDR;
-                errmsg = _("cannot set IFF_VNET_HDR flag on macvtap tap");
-            }
+            if (features & IFF_VNET_HDR)
+                new_flags |= IFF_VNET_HDR;
+        } else {
+            new_flags &= ~IFF_VNET_HDR;
         }
+
+        if (multiqueue)
+            new_flags |= IFF_MULTI_QUEUE;
+        else
+            new_flags &= ~IFF_MULTI_QUEUE;
 
         if (new_flags != ifreq.ifr_flags) {
             ifreq.ifr_flags = new_flags;
             if (ioctl(tapfd[i], TUNSETIFF, &ifreq) < 0) {
-                virReportSystemError(errno, "%s", errmsg);
-                return rc_on_fail;
+                virReportSystemError(errno, "%s",
+                                     _("unable to set vnet or multiqueue flags on macvtap"));
+                return -1;
             }
         }
     }
@@ -852,7 +856,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         if (virNetDevMacVLanTapOpen(cr_ifname, &rc, 1, 10) < 0)
             goto disassociate_exit;
 
-        if (virNetDevMacVLanTapSetup(&rc, 1, vnet_hdr) < 0) {
+        if (virNetDevMacVLanTapSetup(&rc, 1, vnet_hdr, false) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
