@@ -58,7 +58,6 @@
 #include "virhostdev.h"
 #include "network/bridge_driver.h"
 #include "locking/domain_lock.h"
-#include "virstats.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -4644,56 +4643,6 @@ libxlDomainIsUpdated(virDomainPtr dom)
 }
 
 static int
-libxlDomainInterfaceStats(virDomainPtr dom,
-                          const char *path,
-                          virDomainInterfaceStatsPtr stats)
-{
-    libxlDriverPrivatePtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
-    ssize_t i;
-    int ret = -1;
-
-    if (!(vm = libxlDomObjFromDomain(dom)))
-        goto cleanup;
-
-    if (virDomainInterfaceStatsEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
-
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_QUERY) < 0)
-        goto cleanup;
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
-    }
-
-    /* Check the path is one of the domain's network interfaces. */
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (vm->def->nets[i]->ifname &&
-            STREQ(vm->def->nets[i]->ifname, path)) {
-            ret = 0;
-            break;
-        }
-    }
-
-    if (ret == 0)
-        ret = virNetInterfaceStats(path, stats);
-    else
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("'%s' is not a known interface"), path);
-
- endjob:
-    if (!libxlDomainObjEndJob(driver, vm))
-        vm = NULL;
-
- cleanup:
-    if (vm)
-        virObjectUnlock(vm);
-    return ret;
-}
-
-static int
 libxlDomainGetTotalCPUStats(libxlDriverPrivatePtr driver,
                             virDomainObjPtr vm,
                             virTypedParameterPtr params,
@@ -5474,7 +5423,6 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .nodeGetCellsFreeMemory = libxlNodeGetCellsFreeMemory, /* 1.1.1 */
     .domainMemoryStats = libxlDomainMemoryStats, /* 1.3.0 */
     .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.3.0 */
-    .domainInterfaceStats = libxlDomainInterfaceStats, /* 1.3.0 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
     .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
