@@ -215,10 +215,10 @@ virFDStreamAddCallback(virStreamPtr st,
     }
 
     if ((fdst->watch = virEventAddHandle(fdst->fd,
-                                           events,
-                                           virFDStreamEvent,
-                                           st,
-                                           virFDStreamCallbackFree)) < 0) {
+                                         events,
+                                         virFDStreamEvent,
+                                         st,
+                                         virFDStreamCallbackFree)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot register file watch on stream"));
         goto cleanup;
@@ -624,7 +624,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
      */
     if ((st->flags & VIR_STREAM_NONBLOCK) &&
         ((!S_ISCHR(sb.st_mode) &&
-         !S_ISFIFO(sb.st_mode)) || forceIOHelper)) {
+          !S_ISFIFO(sb.st_mode)) || forceIOHelper)) {
         int fds[2] = { -1, -1 };
 
         if ((oflags & O_ACCMODE) == O_RDWR) {
