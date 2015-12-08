@@ -10086,7 +10086,12 @@ qemuDomainSetNumaParamsLive(virDomainObjPtr vm,
         goto cleanup;
     virCgroupFree(&cgroup_temp);
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                false, &cgroup_temp) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, nodeset_str) < 0)
@@ -10319,7 +10324,6 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                    unsigned long long period, long long quota)
 {
     size_t i;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_vcpu = NULL;
 
     if (period == 0 && quota == 0)
@@ -10328,7 +10332,12 @@ qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
     if (!qemuDomainHasVcpuPids(vm))
         return 0;
 
-    for (i = 0; i < priv->nvcpupids; i++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
         if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_VCPU, i,
                                false, &cgroup_vcpu) < 0)
             goto cleanup;
