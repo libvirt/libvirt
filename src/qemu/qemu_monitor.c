@@ -1494,6 +1494,19 @@ qemuMonitorEmitMigrationStatus(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorEmitMigrationPass(qemuMonitorPtr mon,
+                             int pass)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, pass=%d", mon, pass);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainMigrationPass, mon->vm, pass);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
