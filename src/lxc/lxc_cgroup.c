@@ -504,6 +504,17 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             &cgroup) < 0)
         goto cleanup;
 
+    if (virCgroupAddTask(cgroup, initpid) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(cgroup);
+        virCgroupFree(&cgroup);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+        goto cleanup;
+    }
+
     /* setup control group permissions for user namespace */
     if (def->idmap.uidmap) {
         if (virCgroupSetOwner(cgroup,
