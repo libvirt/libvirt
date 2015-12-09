@@ -222,9 +222,9 @@ virSecurityStackReserveLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackSetSecurityDiskLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr vm,
-                                     virDomainDiskDefPtr disk)
+virSecurityStackSetDiskLabel(virSecurityManagerPtr mgr,
+                             virDomainDefPtr vm,
+                             virDomainDiskDefPtr disk)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -240,9 +240,9 @@ virSecurityStackSetSecurityDiskLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
-                                         virDomainDefPtr vm,
-                                         virDomainDiskDefPtr disk)
+virSecurityStackRestoreDiskLabel(virSecurityManagerPtr mgr,
+                                 virDomainDefPtr vm,
+                                 virDomainDiskDefPtr disk)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -258,10 +258,10 @@ virSecurityStackRestoreSecurityDiskLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        virDomainHostdevDefPtr dev,
-                                        const char *vroot)
+virSecurityStackSetHostdevLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr vm,
+                                virDomainHostdevDefPtr dev,
+                                const char *vroot)
 
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -281,10 +281,10 @@ virSecurityStackSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
-                                            virDomainDefPtr vm,
-                                            virDomainHostdevDefPtr dev,
-                                            const char *vroot)
+virSecurityStackRestoreHostdevLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    virDomainHostdevDefPtr dev,
+                                    const char *vroot)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -303,9 +303,9 @@ virSecurityStackRestoreSecurityHostdevLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackSetSecurityAllLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    const char *stdin_path)
+virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
+                            virDomainDefPtr vm,
+                            const char *stdin_path)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -321,9 +321,9 @@ virSecurityStackSetSecurityAllLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityStackRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr vm,
-                                        bool migrated)
+virSecurityStackRestoreAllLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr vm,
+                                bool migrated)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -565,9 +565,9 @@ virSecurityStackGetBaseLabel(virSecurityManagerPtr mgr, int virtType)
 }
 
 static int
-virSecurityStackSetSecurityImageLabel(virSecurityManagerPtr mgr,
-                                      virDomainDefPtr vm,
-                                      virStorageSourcePtr src)
+virSecurityStackSetImageLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr vm,
+                              virStorageSourcePtr src)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -582,9 +582,9 @@ virSecurityStackSetSecurityImageLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecurityStackRestoreSecurityImageLabel(virSecurityManagerPtr mgr,
-                                          virDomainDefPtr vm,
-                                          virStorageSourcePtr src)
+virSecurityStackRestoreImageLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  virStorageSourcePtr src)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -631,11 +631,11 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSecurityVerify               = virSecurityStackVerify,
 
-    .domainSetSecurityDiskLabel         = virSecurityStackSetSecurityDiskLabel,
-    .domainRestoreSecurityDiskLabel     = virSecurityStackRestoreSecurityDiskLabel,
+    .domainSetSecurityDiskLabel         = virSecurityStackSetDiskLabel,
+    .domainRestoreSecurityDiskLabel     = virSecurityStackRestoreDiskLabel,
 
-    .domainSetSecurityImageLabel        = virSecurityStackSetSecurityImageLabel,
-    .domainRestoreSecurityImageLabel    = virSecurityStackRestoreSecurityImageLabel,
+    .domainSetSecurityImageLabel        = virSecurityStackSetImageLabel,
+    .domainRestoreSecurityImageLabel    = virSecurityStackRestoreImageLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityStackSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityStackSetSocketLabel,
@@ -649,11 +649,11 @@ virSecurityDriver virSecurityDriverStack = {
     .domainSetSecurityProcessLabel      = virSecurityStackSetProcessLabel,
     .domainSetSecurityChildProcessLabel = virSecurityStackSetChildProcessLabel,
 
-    .domainSetSecurityAllLabel          = virSecurityStackSetSecurityAllLabel,
-    .domainRestoreSecurityAllLabel      = virSecurityStackRestoreSecurityAllLabel,
+    .domainSetSecurityAllLabel          = virSecurityStackSetAllLabel,
+    .domainRestoreSecurityAllLabel      = virSecurityStackRestoreAllLabel,
 
-    .domainSetSecurityHostdevLabel      = virSecurityStackSetSecurityHostdevLabel,
-    .domainRestoreSecurityHostdevLabel  = virSecurityStackRestoreSecurityHostdevLabel,
+    .domainSetSecurityHostdevLabel      = virSecurityStackSetHostdevLabel,
+    .domainRestoreSecurityHostdevLabel  = virSecurityStackRestoreHostdevLabel,
 
     .domainSetSavedStateLabel           = virSecurityStackSetSavedStateLabel,
     .domainRestoreSavedStateLabel       = virSecurityStackRestoreSavedStateLabel,
