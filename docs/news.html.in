@@ -16,6 +16,250 @@
     to gauge progress.
     </p>
 
+   <h3>1.3.0: Dec 09 2015</h3>
+    <ul>
+      <li>Features:<br/>
+      virt-admin and administration API (Erik Skultety, Martin Kletzander),<br/>
+      various improvements in virtio devices support (Ján Tomko, Marc-André Lureau),<br/>
+      log daemon, logging improvements and protocol (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      libvirt: Update virDomainSetMemory description (Nikolay Shirokovskiy),<br/>
+      virt-admin: Provide a man page for virt-admin (Erik Skultety),<br/>
+      Enhance documentation of virDomainDetachDevice (Jiri Denemark),<br/>
+      qemu: monitor: Explain logic of qemuMonitorGetCPUInfo (Peter Krempa),<br/>
+      document virCommandRunRegex function (Christian Loehle),<br/>
+      libvirt-domain: Fix typo in debug message (Cole Robinson),<br/>
+      qemu: Explain mlock limit size more in detail (Peter Krempa),<br/>
+      virsh.pod: improve attach-interface section (Pavel Hrdina),<br/>
+      virnetdev: Fix function comments for virNetDevGetFeatures (John Ferlan),<br/>
+      virnetdev: Document reasons for ignoring some SIOCETHTOOL errno values (John Ferlan)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      network: selectively disable -Wcast-align in virNetDevParseDadStatus (Ian Campbell),<br/>
+      log_manager: Include configmake.h last (Michal Privoznik),<br/>
+      virtlogd: Fix build without DBus (Martin Kletzander),<br/>
+      virtlogd: use %llu to print 64bit types (Guido Günther)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      qemu: fix memory leak in opening log file (Daniel P. Berrange),<br/>
+      qemu: Automatic SCSI controller creation in SCSI disk hotplug broken (Boris Fiuczynski),<br/>
+      qemu: domain: Prevent overflows in memory alignment code (Peter Krempa),<br/>
+      conf: Revert some code to resolve issues for hostdev hotplug (Boris Fiuczynski),<br/>
+      virsh: report errors for empty strings (Ján Tomko),<br/>
+      bridge: check for invalid MAC in networkGetDHCPLeases (Ján Tomko),<br/>
+      qemu_agent: fix deadlock in qemuProcessHandleAgentEOF (Wang Yufei),<br/>
+      include: Install libvirt-common.h (Martin Kletzander),<br/>
+      tools: fix output of list with state-shutoff (Wei Jiangang),<br/>
+      virlogd: fix crash if log file exists and it's larger the maxlen (Pavel Hrdina),<br/>
+      systemd: Escape only needed characters for machined (Martin Kletzander),<br/>
+      logging: remove reference to non-existent augeas files (Daniel P. Berrange),<br/>
+      virtlockd: fix misc memory leaks and other bugs (Daniel P. Berrange),<br/>
+      systemd: Escape machine name for machined (Martin Kletzander),<br/>
+      schema: use a better regex for listen addresses (Ján Tomko),<br/>
+      apparmor: add missing qemu binaries (Guido Günther),<br/>
+      storage: Change virStorageBackendVolOpen to use virFileOpenAs (John Ferlan),<br/>
+      storage: Really fix setting mode for backend exec in NFS root-squash env (John Ferlan),<br/>
+      qemu: Add ppc64-specific math to qemuDomainGetMlockLimitBytes() (Andrea Bolognani),<br/>
+      libxl: don't unlock virDomainObj if refcnt is 0 (Jim Fehlig),<br/>
+      libxl: unref libxlDriverConfig object (Jim Fehlig),<br/>
+      qemu: Fix build error in Coverity environment (John Ferlan),<br/>
+      virSetUIDGID: Don't leak supplementary groups (Richard Weinberger),<br/>
+      locking: Add io_timeout to sanlock (Michal Privoznik),<br/>
+      libvirt-guests: Disable shutdown timeout (Guido Günther),<br/>
+      tpm: adapt sysfs cancel path for new TPM driver (Stefan Berger),<br/>
+      bhyve: monitor: do not override domain's privateData (Roman Bogorodskiy),<br/>
+      storage: Don't assume storage pool exists for FC/SCSI refresh thread (John Ferlan),<br/>
+      domain-conf: reorder usb controllers so the master is first (Pavel Hrdina),<br/>
+      qemu: fix parsing of -sdl arg (Daniel P. Berrange),<br/>
+      qemu: handle floppy disk bus when parsing command line argv (Daniel P. Berrange),<br/>
+      qemu: hotplug: Fix mlock limit handling on memory hotplug (Peter Krempa),<br/>
+      Revert "utils: Remove the logging of errors from virNetDevSendEthtoolIoctl" (Daniel P. Berrange),<br/>
+      qemu: migration: Actually error out on unsupported migration flag (Peter Krempa),<br/>
+      qemu: migration: Properly parse memory hotplug migration flag (Peter Krempa),<br/>
+      network: Remove extraneous ATTRIBUTE_NONNULL for virNetDevWaitDadFinish (John Ferlan),<br/>
+      virnetdev: Check correct return value for virNetDevFeatureAvailable (John Ferlan),<br/>
+      storage: On 'buildVol' failure don't delete the volume (John Ferlan),<br/>
+      Revert "storage: Prior to creating a volume, refresh the pool" (John Ferlan),<br/>
+      qemu: Fix memory leak in qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Use correct type when calling qemuPrepareNVRAM (Jiri Denemark)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      Revert "libxl: implement virDomainInterfaceStats" (Jim Fehlig),<br/>
+      rpm: explicitly enable &amp; start virtlogd on install (Daniel P. Berrange),<br/>
+      libvirtd: enable virtlockd/virtlogd socket activation on install (Daniel P. Berrange),<br/>
+      logging: validate flags passed from client in virtlogd (Daniel P. Berrange),<br/>
+      logging: change log protocol to be more reusable (Daniel P. Berrange),<br/>
+      logging: preserve driver, dom name &amp; uuid against log file (Daniel P. Berrange),<br/>
+      qemu: include hostname in QEMU log files (Daniel P. Berrange),<br/>
+      rotatingfile: mark log files as close-on-exec (Daniel P. Berrange),<br/>
+      libvirtd: require virtlogd to start before libvirtd (Guido Günther),<br/>
+      schema: Allow &gt; UINT_MAX KiB of memory for NUMA nodes (Peter Krempa),<br/>
+      virsh: remove custom error for cpulist from cmdIOThreadPin (Ján Tomko),<br/>
+      libxl: implement virDomainInterfaceStats (Joao Martins),<br/>
+      tests: Run virnetdaemontest iff WITH_YAJL (Michal Privoznik),<br/>
+      admin: Distribute libvirt-admin.conf (Martin Kletzander),<br/>
+      admin: Rename virAdmConnect to virAdmDaemon (Martin Kletzander),<br/>
+      spec: Temporarily disable new admin-related files (Martin Kletzander),<br/>
+      admin: Include admin_remote.c in the dist package (Martin Kletzander),<br/>
+      build: Create needed folders without dependency tracking (Martin Kletzander),<br/>
+      util: Avoid variable named 'truncate' shadowing global declaration (Martin Kletzander),<br/>
+      conf: Split virDomainObjList into a separate file (Michal Privoznik),<br/>
+      qemu: build command line for virtio-input-host device (Ján Tomko),<br/>
+      qemu: add passed-through input devs to cgroup ACL (Ján Tomko),<br/>
+      security: label the evdev for input device passthrough (Ján Tomko),<br/>
+      conf: add XML for input device passthrough (Ján Tomko),<br/>
+      qemu: add capability for virtio-input-host-device (Ján Tomko),<br/>
+      qemu: build command line for virtio input devices (Ján Tomko),<br/>
+      conf: parse and format virtio input bus in domain XML (Ján Tomko),<br/>
+      qemu: add capabilities for virtio input devices (Ján Tomko),<br/>
+      admin: Introduce virAdmConnectGetLibVersion (Erik Skultety),<br/>
+      admin: Add support for connection close callbacks (Erik Skultety),<br/>
+      admin: Add support for URI aliases (Erik Skultety),<br/>
+      livirt: Move URI alias matching to util (Erik Skultety),<br/>
+      admin: Add URI support and introduce virAdmGetDefaultURI (Erik Skultety),<br/>
+      admin: Do not generate remoteAdminConnect{Open,Close} (Erik Skultety),<br/>
+      admin: Move remote admin API version to a separate module (Erik Skultety),<br/>
+      admin: Introduce virAdmConnectIsAlive (Erik Skultety),<br/>
+      virt-admin: Introduce first working skeleton (Erik Skultety),<br/>
+      admin: introduce virAdmGetVersion (Erik Skultety),<br/>
+      libvirt: Move config getters to util (Erik Skultety),<br/>
+      admin: Introduce libvirt-admin.conf (Erik Skultety),<br/>
+      libvirt: introduce libvirt/libvirt-common.h.in (Erik Skultety),<br/>
+      qemu: add virtio-gpu virgl support (Marc-André Lureau),<br/>
+      qemu: add virtio video device (Marc-André Lureau),<br/>
+      domain: replace bool accel{2d, 3d} with a tristate (Marc-André Lureau),<br/>
+      Replace support{2d,3d} with accel{2d,3d} (Marc-André Lureau),<br/>
+      logging: avoid variables called 'daemon' due to function clash (Daniel P. Berrange),<br/>
+      logging: inhibit virtlogd shutdown while log files are open (Daniel P. Berrange),<br/>
+      qemu: add support for sending QEMU stdout/stderr to virtlogd (Daniel P. Berrange),<br/>
+      qemu: convert monitor to use qemuDomainLogContextPtr indirectly (Daniel P. Berrange),<br/>
+      qemu: convert process stop/attach to use qemuDomainLogContextPtr (Daniel P. Berrange),<br/>
+      qemu: convert qemuLogOperation to take a qemuDomainLogContextPtr (Daniel P. Berrange),<br/>
+      qemu: change qemuDomainTaint APIs to accept qemuDomainLogContextPtr (Daniel P. Berrange),<br/>
+      qemu: convert log file creation to use qemuDomainLogContextPtr (Daniel P. Berrange),<br/>
+      qemu: introduce a qemuDomainLogContext object (Daniel P. Berrange),<br/>
+      qemu: unify code for reporting errors from QEMU log files (Daniel P. Berrange),<br/>
+      qemu: remove writing to QEMU log file for rename operation (Daniel P. Berrange),<br/>
+      logging: add client for virtlogd daemon (Daniel P. Berrange),<br/>
+      logging: introduce log handling protocol (Daniel P. Berrange),<br/>
+      Import stripped down virtlockd code as basis of virtlogd (Daniel P. Berrange),<br/>
+      util: add APIs for reading/writing from/to rotating files (Daniel P. Berrange),<br/>
+      virsh: Try to keep printed XML pretty with change-media (Martin Kletzander),<br/>
+      qemu: Use qemuProcessLaunch in migration Prepare phase (Jiri Denemark),<br/>
+      qemu: Skip starting NBD servers for offline migration (Jiri Denemark),<br/>
+      qemu: Kill QEMU process if Prepare phase fails (Jiri Denemark),<br/>
+      qemu: Separate incoming URI generation from qemuMigrationPrepareAny (Jiri Denemark),<br/>
+      qemu: Introduce qemuProcessFinishStartup (Jiri Denemark),<br/>
+      qemu: Introduce qemuProcessLaunch (Jiri Denemark),<br/>
+      qemu: Introduce qemuProcessInit (Jiri Denemark),<br/>
+      conf: reject multiple panic devices of same model (Dmitry Andreev),<br/>
+      Allow multiple panic devices (Dmitry Andreev),<br/>
+      qemu: add support for hv_crash feature as a panic device (Dmitry Andreev),<br/>
+      tests: add tests for the new panic device attribute - 'model' (Dmitry Andreev),<br/>
+      conf: add 'model' attribute for panic device with values isa, pseries, hyperv (Dmitry Andreev),<br/>
+      conf: refactor code for checking ABI stability of panic device (Dmitry Andreev),<br/>
+      nodedev: report maxCount for virtual_functions capability (Laine Stump),<br/>
+      conf: support reporting maxCount attribute for virtual_functions cap (Laine Stump),<br/>
+      Post-release version bump to 1.3.0 (Pavel Hrdina),<br/>
+      conf: Drop useless check when parsing cpu scheduler info (Peter Krempa),<br/>
+      qemu: pass the asyncJob to qemuProcessStartCPUs (Ján Tomko),<br/>
+      xenapi: Refactor extraction of vcpu count (Peter Krempa),<br/>
+      phyp: Refactor extraction of vcpu count (Peter Krempa),<br/>
+      openvz: Refactor extraction of vcpu count (Peter Krempa),<br/>
+      hyperv: Allocate 'def' via virDomainDefNew (Peter Krempa),<br/>
+      qemuSetupChrSourceCgroup: rename dev to source (Ján Tomko),<br/>
+      Simplify qemuSetupChrSourceCgroup and its callers (Ján Tomko),<br/>
+      rename qemuSetupHostdevCGroup to qemuSetupHostdevCgroup (Ján Tomko),<br/>
+      qemu: handle more machines with a single builtin IDE controller (Guido Günther),<br/>
+      qemu: Always set locked memory limit for ppc64 domains (Andrea Bolognani),<br/>
+      qemu: Use qemuDomainRequiresMlock() when attaching PCI hostdev (Andrea Bolognani),<br/>
+      qemu: Use qemuDomainRequiresMlock() in qemuBuildCommandLine() (Andrea Bolognani),<br/>
+      process: Log when limiting the amount of locked memory (Andrea Bolognani),<br/>
+      vz: implementation of domainReboot callback (Mikhail Feoktistov),<br/>
+      vz: allow only en-us keymap for VNC (Mikhail Feoktistov),<br/>
+      qemu: Close logfd when closing monitor (Jiri Denemark),<br/>
+      qemu: Do not infer flags from other qemuProcessStart arguments (Jiri Denemark),<br/>
+      qemu: Introduce qemuProcessMakeDir (Jiri Denemark),<br/>
+      qemu: Separate balloon code from qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Enter monitor within qemuProcessSetLinkStates (Jiri Denemark),<br/>
+      qemu: Separate raw IO code from qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Separate graphics handling code from qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Separate hook handling code from qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Rename stdin_{fd,path} in qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Use -incoming defer for migrations (Jiri Denemark),<br/>
+      qemu: Add APIs for migrate-incoming QMP command (Jiri Denemark),<br/>
+      qemu: Always set async job when starting a domain (Jiri Denemark),<br/>
+      qemu: Introduce qemuProcessIncomingDef (Jiri Denemark),<br/>
+      qemu: Move incoming URI code to qemu_migration (Jiri Denemark),<br/>
+      qemu: Don't generate migration URI in qemuBuildCommandLine (Jiri Denemark),<br/>
+      qemu: Refactor the code to build -incoming command line (Jiri Denemark),<br/>
+      qemu: Refactor waiting for completed migration on destination (Jiri Denemark),<br/>
+      util: add virDiskNameParse to handle disk and partition idx (Joao Martins),<br/>
+      libxl: implement virDomainMemorystats (Joao Martins),<br/>
+      lxc: Bind mount container TTYs (Richard Weinberger),<br/>
+      lxc: Don't make container's TTY a controlling TTY (Richard Weinberger),<br/>
+      qemu: ppc64: Support memory hotplug without NUMA enabled (Peter Krempa),<br/>
+      qemu: command: Prepare memory device def formatter for missing target node (Peter Krempa),<br/>
+      conf: Prepare making memory device target node optional (Peter Krempa),<br/>
+      qemu: command: Move dimm device checks from formatter to checker (Peter Krempa),<br/>
+      qemu: domain: Add common function to perform memory hotplug checks (Peter Krempa),<br/>
+      qemu: command: Always execute memory device formatter (Peter Krempa),<br/>
+      qemu: command: Make qemuBuildMemoryBackendStr usable without NUMA (Peter Krempa),<br/>
+      libxl: implement virDomainGetCPUStats (Joao Martins),<br/>
+      syntax-check: Add prohibit_space_in_label rule (Andrea Bolognani),<br/>
+      util: remove unnecessary needSize (Chen Hanxiao),<br/>
+      storage: Introduce virStoragePoolObjFindPoolByUUID (John Ferlan),<br/>
+      storage: Change cbdata scsi refresh thread field name (John Ferlan),<br/>
+      storage: Make active boolean (John Ferlan),<br/>
+      qemu: domain: Restructurate control flow in qemuDomainGetMlockLimitBytes (Peter Krempa),<br/>
+      qemu: Fix job entry debug message (Jiri Denemark),<br/>
+      tests: Add QEMU 2.4.0 capabilities (Jiri Denemark),<br/>
+      tests: Remove qemuxmlnstest (Jiri Denemark),<br/>
+      qemu: Fix style in qemuProcessStart (Jiri Denemark),<br/>
+      security: Cleanup DAC driver (Jiri Denemark),<br/>
+      domain-conf: cleanup controller insert function (Pavel Hrdina),<br/>
+      virsh-domain: update attach-interface to support type=hostdev (Pavel Hrdina),<br/>
+      vz: support cpu time in driver's domainGetInfo (Nikolay Shirokovskiy),<br/>
+      qemu: assume various QEMU 0.10 features are always available (Daniel P. Berrange),<br/>
+      qemu: assume -vga is always available (Daniel P. Berrange),<br/>
+      qemu: assume -drive format is always available (Daniel P. Berrange),<br/>
+      qemu: assume -drive cache always uses v2 option names (Daniel P. Berrange),<br/>
+      qemu: assume support for all migration protocols except rdma (Daniel P. Berrange),<br/>
+      qemu: assume vnet-hdr feature is always available (Daniel P. Berrange),<br/>
+      qemu: really remove last traces of Xenner support (Daniel P. Berrange),<br/>
+      qemu: assume -uuid is always available (Daniel P. Berrange),<br/>
+      qemu: assume -name is always available (Daniel P. Berrange),<br/>
+      qemu: assume -drive argument is always available (Daniel P. Berrange),<br/>
+      qemu: handle USB bus in qemuAssignDeviceDiskAliasFixed() (Daniel P. Berrange),<br/>
+      qemu: assume -no-reboot is always available (Daniel P. Berrange),<br/>
+      qemu: assume 'info chardev' is always available (Daniel P. Berrange),<br/>
+      qemu: assume -vnc arg always takes a ':' (Daniel P. Berrange),<br/>
+      qemu: remove all support for kQEMU (Daniel P. Berrange),<br/>
+      qemu: mandate QEMU version 0.12.0 or newer (Daniel P. Berrange),<br/>
+      qemu: hotplug: Reject VFIO hotplug if setting RLIMIT_MEMLOCK fails (Peter Krempa),<br/>
+      qemu: Extract logic to determine the mlock limit size for VFIO (Peter Krempa),<br/>
+      conf: Make @def const in virDomainDefGetMemoryInitial (Peter Krempa),<br/>
+      tests: redo test argv file line wrapping (Daniel P. Berrange),<br/>
+      virnetdev: Use virNetDevSetupControl in virNetDevSendEthtoolIoctl (John Ferlan),<br/>
+      virnetdev: Check for root in virNetDevGetFeatures (John Ferlan),<br/>
+      qemu: add /usr/lib to AC_PATH_PROG for qemu-bridge-helper (Michel Normand),<br/>
+      storage: Pull volume removal from pool in storageVolDeleteInternal (John Ferlan),<br/>
+      storage: Cleanup failures in virStorageBackendCreateRaw (John Ferlan),<br/>
+      storage: Cleanup failures virStorageBackendCreateExecCommand (John Ferlan),<br/>
+      storage: Fix setting mode in virStorageBackendCreateExecCommand (John Ferlan),<br/>
+      Remove new lines from log messages (Jiri Denemark),<br/>
+      qemu: Introduce cleanup label in qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Rename ret variable in qemuProcessStart (Jiri Denemark),<br/>
+      qemu: Rename cleanup label in qemuProcessStart (Jiri Denemark),<br/>
+      Post-release version bump to 1.2.22 (Jiri Denemark)<br/>
+      </li>
+    </ul>
+
    <h3>v1.2.21: Nov 04 2015</h3>
     <ul>
       <li>Documentation:<br/>

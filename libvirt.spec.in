@@ -2379,6 +2379,12 @@ exit 0
 %doc examples/systemtap
 
 %changelog
+* Wed Dec  9 2015 Daniel Veillard <veillard@redhat.com> - 1.3.0-1
+- virt-admin and administration API
+- various improvements in virtio devices support
+- log daemon, logging improvements and protocol
+- many bug fixes and improvements
+
 * Wed Nov  4 2015 Daniel Veillard <veillard@redhat.com> - 1.2.21-1
 - a number of improvements and bug fixes
 
