@@ -444,6 +444,13 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     bool releaseaddr = false;
     bool addedToAddrSet = false;
 
+    if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("'%s' controller cannot be hot plugged."),
+                       virDomainControllerTypeToString(controller->type));
+        return -1;
+    }
+
     if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("target %s:%d already exists"),

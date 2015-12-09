@@ -7713,27 +7713,6 @@ qemuDomainUndefine(virDomainPtr dom)
 }
 
 static int
-qemuDomainAttachDeviceControllerLive(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr dev)
-{
-    virDomainControllerDefPtr cont = dev->data.controller;
-    int ret = -1;
-
-    switch (cont->type) {
-    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        ret = qemuDomainAttachControllerDevice(driver, vm, cont);
-        break;
-    default:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("'%s' controller cannot be hot plugged."),
-                       virDomainControllerTypeToString(cont->type));
-        break;
-    }
-    return ret;
-}
-
-static int
 qemuDomainAttachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
                            virDomainPtr dom)
@@ -7753,7 +7732,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        ret = qemuDomainAttachDeviceControllerLive(driver, vm, dev);
+        ret = qemuDomainAttachControllerDevice(driver, vm, dev->data.controller);
         if (!ret) {
             alias = dev->data.controller->info.alias;
             dev->data.controller = NULL;
