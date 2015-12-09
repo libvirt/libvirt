@@ -1,7 +1,7 @@
 /*
  * storage_backend_fs.c: storage backend for FS and directory handling
  *
- * Copyright (C) 2007-2012 Red Hat, Inc.
+ * Copyright (C) 2007-2015 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -987,6 +987,14 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
 
     vol->type = VIR_STORAGE_VOL_FILE;
+
+    /* Volumes within a directory pools are not recursive; do not
+     * allow escape to ../ or a subdir */
+    if (strchr(vol->name, '/')) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("volume name '%s' cannot contain '/'"), vol->name);
+        return -1;
+    }
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
