@@ -5,5 +5,7 @@
 (device_model '/usr/lib64/xen/bin/qemu-dm')(boot c)(cdrom '/root/boot.iso')\
 (acpi 1)(vnc 1)(keymap ja)))(device (vbd (dev 'ioemu:hda')\
 (uname 'file:/root/foo.img')(mode 'w')))\
+(device (vbd (dev 'hdc:cdrom')\
+(uname 'file:/root/boot.iso')(mode 'r')))\
 (device (vif (mac '00:16:3e:1b:b1:47')(bridge 'xenbr0')\
 (script 'vif-bridge')(type ioemu))))

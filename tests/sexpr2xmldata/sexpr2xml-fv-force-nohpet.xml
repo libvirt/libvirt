@@ -12,7 +12,7 @@
   <features>
     <acpi/>
   </features>
-  <clock offset='utc' adjustment='reset'>
+  <clock offset='variable' adjustment='0' basis='utc'>
     <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
@@ -44,7 +44,7 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='vnc' port='5901' autoport='no'/>
+    <graphics type='vnc' port='-1' autoport='yes'/>
     <memballoon model='xen'/>
   </devices>
 </domain>
