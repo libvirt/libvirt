@@ -41,6 +41,7 @@
 #include "virstring.h"
 #include "virthreadjob.h"
 #include "viratomic.h"
+#include "virprocess.h"
 #include "logging/log_manager.h"
 
 #include "storage/storage_driver.h"
@@ -4117,6 +4118,35 @@ qemuDomainRequiresMlock(virDomainDefPtr def)
     return false;
 }
 
+/**
+ * qemuDomainAdjustMaxMemLock:
+ * @vm: domain
+ *
+ * Adjust the memory locking limit for the QEMU process associated to @vm, in
+ * order to comply with VFIO or architecture requirements.
+ *
+ * The limit will not be changed unless doing so is needed.
+ *
+ * Returns: 0 on success, <0 on failure
+ */
+int
+qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
+{
+    unsigned long long bytes = 0;
+    int ret = -1;
+
+    if (qemuDomainRequiresMlock(vm->def))
+        bytes = qemuDomainGetMlockLimitBytes(vm->def);
+
+    /* Trying to set the memory locking limit to zero is a no-op */
+    if (virProcessSetMaxMemLock(vm->pid, bytes) < 0)
+        goto out;
+
+    ret = 0;
+
+ out:
+     return ret;
+}
 
 /**
  * qemuDomainHasVcpuPids:

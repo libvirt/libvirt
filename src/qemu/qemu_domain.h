@@ -500,6 +500,7 @@ int qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
 
 unsigned long long qemuDomainGetMlockLimitBytes(virDomainDefPtr def);
 bool qemuDomainRequiresMlock(virDomainDefPtr def);
+int qemuDomainAdjustMaxMemLock(virDomainObjPtr vm);
 
 int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        virQEMUCapsPtr qemuCaps,
