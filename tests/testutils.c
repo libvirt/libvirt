@@ -67,6 +67,7 @@ VIR_LOG_INIT("tests.testutils");
 static unsigned int testDebug = -1;
 static unsigned int testVerbose = -1;
 static unsigned int testExpensive = -1;
+static unsigned int testRegenerate = -1;
 
 #ifdef TEST_OOM
 static unsigned int testOOM;
@@ -598,9 +599,8 @@ virtTestCompareToFile(const char *strcontent,
     int ret = -1;
     char *filecontent = NULL;
     char *fixedcontent = NULL;
-    bool regenerate = !!virTestGetFlag("VIR_TEST_REGENERATE_OUTPUT");
 
-    if (virtTestLoadFile(filename, &filecontent) < 0 && !regenerate)
+    if (virtTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
 
     if (filecontent &&
@@ -612,7 +612,7 @@ virtTestCompareToFile(const char *strcontent,
 
     if (STRNEQ_NULLABLE(fixedcontent ? fixedcontent : strcontent,
                         filecontent)) {
-        if (regenerate) {
+        if (virTestGetRegenerate()) {
             if (virFileWriteStr(filename, strcontent, 0666) < 0)
                 goto failure;
             goto out;
@@ -714,6 +714,14 @@ virTestGetExpensive(void)
     if (testExpensive == -1)
         testExpensive = virTestGetFlag("VIR_TEST_EXPENSIVE");
     return testExpensive;
+}
+
+unsigned int
+virTestGetRegenerate(void)
+{
+    if (testRegenerate == -1)
+        testRegenerate = virTestGetFlag("VIR_TEST_REGENERATE_OUTPUT");
+    return testRegenerate;
 }
 
 int virtTestMain(int argc,

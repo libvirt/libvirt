@@ -77,6 +77,7 @@ int virtTestCompareToFile(const char *strcontent,
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
+unsigned int virTestGetRegenerate(void);
 
 # define VIR_TEST_DEBUG(...)                    \
     do {                                        \
