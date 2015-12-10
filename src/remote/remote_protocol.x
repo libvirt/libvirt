@@ -3222,6 +3222,12 @@ struct remote_domain_rename_ret {
     int retcode;
 };
 
+struct remote_domain_event_callback_migration_iteration_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    int iteration;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5694,5 +5700,11 @@ enum remote_procedure {
      * @acl: domain:write
      * @acl: domain:save
      */
-    REMOTE_PROC_DOMAIN_RENAME = 358
+    REMOTE_PROC_DOMAIN_RENAME = 358,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION = 359
 };

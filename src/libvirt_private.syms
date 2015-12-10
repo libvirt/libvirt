@@ -514,6 +514,8 @@ virDomainEventLifecycleNew;
 virDomainEventLifecycleNewFromDef;
 virDomainEventLifecycleNewFromDom;
 virDomainEventLifecycleNewFromObj;
+virDomainEventMigrationIterationNewFromDom;
+virDomainEventMigrationIterationNewFromObj;
 virDomainEventPMSuspendDiskNewFromDom;
 virDomainEventPMSuspendDiskNewFromObj;
 virDomainEventPMSuspendNewFromDom;

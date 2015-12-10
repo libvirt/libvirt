@@ -2692,6 +2692,11 @@ struct remote_domain_rename_args {
 struct remote_domain_rename_ret {
         int                        retcode;
 };
+struct remote_domain_event_callback_migration_iteration_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        int                        iteration;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3051,4 +3056,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_DEL_IOTHREAD = 356,
         REMOTE_PROC_DOMAIN_SET_USER_PASSWORD = 357,
         REMOTE_PROC_DOMAIN_RENAME = 358,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION = 359,
 };

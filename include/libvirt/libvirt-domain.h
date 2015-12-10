@@ -3284,6 +3284,27 @@ typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
                                                          void *opaque);
 
 /**
+ * virConnectDomainEventMigrationIterationCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @iteration: current iteration over domain's memory
+ * @opaque: application specific data
+ *
+ * This callback occurs during live migration when a new iteration over
+ * domain's memory starts. The @iteration value is increased by one every
+ * time a new iteration is started to transfer memory pages dirtied since
+ * the last iteration.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION with
+ * virConnectDomainEventRegisterAny().
+ */
+typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr conn,
+                                                                virDomainPtr dom,
+                                                                int iteration,
+                                                                void *opaque);
+
+/**
  * VIR_DOMAIN_TUNABLE_CPU_VCPUPIN:
  *
  * Macro represents formatted pinning for one vcpu specified by id which is
@@ -3566,6 +3587,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback */
     VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback */
+    VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

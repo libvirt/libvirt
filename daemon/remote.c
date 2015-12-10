@@ -1079,6 +1079,37 @@ remoteRelayDomainEventDeviceAdded(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventMigrationIteration(virConnectPtr conn,
+                                         virDomainPtr dom,
+                                         int iteration,
+                                         void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_callback_migration_iteration_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    VIR_DEBUG("Relaying domain migration pass event %s %d, "
+              "callback %d, iteration %d",
+              dom->name, dom->id, callback->callbackID, iteration);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    make_nonnull_domain(&data.dom, dom);
+
+    data.iteration = iteration;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION,
+                                  (xdrproc_t)xdr_remote_domain_event_callback_migration_iteration_msg,
+                                  &data);
+
+    return 0;
+}
 
 
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
@@ -1102,6 +1133,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventTunable),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventAgentLifecycle),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceAdded),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMigrationIteration),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

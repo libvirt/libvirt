@@ -56,6 +56,7 @@ static virClassPtr virDomainQemuMonitorEventClass;
 static virClassPtr virDomainEventTunableClass;
 static virClassPtr virDomainEventAgentLifecycleClass;
 static virClassPtr virDomainEventDeviceAddedClass;
+static virClassPtr virDomainEventMigrationIterationClass;
 
 
 static void virDomainEventDispose(void *obj);
@@ -74,6 +75,7 @@ static void virDomainQemuMonitorEventDispose(void *obj);
 static void virDomainEventTunableDispose(void *obj);
 static void virDomainEventAgentLifecycleDispose(void *obj);
 static void virDomainEventDeviceAddedDispose(void *obj);
+static void virDomainEventMigrationIterationDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -236,6 +238,14 @@ struct _virDomainEventAgentLifecycle {
 typedef struct _virDomainEventAgentLifecycle virDomainEventAgentLifecycle;
 typedef virDomainEventAgentLifecycle *virDomainEventAgentLifecyclePtr;
 
+struct _virDomainEventMigrationIteration {
+    virDomainEvent parent;
+
+    int iteration;
+};
+typedef struct _virDomainEventMigrationIteration virDomainEventMigrationIteration;
+typedef virDomainEventMigrationIteration *virDomainEventMigrationIterationPtr;
+
 
 static int
 virDomainEventsOnceInit(void)
@@ -335,6 +345,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventAgentLifecycle",
                       sizeof(virDomainEventAgentLifecycle),
                       virDomainEventAgentLifecycleDispose)))
+        return -1;
+    if (!(virDomainEventMigrationIterationClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventMigrationIteration",
+                      sizeof(virDomainEventMigrationIteration),
+                      virDomainEventMigrationIterationDispose)))
         return -1;
     return 0;
 }
@@ -493,6 +509,13 @@ static void
 virDomainEventAgentLifecycleDispose(void *obj)
 {
     virDomainEventAgentLifecyclePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+};
+
+static void
+virDomainEventMigrationIterationDispose(void *obj)
+{
+    virDomainEventMigrationIterationPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 };
 
@@ -1334,6 +1357,43 @@ virDomainEventAgentLifecycleNewFromDom(virDomainPtr dom,
                                            state, reason);
 }
 
+static virObjectEventPtr
+virDomainEventMigrationIterationNew(int id,
+                                    const char *name,
+                                    const unsigned char *uuid,
+                                    int iteration)
+{
+    virDomainEventMigrationIterationPtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventMigrationIterationClass,
+                                 VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->iteration = iteration;
+
+    return (virObjectEventPtr)ev;
+}
+
+virObjectEventPtr
+virDomainEventMigrationIterationNewFromObj(virDomainObjPtr obj,
+                                           int iteration)
+{
+    return virDomainEventMigrationIterationNew(obj->def->id, obj->def->name,
+                                               obj->def->uuid, iteration);
+}
+
+virObjectEventPtr
+virDomainEventMigrationIterationNewFromDom(virDomainPtr dom,
+                                           int iteration)
+{
+    return virDomainEventMigrationIterationNew(dom->id, dom->name, dom->uuid,
+                                               iteration);
+}
+
 
 /* This function consumes the params so caller don't have to care about
  * freeing it even if error occurs. The reason is to not have to do deep
@@ -1611,6 +1671,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
             ((virConnectDomainEventDeviceAddedCallback)cb)(conn, dom,
                                                            deviceAddedEvent->devAlias,
                                                            cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION:
+        {
+            virDomainEventMigrationIterationPtr ev;
+
+            ev = (virDomainEventMigrationIterationPtr) event;
+            ((virConnectDomainEventMigrationIterationCallback)cb)(conn, dom,
+                                                                  ev->iteration,
+                                                                  cbopaque);
             goto cleanup;
         }
 
