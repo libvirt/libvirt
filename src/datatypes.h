@@ -41,7 +41,7 @@ extern virClassPtr virStreamClass;
 extern virClassPtr virStorageVolClass;
 extern virClassPtr virStoragePoolClass;
 
-extern virClassPtr virAdmDaemonClass;
+extern virClassPtr virAdmConnectClass;
 
 # define virCheckConnectReturn(obj, retval)                             \
     do {                                                                \
@@ -297,9 +297,9 @@ extern virClassPtr virAdmDaemonClass;
                   dom, NULLSTR(_domname), _uuidstr, __VA_ARGS__);       \
     } while (0)
 
-# define virCheckAdmDaemonReturn(obj, retval)                           \
+# define virCheckAdmConnectReturn(obj, retval)                          \
     do {                                                                \
-        if (!virObjectIsClass(obj, virAdmDaemonClass)) {                \
+        if (!virObjectIsClass(obj, virAdmConnectClass)) {               \
             virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
                                  __FILE__, __FUNCTION__, __LINE__,      \
                                  __FUNCTION__);                         \
@@ -307,9 +307,9 @@ extern virClassPtr virAdmDaemonClass;
             return retval;                                              \
         }                                                               \
     } while (0)
-# define virCheckAdmDaemonGoto(obj, label)                              \
+# define virCheckAdmConnectGoto(obj, label)                             \
     do {                                                                \
-        if (!virObjectIsClass(obj, virAdmDaemonClass)) {                \
+        if (!virObjectIsClass(obj, virAdmConnectClass)) {               \
             virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
                                  __FILE__, __FUNCTION__, __LINE__,      \
                                  __FUNCTION__);                         \
@@ -331,8 +331,8 @@ extern virClassPtr virAdmDaemonClass;
 
 typedef struct _virConnectCloseCallbackData virConnectCloseCallbackData;
 typedef virConnectCloseCallbackData *virConnectCloseCallbackDataPtr;
-typedef struct _virAdmDaemonCloseCallbackData virAdmDaemonCloseCallbackData;
-typedef virAdmDaemonCloseCallbackData *virAdmDaemonCloseCallbackDataPtr;
+typedef struct _virAdmConnectCloseCallbackData virAdmConnectCloseCallbackData;
+typedef virAdmConnectCloseCallbackData *virAdmConnectCloseCallbackDataPtr;
 
 /**
  * Internal structures holding data related to connection close callbacks.
@@ -346,11 +346,11 @@ struct _virConnectCloseCallbackData {
     virFreeCallback freeCallback;
 };
 
-struct _virAdmDaemonCloseCallbackData {
+struct _virAdmConnectCloseCallbackData {
     virObjectLockable parent;
 
-    virAdmDaemonPtr dmn;
-    virAdmDaemonCloseFunc callback;
+    virAdmConnectPtr conn;
+    virAdmConnectCloseFunc callback;
     void *opaque;
     virFreeCallback freeCallback;
 };
@@ -402,11 +402,11 @@ struct _virConnect {
 };
 
 /**
- * _virAdmDaemon:
+ * _virAdmConnect:
  *
  * Internal structure associated to an admin connection
  */
-struct _virAdmDaemon {
+struct _virAdmConnect {
     virObjectLockable object;
     virURIPtr uri;
 
@@ -414,7 +414,7 @@ struct _virAdmDaemon {
     virFreeCallback privateDataFreeFunc;
 
     /* Per-connection close callback */
-    virAdmDaemonCloseCallbackDataPtr closeCallback;
+    virAdmConnectCloseCallbackDataPtr closeCallback;
 };
 
 
@@ -599,6 +599,6 @@ virNWFilterPtr virGetNWFilter(virConnectPtr conn,
 virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
                                           const char *name);
 
-virAdmDaemonPtr virAdmDaemonNew(void);
+virAdmConnectPtr virAdmConnectNew(void);
 
 #endif /* __VIR_DATATYPES_H__ */

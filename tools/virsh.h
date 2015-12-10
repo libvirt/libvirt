@@ -69,7 +69,6 @@ typedef struct _virshCtrlData virshCtrlData;
  */
 struct _virshControl {
     virConnectPtr conn;         /* connection to hypervisor (MAY BE NULL) */
-    char *connname;             /* connection name */
     bool readonly;              /* connect readonly (first time only, not
                                  * during explicit connect command)
                                  */

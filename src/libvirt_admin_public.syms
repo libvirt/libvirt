@@ -12,13 +12,13 @@
 #
 LIBVIRT_ADMIN_1.3.0 {
     global:
-        virAdmDaemonClose;
-        virAdmDaemonGetURI;
-        virAdmDaemonGetVersion;
-        virAdmDaemonIsAlive;
-        virAdmDaemonOpen;
-        virAdmDaemonRef;
-        virAdmDaemonRegisterCloseCallback;
-        virAdmDaemonUnregisterCloseCallback;
+        virAdmConnectOpen;
+        virAdmConnectClose;
+        virAdmConnectRef;
         virAdmGetVersion;
+        virAdmConnectIsAlive;
+        virAdmConnectGetURI;
+        virAdmConnectGetLibVersion;
+        virAdmConnectRegisterCloseCallback;
+        virAdmConnectUnregisterCloseCallback;
 };

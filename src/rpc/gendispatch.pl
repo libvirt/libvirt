@@ -49,7 +49,7 @@ my $procprefix = shift or die "missing procedure prefix argument";
 my $protocol = shift or die "missing protocol argument";
 my @autogen;
 
-my $connect_ptr = $structprefix eq "admin" ? "virAdmDaemonPtr" : "virConnectPtr";
+my $connect_ptr = $structprefix eq "admin" ? "virAdmConnectPtr" : "virConnectPtr";
 my $prefix = ($structprefix eq "admin") ? "admin" : "vir";
 
 sub fixup_name {

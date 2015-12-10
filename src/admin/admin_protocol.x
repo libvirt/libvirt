@@ -37,11 +37,11 @@ typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 typedef admin_nonnull_string *admin_string;
 
 /*----- Protocol. -----*/
-struct admin_daemon_open_args {
+struct admin_connect_open_args {
     unsigned int flags;
 };
 
-struct admin_daemon_get_version_ret {
+struct admin_connect_get_lib_version_ret {
     unsigned hyper libVer;
 };
 
@@ -70,15 +70,15 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_DAEMON_OPEN = 1,
+    ADMIN_PROC_CONNECT_OPEN = 1,
 
     /**
      * @generate: none
      */
-    ADMIN_PROC_DAEMON_CLOSE = 2,
+    ADMIN_PROC_CONNECT_CLOSE = 2,
 
     /**
      * @generate: both
      */
-    ADMIN_PROC_DAEMON_GET_VERSION = 3
+    ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3
 };

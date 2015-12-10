@@ -53,7 +53,7 @@ virAdmGlobalInit(void)
 {
     /* It would be nice if we could trace the use of this call, to
      * help diagnose in log files if a user calls something other than
-     * virAdmDaemonOpen first.  But we can't rely on VIR_DEBUG working
+     * virAdmConnectOpen first.  But we can't rely on VIR_DEBUG working
      * until after initialization is complete, and since this is
      * one-shot, we never get here again.  */
     if (virThreadInitialize() < 0 ||
@@ -183,20 +183,20 @@ virAdmGetDefaultURI(virConfPtr conf)
 }
 
 /**
- * virAdmDaemonOpen:
+ * virAdmConnectOpen:
  * @name: uri of the daemon to connect to, NULL for default
  * @flags: unused, must be 0
  *
  * Opens connection to admin interface of the daemon.
  *
- * Returns @virAdmDaemonPtr object or NULL on error
+ * Returns @virAdmConnectPtr object or NULL on error
  */
-virAdmDaemonPtr
-virAdmDaemonOpen(const char *name, unsigned int flags)
+virAdmConnectPtr
+virAdmConnectOpen(const char *name, unsigned int flags)
 {
     char *sock_path = NULL;
     char *alias = NULL;
-    virAdmDaemonPtr dmn = NULL;
+    virAdmConnectPtr conn = NULL;
     virConfPtr conf = NULL;
 
     if (virAdmInitialize() < 0)
@@ -206,7 +206,7 @@ virAdmDaemonOpen(const char *name, unsigned int flags)
     virResetLastError();
     virCheckFlags(VIR_CONNECT_NO_ALIASES, NULL);
 
-    if (!(dmn = virAdmDaemonNew()))
+    if (!(conn = virAdmConnectNew()))
         goto error;
 
     if (virConfLoadConfig(&conf, "libvirt-admin.conf") < 0)
@@ -219,46 +219,46 @@ virAdmDaemonOpen(const char *name, unsigned int flags)
          virURIResolveAlias(conf, name, &alias) < 0))
         goto error;
 
-    if (!(dmn->uri = virURIParse(alias ? alias : name)))
+    if (!(conn->uri = virURIParse(alias ? alias : name)))
         goto error;
 
-    if (!(sock_path = getSocketPath(dmn->uri)))
+    if (!(sock_path = getSocketPath(conn->uri)))
         goto error;
 
-    if (!(dmn->privateData = remoteAdminPrivNew(sock_path)))
+    if (!(conn->privateData = remoteAdminPrivNew(sock_path)))
         goto error;
 
-    dmn->privateDataFreeFunc = remoteAdminPrivFree;
+    conn->privateDataFreeFunc = remoteAdminPrivFree;
 
-    if (remoteAdminDaemonOpen(dmn, flags) < 0)
+    if (remoteAdminConnectOpen(conn, flags) < 0)
         goto error;
 
  cleanup:
     VIR_FREE(sock_path);
     VIR_FREE(alias);
     virConfFree(conf);
-    return dmn;
+    return conn;
 
  error:
     virDispatchError(NULL);
-    virObjectUnref(dmn);
-    dmn = NULL;
+    virObjectUnref(conn);
+    conn = NULL;
     goto cleanup;
 }
 
 /**
- * virAdmDaemonClose:
- * @dmn: pointer to admin connection to close
+ * virAdmConnectClose:
+ * @conn: pointer to admin connection to close
  *
  * This function closes the admin connection to the Hypervisor. This should not
  * be called if further interaction with the Hypervisor are needed especially if
  * there is running domain which need further monitoring by the application.
  *
  * Connections are reference counted; the count is explicitly increased by the
- * initial virAdmDaemonOpen, as well as virAdmDaemonRef; it is also temporarily
+ * initial virAdmConnectOpen, as well as virAdmConnectRef; it is also temporarily
  * increased by other API that depend on the connection remaining alive.  The
- * open and every virAdmDaemonRef call should have a matching
- * virAdmDaemonClose, and all other references will be released after the
+ * open and every virAdmConnectRef call should have a matching
+ * virAdmConnectClose, and all other references will be released after the
  * corresponding operation completes.
  *
  * Returns a positive number if at least 1 reference remains on success. The
@@ -266,34 +266,34 @@ virAdmDaemonOpen(const char *name, unsigned int flags)
  * return of 0 implies no references remain and the connection is closed and
  * memory has been freed. A return of -1 implies a failure.
  *
- * It is possible for the last virAdmDaemonClose to return a positive value if
+ * It is possible for the last virAdmConnectClose to return a positive value if
  * some other object still has a temporary reference to the connection, but the
  * application should not try to further use a connection after the
- * virAdmDaemonClose that matches the initial open.
+ * virAdmConnectClose that matches the initial open.
  */
 int
-virAdmDaemonClose(virAdmDaemonPtr dmn)
+virAdmConnectClose(virAdmConnectPtr conn)
 {
-    VIR_DEBUG("dmn=%p", dmn);
+    VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
-    if (!dmn)
+    if (!conn)
         return 0;
 
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
 
-    if (!virObjectUnref(dmn))
+    if (!virObjectUnref(conn))
         return 0;
     return 1;
 }
 
 
 /**
- * virAdmDaemonRef:
- * @dmn: the connection to hold a reference on
+ * virAdmConnectRef:
+ * @conn: the connection to hold a reference on
  *
  * Increment the reference count on the connection. For each additional call to
- * this method, there shall be a corresponding call to virAdmDaemonClose to
+ * this method, there shall be a corresponding call to virAdmConnectClose to
  * release the reference count, once the caller no longer needs the reference to
  * this object.
  *
@@ -305,15 +305,15 @@ virAdmDaemonClose(virAdmDaemonPtr dmn)
  * Returns 0 in case of success, -1 in case of failure
  */
 int
-virAdmDaemonRef(virAdmDaemonPtr dmn)
+virAdmConnectRef(virAdmConnectPtr conn)
 {
-    VIR_DEBUG("dmn=%p refs=%d", dmn,
-              dmn ? dmn->object.parent.u.s.refs : 0);
+    VIR_DEBUG("conn=%p refs=%d", conn,
+              conn ? conn->object.parent.u.s.refs : 0);
 
     virResetLastError();
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
 
-    virObjectRef(dmn);
+    virObjectRef(conn);
 
     return 0;
 }
@@ -327,7 +327,8 @@ virAdmDaemonRef(virAdmDaemonPtr dmn)
  * generic message will be returned. @libVer format is as follows:
  * major * 1,000,000 + minor * 1,000 + release.
  *
- * NOTE: To get the remote side version use virAdmDaemonGetVersion instead.
+ * NOTE: To get the remote side library version use virAdmConnectGetLibVersion
+ * instead.
  *
  * Returns 0 on success, -1 in case of an error.
  */
@@ -352,8 +353,8 @@ virAdmGetVersion(unsigned long long *libVer)
 }
 
 /**
- * virAdmDaemonIsAlive:
- * @dmn: connection to admin server
+ * virAdmConnectIsAlive:
+ * @conn: connection to admin server
  *
  * Decide whether the connection to the admin server is alive or not.
  * Connection is considered alive if the channel it is running over is not
@@ -363,20 +364,20 @@ virAdmGetVersion(unsigned long long *libVer)
  * connection at all or the channel has already been closed, or -1 on error.
  */
 int
-virAdmDaemonIsAlive(virAdmDaemonPtr dmn)
+virAdmConnectIsAlive(virAdmConnectPtr conn)
 {
     bool ret;
     remoteAdminPrivPtr priv = NULL;
 
-    VIR_DEBUG("dmn=%p", dmn);
+    VIR_DEBUG("conn=%p", conn);
 
-    if (!dmn)
+    if (!conn)
         return 0;
 
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
     virResetLastError();
 
-    priv = dmn->privateData;
+    priv = conn->privateData;
     virObjectLock(priv);
     ret = virNetClientIsOpen(priv->client);
     virObjectUnlock(priv);
@@ -385,35 +386,35 @@ virAdmDaemonIsAlive(virAdmDaemonPtr dmn)
 }
 
 /**
- * virAdmDaemonGetURI:
- * @dmn: pointer to an admin connection
+ * virAdmConnectGetURI:
+ * @conn: pointer to an admin connection
  *
  * String returned by this method is normally the same as the string passed
- * to the virAdmDaemonOpen. Even if NULL was passed to virAdmDaemonOpen,
+ * to the virAdmConnectOpen. Even if NULL was passed to virAdmConnectOpen,
  * this method returns a non-null URI string.
  *
  * Returns an URI string related to the connection or NULL in case of an error.
  * Caller is responsible for freeing the string.
  */
 char *
-virAdmDaemonGetURI(virAdmDaemonPtr dmn)
+virAdmConnectGetURI(virAdmConnectPtr conn)
 {
     char *uri = NULL;
-    VIR_DEBUG("dmn=%p", dmn);
+    VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
-    virCheckAdmDaemonReturn(dmn, NULL);
+    virCheckAdmConnectReturn(conn, NULL);
 
-    if (!(uri = virURIFormat(dmn->uri)))
+    if (!(uri = virURIFormat(conn->uri)))
         virDispatchError(NULL);
 
     return uri;
 }
 
 /**
- * virAdmDaemonRegisterCloseCallback:
- * @dmn: connection to admin server
+ * virAdmConnectRegisterCloseCallback:
+ * @conn: connection to admin server
  * @cb: callback to be invoked upon connection close
  * @opaque: user data to pass to @cb
  * @freecb: callback to free @opaque
@@ -429,103 +430,103 @@ virAdmDaemonGetURI(virAdmDaemonPtr dmn)
  *
  * Returns 0 on success, -1 on error
  */
-int virAdmDaemonRegisterCloseCallback(virAdmDaemonPtr dmn,
-                                      virAdmDaemonCloseFunc cb,
-                                      void *opaque,
-                                      virFreeCallback freecb)
+int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
+                                       virAdmConnectCloseFunc cb,
+                                       void *opaque,
+                                       virFreeCallback freecb)
 {
-    VIR_DEBUG("dmn=%p", dmn);
+    VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
 
-    virObjectRef(dmn);
+    virObjectRef(conn);
 
-    virObjectLock(dmn);
-    virObjectLock(dmn->closeCallback);
+    virObjectLock(conn);
+    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (dmn->closeCallback->callback) {
+    if (conn->closeCallback->callback) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A close callback is already registered"));
         goto error;
     }
 
-    dmn->closeCallback->dmn = dmn;
-    dmn->closeCallback->callback = cb;
-    dmn->closeCallback->opaque = opaque;
-    dmn->closeCallback->freeCallback = freecb;
+    conn->closeCallback->conn = conn;
+    conn->closeCallback->callback = cb;
+    conn->closeCallback->opaque = opaque;
+    conn->closeCallback->freeCallback = freecb;
 
-    virObjectUnlock(dmn->closeCallback);
-    virObjectUnlock(dmn);
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
 
     return 0;
 
  error:
-    virObjectUnlock(dmn->closeCallback);
-    virObjectUnlock(dmn);
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
     virDispatchError(NULL);
-    virObjectUnref(dmn);
+    virObjectUnref(conn);
     return -1;
 
 }
 
 /**
- * virAdmDaemonUnregisterCloseCallback:
- * @dmn: pointer to connection object
+ * virAdmConnectUnregisterCloseCallback:
+ * @conn: pointer to connection object
  * @cb: pointer to the current registered callback
  *
  * Unregisters the callback previously set with the
- * virAdmDaemonRegisterCloseCallback method. The callback
+ * virAdmConnectRegisterCloseCallback method. The callback
  * will no longer receive notifications when the connection
  * closes. If a virFreeCallback was provided at time of
  * registration, it will be invoked.
  *
  * Returns 0 on success, -1 on error
  */
-int virAdmDaemonUnregisterCloseCallback(virAdmDaemonPtr dmn,
-                                        virAdmDaemonCloseFunc cb)
+int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
+                                         virAdmConnectCloseFunc cb)
 {
-    VIR_DEBUG("dmn=%p", dmn);
+    VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
 
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
 
-    virObjectLock(dmn);
-    virObjectLock(dmn->closeCallback);
+    virObjectLock(conn);
+    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (dmn->closeCallback->callback != cb) {
+    if (conn->closeCallback->callback != cb) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A different callback was requested"));
         goto error;
     }
 
-    dmn->closeCallback->callback = NULL;
-    if (dmn->closeCallback->freeCallback)
-        dmn->closeCallback->freeCallback(dmn->closeCallback->opaque);
-    dmn->closeCallback->freeCallback = NULL;
+    conn->closeCallback->callback = NULL;
+    if (conn->closeCallback->freeCallback)
+        conn->closeCallback->freeCallback(conn->closeCallback->opaque);
+    conn->closeCallback->freeCallback = NULL;
 
-    virObjectUnlock(dmn->closeCallback);
-    virObjectUnlock(dmn);
-    virObjectUnref(dmn);
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
+    virObjectUnref(conn);
 
     return 0;
 
  error:
-    virObjectUnlock(dmn->closeCallback);
-    virObjectUnlock(dmn);
+    virObjectUnlock(conn->closeCallback);
+    virObjectUnlock(conn);
     virDispatchError(NULL);
     return -1;
 }
 
 /**
- * virAdmDaemonGetVersion:
- * @dmn: pointer to an active admin connection
+ * virAdmConnectGetLibVersion:
+ * @conn: pointer to an active admin connection
  * @libVer: stores the current remote libvirt version number
  *
  * Retrieves the remote side libvirt version used by the daemon. Format
@@ -534,17 +535,17 @@ int virAdmDaemonUnregisterCloseCallback(virAdmDaemonPtr dmn,
  *
  * Returns 0 on success, -1 on failure and @libVer follows this format:
  */
-int virAdmDaemonGetVersion(virAdmDaemonPtr dmn,
-                           unsigned long long *libVer)
+int virAdmConnectGetLibVersion(virAdmConnectPtr conn,
+                               unsigned long long *libVer)
 {
-    VIR_DEBUG("dmn=%p, libVir=%p", dmn, libVer);
+    VIR_DEBUG("conn=%p, libVir=%p", conn, libVer);
 
     virResetLastError();
 
-    virCheckAdmDaemonReturn(dmn, -1);
+    virCheckAdmConnectReturn(conn, -1);
     virCheckNonNullArgReturn(libVer, -1);
 
-    if (remoteAdminDaemonGetVersion(dmn, libVer) < 0)
+    if (remoteAdminConnectGetLibVersion(conn, libVer) < 0)
         goto error;
 
     return 0;

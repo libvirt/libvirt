@@ -56,11 +56,11 @@ static const vshClientHooks hooks;
  * vshAdmCatchDisconnect:
  *
  * We get here when the connection was closed. Unlike virsh, we do not save
- * the fact that the event was raised, sice there is virAdmDaemonIsAlive to
+ * the fact that the event was raised, sice there is virAdmConnectIsAlive to
  * check if the communication channel has not been closed by remote party.
  */
 static void
-vshAdmCatchDisconnect(virAdmDaemonPtr dmn ATTRIBUTE_UNUSED,
+vshAdmCatchDisconnect(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
                       int reason,
                       void *opaque)
 {
@@ -73,7 +73,7 @@ vshAdmCatchDisconnect(virAdmDaemonPtr dmn ATTRIBUTE_UNUSED,
         return;
 
     error = virSaveLastError();
-    uri = virAdmDaemonGetURI(dmn);
+    uri = virAdmConnectGetURI(conn);
 
     switch ((virConnectCloseReason) reason) {
     case VIR_CONNECT_CLOSE_REASON_ERROR:
@@ -100,21 +100,21 @@ vshAdmCatchDisconnect(virAdmDaemonPtr dmn ATTRIBUTE_UNUSED,
 }
 
 static int
-vshAdmDaemon(vshControl *ctl, unsigned int flags)
+vshAdmConnect(vshControl *ctl, unsigned int flags)
 {
     vshAdmControlPtr priv = ctl->privData;
 
-    priv->dmn = virAdmDaemonOpen(priv->name, flags);
+    priv->conn = virAdmConnectOpen(ctl->connname, flags);
 
-    if (!priv->dmn) {
+    if (!priv->conn) {
         if (priv->wantReconnect)
             vshError(ctl, "%s", _("Failed to reconnect to the admin server"));
         else
             vshError(ctl, "%s", _("Failed to connect to the admin server"));
         return -1;
     } else {
-        if (virAdmDaemonRegisterCloseCallback(priv->dmn, vshAdmCatchDisconnect,
-                                              NULL, NULL) < 0)
+        if (virAdmConnectRegisterCloseCallback(priv->conn, vshAdmCatchDisconnect,
+                                               NULL, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
 
         if (priv->wantReconnect)
@@ -132,17 +132,17 @@ vshAdmDisconnect(vshControl *ctl)
     int ret = 0;
     vshAdmControlPtr priv = ctl->privData;
 
-    if (!priv->dmn)
+    if (!priv->conn)
         return ret;
 
-    virAdmDaemonUnregisterCloseCallback(priv->dmn, vshAdmCatchDisconnect);
-    ret = virAdmDaemonClose(priv->dmn);
+    virAdmConnectUnregisterCloseCallback(priv->conn, vshAdmCatchDisconnect);
+    ret = virAdmConnectClose(priv->conn);
     if (ret < 0)
         vshError(ctl, "%s", _("Failed to disconnect from the admin server"));
     else if (ret > 0)
         vshError(ctl, "%s", _("One or more references were leaked after "
                               "disconnect from the hypervisor"));
-    priv->dmn = NULL;
+    priv->conn = NULL;
     return ret;
 }
 
@@ -156,11 +156,11 @@ static void
 vshAdmReconnect(vshControl *ctl)
 {
     vshAdmControlPtr priv = ctl->privData;
-    if (priv->dmn)
+    if (priv->conn)
         priv->wantReconnect = true;
 
     vshAdmDisconnect(ctl);
-    vshAdmDaemon(ctl, 0);
+    vshAdmConnect(ctl, 0);
 
     priv->wantReconnect = false;
 }
@@ -185,7 +185,7 @@ cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     char *uri;
     vshAdmControlPtr priv = ctl->privData;
 
-    uri = virAdmDaemonGetURI(priv->dmn);
+    uri = virAdmConnectGetURI(priv->conn);
     if (!uri) {
         vshError(ctl, "%s", _("failed to get URI"));
         return false;
@@ -243,7 +243,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     vshPrint(ctl, _("Using library: libvirt %d.%d.%d\n"),
              major, minor, rel);
 
-    ret = virAdmDaemonGetVersion(priv->dmn, &daemonVersion);
+    ret = virAdmConnectGetLibVersion(priv->conn, &daemonVersion);
     if (ret < 0) {
         vshError(ctl, "%s", _("failed to get the daemon version"));
     } else {
@@ -292,28 +292,28 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
-    VIR_FREE(priv->name);
-    priv->name = vshStrdup(ctl, name);
+    VIR_FREE(ctl->connname);
+    ctl->connname = vshStrdup(ctl, name);
 
     vshAdmReconnect(ctl);
 
-    return !!priv->dmn;
+    return !!priv->conn;
 }
 
 static void *
-vshAdmDaemonionHandler(vshControl *ctl)
+vshAdmConnectionHandler(vshControl *ctl)
 {
     vshAdmControlPtr priv = ctl->privData;
 
-    if (!virAdmDaemonIsAlive(priv->dmn))
+    if (!virAdmConnectIsAlive(priv->conn))
         vshAdmReconnect(ctl);
 
-    if (!virAdmDaemonIsAlive(priv->dmn)) {
+    if (!virAdmConnectIsAlive(priv->conn)) {
         vshError(ctl, "%s", _("no valid connection"));
         return NULL;
     }
 
-    return priv->dmn;
+    return priv->conn;
 }
 
 /*
@@ -329,7 +329,7 @@ vshAdmInit(vshControl *ctl)
      * work properly */
     vshInitReload(ctl);
 
-    if (priv->dmn)
+    if (priv->conn)
         return false;
 
     /* set up the library error handler */
@@ -342,7 +342,7 @@ vshAdmInit(vshControl *ctl)
         return false;
     ctl->eventLoopStarted = true;
 
-    if (priv->name) {
+    if (ctl->connname) {
         vshAdmReconnect(ctl);
         /* Connecting to a named connection must succeed, but we delay
          * connecting to the default connection until we need it
@@ -350,7 +350,7 @@ vshAdmInit(vshControl *ctl)
          * non-default connection, or might be 'help' which needs no
          * connection).
          */
-        if (!priv->dmn) {
+        if (!priv->conn) {
             vshReportError(ctl);
             return false;
         }
@@ -374,9 +374,9 @@ vshAdmDeinit(vshControl *ctl)
     vshAdmControlPtr priv = ctl->privData;
 
     vshDeinit(ctl);
-    VIR_FREE(priv->name);
+    VIR_FREE(ctl->connname);
 
-    if (priv->dmn)
+    if (priv->conn)
         vshAdmDisconnect(ctl);
 
     virResetLastError();
@@ -473,7 +473,6 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
     int arg, debug;
     size_t i;
     int longindex = -1;
-    vshAdmControlPtr priv = ctl->privData;
     struct option opt[] = {
         {"connect", required_argument, NULL, 'c'},
         {"debug", required_argument, NULL, 'd'},
@@ -490,8 +489,8 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
     while ((arg = getopt_long(argc, argv, "+:c:d:hl:qvV", opt, &longindex)) != -1) {
         switch (arg) {
         case 'c':
-            VIR_FREE(priv->name);
-            priv->name = vshStrdup(ctl, optarg);
+            VIR_FREE(ctl->connname);
+            ctl->connname = vshStrdup(ctl, optarg);
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
@@ -599,7 +598,7 @@ static const vshCmdGrp cmdGroups[] = {
 };
 
 static const vshClientHooks hooks = {
-    .connHandler = vshAdmDaemonionHandler
+    .connHandler = vshAdmConnectionHandler
 };
 
 int
@@ -657,7 +656,7 @@ main(int argc, char **argv)
     virFileActivateDirOverride(argv[0]);
 
     if ((defaultConn = virGetEnvBlockSUID("LIBVIRT_DEFAULT_ADMIN_URI")))
-        virtAdminCtl.name = vshStrdup(ctl, defaultConn);
+        ctl->connname = vshStrdup(ctl, defaultConn);
 
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);
