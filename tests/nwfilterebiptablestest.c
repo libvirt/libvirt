@@ -116,7 +116,7 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -187,7 +187,7 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -236,7 +236,7 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -270,7 +270,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -342,7 +342,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -432,7 +432,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -505,7 +505,7 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque ATTRIBUTE_UNUSED)
     virtTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
-        virtTestDifference(stderr, actual, expected);
+        virtTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
