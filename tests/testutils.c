@@ -670,16 +670,12 @@ virtTestCompareToFile(const char *strcontent,
 
     if (STRNEQ_NULLABLE(fixedcontent ? fixedcontent : strcontent,
                         filecontent)) {
-        if (virTestGetRegenerate()) {
-            if (virFileWriteStr(filename, strcontent, 0666) < 0)
-                goto failure;
-            goto out;
-        }
-        virtTestDifference(stderr, filecontent, strcontent);
+        virtTestDifferenceFull(stderr,
+                               filecontent, filename,
+                               strcontent, NULL);
         goto failure;
     }
 
- out:
     ret = 0;
  failure:
     VIR_FREE(fixedcontent);
