@@ -51,7 +51,7 @@ testCompareXMLToConfigFiles(const char *xml,
             goto fail;
 
         if (STRNEQ(expectxml, actualxml)) {
-            virtTestDifference(stderr, expectxml, actualxml);
+            virtTestDifferenceFull(stderr, expectxml, xml, actualxml, NULL);
             goto fail;
         }
     }

@@ -175,6 +175,7 @@ testQemuHotplugUpdate(virDomainObjPtr vm,
 static int
 testQemuHotplugCheckResult(virDomainObjPtr vm,
                            const char *expected,
+                           const char *expectedFile,
                            bool fail)
 {
     char *actual;
@@ -192,7 +193,9 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
         ret = 0;
     } else {
         if (!fail)
-            virtTestDifference(stderr, expected, actual);
+            virtTestDifferenceFull(stderr,
+                                   expected, expectedFile,
+                                   actual, NULL);
         ret = -1;
     }
 
@@ -294,13 +297,15 @@ testQemuHotplug(const void *data)
             VIR_FREE(dev);
         }
         if (ret == 0 || fail)
-            ret = testQemuHotplugCheckResult(vm, result_xml, fail);
+            ret = testQemuHotplugCheckResult(vm, result_xml,
+                                             result_filename, fail);
         break;
 
     case DETACH:
         ret = testQemuHotplugDetach(vm, dev);
         if (ret == 0 || fail)
-            ret = testQemuHotplugCheckResult(vm, domain_xml, fail);
+            ret = testQemuHotplugCheckResult(vm, domain_xml,
+                                             domain_filename, fail);
         break;
 
     case UPDATE:
