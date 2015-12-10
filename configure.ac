@@ -883,7 +883,6 @@ if test "$with_libxl" != "no" ; then
     PKG_CHECK_MODULES([LIBXL], [xenlight], [
      LIBXL_FIRMWARE_DIR=`$PKG_CONFIG --variable xenfirmwaredir xenlight`
      LIBXL_EXECBIN_DIR=`$PKG_CONFIG --variable libexec_bin xenlight`
-     LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
      with_libxl=yes
     ], [LIBXL_FOUND=no])
     if test "$LIBXL_FOUND" = "no"; then
@@ -896,7 +895,7 @@ if test "$with_libxl" != "no" ; then
         LIBS="$LIBS $LIBXL_LIBS"
         AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
             with_libxl=yes
-            LIBXL_LIBS="$LIBXL_LIBS -lxenlight -lxenctrl"
+            LIBXL_LIBS="$LIBXL_LIBS -lxenlight"
         ],[
             if test "$with_libxl" = "yes"; then
                 fail=1
@@ -924,6 +923,14 @@ if test "$with_libxl" = "yes"; then
     if test "x$LIBXL_EXECBIN_DIR" != "x"; then
         AC_DEFINE_UNQUOTED([LIBXL_EXECBIN_DIR], ["$LIBXL_EXECBIN_DIR"], [directory containing Xen libexec binaries])
     fi
+    dnl Check if the xtl_* infrastructure is in libxentoollog
+    dnl (since Xen 4.7) if not then assume it is in libxenctrl
+    dnl (as it was for 4.6 and earler)
+    AC_CHECK_LIB([xentoollog], [xtl_createlogger_stdiostream], [
+        LIBXL_LIBS="$LIBXL_LIBS -lxentoollog"
+    ],[
+        LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
+    ])
 fi
 AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
 
