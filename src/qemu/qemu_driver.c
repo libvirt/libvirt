@@ -1361,6 +1361,82 @@ static char *qemuConnectGetCapabilities(virConnectPtr conn) {
 
 
 static int
+qemuGetSchedInfo(unsigned long long *cpuWait,
+                 pid_t pid, pid_t tid)
+{
+    char *proc = NULL;
+    char *data = NULL;
+    char **lines = NULL;
+    size_t i;
+    int ret = -1;
+    double val;
+
+    *cpuWait = 0;
+
+    /* In general, we cannot assume pid_t fits in int; but /proc parsing
+     * is specific to Linux where int works fine.  */
+    if (tid)
+        ret = virAsprintf(&proc, "/proc/%d/task/%d/sched", (int)pid, (int)tid);
+    else
+        ret = virAsprintf(&proc, "/proc/%d/sched", (int)pid);
+    if (ret < 0)
+        goto cleanup;
+    ret = -1;
+
+    /* The file is not guaranteed to exist (needs CONFIG_SCHED_DEBUG) */
+    if (access(proc, R_OK) < 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(proc, (1<<16), &data) < 0)
+        goto cleanup;
+
+    lines = virStringSplit(data, "\n", 0);
+    if (!lines)
+        goto cleanup;
+
+    for (i = 0; lines[i] != NULL; i++) {
+        const char *line = lines[i];
+
+        /* Needs CONFIG_SCHEDSTATS. The second check
+         * is the old name the kernel used in past */
+        if (STRPREFIX(line, "se.statistics.wait_sum") ||
+            STRPREFIX(line, "se.wait_sum")) {
+            line = strchr(line, ':');
+            if (!line) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Missing separator in sched info '%s'"),
+                               lines[i]);
+                goto cleanup;
+            }
+            line++;
+            while (*line == ' ')
+                line++;
+
+            if (virStrToDouble(line, NULL, &val) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to parse sched info value '%s'"),
+                               line);
+                goto cleanup;
+            }
+
+            *cpuWait = (unsigned long long)(val * 1000000);
+            break;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(data);
+    VIR_FREE(proc);
+    VIR_FREE(lines);
+    return ret;
+}
+
+
+static int
 qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
                    pid_t pid, int tid)
 {
@@ -1424,6 +1500,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 static int
 qemuDomainHelperGetVcpus(virDomainObjPtr vm,
                          virVcpuInfoPtr info,
+                         unsigned long long *cpuwait,
                          int maxinfo,
                          unsigned char *cpumaps,
                          int maplen)
@@ -1474,6 +1551,11 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
 
             virBitmapToDataBuf(map, cpumap, maplen);
             virBitmapFree(map);
+        }
+
+        if (cpuwait) {
+            if (qemuGetSchedInfo(&(cpuwait[i]), vm->pid, vcpupid) < 0)
+                return -1;
         }
 
         ncpuinfo++;
@@ -5490,7 +5572,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuDomainHelperGetVcpus(vm, info, maxinfo, cpumaps, maplen);
+    ret = qemuDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -19034,6 +19116,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     int ret = -1;
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     virVcpuInfoPtr cpuinfo = NULL;
+    unsigned long long *cpuwait = NULL;
 
     if (virTypedParamsAddUInt(&record->params,
                               &record->nparams,
@@ -19049,10 +19132,12 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                               virDomainDefGetVcpusMax(dom->def)) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(cpuinfo, virDomainDefGetVcpus(dom->def)) < 0)
-        return -1;
+    if (VIR_ALLOC_N(cpuinfo, virDomainDefGetVcpus(dom->def)) < 0 ||
+        VIR_ALLOC_N(cpuwait, virDomainDefGetVcpus(dom->def)) < 0)
+        goto cleanup;
 
-    if (qemuDomainHelperGetVcpus(dom, cpuinfo, virDomainDefGetVcpus(dom->def),
+    if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait,
+                                 virDomainDefGetVcpus(dom->def),
                                  NULL, 0) < 0) {
         virResetLastError();
         ret = 0; /* it's ok to be silent and go ahead */
@@ -19081,12 +19166,21 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                     param_name,
                                     cpuinfo[i].cpuTime) < 0)
             goto cleanup;
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "vcpu.%zu.wait", i);
+        if (virTypedParamsAddULLong(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    cpuwait[i]) < 0)
+            goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
     VIR_FREE(cpuinfo);
+    VIR_FREE(cpuwait);
     return ret;
 }
 
