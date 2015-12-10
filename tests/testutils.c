@@ -440,16 +440,19 @@ virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
  * @param expectName: name designator of the expected text
  * @param actual: actual output text
  * @param actualName: name designator of the actual text
+ * @param regenerate: enable or disable regenerate functionality
  *
  * Display expected and actual output text, trimmed to first and last
  * characters at which differences occur. Displays names of the text strings if
  * non-NULL.
  */
-int virtTestDifferenceFull(FILE *stream,
-                           const char *expect,
-                           const char *expectName,
-                           const char *actual,
-                           const char *actualName)
+static int
+virtTestDifferenceFullInternal(FILE *stream,
+                               const char *expect,
+                               const char *expectName,
+                               const char *actual,
+                               const char *actualName,
+                               bool regenerate)
 {
     const char *expectStart;
     const char *expectEnd;
@@ -465,6 +468,12 @@ int virtTestDifferenceFull(FILE *stream,
     expectEnd = expect + (strlen(expect)-1);
     actualStart = actual;
     actualEnd = actual + (strlen(actual)-1);
+
+    if (regenerate && virTestGetRegenerate() > 0) {
+        if (expectName && actual &&
+            virFileWriteStr(expectName, actual, 0666) < 0)
+            return -1;
+    }
 
     if (!virTestGetDebug())
         return 0;
@@ -511,16 +520,65 @@ int virtTestDifferenceFull(FILE *stream,
 /**
  * @param stream: output stream to write differences to
  * @param expect: expected output text
+ * @param expectName: name designator of the expected text
+ * @param actual: actual output text
+ * @param actualName: name designator of the actual text
+ *
+ * Display expected and actual output text, trimmed to first and last
+ * characters at which differences occur. Displays names of the text strings if
+ * non-NULL. If VIR_TEST_REGENERATE_OUTPUT is used, this function will
+ * regenerate the expected file.
+ */
+int
+virtTestDifferenceFull(FILE *stream,
+                       const char *expect,
+                       const char *expectName,
+                       const char *actual,
+                       const char *actualName)
+{
+    return virtTestDifferenceFullInternal(stream, expect, expectName,
+                                          actual, actualName, true);
+}
+
+/**
+ * @param stream: output stream to write differences to
+ * @param expect: expected output text
+ * @param expectName: name designator of the expected text
+ * @param actual: actual output text
+ * @param actualName: name designator of the actual text
+ *
+ * Display expected and actual output text, trimmed to first and last
+ * characters at which differences occur. Displays names of the text strings if
+ * non-NULL. If VIR_TEST_REGENERATE_OUTPUT is used, this function will not
+ * regenerate the expected file.
+ */
+int
+virtTestDifferenceFullNoRegenerate(FILE *stream,
+                                   const char *expect,
+                                   const char *expectName,
+                                   const char *actual,
+                                   const char *actualName)
+{
+    return virtTestDifferenceFullInternal(stream, expect, expectName,
+                                          actual, actualName, false);
+}
+
+/**
+ * @param stream: output stream to write differences to
+ * @param expect: expected output text
  * @param actual: actual output text
  *
  * Display expected and actual output text, trimmed to
  * first and last characters at which differences occur
  */
-int virtTestDifference(FILE *stream,
-                       const char *expect,
-                       const char *actual)
+int
+virtTestDifference(FILE *stream,
+                   const char *expect,
+                   const char *actual)
 {
-    return virtTestDifferenceFull(stream, expect, NULL, actual, NULL);
+    return virtTestDifferenceFullNoRegenerate(stream,
+                                              expect, NULL,
+                                              actual, NULL);
 }
 
 

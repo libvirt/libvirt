@@ -67,6 +67,11 @@ int virtTestDifferenceFull(FILE *stream,
                            const char *expectName,
                            const char *actual,
                            const char *actualName);
+int virtTestDifferenceFullNoRegenerate(FILE *stream,
+                                       const char *expect,
+                                       const char *expectName,
+                                       const char *actual,
+                                       const char *actualName);
 int virtTestDifferenceBin(FILE *stream,
                           const char *expect,
                           const char *actual,
