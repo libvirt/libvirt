@@ -74,3 +74,13 @@ virTPMCreateCancelPath(const char *devpath)
 
     return path;
 }
+
+/**
+ * Large values for memory would fail on 32 bit systems, despite having
+ * variables that support it.
+ */
+unsigned long long
+virMemoryMaxValue(bool capped ATTRIBUTE_UNUSED)
+{
+    return LLONG_MAX;
+}

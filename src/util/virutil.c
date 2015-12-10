@@ -2658,6 +2658,8 @@ virMemoryLimitIsSet(unsigned long long value)
  * @capped: whether the value must fit into unsigned long
  *   (long long is assumed otherwise)
  *
+ * Note: This function is mocked in tests/qemuxml2argvmock.c for test stability
+ *
  * Returns the maximum possible memory value in bytes.
  */
 unsigned long long
