@@ -4125,7 +4125,10 @@ qemuDomainRequiresMlock(virDomainDefPtr def)
  * Adjust the memory locking limit for the QEMU process associated to @vm, in
  * order to comply with VFIO or architecture requirements.
  *
- * The limit will not be changed unless doing so is needed.
+ * The limit will not be changed unless doing so is needed; the first time
+ * the limit is changed, the original (default) limit is stored in @vm and
+ * that value will be restored if qemuDomainAdjustMaxMemLock() is called once
+ * memory locking is no longer required.
  *
  * Returns: 0 on success, <0 on failure
  */
@@ -4135,8 +4138,22 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
     unsigned long long bytes = 0;
     int ret = -1;
 
-    if (qemuDomainRequiresMlock(vm->def))
+    if (qemuDomainRequiresMlock(vm->def)) {
+        /* If this is the first time adjusting the limit, save the current
+         * value so that we can restore it once memory locking is no longer
+         * required. Failing to obtain the current limit is not a critical
+         * failure, it just means we'll be unable to lower it later */
+        if (!vm->original_memlock) {
+            if (virProcessGetMaxMemLock(vm->pid, &(vm->original_memlock)) < 0)
+                vm->original_memlock = 0;
+        }
         bytes = qemuDomainGetMlockLimitBytes(vm->def);
+    } else {
+        /* Once memory locking is no longer required, we can restore the
+         * original, usually very low, limit */
+        bytes = vm->original_memlock;
+        vm->original_memlock = 0;
+    }
 
     /* Trying to set the memory locking limit to zero is a no-op */
     if (virProcessSetMaxMemLock(vm->pid, bytes) < 0)
