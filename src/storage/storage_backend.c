@@ -2002,7 +2002,7 @@ virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
     VIR_DEBUG("extent logical start: %ju len: %ju",
               (uintmax_t)extent_start, (uintmax_t)extent_length);
 
-    if ((ret = lseek(fd, extent_start, SEEK_SET)) < 0) {
+    if (lseek(fd, extent_start, SEEK_SET) < 0) {
         virReportSystemError(errno,
                              _("Failed to seek to position %ju in volume "
                                "with path '%s'"),
@@ -2029,7 +2029,6 @@ virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
     }
 
     if (fdatasync(fd) < 0) {
-        ret = -errno;
         virReportSystemError(errno,
                              _("cannot sync data to volume with path '%s'"),
                              vol->target.path);
