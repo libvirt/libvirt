@@ -1826,6 +1826,8 @@ virDomainChrSourceDefClear(virDomainChrSourceDefPtr def)
         VIR_FREE(def->data.spiceport.channel);
         break;
     }
+
+    VIR_FREE(def->logfile);
 }
 
 /* Deep copies the contents of src into dest.  Return -1 and report
@@ -9538,6 +9540,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *connectHost = NULL;
     char *connectService = NULL;
     char *path = NULL;
+    char *logfile = NULL;
+    char *logappend = NULL;
     char *mode = NULL;
     char *protocol = NULL;
     char *channel = NULL;
@@ -9625,6 +9629,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     }
                     ctxt->node = saved_node;
                 }
+            } else if (xmlStrEqual(cur->name, BAD_CAST "log")) {
+                if (!logfile)
+                    logfile = virXMLPropString(cur, "file");
+                if (!logappend)
+                    logappend = virXMLPropString(cur, "append");
             } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
                 if (!protocol)
                     protocol = virXMLPropString(cur, "type");
@@ -9783,6 +9792,16 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
     }
 
+    def->logfile = logfile;
+    logfile = NULL;
+
+    if (logappend != NULL &&
+        (def->logappend = virTristateSwitchTypeFromString(logappend)) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid append attribute value '%s'"), logappend);
+        goto error;
+    }
+
  cleanup:
     VIR_FREE(mode);
     VIR_FREE(protocol);
@@ -9793,6 +9812,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     VIR_FREE(path);
     VIR_FREE(channel);
     VIR_FREE(append);
+    VIR_FREE(logappend);
+    VIR_FREE(logfile);
 
     return remaining;
 
@@ -20298,6 +20319,15 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
                               def->data.spiceport.channel);
         break;
 
+    }
+
+    if (def->logfile) {
+        virBufferEscapeString(buf, "<log file='%s'", def->logfile);
+        if (def->logappend != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(buf, " append='%s'",
+                              virTristateSwitchTypeToString(def->logappend));
+        }
+        virBufferAddLit(buf, "/>\n");
     }
 
     return 0;

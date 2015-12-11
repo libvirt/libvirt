@@ -1204,6 +1204,8 @@ struct _virDomainChrSourceDef {
             char *channel;
         } spiceport;
     } data;
+    char *logfile;
+    int logappend;
 };
 
 /* A complete character device, both host and domain views.  */

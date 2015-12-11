@@ -3299,6 +3299,18 @@
         </optional>
       </element>
     </optional>
+    <optional>
+      <element name="log">
+        <attribute name="file">
+          <ref name="absFilePath"/>
+        </attribute>
+        <optional>
+          <attribute name="append">
+            <ref name="virOnOff"/>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
   </define>
   <!--
       The description for a console
