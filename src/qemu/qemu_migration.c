@@ -3131,7 +3131,6 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
         if (nmigrate_disks) {
             if (has_drive_mirror) {
                 size_t i, j;
-
                 /* Check user requested only known disk targets. */
                 for (i = 0; i < nmigrate_disks; i++) {
                     for (j = 0; j < vm->def->ndisks; j++) {

@@ -817,6 +817,9 @@ mymain(void)
 
     DO_TEST("acpi-table");
 
+    DO_TEST("video-qxl-heads");
+    DO_TEST("video-qxl-noheads");
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

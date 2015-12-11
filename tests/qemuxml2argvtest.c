@@ -1455,6 +1455,20 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY, QEMU_CAPS_QXL_VGA_VGAMEM,
             QEMU_CAPS_QXL_VGAMEM);
+    DO_TEST("video-qxl-heads",
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_QXL_MAX_OUTPUTS,
+            QEMU_CAPS_QXL_VGA_MAX_OUTPUTS);
+    DO_TEST("video-qxl-noheads",
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_QXL_MAX_OUTPUTS,
+            QEMU_CAPS_QXL_VGA_MAX_OUTPUTS);
     DO_TEST("video-virtio-gpu-device",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
