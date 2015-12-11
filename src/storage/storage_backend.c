@@ -1987,33 +1987,31 @@ virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
 
 
 static int
-virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
-                                 int fd,
-                                 off_t extent_start,
-                                 off_t extent_length,
-                                 size_t writebuf_length,
-                                 size_t *bytes_wiped)
+virStorageBackendWipeLocal(virStorageVolDefPtr vol,
+                           int fd,
+                           unsigned long long wipe_len,
+                           size_t writebuf_length,
+                           size_t *bytes_wiped)
 {
     int ret = -1, written = 0;
-    off_t remaining = 0;
+    unsigned long long remaining = 0;
     size_t write_size = 0;
     char *writebuf = NULL;
 
-    VIR_DEBUG("extent logical start: %ju len: %ju",
-              (uintmax_t)extent_start, (uintmax_t)extent_length);
+    VIR_DEBUG("wiping start: 0 len: %llu", wipe_len);
 
     if (VIR_ALLOC_N(writebuf, writebuf_length) < 0)
         goto cleanup;
 
-    if (lseek(fd, extent_start, SEEK_SET) < 0) {
+    if (lseek(fd, 0, SEEK_SET) < 0) {
         virReportSystemError(errno,
-                             _("Failed to seek to position %ju in volume "
+                             _("Failed to seek to the start in volume "
                                "with path '%s'"),
-                             (uintmax_t)extent_start, vol->target.path);
+                             vol->target.path);
         goto cleanup;
     }
 
-    remaining = extent_length;
+    remaining = wipe_len;
     while (remaining > 0) {
 
         write_size = (writebuf_length < remaining) ? writebuf_length : remaining;
@@ -2126,12 +2124,11 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
             ret = virStorageBackendVolZeroSparseFileLocal(vol, st.st_size, fd);
         } else {
-            ret = virStorageBackendWipeExtentLocal(vol,
-                                                   fd,
-                                                   0,
-                                                   vol->target.allocation,
-                                                   st.st_blksize,
-                                                   &bytes_wiped);
+            ret = virStorageBackendWipeLocal(vol,
+                                             fd,
+                                             vol->target.allocation,
+                                             st.st_blksize,
+                                             &bytes_wiped);
         }
     }
 
