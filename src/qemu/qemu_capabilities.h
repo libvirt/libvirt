@@ -361,6 +361,10 @@ typedef enum {
     QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
     QEMU_CAPS_NAME_GUEST, /* -name guest= */
 
+    /* 225 */
+    QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
+    QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

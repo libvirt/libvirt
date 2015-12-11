@@ -178,6 +178,8 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='name-guest'/>
+  <flag name='qxl.max_outputs'/>
+  <flag name='qxl-vga.max_outputs'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

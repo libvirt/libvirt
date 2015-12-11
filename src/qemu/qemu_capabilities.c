@@ -329,6 +329,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "nec-usb-xhci-ports",
               "virtio-scsi-pci.iothread",
               "name-guest",
+
+              "qxl.max_outputs", /* 225 */
+              "qxl-vga.max_outputs",
     );
 
 
@@ -1643,11 +1646,13 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVmwareSvga[] = {
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM },
     { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64 },
+    { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
     { "vram64_size_mb", QEMU_CAPS_QXL_VGA_VRAM64 },
+    { "max_outputs", QEMU_CAPS_QXL_VGA_MAX_OUTPUTS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
