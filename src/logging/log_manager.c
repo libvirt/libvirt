@@ -196,8 +196,10 @@ virLogManagerDomainOpenLogFile(virLogManagerPtr mgr,
         goto cleanup;
     }
 
-    *inode = ret.pos.inode;
-    *offset = ret.pos.offset;
+    if (inode)
+        *inode = ret.pos.inode;
+    if (offset)
+        *offset = ret.pos.offset;
 
     rv = fdout[0];
  cleanup:
