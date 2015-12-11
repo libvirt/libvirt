@@ -1990,8 +1990,7 @@ static int
 virStorageBackendWipeLocal(virStorageVolDefPtr vol,
                            int fd,
                            unsigned long long wipe_len,
-                           size_t writebuf_length,
-                           size_t *bytes_wiped)
+                           size_t writebuf_length)
 {
     int ret = -1, written = 0;
     unsigned long long remaining = 0;
@@ -2025,7 +2024,6 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
             goto cleanup;
         }
 
-        *bytes_wiped += written;
         remaining -= written;
     }
 
@@ -2036,8 +2034,8 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    VIR_DEBUG("Wrote %zu bytes to volume with path '%s'",
-              *bytes_wiped, vol->target.path);
+    VIR_DEBUG("Wrote %llu bytes to volume with path '%s'",
+              wipe_len, vol->target.path);
 
     ret = 0;
 
@@ -2056,7 +2054,6 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     int ret = -1, fd = -1;
     struct stat st;
-    size_t bytes_wiped = 0;
     virCommandPtr cmd = NULL;
 
     virCheckFlags(0, -1);
@@ -2127,8 +2124,7 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
             ret = virStorageBackendWipeLocal(vol,
                                              fd,
                                              vol->target.allocation,
-                                             st.st_blksize,
-                                             &bytes_wiped);
+                                             st.st_blksize);
         }
     }
 
