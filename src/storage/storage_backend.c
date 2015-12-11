@@ -1991,16 +1991,19 @@ virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
                                  int fd,
                                  off_t extent_start,
                                  off_t extent_length,
-                                 char *writebuf,
                                  size_t writebuf_length,
                                  size_t *bytes_wiped)
 {
     int ret = -1, written = 0;
     off_t remaining = 0;
     size_t write_size = 0;
+    char *writebuf = NULL;
 
     VIR_DEBUG("extent logical start: %ju len: %ju",
               (uintmax_t)extent_start, (uintmax_t)extent_length);
+
+    if (VIR_ALLOC_N(writebuf, writebuf_length) < 0)
+        goto cleanup;
 
     if (lseek(fd, extent_start, SEEK_SET) < 0) {
         virReportSystemError(errno,
@@ -2041,6 +2044,7 @@ virStorageBackendWipeExtentLocal(virStorageVolDefPtr vol,
     ret = 0;
 
  cleanup:
+    VIR_FREE(writebuf);
     return ret;
 }
 
@@ -2054,7 +2058,6 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     int ret = -1, fd = -1;
     struct stat st;
-    char *writebuf = NULL;
     size_t bytes_wiped = 0;
     virCommandPtr cmd = NULL;
 
@@ -2123,15 +2126,10 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
             ret = virStorageBackendVolZeroSparseFileLocal(vol, st.st_size, fd);
         } else {
-
-            if (VIR_ALLOC_N(writebuf, st.st_blksize) < 0)
-                goto cleanup;
-
             ret = virStorageBackendWipeExtentLocal(vol,
                                                    fd,
                                                    0,
                                                    vol->target.allocation,
-                                                   writebuf,
                                                    st.st_blksize,
                                                    &bytes_wiped);
         }
@@ -2139,7 +2137,6 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(writebuf);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
