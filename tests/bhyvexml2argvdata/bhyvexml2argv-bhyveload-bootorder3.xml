@@ -5,14 +5,20 @@
   <vcpu>1</vcpu>
   <os>
     <type>hvm</type>
-    <boot dev='cdrom'/>
   </os>
   <devices>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </disk>
     <disk type='file' device='cdrom'>
       <driver name='file' type='raw'/>
       <source file='/tmp/cdrom.iso'/>
-      <target dev='hdc' bus='sata'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <target dev='hda' bus='sata'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <boot order='1'/>
     </disk>
     <interface type='bridge'>
       <model type='virtio'/>
