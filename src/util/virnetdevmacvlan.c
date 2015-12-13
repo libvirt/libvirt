@@ -289,12 +289,11 @@ virNetDevMacVLanTapOpen(const char *ifname,
  * @tapfd: array of file descriptors of the macvtap tap
  * @tapfdSize: number of file descriptors in @tapfd
  * @vnet_hdr: whether to enable or disable IFF_VNET_HDR
- * @multiqueue: whether to enable or disable IFF_MULTI_QUEUE
  *
- * Turn on the IFF_VNET_HDR flag if requested and available, but make sure it's
- * off otherwise. Similarly, turn on IFF_MULTI_QUEUE if requested, but if it
- * can't be set, consider it a fatal error (rather than ignoring as with
- * @vnet_hdr).
+ * Turn on the IFF_VNET_HDR flag if requested and available, but make sure
+ * it's off otherwise. Similarly, turn on IFF_MULTI_QUEUE if @tapfdSize is
+ * greater than one, but if it can't be set, consider it a fatal error
+ * (rather than ignoring as with @vnet_hdr).
  *
  * A fatal error is defined as the VNET_HDR flag being set but it cannot
  * be turned off for some reason. This is reported with -1. Other fatal
@@ -304,7 +303,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
  * Returns 0 on success, -1 in case of fatal error.
  */
 static int
-virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr, bool multiqueue)
+virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
 {
     unsigned int features;
     struct ifreq ifreq;
@@ -335,12 +334,12 @@ virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr, bool multi
         }
 
 # ifdef IFF_MULTI_QUEUE
-        if (multiqueue)
+        if (tapfdSize > 1)
             new_flags |= IFF_MULTI_QUEUE;
         else
             new_flags &= ~IFF_MULTI_QUEUE;
 # else
-        if (multiqueue) {
+        if (tapfdSize > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Multiqueue devices are not supported on this system"));
             return -1;
@@ -870,7 +869,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         if (virNetDevMacVLanTapOpen(cr_ifname, tapfd, tapfdSize, 10) < 0)
             goto disassociate_exit;
 
-        if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr, tapfdSize > 0) < 0) {
+        if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
