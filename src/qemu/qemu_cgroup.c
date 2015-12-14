@@ -1052,11 +1052,6 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
                                true, &cgroup_vcpu) < 0)
             goto cleanup;
 
-        /* move the thread for vcpu to sub dir */
-        if (virCgroupAddTask(cgroup_vcpu,
-                             qemuDomainGetVcpuPid(vm, i)) < 0)
-            goto cleanup;
-
         if (period || quota) {
             if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
                 goto cleanup;
@@ -1090,6 +1085,12 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
             if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;
         }
+
+        /* move the thread for vcpu to sub dir */
+        if (virCgroupAddTask(cgroup_vcpu,
+                             qemuDomainGetVcpuPid(vm, i)) < 0)
+            goto cleanup;
+
     }
     virCgroupFree(&cgroup_vcpu);
     VIR_FREE(mem_mask);
@@ -1222,11 +1223,6 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
                                true, &cgroup_iothread) < 0)
             goto cleanup;
 
-        /* move the thread for iothread to sub dir */
-        if (virCgroupAddTask(cgroup_iothread,
-                             def->iothreadids[i]->thread_id) < 0)
-            goto cleanup;
-
         if (period || quota) {
             if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
                 goto cleanup;
@@ -1252,6 +1248,11 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
                 qemuSetupCgroupCpusetCpus(cgroup_iothread, cpumask) < 0)
                 goto cleanup;
         }
+
+        /* move the thread for iothread to sub dir */
+        if (virCgroupAddTask(cgroup_iothread,
+                             def->iothreadids[i]->thread_id) < 0)
+            goto cleanup;
 
         virCgroupFree(&cgroup_iothread);
     }
