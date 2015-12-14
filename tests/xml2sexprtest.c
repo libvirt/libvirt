@@ -107,12 +107,6 @@ mymain(void)
     DO_TEST("pv", "pv", "pvtest", 2);
     DO_TEST("fv", "fv-v2", "fvtest", 2);
     DO_TEST("fv-vncunused", "fv-vncunused", "fvtest", 2);
-#ifdef WITH_RHEL5_API
-    /* RHEL-5 Xen doesn't support the old style vnc configuration */
-    DO_TEST("pv-vfb-orig", "pv-vfb-new", "pvtest", 2);
-#else
-    DO_TEST("pv-vfb-orig", "pv-vfb-orig", "pvtest", 2);
-#endif
     DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
     DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest", 3);
     DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
@@ -162,7 +156,6 @@ mymain(void)
 
     DO_TEST("fv-sound", "fv-sound", "fvtest", 1);
 
-    DO_TEST("fv-net-ioemu", "fv-net-ioemu", "fvtest", 1);
     DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest", 1);
 
     DO_TEST("boot-grub", "boot-grub", "fvtest", 1);
