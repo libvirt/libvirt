@@ -181,6 +181,7 @@
   <flag name='qxl.max_outputs'/>
   <flag name='qxl-vga.max_outputs'/>
   <flag name='spice-unix'/>
+  <flag name='drive-detect-zeroes'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

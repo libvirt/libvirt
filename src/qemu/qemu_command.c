@@ -1391,6 +1391,30 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
+    if (disk->detect_zeroes) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
+            int detect_zeroes = disk->detect_zeroes;
+
+            /*
+             * As a convenience syntax, if discards are ignored and
+             * zero detection is set to 'unmap', then simply behave
+             * like zero detection is set to 'on'.  But don't change
+             * it in the XML for easier adjustments.  This behaviour
+             * is documented.
+             */
+            if (disk->discard != VIR_DOMAIN_DISK_DISCARD_UNMAP &&
+                detect_zeroes == VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP)
+                detect_zeroes = VIR_DOMAIN_DISK_DETECT_ZEROES_ON;
+
+            virBufferAsprintf(&opt, ",detect-zeroes=%s",
+                              virDomainDiskDetectZeroesTypeToString(detect_zeroes));
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("detect_zeroes is not supported by this QEMU binary"));
+            goto error;
+        }
+    }
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
         const char *wpolicy = NULL, *rpolicy = NULL;
 

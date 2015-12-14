@@ -149,6 +149,7 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='name-guest'/>
+  <flag name='drive-detect-zeroes'/>
   <version>2005094</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

@@ -333,6 +333,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qxl.max_outputs", /* 225 */
               "qxl-vga.max_outputs",
               "spice-unix",
+              "drive-detect-zeroes",
     );
 
 
@@ -2650,6 +2651,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "mem-merge", QEMU_CAPS_MEM_MERGE },
     { "machine", "vmport", QEMU_CAPS_MACHINE_VMPORT_OPT },
     { "drive", "discard", QEMU_CAPS_DRIVE_DISCARD },
+    { "drive", "detect-zeroes", QEMU_CAPS_DRIVE_DETECT_ZEROES },
     { "realtime", "mlock", QEMU_CAPS_MLOCK },
     { "boot-opts", "strict", QEMU_CAPS_BOOT_STRICT },
     { "boot-opts", "reboot-timeout", QEMU_CAPS_REBOOT_TIMEOUT },
