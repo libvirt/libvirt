@@ -214,14 +214,11 @@ mymain(void)
         DO_TEST_FORMAT(name, version);                                  \
     } while (0)
 
-    DO_TEST("paravirt-old-pvfb", 1);
-    DO_TEST("paravirt-old-pvfb-vncdisplay", 1);
     DO_TEST("paravirt-new-pvfb", 3);
     DO_TEST("paravirt-new-pvfb-vncdisplay", 3);
     DO_TEST("paravirt-net-e1000", 3);
     DO_TEST("paravirt-net-vifname", 3);
     DO_TEST("paravirt-vcpu", 2);
-    DO_TEST("fullvirt-old-cdrom", 1);
     DO_TEST("fullvirt-new-cdrom", 2);
     DO_TEST("fullvirt-utc", 2);
     DO_TEST("fullvirt-localtime", 2);
