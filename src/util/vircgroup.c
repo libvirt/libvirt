@@ -3161,17 +3161,17 @@ virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
  */
 static int
 virCgroupGetPercpuVcpuSum(virCgroupPtr group,
-                          unsigned int nvcpupids,
+                          virBitmapPtr guestvcpus,
                           unsigned long long *sum_cpu_time,
                           size_t nsum,
                           virBitmapPtr cpumap)
 {
     int ret = -1;
-    size_t i;
+    ssize_t i = -1;
     char *buf = NULL;
     virCgroupPtr group_vcpu = NULL;
 
-    for (i = 0; i < nvcpupids; i++) {
+    while ((i = virBitmapNextSetBit(guestvcpus, i)) >= 0) {
         char *pos;
         unsigned long long tmp;
         ssize_t j;
@@ -3233,7 +3233,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                         unsigned int nparams,
                         int start_cpu,
                         unsigned int ncpus,
-                        unsigned int nvcpupids)
+                        virBitmapPtr guestvcpus)
 {
     int ret = -1;
     size_t i;
@@ -3248,7 +3248,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0) {
-        if (nvcpupids == 0)
+        if (!guestvcpus)
             return CGROUP_NB_PER_CPU_STAT_PARAM;
         else
             return CGROUP_NB_PER_CPU_STAT_PARAM + 1;
@@ -3303,11 +3303,11 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     /* return percpu vcputime in index 1 */
     param_idx = 1;
 
-    if (nvcpupids > 0 && param_idx < nparams) {
+    if (guestvcpus && param_idx < nparams) {
         if (VIR_ALLOC_N(sum_cpu_time, need_cpus) < 0)
             goto cleanup;
-        if (virCgroupGetPercpuVcpuSum(group, nvcpupids, sum_cpu_time, need_cpus,
-                                      cpumap) < 0)
+        if (virCgroupGetPercpuVcpuSum(group, guestvcpus, sum_cpu_time,
+                                      need_cpus, cpumap) < 0)
             goto cleanup;
 
         for (i = start_cpu; i < need_cpus; i++) {

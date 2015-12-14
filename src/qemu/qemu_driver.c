@@ -18207,6 +18207,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    virBitmapPtr guestvcpus = NULL;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
@@ -18230,13 +18231,18 @@ qemuDomainGetCPUStats(virDomainPtr domain,
         goto cleanup;
     }
 
+    if (qemuDomainHasVcpuPids(vm) &&
+        !(guestvcpus = virDomainDefGetOnlineVcpumap(vm->def)))
+        goto cleanup;
+
     if (start_cpu == -1)
         ret = virCgroupGetDomainTotalCpuStats(priv->cgroup,
                                               params, nparams);
     else
         ret = virCgroupGetPercpuStats(priv->cgroup, params, nparams,
-                                      start_cpu, ncpus, priv->nvcpupids);
+                                      start_cpu, ncpus, guestvcpus);
  cleanup:
+    virBitmapFree(guestvcpus);
     virDomainObjEndAPI(&vm);
     return ret;
 }

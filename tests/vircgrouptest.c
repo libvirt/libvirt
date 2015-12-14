@@ -656,7 +656,7 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
 
     if ((rv = virCgroupGetPercpuStats(cgroup,
                                       params,
-                                      1, 0, EXPECTED_NCPUS, 0)) < 0) {
+                                      1, 0, EXPECTED_NCPUS, NULL)) < 0) {
         fprintf(stderr, "Failed call to virCgroupGetPercpuStats for /virtualmachines cgroup: %d\n", -rv);
         goto cleanup;
     }

@@ -26,6 +26,7 @@
 # define __VIR_CGROUP_H__
 
 # include "virutil.h"
+# include "virbitmap.h"
 
 struct virCgroup;
 typedef struct virCgroup *virCgroupPtr;
@@ -246,7 +247,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
                         unsigned int nparams,
                         int start_cpu,
                         unsigned int ncpus,
-                        unsigned int nvcpupids);
+                        virBitmapPtr guestvcpus);
 
 int
 virCgroupGetDomainTotalCpuStats(virCgroupPtr group,
