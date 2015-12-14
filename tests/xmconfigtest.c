@@ -243,7 +243,6 @@ mymain(void)
 
     DO_TEST("fullvirt-sound", 2);
 
-    DO_TEST("fullvirt-net-ioemu", 2);
     DO_TEST("fullvirt-net-netfront", 2);
 
     DO_TEST_FORMAT("fullvirt-default-feature", 2);
