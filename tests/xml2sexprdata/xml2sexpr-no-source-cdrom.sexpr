@@ -3,8 +3,8 @@
 (on_reboot 'destroy')(on_crash 'destroy')\
 (image (hvm (kernel '/usr/lib/xen/boot/hvmloader')(vcpus 1)(boot c)(acpi 1)\
 (apic 1)(pae 1)(usb 1)(parallel none)(serial none)\
-(device_model '/usr/lib/xen/bin/qemu-dm')(vnc 1)(vncunused 0)(vncdisplay 6)))\
-(localtime 0)\
+(device_model '/usr/lib/xen/bin/qemu-dm')(vnc 1)(vncunused 0)(vncdisplay 6)\
+(rtc_timeoffset 0)(localtime 0)))(localtime 0)\
 (device (vbd (dev 'hda:disk')(uname 'phy:/dev/sda8')(mode 'w')))\
 (device (vbd (dev 'hdc:cdrom')(mode 'r')))\
-(device (vif (mac '00:16:3e:0a:7b:39')(model 'e1000')(type ioemu))))\
+(device (vif (mac '00:16:3e:0a:7b:39')(model 'e1000'))))\

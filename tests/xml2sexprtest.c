@@ -21,7 +21,7 @@ static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;
 
 static int
-testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
+testCompareFiles(const char *xml, const char *sexpr)
 {
   char *gotsexpr = NULL;
   int ret = -1;
@@ -36,7 +36,7 @@ testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion)
       goto fail;
   }
 
-  if (!(gotsexpr = xenFormatSxpr(NULL, def, xendConfigVersion)))
+  if (!(gotsexpr = xenFormatSxpr(NULL, def, 4)))
       goto fail;
 
   if (virtTestCompareToFile(gotsexpr, sexpr) < 0)
@@ -55,7 +55,6 @@ struct testInfo {
     const char *input;
     const char *output;
     const char *name;
-    int version;
 };
 
 static int
@@ -73,7 +72,7 @@ testCompareHelper(const void *data)
         goto cleanup;
     }
 
-    result = testCompareFiles(xml, args, info->version);
+    result = testCompareFiles(xml, args);
 
  cleanup:
     VIR_FREE(xml);
@@ -87,9 +86,9 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(in, out, name, version)                                \
+#define DO_TEST(in, out, name)                                         \
     do {                                                               \
-        struct testInfo info = { in, out, name, version };             \
+        struct testInfo info = { in, out, name };                      \
         virResetLastError();                                           \
         if (virtTestRun("Xen XML-2-SEXPR " in " -> " out,              \
                         testCompareHelper, &info) < 0)                 \
@@ -102,64 +101,64 @@ mymain(void)
     if (!(xmlopt = xenDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-    DO_TEST("pv", "pv", "pvtest", 1);
-    DO_TEST("fv", "fv", "fvtest", 1);
-    DO_TEST("pv", "pv", "pvtest", 2);
-    DO_TEST("fv", "fv-v2", "fvtest", 2);
-    DO_TEST("fv-vncunused", "fv-vncunused", "fvtest", 2);
-    DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest", 3);
-    DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest", 3);
-    DO_TEST("pv-bootloader", "pv-bootloader", "pvtest", 1);
-    DO_TEST("pv-bootloader-cmdline", "pv-bootloader-cmdline", "pvtest", 1);
-    DO_TEST("pv-vcpus", "pv-vcpus", "pvtest", 1);
+    DO_TEST("pv", "pv", "pvtest");
+    DO_TEST("fv", "fv", "fvtest");
+    DO_TEST("pv", "pv", "pvtest");
+    DO_TEST("fv", "fv-v2", "fvtest");
+    DO_TEST("fv-vncunused", "fv-vncunused", "fvtest");
+    DO_TEST("pv-vfb-new", "pv-vfb-new", "pvtest");
+    DO_TEST("pv-vfb-new-auto", "pv-vfb-new-auto", "pvtest");
+    DO_TEST("pv-bootloader", "pv-bootloader", "pvtest");
+    DO_TEST("pv-bootloader-cmdline", "pv-bootloader-cmdline", "pvtest");
+    DO_TEST("pv-vcpus", "pv-vcpus", "pvtest");
 
-    DO_TEST("disk-file", "disk-file", "pvtest", 2);
-    DO_TEST("disk-block", "disk-block", "pvtest", 2);
-    DO_TEST("disk-block-shareable", "disk-block-shareable", "pvtest", 2);
-    DO_TEST("disk-drv-loop", "disk-drv-loop", "pvtest", 2);
-    DO_TEST("disk-drv-blkback", "disk-drv-blkback", "pvtest", 2);
-    DO_TEST("disk-drv-blktap", "disk-drv-blktap", "pvtest", 2);
-    DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", "pvtest", 2);
-    DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", "pvtest", 2);
-    DO_TEST("disk-drv-blktap2", "disk-drv-blktap2", "pvtest", 2);
-    DO_TEST("disk-drv-blktap2-raw", "disk-drv-blktap2-raw", "pvtest", 2);
+    DO_TEST("disk-file", "disk-file", "pvtest");
+    DO_TEST("disk-block", "disk-block", "pvtest");
+    DO_TEST("disk-block-shareable", "disk-block-shareable", "pvtest");
+    DO_TEST("disk-drv-loop", "disk-drv-loop", "pvtest");
+    DO_TEST("disk-drv-blkback", "disk-drv-blkback", "pvtest");
+    DO_TEST("disk-drv-blktap", "disk-drv-blktap", "pvtest");
+    DO_TEST("disk-drv-blktap-raw", "disk-drv-blktap-raw", "pvtest");
+    DO_TEST("disk-drv-blktap-qcow", "disk-drv-blktap-qcow", "pvtest");
+    DO_TEST("disk-drv-blktap2", "disk-drv-blktap2", "pvtest");
+    DO_TEST("disk-drv-blktap2-raw", "disk-drv-blktap2-raw", "pvtest");
 
-    DO_TEST("curmem", "curmem", "rhel5", 2);
-    DO_TEST("net-routed", "net-routed", "pvtest", 2);
-    DO_TEST("net-bridged", "net-bridged", "pvtest", 2);
-    DO_TEST("net-e1000", "net-e1000", "pvtest", 2);
-    DO_TEST("bridge-ipaddr", "bridge-ipaddr", "pvtest", 2);
-    DO_TEST("no-source-cdrom", "no-source-cdrom", "test", 2);
-    DO_TEST("pv-localtime", "pv-localtime", "pvtest", 1);
-    DO_TEST("pci-devs", "pci-devs", "pvtest", 2);
+    DO_TEST("curmem", "curmem", "rhel5");
+    DO_TEST("net-routed", "net-routed", "pvtest");
+    DO_TEST("net-bridged", "net-bridged", "pvtest");
+    DO_TEST("net-e1000", "net-e1000", "pvtest");
+    DO_TEST("bridge-ipaddr", "bridge-ipaddr", "pvtest");
+    DO_TEST("no-source-cdrom", "no-source-cdrom", "test");
+    DO_TEST("pv-localtime", "pv-localtime", "pvtest");
+    DO_TEST("pci-devs", "pci-devs", "pvtest");
 
-    DO_TEST("fv-utc", "fv-utc", "fvtest", 1);
-    DO_TEST("fv-localtime", "fv-localtime", "fvtest", 1);
-    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest", 1);
-    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest", 1);
-    DO_TEST("fv-kernel", "fv-kernel", "fvtest", 1);
-    DO_TEST("fv-force-hpet", "fv-force-hpet", "fvtest", 1);
-    DO_TEST("fv-force-nohpet", "fv-force-nohpet", "fvtest", 1);
+    DO_TEST("fv-utc", "fv-utc", "fvtest");
+    DO_TEST("fv-localtime", "fv-localtime", "fvtest");
+    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest");
+    DO_TEST("fv-usbmouse", "fv-usbmouse", "fvtest");
+    DO_TEST("fv-kernel", "fv-kernel", "fvtest");
+    DO_TEST("fv-force-hpet", "fv-force-hpet", "fvtest");
+    DO_TEST("fv-force-nohpet", "fv-force-nohpet", "fvtest");
 
-    DO_TEST("fv-serial-null", "fv-serial-null", "fvtest", 1);
-    DO_TEST("fv-serial-file", "fv-serial-file", "fvtest", 1);
-    DO_TEST("fv-serial-dev-2-ports", "fv-serial-dev-2-ports", "fvtest", 1);
-    DO_TEST("fv-serial-dev-2nd-port", "fv-serial-dev-2nd-port", "fvtest", 1);
-    DO_TEST("fv-serial-stdio", "fv-serial-stdio", "fvtest", 1);
-    DO_TEST("fv-serial-pty", "fv-serial-pty", "fvtest", 1);
-    DO_TEST("fv-serial-pipe", "fv-serial-pipe", "fvtest", 1);
-    DO_TEST("fv-serial-tcp", "fv-serial-tcp", "fvtest", 1);
-    DO_TEST("fv-serial-udp", "fv-serial-udp", "fvtest", 1);
-    DO_TEST("fv-serial-tcp-telnet", "fv-serial-tcp-telnet", "fvtest", 1);
-    DO_TEST("fv-serial-unix", "fv-serial-unix", "fvtest", 1);
-    DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", "fvtest", 1);
+    DO_TEST("fv-serial-null", "fv-serial-null", "fvtest");
+    DO_TEST("fv-serial-file", "fv-serial-file", "fvtest");
+    DO_TEST("fv-serial-dev-2-ports", "fv-serial-dev-2-ports", "fvtest");
+    DO_TEST("fv-serial-dev-2nd-port", "fv-serial-dev-2nd-port", "fvtest");
+    DO_TEST("fv-serial-stdio", "fv-serial-stdio", "fvtest");
+    DO_TEST("fv-serial-pty", "fv-serial-pty", "fvtest");
+    DO_TEST("fv-serial-pipe", "fv-serial-pipe", "fvtest");
+    DO_TEST("fv-serial-tcp", "fv-serial-tcp", "fvtest");
+    DO_TEST("fv-serial-udp", "fv-serial-udp", "fvtest");
+    DO_TEST("fv-serial-tcp-telnet", "fv-serial-tcp-telnet", "fvtest");
+    DO_TEST("fv-serial-unix", "fv-serial-unix", "fvtest");
+    DO_TEST("fv-parallel-tcp", "fv-parallel-tcp", "fvtest");
 
-    DO_TEST("fv-sound", "fv-sound", "fvtest", 1);
+    DO_TEST("fv-sound", "fv-sound", "fvtest");
 
-    DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest", 1);
+    DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest");
 
-    DO_TEST("boot-grub", "boot-grub", "fvtest", 1);
-    DO_TEST("escape", "escape", "fvtest", 1);
+    DO_TEST("boot-grub", "boot-grub", "fvtest");
+    DO_TEST("escape", "escape", "fvtest");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

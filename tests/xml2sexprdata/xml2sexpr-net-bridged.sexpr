@@ -4,7 +4,8 @@
 (image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')\
 (ramdisk '/var/lib/xen/initrd.img.0u-Vhq')\
 (args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
-core/test/5.91/x86_64/os  ')))(localtime 0)(device (vbd (dev 'xvda')\
+core/test/5.91/x86_64/os  ')(localtime 0)))\
+(localtime 0)(device (vbd (dev 'xvda')\
 (uname 'file:/root/some.img')(mode 'w')))\
 (device (vif (mac '00:11:22:33:44:55')(bridge 'xenbr2')\
 (script 'vif-bridge'))))\

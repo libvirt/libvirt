@@ -2,6 +2,6 @@
 (uuid '596a5d21-71f4-8fb2-e068-e2386a5c413e')(bootloader '/usr/bin/pypxeboot')\
 (bootloader_args 'mac=AA:00:86:e2:35:72')(on_poweroff 'destroy')\
 (on_reboot 'destroy')(on_crash 'destroy')\
-(localtime 0)\
+(image (linux (localtime 0)))(localtime 0)\
 (device (vbd (dev 'xvda')\
 (uname 'file:/root/some.img')(mode 'w'))))\

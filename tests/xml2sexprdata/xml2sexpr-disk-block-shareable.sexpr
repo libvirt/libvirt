@@ -1,7 +1,7 @@
 (vm (name 'pvtest')(memory 384)(maxmem 512)(vcpus 1)\
 (uuid '49a0c6ff-c066-5392-6498-3632d093c2e7')(bootloader '/usr/bin/pygrub')\
 (on_poweroff 'destroy')(on_reboot 'restart')(on_crash 'restart')\
-(image (linux (args 'ro root=/dev/VolGroup00/LogVol00')))\
+(image (linux (args 'ro root=/dev/VolGroup00/LogVol00')(localtime 0)))\
 (localtime 0)\
 (device (tap (dev 'xvda')(uname 'tap:aio:/var/lib/xen/images/rhel5pv.img')\
 (mode 'w!')))\

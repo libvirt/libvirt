@@ -4,7 +4,7 @@
 (image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')\
 (ramdisk '/var/lib/xen/initrd.img.0u-Vhq')\
 (args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
-core/test/5.91/x86_64/os  ')))\
+core/test/5.91/x86_64/os  ')(localtime 0)))\
 (localtime 0)\
 (device (tap (dev 'xvda')\
 (uname 'tap:qcow:/root/some.img')(mode 'w'))))\

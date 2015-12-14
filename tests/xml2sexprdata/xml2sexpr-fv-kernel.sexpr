@@ -6,6 +6,7 @@
 (args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
 core/test/5.91/x86_64/os  ')(loader '/usr/lib/xen/boot/hvmloader')(vcpus 2)\
 (boot c)(usb 1)(parallel none)(serial pty)\
-(device_model '/usr/lib/xen/bin/qemu-dm')))\
+(device_model '/usr/lib/xen/bin/qemu-dm')\
+(rtc_timeoffset 0)(localtime 0)))\
 (localtime 0)\
-(device (vbd (dev 'ioemu:xvda')(uname 'file:/root/some.img')(mode 'w'))))\
+(device (vbd (dev 'xvda:disk')(uname 'file:/root/some.img')(mode 'w'))))\
