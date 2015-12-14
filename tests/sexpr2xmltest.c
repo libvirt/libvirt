@@ -136,7 +136,6 @@ mymain(void)
     DO_TEST("fv", "fv", 1);
     DO_TEST("pv", "pv", 2);
     DO_TEST("fv-v2", "fv-v2", 2);
-    DO_TEST("pv-vfb-orig", "pv-vfb-orig", 2);
     DO_TEST("pv-vfb-new", "pv-vfb-new", 3);
     DO_TEST("pv-vfb-new-vncdisplay", "pv-vfb-new-vncdisplay", 3);
     DO_TEST("pv-vfb-type-crash", "pv-vfb-type-crash", 3);
@@ -185,7 +184,6 @@ mymain(void)
     DO_TEST("fv-sound", "fv-sound", 1);
     DO_TEST("fv-sound-all", "fv-sound-all", 1);
 
-    DO_TEST("fv-net-ioemu", "fv-net-ioemu", 1);
     DO_TEST("fv-net-netfront", "fv-net-netfront", 1);
 
     DO_TEST("fv-empty-kernel", "fv-empty-kernel", 1);
