@@ -41,20 +41,19 @@ testCompareFiles(const char *xml, const char *sexpr)
 
   memset(&priv, 0, sizeof(priv));
   /* Many puppies died to bring you this code. */
-  priv.xendConfigVersion = 4;
   priv.caps = caps;
   conn->privateData = &priv;
   if (virMutexInit(&priv.lock) < 0)
       goto fail;
 
-  if (xenGetDomIdFromSxprString(sexprData, 4, &id) < 0)
+  if (xenGetDomIdFromSxprString(sexprData, &id) < 0)
       goto fail;
   xenUnifiedLock(&priv);
   tty = xenStoreDomainGetConsolePath(conn, id);
   vncport = xenStoreDomainGetVNCPort(conn, id);
   xenUnifiedUnlock(&priv);
 
-  if (!(def = xenParseSxprString(sexprData, 4,
+  if (!(def = xenParseSxprString(sexprData,
                                  tty, vncport, caps, xmlopt)))
       goto fail;
 

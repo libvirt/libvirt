@@ -1569,7 +1569,7 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
     if (root == NULL)
         return NULL;
 
-    if (xenGetDomIdFromSxpr(root, priv->xendConfigVersion, &id) < 0)
+    if (xenGetDomIdFromSxpr(root, &id) < 0)
         goto cleanup;
     xenUnifiedLock(priv);
     if (sexpr_lookup(root, "domain/image/hvm"))
@@ -1579,7 +1579,6 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
     vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
     if (!(def = xenParseSxpr(root,
-                             priv->xendConfigVersion,
                              cpus,
                              tty,
                              vncport)))
@@ -2056,7 +2055,6 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
     char *sexpr;
     const char *tmp;
     struct sexpr *root;
-    xenUnifiedPrivatePtr priv = conn->privateData;
 
     if (def->id != -1) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2065,7 +2063,7 @@ xenDaemonCreateXML(virConnectPtr conn, virDomainDefPtr def)
         return -1;
     }
 
-    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion)))
+    if (!(sexpr = xenFormatSxpr(conn, def)))
         return -1;
 
     ret = xenDaemonDomainCreateXML(conn, sexpr);
@@ -2167,7 +2165,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
         if (xenFormatSxprDisk(dev->data.disk,
                               &buf,
                               def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
-                              priv->xendConfigVersion, 1) < 0)
+                              1) < 0)
             goto cleanup;
 
         if (dev->data.disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
@@ -2180,7 +2178,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
                              dev->data.net,
                              &buf,
                              def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
-                             priv->xendConfigVersion, 1) < 0)
+                             1) < 0)
             goto cleanup;
 
         char macStr[VIR_MAC_STRING_BUFLEN];
@@ -2303,7 +2301,7 @@ xenDaemonUpdateDeviceFlags(virConnectPtr conn,
         if (xenFormatSxprDisk(dev->data.disk,
                               &buf,
                               def->os.type == VIR_DOMAIN_OSTYPE_HVM ? 1 : 0,
-                              priv->xendConfigVersion, 1) < 0)
+                              1) < 0)
             goto cleanup;
         break;
 
@@ -2691,9 +2689,8 @@ xenDaemonDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
 {
     int ret = -1;
     char *sexpr;
-    xenUnifiedPrivatePtr priv = conn->privateData;
 
-    if (!(sexpr = xenFormatSxpr(conn, def, priv->xendConfigVersion))) {
+    if (!(sexpr = xenFormatSxpr(conn, def))) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("failed to build sexpr"));
         goto cleanup;
@@ -3107,15 +3104,14 @@ xenDaemonDomainBlockPeek(virConnectPtr conn,
         return -1;
     }
 
-    if (xenGetDomIdFromSxpr(root, priv->xendConfigVersion, &id) < 0)
+    if (xenGetDomIdFromSxpr(root, &id) < 0)
         goto cleanup;
     xenUnifiedLock(priv);
     tty = xenStoreDomainGetConsolePath(conn, id);
     vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
 
-    if (!(def = xenParseSxpr(root, priv->xendConfigVersion, NULL, tty,
-                             vncport)))
+    if (!(def = xenParseSxpr(root, NULL, tty, vncport)))
         goto cleanup;
 
     if (!(actual = virDomainDiskPathByName(def, path))) {

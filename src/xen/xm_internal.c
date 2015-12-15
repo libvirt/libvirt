@@ -920,7 +920,7 @@ xenXMDomainCreate(virConnectPtr conn,
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto error;
 
-    if (!(sexpr = xenFormatSxpr(conn, entry->def, priv->xendConfigVersion)))
+    if (!(sexpr = xenFormatSxpr(conn, entry->def)))
         goto error;
 
     ret = xenDaemonDomainCreateXML(conn, sexpr);

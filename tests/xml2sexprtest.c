@@ -36,7 +36,7 @@ testCompareFiles(const char *xml, const char *sexpr)
       goto fail;
   }
 
-  if (!(gotsexpr = xenFormatSxpr(NULL, def, 4)))
+  if (!(gotsexpr = xenFormatSxpr(NULL, def)))
       goto fail;
 
   if (virtTestCompareToFile(gotsexpr, sexpr) < 0)

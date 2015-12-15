@@ -2608,7 +2608,6 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
     } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_SEXPR)) {
         /* only support latest xend config format */
         if (!(def = xenParseSxprString(nativeConfig,
-                                       XEND_CONFIG_VERSION_3_1_0,
                                        NULL,
                                        -1,
                                        cfg->caps,

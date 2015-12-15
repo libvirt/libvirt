@@ -60,7 +60,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     if (!conn) goto fail;
 
     /* Many puppies died to bring you this code. */
-    priv.xendConfigVersion = 4;
     priv.caps = caps;
     conn->privateData = &priv;
 
@@ -113,7 +112,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
         goto fail;
 
     /* Many puppies died to bring you this code. */
-    priv.xendConfigVersion = 4;
     priv.caps = caps;
     conn->privateData = &priv;
 

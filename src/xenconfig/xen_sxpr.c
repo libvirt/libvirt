@@ -42,7 +42,7 @@
 VIR_LOG_INIT("xenconfig.xen_sxpr");
 
 /* Get a domain id from a S-expression string */
-int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id)
+int xenGetDomIdFromSxprString(const char *sexpr, int *id)
 {
     struct sexpr *root = string2sexpr(sexpr);
     int ret;
@@ -52,15 +52,13 @@ int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id)
     if (!root)
         return -1;
 
-    ret = xenGetDomIdFromSxpr(root, xendConfigVersion, id);
+    ret = xenGetDomIdFromSxpr(root, id);
     sexpr_free(root);
     return ret;
 }
 
 /* Get a domain id from a S-expression */
-int xenGetDomIdFromSxpr(const struct sexpr *root,
-                        int xendConfigVersion ATTRIBUTE_UNUSED,
-                        int *id)
+int xenGetDomIdFromSxpr(const struct sexpr *root, int *id)
 {
     const char * tmp = sexpr_node(root, "domain/domid");
 
@@ -322,7 +320,6 @@ xenParseSxprChar(const char *value,
  * @def: the domain config
  * @root: root S-expression
  * @hvm: true or 1 if node contains HVM S-Expression
- * @xendConfigVersion: version of xend
  *
  * This parses out block devices from the domain S-expression
  *
@@ -331,8 +328,7 @@ xenParseSxprChar(const char *value,
 static int
 xenParseSxprDisks(virDomainDefPtr def,
                   const struct sexpr *root,
-                  int hvm,
-                  int xendConfigVersion ATTRIBUTE_UNUSED)
+                  int hvm)
 {
     const struct sexpr *cur, *node;
     virDomainDiskDefPtr disk = NULL;
@@ -754,7 +750,6 @@ xenParseSxprUSB(virDomainDefPtr def,
  * @def: the domain config
  * @root: root S-expression
  * @hvm: true or 1 if root contains HVM S-Expression
- * @xendConfigVersion: version of xend
  * @vncport: VNC port number
  *
  * This parses out VNC devices from the domain S-expression
@@ -765,7 +760,6 @@ static int
 xenParseSxprGraphicsOld(virDomainDefPtr def,
                         const struct sexpr *root,
                         int hvm,
-                        int xendConfigVersion ATTRIBUTE_UNUSED,
                         int vncport)
 {
     const char *tmp;
@@ -1059,7 +1053,6 @@ xenParseSxprPCI(virDomainDefPtr def,
 /**
  * xenParseSxpr:
  * @root: the root of the parsed S-Expression
- * @xendConfigVersion: version of xend
  * @cpus: set of cpus the domain may be pinned to
  * @tty: the console pty path
  * @vncport: VNC port number
@@ -1072,7 +1065,6 @@ xenParseSxprPCI(virDomainDefPtr def,
  */
 virDomainDefPtr
 xenParseSxpr(const struct sexpr *root,
-             int xendConfigVersion,
              const char *cpus, char *tty, int vncport)
 {
     const char *tmp;
@@ -1271,7 +1263,7 @@ xenParseSxpr(const struct sexpr *root,
         goto error;
 
     /* append block devices */
-    if (xenParseSxprDisks(def, root, hvm, xendConfigVersion) < 0)
+    if (xenParseSxprDisks(def, root, hvm) < 0)
         goto error;
 
     if (xenParseSxprNets(def, root) < 0)
@@ -1286,8 +1278,7 @@ xenParseSxpr(const struct sexpr *root,
 
     /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
     if ((def->ngraphics == 0) &&
-        xenParseSxprGraphicsOld(def, root, hvm, xendConfigVersion,
-                                      vncport) < 0)
+        xenParseSxprGraphicsOld(def, root, hvm, vncport) < 0)
         goto error;
 
     /* in case of HVM we have USB device emulation */
@@ -1392,7 +1383,6 @@ xenParseSxpr(const struct sexpr *root,
 /**
  * xenParseSxprString:
  * @sexpr: the root of the parsed S-Expression
- * @xendConfigVersion: version of xend
  * @tty: the console pty path
  * @vncport: VNC port number
  *
@@ -1404,7 +1394,6 @@ xenParseSxpr(const struct sexpr *root,
  */
 virDomainDefPtr
 xenParseSxprString(const char *sexpr,
-                   int xendConfigVersion,
                    char *tty,
                    int vncport,
                    virCapsPtr caps,
@@ -1416,7 +1405,7 @@ xenParseSxprString(const char *sexpr,
     if (!root)
         return NULL;
 
-    if (!(def = xenParseSxpr(root, xendConfigVersion, NULL, tty, vncport)))
+    if (!(def = xenParseSxpr(root, NULL, tty, vncport)))
         goto cleanup;
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
@@ -1499,7 +1488,6 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
  * xenFormatSxprGraphicsOld:
  * @def: the domain config
  * @buf: a buffer for the result S-expression
- * @xendConfigVersion: version of xend
  *
  * Convert the graphics part of the domain description into a S-expression
  * in buf. (HVM <= 3.0.4 or PV <= 3.0.3)
@@ -1507,9 +1495,7 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
-                         virBufferPtr buf,
-                         int xendConfigVersion ATTRIBUTE_UNUSED)
+xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def, virBufferPtr buf)
 {
     const char *listenAddr;
 
@@ -1639,7 +1625,6 @@ xenFormatSxprChr(virDomainChrDefPtr def,
  * @node: node containing the disk description
  * @buf: a buffer for the result S-expression
  * @hvm: true or 1 if domain is HVM
- * @xendConfigVersion: xend configuration file format
  * @isAttach: create expression for device attach (1).
  *
  * Convert the disk device part of the domain config into a S-expresssion in buf.
@@ -1650,7 +1635,6 @@ int
 xenFormatSxprDisk(virDomainDiskDefPtr def,
                   virBufferPtr buf,
                   int hvm,
-                  int xendConfigVersion ATTRIBUTE_UNUSED,
                   int isAttach)
 {
     const char *src = virDomainDiskGetSource(def);
@@ -1758,7 +1742,6 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
  * @def: the domain config
  * @buf: a buffer for the result S-expression
  * @hvm: true or 1 if domain is HVM
- * @xendConfigVersion: xend configuration file format
  * @isAttach: create expression for device attach (1).
  *
  * Convert the interface description of the domain config into a S-expression in buf.
@@ -1773,7 +1756,6 @@ xenFormatSxprNet(virConnectPtr conn,
                  virDomainNetDefPtr def,
                  virBufferPtr buf,
                  int hvm,
-                 int xendConfigVersion ATTRIBUTE_UNUSED,
                  int isAttach)
 {
     const char *script = DEFAULT_VIF_SCRIPT;
@@ -2093,7 +2075,6 @@ verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
  * xenFormatSxpr:
  * @conn: pointer to the hypervisor connection
  * @def: domain config definition
- * @xendConfigVersion: xend configuration file format
  *
  * Generate an S-expression representing the domain configuration.
  *
@@ -2101,9 +2082,7 @@ verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
  *         the caller must free() the returned value.
  */
 char *
-xenFormatSxpr(virConnectPtr conn,
-              virDomainDefPtr def,
-              int xendConfigVersion)
+xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2324,8 +2303,7 @@ xenFormatSxpr(virConnectPtr conn,
         /* PV graphics for xen <= 3.0.4, or HVM graphics */
         if (hvm) {
             if ((def->ngraphics == 1) &&
-                xenFormatSxprGraphicsOld(def->graphics[0],
-                                         &buf, xendConfigVersion) < 0)
+                xenFormatSxprGraphicsOld(def->graphics[0], &buf) < 0)
                 goto error;
         }
     } else {
@@ -2405,13 +2383,11 @@ xenFormatSxpr(virConnectPtr conn,
 
 
     for (i = 0; i < def->ndisks; i++)
-        if (xenFormatSxprDisk(def->disks[i],
-                              &buf, hvm, xendConfigVersion, 0) < 0)
+        if (xenFormatSxprDisk(def->disks[i], &buf, hvm, 0) < 0)
             goto error;
 
     for (i = 0; i < def->nnets; i++)
-        if (xenFormatSxprNet(conn, def->nets[i],
-                             &buf, hvm, xendConfigVersion, 0) < 0)
+        if (xenFormatSxprNet(conn, def->nets[i], &buf, hvm, 0) < 0)
             goto error;
 
     if (xenFormatSxprAllPCI(def, &buf) < 0)
