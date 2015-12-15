@@ -4280,3 +4280,87 @@ qemuDomainGetVcpuPid(virDomainObjPtr vm,
 
     return priv->vcpupids[vcpu];
 }
+
+
+/**
+ * qemuDomainDetectVcpuPids:
+ * @driver: qemu driver data
+ * @vm: domain object
+ * @asyncJob: current asynchronous job type
+ *
+ * Updates vCPU thread ids in the private data of @vm.
+ *
+ * Returns 0 on success -1 on error and reports an appropriate error.
+ */
+int
+qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob)
+{
+    pid_t *cpupids = NULL;
+    int ncpupids;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /*
+     * Current QEMU *can* report info about host threads mapped
+     * to vCPUs, but it is not in a manner we can correctly
+     * deal with. The TCG CPU emulation does have a separate vCPU
+     * thread, but it runs every vCPU in that same thread. So it
+     * is impossible to setup different affinity per thread.
+     *
+     * What's more the 'query-cpus' command returns bizarre
+     * data for the threads. It gives the TCG thread for the
+     * vCPU 0, but for vCPUs 1-> N, it actually replies with
+     * the main process thread ID.
+     *
+     * The result is that when we try to set affinity for
+     * vCPU 1, it will actually change the affinity of the
+     * emulator thread :-( When you try to set affinity for
+     * vCPUs 2, 3.... it will fail if the affinity was
+     * different from vCPU 1.
+     *
+     * We *could* allow vcpu pinning with TCG, if we made the
+     * restriction that all vCPUs had the same mask. This would
+     * at least let us separate emulator from vCPUs threads, as
+     * we do for KVM. It would need some changes to our cgroups
+     * CPU layout though, and error reporting for the config
+     * restrictions.
+     *
+     * Just disable CPU pinning with TCG until someone wants
+     * to try to do this hard work.
+     */
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU) {
+        priv->nvcpupids = 0;
+        priv->vcpupids = NULL;
+        return 0;
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+    ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+    /* failure to get the VCPU<-> PID mapping or to execute the query
+     * command will not be treated fatal as some versions of qemu don't
+     * support this command */
+    if (ncpupids <= 0) {
+        virResetLastError();
+
+        priv->nvcpupids = 0;
+        priv->vcpupids = NULL;
+        return 0;
+    }
+
+    if (ncpupids != virDomainDefGetVcpus(vm->def)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("got wrong number of vCPU pids from QEMU monitor. "
+                         "got %d, wanted %d"),
+                       ncpupids, virDomainDefGetVcpus(vm->def));
+        VIR_FREE(cpupids);
+        return -1;
+    }
+
+    priv->nvcpupids = ncpupids;
+    priv->vcpupids = cpupids;
+    return 0;
+}
