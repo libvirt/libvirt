@@ -2664,12 +2664,13 @@ virPCIGetSysfsFile(char *virPCIDeviceName, char **pci_sysfs_device_link)
 }
 
 int
-virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev,
+virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
                                 char **pci_sysfs_device_link)
 {
     if (virAsprintf(pci_sysfs_device_link,
-                    PCI_SYSFS "devices/%04x:%02x:%02x.%x", dev->domain,
-                    dev->bus, dev->slot, dev->function) < 0)
+                    PCI_SYSFS "devices/%04x:%02x:%02x.%x",
+                    addr->domain, addr->bus,
+                    addr->slot, addr->function) < 0)
         return -1;
     return 0;
 }

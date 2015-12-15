@@ -159,7 +159,7 @@ virPCIDeviceListPtr virPCIDeviceGetIOMMUGroupList(virPCIDevicePtr dev);
 int virPCIDeviceAddressGetIOMMUGroupAddresses(virPCIDeviceAddressPtr devAddr,
                                               virPCIDeviceAddressPtr **iommuGroupDevices,
                                               size_t *nIommuGroupDevices);
-int virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr dev);
+int virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr);
 char *virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
@@ -180,7 +180,7 @@ int virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
                                         const char *vf_sysfs_device_link,
                                         int *vf_index);
 
-int virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev,
+int virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
                                     char **pci_sysfs_device_link);
 
 int virPCIGetNetName(char *device_link_sysfs_path, char **netname);
