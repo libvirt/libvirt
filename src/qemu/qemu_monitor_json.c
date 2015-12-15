@@ -2223,11 +2223,12 @@ int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
         ret = qemuMonitorJSONCheckError(cmd, reply);
 
     if (ret < 0) {
-        char *replyStr = virJSONValueToString(reply, false);
-
-        if (c_strcasestr(replyStr, "is locked"))
-            ret = -2;
-        VIR_FREE(replyStr);
+        virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
+        if (error) {
+            const char *errorStr = virJSONValueObjectGetString(error, "desc");
+            if (errorStr && c_strcasestr(errorStr, "is locked"))
+                ret = -2;
+        }
     }
 
     virJSONValueFree(cmd);
