@@ -56,10 +56,7 @@ VIR_ENUM_IMPL(virPCIELinkSpeed, VIR_PCIE_LINK_SPEED_LAST,
               "", "2.5", "5", "8")
 
 struct _virPCIDevice {
-    unsigned int  domain;
-    unsigned int  bus;
-    unsigned int  slot;
-    unsigned int  function;
+    virPCIDeviceAddress address;
 
     char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
@@ -655,10 +652,10 @@ virPCIDeviceSharesBusWithActive(virPCIDevicePtr dev, virPCIDevicePtr check, void
     virPCIDeviceList *inactiveDevs = data;
 
     /* Different domain, different bus, or simply identical device */
-    if (dev->domain != check->domain ||
-        dev->bus != check->bus ||
-        (dev->slot == check->slot &&
-         dev->function == check->function))
+    if (dev->address.domain != check->address.domain ||
+        dev->address.bus != check->address.bus ||
+        (dev->address.slot == check->address.slot &&
+         dev->address.function == check->address.function))
         return 0;
 
     /* same bus, but inactive, i.e. about to be assigned to guest */
@@ -689,7 +686,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
     int ret = 0;
     int fd;
 
-    if (dev->domain != check->domain)
+    if (dev->address.domain != check->address.domain)
         return 0;
 
     if ((fd = virPCIDeviceConfigOpen(check, false)) < 0)
@@ -713,7 +710,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
     /* if the secondary bus exactly equals the device's bus, then we found
      * the direct parent.  No further work is necessary
      */
-    if (dev->bus == secondary) {
+    if (dev->address.bus == secondary) {
         ret = 1;
         goto cleanup;
     }
@@ -722,10 +719,12 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
      * In this case, what we need to do is look for the "best" match; i.e.
      * the most restrictive match that still satisfies all of the conditions.
      */
-    if (dev->bus > secondary && dev->bus <= subordinate) {
+    if (dev->address.bus > secondary && dev->address.bus <= subordinate) {
         if (*best == NULL) {
-            *best = virPCIDeviceNew(check->domain, check->bus, check->slot,
-                                    check->function);
+            *best = virPCIDeviceNew(check->address.domain,
+                                    check->address.bus,
+                                    check->address.slot,
+                                    check->address.function);
             if (*best == NULL) {
                 ret = -1;
                 goto cleanup;
@@ -745,8 +744,10 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
 
             if (secondary > best_secondary) {
                 virPCIDeviceFree(*best);
-                *best = virPCIDeviceNew(check->domain, check->bus, check->slot,
-                                        check->function);
+                *best = virPCIDeviceNew(check->address.domain,
+                                        check->address.bus,
+                                        check->address.slot,
+                                        check->address.function);
                 if (*best == NULL) {
                     ret = -1;
                     goto cleanup;
@@ -970,7 +971,7 @@ virPCIDeviceReset(virPCIDevicePtr dev,
         ret = virPCIDeviceTryPowerManagementReset(dev, fd);
 
     /* Bus reset is not an option with the root bus */
-    if (ret < 0 && dev->bus != 0)
+    if (ret < 0 && dev->address.bus != 0)
         ret = virPCIDeviceTrySecondaryBusReset(dev, fd, inactiveDevs);
 
     if (ret < 0) {
@@ -1483,8 +1484,8 @@ virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher)
                 virStrToLong_ui(tmp + 1, &tmp, 16, &function) < 0 || *tmp != '\n')
                 continue;
 
-            if (domain != dev->domain || bus != dev->bus || slot != dev->slot ||
-                function != dev->function)
+            if (domain != dev->address.domain || bus != dev->address.bus ||
+                slot != dev->address.slot || function != dev->address.function)
                 continue;
             in_matching_device = true;
             match_depth = strspn(line, " ");
@@ -1560,17 +1561,16 @@ virPCIDeviceNew(unsigned int domain,
     if (VIR_ALLOC(dev) < 0)
         return NULL;
 
-    dev->domain   = domain;
-    dev->bus      = bus;
-    dev->slot     = slot;
-    dev->function = function;
+    dev->address.domain = domain;
+    dev->address.bus = bus;
+    dev->address.slot = slot;
+    dev->address.function = function;
 
     if (snprintf(dev->name, sizeof(dev->name), "%.4x:%.2x:%.2x.%.1x",
-                 dev->domain, dev->bus, dev->slot,
-                 dev->function) >= sizeof(dev->name)) {
+                 domain, bus, slot, function) >= sizeof(dev->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"),
-                       dev->domain, dev->bus, dev->slot, dev->function);
+                       domain, bus, slot, function);
         goto error;
     }
     if (virAsprintf(&dev->path, PCI_SYSFS "devices/%s/config",
@@ -1661,25 +1661,14 @@ virPCIDeviceFree(virPCIDevicePtr dev)
  * @dev: device to get address from
  *
  * Take a PCI device on input and return its PCI address. The
- * caller must free the returned value when no longer needed.
+ * returned object is owned by the device and must not be freed.
  *
- * Returns NULL on failure, the device address on success.
+ * Returns: a pointer to the address, which can never be NULL.
  */
 virPCIDeviceAddressPtr
 virPCIDeviceGetAddress(virPCIDevicePtr dev)
 {
-
-    virPCIDeviceAddressPtr pciAddrPtr;
-
-    if (!dev || (VIR_ALLOC(pciAddrPtr) < 0))
-        return NULL;
-
-    pciAddrPtr->domain = dev->domain;
-    pciAddrPtr->bus = dev->bus;
-    pciAddrPtr->slot = dev->slot;
-    pciAddrPtr->function = dev->function;
-
-    return pciAddrPtr;
+    return &(dev->address);
 }
 
 const char *
@@ -1890,12 +1879,14 @@ virPCIDeviceListFindIndex(virPCIDeviceListPtr list, virPCIDevicePtr dev)
 {
     size_t i;
 
-    for (i = 0; i < list->count; i++)
-        if (list->devs[i]->domain   == dev->domain &&
-            list->devs[i]->bus      == dev->bus    &&
-            list->devs[i]->slot     == dev->slot   &&
-            list->devs[i]->function == dev->function)
+    for (i = 0; i < list->count; i++) {
+        virPCIDevicePtr other = list->devs[i];
+        if (other->address.domain   == dev->address.domain &&
+            other->address.bus      == dev->address.bus    &&
+            other->address.slot     == dev->address.slot   &&
+            other->address.function == dev->address.function)
             return i;
+    }
     return -1;
 }
 
@@ -1910,10 +1901,11 @@ virPCIDeviceListFindByIDs(virPCIDeviceListPtr list,
     size_t i;
 
     for (i = 0; i < list->count; i++) {
-        if (list->devs[i]->domain == domain &&
-            list->devs[i]->bus == bus &&
-            list->devs[i]->slot == slot &&
-            list->devs[i]->function == function)
+        virPCIDevicePtr other = list->devs[i];
+        if (other->address.domain   == domain &&
+            other->address.bus      == bus    &&
+            other->address.slot     == slot   &&
+            other->address.function == function)
             return list->devs[i];
     }
     return NULL;
@@ -1944,7 +1936,8 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     int direrr;
 
     if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
-                    dev->domain, dev->bus, dev->slot, dev->function) < 0)
+                    dev->address.domain, dev->address.bus,
+                    dev->address.slot, dev->address.function) < 0)
         goto cleanup;
 
     if (!(dir = opendir(pcidir))) {
@@ -2074,13 +2067,11 @@ virPCIDeviceListPtr
 virPCIDeviceGetIOMMUGroupList(virPCIDevicePtr dev)
 {
     virPCIDeviceListPtr groupList = virPCIDeviceListNew();
-    virPCIDeviceAddress devAddr = { dev->domain, dev->bus,
-                                    dev->slot, dev->function };
 
     if (!groupList)
         goto error;
 
-    if (virPCIDeviceAddressIOMMUGroupIterate(&devAddr,
+    if (virPCIDeviceAddressIOMMUGroupIterate(&(dev->address),
                                              virPCIDeviceGetIOMMUGroupAddOne,
                                              groupList) < 0)
         goto error;
@@ -2294,7 +2285,7 @@ virPCIDeviceIsBehindSwitchLackingACS(virPCIDevicePtr dev)
          * into play since devices on the root bus can't P2P without going
          * through the root IOMMU.
          */
-        if (dev->bus == 0) {
+        if (dev->address.bus == 0) {
             return 0;
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,

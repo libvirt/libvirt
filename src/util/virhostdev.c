@@ -585,15 +585,12 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
             goto cleanup;
         }
 
-        VIR_FREE(devAddr);
-        if (!(devAddr = virPCIDeviceGetAddress(dev)))
-            goto cleanup;
-
         /* The device is in use by other active domain if
          * the dev is in list activePCIHostdevs. VFIO devices
          * belonging to same iommu group can't be shared
          * across guests.
          */
+        devAddr = virPCIDeviceGetAddress(dev);
         if (usesVfio) {
             if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
                                                      virHostdevIsPCINodeDeviceUsed,
@@ -728,7 +725,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnref(pcidevs);
-    VIR_FREE(devAddr);
     return ret;
 }
 
@@ -1558,7 +1554,6 @@ int
 virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
                               virPCIDevicePtr pci)
 {
-    virPCIDeviceAddressPtr devAddr = NULL;
     struct virHostdevIsPCINodeDeviceUsedData data = { hostdev_mgr, NULL,
                                                      false };
     int ret = -1;
@@ -1566,10 +1561,7 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
-    if (!(devAddr = virPCIDeviceGetAddress(pci)))
-        goto out;
-
-    if (virHostdevIsPCINodeDeviceUsed(devAddr, &data))
+    if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
         goto out;
 
     if (virPCIDeviceDetach(pci, hostdev_mgr->activePCIHostdevs,
@@ -1581,7 +1573,6 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
  out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
-    VIR_FREE(devAddr);
     return ret;
 }
 
@@ -1589,7 +1580,6 @@ int
 virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
                                 virPCIDevicePtr pci)
 {
-    virPCIDeviceAddressPtr devAddr = NULL;
     struct virHostdevIsPCINodeDeviceUsedData data = {hostdev_mgr, NULL,
                                                      false};
     int ret = -1;
@@ -1597,10 +1587,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->activePCIHostdevs);
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
-    if (!(devAddr = virPCIDeviceGetAddress(pci)))
-        goto out;
-
-    if (virHostdevIsPCINodeDeviceUsed(devAddr, &data))
+    if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
         goto out;
 
     virPCIDeviceReattachInit(pci);
@@ -1613,7 +1600,6 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
  out:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
-    VIR_FREE(devAddr);
     return ret;
 }
 
