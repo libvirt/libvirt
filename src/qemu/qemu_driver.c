@@ -4770,11 +4770,10 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-    pid_t *cpupids = NULL;
-    int ncpupids = 0;
     virCgroupPtr cgroup_vcpu = NULL;
     char *mem_mask = NULL;
     virDomainNumatuneMemMode mem_mode;
+    pid_t vcpupid;
 
     if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
         return -1;
@@ -4789,9 +4788,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     rc = qemuMonitorSetCPU(priv->mon, vcpu, true);
 
-    if (rc == 0)
-        ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
-
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
@@ -4802,23 +4798,15 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     vcpuinfo->online = true;
 
-    if (ncpupids < 0)
-        goto cleanup;
+    if ((rc = qemuDomainDetectVcpuPids(driver, vm, QEMU_ASYNC_JOB_NONE)) <= 0) {
+        /* vcpu pids were not detected, skip setting of affinity */
+        if (rc == 0)
+            ret = 0;
 
-    /* failure to re-detect vCPU pids after hotplug due to lack of support was
-     * historically deemed not fatal. We need to skip the rest of the steps though. */
-    if (ncpupids == 0) {
-        ret = 0;
         goto cleanup;
     }
 
-    if (ncpupids != oldvcpus + 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("got wrong number of vCPU pids from QEMU monitor. "
-                         "got %d, wanted %d"),
-                       ncpupids, oldvcpus + 1);
-        goto cleanup;
-    }
+    vcpupid = qemuDomainGetVcpuPid(vm, vcpu);
 
     if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
         mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
@@ -4828,11 +4816,9 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (priv->cgroup) {
-        cgroup_vcpu =
-            qemuDomainAddCgroupForThread(priv->cgroup,
-                                         VIR_CGROUP_THREAD_VCPU,
-                                         vcpu, mem_mask,
-                                         cpupids[vcpu]);
+        cgroup_vcpu = qemuDomainAddCgroupForThread(priv->cgroup,
+                                                   VIR_CGROUP_THREAD_VCPU,
+                                                   vcpu, mem_mask, vcpupid);
         if (!cgroup_vcpu)
             goto cleanup;
     }
@@ -4844,26 +4830,20 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
                                     &vm->def->cputune.nvcpupin) < 0)
             goto cleanup;
 
-        if (qemuDomainHotplugPinThread(vm->def->cpumask, vcpu, cpupids[vcpu],
+        if (qemuDomainHotplugPinThread(vm->def->cpumask, vcpu, vcpupid,
                                        cgroup_vcpu) < 0) {
             goto cleanup;
         }
     }
 
-    if (qemuProcessSetSchedParams(vcpu, cpupids[vcpu],
+    if (qemuProcessSetSchedParams(vcpu, vcpupid,
                                   vm->def->cputune.nvcpusched,
                                   vm->def->cputune.vcpusched) < 0)
         goto cleanup;
 
-    priv->nvcpupids = ncpupids;
-    VIR_FREE(priv->vcpupids);
-    priv->vcpupids = cpupids;
-    cpupids = NULL;
-
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpupids);
     VIR_FREE(mem_mask);
     virCgroupFree(&cgroup_vcpu);
     return ret;
@@ -4880,8 +4860,6 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-    pid_t *cpupids = NULL;
-    int ncpupids = 0;
 
     if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
         return -1;
@@ -4892,30 +4870,32 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
         return -1;
     }
 
+    vcpuinfo->online = false;
+
     qemuDomainObjEnterMonitor(driver, vm);
 
     rc = qemuMonitorSetCPU(priv->mon, vcpu, false);
 
-    if (rc == 0)
-        ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
-
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update",
-                       rc == 0 && ncpupids == oldvcpus -1);
-
-    if (rc < 0 || ncpupids < 0)
-        goto cleanup;
-
-    /* check if hotunplug has failed */
-    if (ncpupids != oldvcpus - 1) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("qemu didn't unplug vCPU '%u' properly"), vcpu);
+    if (rc < 0) {
+        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", false);
+        vcpuinfo->online = true;
         goto cleanup;
     }
 
-    vcpuinfo->online = false;
+    if ((rc = qemuDomainDetectVcpuPids(driver, vm, QEMU_ASYNC_JOB_NONE)) < 0) {
+        /* rollback only if domain didn't exit */
+        if (rc == -2)
+            goto cleanup;
+
+        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", false);
+        vcpuinfo->online = true;
+        goto cleanup;
+    }
+
+    virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", true);
 
     if (qemuDomainDelCgroupForThread(priv->cgroup,
                                      VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
@@ -4926,15 +4906,9 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                     &vm->def->cputune.nvcpupin,
                     vcpu);
 
-    priv->nvcpupids = ncpupids;
-    VIR_FREE(priv->vcpupids);
-    priv->vcpupids = cpupids;
-    cpupids = NULL;
-
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpupids);
     return ret;
 }
 
