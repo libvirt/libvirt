@@ -864,31 +864,6 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend,
 }
 
 
-static int
-xend_detect_config_version(virConnectPtr conn)
-{
-    struct sexpr *root;
-    const char *value;
-    xenUnifiedPrivatePtr priv = conn->privateData;
-    int ret = -1;
-
-    root = sexpr_get(conn, "/xend/node/");
-    if (root == NULL)
-        return ret;
-
-    value = sexpr_node(root, "node/xend_config_format");
-
-    if (value) {
-        if (virStrToLong_i(value, NULL, 10, &priv->xendConfigVersion) < 0)
-            goto cleanup;
-    }
-    ret = 0;
- cleanup:
-    sexpr_free(root);
-    return ret;
-}
-
-
 /**
  * sexpr_to_xend_domain_state:
  * @root: an S-Expression describing a domain
@@ -1186,22 +1161,19 @@ xenDaemonOpen(virConnectPtr conn,
             virReportError(VIR_ERR_NO_CONNECT, __FUNCTION__);
             goto failed;
         }
-        if (xenDaemonOpen_unix(conn, conn->uri->path) < 0 ||
-            xend_detect_config_version(conn) == -1)
+        if (xenDaemonOpen_unix(conn, conn->uri->path) < 0)
             goto failed;
     } else if (STRCASEEQ(conn->uri->scheme, "xen")) {
         /*
          * try first to open the unix socket
          */
-        if (xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket") == 0 &&
-            xend_detect_config_version(conn) != -1)
+        if (xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket") == 0)
             goto done;
 
         /*
          * try though http on port 8000
          */
-        if (xenDaemonOpen_tcp(conn, "localhost", "8000") < 0 ||
-            xend_detect_config_version(conn) == -1)
+        if (xenDaemonOpen_tcp(conn, "localhost", "8000") < 0)
             goto failed;
     } else if (STRCASEEQ(conn->uri->scheme, "http")) {
         if (conn->uri->port &&
@@ -1210,8 +1182,7 @@ xenDaemonOpen(virConnectPtr conn,
 
         if (xenDaemonOpen_tcp(conn,
                               conn->uri->server ? conn->uri->server : "localhost",
-                              port ? port : "8000") < 0 ||
-            xend_detect_config_version(conn) == -1)
+                              port ? port : "8000") < 0)
             goto failed;
     } else {
         virReportError(VIR_ERR_NO_CONNECT, __FUNCTION__);

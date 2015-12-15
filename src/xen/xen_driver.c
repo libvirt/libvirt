@@ -487,7 +487,6 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
     conn->privateData = priv;
 
     priv->handle = -1;
-    priv->xendConfigVersion = -1;
     priv->xshandle = NULL;
 
 
