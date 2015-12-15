@@ -1317,74 +1317,6 @@ xenParseSxpr(const struct sexpr *root,
                                       vncport) < 0)
         goto error;
 
-
-    /* Old style cdrom config from Xen <= 3.0.2 */
-    if (hvm &&
-        xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-        tmp = sexpr_node(root, "domain/image/hvm/cdrom");
-        if ((tmp != NULL) && (tmp[0] != 0)) {
-            virDomainDiskDefPtr disk;
-            if (!(disk = virDomainDiskDefNew(NULL)))
-                goto error;
-            if (virDomainDiskSetSource(disk, tmp) < 0) {
-                virDomainDiskDefFree(disk);
-                goto error;
-            }
-            virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
-            disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-            if (VIR_STRDUP(disk->dst, "hdc") < 0) {
-                virDomainDiskDefFree(disk);
-                goto error;
-            }
-            if (virDomainDiskSetDriver(disk, "file") < 0) {
-                virDomainDiskDefFree(disk);
-                goto error;
-            }
-            disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-            disk->src->readonly = true;
-
-            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0) {
-                virDomainDiskDefFree(disk);
-                goto error;
-            }
-        }
-    }
-
-
-    /* Floppy disk config */
-    if (hvm) {
-        const char *const fds[] = { "fda", "fdb" };
-        size_t i;
-        for (i = 0; i < ARRAY_CARDINALITY(fds); i++) {
-            tmp = sexpr_fmt_node(root, "domain/image/hvm/%s", fds[i]);
-            if ((tmp != NULL) && (tmp[0] != 0)) {
-                virDomainDiskDefPtr disk;
-                if (!(disk = virDomainDiskDefNew(NULL)))
-                    goto error;
-                if (virDomainDiskSetSource(disk, tmp) < 0) {
-                    virDomainDiskDefFree(disk);
-                    goto error;
-                }
-                virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
-                disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
-                if (VIR_STRDUP(disk->dst, fds[i]) < 0) {
-                    virDomainDiskDefFree(disk);
-                    goto error;
-                }
-                if (virDomainDiskSetSource(disk, "file") < 0) {
-                    virDomainDiskDefFree(disk);
-                    goto error;
-                }
-                disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
-
-                if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0) {
-                    virDomainDiskDefFree(disk);
-                    goto error;
-                }
-            }
-        }
-    }
-
     /* in case of HVM we have USB device emulation */
     if (hvm &&
         xenParseSxprUSB(def, root) < 0)
@@ -2356,32 +2288,6 @@ xenFormatSxpr(virConnectPtr conn,
                 bootorder[def->os.nBootDevs] = '\0';
             }
             virBufferAsprintf(&buf, "(boot %s)", bootorder);
-
-            /* some disk devices are defined here */
-            for (i = 0; i < def->ndisks; i++) {
-                const char *src = virDomainDiskGetSource(def->disks[i]);
-
-                switch (def->disks[i]->device) {
-                case VIR_DOMAIN_DISK_DEVICE_CDROM:
-                    /* Only xend <= 3.0.2 wants cdrom config here */
-                    if (xendConfigVersion != XEND_CONFIG_VERSION_3_0_2)
-                        break;
-                    if (STRNEQ(def->disks[i]->dst, "hdc") || !src)
-                        break;
-
-                    virBufferEscapeSexpr(&buf, "(cdrom '%s')", src);
-                    break;
-
-                case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-                    /* all xend versions define floppies here */
-                    virBufferEscapeSexpr(&buf, "(%s ", def->disks[i]->dst);
-                    virBufferEscapeSexpr(&buf, "'%s')", src);
-                    break;
-
-                default:
-                    break;
-                }
-            }
 
             if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON)
                 virBufferAddLit(&buf, "(acpi 1)");
