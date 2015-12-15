@@ -58,17 +58,14 @@ int xenGetDomIdFromSxprString(const char *sexpr, int xendConfigVersion, int *id)
 }
 
 /* Get a domain id from a S-expression */
-int xenGetDomIdFromSxpr(const struct sexpr *root, int xendConfigVersion, int *id)
+int xenGetDomIdFromSxpr(const struct sexpr *root,
+                        int xendConfigVersion ATTRIBUTE_UNUSED,
+                        int *id)
 {
     const char * tmp = sexpr_node(root, "domain/domid");
-    if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("domain information incomplete, missing id"));
-        return -1;
-    } else {
-        *id = tmp ? sexpr_int(root, "domain/domid") : -1;
-        return 0;
-    }
+
+    *id = tmp ? sexpr_int(root, "domain/domid") : -1;
+    return 0;
 }
 
 /*****************************************************************
@@ -335,7 +332,7 @@ static int
 xenParseSxprDisks(virDomainDefPtr def,
                   const struct sexpr *root,
                   int hvm,
-                  int xendConfigVersion)
+                  int xendConfigVersion ATTRIBUTE_UNUSED)
 {
     const struct sexpr *cur, *node;
     virDomainDiskDefPtr disk = NULL;
@@ -466,19 +463,16 @@ xenParseSxprDisks(virDomainDefPtr def,
                 dst += 6;
 
             disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
-            /* New style disk config from Xen >= 3.0.3 */
-            if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_3) {
-                offset = strrchr(dst, ':');
-                if (offset) {
-                    if (STREQ(offset, ":cdrom")) {
-                        disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                    } else if (STREQ(offset, ":disk")) {
-                        /* The default anyway */
-                    } else {
-                        /* Unknown, lets pretend its a disk too */
-                    }
-                    offset[0] = '\0';
+            offset = strrchr(dst, ':');
+            if (offset) {
+                if (STREQ(offset, ":cdrom")) {
+                    disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+                } else if (STREQ(offset, ":disk")) {
+                    /* The default anyway */
+                } else {
+                    /* Unknown, lets pretend its a disk too */
                 }
+                offset[0] = '\0';
             }
 
             if (VIR_STRDUP(disk->dst, dst) < 0)
@@ -771,7 +765,8 @@ static int
 xenParseSxprGraphicsOld(virDomainDefPtr def,
                         const struct sexpr *root,
                         int hvm,
-                        int xendConfigVersion, int vncport)
+                        int xendConfigVersion ATTRIBUTE_UNUSED,
+                        int vncport)
 {
     const char *tmp;
     virDomainGraphicsDefPtr graphics = NULL;
@@ -791,15 +786,6 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
             goto error;
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
-        /* For Xen >= 3.0.3, don't generate a fixed port mapping
-         * because it will almost certainly be wrong ! Just leave
-         * it as -1 which lets caller see that the VNC server isn't
-         * present yet. Subsequent dumps of the XML will eventually
-         * find the port in XenStore once VNC server has started
-         */
-        if (port == -1 && xendConfigVersion < XEND_CONFIG_VERSION_3_0_3)
-            port = 5900 + def->id;
-
         if ((unused && STREQ(unused, "1")) || port == -1)
             graphics->data.vnc.autoport = true;
         graphics->data.vnc.port = port;
@@ -1098,11 +1084,6 @@ xenParseSxpr(const struct sexpr *root,
         goto error;
 
     tmp = sexpr_node(root, "domain/domid");
-    if (tmp == NULL && xendConfigVersion < XEND_CONFIG_VERSION_3_0_4) { /* domid was mandatory */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("domain information incomplete, missing id"));
-        goto error;
-    }
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     if (tmp)
         def->id = sexpr_int(root, "domain/domid");
@@ -1234,6 +1215,8 @@ xenParseSxpr(const struct sexpr *root,
     vmlocaltime = sexpr_int(root, "domain/localtime");
     if (hvm) {
         const char *value = sexpr_node(root, "domain/image/hvm/localtime");
+        int rtc_offset;
+
         if (value) {
             if (virStrToLong_i(value, NULL, 0, &vmlocaltime) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1241,22 +1224,12 @@ xenParseSxpr(const struct sexpr *root,
                 goto error;
             }
         }
-        /* only managed HVM domains since 3.1.0 have persistent rtc_timeoffset */
-        if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
-            if (vmlocaltime)
-                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
-            else
-                def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
-            def->clock.data.utc_reset = true;
-        } else {
-            int rtc_offset;
-            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
-            rtc_offset =  sexpr_int(root, "domain/image/hvm/rtc_timeoffset");
-            def->clock.data.variable.adjustment = rtc_offset;
-            def->clock.data.variable.basis = vmlocaltime ?
-                VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
-                VIR_DOMAIN_CLOCK_BASIS_UTC;
-        }
+        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_VARIABLE;
+        rtc_offset =  sexpr_int(root, "domain/image/hvm/rtc_timeoffset");
+        def->clock.data.variable.adjustment = rtc_offset;
+        def->clock.data.variable.basis = vmlocaltime ?
+            VIR_DOMAIN_CLOCK_BASIS_LOCALTIME :
+            VIR_DOMAIN_CLOCK_BASIS_UTC;
 
         if (sexpr_lookup(root, "domain/image/hvm/hpet")) {
             virDomainTimerDefPtr timer;
@@ -1536,7 +1509,7 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
 static int
 xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
                          virBufferPtr buf,
-                         int xendConfigVersion)
+                         int xendConfigVersion ATTRIBUTE_UNUSED)
 {
     const char *listenAddr;
 
@@ -1556,23 +1529,20 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def,
             virBufferAsprintf(buf, "(xauthority '%s')", def->data.sdl.xauth);
     } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virBufferAddLit(buf, "(vnc 1)");
-        if (xendConfigVersion >= XEND_CONFIG_VERSION_3_0_3) {
-            if (def->data.vnc.autoport) {
-                virBufferAddLit(buf, "(vncunused 1)");
-            } else {
-                virBufferAddLit(buf, "(vncunused 0)");
-                virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
-            }
-
-            listenAddr = virDomainGraphicsListenGetAddress(def, 0);
-            if (listenAddr)
-                virBufferAsprintf(buf, "(vnclisten '%s')", listenAddr);
-            if (def->data.vnc.auth.passwd)
-                virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
-            if (def->data.vnc.keymap)
-                virBufferAsprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
-
+        if (def->data.vnc.autoport) {
+            virBufferAddLit(buf, "(vncunused 1)");
+        } else {
+            virBufferAddLit(buf, "(vncunused 0)");
+            virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
         }
+
+        listenAddr = virDomainGraphicsListenGetAddress(def, 0);
+        if (listenAddr)
+            virBufferAsprintf(buf, "(vnclisten '%s')", listenAddr);
+        if (def->data.vnc.auth.passwd)
+            virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
+        if (def->data.vnc.keymap)
+            virBufferAsprintf(buf, "(keymap '%s')", def->data.vnc.keymap);
     }
 
     return 0;
@@ -1680,7 +1650,7 @@ int
 xenFormatSxprDisk(virDomainDiskDefPtr def,
                   virBufferPtr buf,
                   int hvm,
-                  int xendConfigVersion,
+                  int xendConfigVersion ATTRIBUTE_UNUSED,
                   int isAttach)
 {
     const char *src = virDomainDiskGetSource(def);
@@ -1694,18 +1664,6 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
         if (isAttach) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Cannot directly attach floppy %s"), src);
-            return -1;
-        }
-        return 0;
-    }
-
-    /* Xend <= 3.0.2 doesn't include cdrom config here */
-    if (hvm &&
-        def->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-        xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-        if (isAttach) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Cannot directly attach CDROM %s"), src);
             return -1;
         }
         return 0;
@@ -1726,16 +1684,10 @@ xenFormatSxprDisk(virDomainDiskDefPtr def,
     }
 
     if (hvm) {
-        /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
-        if (xendConfigVersion == XEND_CONFIG_VERSION_3_0_2) {
-            virBufferEscapeSexpr(buf, "(dev 'ioemu:%s')", def->dst);
-        } else {
-            /* But newer does not */
-            virBufferEscapeSexpr(buf, "(dev '%s:", def->dst);
-            virBufferAsprintf(buf, "%s')",
-                              def->device == VIR_DOMAIN_DISK_DEVICE_CDROM ?
-                              "cdrom" : "disk");
-        }
+        virBufferEscapeSexpr(buf, "(dev '%s:", def->dst);
+        virBufferAsprintf(buf, "%s')",
+                          def->device == VIR_DOMAIN_DISK_DEVICE_CDROM ?
+                          "cdrom" : "disk");
     } else if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
         virBufferEscapeSexpr(buf, "(dev '%s:cdrom')", def->dst);
     } else {
@@ -1821,7 +1773,7 @@ xenFormatSxprNet(virConnectPtr conn,
                  virDomainNetDefPtr def,
                  virBufferPtr buf,
                  int hvm,
-                 int xendConfigVersion,
+                 int xendConfigVersion ATTRIBUTE_UNUSED,
                  int isAttach)
 {
     const char *script = DEFAULT_VIF_SCRIPT;
@@ -1935,12 +1887,6 @@ xenFormatSxprNet(virConnectPtr conn,
         } else {
             if (def->model != NULL)
                 virBufferEscapeSexpr(buf, "(model '%s')", def->model);
-            /*
-             * apparently (type ioemu) breaks paravirt drivers on HVM so skip
-             * this from XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU
-             */
-            if (xendConfigVersion <= XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU)
-                virBufferAddLit(buf, "(type ioemu)");
         }
     }
 
@@ -2362,7 +2308,7 @@ xenFormatSxpr(virConnectPtr conn,
         } /* hvm */
 
         /* get the device emulation model */
-        if (def->emulator && (hvm || xendConfigVersion >= XEND_CONFIG_VERSION_3_0_4))
+        if (def->emulator && hvm)
             virBufferEscapeSexpr(&buf, "(device_model '%s')", def->emulator);
 
         /* look for HPET in order to override the hypervisor/xend default */
@@ -2376,7 +2322,7 @@ xenFormatSxpr(virConnectPtr conn,
         }
 
         /* PV graphics for xen <= 3.0.4, or HVM graphics */
-        if (hvm || (xendConfigVersion < XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
+        if (hvm) {
             if ((def->ngraphics == 1) &&
                 xenFormatSxprGraphicsOld(def->graphics[0],
                                          &buf, xendConfigVersion) < 0)
@@ -2390,9 +2336,48 @@ xenFormatSxpr(virConnectPtr conn,
         }
     } /* os.bootloader */
 
-
-    if (xendConfigVersion < XEND_CONFIG_VERSION_3_1_0) {
-        /* <3.1: UTC and LOCALTIME */
+    if (!in_image) {
+        if (hvm)
+            virBufferAddLit(&buf, "(image (hvm ");
+        else
+            virBufferAddLit(&buf, "(image (linux ");
+        in_image = true;
+    }
+    if (hvm) {
+        /* >=3.1 HV: VARIABLE */
+        int rtc_timeoffset;
+        switch (def->clock.offset) {
+        case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+            vmlocaltime = (int)def->clock.data.variable.basis;
+            rtc_timeoffset = def->clock.data.variable.adjustment;
+            break;
+        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+            if (def->clock.data.utc_reset) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("unsupported clock adjustment='reset'"));
+                goto error;
+            }
+            vmlocaltime = 0;
+            rtc_timeoffset = 0;
+            break;
+        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+            if (def->clock.data.utc_reset) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("unsupported clock adjustment='reset'"));
+                goto error;
+            }
+            vmlocaltime = 1;
+            rtc_timeoffset = 0;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported clock offset='%s'"),
+                           virDomainClockOffsetTypeToString(def->clock.offset));
+            goto error;
+        }
+        virBufferAsprintf(&buf, "(rtc_timeoffset %d)", rtc_timeoffset);
+    } else {
+        /* >=3.1 PV: UTC and LOCALTIME */
         switch (def->clock.offset) {
         case VIR_DOMAIN_CLOCK_OFFSET_UTC:
             vmlocaltime = 0;
@@ -2406,66 +2391,10 @@ xenFormatSxpr(virConnectPtr conn,
                            virDomainClockOffsetTypeToString(def->clock.offset));
             goto error;
         }
-    } else {
-        if (!in_image) {
-            if (hvm)
-                virBufferAddLit(&buf, "(image (hvm ");
-            else
-                virBufferAddLit(&buf, "(image (linux ");
-            in_image = true;
-        }
-        if (hvm) {
-            /* >=3.1 HV: VARIABLE */
-            int rtc_timeoffset;
-            switch (def->clock.offset) {
-            case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-                vmlocaltime = (int)def->clock.data.variable.basis;
-                rtc_timeoffset = def->clock.data.variable.adjustment;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-                if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unsupported clock adjustment='reset'"));
-                    goto error;
-                }
-                vmlocaltime = 0;
-                rtc_timeoffset = 0;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-                if (def->clock.data.utc_reset) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("unsupported clock adjustment='reset'"));
-                    goto error;
-                }
-                vmlocaltime = 1;
-                rtc_timeoffset = 0;
-                break;
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported clock offset='%s'"),
-                               virDomainClockOffsetTypeToString(def->clock.offset));
-                goto error;
-            }
-            virBufferAsprintf(&buf, "(rtc_timeoffset %d)", rtc_timeoffset);
-        } else {
-            /* >=3.1 PV: UTC and LOCALTIME */
-            switch (def->clock.offset) {
-            case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-                vmlocaltime = 0;
-                break;
-            case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-                vmlocaltime = 1;
-                break;
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported clock offset='%s'"),
-                               virDomainClockOffsetTypeToString(def->clock.offset));
-                goto error;
-            }
-        } /* !hvm */
-        /* default post-XenD-3.1 location: */
-        virBufferAsprintf(&buf, "(localtime %d)", vmlocaltime);
-    }
+    } /* !hvm */
+    /* default post-XenD-3.1 location: */
+    virBufferAsprintf(&buf, "(localtime %d)", vmlocaltime);
+
     if (in_image) {
         /* closes (image(hvm|linux */
         virBufferAddLit(&buf, "))");
@@ -2489,7 +2418,7 @@ xenFormatSxpr(virConnectPtr conn,
         goto error;
 
     /* New style PV graphics config xen >= 3.0.4 */
-    if (!hvm && (xendConfigVersion >= XEND_CONFIG_MIN_VERS_PVFB_NEWCONF)) {
+    if (!hvm) {
         if ((def->ngraphics == 1) &&
             xenFormatSxprGraphicsNew(def->graphics[0], &buf) < 0)
             goto error;
