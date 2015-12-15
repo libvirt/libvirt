@@ -192,6 +192,7 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
+    DO_TEST("paravirt-maxvcpus");
     DO_TEST("new-disk");
     DO_TEST("spice");
     DO_TEST("spice-features");

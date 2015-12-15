@@ -488,19 +488,22 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
     const char *str = NULL;
     int val = 0;
 
-    if (xenConfigGetULong(conf, "vcpus", &count, 1) < 0 ||
-        MAX_VIRT_CPUS < count)
+    if (xenConfigGetULong(conf, "vcpus", &count, 1) < 0)
         return -1;
 
     if (virDomainDefSetVcpusMax(def, count) < 0)
         return -1;
 
-    if (xenConfigGetULong(conf, "vcpu_avail", &count, -1) < 0)
+    if (virDomainDefSetVcpus(def, count) < 0)
         return -1;
 
-    if (virDomainDefSetVcpus(def, MIN(count_one_bits_l(count),
-                                      virDomainDefGetVcpusMax(def))) < 0)
-        return -1;
+    if (virConfGetValue(conf, "maxvcpus")) {
+        if (xenConfigGetULong(conf, "maxvcpus", &count, 0) < 0)
+            return -1;
+
+        if (virDomainDefSetVcpusMax(def, count) < 0)
+            return -1;
+    }
 
     if (xenConfigGetString(conf, "cpus", &str, NULL) < 0)
         return -1;
@@ -1494,14 +1497,10 @@ xenFormatCPUAllocation(virConfPtr conf, virDomainDefPtr def)
     int ret = -1;
     char *cpus = NULL;
 
-    if (xenConfigSetInt(conf, "vcpus", virDomainDefGetVcpusMax(def)) < 0)
+    if (virDomainDefGetVcpus(def) < virDomainDefGetVcpusMax(def) &&
+        xenConfigSetInt(conf, "maxvcpus", virDomainDefGetVcpusMax(def)) < 0)
         goto cleanup;
-
-    /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
-       either 32, or 64 on a platform where long is big enough.  */
-    if (virDomainDefHasVcpusOffline(def) &&
-        xenConfigSetInt(conf, "vcpu_avail",
-                        (1UL << virDomainDefGetVcpus(def)) - 1) < 0)
+    if (xenConfigSetInt(conf, "vcpus", virDomainDefGetVcpus(def)) < 0)
         goto cleanup;
 
     if ((def->cpumask != NULL) &&

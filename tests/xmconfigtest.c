@@ -215,6 +215,7 @@ mymain(void)
     DO_TEST("paravirt-net-e1000");
     DO_TEST("paravirt-net-vifname");
     DO_TEST("paravirt-vcpu");
+    DO_TEST("paravirt-maxvcpus");
     DO_TEST("fullvirt-new-cdrom");
     DO_TEST("fullvirt-utc");
     DO_TEST("fullvirt-localtime");
