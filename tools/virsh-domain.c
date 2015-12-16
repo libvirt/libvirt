@@ -9162,9 +9162,13 @@ struct virshQemuEventData {
 typedef struct virshQemuEventData virshQemuEventData;
 
 static void
-virshEventPrint(virConnectPtr conn ATTRIBUTE_UNUSED, virDomainPtr dom,
-                const char *event, long long seconds, unsigned int micros,
-                const char *details, void *opaque)
+virshEventQemuPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    virDomainPtr dom,
+                    const char *event,
+                    long long seconds,
+                    unsigned int micros,
+                    const char *details,
+                    void *opaque)
 {
     virshQemuEventData *data = opaque;
     virJSONValuePtr pretty = NULL;
@@ -9261,7 +9265,7 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
 
     if ((eventId = virConnectDomainQemuMonitorEventRegister(priv->conn, dom,
                                                             event,
-                                                            virshEventPrint,
+                                                            virshEventQemuPrint,
                                                             &data, NULL,
                                                             flags)) < 0)
         goto cleanup;
@@ -12138,20 +12142,49 @@ struct virshDomEventData {
 };
 typedef struct virshDomEventData virshDomEventData;
 
+/**
+ * virshEventPrint:
+ *
+ * @data: opaque data passed to all event callbacks
+ * @buf: string buffer describing the event
+ *
+ * Print the event description found in @buf and update virshDomEventData.
+ *
+ * This function resets @buf and frees all memory consumed by its content.
+ */
+static void
+virshEventPrint(virshDomEventData *data,
+                virBufferPtr buf)
+{
+    char *msg;
+
+    if (!(msg = virBufferContentAndReset(buf)))
+        return;
+
+    if (!data->loop && *data->count)
+        goto cleanup;
+
+    vshPrint(data->ctl, "%s", msg);
+
+    (*data->count)++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+
+ cleanup:
+    VIR_FREE(msg);
+}
+
 static void
 virshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                        virDomainPtr dom,
                        void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event '%s' for domain %s\n"),
-             data->cb->name, virDomainGetName(dom));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event '%s' for domain %s\n"),
+                      ((virshDomEventData *) opaque)->cb->name,
+                      virDomainGetName(dom));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12161,16 +12194,13 @@ virshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                          int detail,
                          void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'lifecycle' for domain %s: %s %s\n"),
-             virDomainGetName(dom), virshDomainEventToString(event),
-             virshDomainEventDetailToString(event, detail));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'lifecycle' for domain %s: %s %s\n"),
+                      virDomainGetName(dom),
+                      virshDomainEventToString(event),
+                      virshDomainEventDetailToString(event, detail));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12179,15 +12209,12 @@ virshEventRTCChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                          long long utcoffset,
                          void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'rtc-change' for domain %s: %lld\n"),
-             virDomainGetName(dom), utcoffset);
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'rtc-change' for domain %s: %lld\n"),
+                      virDomainGetName(dom),
+                      utcoffset);
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12196,15 +12223,12 @@ virshEventWatchdogPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                         int action,
                         void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'watchdog' for domain %s: %s\n"),
-             virDomainGetName(dom), virshDomainEventWatchdogToString(action));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'watchdog' for domain %s: %s\n"),
+                      virDomainGetName(dom),
+                      virshDomainEventWatchdogToString(action));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12215,16 +12239,14 @@ virshEventIOErrorPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                        int action,
                        void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'io-error' for domain %s: %s (%s) %s\n"),
-             virDomainGetName(dom), srcPath, devAlias,
-             virshDomainEventIOErrorToString(action));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'io-error' for domain %s: %s (%s) %s\n"),
+                      virDomainGetName(dom),
+                      srcPath,
+                      devAlias,
+                      virshDomainEventIOErrorToString(action));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12237,26 +12259,26 @@ virshEventGraphicsPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                         const virDomainEventGraphicsSubject *subject,
                         void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'graphics' for domain %s: "
-                          "%s local[%s %s %s] remote[%s %s %s] %s"),
-             virDomainGetName(dom), virshGraphicsPhaseToString(phase),
-             virshGraphicsAddressToString(local->family),
-             local->node, local->service,
-             virshGraphicsAddressToString(remote->family),
-             remote->node, remote->service,
-             authScheme);
-    for (i = 0; i < subject->nidentity; i++)
-        vshPrint(data->ctl, " %s=%s", subject->identities[i].type,
-                 subject->identities[i].name);
-    vshPrint(data->ctl, "\n");
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'graphics' for domain %s: "
+                              "%s local[%s %s %s] remote[%s %s %s] %s\n"),
+                      virDomainGetName(dom),
+                      virshGraphicsPhaseToString(phase),
+                      virshGraphicsAddressToString(local->family),
+                      local->node,
+                      local->service,
+                      virshGraphicsAddressToString(remote->family),
+                      remote->node,
+                      remote->service,
+                      authScheme);
+    for (i = 0; i < subject->nidentity; i++) {
+        virBufferAsprintf(&buf, "\t%s=%s\n",
+                          subject->identities[i].type,
+                          subject->identities[i].name);
+    }
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12268,17 +12290,16 @@ virshEventIOErrorReasonPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                              const char *reason,
                              void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event 'io-error-reason' for domain %s: "
-                          "%s (%s) %s due to %s\n"),
-             virDomainGetName(dom), srcPath, devAlias,
-             virshDomainEventIOErrorToString(action), reason);
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'io-error-reason' for domain %s: "
+                              "%s (%s) %s due to %s\n"),
+                      virDomainGetName(dom),
+                      srcPath,
+                      devAlias,
+                      virshDomainEventIOErrorToString(action),
+                      reason);
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12289,17 +12310,15 @@ virshEventBlockJobPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                         int status,
                         void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl, _("event '%s' for domain %s: %s for %s %s\n"),
-             data->cb->name, virDomainGetName(dom),
-             virshDomainBlockJobToString(type),
-             disk, virshDomainBlockJobStatusToString(status));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event '%s' for domain %s: %s for %s %s\n"),
+                      ((virshDomEventData *) opaque)->cb->name,
+                      virDomainGetName(dom),
+                      virshDomainBlockJobToString(type),
+                      disk,
+                      virshDomainBlockJobStatusToString(status));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12311,17 +12330,16 @@ virshEventDiskChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                           int reason,
                           void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'disk-change' for domain %s disk %s: %s -> %s: %s\n"),
-             virDomainGetName(dom), alias, NULLSTR(oldSrc), NULLSTR(newSrc),
-             virshDomainEventDiskChangeToString(reason));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'disk-change' for domain %s disk %s: "
+                              "%s -> %s: %s\n"),
+                      virDomainGetName(dom),
+                      alias,
+                      NULLSTR(oldSrc),
+                      NULLSTR(newSrc),
+                      virshDomainEventDiskChangeToString(reason));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12331,17 +12349,13 @@ virshEventTrayChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                           int reason,
                           void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'tray-change' for domain %s disk %s: %s\n"),
-             virDomainGetName(dom), alias,
-             virshDomainEventTrayChangeToString(reason));
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'tray-change' for domain %s disk %s: %s\n"),
+                      virDomainGetName(dom),
+                      alias,
+                      virshDomainEventTrayChangeToString(reason));
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12361,16 +12375,12 @@ virshEventBalloonChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                              unsigned long long actual,
                              void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'balloon-change' for domain %s: %lluKiB\n"),
-             virDomainGetName(dom), actual);
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'balloon-change' for domain %s: %lluKiB\n"),
+                      virDomainGetName(dom),
+                      actual);
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12379,16 +12389,12 @@ virshEventDeviceRemovedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                              const char *alias,
                              void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'device-removed' for domain %s: %s\n"),
-             virDomainGetName(dom), alias);
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'device-removed' for domain %s: %s\n"),
+                      virDomainGetName(dom),
+                      alias);
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12397,16 +12403,12 @@ virshEventDeviceAddedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                            const char *alias,
                            void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'device-added' for domain %s: %s\n"),
-             virDomainGetName(dom), alias);
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'device-added' for domain %s: %s\n"),
+                      virDomainGetName(dom),
+                      alias);
+    virshEventPrint(opaque, &buf);
 }
 
 static void
@@ -12416,28 +12418,20 @@ virshEventTunablePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                        int nparams,
                        void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
-    char *value = NULL;
+    char *value;
 
-    if (!data->loop && *data->count)
-        return;
-
-    vshPrint(data->ctl,
-             _("event 'tunable' for domain %s:\n"),
-             virDomainGetName(dom));
-
+    virBufferAsprintf(&buf, _("event 'tunable' for domain %s:\n"),
+                      virDomainGetName(dom));
     for (i = 0; i < nparams; i++) {
         value = virTypedParameterToString(&params[i]);
         if (value) {
-            vshPrint(data->ctl, _("\t%s: %s\n"), params[i].field, value);
+            virBufferAsprintf(&buf, "\t%s: %s\n", params[i].field, value);
             VIR_FREE(value);
         }
     }
-
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virshEventPrint(opaque, &buf);
 }
 
 VIR_ENUM_DECL(virshEventAgentLifecycleState)
@@ -12462,19 +12456,14 @@ virshEventAgentLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
                               int reason,
                               void *opaque)
 {
-    virshDomEventData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (!data->loop && *data->count)
-        return;
-    vshPrint(data->ctl,
-             _("event 'agent-lifecycle' for domain %s: state: '%s' reason: '%s'\n"),
-             virDomainGetName(dom),
-             UNKNOWNSTR(virshEventAgentLifecycleStateTypeToString(state)),
-             UNKNOWNSTR(virshEventAgentLifecycleReasonTypeToString(reason)));
-
-    (*data->count)++;
-    if (!data->loop)
-        vshEventDone(data->ctl);
+    virBufferAsprintf(&buf, _("event 'agent-lifecycle' for domain %s: state: "
+                              "'%s' reason: '%s'\n"),
+                      virDomainGetName(dom),
+                      UNKNOWNSTR(virshEventAgentLifecycleStateTypeToString(state)),
+                      UNKNOWNSTR(virshEventAgentLifecycleReasonTypeToString(reason)));
+    virshEventPrint(opaque, &buf);
 }
 
 static vshEventCallback vshEventCallbacks[] = {
