@@ -2506,6 +2506,7 @@ qemuMigrationWaitForSpice(virDomainObjPtr vm)
     if (!wait_for_spice)
         return 0;
 
+    VIR_DEBUG("Waiting for SPICE to finish migration");
     while (!priv->job.spiceMigrated && !priv->job.abortJob) {
         if (virDomainObjWait(vm) < 0)
             return -1;
