@@ -12137,6 +12137,7 @@ struct virshDomEventData {
     vshControl *ctl;
     bool loop;
     int *count;
+    bool timestamp;
     vshEventCallback *cb;
     int id;
 };
@@ -12164,7 +12165,16 @@ virshEventPrint(virshDomEventData *data,
     if (!data->loop && *data->count)
         goto cleanup;
 
-    vshPrint(data->ctl, "%s", msg);
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, "%s: %s", timestamp, msg);
+    } else {
+        vshPrint(data->ctl, "%s", msg);
+    }
 
     (*data->count)++;
     if (!data->loop)
@@ -12543,6 +12553,10 @@ static const vshCmdOptDef opts_event[] = {
      .type = VSH_OT_BOOL,
      .help = N_("list valid event types")
     },
+    {.name = "timestamp",
+     .type = VSH_OT_BOOL,
+     .help = N_("show timestamp for each printed event")
+    },
     {.name = NULL}
 };
 
@@ -12558,6 +12572,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     int event = -1;
     bool all = vshCommandOptBool(cmd, "all");
     bool loop = vshCommandOptBool(cmd, "loop");
+    bool timestamp = vshCommandOptBool(cmd, "timestamp");
     int count = 0;
     virshControlPtr priv = ctl->privData;
 
@@ -12590,6 +12605,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
             data[i].ctl = ctl;
             data[i].loop = loop;
             data[i].count = &count;
+            data[i].timestamp = timestamp;
             data[i].cb = &vshEventCallbacks[i];
             data[i].id = -1;
         }
@@ -12599,6 +12615,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         data[0].ctl = ctl;
         data[0].loop = vshCommandOptBool(cmd, "loop");
         data[0].count = &count;
+        data[0].timestamp = timestamp;
         data[0].cb = &vshEventCallbacks[event];
         data[0].id = -1;
     }
