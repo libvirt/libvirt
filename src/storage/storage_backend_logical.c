@@ -541,6 +541,15 @@ virStorageBackendLogicalMatchPoolSource(virStoragePoolObjPtr pool)
         goto cleanup;
     }
 
+    /* If the pool has defined source device(s), then let's make sure
+     * they match as well; otherwise, matching can only occur on the
+     * pool's name.
+     */
+    if (!pool->def->source.ndevice) {
+        ret = true;
+        goto cleanup;
+    }
+
     /* Let's make sure the pool's device(s) match what the pvs output has
      * for volume group devices.
      */
