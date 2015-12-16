@@ -4781,9 +4781,10 @@ qemuProcessLaunch(virConnectPtr conn,
         if (!shmem && vm->def->mem.nhugepages) {
             for (i = 0; i < virDomainNumaGetNodeCount(vm->def->numa); i++) {
                 if (virDomainNumaGetNodeMemoryAccessMode(vm->def->numa, i) ==
-                    VIR_NUMA_MEM_ACCESS_SHARED)
+                    VIR_NUMA_MEM_ACCESS_SHARED) {
                     shmem = true;
-                break;
+                    break;
+                }
             }
         }
 
