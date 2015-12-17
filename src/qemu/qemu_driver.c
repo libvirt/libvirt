@@ -4764,6 +4764,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
                          unsigned int vcpu)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainVcpuInfoPtr vcpuinfo;
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
@@ -4772,6 +4773,15 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     virCgroupPtr cgroup_vcpu = NULL;
     char *mem_mask = NULL;
     virDomainNumatuneMemMode mem_mode;
+
+    if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
+        return -1;
+
+    if (vcpuinfo->online) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vCPU '%u' is already online"), vcpu);
+        return -1;
+    }
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -4788,7 +4798,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     if (rc < 0)
         goto cleanup;
 
-    ignore_value(virDomainDefSetVcpus(vm->def, oldvcpus + 1));
+    vcpuinfo->online = true;
 
     if (ncpupids < 0)
         goto cleanup;
@@ -4864,11 +4874,21 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                          unsigned int vcpu)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainVcpuInfoPtr vcpuinfo;
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     pid_t *cpupids = NULL;
     int ncpupids = 0;
+
+    if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
+        return -1;
+
+    if (!vcpuinfo->online) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vCPU '%u' is already offline"), vcpu);
+        return -1;
+    }
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -4893,7 +4913,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    ignore_value(virDomainDefSetVcpus(vm->def, oldvcpus - 1));
+    vcpuinfo->online = false;
 
     if (qemuDomainDelCgroupForThread(priv->cgroup,
                                      VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
