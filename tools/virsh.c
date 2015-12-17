@@ -207,7 +207,7 @@ virshReconnect(vshControl *ctl)
             vshError(ctl, "%s", _("failed to connect to the hypervisor"));
     } else {
         if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
-                                            NULL, NULL) < 0)
+                                            ctl, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
         if (connected)
             vshError(ctl, "%s", _("Reconnected to the hypervisor"));
@@ -294,7 +294,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
-                                        NULL, NULL) < 0)
+                                        ctl, NULL) < 0)
         vshError(ctl, "%s", _("Unable to register disconnect callback"));
 
     return true;
