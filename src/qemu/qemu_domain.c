@@ -4290,7 +4290,8 @@ qemuDomainGetVcpuPid(virDomainObjPtr vm,
  *
  * Updates vCPU thread ids in the private data of @vm.
  *
- * Returns 0 on success -1 on error and reports an appropriate error.
+ * Returns number of detected vCPU threads on success, -1 on error and reports
+ * an appropriate error.
  */
 int
 qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
@@ -4298,7 +4299,7 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
                          int asyncJob)
 {
     pid_t *cpupids = NULL;
-    int ncpupids;
+    int ncpupids = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     /*
@@ -4329,26 +4330,23 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
      * Just disable CPU pinning with TCG until someone wants
      * to try to do this hard work.
      */
-    if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU) {
-        priv->nvcpupids = 0;
-        priv->vcpupids = NULL;
-        return 0;
-    }
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        goto done;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
     ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        VIR_FREE(cpupids);
         return -1;
-    /* failure to get the VCPU<-> PID mapping or to execute the query
+    }
+    /* failure to get the VCPU <-> PID mapping or to execute the query
      * command will not be treated fatal as some versions of qemu don't
      * support this command */
     if (ncpupids <= 0) {
         virResetLastError();
-
-        priv->nvcpupids = 0;
-        priv->vcpupids = NULL;
-        return 0;
+        ncpupids = 0;
+        goto done;
     }
 
     if (ncpupids != virDomainDefGetVcpus(vm->def)) {
@@ -4360,7 +4358,9 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
         return -1;
     }
 
+ done:
+    VIR_FREE(priv->vcpupids);
     priv->nvcpupids = ncpupids;
     priv->vcpupids = cpupids;
-    return 0;
+    return ncpupids;
 }
