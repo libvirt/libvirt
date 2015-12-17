@@ -130,6 +130,7 @@ virshCatchDisconnect(virConnectPtr conn,
             virFreeError(error);
         }
         disconnected++;
+        vshEventDone(ctl);
     }
 }
 
