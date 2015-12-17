@@ -1725,7 +1725,12 @@ virStorageVolDelete(virStorageVolPtr vol,
  * @vol: pointer to storage volume
  * @flags: extra flags; not used yet, so callers should always pass 0
  *
- * Ensure data previously on a volume is not accessible to future reads
+ * Ensure data previously on a volume is not accessible to future
+ * reads. Also note, that depending on the actual volume
+ * representation, this call may not really overwrite the
+ * physical location of the volume. For instance, files stored
+ * journaled, log structured, copy-on-write, versioned, and
+ * network file systems are known to be problematic.
  *
  * Returns 0 on success, or -1 on error
  */
@@ -1765,8 +1770,13 @@ virStorageVolWipe(virStorageVolPtr vol,
  * @algorithm: one of virStorageVolWipeAlgorithm
  * @flags: future flags, use 0 for now
  *
- * Similar to virStorageVolWipe, but one can choose
- * between different wiping algorithms.
+ * Similar to virStorageVolWipe, but one can choose between
+ * different wiping algorithms. Also note, that depending on the
+ * actual volume representation, this call may not really
+ * overwrite the physical location of the volume. For instance,
+ * files stored journaled, log structured, copy-on-write,
+ * versioned, and network file systems are known to be
+ * problematic.
  *
  * Returns 0 on success, or -1 on error.
  */
