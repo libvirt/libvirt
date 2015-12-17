@@ -30,8 +30,8 @@
   <define name="domain">
     <element name="domain">
       <ref name="hvs"/>
-      <ref name="ids"/>
       <interleave>
+        <ref name="ids"/>
         <optional>
           <ref name="title"/>
         </optional>
