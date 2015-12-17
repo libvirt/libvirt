@@ -2436,7 +2436,14 @@ storageVolWipePattern(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    ret = backend->wipeVol(obj->conn, pool, vol, algorithm, flags);
+    if (backend->wipeVol(obj->conn, pool, vol, algorithm, flags) < 0)
+        goto cleanup;
+
+    if (backend->refreshVol &&
+        backend->refreshVol(obj->conn, pool, vol) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     virStoragePoolObjUnlock(pool);
