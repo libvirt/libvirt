@@ -595,10 +595,16 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     /* Loop 2: detach managed devices (i.e. bind to appropriate stub driver) */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
+
         if (virPCIDeviceGetManaged(dev) &&
-            virPCIDeviceDetach(dev, hostdev_mgr->activePCIHostdevs, NULL) < 0)
-            goto reattachdevs;
+            virPCIDeviceDetach(dev,
+                               hostdev_mgr->activePCIHostdevs,
+                               hostdev_mgr->inactivePCIHostdevs) < 0)
+                goto reattachdevs;
     }
+
+    /* At this point, all devices are attached to the stub driver and have
+     * been marked as inactive */
 
     /* Loop 3: Now that all the PCI hostdevs have been detached, we
      * can safely reset them */
@@ -708,8 +714,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         /* NB: This doesn't actually re-bind to original driver, just
          * unbinds from the stub driver
          */
-        ignore_value(virPCIDeviceReattach(dev, hostdev_mgr->activePCIHostdevs,
-                                          NULL));
+        ignore_value(virPCIDeviceReattach(dev,
+                                          hostdev_mgr->activePCIHostdevs,
+                                          hostdev_mgr->inactivePCIHostdevs));
     }
 
  cleanup:
