@@ -711,12 +711,14 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
-        /* NB: This doesn't actually re-bind to original driver, just
-         * unbinds from the stub driver
-         */
-        ignore_value(virPCIDeviceReattach(dev,
-                                          hostdev_mgr->activePCIHostdevs,
-                                          hostdev_mgr->inactivePCIHostdevs));
+        if (virPCIDeviceGetManaged(dev)) {
+            /* NB: This doesn't actually re-bind to original driver, just
+             * unbinds from the stub driver
+             */
+            ignore_value(virPCIDeviceReattach(dev,
+                                              hostdev_mgr->activePCIHostdevs,
+                                              hostdev_mgr->inactivePCIHostdevs));
+        }
     }
 
  cleanup:
