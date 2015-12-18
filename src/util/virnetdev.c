@@ -256,9 +256,11 @@ int virNetDevSetMAC(const char *ifname,
     virMacAddrGetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
 
     if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
+        char macstr[VIR_MAC_STRING_BUFLEN];
+
         virReportSystemError(errno,
-                             _("Cannot set interface MAC on '%s'"),
-                             ifname);
+                             _("Cannot set interface MAC to %s on '%s'"),
+                             virMacAddrFormat(macaddr, macstr), ifname);
         goto cleanup;
     }
 
@@ -291,8 +293,8 @@ int virNetDevSetMAC(const char *ifname,
 
         if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
             virReportSystemError(errno,
-                                 _("Cannot set interface MAC on '%s'"),
-                                 ifname);
+                                 _("Cannot set interface MAC to %s on '%s'"),
+                                 mac + 1, ifname);
             goto cleanup;
         }
 
@@ -2270,10 +2272,17 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
             goto malformed_resp;
 
         if (err->error) {
+            char macstr[VIR_MAC_STRING_BUFLEN];
+
             virReportSystemError(-err->error,
-                _("error during set %s of ifindex %d"),
-                (macaddr ? (vlanid >= 0 ? "mac/vlan" : "mac") : "vlanid"),
-                ifindex);
+                                 _("Cannot set interface MAC/vlanid to %s/%d "
+                                   "for ifname %s ifindex %d vf %d"),
+                                 (macaddr
+                                  ? virMacAddrFormat(macaddr, macstr)
+                                  : "(unchanged)"),
+                                 vlanid,
+                                 ifname ? ifname : "(unspecified)",
+                                 ifindex, vf);
             goto cleanup;
         }
         break;
