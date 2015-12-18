@@ -501,7 +501,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             nnicindexes, nicindexes,
                             def->resource->partition,
                             -1,
-                            &cgroup) < 0)
+                            &cgroup) < 0 || !cgroup)
         goto cleanup;
 
     if (virCgroupAddTask(cgroup, initpid) < 0) {
