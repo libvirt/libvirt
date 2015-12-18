@@ -558,10 +558,41 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
             }
 
             if (!found) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Could not find netlink response with "
-                                 "expected parameters"));
-                goto cleanup;
+                char instanceIdStr[VIR_UUID_STRING_BUFLEN] = "(none)";
+
+                if (instanceId)
+                   virUUIDFormat(instanceId, instanceIdStr);
+
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find vf/instanceId %u/%s "
+                                 " in netlink response"),
+                               vf, instanceIdStr);
+
+                /* go through all the entries again. This seems tedious,
+                 * but experience has shown the resulting log to be
+                 * very useful.
+                 */
+                VIR_WARN("IFLA_VF_PORTS entries that were returned:");
+                nla_for_each_nested(tb_vf_ports, tb[IFLA_VF_PORTS], rem) {
+                    char uuidstr[VIR_UUID_STRING_BUFLEN] = "(none)";
+
+                    if (nla_parse_nested(tb_port, IFLA_PORT_MAX, tb_vf_ports,
+                                         ifla_port_policy)) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("error parsing IFLA_VF_PORT "
+                                         "during error reporting"));
+                        goto cleanup;
+                    }
+                    if (tb_port[IFLA_PORT_INSTANCE_UUID]) {
+                        virUUIDFormat((unsigned char *)
+                                      RTA_DATA(tb_port[IFLA_PORT_INSTANCE_UUID]),
+                                      uuidstr);
+                    }
+                    VIR_WARN("  vf: %d uuid: %s",
+                             tb_port[IFLA_PORT_VF] ?
+                             *(uint32_t *)RTA_DATA(tb_port[IFLA_PORT_VF]) : -1,
+                             uuidstr);
+                }                goto cleanup;
             }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
