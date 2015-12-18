@@ -2207,7 +2207,8 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
          * VM default affinity, we must reject it
          */
         for (n = 0; n < def->cputune.nvcpupin; n++) {
-            if (!virBitmapEqual(def->cpumask,
+            if (def->cputune.vcpupin[n]->cpumask &&
+                !virBitmapEqual(def->cpumask,
                                 def->cputune.vcpupin[n]->cpumask)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                "%s", _("cpu affinity is not supported"));
@@ -2218,16 +2219,19 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
     }
 
     for (n = 0; n < virDomainDefGetVcpus(def); n++) {
+        virBitmapPtr bitmap;
         /* set affinity only for existing vcpus */
         if (!(pininfo = virDomainPinFind(def->cputune.vcpupin,
                                          def->cputune.nvcpupin,
                                          n)))
             continue;
 
-        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, n),
-                                  pininfo->cpumask) < 0) {
+        if (!(bitmap = pininfo->cpumask) &&
+            !(bitmap = def->cpumask))
+            continue;
+
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, n), bitmap) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;

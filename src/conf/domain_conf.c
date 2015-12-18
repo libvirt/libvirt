@@ -15173,34 +15173,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    /* Initialize the pinning policy for vcpus which doesn't has
-     * the policy specified explicitly as def->cpuset.
-     */
-    if (def->cpumask) {
-        if (VIR_REALLOC_N(def->cputune.vcpupin, virDomainDefGetVcpus(def)) < 0)
-            goto error;
-
-        for (i = 0; i < virDomainDefGetVcpus(def); i++) {
-            if (virDomainPinIsDuplicate(def->cputune.vcpupin,
-                                        def->cputune.nvcpupin,
-                                        i))
-                continue;
-
-            virDomainPinDefPtr vcpupin = NULL;
-
-            if (VIR_ALLOC(vcpupin) < 0)
-                goto error;
-
-            if (!(vcpupin->cpumask = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN))) {
-                VIR_FREE(vcpupin);
-                goto error;
-            }
-            virBitmapCopy(vcpupin->cpumask, def->cpumask);
-            vcpupin->id = i;
-            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
-        }
-    }
-
     if ((n = virXPathNodeSet("./cputune/emulatorpin", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot extract emulatorpin nodes"));
@@ -21875,10 +21847,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     for (i = 0; i < def->cputune.nvcpupin; i++) {
         char *cpumask;
-        /* Ignore the vcpupin which inherit from "cpuset of "<vcpu>." */
-        if (virBitmapEqual(def->cpumask, def->cputune.vcpupin[i]->cpumask))
-            continue;
-
         virBufferAsprintf(&childrenBuf, "<vcpupin vcpu='%u' ",
                           def->cputune.vcpupin[i]->id);
 

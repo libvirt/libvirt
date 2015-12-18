@@ -2575,6 +2575,8 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
 
         if (pininfo && pininfo->cpumask)
             bitmap = pininfo->cpumask;
+        else if (def->cpumask)
+            bitmap = def->cpumask;
         else
             bitmap = allcpumap;
 

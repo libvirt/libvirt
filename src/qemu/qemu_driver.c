@@ -4682,33 +4682,6 @@ qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
     return NULL;
 }
 
-static int
-qemuDomainHotplugAddPin(virBitmapPtr cpumask,
-                        int idx,
-                        virDomainPinDefPtr **pindef_list,
-                        size_t *npin)
-{
-    int ret = -1;
-    virDomainPinDefPtr pindef = NULL;
-
-    if (VIR_ALLOC(pindef) < 0)
-        goto cleanup;
-
-    if (!(pindef->cpumask = virBitmapNewCopy(cpumask))) {
-        VIR_FREE(pindef);
-        goto cleanup;
-    }
-    pindef->id = idx;
-    if (VIR_APPEND_ELEMENT_COPY(*pindef_list, *npin, pindef) < 0) {
-        virBitmapFree(pindef->cpumask);
-        VIR_FREE(pindef);
-        goto cleanup;
-    }
-    ret = 0;
-
- cleanup:
-    return ret;
-}
 
 static int
 qemuDomainHotplugPinThread(virBitmapPtr cpumask,
@@ -4825,11 +4798,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     /* Inherit def->cpuset */
     if (vm->def->cpumask) {
-        if (qemuDomainHotplugAddPin(vm->def->cpumask, vcpu,
-                                    &vm->def->cputune.vcpupin,
-                                    &vm->def->cputune.nvcpupin) < 0)
-            goto cleanup;
-
         if (qemuDomainHotplugPinThread(vm->def->cpumask, vcpu, vcpupid,
                                        cgroup_vcpu) < 0) {
             goto cleanup;
@@ -5357,6 +5325,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
                  priv->autoCpuset)
             bitmap = priv->autoCpuset;
+        else if (def->cpumask)
+            bitmap = def->cpumask;
         else
             bitmap = allcpumap;
 

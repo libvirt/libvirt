@@ -2472,6 +2472,8 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
 
         if (pininfo && pininfo->cpumask)
             bitmap = pininfo->cpumask;
+        else if (targetDef->cpumask)
+            bitmap = targetDef->cpumask;
         else
             bitmap = allcpumap;
 

@@ -1959,8 +1959,8 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     if (def->cputune.vcpupin) {
         for (i = 0; i < def->cputune.nvcpupin; i++) {
-            if (!virBitmapEqual(def->cpumask,
-                                def->cputune.vcpupin[i]->cpumask)) {
+            if (def->cputune.vcpupin[i]->cpumask &&
+                !virBitmapEqual(def->cpumask, def->cputune.vcpupin[i]->cpumask)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s", _("vcpupin cpumask differs from default cpumask"));
                 return -1;
