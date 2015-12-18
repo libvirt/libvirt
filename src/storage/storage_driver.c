@@ -930,7 +930,8 @@ storagePoolCreate(virStoragePoolPtr obj,
 
  cleanup:
     VIR_FREE(stateFile);
-    virStoragePoolObjUnlock(pool);
+    if (pool)
+        virStoragePoolObjUnlock(pool);
     return ret;
 }
 
