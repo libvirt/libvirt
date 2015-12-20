@@ -17,10 +17,22 @@ dnl <http://www.gnu.org/licenses/>.
 AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
   AC_ARG_WITH([login_shell],
     [AS_HELP_STRING([--with-login-shell],
-      [build virt-login-shell @<:@default=yes@:>@])])
-  m4_divert_text([DEFAULTS], [with_login_shell=yes])
+      [build virt-login-shell @<:@default=check@:>@])])
+  m4_divert_text([DEFAULTS], [with_login_shell=check])
 
-  if test "$with_login_shell" ; then
+  if test "x$with_login_shell" != "xno"; then
+    if test "x$with_win" = "xyes"; then
+      if "x$with_login_shell" = "yes"; then
+        AC_MSG_ERROR([virt-login-shell is not supported on Windows])
+      else
+        with_login_shell=no;
+      fi
+    else
+      with_login_shell=yes;
+    fi
+  fi
+
+  if test "x$with_login_shell" = "xyes" ; then
       AC_DEFINE_UNQUOTED([WITH_LOGIN_SHELL], 1, [whether virt-login-shell is built])
   fi
   AM_CONDITIONAL([WITH_LOGIN_SHELL], [test "$with_login_shell" = "yes"])
