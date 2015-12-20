@@ -2370,12 +2370,8 @@ logStrToLong_ui(char const *s,
     int ret = 0;
 
     ret = virStrToLong_ui(s, end_ptr, base, result);
-    if (ret != 0) {
+    if (ret != 0)
         VIR_ERROR(_("Failed to convert '%s' to unsigned int"), s);
-    } else {
-        VIR_DEBUG("Converted '%s' to unsigned int %u", s, *result);
-    }
-
     return ret;
 }
 
@@ -2436,11 +2432,8 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
     char errbuf[64];
     int ret = -1;
 
-    VIR_DEBUG("Attempting to resolve device path from device link '%s'",
-              device_link);
-
     if (!virFileExists(device_link)) {
-        VIR_DEBUG("sysfs_path '%s' does not exist", device_link);
+        VIR_DEBUG("'%s' does not exist", device_link);
         return ret;
     }
 
@@ -2465,14 +2458,7 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
         goto out;
     }
 
-    VIR_DEBUG("virPCIDeviceAddress %.4x:%.2x:%.2x.%.1x",
-              (*bdf)->domain,
-              (*bdf)->bus,
-              (*bdf)->slot,
-              (*bdf)->function);
-
     ret = 0;
-
  out:
     VIR_FREE(device_path);
 
@@ -2484,22 +2470,20 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
  */
 int
 virPCIGetPhysicalFunction(const char *vf_sysfs_path,
-                          virPCIDeviceAddressPtr *physical_function)
+                          virPCIDeviceAddressPtr *pf)
 {
     int ret = -1;
     char *device_link = NULL;
 
-    VIR_DEBUG("Attempting to get SR IOV physical function for device "
-              "with sysfs path '%s'", vf_sysfs_path);
-
     if (virBuildPath(&device_link, vf_sysfs_path, "physfn") == -1) {
         virReportOOMError();
         return ret;
-    } else {
-        ret = virPCIGetDeviceAddressFromSysfsLink(device_link,
-                                                  physical_function);
     }
 
+    if ((ret = virPCIGetDeviceAddressFromSysfsLink(device_link, pf)) >= 0) {
+        VIR_DEBUG("PF for VF device '%s': %.4x:%.2x:%.2x.%.1x", vf_sysfs_path,
+                  (*pf)->domain, (*pf)->bus, (*pf)->slot, (*pf)->function);
+    }
     VIR_FREE(device_link);
 
     return ret;
@@ -2520,9 +2504,6 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     char *device_link = NULL;
     virPCIDeviceAddress *config_addr = NULL;
     char *totalvfs_file = NULL, *totalvfs_str = NULL;
-
-    VIR_DEBUG("Attempting to get SR IOV virtual functions for device"
-              "with sysfs path '%s'", sysfs_path);
 
     *virtual_functions = NULL;
     *num_virtual_functions = 0;
@@ -2558,13 +2539,13 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
             goto error;
         }
 
-        VIR_DEBUG("Found virtual function %zu", *num_virtual_functions);
         if (VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions, config_addr) < 0)
             goto error;
         VIR_FREE(device_link);
 
     } while (1);
 
+    VIR_DEBUG("Found %zu virtual functions for %s", *num_virtual_functions, sysfs_path);
     ret = 0;
  cleanup:
     VIR_FREE(device_link);
@@ -2749,7 +2730,7 @@ static const char *unsupported = N_("not supported on non-linux platforms");
 
 int
 virPCIGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
-                          virPCIDeviceAddressPtr *physical_function ATTRIBUTE_UNUSED)
+                          virPCIDeviceAddressPtr *pf ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
