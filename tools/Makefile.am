@@ -185,11 +185,11 @@ virt_login_shell_SOURCES =					\
 
 virt_login_shell_LDFLAGS = \
 		$(AM_LDFLAGS) 					\
+		$(PIE_LDFLAGS)					\
 		$(COVERAGE_LDFLAGS)				\
 		$(NULL)
 virt_login_shell_LDADD =					\
 		$(STATIC_BINARIES)				\
-		$(PIE_LDFLAGS)					\
 		../src/libvirt-setuid-rpc-client.la		\
 		../gnulib/lib/libgnu.la
 
@@ -218,11 +218,11 @@ virsh_SOURCES =							\
 
 virsh_LDFLAGS = \
 		$(AM_LDFLAGS) 					\
+		$(PIE_LDFLAGS)					\
 		$(COVERAGE_LDFLAGS)				\
 		$(NULL)
 virsh_LDADD =							\
 		$(STATIC_BINARIES)				\
-		$(PIE_LDFLAGS)					\
 		../src/libvirt-lxc.la				\
 		../src/libvirt-qemu.la				\
 		libvirt_shell.la
