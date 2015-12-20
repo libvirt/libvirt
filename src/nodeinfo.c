@@ -33,6 +33,7 @@
 #include "conf/domain_conf.h"
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>

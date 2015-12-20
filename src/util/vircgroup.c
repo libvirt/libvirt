@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #define __VIR_CGROUP_ALLOW_INCLUDE_PRIV_H__
 #include "vircgrouppriv.h"

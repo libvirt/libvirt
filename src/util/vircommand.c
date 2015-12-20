@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #if WITH_CAPNG
 # include <cap-ng.h>

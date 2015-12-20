@@ -24,6 +24,8 @@
 #ifndef __QEMUD_CONF_H
 # define __QEMUD_CONF_H
 
+# include <unistd.h>
+
 # include "virebtables.h"
 # include "internal.h"
 # include "capabilities.h"
