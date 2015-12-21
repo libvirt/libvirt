@@ -9173,6 +9173,7 @@ struct virshQemuEventData {
     vshControl *ctl;
     bool loop;
     bool pretty;
+    bool timestamp;
     int count;
 };
 typedef struct virshQemuEventData virshQemuEventData;
@@ -9197,8 +9198,20 @@ virshEventQemuPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (pretty && (str = virJSONValueToString(pretty, true)))
             details = str;
     }
-    vshPrint(data->ctl, "event %s at %lld.%06u for domain %s: %s\n",
-             event, seconds, micros, virDomainGetName(dom), NULLSTR(details));
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, "%s: event %s for domain %s: %s\n",
+                 timestamp, event, virDomainGetName(dom), NULLSTR(details));
+    } else {
+        vshPrint(data->ctl, "event %s at %lld.%06u for domain %s: %s\n",
+                 event, seconds, micros, virDomainGetName(dom), NULLSTR(details));
+    }
+
     data->count++;
     if (!data->loop)
         vshEventDone(data->ctl);
@@ -9245,6 +9258,10 @@ static const vshCmdOptDef opts_qemu_monitor_event[] = {
      .type = VSH_OT_BOOL,
      .help = N_("treat event case-insensitively")
     },
+    {.name = "timestamp",
+     .type = VSH_OT_BOOL,
+     .help = N_("show timestamp for each printed event")
+    },
     {.name = NULL}
 };
 
@@ -9268,6 +9285,7 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     data.ctl = ctl;
     data.loop = vshCommandOptBool(cmd, "loop");
     data.pretty = vshCommandOptBool(cmd, "pretty");
+    data.timestamp = vshCommandOptBool(cmd, "timestamp");
     data.count = 0;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
