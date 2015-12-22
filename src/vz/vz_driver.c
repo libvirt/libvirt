@@ -961,12 +961,13 @@ vzDomainUndefineFlags(virDomainPtr domain,
     virDomainObjPtr dom = NULL;
     int ret;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
+                  VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
 
     if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
-    ret = prlsdkUnregisterDomain(privconn, dom);
+    ret = prlsdkUnregisterDomain(privconn, dom, flags);
     if (ret)
         virObjectUnlock(dom);
 
