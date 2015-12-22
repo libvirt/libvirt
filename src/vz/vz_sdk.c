@@ -3718,6 +3718,46 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
     return ret;
 }
 
+/**
+ * prlsdkDetachDomainHardDisks:
+ *
+ * @sdkdom: domain handle
+ *
+ * Returns 0 if hard disks were successfully detached or not detected.
+ */
+static int
+prlsdkDetachDomainHardDisks(PRL_HANDLE sdkdom)
+{
+    int ret = -1;
+    PRL_RESULT pret;
+    PRL_UINT32 hddCount;
+    PRL_UINT32 i;
+    PRL_HANDLE job;
+
+    job = PrlVm_BeginEdit(sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    for (i = 0; i < hddCount; ++i) {
+        ret = prlsdkDelDisk(sdkdom, i);
+        if (ret)
+            goto cleanup;
+    }
+
+    job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
+    if (PRL_FAILED(waitJob(job)))
+        ret = -1;
+
+ cleanup:
+
+    return ret;
+}
+
+
+
 int
 prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
 {
@@ -3728,7 +3768,10 @@ prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
     for (i = 0; i < dom->def->nnets; i++)
         prlsdkCleanupBridgedNet(privconn, dom->def->nets[i]);
 
-    job = PrlVm_Unreg(privdom->sdkdom);
+    if (prlsdkDetachDomainHardDisks(privdom->sdkdom))
+        return -1;
+
+    job = PrlVm_Delete(privdom->sdkdom, PRL_INVALID_HANDLE);
     if (PRL_FAILED(waitJob(job)))
         return -1;
 
