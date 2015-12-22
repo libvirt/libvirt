@@ -3765,8 +3765,6 @@ prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
     PRL_HANDLE job;
     size_t i;
 
-    for (i = 0; i < dom->def->nnets; i++)
-        prlsdkCleanupBridgedNet(privconn, dom->def->nets[i]);
 
     if (prlsdkDetachDomainHardDisks(privdom->sdkdom))
         return -1;
@@ -3774,6 +3772,9 @@ prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom)
     job = PrlVm_Delete(privdom->sdkdom, PRL_INVALID_HANDLE);
     if (PRL_FAILED(waitJob(job)))
         return -1;
+
+    for (i = 0; i < dom->def->nnets; i++)
+        prlsdkCleanupBridgedNet(privconn, dom->def->nets[i]);
 
     if (prlsdkSendEvent(privconn, dom, VIR_DOMAIN_EVENT_UNDEFINED,
                         VIR_DOMAIN_EVENT_UNDEFINED_REMOVED) < 0)
