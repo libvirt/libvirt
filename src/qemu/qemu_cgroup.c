@@ -1079,10 +1079,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
                 }
             }
 
-            if (!cpumap)
-                continue;
-
-            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
+            if (cpumap && qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;
         }
 
