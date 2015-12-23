@@ -923,6 +923,7 @@ typedef enum {
     VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution */
     VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused */
     VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running */
+    VIR_DOMAIN_SAVE_NOT_SHUTDOWN = 1 << 3, /* Do not shut down the domain */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,
