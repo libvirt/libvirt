@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2015-04-28 11:46-0400\n"
+"POT-Creation-Date: 2015-12-23 18:33-0500\n"
 "PO-Revision-Date: 2014-10-29 03:16+0000\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -416,7 +416,7 @@ msgstr "连接已经打开"
 msgid "keepalive support is required to connect"
 msgstr "连接需要 keepalive 支持"
 
-#: daemon/remote.c:1411 daemon/remote.c:1496 src/remote/remote_driver.c:1721
+#: daemon/remote.c:1411 daemon/remote.c:1496 src/remote/remote_driver.c:1717
 #, c-format
 msgid "unknown parameter type: %d"
 msgstr "未知参数类型：%d"
@@ -434,8 +434,8 @@ msgstr "nparmas 过大"
 msgid "Parameter %s too big for destination"
 msgstr "对于目的地来说参数 %s 太大"
 
-#: daemon/remote.c:1588 src/remote/remote_driver.c:1560
-#: src/remote/remote_driver.c:1574 src/remote/remote_driver.c:1623
+#: daemon/remote.c:1588 src/remote/remote_driver.c:1556
+#: src/remote/remote_driver.c:1570 src/remote/remote_driver.c:1619
 #, c-format
 msgid "Too many domains '%d' for limit '%d'"
 msgstr ""
@@ -520,43 +520,43 @@ msgstr "ncpus 太大"
 msgid "maxerrors too large"
 msgstr "maxerrors 太大"
 
-#: daemon/remote.c:4510 daemon/remote.c:4577 src/remote/remote_driver.c:6635
-#: src/remote/remote_driver.c:6701
+#: daemon/remote.c:4510 daemon/remote.c:4577 src/remote/remote_driver.c:6631
+#: src/remote/remote_driver.c:6697
 #, c-format
 msgid "Too many domain snapshots '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4637 src/remote/remote_driver.c:3594
+#: daemon/remote.c:4637 src/remote/remote_driver.c:3590
 #, c-format
 msgid "Too many storage pools '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4699 src/remote/remote_driver.c:3660
+#: daemon/remote.c:4699 src/remote/remote_driver.c:3656
 #, c-format
 msgid "Too many storage volumes '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4758 src/remote/remote_driver.c:3041
+#: daemon/remote.c:4758 src/remote/remote_driver.c:3037
 #, c-format
 msgid "Too many networks '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4816 src/remote/remote_driver.c:3299
+#: daemon/remote.c:4816 src/remote/remote_driver.c:3295
 #, c-format
 msgid "Too many interfaces '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4874 src/remote/remote_driver.c:3364
+#: daemon/remote.c:4874 src/remote/remote_driver.c:3360
 #, c-format
 msgid "Too many node devices '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4932 src/remote/remote_driver.c:3429
+#: daemon/remote.c:4932 src/remote/remote_driver.c:3425
 #, c-format
 msgid "Too many network filters '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4990 src/remote/remote_driver.c:3494
+#: daemon/remote.c:4990 src/remote/remote_driver.c:3490
 #, c-format
 msgid "Too many secrets '%d' for limit '%d'"
 msgstr ""
@@ -568,9 +568,9 @@ msgstr ""
 
 #: daemon/remote.c:5251 daemon/remote.c:5307 daemon/remote.c:5368
 #: daemon/remote.c:5438 daemon/remote.c:5498 daemon/remote.c:5555
-#: src/remote/remote_driver.c:6927 src/remote/remote_driver.c:6993
-#: src/remote/remote_driver.c:7075 src/remote/remote_driver.c:7161
-#: src/remote/remote_driver.c:7233 src/remote/remote_driver.c:7305
+#: src/remote/remote_driver.c:6923 src/remote/remote_driver.c:6989
+#: src/remote/remote_driver.c:7071 src/remote/remote_driver.c:7157
+#: src/remote/remote_driver.c:7229 src/remote/remote_driver.c:7301
 #, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr ""
@@ -599,7 +599,7 @@ msgstr ""
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr ""
 
-#: daemon/remote.c:6158 src/remote/remote_driver.c:7567
+#: daemon/remote.c:6158 src/remote/remote_driver.c:7563
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
 msgstr ""
@@ -609,7 +609,7 @@ msgstr ""
 msgid "Number of domain stats records is %d, which exceeds max limit: %d"
 msgstr ""
 
-#: daemon/remote.c:6348 src/remote/remote_driver.c:7770
+#: daemon/remote.c:6348 src/remote/remote_driver.c:7766
 #, c-format
 msgid "Too many mountpoints in fsinfo: %d for limit %d"
 msgstr ""
@@ -899,7 +899,7 @@ msgstr ""
 msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
 msgstr ""
 
-#: src/bhyve/bhyve_driver.c:94 src/lxc/lxc_process.c:1445
+#: src/bhyve/bhyve_driver.c:94 src/lxc/lxc_process.c:1442
 #: src/libxl/libxl_driver.c:123 src/qemu/qemu_driver.c:298
 #: src/uml/uml_driver.c:196
 #, c-format
@@ -949,12 +949,12 @@ msgid "Unknown release: %s"
 msgstr "未知发布：%s"
 
 #: src/bhyve/bhyve_driver.c:379 src/libxl/libxl_driver.c:3720
-#: src/qemu/qemu_driver.c:8221 src/uml/uml_driver.c:2478
+#: src/qemu/qemu_driver.c:8365 src/uml/uml_driver.c:2478
 msgid "cannot set autostart for transient domain"
 msgstr "无法为瞬时域设定自动启动"
 
 #: src/bhyve/bhyve_driver.c:394 src/libxl/libxl_driver.c:3735
-#: src/qemu/qemu_driver.c:8241 src/storage/storage_driver.c:1109
+#: src/qemu/qemu_driver.c:8385 src/storage/storage_driver.c:1109
 #: src/uml/uml_driver.c:2493
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -968,7 +968,7 @@ msgstr "为 '%s' 创建符号链接 '%s' 失败"
 
 #: src/bhyve/bhyve_driver.c:408 src/lxc/lxc_driver.c:3248
 #: src/libxl/libxl_driver.c:3749 src/network/bridge_driver.c:3501
-#: src/qemu/qemu_driver.c:8257 src/storage/storage_driver.c:1124
+#: src/qemu/qemu_driver.c:8401 src/storage/storage_driver.c:1124
 #: src/uml/uml_driver.c:2507
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -990,8 +990,8 @@ msgid "No domain with matching uuid '%s'"
 msgstr "没有匹配 uuid '%s' 的域"
 
 #: src/bhyve/bhyve_driver.c:790 src/parallels/parallels_driver.c:493
-#: src/qemu/qemu_driver.c:1552 src/qemu/qemu_driver.c:11684
-#: src/qemu/qemu_driver.c:12098 src/qemu/qemu_driver.c:12143
+#: src/qemu/qemu_driver.c:1552 src/qemu/qemu_driver.c:11828
+#: src/qemu/qemu_driver.c:12242 src/qemu/qemu_driver.c:12287
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr "没有与名称 '%s' 匹配的域"
@@ -1029,7 +1029,7 @@ msgstr "域没有在运行"
 #: src/lxc/lxc_driver.c:3469 src/lxc/lxc_driver.c:3543
 #: src/lxc/lxc_driver.c:5675 src/libxl/libxl_driver.c:4011
 #: src/libxl/libxl_driver.c:4536 src/openvz/openvz_driver.c:2016
-#: src/openvz/openvz_driver.c:2268 src/qemu/qemu_domain.c:2831
+#: src/openvz/openvz_driver.c:2268 src/qemu/qemu_domain.c:2854
 #: src/qemu/qemu_driver.c:1838 src/qemu/qemu_driver.c:1850
 #: src/qemu/qemu_driver.c:1919 src/qemu/qemu_driver.c:2003
 #: src/qemu/qemu_driver.c:2096 src/qemu/qemu_driver.c:2164
@@ -1039,29 +1039,29 @@ msgstr "域没有在运行"
 #: src/qemu/qemu_driver.c:3411 src/qemu/qemu_driver.c:3729
 #: src/qemu/qemu_driver.c:3844 src/qemu/qemu_driver.c:3928
 #: src/qemu/qemu_driver.c:3991 src/qemu/qemu_driver.c:4060
-#: src/qemu/qemu_driver.c:4839 src/qemu/qemu_driver.c:5548
-#: src/qemu/qemu_driver.c:6416 src/qemu/qemu_driver.c:10312
-#: src/qemu/qemu_driver.c:10387 src/qemu/qemu_driver.c:10473
-#: src/qemu/qemu_driver.c:10628 src/qemu/qemu_driver.c:10989
-#: src/qemu/qemu_driver.c:11109 src/qemu/qemu_driver.c:11395
-#: src/qemu/qemu_driver.c:12501 src/qemu/qemu_driver.c:12538
-#: src/qemu/qemu_driver.c:12597 src/qemu/qemu_driver.c:12653
-#: src/qemu/qemu_driver.c:12696 src/qemu/qemu_driver.c:12750
-#: src/qemu/qemu_driver.c:12815 src/qemu/qemu_driver.c:13747
-#: src/qemu/qemu_driver.c:15241 src/qemu/qemu_driver.c:15250
-#: src/qemu/qemu_driver.c:15396 src/qemu/qemu_driver.c:15476
-#: src/qemu/qemu_driver.c:15744 src/qemu/qemu_driver.c:15779
-#: src/qemu/qemu_driver.c:15932 src/qemu/qemu_driver.c:16006
-#: src/qemu/qemu_driver.c:16122 src/qemu/qemu_driver.c:16484
-#: src/qemu/qemu_driver.c:16704 src/qemu/qemu_driver.c:16771
-#: src/qemu/qemu_driver.c:17418 src/qemu/qemu_driver.c:17564
-#: src/qemu/qemu_driver.c:17623 src/qemu/qemu_driver.c:17661
-#: src/qemu/qemu_driver.c:17699 src/qemu/qemu_driver.c:17769
-#: src/qemu/qemu_driver.c:17781 src/qemu/qemu_driver.c:17878
-#: src/qemu/qemu_driver.c:17890 src/qemu/qemu_driver.c:18065
-#: src/qemu/qemu_driver.c:18117 src/qemu/qemu_driver.c:18140
-#: src/qemu/qemu_driver.c:18186 src/qemu/qemu_driver.c:18230
-#: src/qemu/qemu_driver.c:19104 src/qemu/qemu_migration.c:2739
+#: src/qemu/qemu_driver.c:4983 src/qemu/qemu_driver.c:5692
+#: src/qemu/qemu_driver.c:6560 src/qemu/qemu_driver.c:10456
+#: src/qemu/qemu_driver.c:10531 src/qemu/qemu_driver.c:10617
+#: src/qemu/qemu_driver.c:10772 src/qemu/qemu_driver.c:11133
+#: src/qemu/qemu_driver.c:11253 src/qemu/qemu_driver.c:11539
+#: src/qemu/qemu_driver.c:12645 src/qemu/qemu_driver.c:12682
+#: src/qemu/qemu_driver.c:12741 src/qemu/qemu_driver.c:12797
+#: src/qemu/qemu_driver.c:12840 src/qemu/qemu_driver.c:12894
+#: src/qemu/qemu_driver.c:12959 src/qemu/qemu_driver.c:13891
+#: src/qemu/qemu_driver.c:15385 src/qemu/qemu_driver.c:15394
+#: src/qemu/qemu_driver.c:15540 src/qemu/qemu_driver.c:15620
+#: src/qemu/qemu_driver.c:15889 src/qemu/qemu_driver.c:15924
+#: src/qemu/qemu_driver.c:16076 src/qemu/qemu_driver.c:16150
+#: src/qemu/qemu_driver.c:16266 src/qemu/qemu_driver.c:16625
+#: src/qemu/qemu_driver.c:16845 src/qemu/qemu_driver.c:16912
+#: src/qemu/qemu_driver.c:17559 src/qemu/qemu_driver.c:17705
+#: src/qemu/qemu_driver.c:17764 src/qemu/qemu_driver.c:17802
+#: src/qemu/qemu_driver.c:17840 src/qemu/qemu_driver.c:17910
+#: src/qemu/qemu_driver.c:17922 src/qemu/qemu_driver.c:18019
+#: src/qemu/qemu_driver.c:18031 src/qemu/qemu_driver.c:18206
+#: src/qemu/qemu_driver.c:18258 src/qemu/qemu_driver.c:18281
+#: src/qemu/qemu_driver.c:18327 src/qemu/qemu_driver.c:18371
+#: src/qemu/qemu_driver.c:19245 src/qemu/qemu_migration.c:2739
 #: src/qemu/qemu_migration.c:4848 src/test/test_driver.c:6315
 #: src/uml/uml_driver.c:2626 src/xen/xen_driver.c:2678
 #: src/xen/xm_internal.c:675
@@ -1073,7 +1073,7 @@ msgid "no console devices available"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:1206 src/bhyve/bhyve_driver.c:1213
-#: src/lxc/lxc_container.c:1006 src/lxc/lxc_driver.c:1655
+#: src/lxc/lxc_container.c:1007 src/lxc/lxc_driver.c:1655
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "新建文件夹 %s 失败"
@@ -1085,7 +1085,7 @@ msgid "unknown type '%s'"
 msgstr "未知类型 '%s'"
 
 #: src/bhyve/bhyve_driver.c:1379 src/qemu/qemu_domain.c:1753
-#: src/qemu/qemu_driver.c:12435
+#: src/qemu/qemu_driver.c:12579
 msgid "cannot get host CPU capabilities"
 msgstr "无法获取主机 CPU 功能"
 
@@ -1144,12 +1144,12 @@ msgstr ""
 msgid "Cannot write device.map '%s'"
 msgstr "无法打开设备 '%s'"
 
-#: src/bhyve/bhyve_process.c:202 src/qemu/qemu_process.c:4820
+#: src/bhyve/bhyve_process.c:202 src/qemu/qemu_process.c:4739
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr "未显示域 %s"
 
-#: src/bhyve/bhyve_process.c:226 src/storage/storage_backend_fs.c:1155
+#: src/bhyve/bhyve_process.c:226 src/storage/storage_backend_fs.c:1163
 #, c-format
 msgid "cannot unlink file '%s'"
 msgstr "无法取消链接文件 '%s'"
@@ -2468,7 +2468,7 @@ msgstr "未知接口类型 '%s'"
 msgid "<virtualport> element unsupported for <interface type='%s'>"
 msgstr "不支持 <interface type='%s'> 的 <virtualport> 元素"
 
-#: src/conf/domain_conf.c:7645 src/lxc/lxc_native.c:450
+#: src/conf/domain_conf.c:7645 src/lxc/lxc_native.c:448
 #, fuzzy
 msgid "Domain interface"
 msgstr "域不活跃"
@@ -3343,7 +3343,7 @@ msgstr "在构架 %s 中没有用于域 %s os 类型 %s 的模拟器"
 msgid "cannot count boot devices"
 msgstr "无法统计引导设备"
 
-#: src/conf/domain_conf.c:12397 src/conf/domain_conf.c:20607
+#: src/conf/domain_conf.c:12397 src/conf/domain_conf.c:20605
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "每个设备的 boot 元素无法与 os/boot 元素联合使用"
 
@@ -4467,8 +4467,8 @@ msgid "PCI address Formatting failed"
 msgstr "PCI 地址格式化失败"
 
 #: src/conf/domain_conf.c:17703 src/conf/domain_conf.c:17743
-#: src/conf/domain_conf.c:19336 src/conf/domain_conf.c:19345
-#: src/libxl/libxl_driver.c:3038 src/qemu/qemu_hotplug.c:3685
+#: src/conf/domain_conf.c:19334 src/conf/domain_conf.c:19343
+#: src/libxl/libxl_driver.c:3038 src/qemu/qemu_hotplug.c:3691
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "意外的 hostdev 类型 %d"
@@ -4573,103 +4573,103 @@ msgstr "意外的计时器跟踪 %d"
 msgid "unexpected timer mode %d"
 msgstr "意外的计时器模式 %d"
 
-#: src/conf/domain_conf.c:19327 src/conf/domain_conf.c:19352
+#: src/conf/domain_conf.c:19325 src/conf/domain_conf.c:19350
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "意外的 hostdev 模式 %d"
 
-#: src/conf/domain_conf.c:19468
+#: src/conf/domain_conf.c:19466
 #, c-format
 msgid "unexpected hub type %d"
 msgstr "意外的集线器类型 %d"
 
-#: src/conf/domain_conf.c:19630
+#: src/conf/domain_conf.c:19628
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "意外的域类型 %d"
 
-#: src/conf/domain_conf.c:19975
+#: src/conf/domain_conf.c:19973
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "意外的引导设备类型 %d"
 
-#: src/conf/domain_conf.c:20008
+#: src/conf/domain_conf.c:20006
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr "意外的 smbios 模式 %d"
 
-#: src/conf/domain_conf.c:20055
+#: src/conf/domain_conf.c:20053
 #, c-format
 msgid "unexpected feature %zu"
 msgstr "意外功能 %zu"
 
-#: src/conf/domain_conf.c:20076
+#: src/conf/domain_conf.c:20074
 #, c-format
 msgid "Unexpected state of feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:20578
+#: src/conf/domain_conf.c:20576
 #, c-format
 msgid "boot order %d is already used by another device"
 msgstr ""
 
-#: src/conf/domain_conf.c:20599
+#: src/conf/domain_conf.c:20597
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr "失败配置不兼容：域不支持 USB 总线"
 
-#: src/conf/domain_conf.c:20637 src/conf/network_conf.c:2711
+#: src/conf/domain_conf.c:20635 src/conf/network_conf.c:2711
 #: src/conf/nwfilter_conf.c:2829 src/util/virdnsmasq.c:550
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "无法生成配置目录 '%s'"
 
-#: src/conf/domain_conf.c:20778
+#: src/conf/domain_conf.c:20776
 #, c-format
 msgid "unexpected domain %s already exists"
 msgstr "意外目标 %s 已存在"
 
-#: src/conf/domain_conf.c:20819 src/conf/network_conf.c:2966
+#: src/conf/domain_conf.c:20817 src/conf/network_conf.c:2966
 #: src/conf/network_conf.c:3000 src/conf/nwfilter_conf.c:3205
 #: src/conf/storage_conf.c:1857
 #, c-format
 msgid "Failed to open dir '%s'"
 msgstr "打开目录 '%s' 失败"
 
-#: src/conf/domain_conf.c:20890
+#: src/conf/domain_conf.c:20888
 #, c-format
 msgid "cannot remove config %s"
 msgstr "无法为删除配置 %s"
 
-#: src/conf/domain_conf.c:21256
+#: src/conf/domain_conf.c:21254
 #, c-format
 msgid "unable to visit backing chain file %s"
 msgstr "无法访问后端链文件 %s"
 
-#: src/conf/domain_conf.c:21368
+#: src/conf/domain_conf.c:21366
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "无效域状态：%d"
 
-#: src/conf/domain_conf.c:21849
+#: src/conf/domain_conf.c:21847
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "还没有采用复制 '%d' 类型定义的方法"
 
-#: src/conf/domain_conf.c:22106
+#: src/conf/domain_conf.c:22104
 #, c-format
 msgid "no device found with alias %s"
 msgstr "没有找到别名为 %s 的设备"
 
-#: src/conf/domain_conf.c:22170 src/conf/domain_conf.c:22229
+#: src/conf/domain_conf.c:22168 src/conf/domain_conf.c:22227
 #, c-format
 msgid "unknown metadata type '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:22207
+#: src/conf/domain_conf.c:22205
 msgid "Requested metadata element is not present"
 msgstr "所需元数据元素未出现"
 
-#: src/conf/domain_conf.c:22253
+#: src/conf/domain_conf.c:22251
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -4734,103 +4734,99 @@ msgstr "不支持的协议 family %s"
 msgid "bridge interface stp should be on or off got %s"
 msgstr "应该打开或者关闭桥接接口获得 %s"
 
-#: src/conf/interface_conf.c:561
-msgid "bond has no interfaces"
-msgstr "绑定未指定网络接口"
-
-#: src/conf/interface_conf.c:609
+#: src/conf/interface_conf.c:604
 msgid "bond interface miimon freq missing or invalid"
 msgstr "绑定接口 miimon freq 缺失或者无效"
 
-#: src/conf/interface_conf.c:617
+#: src/conf/interface_conf.c:612
 msgid "bond interface miimon downdelay invalid"
 msgstr "绑定接口 miimon downdelay 无效"
 
-#: src/conf/interface_conf.c:625
+#: src/conf/interface_conf.c:620
 msgid "bond interface miimon updelay invalid"
 msgstr "绑定接口 miimon updelay 无效"
 
-#: src/conf/interface_conf.c:641
+#: src/conf/interface_conf.c:636
 msgid "bond interface arpmon interval missing or invalid"
 msgstr "绑定接口 arpmon interval 缺失或者无效"
 
-#: src/conf/interface_conf.c:649
+#: src/conf/interface_conf.c:644
 msgid "bond interface arpmon target missing"
 msgstr "绑定接口 arpmon 目标缺失"
 
-#: src/conf/interface_conf.c:668
+#: src/conf/interface_conf.c:663
 msgid "vlan interface misses the tag attribute"
 msgstr "vlan 接口缺少 tag 属性"
 
-#: src/conf/interface_conf.c:676
+#: src/conf/interface_conf.c:671
 msgid "vlan interface misses name attribute"
 msgstr "vlan 接口缺少 name 属性"
 
-#: src/conf/interface_conf.c:696
+#: src/conf/interface_conf.c:691
 msgid "interface misses the type attribute"
 msgstr "网络接口类型属性缺失"
 
-#: src/conf/interface_conf.c:702
+#: src/conf/interface_conf.c:697
 #, c-format
 msgid "unknown interface type %s"
 msgstr "未知的网络接口类型 %s"
 
-#: src/conf/interface_conf.c:721
+#: src/conf/interface_conf.c:716
 #, c-format
 msgid "interface has unsupported type '%s'"
 msgstr "接口中有不支持的类型 %s"
 
-#: src/conf/interface_conf.c:757
+#: src/conf/interface_conf.c:752
 msgid "bridge interface misses the bridge element"
 msgstr "bridge 接口缺少 bridge 元素"
 
-#: src/conf/interface_conf.c:770
+#: src/conf/interface_conf.c:765
 msgid "bond interface misses the bond element"
 msgstr "绑定接口缺少绑定元素"
 
-#: src/conf/interface_conf.c:783
+#: src/conf/interface_conf.c:778
 msgid "vlan interface misses the vlan element"
 msgstr "vlan 接口缺少 vlan 元素"
 
-#: src/conf/interface_conf.c:811
+#: src/conf/interface_conf.c:806
 #, c-format
 msgid "unexpected root element <%s>, expecting <interface>"
 msgstr "意外的 root 元素 <%s>，应为 <interface>"
 
-#: src/conf/interface_conf.c:838
+#: src/conf/interface_conf.c:833
 msgid "(interface_definition)"
 msgstr "(interface_definition)"
 
-#: src/conf/interface_conf.c:922
+#: src/conf/interface_conf.c:917
 msgid "bond arp monitoring has no target"
 msgstr "绑定 arp 监视没有目标"
 
-#: src/conf/interface_conf.c:951
+#: src/conf/interface_conf.c:946
 msgid "vlan misses the tag name"
 msgstr "vlan 缺少标签名"
 
-#: src/conf/interface_conf.c:1033
+#: src/conf/interface_conf.c:1028
 msgid "virInterfaceDefFormat unknown startmode"
 msgstr "virInterfaceDefFormat 未知启动模式"
 
-#: src/conf/interface_conf.c:1048
+#: src/conf/interface_conf.c:1043
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
-#: src/conf/interface_conf.c:1054
+#: src/conf/interface_conf.c:1049
 msgid "virInterfaceDefFormat missing interface name"
 msgstr "virInterfaceDefFormat 缺少接口名称"
 
-#: src/conf/interface_conf.c:1060
+#: src/conf/interface_conf.c:1055
 #, c-format
 msgid "unexpected interface type %d"
 msgstr "意外接口类型 %d"
 
-#: src/conf/interface_conf.c:1253 src/conf/network_conf.c:379
+#: src/conf/interface_conf.c:1248 src/conf/network_conf.c:379
 #: src/conf/node_device_conf.c:192 src/conf/nwfilter_conf.c:3141
 #: src/conf/storage_conf.c:1784 src/libxl/libxl_driver.c:296
 #: src/parallels/parallels_driver.c:191 src/qemu/qemu_driver.c:643
-#: src/remote/remote_driver.c:1124 src/test/test_driver.c:716
+#: src/remote/remote_driver.c:1120 src/test/test_driver.c:716
 #: src/test/test_driver.c:1406 src/xen/xen_driver.c:483
 msgid "cannot initialize mutex"
 msgstr "无法初始化互斥"
@@ -7418,42 +7414,42 @@ msgstr ""
 "主机系统属性 'hardware.cpuFeature[].edx'  的字节 29（长模式）值 '%s'  中有意"
 "外值 '%c' ，应为 '0' 或者 '1'。"
 
-#: src/esx/esx_driver.c:631 src/esx/esx_driver.c:4375
-#: src/esx/esx_driver.c:4465 src/esx/esx_network_driver.c:222
-#: src/esx/esx_network_driver.c:590 src/esx/esx_storage_backend_vmfs.c:575
-#: src/esx/esx_util.c:52 src/esx/esx_util.c:229 src/esx/esx_vi.c:55
-#: src/esx/esx_vi.c:376 src/esx/esx_vi.c:445 src/esx/esx_vi.c:1001
-#: src/esx/esx_vi.c:1406 src/esx/esx_vi.c:1605 src/esx/esx_vi.c:1641
-#: src/esx/esx_vi.c:1657 src/esx/esx_vi.c:1680 src/esx/esx_vi.c:1719
-#: src/esx/esx_vi.c:1747 src/esx/esx_vi.c:1780 src/esx/esx_vi.c:1834
-#: src/esx/esx_vi.c:1857 src/esx/esx_vi.c:1912 src/esx/esx_vi.c:2159
-#: src/esx/esx_vi.c:2360 src/esx/esx_vi.c:2386 src/esx/esx_vi.c:2422
-#: src/esx/esx_vi.c:2455 src/esx/esx_vi.c:2492 src/esx/esx_vi.c:2597
-#: src/esx/esx_vi.c:2762 src/esx/esx_vi.c:2806 src/esx/esx_vi.c:2871
-#: src/esx/esx_vi.c:2926 src/esx/esx_vi.c:3059 src/esx/esx_vi.c:3126
-#: src/esx/esx_vi.c:3212 src/esx/esx_vi.c:3276 src/esx/esx_vi.c:3324
-#: src/esx/esx_vi.c:3430 src/esx/esx_vi.c:3485 src/esx/esx_vi.c:3582
-#: src/esx/esx_vi.c:3778 src/esx/esx_vi.c:3890 src/esx/esx_vi.c:3944
-#: src/esx/esx_vi.c:4001 src/esx/esx_vi.c:4052 src/esx/esx_vi.c:4096
-#: src/esx/esx_vi.c:4143 src/esx/esx_vi.c:4190 src/esx/esx_vi.c:4234
-#: src/esx/esx_vi.c:4285 src/esx/esx_vi.c:4347 src/esx/esx_vi.c:4462
-#: src/esx/esx_vi.c:4913 src/esx/esx_vi.c:5007 src/esx/esx_vi.c:5139
-#: src/esx/esx_vi.c:5219 src/esx/esx_vi_methods.c:42
-#: src/esx/esx_vi_methods.c:236 src/esx/esx_vi_types.c:46
-#: src/esx/esx_vi_types.c:105 src/esx/esx_vi_types.c:199
-#: src/esx/esx_vi_types.c:250 src/esx/esx_vi_types.c:292
-#: src/esx/esx_vi_types.c:346 src/esx/esx_vi_types.c:618
-#: src/esx/esx_vi_types.c:637 src/esx/esx_vi_types.c:717
-#: src/esx/esx_vi_types.c:943 src/esx/esx_vi_types.c:1012
-#: src/esx/esx_vi_types.c:1221 src/esx/esx_vi_types.c:1253
-#: src/esx/esx_vi_types.c:1273 src/esx/esx_vi_types.c:1297
-#: src/esx/esx_vi_types.c:1472 src/esx/esx_vi_types.c:1511
-#: src/esx/esx_vi_types.c:1644 src/esx/esx_vi_types.c:1709
-#: src/esx/esx_vi_types.c:1738 src/hyperv/hyperv_util.c:44
-#: src/hyperv/hyperv_wmi.c:135 src/hyperv/hyperv_wmi.c:613
-#: src/hyperv/hyperv_wmi.c:647 src/vmx/vmx.c:1792 src/vmx/vmx.c:1863
-#: src/vmx/vmx.c:1976 src/vmx/vmx.c:2335 src/vmx/vmx.c:2446 src/vmx/vmx.c:2662
-#: src/vmx/vmx.c:2850 src/vmx/vmx.c:2947 src/vmx/vmx.c:3318 src/vmx/vmx.c:3501
+#: src/esx/esx_driver.c:631 src/esx/esx_driver.c:4375 src/esx/esx_driver.c:4465
+#: src/esx/esx_network_driver.c:222 src/esx/esx_network_driver.c:590
+#: src/esx/esx_storage_backend_vmfs.c:575 src/esx/esx_util.c:52
+#: src/esx/esx_util.c:229 src/esx/esx_vi.c:55 src/esx/esx_vi.c:376
+#: src/esx/esx_vi.c:445 src/esx/esx_vi.c:1001 src/esx/esx_vi.c:1406
+#: src/esx/esx_vi.c:1605 src/esx/esx_vi.c:1641 src/esx/esx_vi.c:1657
+#: src/esx/esx_vi.c:1680 src/esx/esx_vi.c:1719 src/esx/esx_vi.c:1747
+#: src/esx/esx_vi.c:1780 src/esx/esx_vi.c:1834 src/esx/esx_vi.c:1857
+#: src/esx/esx_vi.c:1912 src/esx/esx_vi.c:2159 src/esx/esx_vi.c:2360
+#: src/esx/esx_vi.c:2386 src/esx/esx_vi.c:2422 src/esx/esx_vi.c:2455
+#: src/esx/esx_vi.c:2492 src/esx/esx_vi.c:2597 src/esx/esx_vi.c:2762
+#: src/esx/esx_vi.c:2806 src/esx/esx_vi.c:2871 src/esx/esx_vi.c:2926
+#: src/esx/esx_vi.c:3059 src/esx/esx_vi.c:3126 src/esx/esx_vi.c:3212
+#: src/esx/esx_vi.c:3276 src/esx/esx_vi.c:3324 src/esx/esx_vi.c:3430
+#: src/esx/esx_vi.c:3485 src/esx/esx_vi.c:3582 src/esx/esx_vi.c:3778
+#: src/esx/esx_vi.c:3890 src/esx/esx_vi.c:3944 src/esx/esx_vi.c:4001
+#: src/esx/esx_vi.c:4052 src/esx/esx_vi.c:4096 src/esx/esx_vi.c:4143
+#: src/esx/esx_vi.c:4190 src/esx/esx_vi.c:4234 src/esx/esx_vi.c:4285
+#: src/esx/esx_vi.c:4347 src/esx/esx_vi.c:4462 src/esx/esx_vi.c:4913
+#: src/esx/esx_vi.c:5007 src/esx/esx_vi.c:5139 src/esx/esx_vi.c:5219
+#: src/esx/esx_vi_methods.c:42 src/esx/esx_vi_methods.c:236
+#: src/esx/esx_vi_types.c:46 src/esx/esx_vi_types.c:105
+#: src/esx/esx_vi_types.c:199 src/esx/esx_vi_types.c:250
+#: src/esx/esx_vi_types.c:292 src/esx/esx_vi_types.c:346
+#: src/esx/esx_vi_types.c:618 src/esx/esx_vi_types.c:637
+#: src/esx/esx_vi_types.c:717 src/esx/esx_vi_types.c:943
+#: src/esx/esx_vi_types.c:1012 src/esx/esx_vi_types.c:1221
+#: src/esx/esx_vi_types.c:1253 src/esx/esx_vi_types.c:1273
+#: src/esx/esx_vi_types.c:1297 src/esx/esx_vi_types.c:1472
+#: src/esx/esx_vi_types.c:1511 src/esx/esx_vi_types.c:1644
+#: src/esx/esx_vi_types.c:1709 src/esx/esx_vi_types.c:1738
+#: src/hyperv/hyperv_util.c:44 src/hyperv/hyperv_wmi.c:135
+#: src/hyperv/hyperv_wmi.c:613 src/hyperv/hyperv_wmi.c:647 src/vmx/vmx.c:1792
+#: src/vmx/vmx.c:1863 src/vmx/vmx.c:1976 src/vmx/vmx.c:2335 src/vmx/vmx.c:2446
+#: src/vmx/vmx.c:2662 src/vmx/vmx.c:2850 src/vmx/vmx.c:2947 src/vmx/vmx.c:3318
+#: src/vmx/vmx.c:3501
 msgid "Invalid argument"
 msgstr "无效参数"
 
@@ -7748,7 +7744,7 @@ msgstr "快照 '%s' 已存在"
 msgid "Could not create snapshot: %s"
 msgstr "无法生成快照：%s"
 
-#: src/esx/esx_driver.c:4583 src/qemu/qemu_driver.c:14566
+#: src/esx/esx_driver.c:4583 src/qemu/qemu_driver.c:14710
 #: src/test/test_driver.c:6636 src/vbox/vbox_common.c:6377
 #, c-format
 msgid "snapshot '%s' does not have a parent"
@@ -7870,8 +7866,7 @@ msgstr "iSCSI 存储池不支持卷删除"
 msgid "iSCSI storage pool does not support volume wiping"
 msgstr "iSCSI 存储池不支持卷擦除"
 
-#: src/esx/esx_storage_backend_vmfs.c:99
-#: src/esx/esx_storage_backend_vmfs.c:509
+#: src/esx/esx_storage_backend_vmfs.c:99 src/esx/esx_storage_backend_vmfs.c:509
 msgid "DatastoreInfo has unexpected type"
 msgstr "DatastoreInfo 有意外类型"
 
@@ -8934,8 +8929,7 @@ msgstr "系统不可用"
 
 #: src/hyperv/hyperv_wmi.c:375 tools/virsh.c:2373 tools/virsh.c:2418
 #: tools/virsh.c:3091 tools/virsh.c:3097 tools/virsh-domain.c:5293
-#: tools/virsh-domain.c:6994 tools/virsh-pool.c:1454
-#: tools/virsh-snapshot.c:453
+#: tools/virsh-domain.c:6994 tools/virsh-pool.c:1454 tools/virsh-snapshot.c:453
 msgid "Out of memory"
 msgstr "内存溢出"
 
@@ -9386,13 +9380,12 @@ msgstr "%s 中的 uuidstr 必须是有效 UUID"
 msgid "could not build absolute output file path"
 msgstr "无法构建绝对输出文件路径"
 
-#: src/libvirt-domain.c:916 src/libvirt-domain.c:1043
-#: src/libvirt-domain.c:1184
+#: src/libvirt-domain.c:916 src/libvirt-domain.c:1043 src/libvirt-domain.c:1184
 msgid "running and paused flags are mutually exclusive"
 msgstr "运行中和暂停的标签彼此互斥"
 
-#: src/libvirt-domain.c:978 src/libvirt-domain.c:1055
-#: src/libvirt-domain.c:1120 src/libvirt-domain.c:1196
+#: src/libvirt-domain.c:978 src/libvirt-domain.c:1055 src/libvirt-domain.c:1120
+#: src/libvirt-domain.c:1196
 msgid "could not build absolute input file path"
 msgstr "无法构建绝对输入文件路径"
 
@@ -9897,8 +9890,7 @@ msgstr ""
 msgid "Can't determine restart state file path"
 msgstr ""
 
-#: src/locking/lock_daemon_dispatch.c:60
-#: src/locking/lock_daemon_dispatch.c:118
+#: src/locking/lock_daemon_dispatch.c:60 src/locking/lock_daemon_dispatch.c:118
 #: src/locking/lock_daemon_dispatch.c:167
 #: src/locking/lock_daemon_dispatch.c:216
 #: src/locking/lock_daemon_dispatch.c:271
@@ -9908,8 +9900,7 @@ msgstr ""
 msgid "lock manager connection has been restricted"
 msgstr "已限制锁定管理程序连接"
 
-#: src/locking/lock_daemon_dispatch.c:66
-#: src/locking/lock_daemon_dispatch.c:124
+#: src/locking/lock_daemon_dispatch.c:66 src/locking/lock_daemon_dispatch.c:124
 #: src/locking/lock_daemon_dispatch.c:173
 #: src/locking/lock_daemon_dispatch.c:222
 #: src/locking/lock_daemon_dispatch.c:324
@@ -9917,8 +9908,7 @@ msgstr "已限制锁定管理程序连接"
 msgid "lock owner details have not been registered"
 msgstr "未注册锁拥有者详情"
 
-#: src/locking/lock_daemon_dispatch.c:72
-#: src/locking/lock_daemon_dispatch.c:130
+#: src/locking/lock_daemon_dispatch.c:72 src/locking/lock_daemon_dispatch.c:130
 #: src/locking/lock_daemon_dispatch.c:179
 #: src/locking/lock_daemon_dispatch.c:330
 #, c-format
@@ -10012,7 +10002,7 @@ msgstr "无法生成锁空间 %s"
 
 #: src/locking/lock_driver_sanlock.c:262 src/locking/lock_driver_sanlock.c:317
 #: src/locking/lock_driver_sanlock.c:671 src/storage/storage_backend.c:365
-#: src/util/vircgroup.c:3889 src/util/vircgroup.c:3901 src/util/virfile.c:2009
+#: src/util/vircgroup.c:3883 src/util/vircgroup.c:3895 src/util/virfile.c:2009
 #: src/util/virfile.c:2308
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
@@ -10257,7 +10247,7 @@ msgstr "无法获取 MEMORY cgroup 控制器路径"
 msgid "Resource partition '%s' must start with '/'"
 msgstr "资源分区 '%s' 必须以 '/' 开始"
 
-#: src/lxc/lxc_fuse.c:150 src/util/vircgroup.c:3545
+#: src/lxc/lxc_fuse.c:150 src/util/vircgroup.c:3539
 #, c-format
 msgid "Cannot open %s"
 msgstr "无法打开 %s"
@@ -10303,65 +10293,65 @@ msgstr ""
 msgid "missing tmpfs size, set the size option"
 msgstr ""
 
-#: src/lxc/lxc_native.c:487
+#: src/lxc/lxc_native.c:485
 msgid "Missing 'link' attribute for NIC"
 msgstr ""
 
-#: src/lxc/lxc_native.c:621
+#: src/lxc/lxc_native.c:619
 #, fuzzy, c-format
 msgid "Invalid CIDR address: '%s'"
 msgstr "无效的 MAC 地址: %s"
 
-#: src/lxc/lxc_native.c:698
+#: src/lxc/lxc_native.c:696
 #, c-format
 msgid "failed to parse int: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:739
+#: src/lxc/lxc_native.c:737
 #, c-format
 msgid "invalid lxc.id_map: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:827 src/lxc/lxc_native.c:963
+#: src/lxc/lxc_native.c:825 src/lxc/lxc_native.c:961
 #, c-format
 msgid "failed to parse integer: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:884
+#: src/lxc/lxc_native.c:882
 #, c-format
 msgid "invalid %s value: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:910
+#: src/lxc/lxc_native.c:908
 #, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:916
+#: src/lxc/lxc_native.c:914
 #, c-format
 msgid "failed to parse read_bps_device: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:923
+#: src/lxc/lxc_native.c:921
 #, c-format
 msgid "failed to parse write_bps_device: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:930
+#: src/lxc/lxc_native.c:928
 #, c-format
 msgid "failed to parse read_iops_device: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:937
+#: src/lxc/lxc_native.c:935
 #, c-format
 msgid "failed to parse write_iops_device: '%s'"
 msgstr ""
 
-#: src/lxc/lxc_native.c:1010 src/qemu/qemu_command.c:11949
+#: src/lxc/lxc_native.c:1008 src/qemu/qemu_command.c:11949
 msgid "failed to generate uuid"
 msgstr "生成 uuid 失败"
 
-#: src/lxc/lxc_native.c:1056
+#: src/lxc/lxc_native.c:1054
 msgid "lxc.mount found, use lxc.mount.entry lines instead"
 msgstr ""
 
@@ -10424,295 +10414,295 @@ msgstr "setuid 或者 setgid 失败"
 msgid "Failed to set IP address '%s' on %s"
 msgstr "解析 PCI 配置地址 '%s' 失败"
 
-#: src/lxc/lxc_container.c:633
+#: src/lxc/lxc_container.c:634
 #, c-format
 msgid "Failed to unmount '%s' and could not detach subtree '%s'"
 msgstr "无法卸载 '%s' 也无法取消子树 '%s'"
 
-#: src/lxc/lxc_container.c:641
+#: src/lxc/lxc_container.c:642
 #, c-format
 msgid "Failed to unmount '%s' and could not unmount old root '%s'"
 msgstr "无法卸载 '%s' 也无法卸载旧的 root '%s'"
 
-#: src/lxc/lxc_container.c:669
+#: src/lxc/lxc_container.c:670
 #, c-format
 msgid "Failed to access '%s'"
 msgstr ""
 
-#: src/lxc/lxc_container.c:681
+#: src/lxc/lxc_container.c:682
 #, c-format
 msgid "Failed to resolve symlink at %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:712
+#: src/lxc/lxc_container.c:713
 msgid "Unexpected root filesystem without loop device"
 msgstr "意外的没有循环设备的 root 文件系统"
 
-#: src/lxc/lxc_container.c:718
+#: src/lxc/lxc_container.c:719
 #, c-format
 msgid "Unsupported root filesystem type %s"
 msgstr "不支持的 root 文件系统类型 %s"
 
-#: src/lxc/lxc_container.c:759
+#: src/lxc/lxc_container.c:760
 msgid "Failed to make root private"
 msgstr "使 root 成为专用失败"
 
-#: src/lxc/lxc_container.c:768 src/lxc/lxc_container.c:788
-#: src/lxc/lxc_container.c:1238 src/lxc/lxc_container.c:1518
-#: src/lxc/lxc_container.c:1582
+#: src/lxc/lxc_container.c:769 src/lxc/lxc_container.c:789
+#: src/lxc/lxc_container.c:1239 src/lxc/lxc_container.c:1519
+#: src/lxc/lxc_container.c:1583
 #, c-format
 msgid "Failed to create %s"
 msgstr "创建 %s 失败"
 
-#: src/lxc/lxc_container.c:777
+#: src/lxc/lxc_container.c:778
 #, c-format
 msgid "Failed to mount empty tmpfs at %s"
 msgstr "在 %s 挂载空 tmpfs 失败"
 
-#: src/lxc/lxc_container.c:796
+#: src/lxc/lxc_container.c:797
 #, c-format
 msgid "Failed to bind %s to new root %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:804
+#: src/lxc/lxc_container.c:805
 #, c-format
 msgid "Failed to make new root %s readonly"
 msgstr "让新的 root %s 为只读失败"
 
-#: src/lxc/lxc_container.c:814
+#: src/lxc/lxc_container.c:815
 #, c-format
 msgid "Failed to chdir into %s"
 msgstr "使用 cd 命令进入 %s 失败"
 
-#: src/lxc/lxc_container.c:822
+#: src/lxc/lxc_container.c:823
 msgid "Failed to pivot root"
 msgstr "pivot root 失败"
 
-#: src/lxc/lxc_container.c:888
+#: src/lxc/lxc_container.c:889
 msgid "Failed to read /proc/mounts"
 msgstr "读取 /proc/mounts 失败"
 
-#: src/lxc/lxc_container.c:915
+#: src/lxc/lxc_container.c:916
 #, c-format
 msgid "Failed to make mount %s readonly"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1024
+#: src/lxc/lxc_container.c:1025
 #, c-format
 msgid "Failed to mount %s on %s type %s flags=%x"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1034
+#: src/lxc/lxc_container.c:1035
 #, c-format
 msgid "Failed to re-mount %s on %s flags=%x"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1069
+#: src/lxc/lxc_container.c:1070
 #, c-format
 msgid "Failed to mount %s on /proc/meminfo"
 msgstr "在 /proc/meminfo 中挂载 %s 失败"
 
-#: src/lxc/lxc_container.c:1099
+#: src/lxc/lxc_container.c:1100
 msgid "Cannot create /dev"
 msgstr ""
 
-#: src/lxc/lxc_container.c:1108
+#: src/lxc/lxc_container.c:1109
 #, c-format
 msgid "Failed to mount %s on /dev"
 msgstr "在 /dev 中挂载 %s 设备"
 
-#: src/lxc/lxc_container.c:1135
+#: src/lxc/lxc_container.c:1136
 msgid "Cannot create /dev/pts"
 msgstr "无法创建 /dev/pts"
 
-#: src/lxc/lxc_container.c:1144
+#: src/lxc/lxc_container.c:1145
 #, c-format
 msgid "Failed to mount %s on /dev/pts"
 msgstr "在 /dev/pts 中挂载 %s 失败"
 
-#: src/lxc/lxc_container.c:1171
+#: src/lxc/lxc_container.c:1172
 #, c-format
 msgid "Failed to symlink device %s to %s"
 msgstr "为设备 %s 符号链接为 %s 失败"
 
-#: src/lxc/lxc_container.c:1183
+#: src/lxc/lxc_container.c:1184
 msgid "Failed to bind /dev/pts/ptmx on to /dev/ptmx"
 msgstr "将 /dev/pts/ptmx 捆绑到 /dev/ptmx 失败"
 
-#: src/lxc/lxc_container.c:1193
+#: src/lxc/lxc_container.c:1194
 #, c-format
 msgid "Failed to symlink %s to %s"
 msgstr "将符号链接 %s 改为 %s 失败"
 
-#: src/lxc/lxc_container.c:1202
+#: src/lxc/lxc_container.c:1203
 #, c-format
 msgid "Failed to symlink %s to /dev/console"
 msgstr "为 /dev/console 添加符号链接 %s 失败"
 
-#: src/lxc/lxc_container.c:1225
+#: src/lxc/lxc_container.c:1226
 #, c-format
 msgid "Unable to stat bind target %s"
 msgstr "无法统计捆绑目标 %s"
 
-#: src/lxc/lxc_container.c:1231
+#: src/lxc/lxc_container.c:1232
 #, c-format
 msgid "Unable to stat bind source %s"
 msgstr "无法统计源目标 %s"
 
-#: src/lxc/lxc_container.c:1248
+#: src/lxc/lxc_container.c:1249
 #, c-format
 msgid "Failed to create bind target %s"
 msgstr "创建捆绑目标失败：%s"
 
-#: src/lxc/lxc_container.c:1255
+#: src/lxc/lxc_container.c:1256
 #, c-format
 msgid "Failed to close bind target %s"
 msgstr "关闭捆绑目标 %s 失败"
 
-#: src/lxc/lxc_container.c:1264
+#: src/lxc/lxc_container.c:1265
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "将挂载目录 %s 捆绑到 %s 失败"
 
-#: src/lxc/lxc_container.c:1273 src/lxc/lxc_container.c:1598
+#: src/lxc/lxc_container.c:1274 src/lxc/lxc_container.c:1599
 #, c-format
 msgid "Failed to make directory %s readonly"
 msgstr "让目录 %s 成为只读失败"
 
-#: src/lxc/lxc_container.c:1300
+#: src/lxc/lxc_container.c:1301
 #, c-format
 msgid "Unable to open filesystem %s"
 msgstr "无法打开文件系统 %s"
 
-#: src/lxc/lxc_container.c:1306
+#: src/lxc/lxc_container.c:1307
 msgid "Unable to create blkid library handle"
 msgstr "无法创建 blkid 库句柄"
 
-#: src/lxc/lxc_container.c:1311
+#: src/lxc/lxc_container.c:1312
 #, c-format
 msgid "Unable to associate device %s with blkid library"
 msgstr "无法使用 blkid 库关联设备 %s"
 
-#: src/lxc/lxc_container.c:1327
+#: src/lxc/lxc_container.c:1328
 #, c-format
 msgid "Too many filesystems detected for %s"
 msgstr "探测到 %s 的太多文件系统"
 
-#: src/lxc/lxc_container.c:1331
+#: src/lxc/lxc_container.c:1332
 #, c-format
 msgid "Unable to detect filesystem for %s"
 msgstr "无法为 %s 探测文件系统"
 
-#: src/lxc/lxc_container.c:1339
+#: src/lxc/lxc_container.c:1340
 #, c-format
 msgid "Unable to find filesystem type for %s"
 msgstr "无法为 %s 找到文件系统类型"
 
-#: src/lxc/lxc_container.c:1409 src/util/iohelper.c:151
+#: src/lxc/lxc_container.c:1410 src/util/iohelper.c:151
 #, c-format
 msgid "Unable to read %s"
 msgstr "无法读取 %s"
 
-#: src/lxc/lxc_container.c:1439
+#: src/lxc/lxc_container.c:1440
 #, c-format
 msgid "%s has unexpected '*' before last line"
 msgstr "%s 在最后一行前应有 '*' "
 
-#: src/lxc/lxc_container.c:1463
+#: src/lxc/lxc_container.c:1464
 #, c-format
 msgid "Failed to mount device %s to %s"
 msgstr "将设备 %s 挂载到 %s 失败"
 
-#: src/lxc/lxc_container.c:1486
+#: src/lxc/lxc_container.c:1487
 #, c-format
 msgid "Failed to mount device %s to %s, unable to detect filesystem"
 msgstr "将设备 %s 挂载到 %s 失败，无法探测文件系统。"
 
-#: src/lxc/lxc_container.c:1531
+#: src/lxc/lxc_container.c:1532
 #, c-format
 msgid "Failed to mount device %s to %s as %s"
 msgstr "无法将设备 %s 作为 %s 挂载到 %s"
 
-#: src/lxc/lxc_container.c:1589
+#: src/lxc/lxc_container.c:1590
 #, c-format
 msgid "Failed to mount directory %s as tmpfs"
 msgstr "将目录 %s 作为 tmpfs 挂载失败"
 
-#: src/lxc/lxc_container.c:1637
+#: src/lxc/lxc_container.c:1638
 #, c-format
 msgid "Unexpected filesystem type %s"
 msgstr "意外的文件系统类型 %s"
 
-#: src/lxc/lxc_container.c:1642
+#: src/lxc/lxc_container.c:1643
 #, c-format
 msgid "Cannot mount filesystem type %s"
 msgstr "无法挂载文件系统类型 %s"
 
-#: src/lxc/lxc_container.c:1693
+#: src/lxc/lxc_container.c:1694
 #, c-format
 msgid "Failed to create directory for '%s' dev '%s'"
 msgstr "为 '%s' dev '%s' 生成目录失败"
 
-#: src/lxc/lxc_container.c:2076
+#: src/lxc/lxc_container.c:2077
 #, c-format
 msgid "Failed to add capability %s: %d"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2108
+#: src/lxc/lxc_container.c:2109
 #, c-format
 msgid "Failed to remove capability %s: %d"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2116
+#: src/lxc/lxc_container.c:2117
 #, c-format
 msgid "Unsupported capabilities policy: %s"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2123
+#: src/lxc/lxc_container.c:2124
 #, c-format
 msgid "Failed to apply capabilities: %d"
 msgstr "应用容量失败：%d"
 
-#: src/lxc/lxc_container.c:2170
+#: src/lxc/lxc_container.c:2171
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() 传递无效 vm 定义"
 
-#: src/lxc/lxc_container.c:2179
+#: src/lxc/lxc_container.c:2180
 msgid "Failed to read the container continue message"
 msgstr "读取容器继续信息失败"
 
-#: src/lxc/lxc_container.c:2206
+#: src/lxc/lxc_container.c:2207
 #, fuzzy
 msgid "At least one tty is required"
 msgstr "至少需要一个 cgroup 控制器"
 
-#: src/lxc/lxc_container.c:2215
+#: src/lxc/lxc_container.c:2216
 #, c-format
 msgid "Failed to open tty %s"
 msgstr "打开 tty %s 失败"
 
-#: src/lxc/lxc_container.c:2231
+#: src/lxc/lxc_container.c:2232
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr "未找到与容器 root 相关的 init 路径 '%s'"
 
-#: src/lxc/lxc_container.c:2249
+#: src/lxc/lxc_container.c:2250
 msgid "Failed to send continue signal to controller"
 msgstr ""
 
-#: src/lxc/lxc_container.c:2284 src/lxc/lxc_controller.c:2598
+#: src/lxc/lxc_container.c:2285 src/lxc/lxc_controller.c:2598
 msgid "Unknown failure in libvirt_lxc startup"
 msgstr "启动 libvirt_lxc 时出现未知错误"
 
-#: src/lxc/lxc_container.c:2378
+#: src/lxc/lxc_container.c:2379
 msgid "Kernel doesn't support user namespace"
 msgstr "内核不支持用户名称空间"
 
-#: src/lxc/lxc_container.c:2396
+#: src/lxc/lxc_container.c:2397
 msgid "Failed to run clone container"
 msgstr "运行克隆容器失败"
 
-#: src/lxc/lxc_container.c:2457
+#: src/lxc/lxc_container.c:2458
 #, c-format
 msgid "Failed to change owner of %s to %u:%u"
 msgstr "将 %s 的拥有者改为 %u:%u 失败"
@@ -10963,8 +10953,7 @@ msgstr "没有符合 id 为 %d 的域"
 msgid "No domain with matching name '%s'"
 msgstr "没有符合名称为 '%s' 的域"
 
-#: src/lxc/lxc_driver.c:481 src/lxc/lxc_driver.c:1116
-#: src/lxc/lxc_driver.c:1230
+#: src/lxc/lxc_driver.c:481 src/lxc/lxc_driver.c:1116 src/lxc/lxc_driver.c:1230
 msgid "System lacks NETNS support"
 msgstr "系统缺少 NETNS 支持"
 
@@ -10985,31 +10974,31 @@ msgid "Failed to set memory for domain"
 msgstr "为域设定内存失败"
 
 #: src/lxc/lxc_driver.c:848 src/lxc/lxc_driver.c:967
-#: src/qemu/qemu_driver.c:9196 src/qemu/qemu_driver.c:9330
+#: src/qemu/qemu_driver.c:9340 src/qemu/qemu_driver.c:9474
 msgid "cgroup memory controller is not mounted"
 msgstr "未挂载 cgroup 内存控制器"
 
-#: src/lxc/lxc_driver.c:879 src/qemu/qemu_driver.c:9228
+#: src/lxc/lxc_driver.c:879 src/qemu/qemu_driver.c:9372
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
 "swap_hard_limit"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:889 src/qemu/qemu_driver.c:9238
+#: src/lxc/lxc_driver.c:889 src/qemu/qemu_driver.c:9382
 #, c-format
 msgid "unable to set memory %s tunable"
 msgstr "无法设定内存 %s 的可调值"
 
 #: src/lxc/lxc_driver.c:1070 src/libxl/libxl_driver.c:2252
-#: src/libxl/libxl_driver.c:2299 src/qemu/qemu_driver.c:6463
-#: src/qemu/qemu_driver.c:6511 src/xen/xen_driver.c:1635
+#: src/libxl/libxl_driver.c:2299 src/qemu/qemu_driver.c:6607
+#: src/qemu/qemu_driver.c:6655 src/xen/xen_driver.c:1635
 #: src/xen/xen_driver.c:1688
 #, c-format
 msgid "unsupported config type %s"
 msgstr "不支持的配置类型 %s"
 
-#: src/lxc/lxc_driver.c:1308 src/qemu/qemu_driver.c:5611
-#: src/qemu/qemu_driver.c:5662
+#: src/lxc/lxc_driver.c:1308 src/qemu/qemu_driver.c:5755
+#: src/qemu/qemu_driver.c:5806
 #, c-format
 msgid "unknown virt type in domain definition '%d'"
 msgstr "域定义 '%d' 中未知的 virt 类型"
@@ -11019,17 +11008,17 @@ msgstr "域定义 '%d' 中未知的 virt 类型"
 msgid "Init pid is not yet available"
 msgstr "init pid 尚不可用"
 
-#: src/lxc/lxc_driver.c:1339 src/qemu/qemu_driver.c:5634
-#: src/qemu/qemu_driver.c:5696
+#: src/lxc/lxc_driver.c:1339 src/qemu/qemu_driver.c:5778
+#: src/qemu/qemu_driver.c:5840
 msgid "Failed to get security label"
 msgstr "获得安全性标签失败"
 
-#: src/lxc/lxc_driver.c:1375 src/qemu/qemu_driver.c:5736
+#: src/lxc/lxc_driver.c:1375 src/qemu/qemu_driver.c:5880
 #, c-format
 msgid "security model string exceeds max %d bytes"
 msgstr "安全性模式超过最大的 %d 字节"
 
-#: src/lxc/lxc_driver.c:1384 src/qemu/qemu_driver.c:5746
+#: src/lxc/lxc_driver.c:1384 src/qemu/qemu_driver.c:5890
 #, c-format
 msgid "security DOI string exceeds max %d bytes"
 msgstr "安全性 DOI 超过最大的 %d 字节"
@@ -11039,46 +11028,46 @@ msgid "Failed to initialize security drivers"
 msgstr "初始化安全驱动程序失败"
 
 #: src/lxc/lxc_driver.c:1841 src/lxc/lxc_driver.c:1966
-#: src/lxc/lxc_driver.c:2106 src/qemu/qemu_driver.c:8313
-#: src/qemu/qemu_driver.c:9864 src/qemu/qemu_driver.c:10179
+#: src/lxc/lxc_driver.c:2106 src/qemu/qemu_driver.c:8457
+#: src/qemu/qemu_driver.c:10008 src/qemu/qemu_driver.c:10323
 msgid "cgroup CPU controller is not mounted"
 msgstr "未挂载 cgroup CPU 控制器"
 
-#: src/lxc/lxc_driver.c:2229 src/qemu/qemu_driver.c:8403
+#: src/lxc/lxc_driver.c:2229 src/qemu/qemu_driver.c:8547
 #, fuzzy, c-format
 msgid "unknown parameter '%s'"
 msgstr "未知参数类型：%d"
 
-#: src/lxc/lxc_driver.c:2252 src/qemu/qemu_driver.c:8426
+#: src/lxc/lxc_driver.c:2252 src/qemu/qemu_driver.c:8570
 #, c-format
 msgid "unable to parse blkio device '%s' '%s'"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2258 src/qemu/qemu_driver.c:8432
+#: src/lxc/lxc_driver.c:2258 src/qemu/qemu_driver.c:8576
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "参数 '%s' 的无效类型 '%s'，应为 '%s'。"
 
-#: src/lxc/lxc_driver.c:2299 src/qemu/qemu_driver.c:8475
+#: src/lxc/lxc_driver.c:2299 src/qemu/qemu_driver.c:8619
 #, c-format
 msgid "Unknown parameter %s"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2364 src/lxc/lxc_driver.c:2444
 #: src/lxc/lxc_driver.c:2582 src/lxc/lxc_driver.c:2776
-#: src/qemu/qemu_driver.c:8573 src/qemu/qemu_driver.c:8777
+#: src/qemu/qemu_driver.c:8717 src/qemu/qemu_driver.c:8921
 msgid "blkio cgroup isn't mounted"
 msgstr "未挂账 blkio cgroup"
 
 #: src/lxc/lxc_driver.c:2380 src/lxc/lxc_driver.c:2462
-#: src/qemu/qemu_driver.c:10318 src/qemu/qemu_driver.c:10393
-#: src/qemu/qemu_driver.c:10481 src/test/test_driver.c:3404
+#: src/qemu/qemu_driver.c:10462 src/qemu/qemu_driver.c:10537
+#: src/qemu/qemu_driver.c:10625 src/test/test_driver.c:3404
 #, c-format
 msgid "invalid path: %s"
 msgstr "无效路径：%s"
 
 #: src/lxc/lxc_driver.c:2387 src/lxc/lxc_driver.c:2469
-#: src/qemu/qemu_driver.c:10400 src/qemu/qemu_driver.c:10488
+#: src/qemu/qemu_driver.c:10544 src/qemu/qemu_driver.c:10632
 #: src/qemu/qemu_hotplug.c:176
 #, c-format
 msgid "missing disk device alias name for %s"
@@ -11088,7 +11077,7 @@ msgstr "缺少 %s 的磁盘设备别名"
 msgid "domain stats query failed"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2658 src/qemu/qemu_driver.c:8649
+#: src/lxc/lxc_driver.c:2658 src/qemu/qemu_driver.c:8793
 #, c-format
 msgid "Unknown blkio parameter %s"
 msgstr ""
@@ -11096,9 +11085,9 @@ msgstr ""
 #: src/lxc/lxc_driver.c:2940 src/lxc/lxc_driver.c:2973
 #: src/lxc/lxc_driver.c:3005 src/lxc/lxc_driver.c:3036
 #: src/lxc/lxc_driver.c:3067 src/lxc/lxc_driver.c:3099
-#: src/qemu/qemu_driver.c:8948 src/qemu/qemu_driver.c:8981
-#: src/qemu/qemu_driver.c:9013 src/qemu/qemu_driver.c:9044
-#: src/qemu/qemu_driver.c:9075 src/qemu/qemu_driver.c:9107
+#: src/qemu/qemu_driver.c:9092 src/qemu/qemu_driver.c:9125
+#: src/qemu/qemu_driver.c:9157 src/qemu/qemu_driver.c:9188
+#: src/qemu/qemu_driver.c:9219 src/qemu/qemu_driver.c:9251
 #: src/util/virtypedparam.c:193 src/util/virtypedparam.c:250
 #, c-format
 msgid "Field name '%s' too long"
@@ -11119,7 +11108,7 @@ msgid "Cannot create autostart directory %s"
 msgstr "无法生成自动启动目录 %s"
 
 #: src/lxc/lxc_driver.c:3241 src/libxl/libxl_driver.c:3742
-#: src/qemu/qemu_driver.c:8248 src/uml/uml_driver.c:2500
+#: src/qemu/qemu_driver.c:8392 src/uml/uml_driver.c:2500
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr "为 '%s' 创建符号链接 '%s' 失败"
@@ -11142,7 +11131,7 @@ msgid "default"
 msgstr "默认"
 
 #: src/lxc/lxc_driver.c:3497 src/libxl/libxl_driver.c:4029
-#: src/qemu/qemu_driver.c:15432 src/uml/uml_driver.c:2654
+#: src/qemu/qemu_driver.c:15576 src/uml/uml_driver.c:2654
 #: src/xen/xen_driver.c:2706
 #, c-format
 msgid "character device %s is not using a PTY"
@@ -11180,7 +11169,7 @@ msgstr "无法向 init pid %llu 发送 SIGTERM"
 msgid "target %s already exists."
 msgstr "目标 %s 已存在。"
 
-#: src/lxc/lxc_driver.c:3798 src/qemu/qemu_driver.c:7427
+#: src/lxc/lxc_driver.c:3798 src/qemu/qemu_driver.c:7571
 msgid "device is already in the domain configuration"
 msgstr "该域配置中已经有设备"
 
@@ -11193,15 +11182,15 @@ msgid "persistent update of device is not supported"
 msgstr "不支持设备的持久更新"
 
 #: src/lxc/lxc_driver.c:3866 src/libxl/libxl_driver.c:3139
-#: src/qemu/qemu_driver.c:7551
+#: src/qemu/qemu_driver.c:7695
 #, c-format
 msgid "no target device %s"
 msgstr "无目标设备 %s"
 
 #: src/lxc/lxc_driver.c:3887 src/libxl/libxl_driver.c:3158
-#: src/qemu/qemu_driver.c:7570 src/qemu/qemu_driver.c:7594
-#: src/qemu/qemu_hotplug.c:1505 src/qemu/qemu_hotplug.c:3929
-#: src/qemu/qemu_hotplug.c:3984
+#: src/qemu/qemu_driver.c:7714 src/qemu/qemu_driver.c:7738
+#: src/qemu/qemu_hotplug.c:1511 src/qemu/qemu_hotplug.c:3935
+#: src/qemu/qemu_hotplug.c:3990
 msgid "device not present in domain configuration"
 msgstr "域配置中没有设备"
 
@@ -11232,8 +11221,8 @@ msgid "devices cgroup isn't mounted"
 msgstr "为挂载设备 cgroup"
 
 #: src/lxc/lxc_driver.c:4095 src/libxl/libxl_driver.c:2599
-#: src/qemu/qemu_driver.c:7398 src/qemu/qemu_hotplug.c:342
-#: src/qemu/qemu_hotplug.c:573 src/qemu/qemu_hotplug.c:687
+#: src/qemu/qemu_driver.c:7542 src/qemu/qemu_hotplug.c:343
+#: src/qemu/qemu_hotplug.c:579 src/qemu/qemu_hotplug.c:693
 #: src/uml/uml_driver.c:2200
 #, c-format
 msgid "target %s already exists"
@@ -11286,7 +11275,7 @@ msgid "device type '%s' cannot be attached"
 msgstr "无法附加设备类型 '%s'"
 
 #: src/lxc/lxc_driver.c:4608 src/libxl/libxl_driver.c:2738
-#: src/qemu/qemu_hotplug.c:3315 src/uml/uml_driver.c:2331
+#: src/qemu/qemu_hotplug.c:3321 src/uml/uml_driver.c:2331
 #, c-format
 msgid "disk %s not found"
 msgstr "未找到磁盘 %s"
@@ -11311,16 +11300,16 @@ msgid "device type '%s' cannot be detached"
 msgstr "无法分离设备类型 '%s' "
 
 #: src/lxc/lxc_driver.c:5000 src/lxc/lxc_driver.c:5129
-#: src/lxc/lxc_driver.c:5242 src/qemu/qemu_driver.c:7799
-#: src/qemu/qemu_driver.c:7946 src/qemu/qemu_driver.c:8082
+#: src/lxc/lxc_driver.c:5242 src/qemu/qemu_driver.c:7943
+#: src/qemu/qemu_driver.c:8090 src/qemu/qemu_driver.c:8226
 msgid "cannot do live update a device on inactive domain"
 msgstr "无法在不活跃的域中进行设备 live 更新"
 
 #: src/lxc/lxc_driver.c:5011 src/lxc/lxc_driver.c:5137
 #: src/lxc/lxc_driver.c:5250 src/libxl/libxl_driver.c:3291
 #: src/libxl/libxl_driver.c:3402 src/libxl/libxl_driver.c:3510
-#: src/qemu/qemu_driver.c:7807 src/qemu/qemu_driver.c:7954
-#: src/qemu/qemu_driver.c:8090
+#: src/qemu/qemu_driver.c:7951 src/qemu/qemu_driver.c:8098
+#: src/qemu/qemu_driver.c:8234
 msgid "cannot modify device on transient domain"
 msgstr "无法修改临时域中的设备"
 
@@ -11332,7 +11321,7 @@ msgstr "无法修改 live 设备"
 msgid "domain is not active"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:5681 src/qemu/qemu_driver.c:17570
+#: src/lxc/lxc_driver.c:5681 src/qemu/qemu_driver.c:17711
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr "未挂载 cgroup CPUACCT 控制器"
 
@@ -11436,7 +11425,7 @@ msgid "terminated abnormally"
 msgstr ""
 
 #: src/lxc/lxc_process.c:1262 src/lxc/lxc_process.c:1270
-#: src/lxc/lxc_process.c:1310 src/lxc/lxc_process.c:1342
+#: src/lxc/lxc_process.c:1310 src/lxc/lxc_process.c:1339
 #, c-format
 msgid "guest failed to start: %s"
 msgstr "虚拟机无法启动：%s"
@@ -11450,12 +11439,12 @@ msgstr "读取 pid 文件 %s/%s.pid 失败"
 msgid "could not close handshake fd"
 msgstr "无法关闭握手 fd"
 
-#: src/lxc/lxc_process.c:1329 src/lxc/lxc_process.c:1515
+#: src/lxc/lxc_process.c:1326 src/lxc/lxc_process.c:1509
 #, c-format
 msgid "No valid cgroup for machine %s"
 msgstr "机器 %s 没有有效 cgroup"
 
-#: src/lxc/lxc_process.c:1380
+#: src/lxc/lxc_process.c:1377
 msgid "could not close logfile"
 msgstr "无法关闭 logfile"
 
@@ -11511,21 +11500,21 @@ msgstr "打开域映像文件 '%s' 失败"
 msgid "failed to read libxl header"
 msgstr "读取 libxl 标头失败"
 
-#: src/libxl/libxl_domain.c:872 src/qemu/qemu_driver.c:5891
+#: src/libxl/libxl_domain.c:872 src/qemu/qemu_driver.c:6035
 msgid "image magic is incorrect"
 msgstr "image magic 不正确"
 
-#: src/libxl/libxl_domain.c:878 src/qemu/qemu_driver.c:5917
+#: src/libxl/libxl_domain.c:878 src/qemu/qemu_driver.c:6061
 #, c-format
 msgid "image version is not supported (%d > %d)"
 msgstr "映像版本不受支持（%d > %d）"
 
-#: src/libxl/libxl_domain.c:885 src/qemu/qemu_driver.c:5924
+#: src/libxl/libxl_domain.c:885 src/qemu/qemu_driver.c:6068
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "无效 XML 长度：%d"
 
-#: src/libxl/libxl_domain.c:893 src/qemu/qemu_driver.c:5933
+#: src/libxl/libxl_domain.c:893 src/qemu/qemu_driver.c:6077
 msgid "failed to read XML"
 msgstr "读取 XML 失败"
 
@@ -11534,7 +11523,7 @@ msgstr "读取 XML 失败"
 msgid "Failed to pin vcpu '%d' with libxenlight"
 msgstr "使用 libxenlight pin vcpu '%d' 失败"
 
-#: src/libxl/libxl_domain.c:1263 src/qemu/qemu_driver.c:6358
+#: src/libxl/libxl_domain.c:1263 src/qemu/qemu_driver.c:6502
 #, c-format
 msgid ""
 "cannot restore domain '%s' uuid %s from a file which belongs to domain '%s' "
@@ -11727,7 +11716,7 @@ msgstr "无法在不活跃的域中设定 vcpu"
 msgid "could not determine max vcpus for the domain"
 msgstr "无法决定该域的最大 vcpu"
 
-#: src/libxl/libxl_driver.c:1806 src/qemu/qemu_driver.c:4805
+#: src/libxl/libxl_driver.c:1806 src/qemu/qemu_driver.c:4949
 #: src/xen/xend_internal.c:1823 src/xen/xm_internal.c:699
 #, c-format
 msgid ""
@@ -11760,21 +11749,21 @@ msgstr "使用 libxenlight 为域 '%d' 列出 vcpu 失败"
 msgid "parsing sxpr config failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2476 src/qemu/qemu_driver.c:6996
+#: src/libxl/libxl_driver.c:2476 src/qemu/qemu_driver.c:7140
 #: src/uml/uml_driver.c:2160 src/vmware/vmware_driver.c:798
 msgid "cannot undefine transient domain"
 msgstr "无法取消定义瞬时域"
 
-#: src/libxl/libxl_driver.c:2488 src/qemu/qemu_driver.c:7021
+#: src/libxl/libxl_driver.c:2488 src/qemu/qemu_driver.c:7165
 msgid "Failed to remove domain managed save image"
 msgstr "删除域管理的保存映像失败"
 
-#: src/libxl/libxl_driver.c:2493 src/qemu/qemu_driver.c:7027
+#: src/libxl/libxl_driver.c:2493 src/qemu/qemu_driver.c:7171
 #: src/test/test_driver.c:3162 tools/virsh-domain.c:3801
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "域管理的保存映像存在时拒绝取消定义"
 
-#: src/libxl/libxl_driver.c:2549 src/qemu/qemu_driver.c:7301
+#: src/libxl/libxl_driver.c:2549 src/qemu/qemu_driver.c:7445
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "没有总线为 '%s' 且目标为 '%s' 的设备"
@@ -11789,7 +11778,7 @@ msgstr "%s 设备不支持可移动介质"
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "libxenlight 无法在域 '%s' 中更改介质"
 
-#: src/libxl/libxl_driver.c:2605 src/qemu/qemu_hotplug.c:698
+#: src/libxl/libxl_driver.c:2605 src/qemu/qemu_hotplug.c:704
 #: src/uml/uml_driver.c:2207
 msgid "disk source path is missing"
 msgstr "缺少磁盘源"
@@ -11799,13 +11788,13 @@ msgstr "缺少磁盘源"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "libxenlight 附加磁盘 '%s' 失败"
 
-#: src/libxl/libxl_driver.c:2627 src/qemu/qemu_hotplug.c:822
+#: src/libxl/libxl_driver.c:2627 src/qemu/qemu_hotplug.c:828
 #: src/uml/uml_driver.c:2277
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "无法热插拔磁盘总线 '%s'。"
 
-#: src/libxl/libxl_driver.c:2633 src/qemu/qemu_hotplug.c:828
+#: src/libxl/libxl_driver.c:2633 src/qemu/qemu_hotplug.c:834
 #, c-format
 msgid "disk device type '%s' cannot be hotplugged"
 msgstr "无法热插拔磁盘设备类型 '%s'。"
@@ -11821,13 +11810,13 @@ msgid "libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2700 src/libxl/libxl_driver.c:3027
-#: src/qemu/qemu_hotplug.c:1856 src/qemu/qemu_hotplug.c:3640
+#: src/qemu/qemu_hotplug.c:1862 src/qemu/qemu_hotplug.c:3646
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "不支持 hostdev 模式 '%s'"
 
-#: src/libxl/libxl_driver.c:2713 src/qemu/qemu_hotplug.c:1882
-#: src/qemu/qemu_hotplug.c:3606
+#: src/libxl/libxl_driver.c:2713 src/qemu/qemu_hotplug.c:1888
+#: src/qemu/qemu_hotplug.c:3612
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "不支持 hostdev 子系统类型 '%s'"
@@ -11858,12 +11847,12 @@ msgid ""
 "already exists"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2974 src/qemu/qemu_hotplug.c:3651
+#: src/libxl/libxl_driver.c:2974 src/qemu/qemu_hotplug.c:3657
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "未找到主机 pci 设备 %.4x:%.2x:%.2x.%.1x"
 
-#: src/libxl/libxl_driver.c:2982 src/qemu/qemu_hotplug.c:3492
+#: src/libxl/libxl_driver.c:2982 src/qemu/qemu_hotplug.c:3498
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "无法热插拔多功能 PCI 设备：%.4x:%.2x:%.2x.%.1x"
@@ -11879,7 +11868,7 @@ msgstr ""
 msgid "libxenlight failed to detach network device"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3193 src/qemu/qemu_driver.c:7323
+#: src/libxl/libxl_driver.c:3193 src/qemu/qemu_driver.c:7467
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "无法更新磁盘总线 '%s'"
@@ -11890,12 +11879,12 @@ msgid "device type '%s' cannot be updated"
 msgstr "无法更新设备类型 '%s'"
 
 #: src/libxl/libxl_driver.c:3221 src/openvz/openvz_driver.c:2056
-#: src/qemu/qemu_driver.c:7673
+#: src/qemu/qemu_driver.c:7817
 #, c-format
 msgid "target %s doesn't exist."
 msgstr "目标 %s 不存在"
 
-#: src/libxl/libxl_driver.c:3227 src/qemu/qemu_driver.c:7680
+#: src/libxl/libxl_driver.c:3227 src/qemu/qemu_driver.c:7824
 msgid "this disk doesn't support update"
 msgstr "这个磁盘不支持更新"
 
@@ -11936,12 +11925,12 @@ msgstr "使用 libxenlight 为域 '%d' 设置调度程序参数失败"
 msgid "Named device aliases are not supported"
 msgstr "不支持命名的设备别名"
 
-#: src/libxl/libxl_driver.c:4022 src/qemu/qemu_driver.c:15425
+#: src/libxl/libxl_driver.c:4022 src/qemu/qemu_driver.c:15569
 #, c-format
 msgid "cannot find character device %s"
 msgstr "无法找到字符设备 %s"
 
-#: src/libxl/libxl_driver.c:4042 src/qemu/qemu_driver.c:15445
+#: src/libxl/libxl_driver.c:4042 src/qemu/qemu_driver.c:15589
 msgid "Active console session exists for this domain"
 msgstr "这个域有活跃控制台会话"
 
@@ -11954,7 +11943,7 @@ msgstr "无法获取 numa 参数"
 msgid "Node %zu out of range"
 msgstr "节点 %zu 超出范围"
 
-#: src/libxl/libxl_driver.c:4353 src/qemu/qemu_driver.c:12239
+#: src/libxl/libxl_driver.c:4353 src/qemu/qemu_driver.c:12383
 #: src/xen/xen_driver.c:2502
 #, c-format
 msgid "device %s is not a PCI device"
@@ -12301,7 +12290,7 @@ msgstr "没有带匹配 uuid 的网络"
 
 #: src/network/bridge_driver.c:2507 src/network/bridge_driver.c:3793
 #: src/network/bridge_driver.c:4202 src/network/bridge_driver.c:4402
-#: src/network/bridge_driver.c:4561 src/parallels/parallels_network.c:494
+#: src/network/bridge_driver.c:4561 src/parallels/parallels_network.c:492
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "没有匹配名称 '%s' 的网络"
@@ -12381,8 +12370,8 @@ msgstr "为网络 %s 指定的 <vlan> 元素，其类型不支持 vlan 配置。
 
 #: src/network/bridge_driver.c:3072 src/network/bridge_driver.c:3144
 #: src/network/bridge_driver.c:3302 src/network/bridge_driver.c:3337
-#: src/network/bridge_driver.c:3463 src/parallels/parallels_network.c:470
-#: src/parallels/parallels_network.c:521 src/parallels/parallels_network.c:587
+#: src/network/bridge_driver.c:3463 src/parallels/parallels_network.c:468
+#: src/parallels/parallels_network.c:519 src/parallels/parallels_network.c:585
 #: src/test/test_driver.c:3815
 msgid "no network with matching uuid"
 msgstr "没有带匹配 uuid 的网络"
@@ -13566,7 +13555,7 @@ msgstr "为 %s 设定 %s 失败：数值太大"
 msgid "no domain with matching uuid '%s'"
 msgstr "没有匹配 uuid '%s' 的域"
 
-#: src/openvz/openvz_driver.c:2033 src/qemu/qemu_driver.c:10645
+#: src/openvz/openvz_driver.c:2033 src/qemu/qemu_driver.c:10789
 #: src/test/test_driver.c:3460
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
@@ -13603,7 +13592,7 @@ msgstr "意外的平行 URI 路径 '%s'，尝试 parallels:///system"
 msgid "Unsupported OS type: %s"
 msgstr "不支持的 OS 类型：%s"
 
-#: src/parallels/parallels_driver.c:793 src/qemu/qemu_driver.c:5484
+#: src/parallels/parallels_driver.c:793 src/qemu/qemu_driver.c:5628
 msgid "cannot list vcpu pinning for an inactive domain"
 msgstr "无法为不活跃域列出 vcpu pinning"
 
@@ -13611,31 +13600,31 @@ msgstr "无法为不活跃域列出 vcpu pinning"
 msgid "Can't find prlctl command in the PATH env"
 msgstr "无法在 PATH env 中找到 prlctl 命令"
 
-#: src/parallels/parallels_network.c:40 src/parallels/parallels_utils.h:38
+#: src/parallels/parallels_network.c:41 src/parallels/parallels_utils.h:38
 msgid "Can't parse prlctl output"
 msgstr "无法节写 prlctl 输出结果"
 
-#: src/parallels/parallels_network.c:64
+#: src/parallels/parallels_network.c:62
 #, c-format
 msgid "cannot read link '%s'"
 msgstr "无法读取链接 '%s'"
 
-#: src/parallels/parallels_network.c:77
+#: src/parallels/parallels_network.c:75
 #, c-format
 msgid "Error reading file '%s'"
 msgstr "读取文件 '%s' 出错"
 
-#: src/parallels/parallels_network.c:84
+#: src/parallels/parallels_network.c:82
 #, c-format
 msgid "Error reading MAC from '%s'"
 msgstr "从 '%s' 读取 MAC 出错"
 
-#: src/parallels/parallels_network.c:90
+#: src/parallels/parallels_network.c:88
 #, c-format
 msgid "Can't parse MAC '%s'"
 msgstr "无法解析 MAC 地址 '%s'"
 
-#: src/parallels/parallels_network.c:257
+#: src/parallels/parallels_network.c:255
 msgid "Can't parse UUID"
 msgstr "无法解析 UUID"
 
@@ -14825,12 +14814,12 @@ msgstr "这个主机中的没存 cgroup 不可用"
 msgid "CPU tuning is not available on this host"
 msgstr "这个主机中的 CPU 调节不可用"
 
-#: src/qemu/qemu_cgroup.c:870
+#: src/qemu/qemu_cgroup.c:867
 msgid "Cannot setup cgroups until process is started"
 msgstr "进程启动前无法设定 cgroups"
 
-#: src/qemu/qemu_cgroup.c:1007 src/qemu/qemu_cgroup.c:1106
-#: src/qemu/qemu_cgroup.c:1180
+#: src/qemu/qemu_cgroup.c:1004 src/qemu/qemu_cgroup.c:1103
+#: src/qemu/qemu_cgroup.c:1177
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr "调度程序调节需要 cgroup cpu"
 
@@ -14843,7 +14832,7 @@ msgstr "问接口检索文件识别符失败"
 msgid "cannot use custom tap device in session mode"
 msgstr "无法成为会话领导者"
 
-#: src/qemu/qemu_command.c:311 src/qemu/qemu_hotplug.c:1917
+#: src/qemu/qemu_command.c:311 src/qemu/qemu_hotplug.c:1923
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "缺少计时器名称"
@@ -15223,7 +15212,7 @@ msgstr "这个 QEMU 二进制不支持弃用"
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制不支持磁盘 aio 模式"
 
-#: src/qemu/qemu_command.c:3727 src/qemu/qemu_driver.c:17091
+#: src/qemu/qemu_command.c:3727 src/qemu/qemu_driver.c:17232
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持块 I/O节流"
 
@@ -15465,7 +15454,7 @@ msgid "invalid PCI passthrough type '%s'"
 msgstr ""
 
 #: src/qemu/qemu_command.c:5445 src/qemu/qemu_command.c:5484
-#: src/qemu/qemu_hotplug.c:1310
+#: src/qemu/qemu_hotplug.c:1316
 #, c-format
 msgid ""
 "non-zero domain='%.4x' in host device PCI address not supported in this QEMU "
@@ -15742,7 +15731,7 @@ msgstr ""
 msgid "Error generating NIC -device string"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7815 src/qemu/qemu_hotplug.c:901
+#: src/qemu/qemu_command.c:7815 src/qemu/qemu_hotplug.c:907
 #, c-format
 msgid "Multiqueue network is not supported for: %s"
 msgstr "%s 不支持多队列网络"
@@ -15780,18 +15769,18 @@ msgstr ""
 msgid "this qemu doesn't support passing readonly attribute"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8300 src/qemu/qemu_driver.c:9179
-#: src/qemu/qemu_driver.c:9316
+#: src/qemu/qemu_command.c:8300 src/qemu/qemu_driver.c:9323
+#: src/qemu/qemu_driver.c:9460
 msgid "Memory tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8306 src/qemu/qemu_driver.c:8556
-#: src/qemu/qemu_driver.c:8756
+#: src/qemu/qemu_command.c:8306 src/qemu/qemu_driver.c:8700
+#: src/qemu/qemu_driver.c:8900
 msgid "Block I/O tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8314 src/qemu/qemu_driver.c:8299
-#: src/qemu/qemu_driver.c:9841 src/qemu/qemu_driver.c:10151
+#: src/qemu/qemu_command.c:8314 src/qemu/qemu_driver.c:8443
+#: src/qemu/qemu_driver.c:9985 src/qemu/qemu_driver.c:10295
 msgid "CPU tuning is not available in session mode"
 msgstr ""
 
@@ -15823,8 +15812,8 @@ msgstr "QEMU 二进制 %s 不支持 smbios 设定"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "域 '%s' sysinfo 不可用"
 
-#: src/qemu/qemu_command.c:8570 src/qemu/qemu_hotplug.c:1527
-#: src/qemu/qemu_hotplug.c:3935 src/qemu/qemu_hotplug.c:3992
+#: src/qemu/qemu_command.c:8570 src/qemu/qemu_hotplug.c:1533
+#: src/qemu/qemu_hotplug.c:3941 src/qemu/qemu_hotplug.c:3998
 msgid "qemu does not support -device"
 msgstr "qemu 不支持 -device"
 
@@ -15892,7 +15881,7 @@ msgstr ""
 msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8997 src/qemu/qemu_hotplug.c:767
+#: src/qemu/qemu_command.c:8997 src/qemu/qemu_hotplug.c:773
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "磁盘 '%s' 不支持驱动程序名称 '%s' "
@@ -16000,7 +15989,7 @@ msgstr "这个 QEMU 二进制缺少 hda 支持"
 msgid "invalid watchdog action"
 msgstr "无效 watchdog 动作"
 
-#: src/qemu/qemu_command.c:10020 src/qemu/qemu_hotplug.c:1370
+#: src/qemu/qemu_command.c:10020 src/qemu/qemu_hotplug.c:1376
 #, fuzzy
 msgid "redirected devices are not supported by this QEMU"
 msgstr "这个 QEMU 不支持磁盘 device='lun' "
@@ -16031,7 +16020,7 @@ msgid ""
 "booting from assigned SCSI devices is not supported with this version of qemu"
 msgstr "这个版本的 qemu 不支持使用分配的 SCSI 设备引导"
 
-#: src/qemu/qemu_command.c:10109 src/qemu/qemu_hotplug.c:1240
+#: src/qemu/qemu_command.c:10109 src/qemu/qemu_hotplug.c:1246
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "qemu 的这个版本不支持 VFIO PCI 设备分配"
 
@@ -16039,7 +16028,7 @@ msgstr "qemu 的这个版本不支持 VFIO PCI 设备分配"
 msgid "PCI device assignment is not supported by this version of qemu"
 msgstr "qemu 的这个版本不支持 PCI 设备分配"
 
-#: src/qemu/qemu_command.c:10175 src/qemu/qemu_hotplug.c:1760
+#: src/qemu/qemu_command.c:10175 src/qemu/qemu_hotplug.c:1766
 msgid "SCSI passthrough is not supported by this version of qemu"
 msgstr "这个版本的 qemu 不支持 SCSI 转移"
 
@@ -16612,7 +16601,7 @@ msgid "Unable to write to domain logfile %s"
 msgstr "无法写入域日志文件 %s"
 
 #: src/qemu/qemu_domain.c:2166 src/storage/storage_backend.c:1085
-#: src/storage/storage_backend_fs.c:1245
+#: src/storage/storage_backend_fs.c:1253
 msgid "unable to find kvm-img or qemu-img"
 msgstr "无法找到 kvm-img 或者 qemu-img"
 
@@ -16626,11 +16615,16 @@ msgstr "无法生成快照目录 '%s'"
 msgid "Disk device '%s' does not support snapshotting"
 msgstr "磁盘设备 '%s' 不支持快照功能"
 
-#: src/qemu/qemu_domain.c:2816
+#: src/qemu/qemu_domain.c:2766 src/qemu/qemu_domain.c:2774
+#, c-format
+msgid "disk '%s' already in active block job"
+msgstr ""
+
+#: src/qemu/qemu_domain.c:2839
 msgid "QEMU guest agent is not available due to an error"
 msgstr "由于出错导致 QEMU 虚拟机代理不可用"
 
-#: src/qemu/qemu_domain.c:2824
+#: src/qemu/qemu_domain.c:2847
 msgid "QEMU guest agent is not configured"
 msgstr "未配置 QEMU 虚拟机代理"
 
@@ -16780,8 +16774,8 @@ msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///session"
 msgid "Unable to open %s"
 msgstr "无法打开 tty %s"
 
-#: src/qemu/qemu_driver.c:1430 src/qemu/qemu_driver.c:4996
-#: src/qemu/qemu_driver.c:5335 src/qemu/qemu_process.c:2513
+#: src/qemu/qemu_driver.c:1430 src/qemu/qemu_driver.c:5140
+#: src/qemu/qemu_driver.c:5479 src/qemu/qemu_process.c:2432
 msgid "cpu affinity is not supported"
 msgstr "不支持 cpu 亲和性"
 
@@ -16801,7 +16795,7 @@ msgid "domain is pmsuspended"
 msgstr "域为 pm 暂停的"
 
 #: src/qemu/qemu_driver.c:1934 src/qemu/qemu_migration.c:5243
-#: src/qemu/qemu_process.c:603 src/qemu/qemu_process.c:5015
+#: src/qemu/qemu_process.c:603 src/qemu/qemu_process.c:4934
 msgid "resume operation failed"
 msgstr "恢复操作失败"
 
@@ -16843,7 +16837,7 @@ msgstr "无法为域读取 cputime"
 msgid "failed to write header to domain save file '%s'"
 msgstr "将标头写入域保存文件 '%s' 失败"
 
-#: src/qemu/qemu_driver.c:2846 src/qemu/qemu_driver.c:6287
+#: src/qemu/qemu_driver.c:2846 src/qemu/qemu_driver.c:6431
 #, c-format
 msgid "failed to write xml to '%s'"
 msgstr "将 xml 写入 '%s' 失败"
@@ -16873,14 +16867,14 @@ msgstr "生成 '%s' 的子进程的错误"
 msgid "Error from child process opening '%s'"
 msgstr "从自进程打开 '%s' 出错"
 
-#: src/qemu/qemu_driver.c:3044 src/qemu/qemu_process.c:4268
+#: src/qemu/qemu_driver.c:3044 src/qemu/qemu_process.c:4187
 #: src/storage/storage_backend.c:511
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr "创建文件 '%s' 失败"
 
-#: src/qemu/qemu_driver.c:3045 src/qemu/qemu_process.c:4259
-#: src/storage/storage_backend_fs.c:1443
+#: src/qemu/qemu_driver.c:3045 src/qemu/qemu_process.c:4178
+#: src/storage/storage_backend_fs.c:1451
 #: src/storage/storage_backend_gluster.c:695 src/util/virfile.c:1347
 #: src/util/virstoragefile.c:875
 #, c-format
@@ -16888,7 +16882,7 @@ msgid "Failed to open file '%s'"
 msgstr "打开文件 '%s' 失败"
 
 #: src/qemu/qemu_driver.c:3110 src/qemu/qemu_driver.c:3599
-#: src/qemu/qemu_driver.c:5859
+#: src/qemu/qemu_driver.c:6003
 msgid "bypass cache unsupported by this system"
 msgstr "这个系统不支持的旁路缓存"
 
@@ -16898,10 +16892,10 @@ msgid "unable to write %s"
 msgstr "无法写入 %s"
 
 #: src/qemu/qemu_driver.c:3208 src/qemu/qemu_driver.c:3223
-#: src/qemu/qemu_driver.c:3747 src/qemu/qemu_driver.c:13127
-#: src/qemu/qemu_driver.c:13918 src/qemu/qemu_driver.c:14883
-#: src/qemu/qemu_driver.c:14936 src/qemu/qemu_driver.c:15619
-#: src/qemu/qemu_hotplug.c:546 src/qemu/qemu_migration.c:1784
+#: src/qemu/qemu_driver.c:3747 src/qemu/qemu_driver.c:13271
+#: src/qemu/qemu_driver.c:14062 src/qemu/qemu_driver.c:15027
+#: src/qemu/qemu_driver.c:15080 src/qemu/qemu_driver.c:15763
+#: src/qemu/qemu_hotplug.c:552 src/qemu/qemu_migration.c:1784
 #: src/qemu/qemu_migration.c:4321 src/qemu/qemu_migration.c:4780
 #: src/qemu/qemu_migration.c:5157 src/qemu/qemu_migration.c:5365
 #: src/qemu/qemu_process.c:582
@@ -16917,7 +16911,7 @@ msgid "Invalid save image format specified in configuration file"
 msgstr "配置文件中指定的无效映像格式"
 
 #: src/qemu/qemu_driver.c:3341 src/qemu/qemu_driver.c:3431
-#: src/qemu/qemu_driver.c:13947
+#: src/qemu/qemu_driver.c:14091
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr "用于配置文件中映像格式的压缩程序不可用"
@@ -16968,7 +16962,7 @@ msgstr "转储失败后恢复"
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr "目前只支持提取页面 ID 0 的快照"
 
-#: src/qemu/qemu_driver.c:3861 src/qemu/qemu_driver.c:11119
+#: src/qemu/qemu_driver.c:3861 src/qemu/qemu_driver.c:11263
 #: src/vbox/vbox_common.c:7297
 #, c-format
 msgid "mkostemp(\"%s\") failed"
@@ -16986,916 +16980,910 @@ msgstr "转储失败"
 msgid "Resuming after dump failed"
 msgstr "转储失败后恢复"
 
-#: src/qemu/qemu_driver.c:4582
+#: src/qemu/qemu_driver.c:4726
 msgid "qemu didn't unplug the vCPUs properly"
 msgstr "qemu 没有正确取出 vCPUs"
 
-#: src/qemu/qemu_driver.c:4590 src/qemu/qemu_process.c:2287
+#: src/qemu/qemu_driver.c:4734 src/qemu/qemu_process.c:2206
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr "从 QEMU 监控程序中获得错误的 vCPU 数。得到的是 %d，应为 %d。"
 
-#: src/qemu/qemu_driver.c:4621
+#: src/qemu/qemu_driver.c:4765
 #, c-format
 msgid "unable to add vcpu %zu task %d to cgroup"
 msgstr "无法在 cgroup 中添加 vcpu %zu task %d"
 
-#: src/qemu/qemu_driver.c:4655
+#: src/qemu/qemu_driver.c:4799
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for vcpu %zu"
 msgstr "无法在 cgroup 中为 vcpu %zu 设定 cpuset.cpus"
 
-#: src/qemu/qemu_driver.c:4664
+#: src/qemu/qemu_driver.c:4808
 #, c-format
 msgid "failed to set cpu affinity for vcpu %zu"
 msgstr "无法为 vcpu %zu 设定 cpu 亲和性"
 
-#: src/qemu/qemu_driver.c:4712
+#: src/qemu/qemu_driver.c:4856
 msgid "cannot change vcpu count of this domain"
 msgstr "无法更改这个域的 vcpu 计数"
 
-#: src/qemu/qemu_driver.c:4748 src/test/test_driver.c:2656
+#: src/qemu/qemu_driver.c:4892 src/test/test_driver.c:2656
 #: src/xen/xen_driver.c:1409
 #, c-format
 msgid "argument out of range: %d"
 msgstr "参数超出范围：%d"
 
-#: src/qemu/qemu_driver.c:4793
+#: src/qemu/qemu_driver.c:4937
 msgid "cannot adjust maximum on running domain"
 msgstr "无法调整运行域的最大值"
 
-#: src/qemu/qemu_driver.c:4814
+#: src/qemu/qemu_driver.c:4958
 msgid "changing of maximum vCPU count isn't supported via guest agent"
 msgstr "不支持通过虚拟机代理更改最大 vCPU 计数"
 
-#: src/qemu/qemu_driver.c:4824
+#: src/qemu/qemu_driver.c:4968
 #, c-format
 msgid ""
 "requested vcpu count is greater than the count of enabled vcpus in the "
 "domain: %d > %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:4855
+#: src/qemu/qemu_driver.c:4999
 #, c-format
 msgid "failed to set state of cpu %d via guest agent"
 msgstr "通过虚拟代理设定 cpu %d 状态失败"
 
-#: src/qemu/qemu_driver.c:4972
+#: src/qemu/qemu_driver.c:5116
 #, c-format
 msgid "vcpu number out of range %d > %d"
 msgstr "vcpu 数超过范围 %d > %d"
 
-#: src/qemu/qemu_driver.c:4982 src/qemu/qemu_driver.c:5270
+#: src/qemu/qemu_driver.c:5126 src/qemu/qemu_driver.c:5414
 msgid "Empty cpu list for pinning"
 msgstr "用于 ping 的空白 cpu"
 
-#: src/qemu/qemu_driver.c:5015 src/qemu/qemu_driver.c:5290
+#: src/qemu/qemu_driver.c:5159 src/qemu/qemu_driver.c:5434
 msgid "failed to update vcpupin"
 msgstr "更新 vcpupin 失败"
 
-#: src/qemu/qemu_driver.c:5026
+#: src/qemu/qemu_driver.c:5170
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for vcpu %d"
 msgstr "在 cgroup 中为 vcpu %d 设定 cpuset.cpus 失败"
 
-#: src/qemu/qemu_driver.c:5033
+#: src/qemu/qemu_driver.c:5177
 #, c-format
 msgid "failed to set cpu affinity for vcpu %d"
 msgstr "为 vcpu %d 设定 cpu 亲和性失败"
 
-#: src/qemu/qemu_driver.c:5085
+#: src/qemu/qemu_driver.c:5229
 msgid "failed to update or add vcpupin xml of a persistent domain"
 msgstr "更新或者具体持久域的 vcpupin xml 失败"
 
-#: src/qemu/qemu_driver.c:5251
+#: src/qemu/qemu_driver.c:5395
 msgid ""
 "Changing affinity for emulator thread dynamically is not allowed when CPU "
 "placement is 'auto'"
 msgstr "CPU 布局为 'auto' 时不孕续动态更改模拟程序线程的亲和性"
 
-#: src/qemu/qemu_driver.c:5305
+#: src/qemu/qemu_driver.c:5449
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
 msgstr "在 cgroup 中为模拟程序线程设定 cpuset.cpus 失败"
 
-#: src/qemu/qemu_driver.c:5312
+#: src/qemu/qemu_driver.c:5456
 msgid "failed to set cpu affinity for emulator threads"
 msgstr "为模拟程序线程设定 cpu 亲和性失败"
 
-#: src/qemu/qemu_driver.c:5321
+#: src/qemu/qemu_driver.c:5465
 msgid "failed to delete emulatorpin xml of a running domain"
 msgstr "删除运行中的 emulatorpin xml 失败"
 
-#: src/qemu/qemu_driver.c:5357
+#: src/qemu/qemu_driver.c:5501
 msgid "failed to delete emulatorpin xml of a persistent domain"
 msgstr "删除永久域的 emulatorpin xml 失败"
 
-#: src/qemu/qemu_driver.c:5364
+#: src/qemu/qemu_driver.c:5508
 msgid "failed to update or add emulatorpin xml of a persistent domain"
 msgstr "更新或者添加永久域的 emulatorpin xml 失败"
 
-#: src/qemu/qemu_driver.c:5535
+#: src/qemu/qemu_driver.c:5679
 msgid ""
 "vCPU count provided by the guest agent can only be  requested for live "
 "domains"
 msgstr "只能由 live 域请求虚拟代理提供的 vCPU 计数"
 
-#: src/qemu/qemu_driver.c:5879 src/qemu/qemu_driver.c:5899
+#: src/qemu/qemu_driver.c:6023 src/qemu/qemu_driver.c:6043
 #, c-format
 msgid "cannot remove corrupt file: %s"
 msgstr "无法删除崩溃文件：%s"
 
-#: src/qemu/qemu_driver.c:5886
+#: src/qemu/qemu_driver.c:6030
 msgid "failed to read qemu header"
 msgstr "读取 qemu 标题失败"
 
-#: src/qemu/qemu_driver.c:5895
+#: src/qemu/qemu_driver.c:6039
 msgid "save image is incomplete"
 msgstr "保存映像不完整"
 
-#: src/qemu/qemu_driver.c:6024
+#: src/qemu/qemu_driver.c:6168
 #, c-format
 msgid "cannot close file: %s"
 msgstr "无法关闭文件：%s"
 
-#: src/qemu/qemu_driver.c:6048
+#: src/qemu/qemu_driver.c:6192
 msgid "failed to resume domain"
 msgstr "恢复域失败"
 
-#: src/qemu/qemu_driver.c:6274
+#: src/qemu/qemu_driver.c:6418
 msgid "new xml too large to fit in file"
 msgstr "新的 xml 太大无法放入文件"
 
-#: src/qemu/qemu_driver.c:6281
+#: src/qemu/qemu_driver.c:6425
 #, c-format
 msgid "cannot seek in '%s'"
 msgstr "无法在 '%s' 中查询"
 
-#: src/qemu/qemu_driver.c:6764
+#: src/qemu/qemu_driver.c:6908
 #, c-format
 msgid "cannot remove managed save file %s"
 msgstr "无法删除管理的保存文件 %s"
 
-#: src/qemu/qemu_driver.c:6841
+#: src/qemu/qemu_driver.c:6985
 msgid "domain is already running"
 msgstr "域正在运行中"
 
-#: src/qemu/qemu_driver.c:6917 src/qemu/qemu_driver.c:14100
-#: src/qemu/qemu_driver.c:14762
+#: src/qemu/qemu_driver.c:7061 src/qemu/qemu_driver.c:14244
+#: src/qemu/qemu_driver.c:14906
 msgid "domain has active block job"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7004 src/test/test_driver.c:3175
+#: src/qemu/qemu_driver.c:7148 src/test/test_driver.c:3175
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr "无法删除使用 %d 快照的不活跃域"
 
-#: src/qemu/qemu_driver.c:7038
+#: src/qemu/qemu_driver.c:7182
 msgid "cannot delete inactive domain with nvram"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7044
+#: src/qemu/qemu_driver.c:7188
 #, c-format
 msgid "failed to remove nvram: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7100
+#: src/qemu/qemu_driver.c:7244
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "不能热插拔 '%s' 控制器。"
 
-#: src/qemu/qemu_driver.c:7189
+#: src/qemu/qemu_driver.c:7333
 #, c-format
 msgid "live attach of device '%s' is not supported"
 msgstr "不支持即时附加 '%s' 设备"
 
-#: src/qemu/qemu_driver.c:7214
+#: src/qemu/qemu_driver.c:7358
 #, c-format
 msgid "'%s' controller cannot be hot unplugged."
 msgstr "不能热插拔 '%s' 控制器"
 
-#: src/qemu/qemu_driver.c:7267
+#: src/qemu/qemu_driver.c:7411
 #, c-format
 msgid "live detach of device '%s' is not supported"
 msgstr "不支持即时断开设备 '%s'"
 
-#: src/qemu/qemu_driver.c:7373
+#: src/qemu/qemu_driver.c:7517
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr "不支持即时更新设备 '%s'"
 
-#: src/qemu/qemu_driver.c:7443
+#: src/qemu/qemu_driver.c:7587
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr "锁空间 %s 中租赁 %s 已存在"
 
-#: src/qemu/qemu_driver.c:7459 src/qemu/qemu_driver.c:7483
+#: src/qemu/qemu_driver.c:7603 src/qemu/qemu_driver.c:7627
 msgid "Target already exists"
 msgstr "目标已存在"
 
-#: src/qemu/qemu_driver.c:7496
+#: src/qemu/qemu_driver.c:7640
 #, fuzzy
 msgid "a device with the same address already exists "
 msgstr "设备 %s 已存在"
 
-#: src/qemu/qemu_driver.c:7525
+#: src/qemu/qemu_driver.c:7669
 #, c-format
 msgid "persistent attach of device '%s' is not supported"
 msgstr "不支持永久附加设备 '%s'"
 
-#: src/qemu/qemu_driver.c:7582 src/qemu/qemu_hotplug.c:3903
+#: src/qemu/qemu_driver.c:7726 src/qemu/qemu_hotplug.c:3909
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "锁空间 %s 中租赁 %s 已不存在"
 
-#: src/qemu/qemu_driver.c:7616
+#: src/qemu/qemu_driver.c:7760
 msgid "no matching filesystem device was found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7627
+#: src/qemu/qemu_driver.c:7771
 #, fuzzy
 msgid "no matching RNG device was found"
 msgstr "缺少 RNG 设备型号"
 
-#: src/qemu/qemu_driver.c:7650
+#: src/qemu/qemu_driver.c:7794
 #, c-format
 msgid "persistent detach of device '%s' is not supported"
 msgstr "不支持永久断开设备 '%s'"
 
-#: src/qemu/qemu_driver.c:7699
+#: src/qemu/qemu_driver.c:7843
 #, fuzzy, c-format
 msgid "cannot find existing graphics type '%s' device to modify"
 msgstr "无法找到现有图形设备进行修改"
 
-#: src/qemu/qemu_driver.c:7745
+#: src/qemu/qemu_driver.c:7889
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "不支持永久更新设备 '%s'"
 
-#: src/qemu/qemu_driver.c:9449
+#: src/qemu/qemu_driver.c:9593
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr "为运行的域更改 nodeset 需要严格 numa 模式"
 
-#: src/qemu/qemu_driver.c:9536
+#: src/qemu/qemu_driver.c:9680
 msgid "NUMA tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9543
+#: src/qemu/qemu_driver.c:9687
 msgid "cgroup cpuset controller is not mounted"
 msgstr "未挂载 cgroup cpuset 控制器"
 
-#: src/qemu/qemu_driver.c:9556
+#: src/qemu/qemu_driver.c:9700
 #, c-format
 msgid "unsupported numatune mode: '%d'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9567
+#: src/qemu/qemu_driver.c:9711
 msgid "Invalid nodeset for numatune"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9577
+#: src/qemu/qemu_driver.c:9721
 msgid "can't change numatune mode for running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9786
+#: src/qemu/qemu_driver.c:9930
 #, c-format
 msgid "value of '%s' is out of range [%lld, %lld]"
 msgstr "'%s' 值超出 [%lld, %lld] 范围"
 
-#: src/qemu/qemu_driver.c:10284
+#: src/qemu/qemu_driver.c:10428
 msgid "empty path"
 msgstr "库路径"
 
-#: src/qemu/qemu_driver.c:10292
+#: src/qemu/qemu_driver.c:10436
 #, c-format
 msgid "size must be less than %llu"
 msgstr "大小必须小于 %llu"
 
-#: src/qemu/qemu_driver.c:10372 src/qemu/qemu_driver.c:10455
+#: src/qemu/qemu_driver.c:10516 src/qemu/qemu_driver.c:10599
 #: src/test/test_driver.c:3388
 msgid "summary statistics are not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10710 src/qemu/qemu_driver.c:10718
-#: src/qemu/qemu_driver.c:10895
+#: src/qemu/qemu_driver.c:10854 src/qemu/qemu_driver.c:10862
+#: src/qemu/qemu_driver.c:11039
 #, c-format
 msgid "Can't find device %s"
 msgstr "无法找到设备 %s"
 
-#: src/qemu/qemu_driver.c:11001
+#: src/qemu/qemu_driver.c:11145
 msgid "cannot get RSS for domain"
 msgstr "无法为域获取 RSS"
 
-#: src/qemu/qemu_driver.c:11040 src/qemu/qemu_driver.c:11331
+#: src/qemu/qemu_driver.c:11184 src/qemu/qemu_driver.c:11475
 #: src/uml/uml_driver.c:2556
 msgid "NULL or empty path"
 msgstr "NULL 或者空路径"
 
-#: src/qemu/qemu_driver.c:11047 src/uml/uml_driver.c:2563
+#: src/qemu/qemu_driver.c:11191 src/uml/uml_driver.c:2563
 #, c-format
 msgid "invalid path '%s'"
 msgstr "无效路径 '%s'"
 
-#: src/qemu/qemu_driver.c:11063
+#: src/qemu/qemu_driver.c:11207
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr "%s：查找并读取失败"
 
-#: src/qemu/qemu_driver.c:11100
+#: src/qemu/qemu_driver.c:11244
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "标签参数必须为 VIR_MEMORY_VIRTUAL 或者 VIR_MEMORY_PHYSICAL"
 
-#: src/qemu/qemu_driver.c:11144
+#: src/qemu/qemu_driver.c:11288
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "读取使用模板 %s 创建的临时文件失败"
 
-#: src/qemu/qemu_driver.c:11210 src/storage/storage_backend.c:1402
+#: src/qemu/qemu_driver.c:11354 src/storage/storage_backend.c:1402
 #: src/storage/storage_backend.c:1455 src/util/virstoragefile.c:880
 #: src/util/virstoragefile.c:1015
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "无法 stat 文件 '%s'"
 
-#: src/qemu/qemu_driver.c:11215 src/storage/storage_backend_fs.c:1450
+#: src/qemu/qemu_driver.c:11359 src/storage/storage_backend_fs.c:1458
 #: src/util/virstoragefile.c:896 src/util/virstoragefile.c:1038
 #, c-format
 msgid "cannot read header '%s'"
 msgstr "无法读取标题 '%s'"
 
-#: src/qemu/qemu_driver.c:11228
+#: src/qemu/qemu_driver.c:11372
 #, c-format
 msgid "failed to stat remote file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11256
+#: src/qemu/qemu_driver.c:11400
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr "查找 %s 的结尾失败"
 
-#: src/qemu/qemu_driver.c:11269
+#: src/qemu/qemu_driver.c:11413
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr "没有可用于 %s 的磁盘格式，并禁用探测。"
 
-#: src/qemu/qemu_driver.c:11346
+#: src/qemu/qemu_driver.c:11490
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr "没有为域分配无效路径 %s"
 
-#: src/qemu/qemu_driver.c:11354
+#: src/qemu/qemu_driver.c:11498
 #, c-format
 msgid "disk '%s' does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11523 src/qemu/qemu_driver.c:11911
-#: src/qemu/qemu_driver.c:11964
+#: src/qemu/qemu_driver.c:11667 src/qemu/qemu_driver.c:12055
+#: src/qemu/qemu_driver.c:12108
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "调用 PrepareTunnel 但没有设置 TUNNELLED 标签"
 
-#: src/qemu/qemu_driver.c:11529 src/qemu/qemu_driver.c:11584
-#: src/qemu/qemu_driver.c:11630
+#: src/qemu/qemu_driver.c:11673 src/qemu/qemu_driver.c:11728
+#: src/qemu/qemu_driver.c:11774
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr "无法在锁管理器 %s 中使用迁移 v2 协议"
 
-#: src/qemu/qemu_driver.c:11577 src/qemu/qemu_driver.c:11798
-#: src/qemu/qemu_driver.c:11865
+#: src/qemu/qemu_driver.c:11721 src/qemu/qemu_driver.c:11942
+#: src/qemu/qemu_driver.c:12009
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "请求管道迁移但调用无效 RPC 方法"
 
-#: src/qemu/qemu_driver.c:12290
+#: src/qemu/qemu_driver.c:12434
 msgid ""
 "neither VFIO nor KVM device assignment is currently supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12299
+#: src/qemu/qemu_driver.c:12443
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12308
+#: src/qemu/qemu_driver.c:12452
 msgid "KVM device assignment is currently not supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12316 src/xen/xen_driver.c:2536
+#: src/qemu/qemu_driver.c:12460 src/xen/xen_driver.c:2536
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "未知驱动程序名称 '%s'"
 
-#: src/qemu/qemu_driver.c:12605
+#: src/qemu/qemu_driver.c:12749
 msgid "no job is active on the domain"
 msgstr "该域中没有活跃的任务"
 
-#: src/qemu/qemu_driver.c:12609
+#: src/qemu/qemu_driver.c:12753
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr "无法中止进入的迁移；使用 virDomainDestroy。"
 
-#: src/qemu/qemu_driver.c:12709 src/qemu/qemu_driver.c:12763
+#: src/qemu/qemu_driver.c:12853 src/qemu/qemu_driver.c:12907
 msgid "Compressed migration is not supported by QEMU binary"
 msgstr "QEMU 二进制文件不支持压缩迁移"
 
-#: src/qemu/qemu_driver.c:12804 src/qemu/qemu_driver.c:15858
-#: src/qemu/qemu_driver.c:16317 src/qemu/qemu_driver.c:16500
+#: src/qemu/qemu_driver.c:12948 src/qemu/qemu_driver.c:16000
+#: src/qemu/qemu_driver.c:16458 src/qemu/qemu_driver.c:16641
 #: src/qemu/qemu_monitor.c:2188 tools/virsh-domain.c:2253
 #, c-format
 msgid "bandwidth must be less than %llu"
 msgstr "带宽必须小于 %llu"
 
-#: src/qemu/qemu_driver.c:13035
+#: src/qemu/qemu_driver.c:13179
 #, c-format
 msgid "unknown image format of '%s' and format probing is disabled"
 msgstr "已禁用 '%s' 的未知映像格式以及格式探测"
 
-#: src/qemu/qemu_driver.c:13162 src/qemu/qemu_driver.c:14015
+#: src/qemu/qemu_driver.c:13306 src/qemu/qemu_driver.c:14159
 msgid "resuming after snapshot failed"
 msgstr "快照失败后恢复"
 
-#: src/qemu/qemu_driver.c:13198
+#: src/qemu/qemu_driver.c:13342
 #, c-format
 msgid ""
 "external inactive snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13210 src/qemu/qemu_driver.c:13298
+#: src/qemu/qemu_driver.c:13354 src/qemu/qemu_driver.c:13442
 #, c-format
 msgid "external inactive snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13224
+#: src/qemu/qemu_driver.c:13368
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13260
+#: src/qemu/qemu_driver.c:13404
 #, c-format
 msgid ""
 "external active snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13273
+#: src/qemu/qemu_driver.c:13417
 #, c-format
 msgid "external active snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13343 src/qemu/qemu_driver.c:16175
+#: src/qemu/qemu_driver.c:13487 src/qemu/qemu_driver.c:16315
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "无法获取磁盘 %s 统计数据：%s"
 
-#: src/qemu/qemu_driver.c:13348
+#: src/qemu/qemu_driver.c:13492
 #, c-format
 msgid "missing existing file for disk %s: %s"
 msgstr "磁盘 %s 缺少文件：%s"
 
-#: src/qemu/qemu_driver.c:13354
+#: src/qemu/qemu_driver.c:13498
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr "磁盘 %s 的外部快照已存在，且不是块设备：%s"
 
-#: src/qemu/qemu_driver.c:13404
+#: src/qemu/qemu_driver.c:13548
 #, c-format
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13416
+#: src/qemu/qemu_driver.c:13560
 #, c-format
 msgid "internal inactive snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13444
+#: src/qemu/qemu_driver.c:13588
 msgid "reuse is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持重新使用"
 
-#: src/qemu/qemu_driver.c:13458
+#: src/qemu/qemu_driver.c:13602
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr " 活跃 qemu 域需要外部磁盘快照；地盘 %s 要求内部快照。"
 
-#: src/qemu/qemu_driver.c:13471
+#: src/qemu/qemu_driver.c:13615
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr "存储类型 %s 不支持磁盘 %s 的内部快照"
 
-#: src/qemu/qemu_driver.c:13486
+#: src/qemu/qemu_driver.c:13630
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr "磁盘 %s 不支持的外部快照：%s"
 
-#: src/qemu/qemu_driver.c:13509 src/qemu/qemu_driver.c:13596
+#: src/qemu/qemu_driver.c:13653 src/qemu/qemu_driver.c:13740
 msgid "unexpected code path"
 msgstr "意外代码路径"
 
-#: src/qemu/qemu_driver.c:13517
+#: src/qemu/qemu_driver.c:13661
 msgid "nothing selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13526
+#: src/qemu/qemu_driver.c:13670
 msgid ""
 "internal snapshots and checkpoints require all disks to be selected for "
 "snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13534
+#: src/qemu/qemu_driver.c:13678
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr "只用于磁盘的块摘需要至少选择一个磁盘用于快照"
 
-#: src/qemu/qemu_driver.c:13546
+#: src/qemu/qemu_driver.c:13690
 msgid ""
 "mixing internal and external targets for a snapshot is not yet supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13561
+#: src/qemu/qemu_driver.c:13705
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr "不支持错磁盘的 atomic live 快照"
 
-#: src/qemu/qemu_driver.c:13627
+#: src/qemu/qemu_driver.c:13771
 #, c-format
 msgid "failed to create image file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13756
+#: src/qemu/qemu_driver.c:13900
 msgid "live disk snapshot not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持即时磁盘快照"
 
-#: src/qemu/qemu_driver.c:13940
+#: src/qemu/qemu_driver.c:14084
 msgid "Invalid snapshot image format specified in configuration file"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14072
+#: src/qemu/qemu_driver.c:14216
 msgid "quiesce requires disk-only"
 msgstr "quiesce 需要 disk-only"
 
-#: src/qemu/qemu_driver.c:14095 src/qemu/qemu_migration.c:1961
+#: src/qemu/qemu_driver.c:14239 src/qemu/qemu_migration.c:1961
 msgid "domain is marked for auto destroy"
 msgstr "将域标记为自动销毁"
 
-#: src/qemu/qemu_driver.c:14106 src/test/test_driver.c:6825
+#: src/qemu/qemu_driver.c:14250 src/test/test_driver.c:6825
 msgid "cannot halt after transient domain snapshot"
 msgstr "无法停止临时域快照"
 
-#: src/qemu/qemu_driver.c:14123
+#: src/qemu/qemu_driver.c:14267
 #, c-format
 msgid "invalid snapshot name '%s': name can't contain '/'"
 msgstr "无效快照名 '%s'：名称中不能包含 '/'"
 
-#: src/qemu/qemu_driver.c:14131
+#: src/qemu/qemu_driver.c:14275
 #, c-format
 msgid "invalid snapshot name '%s': name can't start with '.'"
 msgstr "无效快照名 '%s'：名称中不能以 '.' 开头"
 
-#: src/qemu/qemu_driver.c:14144
+#: src/qemu/qemu_driver.c:14288
 msgid "live snapshot creation is supported only with external checkpoints"
 msgstr "只有外部检查点支持实时快照生成"
 
-#: src/qemu/qemu_driver.c:14161
+#: src/qemu/qemu_driver.c:14305
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14169
+#: src/qemu/qemu_driver.c:14313
 #, c-format
 msgid "Invalid domain state %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14214
+#: src/qemu/qemu_driver.c:14358
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14300
+#: src/qemu/qemu_driver.c:14444
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "无法为快照 %s 保存元数据"
 
-#: src/qemu/qemu_driver.c:14596 src/test/test_driver.c:6663
+#: src/qemu/qemu_driver.c:14740 src/test/test_driver.c:6663
 msgid "the domain does not have a current snapshot"
 msgstr "该域没有当前快照"
 
-#: src/qemu/qemu_driver.c:14778 src/test/test_driver.c:7073
+#: src/qemu/qemu_driver.c:14922 src/test/test_driver.c:7073
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr "临时域需要请求运行或者暂停到不活跃快照的转换"
 
-#: src/qemu/qemu_driver.c:14785
+#: src/qemu/qemu_driver.c:14929
 msgid "revert to external snapshot not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14792 src/test/test_driver.c:7081
+#: src/qemu/qemu_driver.c:14936 src/test/test_driver.c:7081
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "快照 '%s' 缺少域 '%s' 恢复信息"
 
-#: src/qemu/qemu_driver.c:14802
+#: src/qemu/qemu_driver.c:14946
 msgid "must respawn qemu to start inactive snapshot"
 msgstr "必须复位 qemu 方可启动不活跃的快照"
 
-#: src/qemu/qemu_driver.c:15030
+#: src/qemu/qemu_driver.c:15174
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15038
+#: src/qemu/qemu_driver.c:15182
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15155
+#: src/qemu/qemu_driver.c:15299
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr "尚不支持 %d 外部磁盘快照删除"
 
-#: src/qemu/qemu_driver.c:15179
+#: src/qemu/qemu_driver.c:15323
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "将快照 '%s' 设定为当前快照失败"
 
-#: src/qemu/qemu_driver.c:15303
+#: src/qemu/qemu_driver.c:15447
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr "没有 pid %u 的监控程序连接"
 
-#: src/qemu/qemu_driver.c:15308
+#: src/qemu/qemu_driver.c:15452
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr "无法为 pid %s 连接到类型 '%u' 的监控程序连接"
 
-#: src/qemu/qemu_driver.c:15499
+#: src/qemu/qemu_driver.c:15643
 #, c-format
 msgid "cannot find channel %s"
 msgstr "无法找到频道 %s"
 
-#: src/qemu/qemu_driver.c:15506
+#: src/qemu/qemu_driver.c:15650
 #, c-format
 msgid "channel %s is not using a UNIX socket"
 msgstr "频道 %s 未使用 UNIX 插槽"
 
-#: src/qemu/qemu_driver.c:15519
+#: src/qemu/qemu_driver.c:15663
 msgid "Active channel stream exists for this domain"
 msgstr "这个域有活跃频道流"
 
-#: src/qemu/qemu_driver.c:15551
+#: src/qemu/qemu_driver.c:15695
 msgid "No device found for specified path"
 msgstr "没有找到指定路径的设备"
 
-#: src/qemu/qemu_driver.c:15574 src/qemu/qemu_driver.c:15798
+#: src/qemu/qemu_driver.c:15718 src/qemu/qemu_driver.c:15940
 #, c-format
 msgid "pivot of disk '%s' requires an active copy job"
 msgstr "磁盘'%s' 的 pivot 需要活跃复制任务"
 
-#: src/qemu/qemu_driver.c:15596
+#: src/qemu/qemu_driver.c:15740
 #, c-format
 msgid "disk '%s' not ready for pivot yet"
 msgstr "pivot 还不能使用磁盘 '%s'"
 
-#: src/qemu/qemu_driver.c:15708
+#: src/qemu/qemu_driver.c:15853
 msgid "resuming after drive-reopen failed"
 msgstr "drive-reopen 后恢复失败"
 
-#: src/qemu/qemu_driver.c:15750
+#: src/qemu/qemu_driver.c:15895
 msgid "flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only with non-null base"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15760 src/qemu/qemu_driver.c:16013
+#: src/qemu/qemu_driver.c:15905 src/qemu/qemu_driver.c:16157
 msgid "block jobs not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持块任务"
 
-#: src/qemu/qemu_driver.c:15764
+#: src/qemu/qemu_driver.c:15909
 msgid "partial block pull not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持部分块提取"
 
-#: src/qemu/qemu_driver.c:15769
+#: src/qemu/qemu_driver.c:15914
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持开始块提取时设置带宽"
 
-#: src/qemu/qemu_driver.c:15790 src/qemu/qemu_driver.c:16132
-#: src/qemu/qemu_driver.c:16520
-#, c-format
-msgid "disk '%s' already in active block job"
-msgstr ""
-
-#: src/qemu/qemu_driver.c:15805
+#: src/qemu/qemu_driver.c:15947
 #, c-format
 msgid "another job on disk '%s' is still being ended"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15832
+#: src/qemu/qemu_driver.c:15974
 msgid "this QEMU binary doesn't support relative block pull/rebase"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15845 src/qemu/qemu_driver.c:16617
+#: src/qemu/qemu_driver.c:15987 src/qemu/qemu_driver.c:16755
 msgid "can't keep relative backing relationship"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16038
+#: src/qemu/qemu_driver.c:16182
 #, c-format
 msgid "bandwidth %llu cannot be represented in result"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16140
+#: src/qemu/qemu_driver.c:16280
 msgid "block copy is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持块复制"
 
-#: src/qemu/qemu_driver.c:16149
+#: src/qemu/qemu_driver.c:16289
 msgid "domain is not transient"
 msgstr "域不是暂时的"
 
-#: src/qemu/qemu_driver.c:16160
+#: src/qemu/qemu_driver.c:16300
 #, c-format
 msgid "disk '%s' has backing file, so raw shallow copy is not possible"
 msgstr "磁盘 '%s' 有后备文件，因此不能进行原始浅复制"
 
-#: src/qemu/qemu_driver.c:16170
+#: src/qemu/qemu_driver.c:16310
 msgid "non-file destination not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16181
+#: src/qemu/qemu_driver.c:16321
 #, c-format
 msgid "missing destination file for disk %s: %s"
 msgstr "磁盘 %s 缺少目的地文件：%s"
 
-#: src/qemu/qemu_driver.c:16188
+#: src/qemu/qemu_driver.c:16328
 #, c-format
 msgid ""
 "external destination file for disk %s already exists and is not a block "
 "device: %s"
 msgstr "磁盘 %s 的外部目的文件已存在，且不是块设备：%s"
 
-#: src/qemu/qemu_driver.c:16195
+#: src/qemu/qemu_driver.c:16335
 #, c-format
 msgid ""
 "blockdev flag requested for disk %s, but file '%s' is not a block device"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16329
+#: src/qemu/qemu_driver.c:16470
 msgid "Relative backing during copy not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16394
+#: src/qemu/qemu_driver.c:16535
 #, c-format
 msgid "bandwidth must be less than %llu bytes"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16492
+#: src/qemu/qemu_driver.c:16633
 msgid "online commit not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持在线指派"
 
-#: src/qemu/qemu_driver.c:16514
+#: src/qemu/qemu_driver.c:16655
 #, c-format
 msgid "disk %s has no source file to be committed"
 msgstr "磁盘 %s 没有可指派的源文件"
 
-#: src/qemu/qemu_driver.c:16538
+#: src/qemu/qemu_driver.c:16676
 msgid "active commit not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16544
+#: src/qemu/qemu_driver.c:16682
 #, c-format
 msgid "commit of '%s' active layer requires active flag"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16550
+#: src/qemu/qemu_driver.c:16688
 #, c-format
 msgid "active commit requested but '%s' is not active"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16557
+#: src/qemu/qemu_driver.c:16695
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "链 '%s' 的顶部 '%s' 没有后备文件"
 
-#: src/qemu/qemu_driver.c:16572
+#: src/qemu/qemu_driver.c:16710
 #, c-format
 msgid "base '%s' is not immediately below '%s' in chain for '%s'"
 msgstr "'%s' 在链中的 '%s' 就在基础 '%s' 下面"
 
-#: src/qemu/qemu_driver.c:16607
+#: src/qemu/qemu_driver.c:16745
 msgid "this qemu doesn't support relative blockpull"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16712 src/qemu/qemu_driver.c:16779
+#: src/qemu/qemu_driver.c:16853 src/qemu/qemu_driver.c:16920
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr "没有使用索引 %d 的图形后端"
 
-#: src/qemu/qemu_driver.c:16724 src/qemu/qemu_driver.c:16791
+#: src/qemu/qemu_driver.c:16865 src/qemu/qemu_driver.c:16932
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr "只能打开 VNC 或者 SPICE 图形后端，无法打开 %s。"
 
-#: src/qemu/qemu_driver.c:16922
+#: src/qemu/qemu_driver.c:17063
 #, c-format
 msgid "block I/O throttle limit value must be less than %llu"
 msgstr "块 I/O 节流器阈值必须小于 %llu"
 
-#: src/qemu/qemu_driver.c:17049
+#: src/qemu/qemu_driver.c:17190
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr "无法在同时设置总计以及读取/写入 bytes_sec"
 
-#: src/qemu/qemu_driver.c:17057
+#: src/qemu/qemu_driver.c:17198
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr "无法同时设置总计以及读取/写入 iops_sec "
 
-#: src/qemu/qemu_driver.c:17065
+#: src/qemu/qemu_driver.c:17206
 #, fuzzy
 msgid "total and read/write of bytes_sec_max cannot be set at the same time"
 msgstr "无法在同时设置总计以及读取/写入 bytes_sec"
 
-#: src/qemu/qemu_driver.c:17073
+#: src/qemu/qemu_driver.c:17214
 #, fuzzy
 msgid "total and read/write of iops_sec_max cannot be set at the same time"
 msgstr "无法同时设置总计以及读取/写入 iops_sec "
 
-#: src/qemu/qemu_driver.c:17081
+#: src/qemu/qemu_driver.c:17222
 #, c-format
 msgid "missing persistent configuration for disk '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17098
+#: src/qemu/qemu_driver.c:17239
 #, fuzzy
 msgid "a block I/O throttling parameter is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持块 I/O节流"
 
-#: src/qemu/qemu_driver.c:17144
+#: src/qemu/qemu_driver.c:17285
 msgid "Saving live XML config failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17173
+#: src/qemu/qemu_driver.c:17314
 msgid "Write to config file failed"
 msgstr "写入配置文件失败"
 
-#: src/qemu/qemu_driver.c:17266
+#: src/qemu/qemu_driver.c:17407
 #, c-format
 msgid "disk '%s' was not found in the domain config"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17600
+#: src/qemu/qemu_driver.c:17741
 msgid "Duration not supported. Use 0 for now"
 msgstr "不支持时限。从现在开始使用 0。"
 
-#: src/qemu/qemu_driver.c:17608
+#: src/qemu/qemu_driver.c:17749
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr "未知挂起目标：%u"
 
-#: src/qemu/qemu_driver.c:17631
+#: src/qemu/qemu_driver.c:17772
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr "由于缺少 system_wakeup 监控程序命令无法挂起域"
 
-#: src/qemu/qemu_driver.c:17641
+#: src/qemu/qemu_driver.c:17782
 msgid "S3 state is disabled for this domain"
 msgstr "这个域禁用了 S3 状态"
 
-#: src/qemu/qemu_driver.c:17648
+#: src/qemu/qemu_driver.c:17789
 msgid "S4 state is disabled for this domain"
 msgstr "这个域禁用了 S4 状态"
 
-#: src/qemu/qemu_driver.c:17707
+#: src/qemu/qemu_driver.c:17848
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr "由于缺少 system_wakeup 监控程序命令无法唤醒域"
 
-#: src/qemu/qemu_driver.c:17863
+#: src/qemu/qemu_driver.c:18004
 msgid "Specifying mount point is not supported for now"
 msgstr "现在还不支持指定挂载点"
 
-#: src/qemu/qemu_driver.c:18123
+#: src/qemu/qemu_driver.c:18264
 msgid "cannot set time: qemu doesn't support rtc-reset-reinjection command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18215
+#: src/qemu/qemu_driver.c:18356
 msgid "specifying mountpoints is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18294
+#: src/qemu/qemu_driver.c:18435
 #, c-format
 msgid "unknown virttype: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18301
+#: src/qemu/qemu_driver.c:18442
 #, c-format
 msgid "unknown architecture: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18321
+#: src/qemu/qemu_driver.c:18462
 #, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18331
+#: src/qemu/qemu_driver.c:18472
 #, c-format
 msgid "unable to find any emulator to serve '%s' architecture"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18345
+#: src/qemu/qemu_driver.c:18486
 #, c-format
 msgid "the machine '%s' is not supported by emulator '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18885
+#: src/qemu/qemu_driver.c:19026
 #, c-format
 msgid "Stats types bits 0x%x are not supported by this daemon"
 msgstr ""
@@ -17916,331 +17904,331 @@ msgstr ""
 msgid "Unable to eject media"
 msgstr "无法弹出介质"
 
-#: src/qemu/qemu_hotplug.c:441
+#: src/qemu/qemu_hotplug.c:447
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "目标 %s:%d 已存在"
 
-#: src/qemu/qemu_hotplug.c:472
+#: src/qemu/qemu_hotplug.c:478
 msgid "USB controller hotplug unsupported in this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持 USB 控制器热插拔"
 
-#: src/qemu/qemu_hotplug.c:584
+#: src/qemu/qemu_hotplug.c:590
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "错误的磁盘地址类型 %s"
 
-#: src/qemu/qemu_hotplug.c:628
+#: src/qemu/qemu_hotplug.c:634
 #, c-format
 msgid "SCSI controller %d was missing its PCI address"
 msgstr "SCSI 控制器 %d 缺少其 PCI 地址"
 
-#: src/qemu/qemu_hotplug.c:790
+#: src/qemu/qemu_hotplug.c:796
 #, c-format
 msgid ""
 "No device with bus '%s' and target '%s'. cdrom and floppy device hotplug "
 "isn't supported by libvirt"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:811
+#: src/qemu/qemu_hotplug.c:817
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "usb 总线不支持 disk device='lun'"
 
-#: src/qemu/qemu_hotplug.c:892
+#: src/qemu/qemu_hotplug.c:898
 msgid "installed qemu version does not support host_net_add"
 msgstr "安装的 qemu 版本不支持 host_net_add"
 
-#: src/qemu/qemu_hotplug.c:984
+#: src/qemu/qemu_hotplug.c:990
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "virtio-s390 网络设备不能热插拔。"
 
-#: src/qemu/qemu_hotplug.c:1001
+#: src/qemu/qemu_hotplug.c:1007
 msgid "Unable to attach network devices without vlan"
 msgstr "没有 vlan 无法附加网络设备"
 
-#: src/qemu/qemu_hotplug.c:1096
+#: src/qemu/qemu_hotplug.c:1102
 msgid "device alias not found: cannot set link state to down"
 msgstr "未找到设备别名：无法将链接状态设定为 down"
 
-#: src/qemu/qemu_hotplug.c:1108
+#: src/qemu/qemu_hotplug.c:1114
 msgid "setting of link state not supported: Link is up"
 msgstr "不支持设定链接状态：链接为 up"
 
-#: src/qemu/qemu_hotplug.c:1290
+#: src/qemu/qemu_hotplug.c:1296
 msgid "guest unexpectedly quit during hotplug"
 msgstr "热插拔过程中虚拟机意外退出"
 
-#: src/qemu/qemu_hotplug.c:1411
+#: src/qemu/qemu_hotplug.c:1417
 msgid "attaching serial console is not supported"
 msgstr "不支持附加串口控制台"
 
-#: src/qemu/qemu_hotplug.c:1417
+#: src/qemu/qemu_hotplug.c:1423
 msgid "chardev already exists"
 msgstr "chardev 已存在"
 
-#: src/qemu/qemu_hotplug.c:1491
+#: src/qemu/qemu_hotplug.c:1497
 msgid "detaching serial console is not supported"
 msgstr "不支持断开串口控制台"
 
-#: src/qemu/qemu_hotplug.c:1774
+#: src/qemu/qemu_hotplug.c:1780
 #, c-format
 msgid "Unable to prepare scsi hostdev for iSCSI: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1779
+#: src/qemu/qemu_hotplug.c:1785
 #, c-format
 msgid "Unable to prepare scsi hostdev: %s:%d:%d:%d"
 msgstr "无法准备 scsi hostdev: %s:%d:%d:%d"
 
-#: src/qemu/qemu_hotplug.c:1926
+#: src/qemu/qemu_hotplug.c:1932
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "桥接 %s 不存在"
 
-#: src/qemu/qemu_hotplug.c:1950
+#: src/qemu/qemu_hotplug.c:1956
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "无法通过在桥接 %s 中添加端口恢复之前的状态"
 
-#: src/qemu/qemu_hotplug.c:1974
+#: src/qemu/qemu_hotplug.c:1980
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "%s 类型接口不支持过滤器"
 
-#: src/qemu/qemu_hotplug.c:1986
+#: src/qemu/qemu_hotplug.c:1992
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr "添加过滤器规则 '%s' 失败 - 尝试恢复原来的规则"
 
-#: src/qemu/qemu_hotplug.c:2008
+#: src/qemu/qemu_hotplug.c:2014
 msgid "can't change link state: device alias not found"
 msgstr "无法更改链接状态：未找到设备别名"
 
-#: src/qemu/qemu_hotplug.c:2049
+#: src/qemu/qemu_hotplug.c:2055
 msgid "cannot find existing network device to modify"
 msgstr "无法找到要修改的现有网络设备"
 
-#: src/qemu/qemu_hotplug.c:2057
+#: src/qemu/qemu_hotplug.c:2063
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "无法在  '%s' 网络类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:2080
+#: src/qemu/qemu_hotplug.c:2086
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "无法将网络接口 mac 地址从 %s 改为 %s"
 
-#: src/qemu/qemu_hotplug.c:2089
+#: src/qemu/qemu_hotplug.c:2095
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "无法将网络设备型号从 %s 改为 %s"
 
-#: src/qemu/qemu_hotplug.c:2114
+#: src/qemu/qemu_hotplug.c:2120
 msgid "cannot modify virtio network device driver attributes"
 msgstr "无法修改 virtio 网络设备驱动程序属性"
 
-#: src/qemu/qemu_hotplug.c:2128
+#: src/qemu/qemu_hotplug.c:2134
 msgid "cannot modify network device script attribute"
 msgstr "无法修改网络设备脚本属性"
 
-#: src/qemu/qemu_hotplug.c:2137
+#: src/qemu/qemu_hotplug.c:2143
 msgid "cannot modify network device tap name"
 msgstr "无法修改网络设备 tap 名称"
 
-#: src/qemu/qemu_hotplug.c:2155
+#: src/qemu/qemu_hotplug.c:2161
 msgid "cannot modify network device guest PCI address"
 msgstr "无法修改网络设备虚拟机 PCI 地址"
 
-#: src/qemu/qemu_hotplug.c:2164
+#: src/qemu/qemu_hotplug.c:2170
 msgid "cannot modify network device alias"
 msgstr "无法修改网络设备别名"
 
-#: src/qemu/qemu_hotplug.c:2169
+#: src/qemu/qemu_hotplug.c:2175
 msgid "cannot modify network device rom bar setting"
 msgstr "无法修改网络设备 rom 栏设置"
 
-#: src/qemu/qemu_hotplug.c:2174
+#: src/qemu/qemu_hotplug.c:2180
 msgid "cannot modify network rom file"
 msgstr "无法修改网络 rom 文件"
 
-#: src/qemu/qemu_hotplug.c:2179
+#: src/qemu/qemu_hotplug.c:2185
 msgid "cannot modify network device boot index setting"
 msgstr "无法修改网络设备引导索引设置"
 
-#: src/qemu/qemu_hotplug.c:2206
+#: src/qemu/qemu_hotplug.c:2212
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "无法将网络接口类型改为 '%s'"
 
-#: src/qemu/qemu_hotplug.c:2265 src/qemu/qemu_hotplug.c:2338
+#: src/qemu/qemu_hotplug.c:2271 src/qemu/qemu_hotplug.c:2344
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "无法在  '%s' 网络类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:2458
+#: src/qemu/qemu_hotplug.c:2464
 msgid "cannot find existing graphics device to modify"
 msgstr "无法找到现有图形设备进行修改"
 
-#: src/qemu/qemu_hotplug.c:2464
+#: src/qemu/qemu_hotplug.c:2470
 msgid "cannot change the number of listen addresses"
 msgstr "无法更改侦听地址数"
 
-#: src/qemu/qemu_hotplug.c:2474
+#: src/qemu/qemu_hotplug.c:2480
 msgid "cannot change the type of listen address"
 msgstr "无法更改侦听地址类型"
 
-#: src/qemu/qemu_hotplug.c:2483
+#: src/qemu/qemu_hotplug.c:2489
 msgid "cannot change listen address setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改侦听地址设置"
 
-#: src/qemu/qemu_hotplug.c:2484
+#: src/qemu/qemu_hotplug.c:2490
 msgid "cannot change listen address setting on spice graphics"
 msgstr "无法在 spice 图形中更改侦听地址设置"
 
-#: src/qemu/qemu_hotplug.c:2493
+#: src/qemu/qemu_hotplug.c:2499
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改侦听网络设置"
 
-#: src/qemu/qemu_hotplug.c:2494
+#: src/qemu/qemu_hotplug.c:2500
 msgid "cannot change listen network setting on spice graphics"
 msgstr "无法更改 spice 图形中的侦听网络设置"
 
-#: src/qemu/qemu_hotplug.c:2512
+#: src/qemu/qemu_hotplug.c:2518
 msgid "cannot change port settings on vnc graphics"
 msgstr "无法在 vnc 图形中更改端口设置"
 
-#: src/qemu/qemu_hotplug.c:2517
+#: src/qemu/qemu_hotplug.c:2523
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改 keymap 设置"
 
-#: src/qemu/qemu_hotplug.c:2558
+#: src/qemu/qemu_hotplug.c:2564
 msgid "cannot change port settings on spice graphics"
 msgstr "无法在 spice 图形中更改端口设置"
 
-#: src/qemu/qemu_hotplug.c:2564
+#: src/qemu/qemu_hotplug.c:2570
 msgid "cannot change keymap setting on spice graphics"
 msgstr "无法在 spice 图形中更改 keymap 设置"
 
-#: src/qemu/qemu_hotplug.c:2606
+#: src/qemu/qemu_hotplug.c:2612
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "无法在  '%s' 图形类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:2891
+#: src/qemu/qemu_hotplug.c:2897
 msgid "unable to determine original VLAN"
 msgstr "无法确定原始 VLAN"
 
-#: src/qemu/qemu_hotplug.c:3089
+#: src/qemu/qemu_hotplug.c:3095
 #, c-format
 msgid "don't know how to remove a %s device"
 msgstr "不知道如何删除 %s 设备"
 
-#: src/qemu/qemu_hotplug.c:3143
+#: src/qemu/qemu_hotplug.c:3149
 msgid "Unable to wait on unplug condition"
 msgstr "无法等待 unplug 条件"
 
-#: src/qemu/qemu_hotplug.c:3184 src/qemu/qemu_hotplug.c:3433
+#: src/qemu/qemu_hotplug.c:3190 src/qemu/qemu_hotplug.c:3439
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "不能热插拔多功能 PCI 设备：%s"
 
-#: src/qemu/qemu_hotplug.c:3194
+#: src/qemu/qemu_hotplug.c:3200
 msgid "device cannot be detached without a valid CCW address"
 msgstr "没有有效 CCW 地址就无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3201
+#: src/qemu/qemu_hotplug.c:3207
 msgid "device cannot be detached without a valid PCI address"
 msgstr "没有有效 PCI 地址无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3256
+#: src/qemu/qemu_hotplug.c:3262
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "基础 qemu 不支持 %s 磁盘删除"
 
-#: src/qemu/qemu_hotplug.c:3263
+#: src/qemu/qemu_hotplug.c:3269
 #, c-format
 msgid "disk '%s' is in an active block job"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3330 src/uml/uml_driver.c:2395
+#: src/qemu/qemu_hotplug.c:3336 src/uml/uml_driver.c:2395
 msgid "This type of disk cannot be hot unplugged"
 msgstr "无法热插拔此类磁盘"
 
-#: src/qemu/qemu_hotplug.c:3334
+#: src/qemu/qemu_hotplug.c:3340
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "无法分离磁盘设备类型 '%s' "
 
-#: src/qemu/qemu_hotplug.c:3406
+#: src/qemu/qemu_hotplug.c:3412
 #, c-format
 msgid "controller %s:%d not found"
 msgstr "未找到控制器 %s:%d"
 
-#: src/qemu/qemu_hotplug.c:3418
+#: src/qemu/qemu_hotplug.c:3424
 #, c-format
 msgid "device with '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3425
+#: src/qemu/qemu_hotplug.c:3431
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3440
+#: src/qemu/qemu_hotplug.c:3446
 msgid "device cannot be detached: device is busy"
 msgstr "不分离设备：设备忙"
 
-#: src/qemu/qemu_hotplug.c:3501 src/qemu/qemu_hotplug.c:3733
+#: src/qemu/qemu_hotplug.c:3507 src/qemu/qemu_hotplug.c:3739
 msgid "device cannot be detached without a PCI address"
 msgstr "没有 PCI 地址无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3529 src/qemu/qemu_hotplug.c:3559
+#: src/qemu/qemu_hotplug.c:3535 src/qemu/qemu_hotplug.c:3565
 msgid "device cannot be detached without a device alias"
 msgstr "没有设备别名无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3535 src/qemu/qemu_hotplug.c:3565
+#: src/qemu/qemu_hotplug.c:3541 src/qemu/qemu_hotplug.c:3571
 msgid "device cannot be detached with this QEMU version"
 msgstr "在这个 QEMU 版本中无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3658
+#: src/qemu/qemu_hotplug.c:3664
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "未找到主机 usb 设备%03d.%03d"
 
-#: src/qemu/qemu_hotplug.c:3662
+#: src/qemu/qemu_hotplug.c:3668
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "未找到 host usb device vendor=0x%.4x product=0x%.4x"
 
-#: src/qemu/qemu_hotplug.c:3671
+#: src/qemu/qemu_hotplug.c:3677
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3677
+#: src/qemu/qemu_hotplug.c:3683
 #, c-format
 msgid "host scsi device %s:%d:%d.%d not found"
 msgstr "未找到主机 scsi 设备 %s:%d:%d.%d"
 
-#: src/qemu/qemu_hotplug.c:3726
+#: src/qemu/qemu_hotplug.c:3732
 msgid "device cannot be detached without a CCW address"
 msgstr "没有 CCW 地址就无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3739
+#: src/qemu/qemu_hotplug.c:3745
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "不能热插拔多功能 PCI 设备：%s"
 
-#: src/qemu/qemu_hotplug.c:3829
+#: src/qemu/qemu_hotplug.c:3835
 msgid "Graphics password only supported for VNC"
 msgstr "图形密码只可用于 VNC"
 
-#: src/qemu/qemu_hotplug.c:3855
+#: src/qemu/qemu_hotplug.c:3861
 msgid "Expiry of passwords is not supported"
 msgstr "不支持密码过期"
 
-#: src/qemu/qemu_hotplug.c:3998
+#: src/qemu/qemu_hotplug.c:4004
 #, fuzzy
 msgid "alias not set for RNG device"
 msgstr "%s 设备不支持可移动介质"
@@ -19942,190 +19930,190 @@ msgstr "%s 的 format='qcow' 密码短语一定不能包含 '\\0'"
 msgid "Failed to create reboot thread, killing domain"
 msgstr "生成重启线程失败，正在杀死域。"
 
-#: src/qemu/qemu_process.c:1617
+#: src/qemu/qemu_process.c:1536
 #, c-format
 msgid "Failed to set security context for monitor for %s"
 msgstr "为 %s 的监视器设定安全上下文失败"
 
-#: src/qemu/qemu_process.c:1649
+#: src/qemu/qemu_process.c:1568
 #, c-format
 msgid "Failed to clear security context for monitor for %s"
 msgstr "为 %s 的监视器清除安全上下文失败"
 
-#: src/qemu/qemu_process.c:1755
+#: src/qemu/qemu_process.c:1674
 #, c-format
 msgid "Failure while reading %s log output"
 msgstr "读取 %s 日志输出失败"
 
-#: src/qemu/qemu_process.c:1762
+#: src/qemu/qemu_process.c:1681
 #, c-format
 msgid "Out of space while reading %s log output: %s"
 msgstr "读取 %s 日志输出时超出范围：%s"
 
-#: src/qemu/qemu_process.c:1769
+#: src/qemu/qemu_process.c:1688
 #, c-format
 msgid "Process exited while reading %s log output: %s"
 msgstr "读取 %s 日志输出时进程推出：%s"
 
-#: src/qemu/qemu_process.c:1784
+#: src/qemu/qemu_process.c:1703
 #, c-format
 msgid "Timed out while reading %s log output: %s"
 msgstr "读取 %s 日志输出时超时：%s"
 
-#: src/qemu/qemu_process.c:1844
+#: src/qemu/qemu_process.c:1763
 #, c-format
 msgid "Process exited prior to exec: %s"
 msgstr ""
 
-#: src/qemu/qemu_process.c:1925 src/qemu/qemu_process.c:2089
+#: src/qemu/qemu_process.c:1844 src/qemu/qemu_process.c:2008
 #, fuzzy
 msgid "failed to format device alias for PTY retrieval"
 msgstr "创建设备 '%s' 失败"
 
-#: src/qemu/qemu_process.c:1937
+#: src/qemu/qemu_process.c:1856
 #, c-format
 msgid "no assigned pty for device %s"
 msgstr "没有为设备 %s 分配 pty"
 
-#: src/qemu/qemu_process.c:2210
+#: src/qemu/qemu_process.c:2129
 #, c-format
 msgid "process exited while connecting to monitor: %s"
 msgstr "连接到监控程序时进程推出：%s"
 
-#: src/qemu/qemu_process.c:2331
+#: src/qemu/qemu_process.c:2250
 #, c-format
 msgid "got wrong number of IOThread pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2392
+#: src/qemu/qemu_process.c:2311
 msgid "Failed to convert nodeset to cpuset"
 msgstr "将 nodeset 转换为 cpuset 失败"
 
-#: src/qemu/qemu_process.c:2424
+#: src/qemu/qemu_process.c:2343
 msgid "Cannot setup CPU affinity until process is started"
 msgstr "进程启动前无法设定 CPU 亲和性"
 
-#: src/qemu/qemu_process.c:2473
+#: src/qemu/qemu_process.c:2392
 msgid "Setting of link state is not supported by this qemu"
 msgstr "这个 qemu 不支持设定链接状态"
 
-#: src/qemu/qemu_process.c:2482
+#: src/qemu/qemu_process.c:2401
 #, c-format
 msgid "Couldn't set link state on interface: %s"
 msgstr "无法在接口中设定链接状态：%s"
 
-#: src/qemu/qemu_process.c:2572
+#: src/qemu/qemu_process.c:2491
 msgid "IOThread affinity is not supported"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2606
+#: src/qemu/qemu_process.c:2525
 #, fuzzy
 msgid "Cannot get bit from bitmap"
 msgstr "无法为域获取 RSS"
 
-#: src/qemu/qemu_process.c:2979
+#: src/qemu/qemu_process.c:2898
 #, c-format
 msgid "cannot find PCI address for VirtIO disk %s"
 msgstr "无法找到用于 VirtIO 磁盘 %s 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:2993
+#: src/qemu/qemu_process.c:2912
 #, c-format
 msgid "cannot find PCI address for %s NIC"
 msgstr "无法找到用于 %s NIC 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3007
+#: src/qemu/qemu_process.c:2926
 #, c-format
 msgid "cannot find PCI address for controller %s"
 msgstr "无法找到用于控制器 %s  的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3021
+#: src/qemu/qemu_process.c:2940
 #, c-format
 msgid "cannot find PCI address for video adapter %s"
 msgstr "无法找到用于显卡 %s 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3035
+#: src/qemu/qemu_process.c:2954
 #, c-format
 msgid "cannot find PCI address for sound adapter %s"
 msgstr "无法找到用于声卡 %s 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3048
+#: src/qemu/qemu_process.c:2967
 #, c-format
 msgid "cannot find PCI address for watchdog %s"
 msgstr "无法找到用于 watchdog %s 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3060
+#: src/qemu/qemu_process.c:2979
 #, c-format
 msgid "cannot find PCI address for balloon %s"
 msgstr "无法找到用于布尔 %s 的 PCI 地址"
 
-#: src/qemu/qemu_process.c:3117
+#: src/qemu/qemu_process.c:3036
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "无法预先生成 chardev 文件 '%s' "
 
-#: src/qemu/qemu_process.c:3974
+#: src/qemu/qemu_process.c:3893
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr "无法生成线程。QEMU 初始化可能没有完成。"
 
-#: src/qemu/qemu_process.c:4083
+#: src/qemu/qemu_process.c:4002
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr "需要自动分配 spic TLS 端口，但在 qemu.conf 中禁用了 spice TLS。"
 
-#: src/qemu/qemu_process.c:4113
+#: src/qemu/qemu_process.c:4032
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "CPUs 最大值超过指定的机器类型限制"
 
-#: src/qemu/qemu_process.c:4158
+#: src/qemu/qemu_process.c:4077
 msgid "host doesn't support paravirtual spinlocks"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4172
+#: src/qemu/qemu_process.c:4091
 msgid "host doesn't support invariant TSC"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4251
+#: src/qemu/qemu_process.c:4170
 #, c-format
 msgid "unable to find any master var store for loader: %s"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4279
+#: src/qemu/qemu_process.c:4198
 #, c-format
 msgid "Unable to read from file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4286
+#: src/qemu/qemu_process.c:4205
 #, c-format
 msgid "Unable to write to file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4294 src/qemu/qemu_process.c:4300
+#: src/qemu/qemu_process.c:4213 src/qemu/qemu_process.c:4219
 #, c-format
 msgid "Unable to close file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4425 src/qemu/qemu_process.c:5438
+#: src/qemu/qemu_process.c:4344 src/qemu/qemu_process.c:5357
 #: src/uml/uml_driver.c:1063
 msgid "VM is already active"
 msgstr "VM 已经激活"
 
-#: src/qemu/qemu_process.c:4527
+#: src/qemu/qemu_process.c:4446
 msgid "Unable to set huge path in security driver"
 msgstr "无法在安全驱动程序中设定超大路径"
 
-#: src/qemu/qemu_process.c:4600
+#: src/qemu/qemu_process.c:4519
 msgid ""
 "QEMU does not support multiple listen addresses for one graphics device."
 msgstr ""
 
-#: src/qemu/qemu_process.c:4609 src/qemu/qemu_process.c:5462
+#: src/qemu/qemu_process.c:4528 src/qemu/qemu_process.c:5381
 #: src/uml/uml_driver.c:1085
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "无法生成日志目录 %s"
 
-#: src/qemu/qemu_process.c:4622
+#: src/qemu/qemu_process.c:4541
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
@@ -20134,29 +20122,29 @@ msgstr ""
 "域需要 KVM，但不可用。在主机 BIOS 中启用了检查虚拟化，同时将主机配置为载入 "
 "kvm 模块。"
 
-#: src/qemu/qemu_process.c:4665
+#: src/qemu/qemu_process.c:4584
 msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr ""
 
-#: src/qemu/qemu_process.c:4685
+#: src/qemu/qemu_process.c:4604
 msgid "Failed to build pidfile path."
 msgstr "无法构建 pidfile 路径。"
 
-#: src/qemu/qemu_process.c:4692
+#: src/qemu/qemu_process.c:4611
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "无法删除停滞 PID 文件 %s"
 
-#: src/qemu/qemu_process.c:4761 src/qemu/qemu_process.c:4786
+#: src/qemu/qemu_process.c:4680 src/qemu/qemu_process.c:4705
 msgid "Raw I/O is not supported on this platform"
 msgstr "这个平台不支持原始 I/O"
 
-#: src/qemu/qemu_process.c:4872
+#: src/qemu/qemu_process.c:4791
 #, c-format
 msgid "cannot stat fd %d"
 msgstr "无法执行 stat fd %d"
 
-#: src/qemu/qemu_process.c:4988
+#: src/qemu/qemu_process.c:4907
 #, c-format
 msgid "unable to set balloon to %lld"
 msgstr "无法将布尔值设定为 %lld"
@@ -20169,7 +20157,7 @@ msgstr "无法将布尔值设定为 %lld"
 #: src/remote/remote_client_bodies.h:2917
 #: src/remote/remote_client_bodies.h:2951
 #: src/remote/remote_client_bodies.h:3339
-#: src/remote/remote_client_bodies.h:5777 src/remote/remote_driver.c:2160
+#: src/remote/remote_client_bodies.h:5777 src/remote/remote_driver.c:2156
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
 msgstr "%s 长度超过上限：%d > %d"
@@ -20197,17 +20185,17 @@ msgstr "%s 长度超过上限：%d > %d"
 msgid "too many remote undefineds: %d > %d"
 msgstr "未定义的远程太多：%d > %d"
 
-#: src/remote/remote_driver.c:562
+#: src/remote/remote_driver.c:558
 #, c-format
 msgid "Failed to parse value of URI component %s"
 msgstr "解析 URI 组件值 %s 失败"
 
-#: src/remote/remote_driver.c:634
+#: src/remote/remote_driver.c:630
 #, c-format
 msgid "using unix socket and remote server '%s' is not supported."
 msgstr "不支持少于 unix 插槽并删除服务器 '%s'"
 
-#: src/remote/remote_driver.c:651
+#: src/remote/remote_driver.c:647
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2)"
@@ -20215,239 +20203,239 @@ msgstr ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2)"
 
-#: src/remote/remote_driver.c:672
+#: src/remote/remote_driver.c:668
 msgid "Only Unix socket URI transport is allowed in setuid mode"
 msgstr ""
 
-#: src/remote/remote_driver.c:789
+#: src/remote/remote_driver.c:785
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open：'ext' 传输需要命令"
 
-#: src/remote/remote_driver.c:808
+#: src/remote/remote_driver.c:804
 msgid "GNUTLS support not available in this build"
 msgstr "这个构建中不能使用 GNUTLS 支持"
 
-#: src/remote/remote_driver.c:833
+#: src/remote/remote_driver.c:829
 msgid ""
 "Connecting to session instance without socket path is not supported by the "
 "libssh2 connection driver"
 msgstr "libssh2 连接驱动程序不支持在没有套接字路径的情况下连接到会话实例"
 
-#: src/remote/remote_driver.c:911
+#: src/remote/remote_driver.c:907
 msgid ""
 "Connecting to session instance without socket path is not supported by the "
 "ssh connection driver"
 msgstr "ssh 连接驱动程序不支持在没有套接字路径的情况下连接到会话实例"
 
-#: src/remote/remote_driver.c:953
+#: src/remote/remote_driver.c:949
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "Windows 中不支持 unix、ssh 以及 ext 传输方法 "
 
-#: src/remote/remote_driver.c:1406
+#: src/remote/remote_driver.c:1402
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetCPUStats: 返回的统计数据超过限制"
 
-#: src/remote/remote_driver.c:1425 src/remote/remote_driver.c:1489
+#: src/remote/remote_driver.c:1421 src/remote/remote_driver.c:1485
 #, c-format
 msgid "Stats %s too big for destination"
 msgstr "对于目的地来说 stats %s 太大"
 
-#: src/remote/remote_driver.c:1470
+#: src/remote/remote_driver.c:1466
 msgid "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
 msgstr "remoteNodeGetMemoryStats: 返回的统计数据超过限制"
 
-#: src/remote/remote_driver.c:1521 src/remote/remote_driver.c:7459
-#: src/remote/remote_driver.c:7715
+#: src/remote/remote_driver.c:1517 src/remote/remote_driver.c:7455
+#: src/remote/remote_driver.c:7711
 #, c-format
 msgid "too many NUMA cells: %d > %d"
 msgstr "NUMA 单元过多：%d > %d"
 
-#: src/remote/remote_driver.c:1751
+#: src/remote/remote_driver.c:1747
 #, c-format
 msgid "%s: too many parameters '%u' for limit '%d'"
 msgstr ""
 
-#: src/remote/remote_driver.c:1760
+#: src/remote/remote_driver.c:1756
 #, c-format
 msgid "%s: too many parameters '%u' for nparams '%d'"
 msgstr ""
 
-#: src/remote/remote_driver.c:1778
+#: src/remote/remote_driver.c:1774
 #, c-format
 msgid "%s: parameter %s too big for destination"
 msgstr ""
 
-#: src/remote/remote_driver.c:1815
+#: src/remote/remote_driver.c:1811
 #, c-format
 msgid "%s: unknown parameter type: %d"
 msgstr ""
 
-#: src/remote/remote_driver.c:1847
+#: src/remote/remote_driver.c:1843
 msgid "returned number of disk errors exceeds limit"
 msgstr "返回的磁盘错误数值超过限制"
 
-#: src/remote/remote_driver.c:1895
+#: src/remote/remote_driver.c:1891
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
 msgstr "remoteDomainBlockStatsFlags: 返回的统计数据超过限额"
 
-#: src/remote/remote_driver.c:2090 src/remote/remote_driver.c:2260
+#: src/remote/remote_driver.c:2086 src/remote/remote_driver.c:2256
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
 msgstr "vCPU 计数超过最大值：%d > %d"
 
-#: src/remote/remote_driver.c:2098 src/remote/remote_driver.c:2202
-#: src/remote/remote_driver.c:2267
+#: src/remote/remote_driver.c:2094 src/remote/remote_driver.c:2198
+#: src/remote/remote_driver.c:2263
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU 映像缓冲长度超过最大值：%d > %d"
 
-#: src/remote/remote_driver.c:2119 src/remote/remote_driver.c:2284
+#: src/remote/remote_driver.c:2115 src/remote/remote_driver.c:2280
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
 msgstr "主机报告太多 vCPU：%d > %d"
 
-#: src/remote/remote_driver.c:2126 src/remote/remote_driver.c:2222
-#: src/remote/remote_driver.c:2290
+#: src/remote/remote_driver.c:2122 src/remote/remote_driver.c:2218
+#: src/remote/remote_driver.c:2286
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "主机报告映像缓冲长度超过最大值：%d > %d"
 
-#: src/remote/remote_driver.c:2340
+#: src/remote/remote_driver.c:2336
 #, c-format
 msgid "security label exceeds maximum: %zu"
 msgstr "安全标签超过最大长度：%zu"
 
-#: src/remote/remote_driver.c:2385
+#: src/remote/remote_driver.c:2381
 #, c-format
 msgid "security label exceeds maximum: %zd"
 msgstr "安全标签超过最大值：%zd"
 
-#: src/remote/remote_driver.c:2457
+#: src/remote/remote_driver.c:2453
 #, c-format
 msgid "security model exceeds maximum: %zu"
 msgstr "安全标签超过最大值：%zu"
 
-#: src/remote/remote_driver.c:2466
+#: src/remote/remote_driver.c:2462
 #, c-format
 msgid "security doi exceeds maximum: %zu"
 msgstr "安全 doi 超过最大长度：%zu"
 
-#: src/remote/remote_driver.c:2553
+#: src/remote/remote_driver.c:2549
 msgid "caller ignores cookie or cookielen"
 msgstr "调度程序忽略 cookie 或者 cookielen"
 
-#: src/remote/remote_driver.c:2562 src/remote/remote_driver.c:5999
-#: src/remote/remote_driver.c:7029
+#: src/remote/remote_driver.c:2558 src/remote/remote_driver.c:5995
+#: src/remote/remote_driver.c:7025
 msgid "caller ignores uri_out"
 msgstr "调度程序忽略 uri_out"
 
-#: src/remote/remote_driver.c:2695
+#: src/remote/remote_driver.c:2691
 #, c-format
 msgid "too many memory stats requested: %d > %d"
 msgstr "stats 请求过多：%d > %d"
 
-#: src/remote/remote_driver.c:2739
+#: src/remote/remote_driver.c:2735
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "为远程协议请求的块 peek 过大，%zi > %d"
 
-#: src/remote/remote_driver.c:2760 src/remote/remote_driver.c:2811
+#: src/remote/remote_driver.c:2756 src/remote/remote_driver.c:2807
 msgid "returned buffer is not same size as requested"
 msgstr "返回的缓冲和请求的大小不同"
 
-#: src/remote/remote_driver.c:2791
+#: src/remote/remote_driver.c:2787
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "为远程协议请求的内存 peek 过大，%zi > %d"
 
-#: src/remote/remote_driver.c:2936
+#: src/remote/remote_driver.c:2932
 #, c-format
 msgid "nparams count exceeds maximum: %u > %u"
 msgstr "nparams 计数超过最大值：%u > %u"
 
-#: src/remote/remote_driver.c:2942
+#: src/remote/remote_driver.c:2938
 #, c-format
 msgid "ncpus count exceeds maximum: %u > %u"
 msgstr "ncpus 计数超过最大值：%u > %u"
 
-#: src/remote/remote_driver.c:2967
+#: src/remote/remote_driver.c:2963
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
 msgstr "remoteDomainGetCPUStats: 返回的统计数据超过限制"
 
-#: src/remote/remote_driver.c:3834
+#: src/remote/remote_driver.c:3830
 #, c-format
 msgid "unknown authentication type %s"
 msgstr "未知验证类型 %s"
 
-#: src/remote/remote_driver.c:3843
+#: src/remote/remote_driver.c:3839
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "请求的验证类型 %s 被拒绝"
 
-#: src/remote/remote_driver.c:3882
+#: src/remote/remote_driver.c:3878
 #, c-format
 msgid "unsupported authentication type %d"
 msgstr "不支持的验证类型 %d"
 
-#: src/remote/remote_driver.c:4169
+#: src/remote/remote_driver.c:4165
 msgid "Failed to make auth credentials"
 msgstr "生成验证证书失败"
 
-#: src/remote/remote_driver.c:4180
+#: src/remote/remote_driver.c:4176
 msgid "No authentication callback available"
 msgstr "没有可用认证回叫"
 
-#: src/remote/remote_driver.c:4186 src/remote/remote_driver.c:4504
+#: src/remote/remote_driver.c:4182 src/remote/remote_driver.c:4500
 msgid "Failed to collect auth credentials"
 msgstr "收集验证证书失败"
 
-#: src/remote/remote_driver.c:4292
+#: src/remote/remote_driver.c:4288
 #, c-format
 msgid "SASL mechanism %s not supported by server"
 msgstr "服务器不支持 SASL 机制 %s"
 
-#: src/remote/remote_driver.c:4322
+#: src/remote/remote_driver.c:4318
 #, c-format
 msgid "SASL negotiation data too long: %zu bytes"
 msgstr "SASL 谈判数据太长：%zu 字节"
 
-#: src/remote/remote_driver.c:4421
+#: src/remote/remote_driver.c:4417
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "协商 SSF %d 不够强大"
 
-#: src/remote/remote_driver.c:5473
+#: src/remote/remote_driver.c:5469
 msgid "no internalFlags support"
 msgstr "无 internalFlags 支持"
 
-#: src/remote/remote_driver.c:5931 src/remote/remote_driver.c:5990
-#: src/remote/remote_driver.c:6073 src/remote/remote_driver.c:6134
-#: src/remote/remote_driver.c:6193 src/remote/remote_driver.c:6950
-#: src/remote/remote_driver.c:7020 src/remote/remote_driver.c:7118
-#: src/remote/remote_driver.c:7190 src/remote/remote_driver.c:7263
+#: src/remote/remote_driver.c:5927 src/remote/remote_driver.c:5986
+#: src/remote/remote_driver.c:6069 src/remote/remote_driver.c:6130
+#: src/remote/remote_driver.c:6189 src/remote/remote_driver.c:6946
+#: src/remote/remote_driver.c:7016 src/remote/remote_driver.c:7114
+#: src/remote/remote_driver.c:7186 src/remote/remote_driver.c:7259
 msgid "caller ignores cookieout or cookieoutlen"
 msgstr "嗲用程序忽略 cookieout 或者 cookieoutlen"
 
-#: src/remote/remote_driver.c:6279
+#: src/remote/remote_driver.c:6275
 #, c-format
 msgid "Too many model names '%d' for limit '%d'"
 msgstr ""
 
-#: src/remote/remote_driver.c:6373
+#: src/remote/remote_driver.c:6369
 msgid "too many file descriptors received"
 msgstr ""
 
-#: src/remote/remote_driver.c:6378
+#: src/remote/remote_driver.c:6374
 msgid "no file descriptor received"
 msgstr ""
 
-#: src/remote/remote_driver.c:6401
+#: src/remote/remote_driver.c:6397
 msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
 msgstr "调用程序不支持 keepalive 协议；可能没有使用事件循环。"
 
-#: src/remote/remote_driver.c:7649
+#: src/remote/remote_driver.c:7645
 #, c-format
 msgid "Number of stats entries is %d, which exceeds max limit: %d"
 msgstr ""
@@ -22470,7 +22458,7 @@ msgid "metadata preallocation is not supported for block volumes"
 msgstr "块卷不支持元数据预分配"
 
 #: src/storage/storage_backend.c:339 src/storage/storage_backend_fs.c:800
-#: src/storage/storage_backend_fs.c:817 src/storage/storage_backend_fs.c:1052
+#: src/storage/storage_backend_fs.c:817 src/storage/storage_backend_fs.c:1060
 #, c-format
 msgid "cannot create path '%s'"
 msgstr "无法创建路径 '%s'"
@@ -22661,8 +22649,7 @@ msgstr ""
 msgid "Volume path '%s' is a socket"
 msgstr ""
 
-#: src/storage/storage_backend.c:1450
-#: src/storage/storage_backend_gluster.c:290
+#: src/storage/storage_backend.c:1450 src/storage/storage_backend_gluster.c:290
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "无法打开卷 '%s'"
@@ -22938,39 +22925,44 @@ msgstr "路径 '%s' 不是绝对路径"
 msgid "failed to remove pool '%s'"
 msgstr "删除池 '%s' 失败"
 
-#: src/storage/storage_backend_fs.c:1020
+#: src/storage/storage_backend_fs.c:1016
+#, fuzzy, c-format
+msgid "volume name '%s' cannot contain '/'"
+msgstr "无效快照名 '%s'：名称中不能包含 '/'"
+
+#: src/storage/storage_backend_fs.c:1028
 #, c-format
 msgid "volume target path '%s' already exists"
 msgstr "卷目标路径 '%s' 已存在"
 
-#: src/storage/storage_backend_fs.c:1042
+#: src/storage/storage_backend_fs.c:1050
 msgid "cannot copy from volume to a directory volume"
 msgstr "无法将卷复制到目录卷"
 
-#: src/storage/storage_backend_fs.c:1073
+#: src/storage/storage_backend_fs.c:1081
 msgid ""
 "storage pool does not support building encrypted volumes from other volumes"
 msgstr "存储池不支持从其他卷构建加密卷"
 
-#: src/storage/storage_backend_fs.c:1093
+#: src/storage/storage_backend_fs.c:1101
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr "没有 qemu-img 则不支持生成非原始映像"
 
-#: src/storage/storage_backend_fs.c:1164
+#: src/storage/storage_backend_fs.c:1172
 #, c-format
 msgid "cannot remove directory '%s'"
 msgstr "无法移除目录 “%s”"
 
-#: src/storage/storage_backend_fs.c:1174
+#: src/storage/storage_backend_fs.c:1182
 #, c-format
 msgid "removing block or network volumes is not supported: %s"
 msgstr "不支持删除块或者网络卷：%s"
 
-#: src/storage/storage_backend_fs.c:1286
+#: src/storage/storage_backend_fs.c:1294
 msgid "preallocate is only supported for raw type volume"
 msgstr "原始类型卷不支持元数据预分配"
 
-#: src/storage/storage_backend_fs.c:1468
+#: src/storage/storage_backend_fs.c:1476
 #, c-format
 msgid "can't canonicalize path '%s'"
 msgstr ""
@@ -23105,8 +23097,7 @@ msgid ""
 "could not get the value of the secret for username %s using usage value '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:336
-#: src/storage/storage_backend_rbd.c:99
+#: src/storage/storage_backend_iscsi.c:336 src/storage/storage_backend_rbd.c:99
 #, c-format
 msgid "no secret matches uuid '%s'"
 msgstr ""
@@ -24134,294 +24125,294 @@ msgstr "无法打开 /proc/cgroups"
 msgid "Error while reading /proc/cgroups"
 msgstr "读取 /proc/cgroups 时出错"
 
-#: src/util/vircgroup.c:352
+#: src/util/vircgroup.c:348
 msgid "Unable to open /proc/mounts"
 msgstr "无法打开 /proc/mounts"
 
-#: src/util/vircgroup.c:390
+#: src/util/vircgroup.c:386
 #, c-format
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup 挂载 '%s' 中缺少 '/' 分隔符"
 
-#: src/util/vircgroup.c:411
+#: src/util/vircgroup.c:407
 #, c-format
 msgid "Cannot stat %s"
 msgstr "无法统计 %s"
 
-#: src/util/vircgroup.c:523 src/util/virnetdevtap.c:119
+#: src/util/vircgroup.c:519 src/util/virnetdevtap.c:119
 #: src/util/virstoragefile.c:1115
 #, c-format
 msgid "Unable to open '%s'"
 msgstr "无法打开 '%s' "
 
-#: src/util/vircgroup.c:641
+#: src/util/vircgroup.c:637
 #, c-format
 msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
 msgstr "不需要控制程序 '%s'，但 '%s' 是共同挂载。"
 
-#: src/util/vircgroup.c:666
+#: src/util/vircgroup.c:662
 msgid "At least one cgroup controller is required"
 msgstr "至少需要一个 cgroup 控制器"
 
-#: src/util/vircgroup.c:688
+#: src/util/vircgroup.c:684
 #, c-format
 msgid "Could not find placement for controller %s at %s"
 msgstr "无法在 %s 为控制器 %s 查找位置"
 
-#: src/util/vircgroup.c:723
+#: src/util/vircgroup.c:719
 #, c-format
 msgid "Invalid value '%s' for '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:728
+#: src/util/vircgroup.c:724
 #, c-format
 msgid "Unable to write to '%s'"
 msgstr "无法写入 '%s'"
 
-#: src/util/vircgroup.c:758
+#: src/util/vircgroup.c:754
 #, c-format
 msgid "Unable to read from '%s'"
 msgstr "无法从 '%s' 中读取"
 
-#: src/util/vircgroup.c:828 src/util/vircgroup.c:855
+#: src/util/vircgroup.c:824 src/util/vircgroup.c:851
 #, c-format
 msgid "Unable to parse '%s' as an integer"
 msgstr "无法将 '%s' 解析为整数"
 
-#: src/util/vircgroup.c:980
+#: src/util/vircgroup.c:976
 #, c-format
 msgid "Failed to create controller %s for group"
 msgstr "为组生成控制器 %s 失败"
 
-#: src/util/vircgroup.c:1123
+#: src/util/vircgroup.c:1119
 #, c-format
 msgid "Controller %d out of range"
 msgstr "控制器 %d 超出范围"
 
-#: src/util/vircgroup.c:1129
+#: src/util/vircgroup.c:1125
 #, c-format
 msgid "Controller '%s' not mounted"
 msgstr "未挂载控制器 '%s'"
 
-#: src/util/vircgroup.c:1156
+#: src/util/vircgroup.c:1152
 #, c-format
 msgid "Cannot parse '%s' as an integer"
 msgstr "无法将 '%s' 解析为整数"
 
-#: src/util/vircgroup.c:1304
+#: src/util/vircgroup.c:1300
 #, c-format
 msgid "Partition path '%s' must start with '/'"
 msgstr "分区路径 '%s' 必须以 '/' 开始"
 
-#: src/util/vircgroup.c:1871
+#: src/util/vircgroup.c:1865
 msgid "No controllers are mounted"
 msgstr "未挂载控制器"
 
-#: src/util/vircgroup.c:1877
+#: src/util/vircgroup.c:1871
 #, c-format
 msgid "Controller '%s' is not mounted"
 msgstr "未挂载控制器 '%s'"
 
-#: src/util/vircgroup.c:1884
+#: src/util/vircgroup.c:1878
 #, c-format
 msgid "Controller '%s' is not enabled for group"
 msgstr "没有为组启用控制器 '%s'"
 
-#: src/util/vircgroup.c:1959
+#: src/util/vircgroup.c:1953
 #, c-format
 msgid "Cannot parse byte %sstat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:1969
+#: src/util/vircgroup.c:1963
 #, c-format
 msgid "Sum of byte %sstat overflows"
 msgstr ""
 
-#: src/util/vircgroup.c:1980
+#: src/util/vircgroup.c:1974
 #, c-format
 msgid "Cannot parse %srequest stat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:1990
+#: src/util/vircgroup.c:1984
 #, c-format
 msgid "Sum of %srequest stat overflows"
 msgstr ""
 
-#: src/util/vircgroup.c:2047 src/util/vircgroup.c:2184
-#: src/util/vircgroup.c:2229 src/util/vircgroup.c:2274
-#: src/util/vircgroup.c:2318 src/util/vircgroup.c:2367
-#: src/util/vircgroup.c:2860 src/util/vircgroup.c:2954
+#: src/util/vircgroup.c:2041 src/util/vircgroup.c:2178
+#: src/util/vircgroup.c:2223 src/util/vircgroup.c:2268
+#: src/util/vircgroup.c:2312 src/util/vircgroup.c:2361
+#: src/util/vircgroup.c:2854 src/util/vircgroup.c:2948
 #, c-format
 msgid "Path '%s' is not accessible"
 msgstr "路径 '%s' 不可访问"
 
-#: src/util/vircgroup.c:2054 src/util/vircgroup.c:2191
-#: src/util/vircgroup.c:2236 src/util/vircgroup.c:2281
-#: src/util/vircgroup.c:2325 src/util/vircgroup.c:2374
+#: src/util/vircgroup.c:2048 src/util/vircgroup.c:2185
+#: src/util/vircgroup.c:2230 src/util/vircgroup.c:2275
+#: src/util/vircgroup.c:2319 src/util/vircgroup.c:2368
 #, c-format
 msgid "Path '%s' must be a block device"
 msgstr "路径 '%s' 必须是一个块设备"
 
-#: src/util/vircgroup.c:2074
+#: src/util/vircgroup.c:2068
 #, c-format
 msgid "Cannot find byte stats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2081
+#: src/util/vircgroup.c:2075
 #, c-format
 msgid "Cannot find request stats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2089
+#: src/util/vircgroup.c:2083
 #, c-format
 msgid "Cannot find byte %sstats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2096 src/util/vircgroup.c:2110
+#: src/util/vircgroup.c:2090 src/util/vircgroup.c:2104
 #, c-format
 msgid "Cannot parse %sstat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2103
+#: src/util/vircgroup.c:2097
 #, c-format
 msgid "Cannot find request %sstats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2407 src/util/vircgroup.c:2506
-#: src/util/vircgroup.c:2568
+#: src/util/vircgroup.c:2401 src/util/vircgroup.c:2500
+#: src/util/vircgroup.c:2562
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "内存 '%llu' 大小必须小于 %llu"
 
-#: src/util/vircgroup.c:3013 src/util/vircgroup.c:3094
+#: src/util/vircgroup.c:3007 src/util/vircgroup.c:3088
 msgid "cpuacct parse error"
 msgstr "cpuacct 解析出错"
 
-#: src/util/vircgroup.c:3071
+#: src/util/vircgroup.c:3065
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d 大于最大值 %d"
 
-#: src/util/vircgroup.c:3149 src/util/vircgroup.c:3163
+#: src/util/vircgroup.c:3143 src/util/vircgroup.c:3157
 msgid "unable to get cpu account"
 msgstr "无法获取 cpu 计数"
 
-#: src/util/vircgroup.c:3219
+#: src/util/vircgroup.c:3213
 #, c-format
 msgid "cfs_period '%llu' must be in range (1000, 1000000)"
 msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
 
-#: src/util/vircgroup.c:3264
+#: src/util/vircgroup.c:3258
 #, c-format
 msgid "cfs_quota '%lld' must be in range (1000, %llu)"
 msgstr "cfs_quota '%lld' 必须在范围 (1000, %llu) 中"
 
-#: src/util/vircgroup.c:3296
+#: src/util/vircgroup.c:3290
 #, c-format
 msgid "Unable to open %s (%d)"
 msgstr "无法打开 %s (%d)"
 
-#: src/util/vircgroup.c:3319
+#: src/util/vircgroup.c:3313
 #, c-format
 msgid "Failed to readdir for %s (%d)"
 msgstr "读取 %s (%d) 目录失败"
 
-#: src/util/vircgroup.c:3327
+#: src/util/vircgroup.c:3321
 #, c-format
 msgid "Unable to remove %s (%d)"
 msgstr "无法删除 %s (%d)"
 
-#: src/util/vircgroup.c:3414 src/util/vircgroup.c:3424 src/util/virfile.c:1817
+#: src/util/vircgroup.c:3408 src/util/vircgroup.c:3418 src/util/virfile.c:1817
 #, c-format
 msgid "Failed to read %s"
 msgstr "读取 %s 失败"
 
-#: src/util/vircgroup.c:3436
+#: src/util/vircgroup.c:3430
 #, c-format
 msgid "Failed to kill process %lu"
 msgstr "杀死进程 %lu 失败"
 
-#: src/util/vircgroup.c:3649
+#: src/util/vircgroup.c:3643
 #, c-format
 msgid "Could not find directory separator in %s"
 msgstr "无法在目录分隔符中找到 %s"
 
-#: src/util/vircgroup.c:3661
+#: src/util/vircgroup.c:3655
 msgid "Could not find any mounted controllers"
 msgstr "未找到任何挂载的控制器"
 
-#: src/util/vircgroup.c:3709
+#: src/util/vircgroup.c:3703
 #, c-format
 msgid "Cannot parse user stat '%s'"
 msgstr "无法解析用户统计 '%s'"
 
-#: src/util/vircgroup.c:3716
+#: src/util/vircgroup.c:3710
 #, c-format
 msgid "Cannot parse sys stat '%s'"
 msgstr "无法解析系统统计 '%s'"
 
-#: src/util/vircgroup.c:3727
+#: src/util/vircgroup.c:3721
 msgid "Cannot determine system clock HZ"
 msgstr "无法确定系统时钟 HZ"
 
-#: src/util/vircgroup.c:3776 src/util/vircgroup.c:3808
+#: src/util/vircgroup.c:3770 src/util/vircgroup.c:3802
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "无法生成目录 %s"
 
-#: src/util/vircgroup.c:3787
+#: src/util/vircgroup.c:3781
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
-#: src/util/vircgroup.c:3817
+#: src/util/vircgroup.c:3811
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
 
-#: src/util/vircgroup.c:3833
+#: src/util/vircgroup.c:3827
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "无法将目录 %s 符号链接到 %s"
 
-#: src/util/vircgroup.c:3875
+#: src/util/vircgroup.c:3869
 #, c-format
 msgid "Unable to open dir '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:3985 src/util/vircgroup.c:3994
-#: src/util/vircgroup.c:4007 src/util/vircgroup.c:4019
-#: src/util/vircgroup.c:4030 src/util/vircgroup.c:4042
-#: src/util/vircgroup.c:4053 src/util/vircgroup.c:4067
-#: src/util/vircgroup.c:4077 src/util/vircgroup.c:4097
-#: src/util/vircgroup.c:4114 src/util/vircgroup.c:4133
-#: src/util/vircgroup.c:4143 src/util/vircgroup.c:4154
-#: src/util/vircgroup.c:4164 src/util/vircgroup.c:4177
-#: src/util/vircgroup.c:4191 src/util/vircgroup.c:4201
-#: src/util/vircgroup.c:4211 src/util/vircgroup.c:4222
-#: src/util/vircgroup.c:4232 src/util/vircgroup.c:4242
-#: src/util/vircgroup.c:4252 src/util/vircgroup.c:4262
-#: src/util/vircgroup.c:4272 src/util/vircgroup.c:4282
-#: src/util/vircgroup.c:4292 src/util/vircgroup.c:4302
-#: src/util/vircgroup.c:4312 src/util/vircgroup.c:4322
-#: src/util/vircgroup.c:4332 src/util/vircgroup.c:4342
-#: src/util/vircgroup.c:4352 src/util/vircgroup.c:4362
-#: src/util/vircgroup.c:4372 src/util/vircgroup.c:4382
-#: src/util/vircgroup.c:4392 src/util/vircgroup.c:4401
-#: src/util/vircgroup.c:4409 src/util/vircgroup.c:4422
-#: src/util/vircgroup.c:4434 src/util/vircgroup.c:4445
-#: src/util/vircgroup.c:4458 src/util/vircgroup.c:4470
-#: src/util/vircgroup.c:4481 src/util/vircgroup.c:4491
-#: src/util/vircgroup.c:4501 src/util/vircgroup.c:4511
-#: src/util/vircgroup.c:4521 src/util/vircgroup.c:4531
-#: src/util/vircgroup.c:4540 src/util/vircgroup.c:4549
-#: src/util/vircgroup.c:4559 src/util/vircgroup.c:4569
-#: src/util/vircgroup.c:4578 src/util/vircgroup.c:4588
-#: src/util/vircgroup.c:4598 src/util/vircgroup.c:4608
-#: src/util/vircgroup.c:4619 src/util/vircgroup.c:4630
-#: src/util/vircgroup.c:4640 src/util/vircgroup.c:4650
-#: src/util/vircgroup.c:4661 src/util/vircgroup.c:4683
-#: src/util/vircgroup.c:4695 src/util/vircgroup.c:4704
+#: src/util/vircgroup.c:3979 src/util/vircgroup.c:3988
+#: src/util/vircgroup.c:4001 src/util/vircgroup.c:4013
+#: src/util/vircgroup.c:4024 src/util/vircgroup.c:4036
+#: src/util/vircgroup.c:4047 src/util/vircgroup.c:4060
+#: src/util/vircgroup.c:4070 src/util/vircgroup.c:4090
+#: src/util/vircgroup.c:4107 src/util/vircgroup.c:4126
+#: src/util/vircgroup.c:4136 src/util/vircgroup.c:4147
+#: src/util/vircgroup.c:4157 src/util/vircgroup.c:4170
+#: src/util/vircgroup.c:4184 src/util/vircgroup.c:4194
+#: src/util/vircgroup.c:4204 src/util/vircgroup.c:4215
+#: src/util/vircgroup.c:4225 src/util/vircgroup.c:4235
+#: src/util/vircgroup.c:4245 src/util/vircgroup.c:4255
+#: src/util/vircgroup.c:4265 src/util/vircgroup.c:4275
+#: src/util/vircgroup.c:4285 src/util/vircgroup.c:4295
+#: src/util/vircgroup.c:4305 src/util/vircgroup.c:4315
+#: src/util/vircgroup.c:4325 src/util/vircgroup.c:4335
+#: src/util/vircgroup.c:4345 src/util/vircgroup.c:4355
+#: src/util/vircgroup.c:4365 src/util/vircgroup.c:4375
+#: src/util/vircgroup.c:4385 src/util/vircgroup.c:4394
+#: src/util/vircgroup.c:4402 src/util/vircgroup.c:4415
+#: src/util/vircgroup.c:4427 src/util/vircgroup.c:4438
+#: src/util/vircgroup.c:4451 src/util/vircgroup.c:4463
+#: src/util/vircgroup.c:4474 src/util/vircgroup.c:4484
+#: src/util/vircgroup.c:4494 src/util/vircgroup.c:4504
+#: src/util/vircgroup.c:4514 src/util/vircgroup.c:4524
+#: src/util/vircgroup.c:4533 src/util/vircgroup.c:4542
+#: src/util/vircgroup.c:4552 src/util/vircgroup.c:4562
+#: src/util/vircgroup.c:4571 src/util/vircgroup.c:4581
+#: src/util/vircgroup.c:4591 src/util/vircgroup.c:4601
+#: src/util/vircgroup.c:4612 src/util/vircgroup.c:4623
+#: src/util/vircgroup.c:4633 src/util/vircgroup.c:4643
+#: src/util/vircgroup.c:4654 src/util/vircgroup.c:4676
+#: src/util/vircgroup.c:4688 src/util/vircgroup.c:4697
 msgid "Control groups not supported on this platform"
 msgstr "这个平台不支持控制组"
 
@@ -25494,9 +25485,9 @@ msgstr "未锁定锁空间资源 '%s'"
 msgid "owner %lld does not hold the resource lock"
 msgstr "拥有者 %lld 不拥有资源锁"
 
-#: src/util/virnetdev.c:121 src/util/virnetdev.c:592
-#: src/util/virnetdevbridge.c:98 src/util/virnetdevbridge.c:558
-#: src/util/virnetdevbridge.c:628 src/util/virnetdevtap.c:280
+#: src/util/virnetdev.c:121 src/util/virnetdev.c:621
+#: src/util/virnetdevbridge.c:98 src/util/virnetdevbridge.c:557
+#: src/util/virnetdevbridge.c:627 src/util/virnetdevtap.c:280
 #: src/util/virnetdevtap.c:346
 #, c-format
 msgid "Network interface name '%s' is too long"
@@ -25539,7 +25530,7 @@ msgstr "无法在 '%s' 设定接口 MAC"
 msgid "Unable to preserve mac for %s"
 msgstr "无法为 %s 保留 mac"
 
-#: src/util/virnetdev.c:416 src/util/virnetdev.c:2193
+#: src/util/virnetdev.c:416 src/util/virnetdev.c:2232
 #, c-format
 msgid "Cannot parse MAC address from '%s'"
 msgstr "无法从 '%s' 解析 MAC 地址"
@@ -25554,218 +25545,223 @@ msgstr "无法在 '%s' 获取接口 MTU"
 msgid "Cannot set interface MTU on '%s'"
 msgstr "无法在 '%s' 设定接口 MTU"
 
-#: src/util/virnetdev.c:602
+#: src/util/virnetdev.c:631
 #, c-format
 msgid "Unable to rename '%s' to '%s'"
 msgstr "无法将 '%s' 重命名为 '%s'"
 
-#: src/util/virnetdev.c:617
+#: src/util/virnetdev.c:646
 #, c-format
 msgid "Cannot rename interface '%s' to '%s' on this platform"
 msgstr "无法在这个平台中将 '%s' 重命名为 '%s'"
 
-#: src/util/virnetdev.c:638 src/util/virnetdev.c:764 src/util/virnetdev.c:783
+#: src/util/virnetdev.c:667 src/util/virnetdev.c:793 src/util/virnetdev.c:812
 #, c-format
 msgid "Cannot get interface flags on '%s'"
 msgstr "无法在 '%s' 中获取接口标签"
 
-#: src/util/virnetdev.c:652 src/util/virnetdev.c:671
+#: src/util/virnetdev.c:681 src/util/virnetdev.c:700
 #, c-format
 msgid "Cannot set interface flags on '%s'"
 msgstr "无法在 '%s' 中设定接口标签"
 
-#: src/util/virnetdev.c:876 src/util/virnetdev.c:929
+#: src/util/virnetdev.c:905 src/util/virnetdev.c:958
 msgid "Unable to open control socket"
 msgstr "无法打开控制插槽"
 
-#: src/util/virnetdev.c:885 src/util/virnetdev.c:935
+#: src/util/virnetdev.c:914 src/util/virnetdev.c:964
 #, c-format
 msgid "invalid interface name %s"
 msgstr "无效接口名称 %s"
 
-#: src/util/virnetdev.c:892
+#: src/util/virnetdev.c:921
 #, c-format
 msgid "Unable to get index for interface %s"
 msgstr "无法为接口 %s 获取索引"
 
-#: src/util/virnetdev.c:912
+#: src/util/virnetdev.c:941
 msgid "Unable to get interface index on this platform"
 msgstr "无法在这个平台中获取接口索引"
 
-#: src/util/virnetdev.c:942
+#: src/util/virnetdev.c:971
 #, c-format
 msgid "Unable to get VLAN for interface %s"
 msgstr "无法为接口 %s 获取 VLAN"
 
-#: src/util/virnetdev.c:959
+#: src/util/virnetdev.c:988
 msgid "Unable to get VLAN on this platform"
 msgstr "无法在这个平台中获取 VLAN"
 
-#: src/util/virnetdev.c:1043 src/util/virnetdev.c:1217
-#: src/util/virnetdev.c:1905 src/util/virnetdev.c:2027
-#: src/util/virnetdevbridge.c:1038 src/util/virnetdevmacvlan.c:208
+#: src/util/virnetdev.c:1072 src/util/virnetdev.c:1246
+#: src/util/virnetdev.c:1944 src/util/virnetdev.c:2066
+#: src/util/virnetdevbridge.c:1037 src/util/virnetdevmacvlan.c:208
 #: src/util/virnetdevmacvlan.c:285 src/util/virnetdevvportprofile.c:762
 msgid "allocated netlink buffer is too small"
 msgstr "分配的 netlink 缓存太小"
 
-#: src/util/virnetdev.c:1093
+#: src/util/virnetdev.c:1122
 #, fuzzy, c-format
 msgid "Error adding IP address to %s"
 msgstr "读取 secret 出错：%s"
 
-#: src/util/virnetdev.c:1204
+#: src/util/virnetdev.c:1233
 #, fuzzy, c-format
 msgid "Error adding route to %s"
 msgstr "读取 secret 出错：%s"
 
-#: src/util/virnetdev.c:1251
+#: src/util/virnetdev.c:1280
 #, fuzzy, c-format
 msgid "Error removing IP address from %s"
 msgstr "从 '%s' 读取 MAC 出错"
 
-#: src/util/virnetdev.c:1409
+#: src/util/virnetdev.c:1438
 #, c-format
 msgid "Unable to get IPv4 address for interface %s"
 msgstr "无法为接口 %s 获取 IPv4 地址"
 
-#: src/util/virnetdev.c:1429
+#: src/util/virnetdev.c:1458
 msgid "Unable to get IPv4 address on this platform"
 msgstr "无法在这个平台中获取 IPv4 地址"
 
-#: src/util/virnetdev.c:1475
+#: src/util/virnetdev.c:1504
 #, c-format
 msgid "could not get MAC address of interface %s"
 msgstr "无法获取接口 %s 的 MAC 地址"
 
-#: src/util/virnetdev.c:1508
+#: src/util/virnetdev.c:1537
 msgid "Unable to check interface config on this platform"
 msgstr "无法在这个平台中检查接口配置"
 
-#: src/util/virnetdev.c:1580
+#: src/util/virnetdev.c:1608
 msgid "Failed to get PCI Config Address String"
 msgstr "获取 PCI 配置地址字符串失败"
 
-#: src/util/virnetdev.c:1585
+#: src/util/virnetdev.c:1613
 msgid "Failed to get PCI SYSFS file"
 msgstr "获取 PCI SYSFS 文件失败"
 
-#: src/util/virnetdev.c:1740
+#: src/util/virnetdev.c:1768
 msgid "Unable to get virtual functions on this platform"
 msgstr "无法在这个平台中获取虚拟功能"
 
-#: src/util/virnetdev.c:1748
+#: src/util/virnetdev.c:1776
 msgid "Unable to check virtual function status on this platform"
 msgstr "无法在这个平台中检查虚拟功能状态"
 
-#: src/util/virnetdev.c:1758
+#: src/util/virnetdev.c:1786
 msgid "Unable to get virtual function index on this platform"
 msgstr "无法在这个平台中获取虚拟功能索引"
 
-#: src/util/virnetdev.c:1767
+#: src/util/virnetdev.c:1795
 msgid "Unable to get physical function status on this platform"
 msgstr "无法在这个平台中检查物理功能状态"
 
-#: src/util/virnetdev.c:1777
+#: src/util/virnetdev.c:1805
 msgid "Unable to get virtual function info on this platform"
 msgstr "无法在这个平台中获取虚拟功能"
 
-#: src/util/virnetdev.c:1873
+#: src/util/virnetdev.c:1815
+#, fuzzy
+msgid "Unable to get sysfs info on this platform"
+msgstr "无法在这个平台中获取 VLAN"
+
+#: src/util/virnetdev.c:1912
 #, c-format
 msgid "error dumping %s (%d) interface"
 msgstr "转储g %s (%d) 接口出错"
 
-#: src/util/virnetdev.c:1900 src/util/virnetdev.c:2022
-#: src/util/virnetdevbridge.c:1033 src/util/virnetdevmacvlan.c:203
+#: src/util/virnetdev.c:1939 src/util/virnetdev.c:2061
+#: src/util/virnetdevbridge.c:1032 src/util/virnetdevmacvlan.c:203
 #: src/util/virnetdevmacvlan.c:280 src/util/virnetdevvportprofile.c:757
 #: src/util/virnetlink.c:315
 msgid "malformed netlink response message"
 msgstr "被破坏的 netlink 响应信息"
 
-#: src/util/virnetdev.c:2000
+#: src/util/virnetdev.c:2039
 #, c-format
 msgid "error during set %s of ifindex %d"
 msgstr "设定 ifindex %s 的 %d 过程出错"
 
-#: src/util/virnetdev.c:2044
+#: src/util/virnetdev.c:2083
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 响应中缺少 IFLA_VF_INFO"
 
-#: src/util/virnetdev.c:2055
+#: src/util/virnetdev.c:2094
 msgid "error parsing IFLA_VF_INFO"
 msgstr "解析 IFLA_VF_INFO 出错"
 
-#: src/util/virnetdev.c:2080
+#: src/util/virnetdev.c:2119
 #, c-format
 msgid "couldn't find IFLA_VF_INFO for VF %d in netlink response"
 msgstr "无法在 netlink 响应中为 VF %d 缺少 IFLA_VF_INFO"
 
-#: src/util/virnetdev.c:2131
+#: src/util/virnetdev.c:2170
 #, c-format
 msgid "Unable to preserve mac/vlan tag for pf = %s, vf = %d"
 msgstr "无法为 pf = %s, vf = %d 保留 mac/vlan 标签"
 
-#: src/util/virnetdev.c:2184
+#: src/util/virnetdev.c:2223
 #, c-format
 msgid "Cannot parse vlan tag from '%s'"
 msgstr "无法从 '%s' 中解析 vlan 标签"
 
-#: src/util/virnetdev.c:2304
+#: src/util/virnetdev.c:2343
 msgid "Unable to dump link info on this platform"
 msgstr "无法在这个平台中转储链接信息"
 
-#: src/util/virnetdev.c:2316
+#: src/util/virnetdev.c:2355
 msgid "Unable to replace net config on this platform"
 msgstr "无法在这个平台中替换网络配置"
 
-#: src/util/virnetdev.c:2327
+#: src/util/virnetdev.c:2366
 msgid "Unable to restore net config on this platform"
 msgstr "无法在这个平台中恢复网络配置"
 
-#: src/util/virnetdev.c:2350 src/util/virnetdev.c:2398
+#: src/util/virnetdev.c:2389 src/util/virnetdev.c:2437
 #, c-format
 msgid "unable to read: %s"
 msgstr ""
 
-#: src/util/virnetdev.c:2357 src/util/virnetdev.c:2368
-#: src/util/virnetdev.c:2406
+#: src/util/virnetdev.c:2396 src/util/virnetdev.c:2407
+#: src/util/virnetdev.c:2445
 #, c-format
 msgid "Unable to parse: %s"
 msgstr ""
 
-#: src/util/virnetdev.c:2463 src/util/virnetdev.c:2512
+#: src/util/virnetdev.c:2502 src/util/virnetdev.c:2551
 #, c-format
 msgid "Cannot add multicast MAC %s on '%s' interface"
 msgstr ""
 
-#: src/util/virnetdev.c:2478
+#: src/util/virnetdev.c:2517
 msgid "Unable to add address to interface multicast list on this platform"
 msgstr ""
 
-#: src/util/virnetdev.c:2527
+#: src/util/virnetdev.c:2566
 msgid "Unable to delete address from interface multicast list on this platform"
 msgstr ""
 
-#: src/util/virnetdev.c:2548
+#: src/util/virnetdev.c:2587
 #, c-format
 msgid "failed to parse multicast address from '%s'"
 msgstr ""
 
-#: src/util/virnetdev.c:2557
+#: src/util/virnetdev.c:2596
 #, c-format
 msgid "Failed to parse interface index from '%s'"
 msgstr ""
 
-#: src/util/virnetdev.c:2568
+#: src/util/virnetdev.c:2607
 #, c-format
 msgid "Failed to parse network device name from '%s'"
 msgstr ""
 
-#: src/util/virnetdev.c:2576 src/util/virnetdev.c:2586
+#: src/util/virnetdev.c:2615 src/util/virnetdev.c:2625
 #, c-format
 msgid "Failed to parse users from '%s'"
 msgstr ""
 
-#: src/util/virnetdev.c:2597
+#: src/util/virnetdev.c:2636
 #, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr ""
@@ -25789,125 +25785,125 @@ msgstr "无效等级 ID %d"
 msgid "Bridge '%s' has no QoS set, therefore unable to set 'floor' on '%s'"
 msgstr "桥接 '%s' 没有 QoS 设置，因此无法在 '%s 中设定 'floor'。"
 
-#: src/util/virnetdevbridge.c:141 src/util/virnetdevbridge.c:152
-#: src/util/virnetdevbridge.c:159
+#: src/util/virnetdevbridge.c:140 src/util/virnetdevbridge.c:151
+#: src/util/virnetdevbridge.c:158
 #, c-format
 msgid "Unable to set bridge %s %s"
 msgstr "无法获取桥接 %s %s"
 
-#: src/util/virnetdevbridge.c:191 src/util/virnetdevbridge.c:203
-#: src/util/virnetdevbridge.c:213
+#: src/util/virnetdevbridge.c:190 src/util/virnetdevbridge.c:202
+#: src/util/virnetdevbridge.c:212
 #, c-format
 msgid "Unable to get bridge %s %s"
 msgstr "无法获取桥接 %s %s"
 
-#: src/util/virnetdevbridge.c:249
+#: src/util/virnetdevbridge.c:248
 #, fuzzy, c-format
 msgid "Unable to set bridge %s port %s %s to %s"
 msgstr "无法添加桥接 %s 端口 %s"
 
-#: src/util/virnetdevbridge.c:277
+#: src/util/virnetdevbridge.c:276
 #, fuzzy, c-format
 msgid "Unable to get bridge %s port %s %s"
 msgstr "无法获取桥接 %s %s"
 
-#: src/util/virnetdevbridge.c:351
+#: src/util/virnetdevbridge.c:350
 #, fuzzy
 msgid "Unable to get bridge port learning on this platform"
 msgstr "无法在这个平台中恢复网络配置"
 
-#: src/util/virnetdevbridge.c:362
+#: src/util/virnetdevbridge.c:361
 #, fuzzy
 msgid "Unable to set bridge port learning on this platform"
 msgstr "无法在这个平台中恢复网络配置"
 
-#: src/util/virnetdevbridge.c:373
+#: src/util/virnetdevbridge.c:372
 #, fuzzy
 msgid "Unable to get bridge port unicast_flood on this platform"
 msgstr "无法在这个平台中获取虚拟功能"
 
-#: src/util/virnetdevbridge.c:384
+#: src/util/virnetdevbridge.c:383
 #, fuzzy
 msgid "Unable to set bridge port unicast_flood on this platform"
 msgstr "无法在这个平台中获取虚拟功能"
 
-#: src/util/virnetdevbridge.c:409 src/util/virnetdevbridge.c:447
+#: src/util/virnetdevbridge.c:408 src/util/virnetdevbridge.c:446
 #, c-format
 msgid "Unable to create bridge %s"
 msgstr "无法生成桥接 %s"
 
-#: src/util/virnetdevbridge.c:431
+#: src/util/virnetdevbridge.c:430
 msgid "Unable to create bridge device"
 msgstr "无法生成桥接设备"
 
-#: src/util/virnetdevbridge.c:471 src/util/virnetdevbridge.c:507
+#: src/util/virnetdevbridge.c:470 src/util/virnetdevbridge.c:506
 #, c-format
 msgid "Unable to delete bridge %s"
 msgstr "无法删除桥接 %s"
 
-#: src/util/virnetdevbridge.c:493
+#: src/util/virnetdevbridge.c:492
 #, c-format
 msgid "Unable to remove bridge %s"
 msgstr "无法删除桥接设备 %s"
 
-#: src/util/virnetdevbridge.c:534 src/util/virnetdevbridge.c:603
+#: src/util/virnetdevbridge.c:533 src/util/virnetdevbridge.c:602
 #, c-format
 msgid "Unable to get interface index for %s"
 msgstr "无法为 %s 获取接口索引"
 
-#: src/util/virnetdevbridge.c:540 src/util/virnetdevbridge.c:565
-#: src/util/virnetdevbridge.c:576
+#: src/util/virnetdevbridge.c:539 src/util/virnetdevbridge.c:564
+#: src/util/virnetdevbridge.c:575
 #, c-format
 msgid "Unable to add bridge %s port %s"
 msgstr "无法添加桥接 %s 端口 %s"
 
-#: src/util/virnetdevbridge.c:610 src/util/virnetdevbridge.c:635
-#: src/util/virnetdevbridge.c:646
+#: src/util/virnetdevbridge.c:609 src/util/virnetdevbridge.c:634
+#: src/util/virnetdevbridge.c:645
 #, c-format
 msgid "Unable to remove bridge %s port %s"
 msgstr "无法删除桥接 %s 端口 %s"
 
-#: src/util/virnetdevbridge.c:785
+#: src/util/virnetdevbridge.c:784
 #, c-format
 msgid "Unable to set STP delay on %s"
 msgstr "无法在 %s 中设定 STP 延迟"
 
-#: src/util/virnetdevbridge.c:795 src/util/virnetdevbridge.c:829
+#: src/util/virnetdevbridge.c:794 src/util/virnetdevbridge.c:828
 #, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "无法在这个平台中为 %s 获取 STP 延迟"
 
-#: src/util/virnetdevbridge.c:812 src/util/virnetdevbridge.c:847
+#: src/util/virnetdevbridge.c:811 src/util/virnetdevbridge.c:846
 #, c-format
 msgid "Unable to get STP on %s on this platform"
 msgstr "无法在这个平台中为 %s 获取 STP"
 
-#: src/util/virnetdevbridge.c:821
+#: src/util/virnetdevbridge.c:820
 #, c-format
 msgid "Unable to set STP delay on %s on this platform"
 msgstr "无法在这个平台中为 %s 设定 STP 延迟"
 
-#: src/util/virnetdevbridge.c:839
+#: src/util/virnetdevbridge.c:838
 #, c-format
 msgid "Unable to set STP on %s on this platform"
 msgstr "无法在这个平台中为 %s 设定 STP"
 
-#: src/util/virnetdevbridge.c:905
+#: src/util/virnetdevbridge.c:904
 #, fuzzy
 msgid "Unable to get bridge vlan_filtering on this platform"
 msgstr "无法在这个平台中获取接口索引"
 
-#: src/util/virnetdevbridge.c:915
+#: src/util/virnetdevbridge.c:914
 #, fuzzy
 msgid "Unable to set bridge vlan_filtering on this platform"
 msgstr "无法在这个平台中获取接口索引"
 
-#: src/util/virnetdevbridge.c:1014
+#: src/util/virnetdevbridge.c:1013
 #, fuzzy, c-format
 msgid "error adding fdb entry for %s"
 msgstr "在 config 列表中添加文件时出错"
 
-#: src/util/virnetdevbridge.c:1051
+#: src/util/virnetdevbridge.c:1050
 #, fuzzy
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "无法在这个平台中删除 TAP 设备"
@@ -25922,24 +25918,20 @@ msgstr "为 %s 生成 %s 类型接口附加时出错"
 msgid "error destroying %s interface"
 msgstr "销毁 %s 接口出错"
 
-#: src/util/virnetdevmacvlan.c:312
-msgid "buffer for ifindex path is too small"
-msgstr "ifindex 路径的缓存太小"
-
-#: src/util/virnetdevmacvlan.c:320
+#: src/util/virnetdevmacvlan.c:316
 #, c-format
 msgid "cannot open macvtap file %s to determine interface index"
 msgstr "无法打开 macvtap 文件 %s 以便确定接口索引"
 
-#: src/util/virnetdevmacvlan.c:327
+#: src/util/virnetdevmacvlan.c:323
 msgid "cannot determine macvtap's tap device interface index"
 msgstr "无法确定 macvtap 的 tap 设备接口索引"
 
-#: src/util/virnetdevmacvlan.c:339
+#: src/util/virnetdevmacvlan.c:334
 msgid "internal buffer for tap device is too small"
 msgstr "tap 设备的内部缓存太小"
 
-#: src/util/virnetdevmacvlan.c:356
+#: src/util/virnetdevmacvlan.c:351
 #, c-format
 msgid "cannot open macvtap tap device %s"
 msgstr "无法打开 macvtap tap 设备 %s"
@@ -26582,8 +26574,7 @@ msgstr ""
 msgid "no agent is available to authenticate"
 msgstr ""
 
-#: src/util/virpolkit.c:128 tests/virpolkittest.c:190
-#: tests/virpolkittest.c:319
+#: src/util/virpolkit.c:128 tests/virpolkittest.c:190 tests/virpolkittest.c:319
 msgid "access denied by policy"
 msgstr ""
 
@@ -27941,12 +27932,16 @@ msgstr ""
 msgid "mktime failed"
 msgstr ""
 
-#: src/util/virtpm.c:54
+#: src/util/virtpm.c:65
+msgid "No usable sysfs TPM cancel file could be found"
+msgstr ""
+
+#: src/util/virtpm.c:69
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM 设备路径 %s 无效"
 
-#: src/util/virtpm.c:58
+#: src/util/virtpm.c:73
 msgid "Missing TPM device path"
 msgstr "缺少 TPM 设备路径"
 
@@ -32266,8 +32261,7 @@ msgid "Id:"
 msgstr "Id:"
 
 #: tools/virsh-domain-monitor.c:1204 tools/virsh-network.c:367
-#: tools/virsh-pool.c:1561 tools/virsh-snapshot.c:925
-#: tools/virsh-volume.c:1046
+#: tools/virsh-pool.c:1561 tools/virsh-snapshot.c:925 tools/virsh-volume.c:1046
 msgid "Name:"
 msgstr "名称："
 
@@ -32281,8 +32275,7 @@ msgid "OS Type:"
 msgstr "OS 类型："
 
 #: tools/virsh-domain-monitor.c:1215 tools/virsh-domain.c:6230
-#: tools/virsh-domain.c:6241 tools/virsh-pool.c:1569
-#: tools/virsh-snapshot.c:961
+#: tools/virsh-domain.c:6241 tools/virsh-pool.c:1569 tools/virsh-snapshot.c:961
 msgid "State:"
 msgstr "状态："
 
@@ -32517,11 +32510,10 @@ msgstr "Id"
 
 #: tools/virsh-domain-monitor.c:1900 tools/virsh-domain-monitor.c:1905
 #: tools/virsh-domain.c:12404 tools/virsh-interface.c:361
-#: tools/virsh-network.c:689 tools/virsh-nwfilter.c:370
-#: tools/virsh-pool.c:1254 tools/virsh-pool.c:1275 tools/virsh-pool.c:1340
-#: tools/virsh-snapshot.c:1600 tools/virsh-snapshot.c:1604
-#: tools/virsh-volume.c:1481 tools/virsh-volume.c:1497
-#: tools/virsh-volume.c:1543
+#: tools/virsh-network.c:689 tools/virsh-nwfilter.c:370 tools/virsh-pool.c:1254
+#: tools/virsh-pool.c:1275 tools/virsh-pool.c:1340 tools/virsh-snapshot.c:1600
+#: tools/virsh-snapshot.c:1604 tools/virsh-volume.c:1481
+#: tools/virsh-volume.c:1497 tools/virsh-volume.c:1543
 msgid "Name"
 msgstr "名称"
 
@@ -35244,8 +35236,7 @@ msgstr "XML 中的域信息"
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "把域信息作为一个 XML 输出到 stdout。"
 
-#: tools/virsh-domain.c:9127 tools/virsh-interface.c:471
-#: tools/virsh-pool.c:696
+#: tools/virsh-domain.c:9127 tools/virsh-interface.c:471 tools/virsh-pool.c:696
 msgid "show inactive defined XML"
 msgstr "显示不活跃定义的 XML"
 
@@ -36744,8 +36735,8 @@ msgstr "MAC 地址"
 msgid "active"
 msgstr "活动"
 
-#: tools/virsh-interface.c:370 tools/virsh-network.c:706
-#: tools/virsh-pool.c:956 tools/virsh-pool.c:1226
+#: tools/virsh-interface.c:370 tools/virsh-network.c:706 tools/virsh-pool.c:956
+#: tools/virsh-pool.c:1226
 msgid "inactive"
 msgstr "不活跃"
 
@@ -37124,11 +37115,10 @@ msgstr "自动开始网络"
 msgid "Configure a network to be automatically started at boot."
 msgstr "设置一个网络在启动时自动开始."
 
-#: tools/virsh-network.c:95 tools/virsh-network.c:251
-#: tools/virsh-network.c:294 tools/virsh-network.c:349
-#: tools/virsh-network.c:768 tools/virsh-network.c:810
-#: tools/virsh-network.c:853 tools/virsh-network.c:1072
-#: tools/virsh-network.c:1302
+#: tools/virsh-network.c:95 tools/virsh-network.c:251 tools/virsh-network.c:294
+#: tools/virsh-network.c:349 tools/virsh-network.c:768
+#: tools/virsh-network.c:810 tools/virsh-network.c:853
+#: tools/virsh-network.c:1072 tools/virsh-network.c:1302
 msgid "network name or uuid"
 msgstr "网络名或 uuid"
 
@@ -39059,8 +39049,8 @@ msgid "Upload file contents to a volume"
 msgstr "将文件内容上传到卷中"
 
 #: tools/virsh-volume.c:654 tools/virsh-volume.c:771 tools/virsh-volume.c:887
-#: tools/virsh-volume.c:934 tools/virsh-volume.c:1027
-#: tools/virsh-volume.c:1085 tools/virsh-volume.c:1188
+#: tools/virsh-volume.c:934 tools/virsh-volume.c:1027 tools/virsh-volume.c:1085
+#: tools/virsh-volume.c:1188
 msgid "vol name, key or path"
 msgstr "卷名称、密钥或者路径"
 
@@ -39462,6 +39452,12 @@ msgstr ""
 #, c-format
 msgid "Unable to exec shell %s"
 msgstr ""
+
+#~ msgid "bond has no interfaces"
+#~ msgstr "绑定未指定网络接口"
+
+#~ msgid "buffer for ifindex path is too small"
+#~ msgstr "ifindex 路径的缓存太小"
 
 #~ msgid "no OS type"
 #~ msgstr "没有操作系统类型"
