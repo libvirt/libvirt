@@ -3258,11 +3258,13 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (ret < 0)
         goto endjob;
 
-    /* Shut it down */
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
-    virDomainAuditStop(vm, "saved");
-    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
-                                              VIR_DOMAIN_EVENT_STOPPED_SAVED);
+    if (!(flags&VIR_DOMAIN_SAVE_NOT_SHUTDOWN)) {
+        /* Shut it down */
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
+        virDomainAuditStop(vm, "saved");
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                                  VIR_DOMAIN_EVENT_STOPPED_SAVED);
+    }
  endjob:
     if (ret < 0) {
         if (was_running && virDomainObjIsActive(vm)) {
@@ -3319,7 +3321,8 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED, -1);
+                  VIR_DOMAIN_SAVE_PAUSED |
+                  VIR_DOMAIN_SAVE_NOT_SHUTDOWN, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
     if (cfg->saveImageFormat) {
