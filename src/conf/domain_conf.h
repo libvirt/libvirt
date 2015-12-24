@@ -1176,6 +1176,7 @@ struct _virDomainChrSourceDef {
         /* no <source> for null, vc, stdio */
         struct {
             char *path;
+            int append; /* enum virTristateSwitch */
         } file; /* pty, file, pipe, or device */
         struct {
             char *master;

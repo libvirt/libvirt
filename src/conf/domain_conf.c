@@ -1722,9 +1722,10 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
     virDomainChrSourceDefClear(dest);
 
     switch (src->type) {
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        dest->data.file.append = src->data.file.append;
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (VIR_STRDUP(dest->data.file.path, src->data.file.path) < 0)
             return -1;
@@ -1796,9 +1797,12 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
         return false;
 
     switch ((virDomainChrType)src->type) {
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        return src->data.file.append == tgt->data.file.append &&
+            STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
+        break;
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         return STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
         break;
@@ -9371,6 +9375,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *channel = NULL;
     char *master = NULL;
     char *slave = NULL;
+    char *append = NULL;
     int remaining = 0;
 
     while (cur != NULL) {
@@ -9380,9 +9385,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     mode = virXMLPropString(cur, "mode");
 
                 switch ((virDomainChrType) def->type) {
+                case VIR_DOMAIN_CHR_TYPE_FILE:
+                    if (!append)
+                        append = virXMLPropString(cur, "append");
                 case VIR_DOMAIN_CHR_TYPE_PTY:
                 case VIR_DOMAIN_CHR_TYPE_DEV:
-                case VIR_DOMAIN_CHR_TYPE_FILE:
                 case VIR_DOMAIN_CHR_TYPE_PIPE:
                 case VIR_DOMAIN_CHR_TYPE_UNIX:
                     /* PTY path is only parsed from live xml.  */
@@ -9468,9 +9475,15 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        if (append &&
+            (def->data.file.append = virTristateSwitchTypeFromString(append)) <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid append attribute value '%s'"), append);
+            goto error;
+        }
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (!path &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
@@ -9611,6 +9624,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     VIR_FREE(connectService);
     VIR_FREE(path);
     VIR_FREE(channel);
+    VIR_FREE(append);
 
     return remaining;
 
@@ -20056,6 +20070,10 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
              !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
             virBufferEscapeString(buf, "<source path='%s'",
                                   def->data.file.path);
+            if (def->type == VIR_DOMAIN_CHR_TYPE_FILE &&
+                def->data.file.append)
+                virBufferAsprintf(buf, " append='%s'",
+                    virTristateSwitchTypeToString(def->data.file.append));
             virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
         }
         break;
