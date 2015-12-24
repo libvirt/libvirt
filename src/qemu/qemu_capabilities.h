@@ -335,6 +335,7 @@ typedef enum {
     /* 205 */
     QEMU_CAPS_VIRTIO_TABLET, /* -device virtio-tablet-{device,pci} */
     QEMU_CAPS_VIRTIO_INPUT_HOST, /* -device virtio-input-host-{device,pci} */
+    QEMU_CAPS_CHARDEV_FILE_APPEND, /* -chardev file,append=on|off */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

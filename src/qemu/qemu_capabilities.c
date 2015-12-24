@@ -308,6 +308,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "virtio-tablet", /* 205 */
               "virtio-input-host",
+              "chardev-file-append",
     );
 
 
@@ -2600,6 +2601,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "drive", "throttling.bps-total-max", QEMU_CAPS_DRIVE_IOTUNE_MAX},
     { "machine", "aes-key-wrap", QEMU_CAPS_AES_KEY_WRAP },
     { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
+    { "chardev", "append", QEMU_CAPS_CHARDEV_FILE_APPEND },
 };
 
 static int

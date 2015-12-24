@@ -22,7 +22,7 @@
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <serial type='file'>
-      <source path='/tmp/serial.log'/>
+      <source path='/tmp/serial.log' append='on'/>
       <target port='0'/>
     </serial>
     <console type='file'>

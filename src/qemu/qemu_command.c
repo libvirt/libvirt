@@ -6555,6 +6555,16 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferAsprintf(&buf, "file,id=char%s,path=%s", alias,
                           dev->data.file.path);
+        if (dev->data.file.append) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("append not supported in this QEMU binary"));
+                goto error;
+            }
+
+            virBufferAsprintf(&buf, ",append=%s",
+                              virTristateSwitchTypeToString(dev->data.file.append));
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
