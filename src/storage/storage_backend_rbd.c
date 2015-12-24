@@ -306,6 +306,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     vol->target.capacity = info.size;
     vol->target.allocation = info.obj_size * info.num_objs;
     vol->type = VIR_STORAGE_VOL_NETWORK;
+    vol->target.format = VIR_STORAGE_FILE_RAW;
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
@@ -557,6 +558,12 @@ virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
+    if (vol->target.format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("only RAW volumes are supported by this storage pool"));
+        return -VIR_ERR_NO_SUPPORT;
+    }
+
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->source.name,
@@ -600,6 +607,12 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
     if (!vol->target.capacity) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("volume capacity required for this storage pool"));
+        goto cleanup;
+    }
+
+    if (vol->target.format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("only RAW volumes are supported by this storage pool"));
         goto cleanup;
     }
 

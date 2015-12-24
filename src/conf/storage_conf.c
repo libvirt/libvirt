@@ -220,7 +220,8 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
       },
       .volOptions = {
           .defaultFormat = VIR_STORAGE_FILE_RAW,
-          .formatToString = virStoragePoolFormatDiskTypeToString,
+          .formatFromString = virStorageVolumeFormatFromString,
+          .formatToString = virStorageFileFormatTypeToString,
       }
     },
     {.poolType = VIR_STORAGE_POOL_SHEEPDOG,
