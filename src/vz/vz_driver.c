@@ -266,6 +266,7 @@ vzOpenDefault(virConnectPtr conn)
     prlsdkDisconnect(privconn);
     prlsdkDeinit();
  err_free:
+    conn->privateData = NULL;
     VIR_FREE(privconn);
     return VIR_DRV_OPEN_ERROR;
 }
@@ -307,10 +308,8 @@ vzConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if ((ret = vzOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS) {
-        vzConnectClose(conn);
+    if ((ret = vzOpenDefault(conn)) != VIR_DRV_OPEN_SUCCESS)
         return ret;
-    }
 
     return VIR_DRV_OPEN_SUCCESS;
 }
