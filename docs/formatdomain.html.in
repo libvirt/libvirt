@@ -5227,7 +5227,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;target port='0'/&gt;
     &lt;/serial&gt;
     &lt;serial type='file'&gt;
-      &lt;source path='/tmp/file'&gt;
+      &lt;source path='/tmp/file' append='on'&gt;
         &lt;seclabel model='dac' relabel='no'/&gt;
       &lt;/source&gt;
       &lt;target port='0'/&gt;
@@ -5261,6 +5261,14 @@ qemu-kvm -net nic,model=? /dev/null
       is done on the socket path.  If this element is not present,
       the <a href="#seclabel">security label is inherited from
         the per-domain setting</a>.
+    </p>
+
+    <p>
+      If the interface <code>type</code> presented to the host is "file",
+      then the <code>source</code> element may contain an optional attribute
+      <code>append</code> that specifies whether or not the information in
+      the file should be preserved on domain restart. Allowed values are
+      "on" and "off" (default). <span class="since">Since 1.3.1</span>.
     </p>
 
     <p>
