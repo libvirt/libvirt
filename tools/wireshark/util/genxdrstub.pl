@@ -57,6 +57,9 @@ for my $proto (@ARGV) {
 
     $c->add_header_file($name, sub {
         dbg "*** Start parsing $proto\n";
+
+        $c->print("extern int hf_libvirt_unknown;\n");
+
         my @lexs = Lexicalizer->parse($source);
         for my $lex (@lexs) {
             next if $lex->ident eq "enum $name\_procedure";
@@ -903,7 +906,7 @@ static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *
 <% } %>
         }
     } else {
-        proto_tree_add_text(tree, tvb, start, -1, "(unknown)");
+        proto_tree_add_item(tree, hf_libvirt_unknown, tvb, start, -1, ENC_NA);
     }
     return FALSE;
 }
@@ -933,7 +936,7 @@ static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *
 <% } %>
     }
     if (!rc) {
-        proto_tree_add_text(tree, tvb, start, -1, "(unknown)");
+        proto_tree_add_item(tree, hf_libvirt_unknown, tvb, start, -1, ENC_NA);
     }
     return rc;
 }

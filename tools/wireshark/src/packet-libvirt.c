@@ -56,7 +56,7 @@ static int hf_libvirt_serial = -1;
 static int hf_libvirt_status = -1;
 static int hf_libvirt_stream = -1;
 static int hf_libvirt_num_of_fds = -1;
-static int hf_libvirt_unknown = -1;
+int hf_libvirt_unknown = -1;
 static gint ett_libvirt = -1;
 
 #define XDR_PRIMITIVE_DISSECTOR(xtype, ctype, ftype)                    \
