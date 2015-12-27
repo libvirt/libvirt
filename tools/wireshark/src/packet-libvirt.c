@@ -338,7 +338,7 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
 {
     gssize payload_length;
 
-    payload_length = tvb_length(tvb) - VIR_HEADER_LEN;
+    payload_length = tvb_captured_length(tvb) - VIR_HEADER_LEN;
     if (payload_length <= 0)
         return; /* No payload */
 
@@ -405,7 +405,7 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
         proto_item *ti;
         proto_tree *libvirt_tree;
 
-        ti = proto_tree_add_item(tree, proto_libvirt, tvb, 0, tvb_length(tvb), ENC_NA);
+        ti = proto_tree_add_item(tree, proto_libvirt, tvb, 0, tvb_captured_length(tvb), ENC_NA);
         libvirt_tree = proto_item_add_subtree(ti, ett_libvirt);
 
         offset = 0;
