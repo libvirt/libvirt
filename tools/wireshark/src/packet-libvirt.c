@@ -431,8 +431,13 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
 #endif
 }
 
+#if WIRESHARK_VERSION >= 1099002
+static guint
+get_message_len(packet_info *pinfo ATTRIBUTE_UNUSED, tvbuff_t *tvb, int offset, void *data ATTRIBUTE_UNUSED)
+#else
 static guint32
 get_message_len(packet_info *pinfo ATTRIBUTE_UNUSED, tvbuff_t *tvb, int offset)
+#endif
 {
     return tvb_get_ntohl(tvb, offset);
 }
