@@ -113,7 +113,7 @@ format_xdr_bytes(guint8 *bytes, guint32 length)
 
     if (length == 0)
         return "";
-    buf = ep_alloc(length*2 + 1);
+    buf = wmem_alloc(wmem_packet_scope(), length*2 + 1);
     for (i = 0; i < length; i++) {
         /* We know that buf has enough size to contain
            2 * length + '\0' characters. */
