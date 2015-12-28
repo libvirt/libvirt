@@ -196,6 +196,7 @@ mymain(void)
     DO_TEST("new-disk");
     DO_TEST("spice");
     DO_TEST("spice-features");
+    DO_TEST("vif-rate");
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
     DO_TEST("fullvirt-multiusb");

@@ -819,6 +819,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
             char mac[18];
             char bridge[50];
             char vifname[50];
+            char rate[50];
             char *key;
 
             bridge[0] = '\0';
@@ -827,6 +828,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
             model[0] = '\0';
             type[0] = '\0';
             vifname[0] = '\0';
+            rate[0] = '\0';
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
                 goto skipnic;
@@ -892,6 +894,13 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
                                        _("IP %s too big for destination"), data);
                         goto skipnic;
                     }
+                } else if (STRPREFIX(key, "rate=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(rate) - 1;
+                    if (virStrncpy(rate, data, len, sizeof(rate)) == NULL) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("rate %s too big for destination"), data);
+                        goto skipnic;
+                    }
                 }
 
                 while (nextkey && (nextkey[0] == ',' ||
@@ -941,6 +950,24 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
             if (vifname[0] &&
                 VIR_STRDUP(net->ifname, vifname) < 0)
                 goto cleanup;
+
+            if (rate[0]) {
+                virNetDevBandwidthPtr bandwidth;
+                unsigned long long kbytes_per_sec;
+
+                if (xenParseSxprVifRate(rate, &kbytes_per_sec) < 0)
+                    goto cleanup;
+
+                if (VIR_ALLOC(bandwidth) < 0)
+                    goto cleanup;
+                if (VIR_ALLOC(bandwidth->out) < 0) {
+                    VIR_FREE(bandwidth);
+                    goto cleanup;
+                }
+
+                bandwidth->out->average = kbytes_per_sec;
+                net->bandwidth = bandwidth;
+            }
 
             if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
                 goto cleanup;
@@ -1183,6 +1210,9 @@ xenFormatNet(virConnectPtr conn,
     if (net->ifname)
         virBufferAsprintf(&buf, ",vifname=%s",
                           net->ifname);
+
+    if (net->bandwidth && net->bandwidth->out && net->bandwidth->out->average)
+        virBufferAsprintf(&buf, ",rate=%lluKB/s", net->bandwidth->out->average);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
