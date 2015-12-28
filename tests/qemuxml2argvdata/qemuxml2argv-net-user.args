@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
 -net nic,macaddr=00:11:22:33:44:55,vlan=0,model=rtl8139,name=net0 \
 -net user,vlan=0,name=hostnet0 \
 -serial none \

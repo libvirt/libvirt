@@ -16,8 +16,8 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMU,,Guest,,,,1,if=ide,bus=0,unit=0,format=raw \
--drive file=sheepdog:example.org:6000:image,,with,,commas,if=virtio,format=raw \
+-drive file=/dev/HostVG/QEMU,,Guest,,,,1,format=raw,if=ide,bus=0,unit=0 \
+-drive file=sheepdog:example.org:6000:image,,with,,commas,format=raw,if=virtio \
 -net none \
 -serial none \
 -parallel none

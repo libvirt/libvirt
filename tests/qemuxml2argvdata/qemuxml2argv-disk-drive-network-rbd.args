@@ -16,14 +16,14 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
 -drive 'file=rbd:pool/image:auth_supported=none:mon_host=mon1.example.org\:\
-6321\;mon2.example.org\:6322\;mon3.example.org\:6322,if=virtio,format=raw' \
--drive file=rbd:pool/image@asdf:auth_supported=none,if=virtio,format=raw \
+6321\;mon2.example.org\:6322\;mon3.example.org\:6322,format=raw,if=virtio' \
+-drive file=rbd:pool/image@asdf:auth_supported=none,format=raw,if=virtio \
 -drive 'file=rbd:pool/image@foo:auth_supported=none:mon_host=mon1.example.org\:\
-6321\;mon2.example.org\:6322\;mon3.example.org\:6322,if=virtio,format=raw' \
+6321\;mon2.example.org\:6322\;mon3.example.org\:6322,format=raw,if=virtio' \
 -drive file=rbd:pool/image@foo:auth_supported=none:conf=/blah/test.conf,\
-if=virtio,format=raw \
+format=raw,if=virtio \
 -net none \
 -serial none \
 -parallel none

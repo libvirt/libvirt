@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot order=dcna,menu=on \
 -usb \
--drive file=/dev/cdrom,if=ide,media=cdrom,bus=1,unit=0,format=raw \
+-drive file=/dev/cdrom,format=raw,if=ide,media=cdrom,bus=1,unit=0 \
 -net none \
 -serial none \
 -parallel none

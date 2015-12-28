@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest7,if=none,id=drive-ide0-0-0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest7,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -device virtio-net-pci,csum=off,gso=off,host_tso4=off,host_tso6=off,host_ecn=off,\
 host_ufo=off,mrg_rxbuf=off,guest_csum=off,guest_tso4=off,guest_tso6=off,\

@@ -28,7 +28,7 @@ QEMU_AUDIO_DRV=none \
 -device xio3130-downstream,port=0x4,chassis=10,id=pci.10,bus=pci.4,addr=0x4 \
 -device xio3130-downstream,port=0x5,chassis=11,id=pci.11,bus=pci.4,addr=0x5 \
 -device xio3130-downstream,port=0x6,chassis=12,id=pci.12,bus=pci.4,addr=0x6 \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-sata0-0-0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
 -device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0 \
 -vga qxl \
 -global qxl-vga.ram_size=67108864 \

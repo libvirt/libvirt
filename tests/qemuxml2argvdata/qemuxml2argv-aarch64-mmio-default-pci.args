@@ -25,7 +25,7 @@ QEMU_AUDIO_DRV=none \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x1 \
 -device virtio-serial-device,id=virtio-serial0 \
 -usb \
--drive file=/aarch64.raw,if=none,id=drive-virtio-disk0,format=raw \
+-drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
 -device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \
 -net user,vlan=0,name=hostnet0 \

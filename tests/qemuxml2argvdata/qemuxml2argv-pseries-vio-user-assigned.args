@@ -21,7 +21,7 @@ QEMU_AUDIO_DRV=none \
 -device spapr-vscsi,id=scsi0,reg=0x2000 \
 -device spapr-vscsi,id=scsi1,reg=0x30000000 \
 -usb \
--drive file=/tmp/scsidisk.img,if=none,id=drive-scsi1-0-0-0,format=raw \
+-drive file=/tmp/scsidisk.img,format=raw,if=none,id=drive-scsi1-0-0-0 \
 -device scsi-disk,bus=scsi1.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi1-0-0-0,\
 id=scsi1-0-0-0 \
 -chardev pty,id=charserial0 \

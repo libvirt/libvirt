@@ -16,10 +16,10 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
--drive file=/dev/HostVG/QEMUGuest2,if=ide,bus=0,unit=1,format=raw \
--drive file=/tmp/data.img,if=ide,bus=1,unit=0,format=raw \
--drive file=/tmp/logs.img,if=ide,bus=1,unit=1,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=ide,bus=0,unit=1 \
+-drive file=/tmp/data.img,format=raw,if=ide,bus=1,unit=0 \
+-drive file=/tmp/logs.img,format=raw,if=ide,bus=1,unit=1 \
 -net none \
 -serial none \
 -parallel none

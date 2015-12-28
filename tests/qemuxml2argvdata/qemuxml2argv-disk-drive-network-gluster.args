@@ -16,9 +16,9 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=gluster://example.org:6000/Volume1/Image,if=virtio,format=raw \
--drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,if=virtio,\
-format=raw' \
+-drive file=gluster://example.org:6000/Volume1/Image,format=raw,if=virtio \
+-drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,format=raw,\
+if=virtio' \
 -net none \
 -serial none \
 -parallel none

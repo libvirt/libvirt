@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive 'file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-1,format=raw,\
+-drive 'file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-1,\
 serial=\ \ WD-WMAP9A966149' \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

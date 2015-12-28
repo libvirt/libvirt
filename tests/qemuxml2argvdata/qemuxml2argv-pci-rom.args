@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-ide0-0-0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:24:a5:9f,bus=pci.0,addr=0x3,\
 rombar=1 \

@@ -3819,6 +3819,11 @@ qemuBuildDriveStr(virConnectPtr conn,
         }
 
         virBufferEscape(&opt, ',', ",", "%s,", source);
+
+        if (disk->src->format > 0 &&
+            disk->src->type != VIR_STORAGE_TYPE_DIR)
+            virBufferAsprintf(&opt, "format=%s,",
+                              virStorageFileFormatTypeToString(disk->src->format));
     }
     VIR_FREE(source);
 
@@ -3879,10 +3884,6 @@ qemuBuildDriveStr(virConnectPtr conn,
                        _("transient disks not supported yet"));
         goto error;
     }
-    if (disk->src->format > 0 &&
-        disk->src->type != VIR_STORAGE_TYPE_DIR)
-        virBufferAsprintf(&opt, ",format=%s",
-                          virStorageFileFormatTypeToString(disk->src->format));
 
     /* generate geometry command string */
     if (disk->geometry.cylinders > 0 &&

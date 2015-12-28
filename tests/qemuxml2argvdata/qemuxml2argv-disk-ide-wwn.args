@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-1,format=raw,\
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-1,\
 serial=WD-WMAP9A966149 \
 -device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,\
 wwn=0x5000c50015ea71ad \

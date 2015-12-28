@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0 \
 -chardev pty,id=charconsole0 \
 -device sclpconsole,chardev=charconsole0,id=console0

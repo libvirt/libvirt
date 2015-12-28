@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
 -cdrom /root/boot.iso \
 -net none \
 -serial none \

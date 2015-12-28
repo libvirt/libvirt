@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=spice \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -spice port=5903,tls-port=5904,sasl,addr=127.0.0.1,\
 x509-dir=/etc/pki/libvirt-spice,tls-channel=default \

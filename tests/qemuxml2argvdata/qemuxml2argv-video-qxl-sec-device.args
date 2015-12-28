@@ -17,8 +17,8 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/var/lib/libvirt/images/QEMUGuest1,if=none,id=drive-ide0-0-0,\
-format=qcow2,cache=none \
+-drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
+id=drive-ide0-0-0,cache=none \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,bus=pci.0,\
 addr=0x2 \

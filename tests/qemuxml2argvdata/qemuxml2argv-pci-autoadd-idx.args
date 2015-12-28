@@ -24,7 +24,7 @@ QEMU_AUDIO_DRV=none \
 -device pci-bridge,chassis_nr=6,id=pci.6,bus=pci.0,addr=0x9 \
 -device pci-bridge,chassis_nr=7,id=pci.7,bus=pci.0,addr=0xa \
 -usb \
--drive file=/var/iso/f18kde.iso,if=none,media=cdrom,id=drive-ide0-1-0,format=raw \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,id=drive-ide0-1-0 \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -vga cirrus \
 -device virtio-balloon-pci,id=balloon0,bus=pci.4,addr=0x6

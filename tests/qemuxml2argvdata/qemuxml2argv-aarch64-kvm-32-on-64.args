@@ -21,7 +21,7 @@ QEMU_AUDIO_DRV=none \
 -initrd /arm.initrd \
 -append 'console=ttyAMA0,115200n8 rw root=/dev/vda rootwait physmap.enabled=0' \
 -usb \
--drive file=/arm.raw,if=none,id=drive-virtio-disk0,format=raw \
+-drive file=/arm.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
 -device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \
 -net user,vlan=0,name=hostnet0 \

@@ -16,10 +16,10 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=ide,bus=0,unit=0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
 -drive 'file=rbd:pool/image:auth_supported=none:mon_host=[\:\:1]\:\
 6321\;example.org\:6789\;[ffff\:1234\:567\:abc\:\:0f]\:6322\;[2001\:db8\:\:ff00\:\
-42\:8329]\:6322,if=virtio,format=raw' \
+42\:8329]\:6322,format=raw,if=virtio' \
 -net none \
 -serial none \
 -parallel none

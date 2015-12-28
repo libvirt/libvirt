@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/var/lib/libvirt/images/QEMUGuest1,if=ide,bus=0,unit=0,format=qcow2,\
+-drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=ide,bus=0,unit=0,\
 cache=none \
 -net none \
 -serial none \

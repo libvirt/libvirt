@@ -18,5 +18,5 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -boot c \
 -usb \
--drive file=/aarch64.raw,if=none,id=drive-virtio-disk0,format=raw \
+-drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0

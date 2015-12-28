@@ -17,10 +17,10 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-ide0-0-0,format=qcow2,\
+-drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=none,bps=5000,iops=6000 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-ide0-0-1,format=qcow2,\
+-drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
 cache=none,bps_rd=5000,bps_wr=5000,iops=7000 \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -16,12 +16,12 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
--drive file=/dev/HostVG/QEMUGuest1,if=none,id=drive-virtio-disk0,format=raw \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=0.0.0007,drive=drive-virtio-disk0,id=virtio-disk0 \
--drive file=/dev/HostVG/QEMUGuest4,if=none,id=drive-virtio-disk1,format=raw \
+-drive file=/dev/HostVG/QEMUGuest4,format=raw,if=none,id=drive-virtio-disk1 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk1,id=virtio-disk1 \
--drive file=/dev/HostVG/QEMUGuest2,if=none,id=drive-virtio-disk2,format=raw \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-virtio-disk2 \
 -device virtio-blk-ccw,devno=fe.0.0001,drive=drive-virtio-disk2,id=virtio-disk2 \
--drive file=/dev/HostVG/QEMUGuest3,if=none,id=drive-virtio-disk3,format=raw \
+-drive file=/dev/HostVG/QEMUGuest3,format=raw,if=none,id=drive-virtio-disk3 \
 -device virtio-blk-ccw,devno=fe.2.f00f,drive=drive-virtio-disk3,id=virtio-disk3 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a
