@@ -1723,10 +1723,11 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
 
     switch (src->type) {
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        dest->data.file.append = src->data.file.append;
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (src->type == VIR_DOMAIN_CHR_TYPE_FILE)
+            dest->data.file.append = src->data.file.append;
         if (VIR_STRDUP(dest->data.file.path, src->data.file.path) < 0)
             return -1;
         break;
@@ -9386,12 +9387,12 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
                 switch ((virDomainChrType) def->type) {
                 case VIR_DOMAIN_CHR_TYPE_FILE:
-                    if (!append)
-                        append = virXMLPropString(cur, "append");
                 case VIR_DOMAIN_CHR_TYPE_PTY:
                 case VIR_DOMAIN_CHR_TYPE_DEV:
                 case VIR_DOMAIN_CHR_TYPE_PIPE:
                 case VIR_DOMAIN_CHR_TYPE_UNIX:
+                    if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
+                        append = virXMLPropString(cur, "append");
                     /* PTY path is only parsed from live xml.  */
                     if (!path  &&
                         (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
@@ -9476,15 +9477,15 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (append &&
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (append && def->type == VIR_DOMAIN_CHR_TYPE_FILE &&
             (def->data.file.append = virTristateSwitchTypeFromString(append)) <= 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid append attribute value '%s'"), append);
             goto error;
         }
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (!path &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
