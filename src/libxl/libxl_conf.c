@@ -1093,6 +1093,7 @@ libxlMakeNic(virDomainDefPtr def,
 {
     bool ioemu_nic = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virDomainNetType actual_type = virDomainNetGetActualType(l_nic);
+    virNetDevBandwidthPtr actual_bw;
 
     /* TODO: Where is mtu stored?
      *
@@ -1204,6 +1205,44 @@ libxlMakeNic(virDomainDefPtr def,
                   "support backend domain name"));
         return -1;
 #endif
+    }
+
+    /*
+     * Set bandwidth.
+     * From $xen-sources/docs/misc/xl-network-configuration.markdown:
+     *
+     *
+     * Specifies the rate at which the outgoing traffic will be limited to.
+     * The default if this keyword is not specified is unlimited.
+     *
+     * The rate may be specified as "<RATE>/s" or optionally "<RATE>/s@<INTERVAL>".
+     *
+     * `RATE` is in bytes and can accept suffixes:
+     *     GB, MB, KB, B for bytes.
+     *     Gb, Mb, Kb, b for bits.
+     * `INTERVAL` is in microseconds and can accept suffixes: ms, us, s.
+     *     It determines the frequency at which the vif transmission credit
+     *     is replenished. The default is 50ms.
+
+     * Vif rate limiting is credit-based. It means that for "1MB/s@20ms",
+     * the available credit will be equivalent of the traffic you would have
+     * done at "1MB/s" during 20ms. This will results in a credit of 20,000
+     * bytes replenished every 20,000 us.
+     *
+     *
+     * libvirt doesn't support the notion of rate limiting over an interval.
+     * Similar to xl's behavior when interval is not specified, set a default
+     * interval of 50ms and calculate the number of bytes per interval based
+     * on the specified average bandwidth.
+     */
+    actual_bw = virDomainNetGetActualBandwidth(l_nic);
+    if (actual_bw && actual_bw->out && actual_bw->out->average) {
+        uint64_t bytes_per_sec = actual_bw->out->average * 1024;
+        uint64_t bytes_per_interval =
+            (((uint64_t) bytes_per_sec * 50000UL) / 1000000UL);
+
+        x_nic->rate_bytes_per_interval = bytes_per_interval;
+        x_nic->rate_interval_usecs =  50000UL;
     }
 
     return 0;
