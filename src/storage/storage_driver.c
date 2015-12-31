@@ -151,7 +151,6 @@ static void
 storageDriverAutostart(void)
 {
     size_t i;
-    char *stateFile = NULL;
     virConnectPtr conn = NULL;
 
     /* XXX Remove hardcoding of QEMU URI */
@@ -187,6 +186,8 @@ storageDriverAutostart(void)
         }
 
         if (started) {
+            char *stateFile;
+
             virStoragePoolObjClearVols(pool);
             stateFile = virFileBuildPath(driver->stateDir,
                                          pool->def->name, ".xml");
@@ -201,11 +202,10 @@ storageDriverAutostart(void)
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
                           pool->def->name, err ? err->message :
                           _("no error message found"));
-                VIR_FREE(stateFile);
-                virStoragePoolObjUnlock(pool);
-                continue;
+            } else {
+                pool->active = true;
             }
-            pool->active = true;
+            VIR_FREE(stateFile);
         }
         virStoragePoolObjUnlock(pool);
     }
