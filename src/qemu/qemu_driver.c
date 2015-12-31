@@ -16527,7 +16527,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
                                      disk->info.alias, &rawInfo);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
-    if (ret < 0)
+    if (ret <= 0)
         goto endjob;
 
     info->cur = rawInfo.cur;
@@ -16554,7 +16554,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
      * we can ignore failure because it is only an optimization.  We
      * hold the vm lock, so modifying the in-memory representation is
      * safe, even if we are a query rather than a modify job. */
-    if (ret == 1 && disk->mirror &&
+    if (disk->mirror &&
         rawInfo.ready != 0 &&
         info->cur == info->end && !disk->mirrorState) {
         virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
