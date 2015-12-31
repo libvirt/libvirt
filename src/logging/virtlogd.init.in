@@ -42,7 +42,7 @@ start() {
     daemon --pidfile $PIDFILE --check $SERVICE $PROCESS --daemon $VIRTLOGD_ARGS
     RETVAL=$?
     echo
-    [ $RETVAL -eq 0 ] && touch @localstatedir@/log/subsys/$SERVICE
+    [ $RETVAL -eq 0 ] && touch @localstatedir@/lock/subsys/$SERVICE
 }
 
 stop() {
@@ -52,7 +52,7 @@ stop() {
     RETVAL=$?
     echo
     if [ $RETVAL -eq 0 ]; then
-        rm -f @localstatedir@/log/subsys/$SERVICE
+        rm -f @localstatedir@/lock/subsys/$SERVICE
         rm -f $PIDFILE
     fi
 }
@@ -84,7 +84,7 @@ case "$1" in
         reload
         ;;
     condrestart|try-restart)
-        [ -f @localstatedir@/log/subsys/$SERVICE ] && restart || :
+        [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
         ;;
     *)
         echo $"Usage: $0 {start|stop|status|restart|condrestart|reload|force-reload|try-restart}"
