@@ -571,8 +571,9 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
     int ret = -1, rc;
 
     /* It is not a bug if there already is a NBD data */
-    if (!mig->nbd &&
-        VIR_ALLOC(mig->nbd) < 0)
+    qemuMigrationCookieNBDFree(mig->nbd);
+
+    if (VIR_ALLOC(mig->nbd) < 0)
         return -1;
 
     if (vm->def->ndisks &&
