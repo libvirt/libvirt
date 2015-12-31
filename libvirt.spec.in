@@ -1792,9 +1792,9 @@ if [ $1 -ge 1 ] ; then
             /bin/systemctl start virtlogd.socket || :
     %else
         /sbin/chkconfig libvirtd 1>/dev/null 2>&1 &&
-            /bin/chkconfig virtlogd on || :
+            /sbin/chkconfig virtlogd on || :
         /sbin/service libvirtd status 1>/dev/null 2>&1 &&
-            /bin/service virtlogd start || :
+            /sbin/service virtlogd start || :
     %endif
 fi
 
