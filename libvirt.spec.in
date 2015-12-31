@@ -647,8 +647,8 @@ BuildRequires: util-linux
 BuildRequires: nfs-utils
 %endif
 
-%if %{with_firewalld}
-# Communication with the firewall daemon uses DBus
+%if %{with_firewalld} || %{with_polkit}
+# Communication with the firewall and polkit daemons use DBus
 BuildRequires: dbus-devel
 %endif
 
