@@ -152,6 +152,8 @@ virDiskNameToIndex;
 virDomainActualNetDefFree;
 virDomainBlockedReasonTypeFromString;
 virDomainBlockedReasonTypeToString;
+virDomainBootTypeFromString;
+virDomainBootTypeToString;
 virDomainCapabilitiesPolicyTypeToString;
 virDomainCapsFeatureTypeToString;
 virDomainChrConsoleTargetTypeFromString;
