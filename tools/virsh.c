@@ -632,6 +632,9 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_STORAGE_GLUSTER
     vshPrint(ctl, " Gluster");
 #endif
+#ifdef WITH_STORAGE_ZFS
+    vshPrint(ctl, " ZFS");
+#endif
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));
