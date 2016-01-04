@@ -2273,39 +2273,6 @@ virDomainClockDefClear(virDomainClockDefPtr def)
     VIR_FREE(def->timers);
 }
 
-virDomainPinDefPtr *
-virDomainPinDefCopy(virDomainPinDefPtr *src, int npin)
-{
-    size_t i;
-    virDomainPinDefPtr *ret = NULL;
-
-    if (VIR_ALLOC_N(ret, npin) < 0)
-        goto error;
-
-    for (i = 0; i < npin; i++) {
-        if (VIR_ALLOC(ret[i]) < 0)
-            goto error;
-        ret[i]->id = src[i]->id;
-        if ((ret[i]->cpumask = virBitmapNewCopy(src[i]->cpumask)) == NULL)
-            goto error;
-    }
-
-    return ret;
-
- error:
-    if (ret) {
-        for (i = 0; i < npin; i++) {
-            if (ret[i]) {
-                virBitmapFree(ret[i]->cpumask);
-                VIR_FREE(ret[i]);
-            }
-        }
-        VIR_FREE(ret);
-    }
-
-    return NULL;
-}
-
 
 static bool
 virDomainIOThreadIDArrayHasPin(virDomainDefPtr def)
@@ -2396,31 +2363,6 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
  error:
     virBitmapFree(thrmap);
     return retval;
-}
-
-
-void
-virDomainPinDefFree(virDomainPinDefPtr def)
-{
-    if (def) {
-        virBitmapFree(def->cpumask);
-        VIR_FREE(def);
-    }
-}
-
-void
-virDomainPinDefArrayFree(virDomainPinDefPtr *def,
-                         int npin)
-{
-    size_t i;
-
-    if (!def)
-        return;
-
-    for (i = 0; i < npin; i++)
-        virDomainPinDefFree(def[i]);
-
-    VIR_FREE(def);
 }
 
 
@@ -18418,84 +18360,6 @@ virDomainIOThreadSchedDelId(virDomainDefPtr def,
                 VIR_DELETE_ELEMENT(def->cputune.iothreadsched, i,
                                    def->cputune.niothreadsched);
             }
-            return;
-        }
-    }
-}
-
-virDomainPinDefPtr
-virDomainPinFind(virDomainPinDefPtr *def,
-                 int npin,
-                 int id)
-{
-    size_t i;
-
-    if (!def || !npin)
-        return NULL;
-
-    for (i = 0; i < npin; i++) {
-        if (def[i]->id == id)
-            return def[i];
-    }
-
-    return NULL;
-}
-
-int
-virDomainPinAdd(virDomainPinDefPtr **pindef_list,
-                size_t *npin,
-                unsigned char *cpumap,
-                int maplen,
-                int id)
-{
-    virDomainPinDefPtr pindef = NULL;
-
-    if (!pindef_list)
-        return -1;
-
-    pindef = virDomainPinFind(*pindef_list, *npin, id);
-    if (pindef) {
-        pindef->id = id;
-        virBitmapFree(pindef->cpumask);
-        pindef->cpumask = virBitmapNewData(cpumap, maplen);
-        if (!pindef->cpumask)
-            return -1;
-
-        return 0;
-    }
-
-    /* No existing pindef matches id, adding a new one */
-
-    if (VIR_ALLOC(pindef) < 0)
-        goto error;
-
-    pindef->id = id;
-    pindef->cpumask = virBitmapNewData(cpumap, maplen);
-    if (!pindef->cpumask)
-        goto error;
-
-    if (VIR_APPEND_ELEMENT(*pindef_list, *npin, pindef) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    virDomainPinDefFree(pindef);
-    return -1;
-}
-
-void
-virDomainPinDel(virDomainPinDefPtr **pindef_list,
-                size_t *npin,
-                int id)
-{
-    int n;
-
-    for (n = 0; n < *npin; n++) {
-        if ((*pindef_list)[n]->id == id) {
-            virBitmapFree((*pindef_list)[n]->cpumask);
-            VIR_FREE((*pindef_list)[n]);
-            VIR_DELETE_ELEMENT(*pindef_list, n, *npin);
             return;
         }
     }

@@ -2100,33 +2100,6 @@ struct _virDomainIOThreadIDDef {
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
 
 
-typedef struct _virDomainPinDef virDomainPinDef;
-typedef virDomainPinDef *virDomainPinDefPtr;
-struct _virDomainPinDef {
-    int id;
-    virBitmapPtr cpumask;
-};
-
-void virDomainPinDefFree(virDomainPinDefPtr def);
-void virDomainPinDefArrayFree(virDomainPinDefPtr *def, int npin);
-
-virDomainPinDefPtr *virDomainPinDefCopy(virDomainPinDefPtr *src,
-                                        int npin);
-
-virDomainPinDefPtr virDomainPinFind(virDomainPinDefPtr *def,
-                                    int npin,
-                                    int id);
-
-int virDomainPinAdd(virDomainPinDefPtr **pindef_list,
-                    size_t *npin,
-                    unsigned char *cpumap,
-                    int maplen,
-                    int id);
-
-void virDomainPinDel(virDomainPinDefPtr **pindef_list,
-                     size_t *npin,
-                     int vcpu);
-
 typedef struct _virDomainCputune virDomainCputune;
 typedef virDomainCputune *virDomainCputunePtr;
 
