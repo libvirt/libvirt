@@ -16546,6 +16546,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
         virReportError(VIR_ERR_OVERFLOW,
                        _("bandwidth %llu cannot be represented in result"),
                        rawInfo.bandwidth);
+        ret = -1;
         goto endjob;
     }
 
