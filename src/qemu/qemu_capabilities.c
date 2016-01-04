@@ -1597,8 +1597,8 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIDEDrive[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPiix4PM[] = {
-    { "disable_s3", QEMU_CAPS_DISABLE_S3 },
-    { "disable_s4", QEMU_CAPS_DISABLE_S4 },
+    { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3 },
+    { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBRedir[] = {

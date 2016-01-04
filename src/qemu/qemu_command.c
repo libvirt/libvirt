@@ -9806,7 +9806,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->pm.s3) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISABLE_S3)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("setting ACPI S3 not supported"));
             goto error;
@@ -9817,7 +9817,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->pm.s4) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISABLE_S4)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("setting ACPI S4 not supported"));
             goto error;
