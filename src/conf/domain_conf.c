@@ -1413,6 +1413,19 @@ virDomainDefGetVcpu(virDomainDefPtr def,
 }
 
 
+/**
+ * virDomainDefHasVcpuPin:
+ * @def: domain definition
+ *
+ * This helper returns true if any of the domain's vcpus has cpu pinning set
+ */
+static bool
+virDomainDefHasVcpuPin(const virDomainDef *def)
+{
+    return !!def->cputune.vcpupin;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -15347,7 +15360,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     if (virDomainNumatuneHasPlacementAuto(def->numa) &&
-        !def->cpumask && !def->cputune.vcpupin &&
+        !def->cpumask && !virDomainDefHasVcpuPin(def) &&
         !def->cputune.emulatorpin &&
         !virDomainIOThreadIDArrayHasPin(def))
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
