@@ -2508,8 +2508,9 @@ static int testDomainPinVcpu(virDomainPtr domain,
     }
 
     if (vcpu > virDomainDefGetVcpus(privdom->def)) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("requested vcpu is higher than allocated vcpus"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("requested vcpu '%d' is not present in the domain"),
+                       vcpu);
         goto cleanup;
     }
 

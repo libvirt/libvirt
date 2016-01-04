@@ -43,7 +43,7 @@ compare exp out || fail=1
 $abs_top_builddir/tools/virsh --connect test:///default vcpupin test 100 0,1 > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > exp || fail=1
-error: invalid argument: requested vcpu is higher than allocated vcpus
+error: invalid argument: requested vcpu '100' is not present in the domain
 
 EOF
 compare exp out || fail=1
