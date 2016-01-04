@@ -10,8 +10,8 @@
     <iothreadpin iothread='2' cpuset='3'/>
     <iothreadpin iothread='1' cpuset='2'/>
     <emulatorpin cpuset='1'/>
-    <vcpupin vcpu='1' cpuset='1'/>
     <vcpupin vcpu='0' cpuset='0'/>
+    <vcpupin vcpu='1' cpuset='1'/>
     <quota>-1</quota>
     <period>1000000</period>
     <shares>2048</shares>
