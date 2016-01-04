@@ -1596,7 +1596,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIDEDrive[] = {
     { "wwn", QEMU_CAPS_IDE_DRIVE_WWN },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPixx4PM[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPiix4PM[] = {
     { "disable_s3", QEMU_CAPS_DISABLE_S3 },
     { "disable_s4", QEMU_CAPS_DISABLE_S4 },
 };
@@ -1679,8 +1679,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIDisk) },
     { "ide-drive", virQEMUCapsObjectPropsIDEDrive,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsIDEDrive) },
-    { "PIIX4_PM", virQEMUCapsObjectPropsPixx4PM,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPixx4PM) },
+    { "PIIX4_PM", virQEMUCapsObjectPropsPiix4PM,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPiix4PM) },
     { "usb-redir", virQEMUCapsObjectPropsUSBRedir,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBRedir) },
     { "usb-host", virQEMUCapsObjectPropsUSBHost,
