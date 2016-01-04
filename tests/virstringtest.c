@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2012-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,6 @@
 #include <stdlib.h>
 
 #include "testutils.h"
-#include "intprops.h"
 #include "verify.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -409,13 +408,11 @@ struct stringToLongData {
 
 /* This test makes assumptions about our compilation platform that are
  * not guaranteed by POSIX.  Good luck to you if you are crazy enough
- * to try and port libvirt to a platform with 16-bit int.  */
+ * to try and port libvirt to a platform with 16-bit int.  Gnulib
+ * already assumes that signed integers are two's complement. */
 verify(sizeof(int) == 4);
-verify(TYPE_TWOS_COMPLEMENT(int));
 verify(sizeof(long) == sizeof(int) || sizeof(long) == sizeof(long long));
-verify(TYPE_TWOS_COMPLEMENT(long));
 verify(sizeof(long long) == 8);
-verify(TYPE_TWOS_COMPLEMENT(long long));
 
 static int
 testStringToLong(const void *opaque)
