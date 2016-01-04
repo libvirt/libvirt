@@ -469,10 +469,19 @@ virtTestDifferenceFullInternal(FILE *stream,
     actualStart = actual;
     actualEnd = actual + (strlen(actual)-1);
 
-    if (regenerate && virTestGetRegenerate() > 0) {
-        if (expectName && actual &&
-            virFileWriteStr(expectName, actual, 0666) < 0)
+    if (regenerate && (virTestGetRegenerate() > 0) && expectName && actual) {
+        char *regencontent;
+
+        /* Try to properly indent qemu argv files */
+        if (!(regencontent = virStringReplace(actual, " -", " \\\n-")))
             return -1;
+
+        if (expectName && actual &&
+            virFileWriteStr(expectName, regencontent, 0666) < 0) {
+            VIR_FREE(regencontent);
+            return -1;
+        }
+        VIR_FREE(regencontent);
     }
 
     if (!virTestGetDebug())
