@@ -311,6 +311,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "chardev-file-append",
               "ich9-disable-s3",
               "ich9-disable-s4",
+
+              "vserport-change-event", /* 210 */
     );
 
 
@@ -1482,6 +1484,7 @@ struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "SPICE_MIGRATE_COMPLETED", QEMU_CAPS_SEAMLESS_MIGRATION },
     { "DEVICE_DELETED", QEMU_CAPS_DEVICE_DEL_EVENT },
     { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
+    { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {

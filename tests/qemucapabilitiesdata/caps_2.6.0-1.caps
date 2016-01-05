@@ -172,4 +172,5 @@
     <flag name='chardev-file-append'/>
     <flag name='ich9-disable-s3'/>
     <flag name='ich9-disable-s4'/>
+    <flag name='vserport-change-event'/>
   </qemuCaps>

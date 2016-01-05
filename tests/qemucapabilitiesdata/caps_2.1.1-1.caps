@@ -159,4 +159,5 @@
     <flag name='rtl8139'/>
     <flag name='e1000'/>
     <flag name='virtio-net'/>
+    <flag name='vserport-change-event'/>
   </qemuCaps>
