@@ -10572,15 +10572,17 @@ virDomainGetBlockIoTune(virDomainPtr dom,
  * Typical use sequence is below.
  *
  * getting total stats: set start_cpu as -1, ncpus 1
- * virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0) => nparams
- * params = calloc(nparams, sizeof(virTypedParameter))
- * virDomainGetCPUStats(dom, params, nparams, -1, 1, 0) => total stats.
+ *
+ *   virDomainGetCPUStats(dom, NULL, 0, -1, 1, 0); // nparams
+ *   params = calloc(nparams, sizeof(virTypedParameter))
+ *   virDomainGetCPUStats(dom, params, nparams, -1, 1, 0); // total stats.
  *
  * getting per-cpu stats:
- * virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0) => ncpus
- * virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0) => nparams
- * params = calloc(ncpus * nparams, sizeof(virTypedParameter))
- * virDomainGetCPUStats(dom, params, nparams, 0, ncpus, 0) => per-cpu stats
+ *
+ *   virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0); // ncpus
+ *   virDomainGetCPUStats(dom, NULL, 0, 0, 1, 0); // nparams
+ *   params = calloc(ncpus * nparams, sizeof(virTypedParameter));
+ *   virDomainGetCPUStats(dom, params, nparams, 0, ncpus, 0); // per-cpu stats
  *
  * Returns -1 on failure, or the number of statistics that were
  * populated per cpu on success (this will be less than the total
