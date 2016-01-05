@@ -4404,7 +4404,7 @@ virDomainMigrateToURI2(virDomainPtr domain,
     else
         dconnuri = NULL;
 
-    if (virDomainMigrateUnmanaged(domain, NULL, flags,
+    if (virDomainMigrateUnmanaged(domain, dxml, flags,
                                   dname, dconnuri, miguri, bandwidth) < 0)
         goto error;
 
