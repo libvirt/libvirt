@@ -20071,7 +20071,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virBufferEscapeString(buf, "<source path='%s'",
                                   def->data.file.path);
             if (def->type == VIR_DOMAIN_CHR_TYPE_FILE &&
-                def->data.file.append)
+                def->data.file.append != VIR_TRISTATE_SWITCH_ABSENT)
                 virBufferAsprintf(buf, " append='%s'",
                     virTristateSwitchTypeToString(def->data.file.append));
             virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
