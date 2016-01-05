@@ -90,6 +90,7 @@ typedef enum {
     VIR_DOMAIN_RUNNING_WAKEUP = 8,          /* returned from pmsuspended due to
                                                wakeup event */
     VIR_DOMAIN_RUNNING_CRASHED = 9,         /* resumed from crashed */
+    VIR_DOMAIN_RUNNING_POSTCOPY = 10,       /* running in post-copy migration mode */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_RUNNING_LAST
@@ -117,6 +118,8 @@ typedef enum {
     VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot */
     VIR_DOMAIN_PAUSED_CRASHED = 10,     /* paused due to a guest crash */
     VIR_DOMAIN_PAUSED_STARTING_UP = 11, /* the domain is being started */
+    VIR_DOMAIN_PAUSED_POSTCOPY = 12,    /* paused for post-copy migration */
+    VIR_DOMAIN_PAUSED_POSTCOPY_FAILED = 13, /* paused after failed post-copy */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_PAUSED_LAST
@@ -2407,6 +2410,8 @@ typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4,  /* Restored from paused state file */
     VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5, /* Restored from paused snapshot */
     VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6, /* suspended after failure during libvirt API call */
+    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY = 7, /* suspended for post-copy migration */
+    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED = 8, /* suspended after failed post-copy */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_SUSPENDED_LAST
@@ -2422,6 +2427,8 @@ typedef enum {
     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause */
     VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1,   /* Resumed for completion of migration */
     VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2, /* Resumed from snapshot */
+    VIR_DOMAIN_EVENT_RESUMED_POSTCOPY = 3,   /* Resumed, but migration is still
+                                                running in post-copy mode */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_RESUMED_LAST

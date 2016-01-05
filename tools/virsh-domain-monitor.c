@@ -182,7 +182,8 @@ VIR_ENUM_IMPL(virshDomainRunningReason,
               N_("migration canceled"),
               N_("save canceled"),
               N_("event wakeup"),
-              N_("crashed"))
+              N_("crashed"),
+              N_("post-copy"))
 
 VIR_ENUM_DECL(virshDomainBlockedReason)
 VIR_ENUM_IMPL(virshDomainBlockedReason,
@@ -203,7 +204,9 @@ VIR_ENUM_IMPL(virshDomainPausedReason,
               N_("shutting down"),
               N_("creating snapshot"),
               N_("crashed"),
-              N_("starting up"))
+              N_("starting up"),
+              N_("post-copy"),
+              N_("post-copy failed"))
 
 VIR_ENUM_DECL(virshDomainShutdownReason)
 VIR_ENUM_IMPL(virshDomainShutdownReason,

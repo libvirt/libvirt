@@ -11449,14 +11449,17 @@ VIR_ENUM_IMPL(virshDomainEventSuspended,
               N_("Watchdog"),
               N_("Restored"),
               N_("Snapshot"),
-              N_("API error"))
+              N_("API error"),
+              N_("Post-copy"),
+              N_("Post-copy Error"))
 
 VIR_ENUM_DECL(virshDomainEventResumed)
 VIR_ENUM_IMPL(virshDomainEventResumed,
               VIR_DOMAIN_EVENT_RESUMED_LAST,
               N_("Unpaused"),
               N_("Migrated"),
-              N_("Snapshot"))
+              N_("Snapshot"),
+              N_("Post-copy"))
 
 VIR_ENUM_DECL(virshDomainEventStopped)
 VIR_ENUM_IMPL(virshDomainEventStopped,

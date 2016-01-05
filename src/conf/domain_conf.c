@@ -675,7 +675,8 @@ VIR_ENUM_IMPL(virDomainRunningReason, VIR_DOMAIN_RUNNING_LAST,
               "migration canceled",
               "save canceled",
               "wakeup",
-              "crashed")
+              "crashed",
+              "post-copy")
 
 VIR_ENUM_IMPL(virDomainBlockedReason, VIR_DOMAIN_BLOCKED_LAST,
               "unknown")
@@ -692,7 +693,9 @@ VIR_ENUM_IMPL(virDomainPausedReason, VIR_DOMAIN_PAUSED_LAST,
               "shutdown",
               "snapshot",
               "panicked",
-              "starting up")
+              "starting up",
+              "post-copy",
+              "post-copy failed")
 
 VIR_ENUM_IMPL(virDomainShutdownReason, VIR_DOMAIN_SHUTDOWN_LAST,
               "unknown",
