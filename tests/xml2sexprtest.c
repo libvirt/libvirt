@@ -156,6 +156,7 @@ mymain(void)
     DO_TEST("fv-sound", "fv-sound", "fvtest");
 
     DO_TEST("fv-net-netfront", "fv-net-netfront", "fvtest");
+    DO_TEST("fv-net-rate", "fv-net-rate", "fvtest");
 
     DO_TEST("boot-grub", "boot-grub", "fvtest");
     DO_TEST("escape", "escape", "fvtest");

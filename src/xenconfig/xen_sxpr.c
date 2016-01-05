@@ -26,6 +26,8 @@
 
 #include <config.h>
 
+#include <regex.h>
+
 #include "internal.h"
 #include "virerror.h"
 #include "virconf.h"
@@ -315,6 +317,56 @@ xenParseSxprChar(const char *value,
 }
 
 
+static const char *vif_bytes_per_sec_re = "^[0-9]+[GMK]?[Bb]/s$";
+
+int
+xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
+{
+    char *trate = NULL;
+    char *p;
+    regex_t rec;
+    char *suffix;
+    unsigned long long tmp;
+    int ret = -1;
+
+    if (VIR_STRDUP(trate, rate) < 0)
+        return -1;
+
+    p = strchr(trate, '@');
+    if (p != NULL)
+        *p = 0;
+
+    regcomp(&rec, vif_bytes_per_sec_re, REG_EXTENDED|REG_NOSUB);
+    if (regexec(&rec, trate, 0, NULL, 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid rate '%s' specified"), rate);
+        goto cleanup;
+    }
+
+    if (virStrToLong_ull(rate, &suffix, 10, &tmp)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse rate '%s'"), rate);
+        goto cleanup;
+    }
+
+    if (*suffix == 'G')
+       tmp *= 1024 * 1024;
+    else if (*suffix == 'M')
+       tmp *= 1024;
+
+    if (*suffix == 'b' || *(suffix + 1) == 'b')
+       tmp /= 8;
+
+    *kbytes_per_sec = tmp;
+    ret = 0;
+
+ cleanup:
+    regfree(&rec);
+    VIR_FREE(trate);
+    return ret;
+}
+
+
 /**
  * xenParseSxprDisks:
  * @def: the domain config
@@ -593,6 +645,25 @@ xenParseSxprNets(virDomainDefPtr def,
             if (!model && type && STREQ(type, "netfront") &&
                 VIR_STRDUP(net->model, "netfront") < 0)
                 goto cleanup;
+
+            tmp = sexpr_node(node, "device/vif/rate");
+            if (tmp) {
+                virNetDevBandwidthPtr bandwidth;
+                unsigned long long kbytes_per_sec;
+
+                if (xenParseSxprVifRate(tmp, &kbytes_per_sec) < 0)
+                    goto cleanup;
+
+                if (VIR_ALLOC(bandwidth) < 0)
+                    goto cleanup;
+                if (VIR_ALLOC(bandwidth->out) < 0) {
+                    VIR_FREE(bandwidth);
+                    goto cleanup;
+                }
+
+                bandwidth->out->average = kbytes_per_sec;
+                net->bandwidth = bandwidth;
+            }
 
             if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
                 goto cleanup;
@@ -1782,6 +1853,9 @@ xenFormatSxprNet(virConnectPtr conn,
     virBufferAddLit(buf, "(vif ");
 
     virBufferAsprintf(buf, "(mac '%s')", virMacAddrFormat(&def->mac, macaddr));
+
+    if (def->bandwidth && def->bandwidth->out && def->bandwidth->out->average)
+        virBufferAsprintf(buf, "(rate '%lluKB/s')", def->bandwidth->out->average);
 
     switch (def->type) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:

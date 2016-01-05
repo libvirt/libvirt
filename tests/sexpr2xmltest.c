@@ -188,6 +188,8 @@ mymain(void)
 
     DO_TEST("boot-grub", "boot-grub");
 
+    DO_TEST("vif-rate", "vif-rate");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

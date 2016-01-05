@@ -15,6 +15,7 @@ xenParseSxpr;
 xenParseSxprChar;
 xenParseSxprSound;
 xenParseSxprString;
+xenParseSxprVifRate;
 
 # xenconfig/xen_xm.h
 xenFormatXM;
