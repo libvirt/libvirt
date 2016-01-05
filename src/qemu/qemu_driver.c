@@ -4457,6 +4457,12 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
         dev.data.chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
         goto endjob;
 
+    dev.data.chr->state = newstate;
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        VIR_WARN("unable to save status of domain %s after updating state of "
+                 "channel %s", vm->def->name, devAlias);
+
     if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
         if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
             if (!priv->agent) {
@@ -4478,12 +4484,6 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
                                                        VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL);
         qemuDomainEventQueue(driver, event);
     }
-
-    dev.data.chr->state = newstate;
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
-        VIR_WARN("unable to save status of domain %s after updating state of "
-                 "channel %s", vm->def->name, devAlias);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
