@@ -205,6 +205,8 @@ struct _qemuDomainObjPrivate {
 
     bool signalIOError; /* true if the domain condition should be signalled on
                            I/O error */
+    bool signalStop; /* true if the domain condition should be signalled on
+                        QMP STOP event */
     char *machineName;
     char *libDir;            /* base path for per-domain files */
     char *channelTargetDir;  /* base path for per-domain channel targets */

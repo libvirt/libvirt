@@ -697,6 +697,8 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 {
     virQEMUDriverPtr driver = opaque;
     virObjectEventPtr event = NULL;
+    virDomainPausedReason reason = VIR_DOMAIN_PAUSED_UNKNOWN;
+    virDomainEventSuspendedDetailType detail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
@@ -708,16 +710,24 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
             goto unlock;
         }
 
-        VIR_DEBUG("Transitioned guest %s to paused state",
-                  vm->def->name);
+        if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            reason = VIR_DOMAIN_PAUSED_MIGRATION;
+            detail = VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED;
+        }
+
+        VIR_DEBUG("Transitioned guest %s to paused state, reason %s",
+                  vm->def->name, virDomainPausedReasonTypeToString(reason));
 
         if (priv->job.current)
             ignore_value(virTimeMillisNow(&priv->job.current->stopped));
 
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_UNKNOWN);
+        if (priv->signalStop)
+            virDomainObjBroadcast(vm);
+
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, reason);
         event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_SUSPENDED,
-                                         VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  detail);
 
         VIR_FREE(priv->lockState);
         if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)

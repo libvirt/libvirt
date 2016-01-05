@@ -4491,19 +4491,24 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     else if (rc == -1)
         goto cleanup;
 
-    /* When migration completed, QEMU will have paused the
-     * CPUs for us, but unless we're using the JSON monitor
-     * we won't have been notified of this, so might still
-     * think we're running. For v2 protocol this doesn't
-     * matter because we'll kill the VM soon, but for v3
-     * this is important because we stay paused until the
-     * confirm3 step, but need to release the lock state
+    /* When migration completed, QEMU will have paused the CPUs for us.
+     * Wait for the STOP event to be processed or explicitly stop CPUs
+     * (for old QEMU which does not send events) to release the lock state.
      */
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        if (qemuMigrationSetOffline(driver, vm) < 0) {
-            priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
-            goto cleanup;
+    if (priv->monJSON) {
+        while (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+            priv->signalStop = true;
+            rc = virDomainObjWait(vm);
+            priv->signalStop = false;
+            if (rc < 0) {
+                priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
+                goto cleanup;
+            }
         }
+    } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
+               qemuMigrationSetOffline(driver, vm) < 0) {
+        priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
+        goto cleanup;
     }
 
     ret = 0;
