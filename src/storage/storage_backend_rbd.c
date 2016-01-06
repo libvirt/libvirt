@@ -281,13 +281,13 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 {
     int ret = -1;
     int r = 0;
-    rbd_image_t image;
+    rbd_image_t image = NULL;
 
     r = rbd_open(ptr->ioctx, vol->name, &image, NULL);
     if (r < 0) {
         virReportSystemError(-r, _("failed to open the RBD image '%s'"),
                              vol->name);
-        return ret;
+        goto cleanup;
     }
 
     rbd_image_info_t info;
@@ -323,7 +323,8 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     ret = 0;
 
  cleanup:
-    rbd_close(image);
+    if (image)
+        rbd_close(image);
     return ret;
 }
 
