@@ -14275,8 +14275,18 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    ignore_value(virBitmapParse(tmp, 0, &def, VIR_DOMAIN_CPUMASK_LEN));
+    if (virBitmapParse(tmp, 0, &def, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto cleanup;
 
+    if (virBitmapIsAllClear(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid value of 'cpuset': %s"), tmp);
+        virBitmapFree(def);
+        def = NULL;
+        goto cleanup;
+    }
+
+ cleanup:
     VIR_FREE(tmp);
     return def;
 }
