@@ -2151,7 +2151,7 @@
                 <td> rbd </td>
                 <td> monitor servers of RBD </td>
                 <td> one or more </td>
-                <td> 6789 </td>
+                <td> librados default </td>
               </tr>
               <tr>
                 <td> sheepdog </td>

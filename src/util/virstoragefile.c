@@ -2245,9 +2245,6 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
         port += skip;
         if (VIR_STRDUP(src->hosts[src->nhosts - 1].port, port) < 0)
             goto error;
-    } else {
-        if (VIR_STRDUP(src->hosts[src->nhosts - 1].port, "6789") < 0)
-            goto error;
     }
 
     parts = virStringSplit(hostport, "\\:", 0);

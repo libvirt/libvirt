@@ -173,7 +173,7 @@ static int virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     for (i = 0; i < source->nhost; i++) {
         if (source->hosts[i].name != NULL &&
             !source->hosts[i].port) {
-            virBufferAsprintf(&mon_host, "%s:6789,",
+            virBufferAsprintf(&mon_host, "%s,",
                               source->hosts[i].name);
         } else if (source->hosts[i].name != NULL &&
             source->hosts[i].port) {
