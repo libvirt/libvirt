@@ -14163,6 +14163,12 @@ virDomainVcpuPinDefParseXML(xmlNodePtr node,
     if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto error;
 
+    if (virBitmapIsAllClear(def->cpumask)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid value of 'cpuset': %s"), tmp);
+        goto error;
+    }
+
  cleanup:
     VIR_FREE(tmp);
     ctxt->node = oldnode;
