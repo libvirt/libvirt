@@ -8115,17 +8115,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         break;
     }
 
-    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Controllers must use the 'pci' address type"));
-        goto error;
-    }
-
  cleanup:
     ctxt->node = saved;
     VIR_FREE(typeStr);
@@ -8814,19 +8803,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                                         flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
                                         | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
-    }
-
-    /* XXX what about ISA/USB based NIC models - once we support
-     * them we should make sure address type is correct */
-    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390 &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Network interfaces must use 'pci' address type"));
-        goto error;
     }
 
     switch (def->type) {
