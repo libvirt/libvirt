@@ -3897,6 +3897,12 @@ qemuValidateCpuCount(virDomainDefPtr def,
 {
     unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
 
+    if (virDomainDefGetVcpus(def) == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Domain requires at least 1 vCPU"));
+        return -1;
+    }
+
     if (maxCpus > 0 && virDomainDefGetVcpusMax(def) > maxCpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Maximum CPUs greater than specified machine type limit"));
