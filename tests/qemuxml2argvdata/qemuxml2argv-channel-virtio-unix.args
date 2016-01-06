@@ -33,4 +33,7 @@ nowait \
 id=channel1 \
 -chardev socket,id=charchannel2,path=/tmp/domain-QEMUGuest1/ble,server,nowait \
 -device virtserialport,bus=virtio-serial0.0,nr=3,chardev=charchannel2,\
-id=channel2,name=ble
+id=channel2,name=ble \
+-chardev socket,id=charchannel3,path=/tmp/domain-QEMUGuest1/fdsa,server,nowait \
+-device virtserialport,bus=virtio-serial0.0,nr=4,chardev=charchannel3,\
+id=channel3,name=fdsa

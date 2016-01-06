@@ -10510,6 +10510,23 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
+            /*
+             * TODO: Refactor so that we generate this (and onther
+             * things) somewhere else then where we are building the
+             * command line.
+             */
+            if (channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+                !channel->source.data.nix.path) {
+                if (virAsprintf(&channel->source.data.nix.path,
+                                "%s/domain-%s/%s",
+                                cfg->channelTargetDir, def->name,
+                                channel->target.name ? channel->target.name
+                                : "unknown.sock") < 0)
+                    goto error;
+
+                channel->source.data.nix.listen = true;
+            }
+
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
                 channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
                 /* spicevmc was originally introduced via a -device

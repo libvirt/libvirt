@@ -32,6 +32,10 @@
     <channel type='unix'>
       <target type='virtio' name='ble'/>
     </channel>
+    <channel type='unix'>
+      <source path='/tmp/domain-oldname/fdsa'/>
+      <target type='virtio' name='fdsa'/>
+    </channel>
     <memballoon model='none'/>
   </devices>
 </domain>
