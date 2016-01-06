@@ -469,6 +469,7 @@ virLogHostnameString(const char **rawmsg,
         VIR_FREE(hostname);
         return -1;
     }
+    VIR_FREE(hostname);
 
     if (virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr) < 0) {
         VIR_FREE(hoststr);
