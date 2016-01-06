@@ -3891,22 +3891,19 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
 }
 
 
-static bool
-qemuValidateCpuMax(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+static int
+qemuValidateCpuCount(virDomainDefPtr def,
+                     virQEMUCapsPtr qemuCaps)
 {
-    unsigned int maxCpus;
+    unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
 
-    maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
-    if (!maxCpus)
-        return true;
-
-    if (virDomainDefGetVcpusMax(def) > maxCpus) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("Maximum CPUs greater than specified machine type limit"));
-        return false;
+    if (maxCpus > 0 && virDomainDefGetVcpusMax(def) > maxCpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Maximum CPUs greater than specified machine type limit"));
+        return -1;
     }
 
-    return true;
+    return 0;
 }
 
 
@@ -4697,7 +4694,7 @@ qemuProcessLaunch(virConnectPtr conn,
         }
     }
 
-    if (!qemuValidateCpuMax(vm->def, priv->qemuCaps))
+    if (qemuValidateCpuCount(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
