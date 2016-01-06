@@ -14331,6 +14331,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr actions = NULL;
+    bool do_transaction = false;
     int ret = 0;
     size_t i;
     bool persist = false;
@@ -14379,9 +14380,11 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                                        reuse, asyncJob);
         if (ret < 0)
             break;
+
+        do_transaction = true;
     }
     if (actions) {
-        if (ret == 0) {
+        if (ret == 0 && do_transaction) {
             if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
                 ret = qemuMonitorTransaction(priv->mon, actions);
                 if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -14390,6 +14393,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                 /* failed to enter monitor, clean stuff up and quit */
                 ret = -1;
             }
+        } else {
+            VIR_DEBUG("no disks to snapshot, skipping 'transaction' command");
         }
 
         virJSONValueFree(actions);
