@@ -285,6 +285,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 
     r = rbd_open(ptr->ioctx, vol->name, &image, NULL);
     if (r < 0) {
+        ret = -r;
         virReportSystemError(-r, _("failed to open the RBD image '%s'"),
                              vol->name);
         goto cleanup;
@@ -293,6 +294,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     rbd_image_info_t info;
     r = rbd_stat(image, &info, sizeof(info));
     if (r < 0) {
+        ret = -r;
         virReportSystemError(-r, _("failed to stat the RBD image '%s'"),
                              vol->name);
         goto cleanup;
@@ -400,7 +402,21 @@ static int virStorageBackendRBDRefreshPool(virConnectPtr conn,
 
         name += strlen(name) + 1;
 
-        if (volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr) < 0) {
+        r = volStorageBackendRBDRefreshVolInfo(vol, pool, &ptr);
+
+        /* It could be that a volume has been deleted through a different route
+         * then libvirt and that will cause a -ENOENT to be returned.
+         *
+         * Another possibility is that there is something wrong with the placement
+         * group (PG) that RBD image's header is in and that causes -ETIMEDOUT
+         * to be returned.
+         *
+         * Do not error out and simply ignore the volume
+         */
+        if (r < 0) {
+            if (r == -ENOENT || r == -ETIMEDOUT)
+                continue;
+
             virStorageVolDefFree(vol);
             goto cleanup;
         }
