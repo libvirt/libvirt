@@ -1370,9 +1370,10 @@ virPCIDeviceDetach(virPCIDevicePtr dev,
     /* Add *a copy of* the dev into list inactiveDevs, if
      * it's not already there.
      */
-    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev) &&
-        virPCIDeviceListAddCopy(inactiveDevs, dev) < 0) {
-        return -1;
+    if (inactiveDevs && !virPCIDeviceListFind(inactiveDevs, dev)) {
+        VIR_DEBUG("Adding PCI device %s to inactive list", dev->name);
+        if (virPCIDeviceListAddCopy(inactiveDevs, dev) < 0)
+            return -1;
     }
 
     return 0;
@@ -1393,8 +1394,10 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
         return -1;
 
     /* Steal the dev from list inactiveDevs */
-    if (inactiveDevs)
+    if (inactiveDevs) {
+        VIR_DEBUG("Removing PCI device %s from inactive list", dev->name);
         virPCIDeviceListDel(inactiveDevs, dev);
+    }
 
     return 0;
 }
