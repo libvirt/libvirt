@@ -1552,7 +1552,9 @@ xenDaemonDomainFetch(virConnectPtr conn, int domid, const char *name,
     if (!(def = xenParseSxpr(root,
                              cpus,
                              tty,
-                             vncport)))
+                             vncport,
+                             priv->caps,
+                             priv->xmlopt)))
         goto cleanup;
 
  cleanup:
@@ -3082,7 +3084,8 @@ xenDaemonDomainBlockPeek(virConnectPtr conn,
     vncport = xenStoreDomainGetVNCPort(conn, id);
     xenUnifiedUnlock(priv);
 
-    if (!(def = xenParseSxpr(root, NULL, tty, vncport)))
+    if (!(def = xenParseSxpr(root, NULL, tty, vncport,
+                             priv->caps, priv->xmlopt)))
         goto cleanup;
 
     if (!(actual = virDomainDiskPathByName(def, path))) {

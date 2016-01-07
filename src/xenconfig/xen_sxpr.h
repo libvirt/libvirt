@@ -43,7 +43,11 @@ virDomainDefPtr xenParseSxprString(const char *sexpr,
                                    virDomainXMLOptionPtr xmlopt);
 
 virDomainDefPtr xenParseSxpr(const struct sexpr *root,
-                             const char *cpus, char *tty, int vncport);
+                             const char *cpus,
+                             char *tty,
+                             int vncport,
+                             virCapsPtr caps,
+                             virDomainXMLOptionPtr xmlopt);
 
 int xenParseSxprSound(virDomainDefPtr def, const char *str);
 

@@ -1065,7 +1065,11 @@ xenParseSxprPCI(virDomainDefPtr def,
  */
 virDomainDefPtr
 xenParseSxpr(const struct sexpr *root,
-             const char *cpus, char *tty, int vncport)
+             const char *cpus,
+             char *tty,
+             int vncport,
+             virCapsPtr caps,
+             virDomainXMLOptionPtr xmlopt)
 {
     const char *tmp;
     virDomainDefPtr def;
@@ -1371,6 +1375,10 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
     }
 
+    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                              xmlopt) < 0)
+        goto error;
+
     return def;
 
  error:
@@ -1405,16 +1413,7 @@ xenParseSxprString(const char *sexpr,
     if (!root)
         return NULL;
 
-    if (!(def = xenParseSxpr(root, NULL, tty, vncport)))
-        goto cleanup;
-
-    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                              xmlopt) < 0) {
-        virDomainDefFree(def);
-        def = NULL;
-    }
-
- cleanup:
+    def = xenParseSxpr(root, NULL, tty, vncport, caps, xmlopt);
     sexpr_free(root);
 
     return def;
