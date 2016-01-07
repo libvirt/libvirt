@@ -59,7 +59,7 @@ testXML2XMLHelper(const char *inxml,
         goto fail;
 
     if (!virDomainDefCheckABIStability(def, def)) {
-        fprintf(stderr, "ABI stability check failed on %s", inxml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", inxml);
         goto fail;
     }
 
@@ -153,7 +153,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     virBufferAdd(&buf, testStatusXMLSuffix, -1);
 
     if (!(source = virBufferContentAndReset(&buf))) {
-        fprintf(stderr, "Failed to create the source XML");
+        VIR_TEST_DEBUG("Failed to create the source XML");
         goto cleanup;
     }
 
@@ -165,7 +165,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     virBufferAdd(&buf, testStatusXMLSuffix, -1);
 
     if (!(expect = virBufferContentAndReset(&buf))) {
-        fprintf(stderr, "Failed to create the expect XML");
+        VIR_TEST_DEBUG("Failed to create the expect XML");
         goto cleanup;
     }
 
@@ -176,14 +176,14 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES))) {
-        fprintf(stderr, "Failed to parse domain status XML:\n%s", source);
+        VIR_TEST_DEBUG("Failed to parse domain status XML:\n%s", source);
         goto cleanup;
     }
 
     /* format it back */
     if (!(actual = virDomainObjFormat(driver.xmlopt, obj,
                                       VIR_DOMAIN_DEF_FORMAT_SECURE))) {
-        fprintf(stderr, "Failed to format domain status XML");
+        VIR_TEST_DEBUG("Failed to format domain status XML");
         goto cleanup;
     }
 
@@ -307,7 +307,7 @@ mymain(void)
 # define DO_TEST_FULL(name, is_different, when)                                \
     do {                                                                       \
         if (testInfoSet(&info, name, is_different, when) < 0) {                \
-            fprintf(stderr, "Failed to generate test data for '%s'", name);    \
+            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);    \
             return -1;                                                         \
         }                                                                      \
                                                                                \
