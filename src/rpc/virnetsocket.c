@@ -1259,7 +1259,11 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 pid_t *pid,
                                 unsigned long long *timestamp)
 {
+# if defined(HAVE_STRUCT_SOCKPEERCRED)
+    struct sockpeercred cr;
+# else
     struct ucred cr;
+# endif
     socklen_t cr_len = sizeof(cr);
     int ret = -1;
 

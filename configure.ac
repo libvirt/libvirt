@@ -393,6 +393,12 @@ AC_CHECK_TYPE([struct ifreq],
         #include <net/if.h>
   ]])
 
+AC_CHECK_TYPE([struct sockpeercred],
+  [AC_DEFINE([HAVE_STRUCT_SOCKPEERCRED], [1],
+    [Defined if struct sockpeercred is available])],
+  [], [[#include <sys/socket.h>
+  ]])
+
 AC_CHECK_DECLS([ETH_FLAG_TXVLAN, ETH_FLAG_NTUPLE, ETH_FLAG_RXHASH, ETH_FLAG_LRO,
                 ETHTOOL_GGSO, ETHTOOL_GGRO, ETHTOOL_GFLAGS, ETHTOOL_GFEATURES],
   [], [], [[#include <linux/ethtool.h>
