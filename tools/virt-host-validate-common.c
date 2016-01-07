@@ -367,9 +367,6 @@ int virHostValidateIOMMU(const char *hvname,
         isIntel = true;
     else if (virHostValidateHasCPUFlag("svm"))
         isAMD = true;
-    else
-        /* XXX PPC/ARM/etc support */
-        return 0;
 
     virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
 
