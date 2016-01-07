@@ -1723,9 +1723,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
-        goto cleanup;
-
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
         goto cleanup;
 
@@ -7500,9 +7497,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))

@@ -1255,6 +1255,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
+    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virObjectUnref(qemuCaps);
