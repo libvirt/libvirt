@@ -3428,7 +3428,7 @@ virDomainMigrateUnmanagedParams(virDomainPtr domain,
                                 unsigned int flags)
 {
     VIR_DOMAIN_DEBUG(domain, "dconnuri=%s, params=%p, nparams=%d, flags=%x",
-                     dconnuri, params, nparams, flags);
+                     NULLSTR(dconnuri), params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     if ((flags & VIR_MIGRATE_PEER2PEER) &&

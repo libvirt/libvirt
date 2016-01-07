@@ -5661,7 +5661,7 @@ qemuMigrationPerform(virQEMUDriverPtr driver,
                                              cookieout, cookieoutlen,
                                              flags, resource);
         } else {
-            return qemuMigrationPerformJob(driver, conn, vm, xmlin, dconnuri,
+            return qemuMigrationPerformJob(driver, conn, vm, xmlin, NULL,
                                            uri, graphicsuri, listenAddress,
                                            nmigrate_disks, migrate_disks,
                                            cookiein, cookieinlen,
