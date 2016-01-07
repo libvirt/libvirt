@@ -859,3 +859,24 @@ virBitmapOverlaps(virBitmapPtr b1,
 
     return false;
 }
+
+/**
+ * virBitmapSubtract:
+ * @a: minuend/result
+ * @b: subtrahend
+ *
+ * Performs bitwise subtraction: a = a - b
+ */
+void
+virBitmapSubtract(virBitmapPtr a,
+                  virBitmapPtr b)
+{
+    size_t i;
+    size_t max = a->map_len;
+
+    if (max > b->map_len)
+        max = b->map_len;
+
+    for (i = 0; i < max; i++)
+        a->map[i] &= ~b->map[i];
+}

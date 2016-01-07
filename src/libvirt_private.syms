@@ -1161,6 +1161,7 @@ virBitmapSetAll;
 virBitmapSetBit;
 virBitmapSize;
 virBitmapString;
+virBitmapSubtract;
 virBitmapToData;
 virBitmapToDataBuf;
 
