@@ -1035,12 +1035,9 @@ virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
 
 
 static int
-qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps,
-                       void *opaque)
+qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
+                               virQEMUCapsPtr qemuCaps)
 {
-    virQEMUDriverPtr driver = opaque;
-    virQEMUCapsPtr qemuCaps = NULL;
     bool addDefaultUSB = true;
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
@@ -1050,20 +1047,6 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
     int ret = -1;
-
-    if (def->os.bootloader || def->os.bootloaderArgs) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("bootloader is not supported by QEMU"));
-        return ret;
-    }
-
-    /* check for emulator and create a default one if needed */
-    if (!def->emulator &&
-        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        return ret;
-
-
-    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {
@@ -1217,6 +1200,37 @@ qemuDomainDefPostParse(virDomainDefPtr def,
             }
         }
     }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainDefPostParse(virDomainDefPtr def,
+                       virCapsPtr caps,
+                       void *opaque)
+{
+    virQEMUDriverPtr driver = opaque;
+    virQEMUCapsPtr qemuCaps = NULL;
+    int ret = -1;
+
+    if (def->os.bootloader || def->os.bootloaderArgs) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bootloader is not supported by QEMU"));
+        return ret;
+    }
+
+    /* check for emulator and create a default one if needed */
+    if (!def->emulator &&
+        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
+        return ret;
+
+    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
+
+    if (qemuDomainDefAddDefaultDevices(def, qemuCaps) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
