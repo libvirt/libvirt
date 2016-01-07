@@ -1208,6 +1208,26 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 
 
 static int
+qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
+{
+    const char *canon;
+
+    if (!(canon = virQEMUCapsGetCanonicalMachine(qemuCaps, def->os.machine)))
+        return 0;
+
+    if (STRNEQ(canon, def->os.machine)) {
+        char *tmp;
+        if (VIR_STRDUP(tmp, canon) < 0)
+            return -1;
+        VIR_FREE(def->os.machine);
+        def->os.machine = tmp;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        void *opaque)
@@ -1230,6 +1250,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     if (qemuDomainDefAddDefaultDevices(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
     ret = 0;

@@ -1684,26 +1684,6 @@ static int qemuConnectNumOfDomains(virConnectPtr conn)
 }
 
 
-static int
-qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
-{
-    const char *canon;
-
-    if (!(canon = virQEMUCapsGetCanonicalMachine(qemuCaps, def->os.machine)))
-        return 0;
-
-    if (STRNEQ(canon, def->os.machine)) {
-        char *tmp;
-        if (VIR_STRDUP(tmp, canon) < 0)
-            return -1;
-        VIR_FREE(def->os.machine);
-        def->os.machine = tmp;
-    }
-
-    return 0;
-}
-
-
 static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                                         const char *xml,
                                         unsigned int flags)
@@ -1747,9 +1727,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
-        goto cleanup;
-
-    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
     if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
@@ -7529,9 +7506,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
         goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
-        goto cleanup;
-
-    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
     if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
@@ -15891,9 +15865,6 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
         goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
-        goto cleanup;
-
-    if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
