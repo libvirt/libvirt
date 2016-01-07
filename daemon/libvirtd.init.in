@@ -1,19 +1,16 @@
 #!/bin/sh
 
 # the following is the LSB init header see
-# http://www.linux-foundation.org/spec//booksets/LSB-Core-generic/LSB-Core-generic.html#INITSCRCOMCONV
+# http://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/initscrcomconv.html
 #
 ### BEGIN INIT INFO
 # Provides: libvirtd
-# Required-Start: $network messagebus virtlogd
-# Should-Start: $named
-# Should-Start: xend
-# Should-Start: avahi-daemon
-# Should-Start: virtlockd
-# Required-Stop: $network messagebus
-# Should-Stop: $named
 # Default-Start: 3 4 5
 # Default-Stop: 0 1 2 6
+# Required-Start: $network messagebus virtlogd
+# Required-Stop: $network messagebus
+# Should-Start: $named xend avahi-daemon virtlockd
+# Should-Stop: $named
 # Short-Description: daemon for libvirt virtualization API
 # Description: This is a daemon for managing guest instances
 #              and libvirt virtual networks
