@@ -21442,6 +21442,129 @@ virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
     return false;
 }
 
+
+static int
+virDomainCputuneDefFormat(virBufferPtr buf,
+                          virDomainDefPtr def)
+{
+    size_t i;
+    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    virBufferAdjustIndent(&childrenBuf, virBufferGetIndent(buf, false) + 2);
+
+    if (def->cputune.sharesSpecified)
+        virBufferAsprintf(&childrenBuf, "<shares>%lu</shares>\n",
+                          def->cputune.shares);
+    if (def->cputune.period)
+        virBufferAsprintf(&childrenBuf, "<period>%llu</period>\n",
+                          def->cputune.period);
+    if (def->cputune.quota)
+        virBufferAsprintf(&childrenBuf, "<quota>%lld</quota>\n",
+                          def->cputune.quota);
+
+    if (def->cputune.emulator_period)
+        virBufferAsprintf(&childrenBuf, "<emulator_period>%llu"
+                          "</emulator_period>\n",
+                          def->cputune.emulator_period);
+
+    if (def->cputune.emulator_quota)
+        virBufferAsprintf(&childrenBuf, "<emulator_quota>%lld"
+                          "</emulator_quota>\n",
+                          def->cputune.emulator_quota);
+
+    for (i = 0; i < def->maxvcpus; i++) {
+        char *cpumask;
+        virDomainVcpuInfoPtr vcpu = def->vcpus + i;
+
+        if (!vcpu->cpumask)
+            continue;
+
+        if (!(cpumask = virBitmapFormat(vcpu->cpumask)))
+            goto cleanup;
+
+        virBufferAsprintf(&childrenBuf,
+                          "<vcpupin vcpu='%zu' cpuset='%s'/>\n", i, cpumask);
+
+        VIR_FREE(cpumask);
+    }
+
+    if (def->cputune.emulatorpin) {
+        char *cpumask;
+        virBufferAddLit(&childrenBuf, "<emulatorpin ");
+
+        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin)))
+            goto cleanup;
+
+        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
+        VIR_FREE(cpumask);
+    }
+
+    for (i = 0; i < def->niothreadids; i++) {
+        char *cpumask;
+
+        /* Ignore iothreadids with no cpumask */
+        if (!def->iothreadids[i]->cpumask)
+            continue;
+
+        virBufferAsprintf(&childrenBuf, "<iothreadpin iothread='%u' ",
+                          def->iothreadids[i]->iothread_id);
+
+        if (!(cpumask = virBitmapFormat(def->iothreadids[i]->cpumask)))
+            goto cleanup;
+
+        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
+        VIR_FREE(cpumask);
+    }
+
+    for (i = 0; i < def->cputune.nvcpusched; i++) {
+        virDomainThreadSchedParamPtr sp = &def->cputune.vcpusched[i];
+        char *ids = NULL;
+
+        if (!(ids = virBitmapFormat(sp->ids)))
+            goto cleanup;
+
+        virBufferAsprintf(&childrenBuf, "<vcpusched vcpus='%s' scheduler='%s'",
+                          ids, virProcessSchedPolicyTypeToString(sp->policy));
+        VIR_FREE(ids);
+
+        if (sp->policy == VIR_PROC_POLICY_FIFO ||
+            sp->policy == VIR_PROC_POLICY_RR)
+            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
+        virBufferAddLit(&childrenBuf, "/>\n");
+    }
+
+    for (i = 0; i < def->cputune.niothreadsched; i++) {
+        virDomainThreadSchedParamPtr sp = &def->cputune.iothreadsched[i];
+        char *ids = NULL;
+
+        if (!(ids = virBitmapFormat(sp->ids)))
+            goto cleanup;
+
+        virBufferAsprintf(&childrenBuf, "<iothreadsched iothreads='%s' scheduler='%s'",
+                          ids, virProcessSchedPolicyTypeToString(sp->policy));
+        VIR_FREE(ids);
+
+        if (sp->policy == VIR_PROC_POLICY_FIFO ||
+            sp->policy == VIR_PROC_POLICY_RR)
+            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
+        virBufferAddLit(&childrenBuf, "/>\n");
+    }
+
+    if (virBufferUse(&childrenBuf)) {
+        virBufferAddLit(buf, "<cputune>\n");
+        virBufferAddBuffer(buf, &childrenBuf);
+        virBufferAddLit(buf, "</cputune>\n");
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childrenBuf);
+    return ret;
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -21654,111 +21777,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
-    /* start format cputune */
-    indent = virBufferGetIndent(buf, false);
-    virBufferAdjustIndent(&childrenBuf, indent + 2);
-    if (def->cputune.sharesSpecified)
-        virBufferAsprintf(&childrenBuf, "<shares>%lu</shares>\n",
-                          def->cputune.shares);
-    if (def->cputune.period)
-        virBufferAsprintf(&childrenBuf, "<period>%llu</period>\n",
-                          def->cputune.period);
-    if (def->cputune.quota)
-        virBufferAsprintf(&childrenBuf, "<quota>%lld</quota>\n",
-                          def->cputune.quota);
-
-    if (def->cputune.emulator_period)
-        virBufferAsprintf(&childrenBuf, "<emulator_period>%llu"
-                          "</emulator_period>\n",
-                          def->cputune.emulator_period);
-
-    if (def->cputune.emulator_quota)
-        virBufferAsprintf(&childrenBuf, "<emulator_quota>%lld"
-                          "</emulator_quota>\n",
-                          def->cputune.emulator_quota);
-
-    for (i = 0; i < def->maxvcpus; i++) {
-        char *cpumask;
-        virDomainVcpuInfoPtr vcpu = def->vcpus + i;
-
-        if (!vcpu->cpumask)
-            continue;
-
-        if (!(cpumask = virBitmapFormat(vcpu->cpumask)))
-            goto error;
-
-        virBufferAsprintf(&childrenBuf,
-                          "<vcpupin vcpu='%zu' cpuset='%s'/>\n", i, cpumask);
-
-        VIR_FREE(cpumask);
-    }
-
-    if (def->cputune.emulatorpin) {
-        char *cpumask;
-        virBufferAddLit(&childrenBuf, "<emulatorpin ");
-
-        if (!(cpumask = virBitmapFormat(def->cputune.emulatorpin)))
-            goto error;
-
-        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
-        VIR_FREE(cpumask);
-    }
-
-    for (i = 0; i < def->niothreadids; i++) {
-        char *cpumask;
-
-        /* Ignore iothreadids with no cpumask */
-        if (!def->iothreadids[i]->cpumask)
-            continue;
-
-        virBufferAsprintf(&childrenBuf, "<iothreadpin iothread='%u' ",
-                          def->iothreadids[i]->iothread_id);
-
-        if (!(cpumask = virBitmapFormat(def->iothreadids[i]->cpumask)))
-            goto error;
-
-        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
-        VIR_FREE(cpumask);
-    }
-
-    for (i = 0; i < def->cputune.nvcpusched; i++) {
-        virDomainThreadSchedParamPtr sp = &def->cputune.vcpusched[i];
-        char *ids = NULL;
-
-        if (!(ids = virBitmapFormat(sp->ids)))
-            goto error;
-        virBufferAsprintf(&childrenBuf, "<vcpusched vcpus='%s' scheduler='%s'",
-                          ids, virProcessSchedPolicyTypeToString(sp->policy));
-        VIR_FREE(ids);
-
-        if (sp->policy == VIR_PROC_POLICY_FIFO ||
-            sp->policy == VIR_PROC_POLICY_RR)
-            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
-        virBufferAddLit(&childrenBuf, "/>\n");
-    }
-
-    for (i = 0; i < def->cputune.niothreadsched; i++) {
-        virDomainThreadSchedParamPtr sp = &def->cputune.iothreadsched[i];
-        char *ids = NULL;
-
-        if (!(ids = virBitmapFormat(sp->ids)))
-            goto error;
-        virBufferAsprintf(&childrenBuf, "<iothreadsched iothreads='%s' scheduler='%s'",
-                          ids, virProcessSchedPolicyTypeToString(sp->policy));
-        VIR_FREE(ids);
-
-        if (sp->policy == VIR_PROC_POLICY_FIFO ||
-            sp->policy == VIR_PROC_POLICY_RR)
-            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
-        virBufferAddLit(&childrenBuf, "/>\n");
-    }
-
-    if (virBufferUse(&childrenBuf)) {
-        virBufferAddLit(buf, "<cputune>\n");
-        virBufferAddBuffer(buf, &childrenBuf);
-        virBufferAddLit(buf, "</cputune>\n");
-    }
-    virBufferFreeAndReset(&childrenBuf);
+    if (virDomainCputuneDefFormat(buf, def) < 0)
+        goto error;
 
     if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
         goto error;
