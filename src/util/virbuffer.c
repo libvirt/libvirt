@@ -180,8 +180,7 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
  * virBufferContentAndReset(), virBufferAdd(). Auto indentation
  * is (intentionally) NOT applied!
  *
- * Moreover, be aware that @toadd is eaten with hair. IOW, the
- * @toadd buffer is reset after this.
+ * The @toadd virBuffer is consumed and cleared.
  */
 void
 virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
