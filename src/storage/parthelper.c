@@ -10,7 +10,7 @@
  * in a reliable fashion if merely after a list of partitions & sizes,
  * though it is fine for creating partitions.
  *
- * Copyright (C) 2007-2008, 2010, 2013 Red Hat, Inc.
+ * Copyright (C) 2007-2008, 2010, 2013, 2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -70,6 +70,7 @@ int main(int argc, char **argv)
     const char *path;
     char *canonical_path;
     const char *partsep;
+    bool devmap_nopartsep = false;
 
     if (setlocale(LC_ALL, "") == NULL ||
         bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
@@ -80,14 +81,22 @@ int main(int argc, char **argv)
 
     if (argc == 3 && STREQ(argv[2], "-g")) {
         cmd = DISK_GEOMETRY;
+    } else if (argc == 3 && STREQ(argv[2], "-p")) {
+        devmap_nopartsep = true;
     } else if (argc != 2) {
-        fprintf(stderr, _("syntax: %s DEVICE [-g]\n"), argv[0]);
+        fprintf(stderr, _("syntax: %s DEVICE [-g]|[-p]\n"), argv[0]);
         return 1;
     }
 
     path = argv[1];
     if (virIsDevMapperDevice(path)) {
-        partsep = "p";
+        /* The 'devmap_nopartsep' option will not append the partsep of "p"
+         * onto the name unless the 'path' ends in a number
+         */
+        if (c_isdigit(path[strlen(path)-1]) || !devmap_nopartsep)
+            partsep = "p";
+        else
+            partsep = "";
         if (VIR_STRDUP_QUIET(canonical_path, path) < 0)
             return 2;
     } else {

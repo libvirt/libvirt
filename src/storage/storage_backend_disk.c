@@ -1,7 +1,7 @@
 /*
  * storage_backend_disk.c: storage backend for disk handling
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -324,6 +324,15 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
     cmd = virCommandNewArgList(parthelper_path,
                                pool->def->source.devices[0].path,
                                NULL);
+
+    /* Check for the presence of the part_separator='no'. Pass this
+     * along to the libvirt_parthelper as option '-p'. This will cause
+     * libvirt_parthelper to not append the "p" partition separator to
+     * the generated device name, unless the name ends with a number.
+     */
+    if (pool->def->source.devices[0].part_separator ==
+        VIR_TRISTATE_BOOL_NO)
+        virCommandAddArg(cmd, "-p");
 
     /* If a volume is passed, virStorageBackendDiskMakeVol only updates the
      * pool allocation for that single volume.
