@@ -1779,6 +1779,11 @@ mymain(void)
             QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET);
     DO_TEST("virtio-input-passthrough", QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_INPUT_HOST);
 
+    DO_TEST("ppc64-usb-controller",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_PCI_OHCI);
+    DO_TEST("ppc64-usb-controller-legacy",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_PIIX3_USB_UHCI);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

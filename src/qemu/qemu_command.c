@@ -10049,18 +10049,30 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                 if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                     cont->model == -1 &&
-                    !qemuDomainMachineIsQ35(def) &&
-                    (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
-                     (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) &&
-                      ARCH_IS_PPC64(def->os.arch)))) {
-                    if (usblegacy) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("Multiple legacy USB controllers are "
-                                         "not supported"));
-                        goto error;
+                    !qemuDomainMachineIsQ35(def)) {
+                    bool need_legacy = false;
+
+                    /* We're not using legacy usb controller for q35 */
+                    if (ARCH_IS_PPC64(def->os.arch)) {
+                        /* For ppc64 the legacy was OHCI */
+                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                            need_legacy = true;
+                    } else {
+                        /* For anything else, we used PIIX3_USB_UHCI */
+                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+                            need_legacy = true;
                     }
-                    usblegacy = true;
-                    continue;
+
+                    if (need_legacy) {
+                        if (usblegacy) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("Multiple legacy USB controllers are "
+                                             "not supported"));
+                            goto error;
+                        }
+                        usblegacy = true;
+                        continue;
+                    }
                 }
 
                 virCommandAddArg(cmd, "-device");
