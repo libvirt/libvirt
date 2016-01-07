@@ -1,7 +1,7 @@
 /*
  * storage_conf.h: config handling for storage driver
  *
- * Copyright (C) 2006-2008, 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2008, 2010-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -157,6 +157,7 @@ struct _virStoragePoolSourceDevice {
     virStoragePoolSourceDeviceExtentPtr freeExtents;
     char *path;
     int format; /* Pool specific source format */
+    int part_separator;  /* enum virTristateSwitch */
 
     /* When the source device is a physical disk,
      * the geometry data is needed

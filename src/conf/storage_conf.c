@@ -1,7 +1,7 @@
 /*
  * storage_conf.c: config handling for storage driver
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -528,6 +528,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < nsource; i++) {
+        char *partsep;
         virStoragePoolSourceDevice dev = { .path = NULL };
         dev.path = virXMLPropString(nodeset[i], "path");
 
@@ -537,10 +538,25 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
+        partsep = virXMLPropString(nodeset[i], "part_separator");
+        if (partsep) {
+            dev.part_separator = virTristateBoolTypeFromString(partsep);
+            if (dev.part_separator <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid part_separator setting '%s'"),
+                               partsep);
+                virStoragePoolSourceDeviceClear(&dev);
+                VIR_FREE(partsep);
+                goto cleanup;
+            }
+            VIR_FREE(partsep);
+        }
+
         if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
             virStoragePoolSourceDeviceClear(&dev);
             goto cleanup;
         }
+
     }
 
     source->dir = virXPathString("string(./dir/@path)", ctxt);
@@ -1051,8 +1067,14 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</device>\n");
             } else {
-                virBufferEscapeString(buf, "<device path='%s'/>\n",
+                virBufferEscapeString(buf, "<device path='%s'",
                                       src->devices[i].path);
+                if (src->devices[i].part_separator !=
+                    VIR_TRISTATE_SWITCH_ABSENT) {
+                    virBufferAsprintf(buf, " part_separator='%s'",
+                                      virTristateBoolTypeToString(src->devices[i].part_separator));
+                }
+                virBufferAddLit(buf, "/>\n");
             }
         }
     }

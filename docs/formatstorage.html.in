@@ -90,6 +90,14 @@
     <pre>
         ...
         &lt;source&gt;
+          &lt;device path='/dev/mapper/mpatha' part_separator='no'/&gt;
+          &lt;format type='gpt'/&gt;
+        &lt;/source&gt;
+        ...</pre>
+
+    <pre>
+        ...
+        &lt;source&gt;
           &lt;adapter type='scsi_host' name='scsi_host1'/&gt;
         &lt;/source&gt;
         ...</pre>
@@ -118,10 +126,28 @@
         (pool types <code>fs</code>, <code>logical</code>, <code>disk</code>,
         <code>iscsi</code>, <code>zfs</code>).
         May be repeated multiple times depending on backend driver. Contains
-        a single attribute <code>path</code> which is either the fully
+        a required attribute <code>path</code> which is either the fully
         qualified path to the block device node or for <code>iscsi</code>
         the iSCSI Qualified Name (IQN).
-        <span class="since">Since 0.4.1</span></dd>
+        <span class="since">Since 0.4.1</span>
+        <p>An optional attribute <code>part_separator</code> for each
+        <code>path</code> may be supplied. Valid values for the attribute
+        may be either "yes" or "no". This attribute is to be used for a
+        <code>disk</code> pool type using a <code>path</code> to a
+        device mapper multipath device configured to utilize either
+        'user_friendly_names' or a custom 'alias' name in the
+        /etc/multipath.conf. The attribute directs libvirt to not
+        generate device volume names with the partition character "p".
+        By default, when libvirt generates the partition names for
+        device mapper multipath devices it will add a "p" path separator
+        to the device name before adding the partition number. For example,
+        a <code>device path</code> of '/dev/mapper/mpatha' libvirt would
+        generate partition names of '/dev/mapper/mpathap1',
+        '/dev/mapper/mpathap2', etc. for each partition found. With
+        this attribute set to "no", libvirt will not append the "p" to
+        the name unless it ends with a number thus generating names
+        of '/dev/mapper/mpatha1', '/dev/mapper/mpatha2', etc.
+        <span class="since">Since 1.3.1</span></p></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
         types <code>dir</code>, <code>netfs</code>, <code>gluster</code>),

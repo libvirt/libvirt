@@ -278,6 +278,11 @@
         <empty/>
         <ref name='devextents'/>
       </choice>
+      <optional>
+        <attribute name="part_separator">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
     </element>
   </define>
 

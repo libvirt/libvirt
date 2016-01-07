@@ -1,0 +1,14 @@
+<pool type='disk'>
+  <name>multipath</name>
+  <uuid>70a7eb15-6c34-ee9c-bf57-69e8e5ff3fb2</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <device path='/dev/mapper/mpatha' part_separator='no'/>
+    <format type='gpt'/>
+  </source>
+  <target>
+    <path>/dev</path>
+  </target>
+</pool>

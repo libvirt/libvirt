@@ -80,6 +80,7 @@ mymain(void)
     DO_TEST("pool-logical-nopath");
     DO_TEST("pool-logical-create");
     DO_TEST("pool-disk");
+    DO_TEST("pool-disk-device-nopartsep");
     DO_TEST("pool-iscsi");
     DO_TEST("pool-iscsi-auth");
     DO_TEST("pool-netfs");
