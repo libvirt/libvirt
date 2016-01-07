@@ -4124,6 +4124,7 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
     if (!inc)
         return;
 
+    VIR_FREE(inc->address);
     VIR_FREE(inc->launchURI);
     VIR_FREE(inc->deferredURI);
     VIR_FREE(inc);
@@ -4137,6 +4138,7 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
  */
 qemuProcessIncomingDefPtr
 qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
+                          const char *listenAddress,
                           const char *migrateFrom,
                           int fd,
                           const char *path)
@@ -4148,6 +4150,9 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
 
     if (VIR_ALLOC(inc) < 0)
         return NULL;
+
+    if (VIR_STRDUP(inc->address, listenAddress) < 0)
+        goto error;
 
     inc->launchURI = qemuMigrationIncomingURI(migrateFrom, fd);
     if (!inc->launchURI)
@@ -5137,7 +5142,7 @@ qemuProcessStart(virConnectPtr conn,
         goto cleanup;
 
     if (migrateFrom) {
-        incoming = qemuProcessIncomingDefNew(priv->qemuCaps, migrateFrom,
+        incoming = qemuProcessIncomingDefNew(priv->qemuCaps, NULL, migrateFrom,
                                              migrateFd, migratePath);
         if (!incoming)
             goto stop;

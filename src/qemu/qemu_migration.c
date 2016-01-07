@@ -3365,7 +3365,8 @@ qemuMigrationPrepareIncoming(virDomainObjPtr vm,
             goto cleanup;
     }
 
-    inc = qemuProcessIncomingDefNew(priv->qemuCaps, migrateFrom, fd, NULL);
+    inc = qemuProcessIncomingDefNew(priv->qemuCaps, listenAddress,
+                                    migrateFrom, fd, NULL);
 
  cleanup:
     VIR_FREE(migrateFrom);
@@ -3586,7 +3587,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (mig->nbd &&
         flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
-        if (qemuMigrationStartNBDServer(driver, vm, listenAddress,
+        if (qemuMigrationStartNBDServer(driver, vm, incoming->address,
                                         nmigrate_disks, migrate_disks) < 0) {
             goto stopjob;
         }

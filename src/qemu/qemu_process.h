@@ -47,6 +47,7 @@ int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
 typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;
 typedef qemuProcessIncomingDef *qemuProcessIncomingDefPtr;
 struct _qemuProcessIncomingDef {
+    char *address; /* address where QEMU is supposed to listen */
     char *launchURI; /* used as a parameter for -incoming command line option */
     char *deferredURI; /* used when calling migrate-incoming QMP command */
     int fd; /* for fd:N URI */
@@ -54,6 +55,7 @@ struct _qemuProcessIncomingDef {
 };
 
 qemuProcessIncomingDefPtr qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
+                                                    const char *listenAddress,
                                                     const char *migrateFrom,
                                                     int fd,
                                                     const char *path);
