@@ -219,13 +219,16 @@ mymain(void)
     DO_TEST("harddisk-transient", "harddisk-transient");
 
     DO_TEST("cdrom-scsi-file", "cdrom-scsi-file");
+    DO_TEST("cdrom-scsi-empty", "cdrom-scsi-empty");
     DO_TEST("cdrom-scsi-device", "cdrom-scsi-device");
     DO_TEST("cdrom-scsi-raw-device", "cdrom-scsi-raw-device");
     DO_TEST("cdrom-scsi-raw-auto-detect", "cdrom-scsi-raw-auto-detect");
     DO_TEST("cdrom-scsi-passthru", "cdrom-scsi-passthru");
     DO_TEST("cdrom-ide-file", "cdrom-ide-file");
+    DO_TEST("cdrom-ide-empty", "cdrom-ide-empty");
     DO_TEST("cdrom-ide-device", "cdrom-ide-device");
     DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device");
+    DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect");
 
     DO_TEST("floppy-file", "floppy-file");

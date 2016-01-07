@@ -235,11 +235,13 @@ mymain(void)
     DO_TEST("harddisk-ide-file", "harddisk-ide-file", 4);
 
     DO_TEST("cdrom-scsi-file", "cdrom-scsi-file", 4);
+    DO_TEST("cdrom-scsi-empty", "cdrom-scsi-empty", 4);
     DO_TEST("cdrom-scsi-device", "cdrom-scsi-device", 4);
     DO_TEST("cdrom-scsi-raw-device", "cdrom-scsi-raw-device", 4);
     DO_TEST("cdrom-scsi-raw-auto-detect", "cdrom-scsi-raw-auto-detect", 4);
     DO_TEST("cdrom-scsi-passthru", "cdrom-scsi-passthru", 4);
     DO_TEST("cdrom-ide-file", "cdrom-ide-file", 4);
+    DO_TEST("cdrom-ide-empty", "cdrom-ide-empty", 4);
     DO_TEST("cdrom-ide-device", "cdrom-ide-device", 4);
     DO_TEST("cdrom-ide-raw-device", "cdrom-ide-raw-device", 4);
     DO_TEST("cdrom-ide-raw-auto-detect", "cdrom-ide-raw-auto-detect", 4);
