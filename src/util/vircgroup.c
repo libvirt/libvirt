@@ -24,10 +24,9 @@
 #include <config.h>
 
 #include <stdio.h>
-#if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
+#if defined HAVE_MNTENT_H && defined HAVE_SYS_MOUNT_H \
+    && defined HAVE_GETMNTENT_R
 # include <mntent.h>
-#endif
-#if defined HAVE_SYS_MOUNT_H
 # include <sys/mount.h>
 #endif
 #include <fcntl.h>
