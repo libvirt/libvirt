@@ -1,0 +1,21 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/libexec/qemu-kvm \
+-name q35-test \
+-S \
+-M q35 \
+-m 2048 \
+-smp 1 \
+-uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-device pci-bridge,chassis_nr=56,id=pci.2,bus=pci.1,addr=0x1 \
+-device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
+-device nec-usb-xhci,id=usb,bus=pcie.0,addr=0x1

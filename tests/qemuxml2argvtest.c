@@ -1181,7 +1181,22 @@ mymain(void)
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-none-usbtablet",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_DEVICE, QEMU_CAPS_NODEFCONFIG);
-
+    DO_TEST("usb-controller-default-q35",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_PCI_OHCI,
+            QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_FAILURE("usb-controller-default-unavailable-q35",
+                    QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                    QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_PCI_OHCI,
+                    QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("usb-controller-explicit-q35",
+            QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_PCI_OHCI,
+            QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST_FAILURE("usb-controller-explicit-unavailable-q35",
+                    QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                    QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_PCI_OHCI,
+                    QEMU_CAPS_PIIX3_USB_UHCI);
 
     DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE);
     DO_TEST_PARSE_ERROR("smbios-date", QEMU_CAPS_SMBIOS_TYPE);
