@@ -31,6 +31,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virstring.h"
+#include "virtime.h"
 #include "conf/network_conf.h"
 
 virNetworkPtr
@@ -1181,6 +1182,7 @@ virshNetworkEventToString(int event)
 struct virshNetEventData {
     vshControl *ctl;
     bool loop;
+    bool timestamp;
     int count;
 };
 typedef struct virshNetEventData virshNetEventData;
@@ -1201,8 +1203,21 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (!data->loop && data->count)
         return;
-    vshPrint(data->ctl, _("event 'lifecycle' for network %s: %s\n"),
-             virNetworkGetName(net), virshNetworkEventToString(event));
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, _("%s: event 'lifecycle' for network %s: %s\n"),
+                 timestamp,
+                 virNetworkGetName(net), virshNetworkEventToString(event));
+    } else {
+        vshPrint(data->ctl, _("event 'lifecycle' for network %s: %s\n"),
+                 virNetworkGetName(net), virshNetworkEventToString(event));
+    }
+
     data->count++;
     if (!data->loop)
         vshEventDone(data->ctl);
@@ -1238,6 +1253,10 @@ static const vshCmdOptDef opts_network_event[] = {
     {.name = "list",
      .type = VSH_OT_BOOL,
      .help = N_("list valid event types")
+    },
+    {.name = "timestamp",
+     .type = VSH_OT_BOOL,
+     .help = N_("show timestamp for each printed event")
     },
     {.name = NULL}
 };
@@ -1275,6 +1294,7 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
 
     data.ctl = ctl;
     data.loop = vshCommandOptBool(cmd, "loop");
+    data.timestamp = vshCommandOptBool(cmd, "timestamp");
     data.count = 0;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
