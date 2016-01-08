@@ -18,10 +18,11 @@
 #
 # Based on an idea from GNU coreutils
 
-test -z "$abs_srcdir" && abs_srcdir=$(pwd)
-test -z "$abs_builddir" && abs_builddir=$(pwd)
-test -z "$abs_top_srcdir" && abs_top_srcdir=$(pwd)/..
-test -z "$abs_top_builddir" && abs_top_builddir=$(pwd)/..
+_scriptdir="$(realpath $(dirname $0))"
+test -z "$abs_srcdir" && abs_srcdir=$_scriptdir
+test -z "$abs_builddir" && abs_builddir=$_scriptdir
+test -z "$abs_top_srcdir" && abs_top_srcdir=$_scriptdir/..
+test -z "$abs_top_builddir" && abs_top_builddir=$_scriptdir/..
 test -z "$LC_ALL" && LC_ALL=C
 
 # Skip this test if the shell lacks support for functions.
