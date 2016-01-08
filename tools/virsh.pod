@@ -1370,7 +1370,7 @@ The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
 =item B<event> {[I<domain>] { I<event> | I<--all> } [I<--loop>]
-[I<--timeout> I<seconds>] | I<--list>}
+[I<--timeout> I<seconds>] [I<--timestamp>] | I<--list>}
 
 Wait for a class of domain events to occur, and print appropriate details
 of events as they happen.  The events can optionally be filtered by
@@ -1385,6 +1385,9 @@ occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
 If I<--timeout> is specified, the command gives up waiting for events
 after I<seconds> have elapsed.   With I<--loop>, the command prints all
 events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
 
 =item B<iothreadinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
 
@@ -2877,7 +2880,7 @@ The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
 =item B<net-event> {[I<network>] I<event> [I<--loop>] [I<--timeout>
-I<seconds>] | I<--list>}
+I<seconds>] [I<--timestamp>] | I<--list>}
 
 Wait for a class of network events to occur, and print appropriate details
 of events as they happen.  The events can optionally be filtered by
@@ -2890,6 +2893,9 @@ occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
 If I<--timeout> is specified, the command gives up waiting for events
 after I<seconds> have elapsed.   With I<--loop>, the command prints all
 events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
 
 =item B<net-info> I<network>
 
@@ -4074,6 +4080,7 @@ timeout.
 
 =item B<qemu-monitor-event> [I<domain>] [I<--event> I<event-name>] [I<--loop>]
 [I<--timeout> I<seconds>] [I<--pretty>] [I<--regex>] [I<--no-case>]
+[I<--timestamp>]
 
 Wait for arbitrary QEMU monitor events to occur, and print out the
 details of events as they happen.  The events can optionally be filtered
@@ -4089,6 +4096,10 @@ If I<--timeout> is specified, the command gives up waiting for events
 after I<seconds> have elapsed.  With I<--loop>, the command prints all
 events until a timeout or interrupt key.  If I<--pretty> is specified,
 any JSON event details are pretty-printed for better legibility.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event, and the timing information provided by QEMU will be
+omitted.
 
 =item B<lxc-enter-namespace> I<domain> -- /path/to/binary [arg1, [arg2, ...]]
 
