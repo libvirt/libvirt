@@ -3856,6 +3856,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefPostParseTimer(def) < 0)
         return -1;
 
+    if (virDomainDefAddImplicitControllers(def) < 0)
+        return -1;
+
     /* clean up possibly duplicated metadata entries */
     virDomainDefMetadataSanitize(def);
 
@@ -16390,10 +16393,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* callback to fill driver specific domain aspects */
     if (virDomainDefPostParse(def, caps, flags, xmlopt) < 0)
-        goto error;
-
-    /* Auto-add any implied controllers which aren't present */
-    if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
     virHashFree(bootHash);
