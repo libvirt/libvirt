@@ -7870,7 +7870,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
         dev->data.disk = NULL;
         if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
-            if (virDomainDefAddImplicitControllers(vmdef) < 0)
+            if (virDomainDefAddImplicitDevices(vmdef) < 0)
                 return -1;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
@@ -7895,7 +7895,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (virDomainHostdevInsert(vmdef, hostdev))
             return -1;
         dev->data.hostdev = NULL;
-        if (virDomainDefAddImplicitControllers(vmdef) < 0)
+        if (virDomainDefAddImplicitDevices(vmdef) < 0)
             return -1;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;
@@ -7937,7 +7937,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (qemuDomainChrInsert(vmdef, dev->data.chr) < 0)
             return -1;
         dev->data.chr = NULL;
-        if (virDomainDefAddImplicitControllers(vmdef) < 0)
+        if (virDomainDefAddImplicitDevices(vmdef) < 0)
             return -1;
         if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
             return -1;

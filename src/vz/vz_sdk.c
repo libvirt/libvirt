@@ -1356,7 +1356,7 @@ prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
     if (prlsdkGetDomainState(sdkdom, &domainState) < 0)
         goto error;
 
-    if (virDomainDefAddImplicitControllers(def) < 0)
+    if (virDomainDefAddImplicitDevices(def) < 0)
         goto error;
 
     if (def->ngraphics > 0) {

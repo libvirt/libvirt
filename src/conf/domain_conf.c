@@ -3902,9 +3902,6 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefPostParseMemory(def, parseFlags) < 0)
         return -1;
 
-    if (virDomainDefAddConsoleCompat(def) < 0)
-        return -1;
-
     if (virDomainDefRejectDuplicateControllers(def) < 0)
         return -1;
 
@@ -3914,7 +3911,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefPostParseTimer(def) < 0)
         return -1;
 
-    if (virDomainDefAddImplicitControllers(def) < 0)
+    if (virDomainDefAddImplicitDevices(def) < 0)
         return -1;
 
     /* clean up possibly duplicated metadata entries */
@@ -18428,7 +18425,7 @@ virDomainDefMaybeAddSmartcardController(virDomainDefPtr def)
  * in the XML. This is for compat with existing apps which will
  * not know/care about <controller> info in the XML
  */
-int
+static int
 virDomainDefAddImplicitControllers(virDomainDefPtr def)
 {
     if (virDomainDefAddDiskControllersForType(def,
@@ -18458,6 +18455,18 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
         return -1;
 
     if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
+        return -1;
+
+    return 0;
+}
+
+int
+virDomainDefAddImplicitDevices(virDomainDefPtr def)
+{
+    if (virDomainDefAddConsoleCompat(def) < 0)
+        return -1;
+
+    if (virDomainDefAddImplicitControllers(def) < 0)
         return -1;
 
     return 0;

@@ -1687,7 +1687,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:controllers */
-    if (virDomainDefAddImplicitControllers(def) < 0) {
+    if (virDomainDefAddImplicitDevices(def) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not add controllers"));
         goto cleanup;
     }

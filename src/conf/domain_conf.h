@@ -2703,7 +2703,7 @@ virDomainObjPtr virDomainObjParseFile(const char *filename,
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);
 
-int virDomainDefAddImplicitControllers(virDomainDefPtr def);
+int virDomainDefAddImplicitDevices(virDomainDefPtr def);
 
 virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(const virDomainDef *def,
                                                   unsigned int iothread_id);
