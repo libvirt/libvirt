@@ -32,6 +32,8 @@ struct testInfo {
     char *inName;
     char *outActiveName;
     char *outInactiveName;
+
+    virQEMUCapsPtr qemuCaps;
 };
 
 static int
@@ -171,6 +173,8 @@ testInfoFree(struct testInfo *info)
     VIR_FREE(info->inName);
     VIR_FREE(info->outActiveName);
     VIR_FREE(info->outInactiveName);
+
+    virObjectUnref(info->qemuCaps);
 }
 
 
@@ -180,6 +184,13 @@ testInfoSet(struct testInfo *info,
             bool different,
             int when)
 {
+    if (!(info->qemuCaps = virQEMUCapsNew()))
+        goto error;
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, name,
+                                info->qemuCaps) < 0)
+        goto error;
+
     if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
                     abs_srcdir, name) < 0)
         goto error;
