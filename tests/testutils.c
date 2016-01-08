@@ -1072,6 +1072,40 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 }
 
 
+int
+testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
+                           const char *infile, const char *outfile, bool live)
+{
+    char *actual = NULL;
+    int ret = -1;
+    virDomainDefPtr def = NULL;
+    unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    if (!live)
+        format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
+
+    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, parse_flags)))
+        goto fail;
+
+    if (!virDomainDefCheckABIStability(def, def)) {
+        VIR_TEST_DEBUG("ABI stability check failed on %s", infile);
+        goto fail;
+    }
+
+    if (!(actual = virDomainDefFormat(def, format_flags)))
+        goto fail;
+
+    if (virtTestCompareToFile(actual, outfile) < 0)
+        goto fail;
+
+    ret = 0;
+ fail:
+    VIR_FREE(actual);
+    virDomainDefFree(def);
+    return ret;
+}
+
+
 static int virtTestCounter;
 static char virtTestCounterStr[128];
 static char *virtTestCounterPrefixEndOffset;

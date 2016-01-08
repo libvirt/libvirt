@@ -11,31 +11,6 @@
 
 static bhyveConn driver;
 
-static int
-testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
-{
-    char *actual = NULL;
-    virDomainDefPtr def = NULL;
-    int ret = -1;
-
-    if (!(def = virDomainDefParseFile(inxml, driver.caps, driver.xmlopt,
-                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto fail;
-
-    if (!(actual = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
-        goto fail;
-
-    if (virtTestCompareToFile(actual, outxml) < 0)
-        goto fail;
-
-    ret = 0;
-
- fail:
-    VIR_FREE(actual);
-    virDomainDefFree(def);
-    return ret;
-}
-
 struct testInfo {
     const char *name;
     bool different;
@@ -55,8 +30,9 @@ testCompareXMLToXMLHelper(const void *data)
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
-    ret = testCompareXMLToXMLFiles(xml_in,
-                                   info->different ? xml_out : xml_in);
+    ret = testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, xml_in,
+                                     info->different ? xml_out : xml_in,
+                                     false);
 
  cleanup:
     VIR_FREE(xml_in);

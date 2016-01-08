@@ -40,56 +40,12 @@ struct testInfo {
 };
 
 static int
-testXML2XMLHelper(const char *inxml,
-                  const char *inXmlData,
-                  const char *outxml,
-                  const char *outXmlData,
-                  bool live)
-{
-    char *actual = NULL;
-    int ret = -1;
-    virDomainDefPtr def = NULL;
-    unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
-    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
-    if (!live)
-        format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
-
-    if (!(def = virDomainDefParseString(inXmlData, driver.caps, driver.xmlopt,
-                                        parse_flags)))
-        goto fail;
-
-    if (!virDomainDefCheckABIStability(def, def)) {
-        VIR_TEST_DEBUG("ABI stability check failed on %s", inxml);
-        goto fail;
-    }
-
-    if (!(actual = virDomainDefFormat(def, format_flags)))
-        goto fail;
-
-    if (STRNEQ(outXmlData, actual)) {
-        virtTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
-        goto fail;
-    }
-
-    ret = 0;
-
- fail:
-    VIR_FREE(actual);
-    virDomainDefFree(def);
-    return ret;
-}
-
-
-static int
 testXML2XMLActive(const void *opaque)
 {
     const struct testInfo *info = opaque;
 
-    return testXML2XMLHelper(info->inName,
-                             info->inFile,
-                             info->outActiveName,
-                             info->outActiveFile,
-                             true);
+    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
+                                      info->inName, info->outActiveName, true);
 }
 
 
@@ -98,11 +54,8 @@ testXML2XMLInactive(const void *opaque)
 {
     const struct testInfo *info = opaque;
 
-    return testXML2XMLHelper(info->inName,
-                             info->inFile,
-                             info->outInactiveName,
-                             info->outInactiveFile,
-                             false);
+    return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
+                                      info->outInactiveName, false);
 }
 
 
