@@ -3420,6 +3420,11 @@
           <value>none</value>
         </choice>
       </attribute>
+      <optional>
+        <attribute name="autodeflate">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <ref name="alias"/>

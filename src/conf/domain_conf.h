@@ -1635,6 +1635,7 @@ struct _virDomainMemballoonDef {
     int model;
     virDomainDeviceInfo info;
     int period; /* seconds between collections */
+    int autodeflate; /* enum virTristateSwitch */
 };
 
 struct _virDomainNVRAMDef {

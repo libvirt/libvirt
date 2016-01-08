@@ -11354,6 +11354,7 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
                                unsigned int flags)
 {
     char *model;
+    char *deflate;
     virDomainMemballoonDefPtr def;
     xmlNodePtr save = ctxt->node;
     unsigned int period = 0;
@@ -11371,6 +11372,13 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     if ((def->model = virDomainMemballoonModelTypeFromString(model)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown memory balloon model '%s'"), model);
+        goto error;
+    }
+
+    if ((deflate = virXMLPropString(node, "autodeflate")) &&
+        (def->autodeflate = virTristateSwitchTypeFromString(deflate)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid autodeflate attribute value '%s'"), deflate);
         goto error;
     }
 
@@ -11392,6 +11400,7 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(model);
+    VIR_FREE(deflate);
 
     ctxt->node = save;
     return def;
@@ -17342,6 +17351,15 @@ virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
         return false;
     }
 
+    if (src->autodeflate != dst->autodeflate) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target balloon autodeflate attribute value "
+                         "'%s' does not match source '%s'"),
+                       virTristateSwitchTypeToString(dst->autodeflate),
+                       virTristateSwitchTypeToString(src->autodeflate));
+        return false;
+    }
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -20523,6 +20541,11 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf, "<memballoon model='%s'", model);
+
+    if (def->autodeflate != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, " autodeflate='%s'",
+                          virTristateSwitchTypeToString(def->autodeflate));
+
     virBufferAdjustIndent(&childrenBuf, indent + 2);
 
     if (def->period)
