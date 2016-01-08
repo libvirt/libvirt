@@ -30,13 +30,8 @@ enum {
 
 struct testInfo {
     char *inName;
-    char *inFile;
-
     char *outActiveName;
-    char *outActiveFile;
-
     char *outInactiveName;
-    char *outInactiveFile;
 };
 
 static int
@@ -95,13 +90,19 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     char *expect = NULL;
     char *actual = NULL;
     char *source = NULL;
+    char *inFile = NULL, *outActiveFile = NULL;
     int ret = -1;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
+
+    if (virtTestLoadFile(data->inName, &inFile) < 0)
+        goto cleanup;
+    if (virtTestLoadFile(data->outActiveName, &outActiveFile) < 0)
+        goto cleanup;
 
     /* construct faked source status XML */
     virBufferAdd(&buf, testStatusXMLPrefix, -1);
     virBufferAdjustIndent(&buf, 2);
-    virBufferAddStr(&buf, data->inFile);
+    virBufferAddStr(&buf, inFile);
     virBufferAdjustIndent(&buf, -2);
     virBufferAdd(&buf, testStatusXMLSuffix, -1);
 
@@ -113,7 +114,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     /* construct the expect string */
     virBufferAdd(&buf, testStatusXMLPrefix, -1);
     virBufferAdjustIndent(&buf, 2);
-    virBufferAddStr(&buf, data->outActiveFile);
+    virBufferAddStr(&buf, outActiveFile);
     virBufferAdjustIndent(&buf, -2);
     virBufferAdd(&buf, testStatusXMLSuffix, -1);
 
@@ -158,6 +159,8 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     VIR_FREE(expect);
     VIR_FREE(actual);
     VIR_FREE(source);
+    VIR_FREE(inFile);
+    VIR_FREE(outActiveFile);
     return ret;
 }
 
@@ -166,13 +169,8 @@ static void
 testInfoFree(struct testInfo *info)
 {
     VIR_FREE(info->inName);
-    VIR_FREE(info->inFile);
-
     VIR_FREE(info->outActiveName);
-    VIR_FREE(info->outActiveFile);
-
     VIR_FREE(info->outInactiveName);
-    VIR_FREE(info->outInactiveFile);
 }
 
 
@@ -184,9 +182,6 @@ testInfoSet(struct testInfo *info,
 {
     if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
                     abs_srcdir, name) < 0)
-        goto error;
-
-    if (virtTestLoadFile(info->inName, &info->inFile) < 0)
         goto error;
 
     if (when & WHEN_INACTIVE) {
@@ -208,9 +203,6 @@ testInfoSet(struct testInfo *info,
             if (VIR_STRDUP(info->outInactiveName, info->inName) < 0)
                 goto error;
         }
-
-        if (virtTestLoadFile(info->outInactiveName, &info->outInactiveFile) < 0)
-            goto error;
     }
 
     if (when & WHEN_ACTIVE) {
@@ -233,8 +225,6 @@ testInfoSet(struct testInfo *info,
                 goto error;
         }
 
-        if (virtTestLoadFile(info->outActiveName, &info->outActiveFile) < 0)
-            goto error;
     }
 
     return 0;
