@@ -1617,6 +1617,60 @@
 {
     "return": [
         {
+             "name": "command_serr_enable",
+             "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "class",
+            "type": "hex32"
+        },
+        {
+            "name": "event_idx",
+            "type": "on/off"
+        },
+        {
+            "name": "indirect_desc",
+            "type": "on/off"
+        }
+    ],
+    "id": "libvirt-33"
+}
+
+{
+    "id": "libvirt-34",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'virtio-balloon-ccw' not found"
+    }
+}
+
+{
+    "id": "libvirt-35",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'virtio-balloon-device' not found"
+    }
+}
+
+{
+    "return": [
+        {
             "name": "xenpv"
         },
         {
@@ -1658,7 +1712,7 @@
             "name": "none"
         }
     ],
-    "id": "libvirt-33"
+    "id": "libvirt-36"
 }
 
 {
@@ -1730,7 +1784,7 @@
             "name": "Opteron_G4"
         }
     ],
-    "id": "libvirt-34"
+    "id": "libvirt-37"
 }
 
 {
@@ -1738,11 +1792,11 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-35"
+    "id": "libvirt-38"
 }
 
 {
-    "id": "libvirt-36",
+    "id": "libvirt-39",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-models has not been found"
@@ -1750,7 +1804,7 @@
 }
 
 {
-    "id": "libvirt-37",
+    "id": "libvirt-40",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-types has not been found"
@@ -1758,7 +1812,7 @@
 }
 
 {
-    "id": "libvirt-38",
+    "id": "libvirt-41",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-command-line-options has not been found"
@@ -1772,5 +1826,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-39"
+    "id": "libvirt-42"
 }

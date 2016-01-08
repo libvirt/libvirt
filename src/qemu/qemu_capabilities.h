@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.h: QEMU capabilities generation
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -341,6 +341,8 @@ typedef enum {
 
     /* 210 */
     QEMU_CAPS_VSERPORT_CHANGE, /* VSERPORT_CHANGE event */
+    QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE, /* virtio-balloon-{device,pci,ccw}.
+                                           * deflate-on-oom */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

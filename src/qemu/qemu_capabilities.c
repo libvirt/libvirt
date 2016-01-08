@@ -1,7 +1,7 @@
 /*
  * qemu_capabilities.c: QEMU capabilities generation
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -313,6 +313,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "ich9-disable-s4",
 
               "vserport-change-event", /* 210 */
+              "virtio-balloon-pci.deflate-on-oom",
     );
 
 
@@ -1568,6 +1569,10 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-input-host-pci", QEMU_CAPS_VIRTIO_INPUT_HOST },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
+    { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE },
+};
+
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
     { "multifunction", QEMU_CAPS_PCI_MULTIFUNCTION },
     { "bootindex", QEMU_CAPS_BOOTINDEX },
@@ -1717,6 +1722,12 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
     { "ICH9-LPC", virQEMUCapsObjectPropsICH9,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsICH9) },
+    { "virtio-balloon-pci", virQEMUCapsObjectPropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon) },
+    { "virtio-balloon-ccw", virQEMUCapsObjectPropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon) },
+    { "virtio-balloon-device", virQEMUCapsObjectPropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon) },
 };
 
 

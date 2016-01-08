@@ -2844,6 +2844,153 @@
 {
   "return": [
     {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "class",
+      "type": "uint32"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest-stats-polling-interval",
+      "type": "int"
+    },
+    {
+      "name": "guest-stats",
+      "type": "guest statistics"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-balloon-device>"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "deflate-on-oom",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-34"
+}
+
+{
+  "id": "libvirt-35",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-balloon-ccw' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest-stats-polling-interval",
+      "type": "int"
+    },
+    {
+      "name": "guest-stats",
+      "type": "guest statistics"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "deflate-on-oom",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-36"
+}
+
+{
+  "return": [
+    {
       "name": "pc-i440fx-2.4",
       "is-default": true,
       "cpu-max": 255,
@@ -2967,7 +3114,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-37"
 }
 
 {
@@ -3057,7 +3204,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-38"
 }
 
 {
@@ -3065,21 +3212,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-36"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-41"
 }
 
 {
@@ -4087,7 +4234,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-42"
 }
 
 {
@@ -4117,5 +4264,5 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-43"
 }
