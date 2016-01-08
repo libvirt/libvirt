@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -592,7 +592,8 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                              tb_port[IFLA_PORT_VF] ?
                              *(uint32_t *)RTA_DATA(tb_port[IFLA_PORT_VF]) : -1,
                              uuidstr);
-                }                goto cleanup;
+                }
+                goto cleanup;
             }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
