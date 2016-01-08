@@ -166,4 +166,6 @@ int qemuProcessSetupVcpu(virDomainObjPtr vm,
 int qemuProcessSetupIOThread(virDomainObjPtr vm,
                              virDomainIOThreadIDDefPtr iothread);
 
+int qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm);
 #endif /* __QEMU_PROCESS_H__ */

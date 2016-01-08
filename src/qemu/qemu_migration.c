@@ -5711,6 +5711,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     unsigned short port;
     unsigned long long timeReceived = 0;
     virObjectEventPtr event;
+    int rc;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -5778,6 +5779,20 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 
     if (qemuMigrationStopNBDServer(driver, vm, mig) < 0)
         goto endjob;
+
+    if (qemuRefreshVirtioChannelState(driver, vm) < 0)
+        goto endjob;
+
+    if ((rc = qemuConnectAgent(driver, vm)) < 0) {
+        if (rc == -2)
+            goto endjob;
+
+        VIR_WARN("Cannot connect to QEMU guest agent for %s",
+                 vm->def->name);
+        virResetLastError();
+        priv->agentError = true;
+    }
+
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (qemuMigrationPersist(driver, vm, mig, !v3proto) < 0) {

@@ -208,6 +208,15 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
     if (!config)
         return 0;
 
+    if (priv->agent)
+        return 0;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VSERPORT_CHANGE) &&
+        config->state != VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
+        VIR_DEBUG("Deferring connecting to guest agent");
+        return 0;
+    }
+
     if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
                                                vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for agent for %s"),
@@ -1887,9 +1896,9 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuProcessReconnectRefreshChannelVirtioState(virQEMUDriverPtr driver,
-                                              virDomainObjPtr vm)
+int
+qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr info = NULL;
@@ -3371,17 +3380,6 @@ qemuProcessReconnect(void *opaque)
     if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, NULL) < 0)
         goto error;
 
-    /* Failure to connect to agent shouldn't be fatal */
-    if ((ret = qemuConnectAgent(driver, obj)) < 0) {
-        if (ret == -2)
-            goto error;
-
-        VIR_WARN("Cannot connect to QEMU guest agent for %s",
-                 obj->def->name);
-        virResetLastError();
-        priv->agentError = true;
-    }
-
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
 
@@ -3468,7 +3466,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainCheckEjectableMedia(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
-    if (qemuProcessReconnectRefreshChannelVirtioState(driver, obj) < 0)
+    if (qemuRefreshVirtioChannelState(driver, obj) < 0)
         goto error;
 
     if (qemuProcessRefreshBalloonState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
@@ -3479,6 +3477,17 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
         goto error;
+
+    /* Failure to connect to agent shouldn't be fatal */
+    if ((ret = qemuConnectAgent(driver, obj)) < 0) {
+        if (ret == -2)
+            goto error;
+
+        VIR_WARN("Cannot connect to QEMU guest agent for %s",
+                 obj->def->name);
+        virResetLastError();
+        priv->agentError = true;
+    }
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, obj, driver->caps) < 0)
