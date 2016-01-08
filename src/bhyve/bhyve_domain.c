@@ -60,6 +60,7 @@ virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks = {
 static int
 bhyveDomainDefPostParse(virDomainDefPtr def,
                         virCapsPtr caps ATTRIBUTE_UNUSED,
+                        unsigned int parseFlags ATTRIBUTE_UNUSED,
                         void *opaque ATTRIBUTE_UNUSED)
 {
     /* Add an implicit PCI root controller */
@@ -78,6 +79,7 @@ static int
 bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                               const virDomainDef *def ATTRIBUTE_UNUSED,
                               virCapsPtr caps ATTRIBUTE_UNUSED,
+                              unsigned int parseFlags ATTRIBUTE_UNUSED,
                               void *opaque ATTRIBUTE_UNUSED)
 {
     if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)

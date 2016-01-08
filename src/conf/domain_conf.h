@@ -2439,12 +2439,14 @@ typedef virDomainXMLOption *virDomainXMLOptionPtr;
  * overall domain defaults.  */
 typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
                                              virCapsPtr caps,
+                                             unsigned int parseFlags,
                                              void *opaque);
 /* Called once per device, for adjusting per-device settings while
  * leaving the overall domain otherwise unchanged.  */
 typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
                                                    const virDomainDef *def,
                                                    virCapsPtr caps,
+                                                   unsigned int parseFlags,
                                                    void *opaque);
 
 typedef struct _virDomainDefParserConfig virDomainDefParserConfig;

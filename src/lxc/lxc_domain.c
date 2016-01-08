@@ -241,6 +241,7 @@ virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
 static int
 virLXCDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps,
+                         unsigned int parseFlags ATTRIBUTE_UNUSED,
                          void *opaque ATTRIBUTE_UNUSED)
 {
     /* check for emulator and create a default one if needed */
@@ -260,6 +261,7 @@ static int
 virLXCDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                                const virDomainDef *def ATTRIBUTE_UNUSED,
                                virCapsPtr caps ATTRIBUTE_UNUSED,
+                               unsigned int parseFlags ATTRIBUTE_UNUSED,
                                void *opaque ATTRIBUTE_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&

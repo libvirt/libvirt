@@ -47,6 +47,7 @@ static int
 xenapiDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                                const virDomainDef *def,
                                virCapsPtr caps ATTRIBUTE_UNUSED,
+                               unsigned int parseFlags ATTRIBUTE_UNUSED,
                                void *opaque ATTRIBUTE_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
@@ -75,6 +76,7 @@ xenapiDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 static int
 xenapiDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
+                         unsigned int parseFlags ATTRIBUTE_UNUSED,
                          void *opaque ATTRIBUTE_UNUSED)
 {
     /* memory hotplug tunables are not supported by this driver */

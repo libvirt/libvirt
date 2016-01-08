@@ -1230,6 +1230,7 @@ qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
+                       unsigned int parseFlags ATTRIBUTE_UNUSED,
                        void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -1305,6 +1306,7 @@ static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                             unsigned int parseFlags ATTRIBUTE_UNUSED,
                              void *opaque)
 {
     virQEMUDriverPtr driver = opaque;

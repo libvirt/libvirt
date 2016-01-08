@@ -4022,6 +4022,7 @@ static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
                                     virCapsPtr caps ATTRIBUTE_UNUSED,
+                                    unsigned int parseFlags ATTRIBUTE_UNUSED,
                                     virDomainXMLOptionPtr xmlopt)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
@@ -4155,18 +4156,19 @@ static int
 virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                             const virDomainDef *def,
                             virCapsPtr caps,
+                            unsigned int flags,
                             virDomainXMLOptionPtr xmlopt)
 {
     int ret;
 
     if (xmlopt->config.devicesPostParseCallback) {
-        ret = xmlopt->config.devicesPostParseCallback(dev, def, caps,
+        ret = xmlopt->config.devicesPostParseCallback(dev, def, caps, flags,
                                                       xmlopt->config.priv);
         if (ret < 0)
             return ret;
     }
 
-    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps, xmlopt)) < 0)
+    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps, flags, xmlopt)) < 0)
         return ret;
 
     return 0;
@@ -4177,6 +4179,7 @@ struct virDomainDefPostParseDeviceIteratorData {
     virDomainDefPtr def;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
+    unsigned int parseFlags;
 };
 
 
@@ -4187,7 +4190,8 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                     void *opaque)
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
-    return virDomainDeviceDefPostParse(dev, data->def, data->caps, data->xmlopt);
+    return virDomainDeviceDefPostParse(dev, data->def, data->caps,
+                                       data->parseFlags, data->xmlopt);
 }
 
 
@@ -4202,11 +4206,12 @@ virDomainDefPostParse(virDomainDefPtr def,
         .def = def,
         .caps = caps,
         .xmlopt = xmlopt,
+        .parseFlags = parseFlags,
     };
 
     /* call the domain config callback */
     if (xmlopt->config.domainPostParseCallback) {
-        ret = xmlopt->config.domainPostParseCallback(def, caps,
+        ret = xmlopt->config.domainPostParseCallback(def, caps, parseFlags,
                                                      xmlopt->config.priv);
         if (ret < 0)
             return ret;
@@ -12644,7 +12649,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     }
 
     /* callback to fill driver specific device aspects */
-    if (virDomainDeviceDefPostParse(dev, def, caps, xmlopt) < 0)
+    if (virDomainDeviceDefPostParse(dev, def, caps, flags, xmlopt) < 0)
         goto error;
 
  cleanup:
