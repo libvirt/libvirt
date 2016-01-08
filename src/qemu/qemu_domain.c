@@ -1306,7 +1306,7 @@ static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                             unsigned int parseFlags ATTRIBUTE_UNUSED,
+                             unsigned int parseFlags,
                              void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -1381,8 +1381,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ARCH_IS_S390(def->os.arch))
         dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
 
-    /* clear auto generated unix socket path */
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+    /* clear auto generated unix socket path for inactive definitions */
+    if ((parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
+        dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
         dev->data.chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
