@@ -345,17 +345,31 @@ mymain(void)
     DO_TEST("hugepages-pages3");
     DO_TEST("hugepages-shared");
     DO_TEST("nosharepages");
+    DO_TEST("restore-v2");
+    DO_TEST("migrate");
+    DO_TEST("qemu-ns-no-env");
     DO_TEST("disk-aio");
     DO_TEST("disk-cdrom");
+    DO_TEST("disk-cdrom-empty");
     DO_TEST("disk-floppy");
     DO_TEST("disk-many");
     DO_TEST("disk-xenvbd");
     DO_TEST("disk-usb");
     DO_TEST("disk-virtio");
     DO_TEST("floppy-drive-fat");
+    DO_TEST("disk-drive-boot-disk");
+    DO_TEST("disk-drive-boot-cdrom");
+    DO_TEST("disk-drive-error-policy-stop");
+    DO_TEST("disk-drive-error-policy-enospace");
+    DO_TEST("disk-drive-error-policy-wreport-rignore");
     DO_TEST("disk-drive-fat");
     DO_TEST("disk-drive-fmt-qcow");
     DO_TEST("disk-drive-copy-on-read");
+    DO_TEST("disk-drive-cache-v2-wt");
+    DO_TEST("disk-drive-cache-v2-wb");
+    DO_TEST("disk-drive-cache-v2-none");
+    DO_TEST("disk-drive-cache-directsync");
+    DO_TEST("disk-drive-cache-unsafe");
     DO_TEST("disk-drive-network-nbd");
     DO_TEST("disk-drive-network-nbd-export");
     DO_TEST("disk-drive-network-nbd-ipv6");
@@ -363,6 +377,12 @@ mymain(void)
     DO_TEST("disk-drive-network-nbd-unix");
     DO_TEST("disk-drive-network-iscsi");
     DO_TEST("disk-drive-network-iscsi-auth");
+    DO_TEST("disk-drive-network-gluster");
+    DO_TEST("disk-drive-network-rbd");
+    DO_TEST("disk-drive-network-rbd-auth");
+    DO_TEST("disk-drive-network-rbd-ipv6");
+    DO_TEST("disk-drive-network-rbd-ceph-env");
+    DO_TEST("disk-drive-network-sheepdog");
     DO_TEST("disk-scsi-device");
     DO_TEST("disk-scsi-vscsi");
     DO_TEST("disk-scsi-virtio-scsi");
@@ -385,6 +405,7 @@ mymain(void)
     DO_TEST("graphics-spice");
     DO_TEST("graphics-spice-compression");
     DO_TEST("graphics-spice-qxl-vga");
+    DO_TEST("nographics-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
     DO_TEST("misc-acpi");
@@ -392,6 +413,7 @@ mymain(void)
     DO_TEST("misc-disable-suspends");
     DO_TEST("misc-enable-s4");
     DO_TEST("misc-no-reboot");
+    DO_TEST("misc-uuid");
     DO_TEST("net-vhostuser");
     DO_TEST("net-user");
     DO_TEST("net-virtio");
@@ -406,6 +428,7 @@ mymain(void)
     DO_TEST("net-openvswitch");
     DO_TEST("sound");
     DO_TEST("sound-device");
+    DO_TEST("watchdog");
     DO_TEST("net-bandwidth");
     DO_TEST("net-bandwidth2");
 

@@ -1268,6 +1268,7 @@ mymain(void)
                        QEMU_CAPS_OBJECT_MEMORY_RAM);
 
     DO_TEST("qemu-ns", NONE);
+    DO_TEST("qemu-ns-no-env", NONE);
 
     DO_TEST("smp", QEMU_CAPS_SMP_TOPOLOGY);
 
