@@ -203,7 +203,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     qemuAgentPtr agent = NULL;
-    virDomainChrSourceDefPtr config = qemuFindAgentConfig(vm->def);
+    virDomainChrDefPtr config = qemuFindAgentConfig(vm->def);
 
     if (!config)
         return 0;
@@ -223,7 +223,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
     virObjectUnlock(vm);
 
     agent = qemuAgentOpen(vm,
-                          config,
+                          &config->source,
                           &agentCallbacks);
 
     virObjectLock(vm);

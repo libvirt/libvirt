@@ -3704,10 +3704,9 @@ qemuDomainSupportsBlockJobs(virDomainObjPtr vm,
  * Returns the pointer to the channel definition that is used to access the
  * guest agent if the agent is configured or NULL otherwise.
  */
-virDomainChrSourceDefPtr
+virDomainChrDefPtr
 qemuFindAgentConfig(virDomainDefPtr def)
 {
-    virDomainChrSourceDefPtr config = NULL;
     size_t i;
 
     for (i = 0; i < def->nchannels; i++) {
@@ -3716,13 +3715,11 @@ qemuFindAgentConfig(virDomainDefPtr def)
         if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
             continue;
 
-        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0")) {
-            config = &channel->source;
-            break;
-        }
+        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0"))
+            return channel;
     }
 
-    return config;
+    return NULL;
 }
 
 

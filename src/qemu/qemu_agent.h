@@ -44,7 +44,7 @@ struct _qemuAgentCallbacks {
 
 
 qemuAgentPtr qemuAgentOpen(virDomainObjPtr vm,
-                           virDomainChrSourceDefPtr config,
+                           const virDomainChrSourceDef *config,
                            qemuAgentCallbacksPtr cb);
 
 void qemuAgentClose(qemuAgentPtr mon);

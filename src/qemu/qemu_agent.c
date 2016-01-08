@@ -710,7 +710,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque)
 
 qemuAgentPtr
 qemuAgentOpen(virDomainObjPtr vm,
-              virDomainChrSourceDefPtr config,
+              const virDomainChrSourceDef *config,
               qemuAgentCallbacksPtr cb)
 {
     qemuAgentPtr mon;
