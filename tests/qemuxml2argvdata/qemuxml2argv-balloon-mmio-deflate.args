@@ -1,0 +1,25 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name aarch64test \
+-S \
+-M virt \
+-cpu cortex-a53 \
+-m 1024 \
+-smp 1 \
+-uuid 496d7ea8-9739-544b-4ebd-ef08be936e8b \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-boot c \
+-kernel /aarch64.kernel \
+-initrd /aarch64.initrd \
+-append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
+-dtb /aarch64.dtb \
+-usb \
+-device virtio-balloon-device,id=balloon0,deflate-on-oom=on

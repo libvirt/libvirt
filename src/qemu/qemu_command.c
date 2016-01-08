@@ -5758,6 +5758,17 @@ qemuBuildMemballoonDevStr(virDomainDefPtr def,
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
         goto error;
 
+    if (dev->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("deflate-on-oom is not supported by this QEMU binary"));
+            goto error;
+        }
+
+        virBufferAsprintf(&buf, ",deflate-on-oom=%s",
+                          virTristateSwitchTypeToString(dev->autodeflate));
+    }
+
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
