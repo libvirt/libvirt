@@ -3173,9 +3173,13 @@ qemuProcessRecoverMigration(virQEMUDriverPtr driver,
 
         case QEMU_MIGRATION_PHASE_FINISH3:
             /* migration finished, we started resuming the domain but didn't
-             * confirm success or failure yet; killing it seems safest */
-            VIR_DEBUG("Killing migrated domain %s", vm->def->name);
-            return -1;
+             * confirm success or failure yet; killing it seems safest unless
+             * we already started guest CPUs */
+            if (state != VIR_DOMAIN_RUNNING) {
+                VIR_DEBUG("Killing migrated domain %s", vm->def->name);
+                return -1;
+            }
+            break;
         }
     } else if (job == QEMU_ASYNC_JOB_MIGRATION_OUT) {
         switch (phase) {
