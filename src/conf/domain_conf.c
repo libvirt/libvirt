@@ -3666,21 +3666,9 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
 
 
 static int
-virDomainDefPostParseInternal(virDomainDefPtr def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags)
+virDomainDefAddConsoleCompat(virDomainDefPtr def)
 {
     size_t i;
-
-    /* verify init path for container based domains */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("init binary must be specified"));
-        return -1;
-    }
-
-    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
-        return -1;
 
     /*
      * Some really crazy backcompat stuff for consoles
@@ -3773,6 +3761,30 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
     }
+
+    return 0;
+}
+
+
+static int
+virDomainDefPostParseInternal(virDomainDefPtr def,
+                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                              unsigned int parseFlags)
+{
+    size_t i;
+
+    /* verify init path for container based domains */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("init binary must be specified"));
+        return -1;
+    }
+
+    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
+        return -1;
+
+    if (virDomainDefAddConsoleCompat(def) < 0)
+        return -1;
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
         return -1;
