@@ -75,6 +75,9 @@
 #define VIRSH_COMMON_OPT_DOMAIN_CONFIG                 \
     VIRSH_COMMON_OPT_CONFIG(N_("affect next boot"))    \
 
+#define VIRSH_COMMON_OPT_DOMAIN_LIVE                   \
+    VIRSH_COMMON_OPT_LIVE(N_("affect running domain")) \
+
 static virDomainPtr
 virshLookupDomainInternal(vshControl *ctl,
                           const char *cmdname,
@@ -225,10 +228,7 @@ static const vshCmdOptDef opts_attach_device[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -382,10 +382,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -836,10 +833,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -1279,10 +1273,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .help = N_("I/O size in bytes")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -1530,10 +1521,7 @@ static const vshCmdOptDef opts_blkiotune[] = {
      .help = N_("per-device bytes wrote per second, in the form of /path/to/device,write_bytes_sec,...")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -3216,10 +3204,7 @@ static const vshCmdOptDef opts_domiftune[] = {
      .help = N_("control domain's outgoing traffics")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -4819,10 +4804,7 @@ static const vshCmdOptDef opts_schedinfo[] = {
      .help = N_("get/set current scheduler info")
     },
     VIRSH_COMMON_OPT_CONFIG(N_("get/set value to be used on next boot")),
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("get/set value from running domain")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("get/set value from running domain")),
     {.name = "set",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_NONE,
@@ -5130,10 +5112,7 @@ static const vshCmdOptDef opts_dump[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("where to dump the core")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("perform a live core dump if supported")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("perform a live core dump if supported")),
     {.name = "crash",
      .type = VSH_OT_BOOL,
      .help = N_("crash the domain after core dump")
@@ -6094,10 +6073,7 @@ static const vshCmdOptDef opts_vcpucount[] = {
      .type = VSH_OT_BOOL,
      .help = N_("get number of currently active vcpus")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("get value from running domain")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("get value from running domain")),
     VIRSH_COMMON_OPT_CONFIG(N_("get value to be used on next boot")),
     {.name = "current",
      .type = VSH_OT_BOOL,
@@ -6415,10 +6391,7 @@ static const vshCmdOptDef opts_vcpupin[] = {
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -6616,10 +6589,7 @@ static const vshCmdOptDef opts_emulatorpin[] = {
      .help = N_("host cpu number(s) to set, or omit option to query")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -6730,10 +6700,7 @@ static const vshCmdOptDef opts_setvcpus[] = {
      .help = N_("set maximum limit on next boot")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -6815,10 +6782,7 @@ static const vshCmdInfo info_iothreadinfo[] = {
 static const vshCmdOptDef opts_iothreadinfo[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -6907,10 +6871,7 @@ static const vshCmdOptDef opts_iothreadpin[] = {
      .help = N_("host cpu number(s) to set")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -6990,10 +6951,7 @@ static const vshCmdOptDef opts_iothreadadd[] = {
      .help = N_("iothread for the new IOThread")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -7061,10 +7019,7 @@ static const vshCmdOptDef opts_iothreaddel[] = {
      .help = N_("iothread_id for the IOThread to delete")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -7745,10 +7700,7 @@ static const vshCmdInfo info_desc[] = {
 
 static const vshCmdOptDef opts_desc[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("modify/get running state")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("modify/get running state")),
     VIRSH_COMMON_OPT_CONFIG(N_("modify/get persistent configuration")),
     {.name = "current",
      .type = VSH_OT_BOOL,
@@ -7922,10 +7874,7 @@ static const vshCmdOptDef opts_metadata[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("URI of the namespace")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("modify/get running state")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("modify/get running state")),
     VIRSH_COMMON_OPT_CONFIG(N_("modify/get persistent configuration")),
     {.name = "current",
      .type = VSH_OT_BOOL,
@@ -8314,10 +8263,7 @@ static const vshCmdOptDef opts_setmem[] = {
      .help = N_("new memory size, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -8401,10 +8347,7 @@ static const vshCmdOptDef opts_setmaxmem[] = {
      .help = N_("new maximum memory size, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -8502,10 +8445,7 @@ static const vshCmdOptDef opts_memtune[] = {
      .help = N_("Min guaranteed memory, as scaled integer (default KiB)")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -8678,10 +8618,7 @@ static const vshCmdOptDef opts_numatune[] = {
      .help = N_("NUMA node selections to set")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -9721,10 +9658,7 @@ static const vshCmdOptDef opts_migrate[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("live migration")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("live migration")),
     {.name = "offline",
      .type = VSH_OT_BOOL,
      .help = N_("offline migration")
@@ -10799,10 +10733,7 @@ static const vshCmdOptDef opts_detach_device[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -10890,10 +10821,7 @@ static const vshCmdOptDef opts_update_device[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -10986,10 +10914,7 @@ static const vshCmdOptDef opts_detach_interface[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -11392,10 +11317,7 @@ static const vshCmdOptDef opts_detach_disk[] = {
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect running domain")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
     {.name = "current",
      .type = VSH_OT_BOOL,
      .help = N_("affect current domain")
@@ -12366,10 +12288,7 @@ static const vshCmdOptDef opts_change_media[] = {
      .help = N_("can be either or both of --live and --config, "
                 "depends on implementation of hypervisor driver")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("alter live configuration of running domain")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("alter live configuration of running domain")),
     VIRSH_COMMON_OPT_CONFIG(N_("alter persistent configuration, effect "
                                "observed on next boot")),
     {.name = "force",

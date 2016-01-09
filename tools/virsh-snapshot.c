@@ -163,10 +163,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("require atomic operation")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("take a live snapshot")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("take a live snapshot")),
     {.name = NULL}
 };
 
@@ -364,10 +361,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
      .type = VSH_OT_BOOL,
      .help = N_("require atomic operation")
     },
-    {.name = "live",
-     .type = VSH_OT_BOOL,
-     .help = N_("take a live snapshot")
-    },
+    VIRSH_COMMON_OPT_LIVE(N_("take a live snapshot")),
     {.name = "memspec",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
