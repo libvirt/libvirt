@@ -22,6 +22,8 @@
  * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
+%#include "virxdrdefs.h"
+
 /*----- Data types. -----*/
 
 /* Length of long, but not unbounded, strings.
