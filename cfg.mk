@@ -1095,7 +1095,7 @@ test-wrap-argv:
 	    res=$$? ; \
 	    rm $${file}-t ; \
 	    test $$res == 0 || { \
-	      echo "$(ME): Incorrect line wrapping in $$file." 1>&2; \
+	      echo "$(ME): Incorrect line wrapping in $$file" 1>&2; \
               echo "$(ME): Use test-wrap-argv.pl to wrap test data files" 1>&2; \
 	      exit 1; } \
 	done
