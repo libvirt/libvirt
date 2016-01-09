@@ -1,7 +1,7 @@
 /*
  * virsh-secret.c: Commands to manage secret
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -73,11 +73,7 @@ static const vshCmdInfo info_secret_define[] = {
 };
 
 static const vshCmdOptDef opts_secret_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing secret attributes in XML")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing secret attributes in XML")),
     {.name = NULL}
 };
 

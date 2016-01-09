@@ -1,7 +1,7 @@
 /*
  * virsh-nwfilter.c: Commands to manage network filters
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -85,11 +85,8 @@ static const vshCmdInfo info_nwfilter_define[] = {
 };
 
 static const vshCmdOptDef opts_nwfilter_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML network filter description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML network "
+                             "filter description")),
     {.name = NULL}
 };
 

@@ -1,7 +1,7 @@
 /*
  * virsh-volume.c: Commands to manage storage volume
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -362,11 +362,7 @@ static const vshCmdInfo info_vol_create[] = {
 
 static const vshCmdOptDef opts_vol_create[] = {
     VIRSH_COMMON_OPT_POOL_NAME,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML vol description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML vol description")),
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
@@ -428,11 +424,7 @@ static const vshCmdInfo info_vol_create_from[] = {
 
 static const vshCmdOptDef opts_vol_create_from[] = {
     VIRSH_COMMON_OPT_POOL_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML vol description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML vol description")),
     {.name = "vol",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -653,11 +645,7 @@ static const vshCmdOptDef opts_vol_upload[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
@@ -764,11 +752,7 @@ static const vshCmdOptDef opts_vol_download[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,

@@ -94,6 +94,13 @@
      .help = _helpstr                                             \
     }                                                             \
 
+# define VIRSH_COMMON_OPT_FILE(_helpstr)                          \
+    {.name = "file",                                              \
+     .type = VSH_OT_DATA,                                         \
+     .flags = VSH_OFLAG_REQ,                                      \
+     .help = _helpstr                                             \
+    }                                                             \
+
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
 

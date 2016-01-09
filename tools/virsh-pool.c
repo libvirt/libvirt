@@ -36,13 +36,6 @@
 #define VIRSH_COMMON_OPT_POOL_FULL                            \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
 
-#define VIRSH_COMMON_OPT_POOL_FILE                            \
-    {.name = "file",                                          \
-     .type = VSH_OT_DATA,                                     \
-     .flags = VSH_OFLAG_REQ,                                  \
-     .help = N_("file containing an XML pool description")    \
-    }                                                         \
-
 #define VIRSH_COMMON_OPT_POOL_BUILD                           \
     {.name = "build",                                         \
      .type = VSH_OT_BOOL,                                     \
@@ -237,7 +230,7 @@ static const vshCmdInfo info_pool_create[] = {
 };
 
 static const vshCmdOptDef opts_pool_create[] = {
-    VIRSH_COMMON_OPT_POOL_FILE,
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML pool description")),
     VIRSH_COMMON_OPT_POOL_BUILD,
     VIRSH_COMMON_OPT_POOL_NO_OVERWRITE,
     VIRSH_COMMON_OPT_POOL_OVERWRITE,
@@ -480,7 +473,7 @@ static const vshCmdInfo info_pool_define[] = {
 };
 
 static const vshCmdOptDef opts_pool_define[] = {
-    VIRSH_COMMON_OPT_POOL_FILE,
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML pool description")),
 
     {.name = NULL}
 };

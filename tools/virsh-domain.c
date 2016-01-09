@@ -224,11 +224,7 @@ static const vshCmdInfo info_attach_device[] = {
 
 static const vshCmdOptDef opts_attach_device[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("XML file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("XML file")),
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
@@ -4133,11 +4129,7 @@ static const vshCmdInfo info_save[] = {
 
 static const vshCmdOptDef opts_save[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("where to save the data")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("where to save the data")),
     {.name = "bypass-cache",
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when saving")
@@ -4394,11 +4386,7 @@ static const vshCmdInfo info_save_image_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_save_image_dumpxml[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("saved state file to read")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("saved state file to read")),
     {.name = "security-info",
      .type = VSH_OT_BOOL,
      .help = N_("include security sensitive information in XML dump")
@@ -4447,11 +4435,7 @@ static const vshCmdInfo info_save_image_define[] = {
 };
 
 static const vshCmdOptDef opts_save_image_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("saved state file to modify")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("saved state file to modify")),
     {.name = "xml",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -4519,11 +4503,7 @@ static const vshCmdInfo info_save_image_edit[] = {
 };
 
 static const vshCmdOptDef opts_save_image_edit[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("saved state file to edit")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("saved state file to edit")),
     {.name = "running",
      .type = VSH_OT_BOOL,
      .help = N_("set domain to be running on restore")
@@ -5008,11 +4988,7 @@ static const vshCmdInfo info_restore[] = {
 };
 
 static const vshCmdOptDef opts_restore[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("the state to restore")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("the state to restore")),
     {.name = "bypass-cache",
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when restoring")
@@ -5089,11 +5065,7 @@ static const vshCmdInfo info_dump[] = {
 
 static const vshCmdOptDef opts_dump[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("where to dump the core")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("where to dump the core")),
     VIRSH_COMMON_OPT_LIVE(N_("perform a live core dump if supported")),
     {.name = "crash",
      .type = VSH_OT_BOOL,
@@ -7038,11 +7010,7 @@ static const vshCmdInfo info_cpu_compare[] = {
 };
 
 static const vshCmdOptDef opts_cpu_compare[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML CPU description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML CPU description")),
     {.name = "error",
      .type = VSH_OT_BOOL,
      .help = N_("report error if CPUs are incompatible")
@@ -7140,11 +7108,7 @@ static const vshCmdInfo info_cpu_baseline[] = {
 };
 
 static const vshCmdOptDef opts_cpu_baseline[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing XML CPU descriptions")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing XML CPU descriptions")),
     {.name = "features",
      .type = VSH_OT_BOOL,
      .help = N_("Show features that are part of the CPU model type")
@@ -7442,11 +7406,7 @@ static const vshCmdInfo info_create[] = {
 };
 
 static const vshCmdOptDef opts_create[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML domain description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML domain description")),
 #ifndef WIN32
     {.name = "console",
      .type = VSH_OT_BOOL,
@@ -7542,11 +7502,7 @@ static const vshCmdInfo info_define[] = {
 };
 
 static const vshCmdOptDef opts_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML domain description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML domain description")),
     {.name = "validate",
      .type = VSH_OT_BOOL,
      .help = N_("validate the XML against the schema")
@@ -10666,11 +10622,7 @@ static const vshCmdInfo info_detach_device[] = {
 
 static const vshCmdOptDef opts_detach_device[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("XML file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("XML file")),
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
@@ -10751,11 +10703,7 @@ static const vshCmdInfo info_update_device[] = {
 
 static const vshCmdOptDef opts_update_device[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("XML file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("XML file")),
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,

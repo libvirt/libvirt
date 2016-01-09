@@ -142,11 +142,7 @@ static const vshCmdInfo info_network_create[] = {
 };
 
 static const vshCmdOptDef opts_network_create[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML network description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML network description")),
     {.name = NULL}
 };
 
@@ -194,11 +190,7 @@ static const vshCmdInfo info_network_define[] = {
 };
 
 static const vshCmdOptDef opts_network_define[] = {
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file containing an XML network description")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML network description")),
     {.name = NULL}
 };
 
