@@ -23,6 +23,13 @@
  *
  */
 
+#define VIRSH_COMMON_OPT_INTERFACE                     \
+    {.name = "interface",                              \
+     .type = VSH_OT_DATA,                              \
+     .flags = VSH_OFLAG_REQ,                           \
+     .help = N_("interface name or MAC address")       \
+    }                                                  \
+
 #include <config.h>
 #include "virsh-interface.h"
 
@@ -100,11 +107,7 @@ static const vshCmdInfo info_interface_edit[] = {
 };
 
 static const vshCmdOptDef opts_interface_edit[] = {
-    {.name = "interface",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("interface name or MAC address")
-    },
+    VIRSH_COMMON_OPT_INTERFACE,
     {.name = NULL}
 };
 
@@ -464,11 +467,7 @@ static const vshCmdInfo info_interface_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_interface_dumpxml[] = {
-    {.name = "interface",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("interface name or MAC address")
-    },
+    VIRSH_COMMON_OPT_INTERFACE,
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
@@ -565,11 +564,7 @@ static const vshCmdInfo info_interface_undefine[] = {
 };
 
 static const vshCmdOptDef opts_interface_undefine[] = {
-    {.name = "interface",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("interface name or MAC address")
-    },
+    VIRSH_COMMON_OPT_INTERFACE,
     {.name = NULL}
 };
 
@@ -608,11 +603,7 @@ static const vshCmdInfo info_interface_start[] = {
 };
 
 static const vshCmdOptDef opts_interface_start[] = {
-    {.name = "interface",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("interface name or MAC address")
-    },
+    VIRSH_COMMON_OPT_INTERFACE,
     {.name = NULL}
 };
 
@@ -651,11 +642,7 @@ static const vshCmdInfo info_interface_destroy[] = {
 };
 
 static const vshCmdOptDef opts_interface_destroy[] = {
-    {.name = "interface",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("interface name or MAC address")
-    },
+    VIRSH_COMMON_OPT_INTERFACE,
     {.name = NULL}
 };
 
