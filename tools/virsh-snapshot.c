@@ -1,7 +1,7 @@
 /*
  * virsh-snapshot.c: Commands to manage domain snapshot
  *
- * Copyright (C) 2005, 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,9 @@
 #include "virstring.h"
 #include "virxml.h"
 #include "conf/snapshot_conf.h"
+
+#define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
 
 /* Helper for snapshot-create and snapshot-create-as */
 static bool
@@ -123,11 +126,7 @@ static const vshCmdInfo info_snapshot_create[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_create[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
      .help = N_("domain snapshot XML")
@@ -328,11 +327,7 @@ static const vshCmdInfo info_snapshot_create_as[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_create_as[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "name",
      .type = VSH_OT_STRING,
      .help = N_("name of snapshot")
@@ -524,11 +519,7 @@ static const vshCmdInfo info_snapshot_edit[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_edit[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
@@ -645,11 +636,7 @@ static const vshCmdInfo info_snapshot_current[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_current[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "name",
      .type = VSH_OT_BOOL,
      .help = N_("list the name, rather than the full xml")
@@ -882,11 +869,7 @@ static const vshCmdInfo info_snapshot_info[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_info[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
@@ -1441,11 +1424,7 @@ static const vshCmdInfo info_snapshot_list[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_list[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "parent",
      .type = VSH_OT_BOOL,
      .help = N_("add a column showing parent snapshot")
@@ -1705,11 +1684,7 @@ static const vshCmdInfo info_snapshot_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_dumpxml[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -1773,11 +1748,7 @@ static const vshCmdInfo info_snapshot_parent[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_parent[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
      .help = N_("find parent of snapshot name")
@@ -1841,11 +1812,7 @@ static const vshCmdInfo info_snapshot_revert[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_revert[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
@@ -1934,11 +1901,7 @@ static const vshCmdInfo info_snapshot_delete[] = {
 };
 
 static const vshCmdOptDef opts_snapshot_delete[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")

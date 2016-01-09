@@ -1,7 +1,7 @@
 /*
  * virsh-domain-monitor.c: Commands to monitor domain status
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,9 @@
 #include "virsh-domain.h"
 #include "virxml.h"
 #include "virstring.h"
+
+#define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
 
 VIR_ENUM_DECL(virshDomainIOError)
 VIR_ENUM_IMPL(virshDomainIOError,
@@ -281,11 +284,7 @@ static const vshCmdInfo info_dommemstat[] = {
 };
 
 static const vshCmdOptDef opts_dommemstat[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "period",
      .type = VSH_OT_INT,
      .flags = VSH_OFLAG_REQ_OPT,
@@ -402,11 +401,7 @@ static const vshCmdInfo info_domblkinfo[] = {
 };
 
 static const vshCmdOptDef opts_domblkinfo[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -457,11 +452,7 @@ static const vshCmdInfo info_domblklist[] = {
 };
 
 static const vshCmdOptDef opts_domblklist[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("get inactive rather than running configuration")
@@ -579,11 +570,7 @@ static const vshCmdInfo info_domiflist[] = {
 };
 
 static const vshCmdOptDef opts_domiflist[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("get inactive rather than running configuration")
@@ -684,11 +671,7 @@ static const vshCmdInfo info_domif_getlink[] = {
 };
 
 static const vshCmdOptDef opts_domif_getlink[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -799,11 +782,7 @@ static const vshCmdInfo info_domcontrol[] = {
 };
 
 static const vshCmdOptDef opts_domcontrol[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = NULL}
 };
 
@@ -856,11 +835,7 @@ static const vshCmdInfo info_domblkstat[] = {
 };
 
 static const vshCmdOptDef opts_domblkstat[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "device",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
@@ -1046,11 +1021,7 @@ static const vshCmdInfo info_domifstat[] = {
 };
 
 static const vshCmdOptDef opts_domifstat[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -1123,11 +1094,7 @@ static const vshCmdInfo info_domblkerror[] = {
 };
 
 static const vshCmdOptDef opts_domblkerror[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id, or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = NULL}
 };
 
@@ -1188,11 +1155,7 @@ static const vshCmdInfo info_dominfo[] = {
 };
 
 static const vshCmdOptDef opts_dominfo[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = NULL}
 };
 
@@ -1331,11 +1294,7 @@ static const vshCmdInfo info_domstate[] = {
 };
 
 static const vshCmdOptDef opts_domstate[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "reason",
      .type = VSH_OT_BOOL,
      .help = N_("also print reason for the state")
@@ -1387,11 +1346,7 @@ static const vshCmdInfo info_domtime[] = {
 };
 
 static const vshCmdOptDef opts_domtime[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "now",
      .type = VSH_OT_BOOL,
      .help = N_("set to the time of the host running virsh")
@@ -2208,10 +2163,7 @@ static const vshCmdInfo info_domifaddr[] = {
 };
 
 static const vshCmdOptDef opts_domifaddr[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")},
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "interface",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
