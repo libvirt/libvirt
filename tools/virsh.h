@@ -88,6 +88,12 @@
      .help = _helpstr                                             \
     }                                                             \
 
+# define VIRSH_COMMON_OPT_CURRENT(_helpstr)                       \
+    {.name = "current",                                           \
+     .type = VSH_OT_BOOL,                                         \
+     .help = _helpstr                                             \
+    }                                                             \
+
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
 

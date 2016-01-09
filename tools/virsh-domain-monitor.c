@@ -292,10 +292,7 @@ static const vshCmdOptDef opts_dommemstat[] = {
     },
     VIRSH_COMMON_OPT_CONFIG(N_("affect next boot")),
     VIRSH_COMMON_OPT_LIVE(N_("affect running domain")),
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect current domain")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("affect current domain")),
     {.name = NULL}
 };
 

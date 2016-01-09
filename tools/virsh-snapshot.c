@@ -135,10 +135,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("redefine metadata for existing snapshot")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("with redefine, set current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("with redefine, set current snapshot")),
     {.name = "no-metadata",
      .type = VSH_OT_BOOL,
      .help = N_("take snapshot but create no metadata")
@@ -518,10 +515,7 @@ static const vshCmdOptDef opts_snapshot_edit[] = {
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("also set edited snapshot as current")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("also set edited snapshot as current")),
     {.name = "rename",
      .type = VSH_OT_BOOL,
      .help = N_("allow renaming an existing snapshot")
@@ -868,10 +862,7 @@ static const vshCmdOptDef opts_snapshot_info[] = {
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("info on current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("info on current snapshot")),
     {.name = NULL}
 };
 
@@ -1471,10 +1462,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
      .type = VSH_OT_STRING,
      .help = N_("limit list to children of given snapshot")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("limit list to children of current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("limit list to children of current snapshot")),
     {.name = "descendants",
      .type = VSH_OT_BOOL,
      .help = N_("with --from, list all descendants")
@@ -1747,10 +1735,7 @@ static const vshCmdOptDef opts_snapshot_parent[] = {
      .type = VSH_OT_STRING,
      .help = N_("find parent of snapshot name")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("find parent of current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("find parent of current snapshot")),
     {.name = NULL}
 };
 
@@ -1811,10 +1796,7 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("revert to current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("revert to current snapshot")),
     {.name = "running",
      .type = VSH_OT_BOOL,
      .help = N_("after reverting, change state to running")
@@ -1900,10 +1882,7 @@ static const vshCmdOptDef opts_snapshot_delete[] = {
      .type = VSH_OT_STRING,
      .help = N_("snapshot name")
     },
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("delete current snapshot")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("delete current snapshot")),
     {.name = "children",
      .type = VSH_OT_BOOL,
      .help = N_("delete snapshot and all children")

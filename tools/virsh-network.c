@@ -908,10 +908,7 @@ static const vshCmdOptDef opts_network_update[] = {
     },
     VIRSH_COMMON_OPT_CONFIG(N_("affect next network startup")),
     VIRSH_COMMON_OPT_LIVE(N_("affect running network")),
-    {.name = "current",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect current state of network")
-    },
+    VIRSH_COMMON_OPT_CURRENT(N_("affect current state of network")),
     {.name = NULL}
 };
 
