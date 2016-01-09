@@ -1,0 +1,18 @@
+<domain type='qemu'>
+  <name>q35</name>
+  <uuid>56f5055c-1b8d-490c-844a-ad646a1caaaa</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-q35-2.5'>hvm</type>
+    <boot dev='network'/>
+  </os>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
+  <devices>
+    <emulator>/usr/bin/qemu-kvm</emulator>
+  </devices>
+</domain>

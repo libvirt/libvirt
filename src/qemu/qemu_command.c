@@ -9805,26 +9805,42 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, "-no-acpi");
     }
 
+    /* We fall back to PIIX4_PM even for q35, since it's what we did
+       pre-q35-pm support. QEMU starts up fine (with a warning) if
+       mixing PIIX PM and -M q35. Starting to reject things here
+       could mean we refuse to start existing configs in the wild.*/
     if (def->pm.s3) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
+        const char *pm_object = "PIIX4_PM";
+
+        if (qemuDomainMachineIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3)) {
+            pm_object = "ICH9-LPC";
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("setting ACPI S3 not supported"));
             goto error;
         }
+
         virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s3=%d",
-                               def->pm.s3 == VIR_TRISTATE_BOOL_NO);
+        virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
+                               pm_object, def->pm.s3 == VIR_TRISTATE_BOOL_NO);
     }
 
     if (def->pm.s4) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
+        const char *pm_object = "PIIX4_PM";
+
+        if (qemuDomainMachineIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4)) {
+            pm_object = "ICH9-LPC";
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("setting ACPI S4 not supported"));
             goto error;
         }
+
         virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "PIIX4_PM.disable_s4=%d",
-                               def->pm.s4 == VIR_TRISTATE_BOOL_NO);
+        virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
+                               pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
     }
 
     /*
