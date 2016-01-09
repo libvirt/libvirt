@@ -558,6 +558,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (virMutexInit(&driver->lock) < 0)
         return -1;
 
+    driver->securityManager = NULL;
+
     driver->config = virQEMUDriverConfigNew(false);
     if (!driver->config)
         goto error;
