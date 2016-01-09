@@ -76,6 +76,12 @@
      .help = _helpstr                                             \
     }                                                             \
 
+# define VIRSH_COMMON_OPT_CONFIG(_helpstr)                        \
+    {.name = "config",                                            \
+    .type = VSH_OT_BOOL,                                          \
+    .help = _helpstr                                              \
+    }                                                             \
+
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
 

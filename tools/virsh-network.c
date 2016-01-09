@@ -1,7 +1,7 @@
 /*
  * virsh-network.c: Commands to manage network
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -906,10 +906,7 @@ static const vshCmdOptDef opts_network_update[] = {
      .type = VSH_OT_INT,
      .help = N_("which parent object to search through")
     },
-    {.name = "config",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect next network startup")
-    },
+    VIRSH_COMMON_OPT_CONFIG(N_("affect next network startup")),
     {.name = "live",
      .type = VSH_OT_BOOL,
      .help = N_("affect running network")

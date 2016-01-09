@@ -290,10 +290,7 @@ static const vshCmdOptDef opts_dommemstat[] = {
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("period in seconds to set collection")
     },
-    {.name = "config",
-     .type = VSH_OT_BOOL,
-     .help = N_("affect next boot")
-    },
+    VIRSH_COMMON_OPT_CONFIG(N_("affect next boot")),
     {.name = "live",
      .type = VSH_OT_BOOL,
      .help = N_("affect running domain")
@@ -681,10 +678,7 @@ static const vshCmdOptDef opts_domif_getlink[] = {
      .type = VSH_OT_ALIAS,
      .help = "config"
     },
-    {.name = "config",
-     .type = VSH_OT_BOOL,
-     .help = N_("Get persistent interface state")
-    },
+    VIRSH_COMMON_OPT_CONFIG(N_("Get persistent interface state")),
     {.name = NULL}
 };
 
