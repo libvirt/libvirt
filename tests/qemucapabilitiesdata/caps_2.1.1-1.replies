@@ -2378,6 +2378,14 @@
 }
 
 {
+    "id": "libvirt-33",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'ICH9-LPC' not found"
+    }
+}
+
+{
   "return": [
     {
       "name": "pc-1.3",
@@ -2487,7 +2495,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -2568,7 +2576,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -2576,21 +2584,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -3450,7 +3458,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -3472,5 +3480,5 @@
       "capability": "zero-blocks"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }

@@ -167,4 +167,6 @@
     <flag name='virtio-mouse'/>
     <flag name='virtio-tablet'/>
     <flag name='virtio-input-host'/>
+    <flag name='ich9-disable-s3'/>
+    <flag name='ich9-disable-s4'/>
   </qemuCaps>

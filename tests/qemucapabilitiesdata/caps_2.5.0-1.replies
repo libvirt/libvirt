@@ -2764,6 +2764,84 @@
 }
 
 {
+  "return":  [
+    {
+      "type": "bool",
+      "name": "memory-hotplug-support"
+    },
+    {
+      "type": "uint32",
+      "name": "rombar"
+    },
+    {
+      "type": "uint32",
+      "name": "sci_int"
+    },
+    {
+      "type": "uint32",
+      "name": "gpe0_blk_len"
+    },
+    {
+      "type": "uint32",
+      "name": "pm_io_base"
+    },
+    {
+      "type": "bool",
+      "name": "noreboot"
+    },
+    {
+      "type": "bool",
+      "name": "multifunction",
+      "description": "on/off"
+    },
+    {
+      "type": "uint8",
+      "name": "disable_s4"
+    },
+    {
+      "type": "uint8",
+      "name": "acpi_disable_cmd"
+    },
+    {
+      "type": "str",
+      "name": "romfile"
+    },
+    {
+      "type": "uint8",
+      "name": "disable_s3"
+    },
+    {
+      "type": "uint8",
+      "name": "s4_val"
+    },
+    {
+      "type": "uint8",
+      "name": "acpi_enable_cmd"
+    },
+    {
+      "type": "bool",
+      "name": "command_serr_enable",
+      "description": "on/off"
+    },
+    {
+      "type": "int32",
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06"
+    },
+    {
+      "type": "bool",
+      "name": "enable_tco"
+    },
+    {
+      "type": "uint32",
+      "name": "gpe0_blk"
+    }
+  ],
+  "id": "libvirt-33"
+}
+
+
+{
   "return": [
     {
       "name": "pc-i440fx-2.4",
@@ -2889,7 +2967,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -2979,7 +3057,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -2987,21 +3065,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -4005,7 +4083,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -4035,5 +4113,5 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }

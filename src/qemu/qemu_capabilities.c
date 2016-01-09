@@ -309,6 +309,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-tablet", /* 205 */
               "virtio-input-host",
               "chardev-file-append",
+              "ich9-disable-s3",
+              "ich9-disable-s4",
     );
 
 
@@ -1650,6 +1652,11 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
+    { "disable_s3", QEMU_CAPS_ICH9_DISABLE_S3 },
+    { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4 },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1705,6 +1712,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxlVga) },
     { "virtio-gpu-pci", virQEMUCapsObjectPropsVirtioGpu,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
+    { "ICH9-LPC", virQEMUCapsObjectPropsICH9,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsICH9) },
 };
 
 

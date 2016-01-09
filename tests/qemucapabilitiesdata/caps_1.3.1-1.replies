@@ -1785,6 +1785,14 @@
 }
 
 {
+    "id": "libvirt-33",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'ICH9-LPC' not found"
+    }
+}
+
+{
     "return": [
         {
             "name": "xenpv"
@@ -1835,7 +1843,7 @@
             "name": "none"
         }
     ],
-    "id": "libvirt-33"
+    "id": "libvirt-34"
 }
 
 {
@@ -1913,7 +1921,7 @@
             "name": "Opteron_G5"
         }
     ],
-    "id": "libvirt-34"
+    "id": "libvirt-35"
 }
 
 {
@@ -1921,11 +1929,11 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-35"
+    "id": "libvirt-36"
 }
 
 {
-    "id": "libvirt-36",
+    "id": "libvirt-37",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-models has not been found"
@@ -1933,7 +1941,7 @@
 }
 
 {
-    "id": "libvirt-37",
+    "id": "libvirt-38",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-tpm-types has not been found"
@@ -1941,7 +1949,7 @@
 }
 
 {
-    "id": "libvirt-38",
+    "id": "libvirt-39",
     "error": {
         "class": "CommandNotFound",
         "desc": "The command query-command-line-options has not been found"
@@ -1955,5 +1963,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-39"
+    "id": "libvirt-40"
 }
