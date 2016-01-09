@@ -2810,21 +2810,9 @@ AC_CONFIG_FILES([\
         po/Makefile.in \
         include/libvirt/Makefile include/libvirt/libvirt-common.h \
         daemon/Makefile \
-        tools/Makefile \
+        examples/Makefile \
         tests/Makefile \
-        examples/apparmor/Makefile \
-        examples/object-events/Makefile \
-        examples/domsuspend/Makefile \
-        examples/dominfo/Makefile \
-        examples/dommigrate/Makefile \
-        examples/domtop/Makefile \
-        examples/openauth/Makefile \
-        examples/hellolibvirt/Makefile \
-        examples/rename/Makefile \
-        examples/systemtap/Makefile \
-        examples/xml/nwfilter/Makefile \
-        examples/lxcconvert/Makefile \
-        examples/polkit/Makefile \
+        tools/Makefile \
         tools/wireshark/Makefile \
         tools/wireshark/src/Makefile])
 AC_OUTPUT

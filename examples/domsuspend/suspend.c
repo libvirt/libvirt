@@ -21,6 +21,8 @@
  * Author: Michal Privoznik <mprivozn@redhat.com>
  */
 
+#include <config.h>
+
 #include <errno.h>
 #include <getopt.h>
 #include <libvirt/libvirt.h>
