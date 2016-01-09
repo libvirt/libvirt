@@ -54,6 +54,13 @@
      .help = N_("pool name or uuid")                          \
     }                                                         \
 
+#define VIRSH_COMMON_OPT_VOLUME_VOL                           \
+    {.name = "vol",                                           \
+     .type = VSH_OT_DATA,                                     \
+     .flags = VSH_OFLAG_REQ,                                  \
+     .help = N_("vol name, key or path")                      \
+    }                                                         \
+
 virStorageVolPtr
 virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                      const char *optname,
@@ -425,11 +432,7 @@ static const vshCmdInfo info_vol_create_from[] = {
 static const vshCmdOptDef opts_vol_create_from[] = {
     VIRSH_COMMON_OPT_POOL_FULL,
     VIRSH_COMMON_OPT_FILE(N_("file containing an XML vol description")),
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("input vol name or key")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     {.name = "inputpool",
      .type = VSH_OT_STRING,
      .help = N_("pool name or uuid of the input volume's pool")
@@ -540,11 +543,7 @@ static const vshCmdInfo info_vol_clone[] = {
 };
 
 static const vshCmdOptDef opts_vol_clone[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("orig vol name or key")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     {.name = "newname",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -640,11 +639,7 @@ static const vshCmdInfo info_vol_upload[] = {
 };
 
 static const vshCmdOptDef opts_vol_upload[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_FILE(N_("file")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
@@ -747,11 +742,7 @@ static const vshCmdInfo info_vol_download[] = {
 };
 
 static const vshCmdOptDef opts_vol_download[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_FILE(N_("file")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
@@ -853,11 +844,7 @@ static const vshCmdInfo info_vol_delete[] = {
 };
 
 static const vshCmdOptDef opts_vol_delete[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "delete-snapshots",
      .type = VSH_OT_BOOL,
@@ -907,11 +894,7 @@ static const vshCmdInfo info_vol_wipe[] = {
 };
 
 static const vshCmdOptDef opts_vol_wipe[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "algorithm",
      .type = VSH_OT_STRING,
@@ -997,11 +980,7 @@ static const vshCmdInfo info_vol_info[] = {
 };
 
 static const vshCmdOptDef opts_vol_info[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
@@ -1052,11 +1031,7 @@ static const vshCmdInfo info_vol_resize[] = {
 };
 
 static const vshCmdOptDef opts_vol_resize[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     {.name = "capacity",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -1153,11 +1128,7 @@ static const vshCmdInfo info_vol_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_vol_dumpxml[] = {
-    {.name = "vol",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("vol name, key or path")
-    },
+    VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
