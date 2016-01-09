@@ -42,6 +42,18 @@
 #include "virxml.h"
 #include "virstring.h"
 
+#define VIRSH_COMMON_OPT_POOL_FULL                            \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
+
+#define VIRSH_COMMON_OPT_POOL_NAME                            \
+    VIRSH_COMMON_OPT_POOL(N_("pool name"))                    \
+
+#define VIRSH_COMMON_OPT_POOL_OPTIONAL                        \
+    {.name = "pool",                                          \
+     .type = VSH_OT_STRING,                                   \
+     .help = N_("pool name or uuid")                          \
+    }                                                         \
+
 virStorageVolPtr
 virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                      const char *optname,
@@ -145,11 +157,7 @@ static const vshCmdInfo info_vol_create_as[] = {
 };
 
 static const vshCmdOptDef opts_vol_create_as[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name")
-    },
+    VIRSH_COMMON_OPT_POOL_NAME,
     {.name = "name",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -353,11 +361,7 @@ static const vshCmdInfo info_vol_create[] = {
 };
 
 static const vshCmdOptDef opts_vol_create[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name")
-    },
+    VIRSH_COMMON_OPT_POOL_NAME,
     {.name = "file",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -423,11 +427,7 @@ static const vshCmdInfo info_vol_create_from[] = {
 };
 
 static const vshCmdOptDef opts_vol_create_from[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_FULL,
     {.name = "file",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -558,10 +558,7 @@ static const vshCmdOptDef opts_vol_clone[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("clone name")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "prealloc-metadata",
      .type = VSH_OT_BOOL,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
@@ -661,10 +658,7 @@ static const vshCmdOptDef opts_vol_upload[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("file")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
      .help = N_("volume offset to upload to")
@@ -775,10 +769,7 @@ static const vshCmdOptDef opts_vol_download[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("file")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
      .help = N_("volume offset to download from")
@@ -883,10 +874,7 @@ static const vshCmdOptDef opts_vol_delete[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "delete-snapshots",
      .type = VSH_OT_BOOL,
      .help = N_("delete snapshots associated with volume (must be "
@@ -940,10 +928,7 @@ static const vshCmdOptDef opts_vol_wipe[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "algorithm",
      .type = VSH_OT_STRING,
      .help = N_("perform selected wiping algorithm")
@@ -1033,10 +1018,7 @@ static const vshCmdOptDef opts_vol_info[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
 
@@ -1096,10 +1078,7 @@ static const vshCmdOptDef opts_vol_resize[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("new capacity for the vol, as scaled integer (default bytes)")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "allocate",
      .type = VSH_OT_BOOL,
      .help = N_("allocate the new capacity, rather than leaving it sparse")
@@ -1195,10 +1174,7 @@ static const vshCmdOptDef opts_vol_dumpxml[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("vol name, key or path")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
 
@@ -1364,11 +1340,7 @@ static const vshCmdInfo info_vol_list[] = {
 };
 
 static const vshCmdOptDef opts_vol_list[] = {
-    {.name = "pool",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_FULL,
     {.name = "details",
      .type = VSH_OT_BOOL,
      .help = N_("display extended details for volumes")
@@ -1710,10 +1682,7 @@ static const vshCmdOptDef opts_vol_key[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("volume name or path")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
 
@@ -1749,10 +1718,7 @@ static const vshCmdOptDef opts_vol_path[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("volume name or key")
     },
-    {.name = "pool",
-     .type = VSH_OT_STRING,
-     .help = N_("pool name or uuid")
-    },
+    VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = NULL}
 };
 

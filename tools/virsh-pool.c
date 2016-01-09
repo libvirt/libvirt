@@ -33,12 +33,8 @@
 #include "conf/storage_conf.h"
 #include "virstring.h"
 
-#define VIRSH_COMMON_OPT_POOL                                 \
-    {.name = "pool",                                          \
-     .type = VSH_OT_DATA,                                     \
-     .flags = VSH_OFLAG_REQ,                                  \
-     .help = N_("pool name or uuid")                          \
-    }                                                         \
+#define VIRSH_COMMON_OPT_POOL_FULL                            \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
 
 #define VIRSH_COMMON_OPT_POOL_FILE                            \
     {.name = "file",                                          \
@@ -188,7 +184,7 @@ static const vshCmdInfo info_pool_autostart[] = {
 };
 
 static const vshCmdOptDef opts_pool_autostart[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = "disable",
      .type = VSH_OT_BOOL,
@@ -575,7 +571,7 @@ static const vshCmdInfo info_pool_build[] = {
 };
 
 static const vshCmdOptDef opts_pool_build[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
     VIRSH_COMMON_OPT_POOL_NO_OVERWRITE,
     VIRSH_COMMON_OPT_POOL_OVERWRITE,
 
@@ -625,7 +621,7 @@ static const vshCmdInfo info_pool_destroy[] = {
 };
 
 static const vshCmdOptDef opts_pool_destroy[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -665,7 +661,7 @@ static const vshCmdInfo info_pool_delete[] = {
 };
 
 static const vshCmdOptDef opts_pool_delete[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -705,7 +701,7 @@ static const vshCmdInfo info_pool_refresh[] = {
 };
 
 static const vshCmdOptDef opts_pool_refresh[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -745,7 +741,7 @@ static const vshCmdInfo info_pool_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_pool_dumpxml[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = "inactive",
      .type = VSH_OT_BOOL,
@@ -1596,7 +1592,7 @@ static const vshCmdInfo info_pool_info[] = {
 };
 
 static const vshCmdOptDef opts_pool_info[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -1673,7 +1669,7 @@ static const vshCmdInfo info_pool_name[] = {
 };
 
 static const vshCmdOptDef opts_pool_name[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -1705,7 +1701,7 @@ static const vshCmdInfo info_pool_start[] = {
 };
 
 static const vshCmdOptDef opts_pool_start[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
     VIRSH_COMMON_OPT_POOL_BUILD,
     VIRSH_COMMON_OPT_POOL_NO_OVERWRITE,
     VIRSH_COMMON_OPT_POOL_OVERWRITE,
@@ -1766,7 +1762,7 @@ static const vshCmdInfo info_pool_undefine[] = {
 };
 
 static const vshCmdOptDef opts_pool_undefine[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -1806,7 +1802,7 @@ static const vshCmdInfo info_pool_uuid[] = {
 };
 
 static const vshCmdOptDef opts_pool_uuid[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };
@@ -1843,7 +1839,7 @@ static const vshCmdInfo info_pool_edit[] = {
 };
 
 static const vshCmdOptDef opts_pool_edit[] = {
-    VIRSH_COMMON_OPT_POOL,
+    VIRSH_COMMON_OPT_POOL_FULL,
 
     {.name = NULL}
 };

@@ -1,7 +1,7 @@
 /*
  * virsh.h: a shell to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,6 +58,16 @@
 # define VIRSH_CMD_GRP_SNAPSHOT         "Snapshot"
 # define VIRSH_CMD_GRP_HOST_AND_HV      "Host and Hypervisor"
 # define VIRSH_CMD_GRP_VIRSH            "Virsh itself"
+
+/*
+ * Common command options
+ */
+# define VIRSH_COMMON_OPT_POOL(_helpstr)                          \
+    {.name = "pool",                                              \
+     .type = VSH_OT_DATA,                                         \
+     .flags = VSH_OFLAG_REQ,                                      \
+     .help = _helpstr                                             \
+    }                                                             \
 
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
