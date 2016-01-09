@@ -66,6 +66,12 @@
 #define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
     VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
 
+#define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT             \
+    {.name = "persistent",                             \
+     .type = VSH_OT_BOOL,                              \
+     .help = N_("make live change persistent")         \
+    }                                                  \
+
 static virDomainPtr
 virshLookupDomainInternal(vshControl *ctl,
                           const char *cmdname,
@@ -214,10 +220,7 @@ static const vshCmdOptDef opts_attach_device[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("XML file")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -377,10 +380,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_BOOL,
      .help = N_("print XML document rather than attach the disk")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -837,10 +837,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_STRING,
      .help = N_("control domain's outgoing traffics")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -10863,10 +10860,7 @@ static const vshCmdOptDef opts_detach_device[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("XML file")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -10960,10 +10954,7 @@ static const vshCmdOptDef opts_update_device[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("XML file")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -11062,10 +11053,7 @@ static const vshCmdOptDef opts_detach_interface[] = {
      .type = VSH_OT_STRING,
      .help = N_("MAC address")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
@@ -11474,10 +11462,7 @@ static const vshCmdOptDef opts_detach_disk[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("target of disk device")
     },
-    {.name = "persistent",
-     .type = VSH_OT_BOOL,
-     .help = N_("make live change persistent")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
     {.name = "config",
      .type = VSH_OT_BOOL,
      .help = N_("affect next boot")
