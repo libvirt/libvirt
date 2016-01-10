@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2015 Red Hat, Inc.
+## Copyright (C) 2005-2016 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -15,8 +15,6 @@
 ## You should have received a copy of the GNU Lesser General Public
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
-
-SUBDIRS= schemas
 
 PERL = perl
 
@@ -150,6 +148,9 @@ fig = \
   migration-tunnel.fig \
   migration-unmanaged-direct.fig
 
+schemadir = $(pkgdatadir)/schemas
+schema_DATA = $(wildcard schemas/*.rng)
+
 EXTRA_DIST=					\
   apibuild.py genaclperms.pl \
   site.xsl newapi.xsl news.xsl page.xsl \
@@ -160,7 +161,8 @@ EXTRA_DIST=					\
   $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in aclperms.htmlinc \
-  todo.pl hvsupport.pl todo.cfg-example
+  todo.pl hvsupport.pl todo.cfg-example \
+  $(schema_DATA)
 
 acl_generated = aclperms.htmlinc
 

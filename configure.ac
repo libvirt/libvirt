@@ -2796,7 +2796,6 @@ AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([\
         Makefile src/Makefile include/Makefile docs/Makefile \
-        docs/schemas/Makefile \
         gnulib/lib/Makefile \
         gnulib/tests/Makefile \
         libvirt.pc \
