@@ -1,4 +1,5 @@
-## Copyright (C) 2005-2015 Red Hat, Inc.
+## Copyright (C) 2005-2016 Red Hat, Inc.
+## Copyright (C) 2013 Yuto KAWAMURA(kawamuray) <kawamuray.dadada@gmail.com>
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -56,7 +57,7 @@ EXTRA_DIST = \
 	virsh-volume.c
 
 
-
+CLEANFILES =
 DISTCLEANFILES =
 
 confdir = $(sysconfdir)/libvirt
@@ -374,7 +375,52 @@ libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 	    mv $@-t $@
 
 
-CLEANFILES = $(bin_SCRIPTS)
+EXTRA_DIST += \
+	wireshark/util/genxdrstub.pl \
+	wireshark/util/make-dissector-reg
+
+if WITH_WIRESHARK_DISSECTOR
+
+ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
+wireshark_src_libvirt_la_CPPFLAGS = \
+	-I wireshark/src $(WIRESHARK_DISSECTOR_CFLAGS)
+wireshark_src_libvirt_la_LDFLAGS = -avoid-version -module
+wireshark_src_libvirt_la_SOURCES = \
+	wireshark/src/packet-libvirt.h \
+	wireshark/src/packet-libvirt.c \
+	wireshark/src/plugin.c
+
+wireshark/src/packet-libvirt.c: wireshark/src/packet-libvirt.h \
+		wireshark/src/libvirt/protocol.h
+
+wireshark/src/plugin.c: wireshark/src/packet-libvirt.c
+	cd wireshark/src && \
+		$(abs_top_srcdir)/tools/wireshark/util/make-dissector-reg \
+		. plugin packet-libvirt.c
+
+WS_DISSECTOR_PROTO_FILES  = \
+  $(abs_top_srcdir)/src/remote/remote_protocol.x \
+  $(abs_top_srcdir)/src/remote/qemu_protocol.x \
+  $(abs_top_srcdir)/src/remote/lxc_protocol.x \
+  $(abs_top_srcdir)/src/rpc/virkeepaliveprotocol.x
+
+wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
+		$(WS_DISSECTOR_PROTO_FILES)
+	$(MKDIR_P) wireshark/src/libvirt
+	cd wireshark/src && \
+	LIBVIRT_VERSION=$(LIBVIRT_VERSION) \
+		  $(PERL) $(abs_top_srcdir)/tools/wireshark/util/genxdrstub.pl \
+		  $(WS_DISSECTOR_PROTO_FILES)
+
+CLEANFILES += wireshark/src/plugin.c
+
+endif WITH_WIRESHARK_DISSECTOR
+
+
+clean-local:
+	-rm -rf wireshark/src/libvirt
+
+CLEANFILES += $(bin_SCRIPTS)
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 MAINTAINERCLEANFILES = $(dist_man1_MANS)
 

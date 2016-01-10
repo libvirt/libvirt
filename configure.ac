@@ -2817,9 +2817,7 @@ AC_CONFIG_FILES([\
         daemon/Makefile \
         examples/Makefile \
         tests/Makefile \
-        tools/Makefile \
-        tools/wireshark/Makefile \
-        tools/wireshark/src/Makefile])
+        tools/Makefile])
 AC_OUTPUT
 
 AC_MSG_NOTICE([])

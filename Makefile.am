@@ -20,7 +20,7 @@ LCOV = lcov
 GENHTML = genhtml
 
 SUBDIRS = . gnulib/lib include src daemon tools docs gnulib/tests \
-  tests po examples tools/wireshark
+  tests po examples
 
 ACLOCAL_AMFLAGS = -I m4
 
