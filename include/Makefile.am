@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2011, 2013 Red Hat, Inc.
+## Copyright (C) 2005-2011, 2013-2016 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -16,4 +16,15 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-SUBDIRS=libvirt
+virincdir = $(includedir)/libvirt
+
+allheaders = $(wildcard libvirt/*.h)
+virinc_HEADERS = $(filter-out libvirt/libvirt-admin.h, $(allheaders))
+
+EXTRA_DIST = libvirt/libvirt-common.h.in
+
+# Temporarily disabled, but we need it for building
+EXTRA_DIST += libvirt/libvirt-admin.h
+
+install-exec-hook:
+	$(mkinstalldirs) $(DESTDIR)$(virincdir)
