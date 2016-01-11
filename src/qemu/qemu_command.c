@@ -1,7 +1,7 @@
 /*
  * qemu_command.c: QEMU command generation
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -2142,12 +2142,12 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
         memset(&tmp_addr, 0, sizeof(tmp_addr));
         tmp_addr.slot = 0x1F;
         tmp_addr.function = 0;
-        tmp_addr.multi = 1;
+        tmp_addr.multi = VIR_TRISTATE_SWITCH_ON;
         if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
                                            false, false) < 0)
            goto cleanup;
         tmp_addr.function = 3;
-        tmp_addr.multi = 0;
+        tmp_addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
         if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
                                            false, false) < 0)
            goto cleanup;
@@ -2623,7 +2623,7 @@ qemuAssignDevicePCISlots(virDomainDefPtr def,
 
                 addrs->lastaddr = addr;
                 addrs->lastaddr.function = 0;
-                addrs->lastaddr.multi = 0;
+                addrs->lastaddr.multi = VIR_TRISTATE_SWITCH_ABSENT;
             }
             /* Finally we can reserve the slot+function */
             if (virDomainPCIAddressReserveAddr(addrs, &addr, flags,
