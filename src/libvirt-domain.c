@@ -11546,7 +11546,8 @@ virDomainInterfaceAddresses(virDomainPtr dom,
         *ifaces = NULL;
     virCheckDomainReturn(dom, -1);
     virCheckNonNullArgGoto(ifaces, error);
-    virCheckReadOnlyGoto(dom->conn->flags, error);
+    if (source == VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT)
+        virCheckReadOnlyGoto(dom->conn->flags, error);
 
     if (dom->conn->driver->domainInterfaceAddresses) {
         int ret;
