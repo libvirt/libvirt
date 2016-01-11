@@ -1035,6 +1035,25 @@ virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
 
 
 static int
+qemuDomainDefAddImplicitInputDevice(virDomainDef *def)
+{
+    if (ARCH_IS_X86(def->os.arch)) {
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                                      VIR_DOMAIN_INPUT_BUS_PS2) < 0)
+            return -1;
+
+        if (virDomainDefMaybeAddInput(def,
+                                      VIR_DOMAIN_INPUT_TYPE_KBD,
+                                      VIR_DOMAIN_INPUT_BUS_PS2) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                virQEMUCapsPtr qemuCaps)
 {
@@ -1048,6 +1067,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
     int ret = -1;
+
+    /* add implicit input devices */
+    if (qemuDomainDefAddImplicitInputDevice(def) < 0)
+        goto cleanup;
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {

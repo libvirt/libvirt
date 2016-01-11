@@ -26,6 +26,8 @@
       <source path='/tmp/guestfwd'/>
       <target type='guestfwd' address='10.0.2.1' port='4600'/>
     </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -39,6 +39,7 @@
 #include "xenapi_driver_private.h"
 #include "xenapi_utils.h"
 #include "virstring.h"
+#include "xen_common.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENAPI
 
@@ -79,6 +80,10 @@ xenapiDomainDefPostParse(virDomainDefPtr def,
                          unsigned int parseFlags ATTRIBUTE_UNUSED,
                          void *opaque ATTRIBUTE_UNUSED)
 {
+    /* add implicit input device */
+    if (xenDomainDefAddImplicitInputDevice(def) < 0)
+        return -1;
+
     /* memory hotplug tunables are not supported by this driver */
     if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
         return -1;

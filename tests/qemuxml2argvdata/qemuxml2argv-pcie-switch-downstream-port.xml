@@ -36,6 +36,8 @@
     <controller type='pci' index='11' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='12' model='pcie-switch-downstream-port'/>
     <controller type='sata' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <video>
       <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
     </video>

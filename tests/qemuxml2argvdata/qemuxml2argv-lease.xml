@@ -33,6 +33,8 @@
       <key>thequickbrownfoxjumpedoverthelazydog</key>
       <target path='/some/lease/path' offset='1024'/>
     </lease>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

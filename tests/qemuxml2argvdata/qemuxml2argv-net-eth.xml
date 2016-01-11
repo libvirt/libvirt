@@ -28,6 +28,8 @@
       <script path='/etc/qemu-ifup'/>
       <model type='rtl8139'/>
     </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>
   </devices>
 </domain>

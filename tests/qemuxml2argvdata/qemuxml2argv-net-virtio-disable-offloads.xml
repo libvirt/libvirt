@@ -30,6 +30,8 @@
         <guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/>
       </driver>
     </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

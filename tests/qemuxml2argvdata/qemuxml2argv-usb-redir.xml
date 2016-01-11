@@ -30,6 +30,8 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <redirdev bus='usb' type='tcp'>
       <source mode='connect' host='localhost' service='4000'/>
       <protocol type='raw'/>

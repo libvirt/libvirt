@@ -24,6 +24,8 @@
       <driver cmd_per_lun='50'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

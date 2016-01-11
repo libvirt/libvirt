@@ -30,6 +30,8 @@
       <source channel='org.qemu.console.serial.0'/>
       <target type='serial' port='0'/>
     </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

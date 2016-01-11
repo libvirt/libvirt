@@ -22,6 +22,8 @@
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <sound model='pcspk'/>
     <sound model='es1370'/>
     <sound model='sb16'/>

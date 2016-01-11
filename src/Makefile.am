@@ -1212,7 +1212,7 @@ libvirt_driver_xen_impl_la_CFLAGS =				\
 		-I$(srcdir)/xenconfig				\
 		$(AM_CFLAGS)
 libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS)
+libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS) libvirt_xenconfig.la
 libvirt_driver_xen_impl_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif WITH_XEN
 
@@ -1273,7 +1273,7 @@ if WITH_XENAPI
 noinst_LTLIBRARIES += libvirt_driver_xenapi.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_xenapi.la
 libvirt_driver_xenapi_la_CFLAGS = $(LIBXENSERVER_CFLAGS) $(CURL_CFLAGS) \
-		-I$(srcdir)/conf $(AM_CFLAGS)
+		-I$(srcdir)/conf -I$(srcdir)/xenconfig $(AM_CFLAGS)
 libvirt_driver_xenapi_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xenapi_la_LIBADD = $(LIBXENSERVER_LIBS) $(CURL_LIBS)
 libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)

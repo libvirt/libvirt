@@ -38,6 +38,8 @@
     <console type='pty'>
       <target type='virtio' port='3'/>
     </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -50,6 +50,8 @@
       <target type='virtio' name='org.linux-kvm.port.lla'/>
       <address type='virtio-serial' controller='2' bus='0' port='0'/>
     </channel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

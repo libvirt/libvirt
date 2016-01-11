@@ -18,6 +18,8 @@
       <pcihole64 unit='KiB'>0</pcihole64>
     </controller>
     <controller type='usb' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

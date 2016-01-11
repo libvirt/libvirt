@@ -35,6 +35,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
+#include "xen_common.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -395,6 +396,10 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         def->nconsoles = 1;
         def->consoles[0] = chrdef;
     }
+
+    /* add implicit input devices */
+    if (xenDomainDefAddImplicitInputDevice(def) < 0)
+        return -1;
 
     /* memory hotplug tunables are not supported by this driver */
     if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)

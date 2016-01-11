@@ -28,6 +28,8 @@
       <protocol type='raw'/>
       <target port='0'/>
     </parallel>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>
   </devices>
 </domain>

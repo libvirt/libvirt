@@ -16043,27 +16043,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
 
-        /* With QEMU / KVM / Xen graphics, mouse + PS/2 is implicit
-         * with graphics, so don't store it.
-         * XXX will this be true for other virt types ? */
-        if ((def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
-             input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
-             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
-              input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
-            (def->os.type == VIR_DOMAIN_OSTYPE_XEN &&
-             input->bus == VIR_DOMAIN_INPUT_BUS_XEN &&
-             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
-              input->type == VIR_DOMAIN_INPUT_TYPE_KBD)) ||
-            (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-             (def->virtType == VIR_DOMAIN_VIRT_VZ ||
-              def->virtType == VIR_DOMAIN_VIRT_PARALLELS)  &&
-             input->bus == VIR_DOMAIN_INPUT_BUS_PARALLELS &&
-             (input->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
-              input->type == VIR_DOMAIN_INPUT_TYPE_KBD))) {
-            virDomainInputDefFree(input);
-            continue;
-        }
-
         def->inputs[def->ninputs++] = input;
     }
     VIR_FREE(nodes);
@@ -16083,29 +16062,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         def->graphics[def->ngraphics++] = graphics;
     }
     VIR_FREE(nodes);
-
-    /* If graphics are enabled, there's an implicit PS2 mouse */
-    if (def->ngraphics > 0 &&
-        (ARCH_IS_X86(def->os.arch) || def->os.arch == VIR_ARCH_NONE)) {
-        int input_bus = VIR_DOMAIN_INPUT_BUS_XEN;
-
-        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
-            input_bus = VIR_DOMAIN_INPUT_BUS_PS2;
-        if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-            (def->virtType == VIR_DOMAIN_VIRT_VZ ||
-             def->virtType == VIR_DOMAIN_VIRT_PARALLELS))
-            input_bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
-
-        if (virDomainDefMaybeAddInput(def,
-                                      VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                                      input_bus) < 0)
-            goto error;
-
-        if (virDomainDefMaybeAddInput(def,
-                                      VIR_DOMAIN_INPUT_TYPE_KBD,
-                                      input_bus) < 0)
-            goto error;
-    }
 
     /* analysis of the sound devices */
     if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0)
@@ -20908,6 +20864,11 @@ virDomainInputDefFormat(virBufferPtr buf,
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
 
+    /* don't format keyboard into migratable XML for backward compatibility */
+    if (def->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
+        flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
+        return 0;
+
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected input type %d"), def->type);
@@ -22362,11 +22323,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainChrDefFormat(buf, def->channels[n], flags) < 0)
             goto error;
 
-    for (n = 0; n < def->ninputs; n++)
-        if ((def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_USB ||
-             def->inputs[n]->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) &&
-            virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
+    for (n = 0; n < def->ninputs; n++) {
+        if (virDomainInputDefFormat(buf, def->inputs[n], flags) < 0)
             goto error;
+    }
 
     if (def->tpm) {
         if (virDomainTPMDefFormat(buf, def->tpm, flags) < 0)
@@ -22374,32 +22334,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
 
     if (def->ngraphics > 0) {
-        /* If graphics is enabled, add the implicit mouse/keyboard */
-        if ((ARCH_IS_X86(def->os.arch)) || def->os.arch == VIR_ARCH_NONE) {
-            virDomainInputDef autoInput = {
-                .type = VIR_DOMAIN_INPUT_TYPE_MOUSE,
-                .info = { .alias = NULL },
-            };
-
-            if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
-                autoInput.bus = VIR_DOMAIN_INPUT_BUS_PS2;
-            else if (def->os.type == VIR_DOMAIN_OSTYPE_EXE &&
-                     (def->virtType == VIR_DOMAIN_VIRT_VZ ||
-                      def->virtType == VIR_DOMAIN_VIRT_PARALLELS))
-                autoInput.bus = VIR_DOMAIN_INPUT_BUS_PARALLELS;
-            else
-               autoInput.bus = VIR_DOMAIN_INPUT_BUS_XEN;
-
-            if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
-                goto error;
-
-            if (!(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)) {
-                autoInput.type = VIR_DOMAIN_INPUT_TYPE_KBD;
-                if (virDomainInputDefFormat(buf, &autoInput, flags) < 0)
-                    goto error;
-            }
-        }
-
         for (n = 0; n < def->ngraphics; n++)
             if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
                 goto error;

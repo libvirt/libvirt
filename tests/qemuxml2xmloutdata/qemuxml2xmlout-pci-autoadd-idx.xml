@@ -34,6 +34,8 @@
     </controller>
     <controller type='pci' index='8' model='pci-bridge'/>
     <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <video>
       <model type='cirrus' vram='16384' heads='1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>

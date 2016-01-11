@@ -35,6 +35,8 @@
       </source>
       <target type='serial' port='0'/>
     </console>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
     <rng model='virtio'>
       <backend model='egd' type='pipe'>

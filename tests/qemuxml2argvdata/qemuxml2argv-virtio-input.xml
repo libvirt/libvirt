@@ -21,6 +21,8 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </input>
     <input type='tablet' bus='virtio'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

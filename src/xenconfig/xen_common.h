@@ -61,4 +61,6 @@ int xenFormatConfigCommon(virConfPtr conf,
                           virConnectPtr conn);
 
 
+int xenDomainDefAddImplicitInputDevice(virDomainDefPtr def);
+
 #endif /* __VIR_XEN_COMMON_H__ */

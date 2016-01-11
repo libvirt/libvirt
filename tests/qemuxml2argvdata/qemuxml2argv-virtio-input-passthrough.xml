@@ -19,6 +19,8 @@
     <input type='passthrough' bus='virtio'>
       <source evdev='/dev/input/event1234'/>
     </input>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

@@ -28,6 +28,8 @@
       <target chassis='40' port='0x1a'/>
     </controller>
     <controller type='sata' index='0'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <video>
       <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
     </video>

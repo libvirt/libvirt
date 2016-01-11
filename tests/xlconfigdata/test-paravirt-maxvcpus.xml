@@ -24,5 +24,7 @@
     <console type='pty'>
       <target type='xen' port='0'/>
     </console>
+    <input type='mouse' bus='xen'/>
+    <input type='keyboard' bus='xen'/>
   </devices>
 </domain>

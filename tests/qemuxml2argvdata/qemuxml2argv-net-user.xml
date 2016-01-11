@@ -27,6 +27,8 @@
       <mac address='00:11:22:33:44:55'/>
       <model type='rtl8139'/>
     </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>
   </devices>
 </domain>
