@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010-2015 Red Hat, Inc.
- * Copyright (C) 2010-2012 IBM Corporation
+ * Copyright (C) 2010-2016 Red Hat, Inc.
+ * Copyright (C) 2010-2012, 2016 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -65,10 +65,12 @@ struct virNetlinkEventHandle {
 
 # ifdef HAVE_LIBNL1
 #  define virNetlinkAlloc nl_handle_alloc
+#  define virNetlinkSetBufferSize nl_set_buffer_size
 #  define virNetlinkFree nl_handle_destroy
 typedef struct nl_handle virNetlinkHandle;
 # else
 #  define virNetlinkAlloc nl_socket_alloc
+#  define virNetlinkSetBufferSize nl_socket_set_buffer_size
 #  define virNetlinkFree nl_socket_free
 typedef struct nl_sock virNetlinkHandle;
 # endif
@@ -160,6 +162,57 @@ virNetlinkShutdown(void)
     }
 }
 
+
+/**
+ * virNetLinkCreateSocket:
+ *
+ * @protocol: which protocol to connect to (e.g. NETLINK_ROUTE,
+ *
+ * Create a netlink socket, set its buffer size, and turn on message
+ * peeking (so the buffer size can be dynamically increased if
+ * needed).
+ *
+ * Returns a handle to the new netlink socket, or 0 if there was a failure.
+ *
+ */
+static virNetlinkHandle *
+virNetlinkCreateSocket(int protocol)
+{
+    virNetlinkHandle *nlhandle = NULL;
+
+    if (!(nlhandle = virNetlinkAlloc())) {
+        virReportSystemError(errno, "%s",
+                             _("cannot allocate nlhandle for netlink"));
+        goto error;
+    }
+    if (nl_connect(nlhandle, protocol) < 0) {
+        virReportSystemError(errno,
+                             _("cannot connect to netlink socket "
+                               "with protocol %d"), protocol);
+        goto error;
+    }
+
+    if (virNetlinkSetBufferSize(nlhandle, 131702, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("cannot set netlink socket buffer "
+                               "size to 128k"));
+        goto error;
+    }
+    nl_socket_enable_msg_peek(nlhandle);
+
+ cleanup:
+    return nlhandle;
+
+ error:
+    if (nlhandle) {
+        nl_close(nlhandle);
+        virNetlinkFree(nlhandle);
+        nlhandle = NULL;
+    }
+    goto cleanup;
+}
+
+
 /**
  * virNetlinkCommand:
  * @nlmsg: pointer to netlink message
@@ -200,19 +253,8 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         goto cleanup;
     }
 
-    nlhandle = virNetlinkAlloc();
-    if (!nlhandle) {
-        virReportSystemError(errno,
-                             "%s", _("cannot allocate nlhandle for netlink"));
+    if (!(nlhandle = virNetlinkCreateSocket(protocol)))
         goto cleanup;
-    }
-
-    if (nl_connect(nlhandle, protocol) < 0) {
-        virReportSystemError(errno,
-                        _("cannot connect to netlink socket with protocol %d"),
-                             protocol);
-        goto cleanup;
-    }
 
     fd = nl_socket_get_fd(nlhandle);
     if (fd < 0) {
@@ -663,19 +705,8 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
     virNetlinkEventServerLock(srv);
 
     /* Allocate a new socket and get fd */
-    srv->netlinknh = virNetlinkAlloc();
-
-    if (!srv->netlinknh) {
-        virReportSystemError(errno,
-                             "%s", _("cannot allocate nlhandle for virNetlinkEvent server"));
+    if (!(srv->netlinknh = virNetlinkCreateSocket(protocol)))
         goto error_locked;
-    }
-
-    if (nl_connect(srv->netlinknh, protocol) < 0) {
-        virReportSystemError(errno,
-                             _("cannot connect to netlink socket with protocol %d"), protocol);
-        goto error_server;
-    }
 
     fd = nl_socket_get_fd(srv->netlinknh);
     if (fd < 0) {
