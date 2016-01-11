@@ -544,14 +544,22 @@ virNetDevVPortProfileGetStatus(struct nlattr **tb, int32_t vf,
                     goto cleanup;
                 }
 
-                if (instanceId &&
-                    tb_port[IFLA_PORT_INSTANCE_UUID] &&
-                    !memcmp(instanceId,
-                            (unsigned char *)
-                                   RTA_DATA(tb_port[IFLA_PORT_INSTANCE_UUID]),
-                            VIR_UUID_BUFLEN) &&
-                    tb_port[IFLA_PORT_VF] &&
-                    vf == *(uint32_t *)RTA_DATA(tb_port[IFLA_PORT_VF])) {
+                /* This ensures that the given VF is present in the
+                 * IFLA_VF_PORTS list, and that its uuid matches the
+                 * instanceId (in case we've associated it). If no
+                 * instanceId is sent from the caller, that means we've
+                 * disassociated it from this instanceId, and the uuid
+                 * will either be unset (if still not associated with
+                 * anything) or will be set to a new and different uuid
+                 */
+                if ((tb_port[IFLA_PORT_VF] &&
+                     vf == *(uint32_t *)RTA_DATA(tb_port[IFLA_PORT_VF])) &&
+                    (!instanceId ||
+                     (tb_port[IFLA_PORT_INSTANCE_UUID] &&
+                      !memcmp(instanceId,
+                              (unsigned char *)
+                              RTA_DATA(tb_port[IFLA_PORT_INSTANCE_UUID]),
+                              VIR_UUID_BUFLEN)))) {
                         found = true;
                         break;
                 }
