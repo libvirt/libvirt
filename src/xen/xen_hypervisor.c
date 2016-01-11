@@ -309,7 +309,7 @@ union xen_getdomaininfolist {
     struct xen_v2d6_getdomaininfo *v2d6;
     struct xen_v2d7_getdomaininfo *v2d7;
     struct xen_v2d8_getdomaininfo *v2d8;
-    struct xen_v2d8_getdomaininfo *v2d9;
+    struct xen_v2d9_getdomaininfo *v2d9;
 };
 typedef union xen_getdomaininfolist xen_getdomaininfolist;
 
