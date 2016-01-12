@@ -2317,12 +2317,12 @@ qemuProcessSetSchedulers(virDomainObjPtr vm)
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
         virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
 
-        if (!vcpu->online)
+        if (!vcpu->online ||
+            vcpu->sched.policy == VIR_PROC_POLICY_NONE)
             continue;
 
-        if (qemuProcessSetSchedParams(i, qemuDomainGetVcpuPid(vm, i),
-                                      vm->def->cputune.nvcpusched,
-                                      vm->def->cputune.vcpusched) < 0)
+        if (virProcessSetScheduler(qemuDomainGetVcpuPid(vm, i),
+                                   vcpu->sched.policy, vcpu->sched.priority) < 0)
             return -1;
     }
 

@@ -4804,9 +4804,9 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
         }
     }
 
-    if (qemuProcessSetSchedParams(vcpu, vcpupid,
-                                  vm->def->cputune.nvcpusched,
-                                  vm->def->cputune.vcpusched) < 0)
+    if (vcpuinfo->sched.policy != VIR_PROC_POLICY_NONE &&
+        virProcessSetScheduler(vcpupid, vcpuinfo->sched.policy,
+                               vcpuinfo->sched.priority) < 0)
         goto cleanup;
 
     ret = 0;

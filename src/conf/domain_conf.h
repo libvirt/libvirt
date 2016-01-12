@@ -2112,8 +2112,6 @@ struct _virDomainCputune {
     long long emulator_quota;
     virBitmapPtr emulatorpin;
 
-    size_t nvcpusched;
-    virDomainThreadSchedParamPtr vcpusched;
     size_t niothreadsched;
     virDomainThreadSchedParamPtr iothreadsched;
 };
@@ -2125,6 +2123,9 @@ typedef virDomainVcpuInfo *virDomainVcpuInfoPtr;
 struct _virDomainVcpuInfo {
     bool online;
     virBitmapPtr cpumask;
+
+    /* note: the sched.ids bitmap is unused so it doesn't have to be cleared */
+    virDomainThreadSchedParam sched;
 };
 
 typedef struct _virDomainBlkiotune virDomainBlkiotune;
