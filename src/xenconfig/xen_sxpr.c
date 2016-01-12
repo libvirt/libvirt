@@ -325,6 +325,7 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     char *trate = NULL;
     char *p;
     regex_t rec;
+    int err;
     char *suffix;
     unsigned long long tmp;
     int ret = -1;
@@ -336,7 +337,16 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     if (p != NULL)
         *p = 0;
 
-    regcomp(&rec, vif_bytes_per_sec_re, REG_EXTENDED|REG_NOSUB);
+    err = regcomp(&rec, vif_bytes_per_sec_re, REG_EXTENDED|REG_NOSUB);
+    if (err != 0) {
+        char error[100];
+        regerror(err, &rec, error, sizeof(error));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regular expression '%s': %s"),
+                       vif_bytes_per_sec_re, error);
+        goto cleanup;
+    }
+
     if (regexec(&rec, trate, 0, NULL, 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid rate '%s' specified"), rate);
