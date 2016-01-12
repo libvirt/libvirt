@@ -619,6 +619,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     virSocketAddr remoteAddr;
     char *rundir = NULL;
     int ret = -1;
+    bool daemonLaunched = false;
 
     VIR_DEBUG("path=%s spawnDaemon=%d binary=%s", path, spawnDaemon,
         NULLSTR(binary));
@@ -699,8 +700,12 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto cleanup;
         }
 
-        if (virNetSocketForkDaemon(binary) < 0)
-            goto cleanup;
+        if (!daemonLaunched) {
+            if (virNetSocketForkDaemon(binary) < 0)
+                goto cleanup;
+
+            daemonLaunched = true;
+        }
 
         usleep(5000);
     }
