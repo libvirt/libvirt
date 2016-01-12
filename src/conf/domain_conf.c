@@ -14585,36 +14585,34 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
     return ret;
 }
 
-static int
-virDomainThreadSchedParse(xmlNodePtr node,
-                          unsigned int minid,
-                          unsigned int maxid,
-                          const char *name,
-                          virDomainThreadSchedParamPtr sp)
+
+static virBitmapPtr
+virDomainSchedulerParse(xmlNodePtr node,
+                        const char *name,
+                        virProcessSchedPolicy *policy,
+                        int *priority)
 {
+    virBitmapPtr ret = NULL;
     char *tmp = NULL;
     int pol = 0;
 
-    tmp = virXMLPropString(node, name);
-    if (!tmp) {
+    if (!(tmp = virXMLPropString(node, name))) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Missing attribute '%s' in element '%sched'"),
                        name, name);
         goto error;
     }
 
-    if (virBitmapParse(tmp, 0, &sp->ids, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(tmp, 0, &ret, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto error;
 
-    if (virBitmapIsAllClear(sp->ids) ||
-        virBitmapNextSetBit(sp->ids, -1) < minid ||
-        virBitmapLastSetBit(sp->ids) > maxid) {
-
+    if (virBitmapIsAllClear(ret)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid value of '%s': %s"),
+                       _("'%s' scheduler bitmap '%s' is empty"),
                        name, tmp);
         goto error;
     }
+
     VIR_FREE(tmp);
 
     if (!(tmp = virXMLPropString(node, "scheduler"))) {
@@ -14625,22 +14623,22 @@ virDomainThreadSchedParse(xmlNodePtr node,
 
     if ((pol = virProcessSchedPolicyTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid scheduler attribute: '%s'"),
-                       tmp);
+                       _("Invalid scheduler attribute: '%s'"), tmp);
         goto error;
     }
-    sp->policy = pol;
+    *policy = pol;
 
     VIR_FREE(tmp);
-    if (sp->policy == VIR_PROC_POLICY_FIFO ||
-        sp->policy == VIR_PROC_POLICY_RR) {
-        tmp = virXMLPropString(node, "priority");
-        if (!tmp) {
+
+    if (pol == VIR_PROC_POLICY_FIFO ||
+        pol == VIR_PROC_POLICY_RR) {
+        if (!(tmp = virXMLPropString(node, "priority"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing scheduler priority"));
             goto error;
         }
-        if (virStrToLong_i(tmp, NULL, 10, &sp->priority) < 0) {
+
+        if (virStrToLong_i(tmp, NULL, 10, priority) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Invalid value for element priority"));
             goto error;
@@ -14648,11 +14646,34 @@ virDomainThreadSchedParse(xmlNodePtr node,
         VIR_FREE(tmp);
     }
 
-    return 0;
+    return ret;
 
  error:
     VIR_FREE(tmp);
-    return -1;
+    virBitmapFree(ret);
+    return NULL;
+}
+
+
+static int
+virDomainThreadSchedParse(xmlNodePtr node,
+                          unsigned int minid,
+                          unsigned int maxid,
+                          const char *name,
+                          virDomainThreadSchedParamPtr sp)
+{
+    if (!(sp->ids = virDomainSchedulerParse(node, name, &sp->policy,
+                                            &sp->priority)))
+        return -1;
+
+    if (virBitmapNextSetBit(sp->ids, -1) < minid ||
+        virBitmapLastSetBit(sp->ids) > maxid) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("%sched bitmap is out of range"), name);
+        return -1;
+    }
+
+    return 0;
 }
 
 
