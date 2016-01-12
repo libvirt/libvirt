@@ -618,7 +618,9 @@ int virNetSocketNewConnectUNIX(const char *path,
         }
         VIR_DEBUG("connect() failed: retries=%d errno=%d", retries, errno);
 
+        retries--;
         if (!spawnDaemon ||
+            retries == 0 ||
             (errno != ENOENT && errno != ECONNREFUSED)) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
@@ -628,7 +630,6 @@ int virNetSocketNewConnectUNIX(const char *path,
         if (virNetSocketForkDaemon(binary) < 0)
             goto cleanup;
 
-        retries--;
         usleep(5000);
     }
 
