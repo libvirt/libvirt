@@ -386,10 +386,10 @@ ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
 wireshark_src_libvirt_la_CPPFLAGS = \
 	-I wireshark/src $(WIRESHARK_DISSECTOR_CFLAGS)
 wireshark_src_libvirt_la_LDFLAGS = -avoid-version -module
+nodist_wireshark_src_libvirt_la_SOURCES = wireshark/src/plugin.c
 wireshark_src_libvirt_la_SOURCES = \
 	wireshark/src/packet-libvirt.h \
-	wireshark/src/packet-libvirt.c \
-	wireshark/src/plugin.c
+	wireshark/src/packet-libvirt.c
 
 wireshark/src/packet-libvirt.c: wireshark/src/packet-libvirt.h \
 		wireshark/src/libvirt/protocol.h
