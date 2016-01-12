@@ -149,7 +149,7 @@ fig = \
   migration-unmanaged-direct.fig
 
 schemadir = $(pkgdatadir)/schemas
-schema_DATA = $(wildcard schemas/*.rng)
+schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST=					\
   apibuild.py genaclperms.pl \

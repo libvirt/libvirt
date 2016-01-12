@@ -16,7 +16,7 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-FILTERS = $(wildcard xml/nwfilter/*.xml)
+FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
 
 EXTRA_DIST = \
 	apparmor/TEMPLATE.qemu \
@@ -30,8 +30,8 @@ EXTRA_DIST = \
 	systemtap/events.stp \
 	systemtap/rpc-monitor.stp \
 	$(FILTERS) \
-	$(wildcard xml/storage/*.xml) \
-	$(wildcard xml/test/*.xml)
+	$(wildcard $(srcdir)/xml/storage/*.xml) \
+	$(wildcard $(srcdir)/xml/test/*.xml)
 
 
 INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \

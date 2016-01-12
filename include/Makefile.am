@@ -18,8 +18,8 @@
 
 virincdir = $(includedir)/libvirt
 
-allheaders = $(wildcard libvirt/*.h)
-virinc_HEADERS = $(filter-out libvirt/libvirt-admin.h, $(allheaders))
+allheaders = $(wildcard $(srcdir)/libvirt/*.h)
+virinc_HEADERS = $(filter-out $(srcdir)/libvirt/libvirt-admin.h, $(allheaders))
 
 EXTRA_DIST = libvirt/libvirt-common.h.in
 
