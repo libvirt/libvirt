@@ -2,6 +2,7 @@
  */
 
 %#include "internal.h"
+%#include "virxdrdefs.h"
 
 typedef opaque virLogManagerProtocolUUID[VIR_UUID_BUFLEN];
 
