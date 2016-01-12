@@ -26,10 +26,6 @@ struct virLockSpaceProtocolDeleteResourceArgs {
         virLockSpaceProtocolNonNullString name;
         u_int                      flags;
 };
-enum virLockSpaceProtocolAcquireResourceFlags {
-        VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED = 1,
-        VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE = 2,
-};
 struct virLockSpaceProtocolAcquireResourceArgs {
         virLockSpaceProtocolNonNullString path;
         virLockSpaceProtocolNonNullString name;

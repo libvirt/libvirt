@@ -249,6 +249,7 @@ MAINTAINERCLEANFILES += $(LOCK_DAEMON_GENERATED)
 
 LOCK_DRIVER_LOCKD_SOURCES = \
 		locking/lock_driver_lockd.c \
+		locking/lock_driver_lockd.h \
 		$(NULL)
 
 LOCK_DAEMON_SOURCES = \

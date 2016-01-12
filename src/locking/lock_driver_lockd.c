@@ -34,6 +34,8 @@
 #include "configmake.h"
 #include "virstring.h"
 
+#include "lock_driver_lockd.h"
+
 #define VIR_FROM_THIS VIR_FROM_LOCKING
 
 VIR_LOG_INIT("locking.lock_driver_lockd");

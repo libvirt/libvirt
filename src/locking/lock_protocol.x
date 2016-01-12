@@ -2,6 +2,7 @@
  */
 
 %#include "internal.h"
+%#include "lock_driver_lockd.h"
 
 typedef opaque virLockSpaceProtocolUUID[VIR_UUID_BUFLEN];
 
@@ -48,11 +49,6 @@ struct virLockSpaceProtocolDeleteResourceArgs {
     virLockSpaceProtocolNonNullString path;
     virLockSpaceProtocolNonNullString name;
     unsigned int flags;
-};
-
-enum virLockSpaceProtocolAcquireResourceFlags {
-    VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_SHARED     = 1,
-    VIR_LOCK_SPACE_PROTOCOL_ACQUIRE_RESOURCE_AUTOCREATE = 2
 };
 
 struct virLockSpaceProtocolAcquireResourceArgs {
