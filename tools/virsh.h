@@ -78,8 +78,8 @@
 
 # define VIRSH_COMMON_OPT_CONFIG(_helpstr)                        \
     {.name = "config",                                            \
-    .type = VSH_OT_BOOL,                                          \
-    .help = _helpstr                                              \
+     .type = VSH_OT_BOOL,                                         \
+     .help = _helpstr                                             \
     }                                                             \
 
 # define VIRSH_COMMON_OPT_LIVE(_helpstr)                          \
