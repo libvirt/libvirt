@@ -548,6 +548,9 @@ int virNetSocketNewConnectUNIX(const char *path,
     char *rundir = NULL;
     int ret = -1;
 
+    VIR_DEBUG("path=%s spawnDaemon=%d binary=%s", path, spawnDaemon,
+        NULLSTR(binary));
+
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
 
@@ -608,10 +611,15 @@ int virNetSocketNewConnectUNIX(const char *path,
     if (remoteAddr.data.un.sun_path[0] == '@')
         remoteAddr.data.un.sun_path[0] = '\0';
 
-    while (retries &&
-           connect(fd, &remoteAddr.data.sa, remoteAddr.len) < 0) {
-        if (!(spawnDaemon && (errno == ENOENT ||
-                              errno == ECONNREFUSED))) {
+    while (retries) {
+        if (connect(fd, &remoteAddr.data.sa, remoteAddr.len) == 0) {
+            VIR_DEBUG("connect() succeeded");
+            break;
+        }
+        VIR_DEBUG("connect() failed: retries=%d errno=%d", retries, errno);
+
+        if (!spawnDaemon ||
+            (errno != ENOENT && errno != ECONNREFUSED)) {
             virReportSystemError(errno, _("Failed to connect socket to '%s'"),
                                  path);
             goto cleanup;
