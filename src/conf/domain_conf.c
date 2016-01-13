@@ -11354,7 +11354,7 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
                                unsigned int flags)
 {
     char *model;
-    char *deflate;
+    char *deflate = NULL;
     virDomainMemballoonDefPtr def;
     xmlNodePtr save = ctxt->node;
     unsigned int period = 0;
