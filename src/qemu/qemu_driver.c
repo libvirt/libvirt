@@ -4743,10 +4743,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-    virCgroupPtr cgroup_vcpu = NULL;
-    char *mem_mask = NULL;
-    virDomainNumatuneMemMode mem_mode;
-    pid_t vcpupid;
 
     if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
         return -1;
@@ -4779,41 +4775,12 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    vcpupid = qemuDomainGetVcpuPid(vm, vcpu);
-
-    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
-        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
-                                            priv->autoNodeset,
-                                            &mem_mask, -1) < 0)
-        goto cleanup;
-
-    if (priv->cgroup) {
-        cgroup_vcpu = qemuDomainAddCgroupForThread(priv->cgroup,
-                                                   VIR_CGROUP_THREAD_VCPU,
-                                                   vcpu, mem_mask, vcpupid);
-        if (!cgroup_vcpu)
-            goto cleanup;
-    }
-
-    /* Inherit def->cpuset */
-    if (vm->def->cpumask) {
-        if (qemuDomainHotplugPinThread(vm->def->cpumask, vcpu, vcpupid,
-                                       cgroup_vcpu) < 0) {
-            goto cleanup;
-        }
-    }
-
-    if (vcpuinfo->sched.policy != VIR_PROC_POLICY_NONE &&
-        virProcessSetScheduler(vcpupid, vcpuinfo->sched.policy,
-                               vcpuinfo->sched.priority) < 0)
+    if (qemuProcessSetupVcpu(vm, vcpu) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(mem_mask);
-    virCgroupFree(&cgroup_vcpu);
     return ret;
 }
 
