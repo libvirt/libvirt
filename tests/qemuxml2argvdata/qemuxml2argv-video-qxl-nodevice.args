@@ -12,13 +12,15 @@ QEMU_AUDIO_DRV=none \
 -smp 1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=ide,bus=0,unit=0,\
-cache=none \
--net none \
--serial none \
--parallel none \
--vga qxl
+-drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
+id=drive-ide0-0-0,cache=none \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-vga qxl \
+-global qxl-vga.ram_size=67108864 \
+-global qxl-vga.vram_size=67108864 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

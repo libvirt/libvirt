@@ -12,14 +12,16 @@ QEMU_AUDIO_DRV=none \
 -smp 1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--drive file=iscsi://example.org:6000/iqn.1992-01.com.example,format=raw,\
-if=virtio \
+-drive file=iscsi://example.org:6000/iqn.1992-01.com.example,format=raw,if=none,\
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
 -drive file=iscsi://example.org:6000/iqn.1992-01.com.example/1,format=raw,\
-if=virtio \
--net none \
--serial none \
--parallel none
+if=none,id=drive-virtio-disk1 \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\
+id=virtio-disk1

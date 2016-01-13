@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -smp 1 \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
@@ -20,6 +21,5 @@ QEMU_AUDIO_DRV=none \
 -append 'root=/dev/ram rw console=ttyS0,115200' \
 -dtb /media/ram/test.dtb \
 -usb \
--net none \
 -serial pty \
--parallel none
+-device virtio-balloon-pci,id=balloon0,bus=pci,addr=0x2

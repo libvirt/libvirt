@@ -12,10 +12,9 @@ QEMU_AUDIO_DRV=none \
 -smp 4 \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--net none \
--serial none \
--parallel none
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

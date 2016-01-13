@@ -21,11 +21,10 @@ host-nodes=5,host-nodes=7,policy=bind \
 -numa node,nodeid=2,cpus=28,cpus=30-31,memdev=ram-node2 \
 -uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--net none \
--serial none \
--parallel none \
--incoming fd:7
+-incoming fd:7 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

@@ -186,6 +186,10 @@ testInfoSet(struct testInfo *info,
     if (!(info->qemuCaps = virQEMUCapsNew()))
         goto error;
 
+    virQEMUCapsSetList(info->qemuCaps,
+                       QEMU_CAPS_DEVICE,
+                       QEMU_CAPS_LAST);
+
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, name,
                                 info->qemuCaps) < 0)
         goto error;

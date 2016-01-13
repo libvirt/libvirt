@@ -17,10 +17,9 @@ policy=preferred \
 -numa node,nodeid=1,cpus=1,memdev=ram-node1 \
 -uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--net none \
--serial none \
--parallel none
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

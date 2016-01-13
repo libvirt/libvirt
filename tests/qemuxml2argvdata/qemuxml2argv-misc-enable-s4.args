@@ -12,12 +12,11 @@ QEMU_AUDIO_DRV=none \
 -smp 1 \
 -uuid 8caaa98c-e7bf-5845-126a-1fc316bd1089 \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -global PIIX4_PM.disable_s4=0 \
 -boot c \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
--net none \
--serial none \
--parallel none
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0

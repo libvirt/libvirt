@@ -12,11 +12,11 @@ QEMU_AUDIO_DRV=none \
 -smp 1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
+-nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
 -boot a \
 -usb \
--drive file=fat:floppy:/var/somefiles,if=floppy,unit=0 \
--net none \
--serial none \
--parallel none
+-drive file=fat:floppy:/var/somefiles,if=none,id=drive-fdc0-0-0 \
+-global isa-fdc.driveA=drive-fdc0-0-0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
