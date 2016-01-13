@@ -11055,6 +11055,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
     char *device_type = NULL;
     char *ret = NULL;
     char *startupPolicy = NULL;
+    char *source_path = NULL;
 
     if (!disk_node)
         return NULL;
@@ -11111,7 +11112,13 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
     }
 
     if (source) {
-        if (type == VIRSH_UPDATE_DISK_XML_INSERT) {
+        if (!(source_path = virXMLPropString(source, "file")) &&
+            !(source_path = virXMLPropString(source, "dev")) &&
+            !(source_path = virXMLPropString(source, "dir")) &&
+            !(source_path = virXMLPropString(source, "pool")))
+            source_path = virXMLPropString(source, "name");
+
+        if (source_path && type == VIRSH_UPDATE_DISK_XML_INSERT) {
             vshError(NULL, _("The disk device '%s' already has media"), target);
             goto cleanup;
         }
@@ -11170,6 +11177,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
  cleanup:
     VIR_FREE(device_type);
     VIR_FREE(startupPolicy);
+    VIR_FREE(source_path);
     return ret;
 }
 
