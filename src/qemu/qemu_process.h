@@ -160,4 +160,8 @@ virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
 
 int qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm);
 
+
+int qemuProcessSetupVcpu(virDomainObjPtr vm,
+                         unsigned int vcpuid);
+
 #endif /* __QEMU_PROCESS_H__ */

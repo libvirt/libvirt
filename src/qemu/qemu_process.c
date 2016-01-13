@@ -2188,56 +2188,6 @@ qemuProcessSetLinkStates(virQEMUDriverPtr driver,
     return ret;
 }
 
-/* Set CPU affinities for vcpus if vcpupin xml provided. */
-static int
-qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
-{
-    virDomainDefPtr def = vm->def;
-    virDomainVcpuInfoPtr vcpu;
-    size_t i;
-    int ret = -1;
-    VIR_DEBUG("Setting affinity on CPUs");
-
-    if (!qemuDomainHasVcpuPids(vm)) {
-        /* If any CPU has custom affinity that differs from the
-         * VM default affinity, we must reject it
-         */
-        for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
-            vcpu = virDomainDefGetVcpu(def, i);
-
-            if (!vcpu->online)
-                continue;
-
-            if (vcpu->cpumask &&
-                !virBitmapEqual(def->cpumask, vcpu->cpumask)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s", _("cpu affinity is not supported"));
-                return -1;
-            }
-        }
-        return 0;
-    }
-
-    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
-        virBitmapPtr bitmap;
-
-        vcpu = virDomainDefGetVcpu(def, i);
-
-        if (!vcpu->online)
-            continue;
-
-        if (!(bitmap = vcpu->cpumask) &&
-            !(bitmap = def->cpumask))
-            continue;
-
-        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, i), bitmap) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
-}
 
 /* Set CPU affinities for emulator threads. */
 static int
@@ -2285,18 +2235,6 @@ static int
 qemuProcessSetSchedulers(virDomainObjPtr vm)
 {
     size_t i = 0;
-
-    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
-
-        if (!vcpu->online ||
-            vcpu->sched.policy == VIR_PROC_POLICY_NONE)
-            continue;
-
-        if (virProcessSetScheduler(qemuDomainGetVcpuPid(vm, i),
-                                   vcpu->sched.policy, vcpu->sched.priority) < 0)
-            return -1;
-    }
 
     for (i = 0; i < vm->def->niothreadids; i++) {
         virDomainIOThreadIDDefPtr info = vm->def->iothreadids[i];
@@ -4495,6 +4433,149 @@ qemuProcessInit(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuProcessSetupVcpu:
+ * @vm: domain object
+ * @vcpuid: id of VCPU to set defaults
+ *
+ * This function sets resource properties (cgroups, affinity, scheduler) for a
+ * vCPU. This function expects that the vCPU is online and the vCPU pids were
+ * correctly detected at the point when it's called.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuProcessSetupVcpu(virDomainObjPtr vm,
+                     unsigned int vcpuid)
+{
+    pid_t vcpupid = qemuDomainGetVcpuPid(vm, vcpuid);
+    virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
+    unsigned long long period = vm->def->cputune.period;
+    long long quota = vm->def->cputune.quota;
+    virCgroupPtr cgroup_vcpu = NULL;
+    virBitmapPtr cpumask;
+    int ret = -1;
+
+    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) ||
+        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+
+        if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+            mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+            virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+                                                priv->autoNodeset,
+                                                &mem_mask, -1) < 0)
+            goto cleanup;
+
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpuid,
+                               true, &cgroup_vcpu) < 0)
+            goto cleanup;
+
+        if (period || quota) {
+            if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
+                goto cleanup;
+        }
+    }
+
+    /* infer which cpumask shall be used */
+    if (vcpu->cpumask)
+        cpumask = vcpu->cpumask;
+    else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+        cpumask = priv->autoCpuset;
+    else
+        cpumask = vm->def->cpumask;
+
+    /* setup cgroups */
+    if (cgroup_vcpu) {
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (mem_mask && virCgroupSetCpusetMems(cgroup_vcpu, mem_mask) < 0)
+                goto cleanup;
+
+            if (cpumask && qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumask) < 0)
+                goto cleanup;
+        }
+
+        /* move the thread for vcpu to sub dir */
+        if (virCgroupAddTask(cgroup_vcpu, vcpupid) < 0)
+            goto cleanup;
+    }
+
+    /* setup legacy affinty */
+    if (cpumask && virProcessSetAffinity(vcpupid, cpumask) < 0)
+        goto cleanup;
+
+    /* set scheduler type and priority */
+    if (vcpu->sched.policy != VIR_PROC_POLICY_NONE) {
+        if (virProcessSetScheduler(vcpupid, vcpu->sched.policy,
+                                   vcpu->sched.priority) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(mem_mask);
+    if (cgroup_vcpu) {
+        if (ret < 0)
+            virCgroupRemove(cgroup_vcpu);
+        virCgroupFree(&cgroup_vcpu);
+    }
+
+    return ret;
+}
+
+
+static int
+qemuProcessSetupVcpus(virDomainObjPtr vm)
+{
+    virDomainVcpuInfoPtr vcpu;
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    size_t i;
+
+    if ((vm->def->cputune.period || vm->def->cputune.quota) &&
+        !virCgroupHasController(((qemuDomainObjPrivatePtr) vm->privateData)->cgroup,
+                                VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
+    if (!qemuDomainHasVcpuPids(vm)) {
+        /* If any CPU has custom affinity that differs from the
+         * VM default affinity, we must reject it */
+        for (i = 0; i < maxvcpus; i++) {
+            vcpu = virDomainDefGetVcpu(vm->def, i);
+
+            if (!vcpu->online)
+                continue;
+
+            if (vcpu->cpumask &&
+                !virBitmapEqual(vm->def->cpumask, vcpu->cpumask)) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                _("cpu affinity is not supported"));
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
+        if (qemuProcessSetupVcpu(vm, i) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * qemuProcessLaunch:
  *
  * Launch a new QEMU process with stopped virtual CPUs.
@@ -4958,16 +5039,12 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessDetectIOThreadPIDs(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting cgroup for each VCPU (if required)");
-    if (qemuSetupCgroupForVcpu(vm) < 0)
+    VIR_DEBUG("Setting vCPU tuning/settings");
+    if (qemuProcessSetupVcpus(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting cgroup for each IOThread (if required)");
     if (qemuSetupCgroupForIOThreads(vm) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Setting VCPU affinities");
-    if (qemuProcessSetVcpuAffinities(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting affinity of IOThread threads");
