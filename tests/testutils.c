@@ -433,6 +433,32 @@ virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
 }
 #endif /* !WIN32 */
 
+static int
+virTestRewrapFile(const char *filename)
+{
+    int ret = -1;
+    char *outbuf = NULL;
+    char *script = NULL;
+    virCommandPtr cmd = NULL;
+
+    if (virAsprintf(&script, "%s/test-wrap-argv.pl", abs_srcdir) < 0)
+        goto cleanup;
+
+    cmd = virCommandNewArgList(script, filename, NULL);
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (virFileWriteStr(filename, outbuf, 0666) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(script);
+    virCommandFree(cmd);
+    VIR_FREE(outbuf);
+    return ret;
+}
 
 /**
  * @param stream: output stream to write differences to
@@ -470,17 +496,15 @@ virtTestDifferenceFullInternal(FILE *stream,
     actualEnd = actual + (strlen(actual)-1);
 
     if (expectName && regenerate && (virTestGetRegenerate() > 0)) {
-        char *regencontent;
-
-        /* Try to properly indent qemu argv files */
-        if (!(regencontent = virStringReplace(actual, " -", " \\\n-")))
-            return -1;
-
-        if (virFileWriteStr(expectName, regencontent, 0666) < 0) {
-            VIR_FREE(regencontent);
+        if (virFileWriteStr(expectName, actual, 0666) < 0) {
+            virDispatchError(NULL);
             return -1;
         }
-        VIR_FREE(regencontent);
+
+        if (virTestRewrapFile(expectName) < 0) {
+            virDispatchError(NULL);
+            return -1;
+        }
     }
 
     if (!virTestGetDebug())
