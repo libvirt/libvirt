@@ -2728,6 +2728,9 @@ virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(virDomainDefPtr def,
                                                   unsigned int iothread_id);
 virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
                                                  unsigned int iothread_id);
+
+virBitmapPtr virDomainIOThreadIDMap(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
 void virDomainIOThreadSchedDelId(virDomainDefPtr def, unsigned int iothread_id);
 
