@@ -3139,8 +3139,13 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
                               virConnectPtr conn,
                               qemuMigrationJobPhase phase,
                               virDomainState state,
-                              int reason ATTRIBUTE_UNUSED)
+                              int reason)
 {
+    bool postcopy = (state == VIR_DOMAIN_PAUSED &&
+                     reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
+                    (state == VIR_DOMAIN_RUNNING &&
+                     reason == VIR_DOMAIN_RUNNING_POSTCOPY);
+
     switch (phase) {
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_PERFORM2:
@@ -3173,8 +3178,10 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
     case QEMU_MIGRATION_PHASE_FINISH3:
         /* migration finished, we started resuming the domain but didn't
          * confirm success or failure yet; killing it seems safest unless
-         * we already started guest CPUs */
-        if (state != VIR_DOMAIN_RUNNING) {
+         * we already started guest CPUs or we were in post-copy mode */
+        if (postcopy) {
+            qemuMigrationPostcopyFailed(driver, vm);
+        } else if (state != VIR_DOMAIN_RUNNING) {
             VIR_DEBUG("Killing migrated domain %s", vm->def->name);
             return -1;
         }
@@ -3192,6 +3199,10 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                                virDomainState state,
                                int reason)
 {
+    bool postcopy = state == VIR_DOMAIN_PAUSED &&
+                    (reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
+                     reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
+
     switch (phase) {
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_PREPARE:
@@ -3209,26 +3220,44 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
     case QEMU_MIGRATION_PHASE_PERFORM2:
     case QEMU_MIGRATION_PHASE_PERFORM3:
         /* migration is still in progress, let's cancel it and resume the
-         * domain */
-        VIR_DEBUG("Cancelling unfinished migration of domain %s",
-                  vm->def->name);
-        if (qemuMigrationCancel(driver, vm) < 0) {
-            VIR_WARN("Could not cancel ongoing migration of domain %s",
-                     vm->def->name);
+         * domain; however we can only do that before migration enters
+         * post-copy mode
+         */
+        if (postcopy) {
+            qemuMigrationPostcopyFailed(driver, vm);
+        } else {
+            VIR_DEBUG("Cancelling unfinished migration of domain %s",
+                      vm->def->name);
+            if (qemuMigrationCancel(driver, vm) < 0) {
+                VIR_WARN("Could not cancel ongoing migration of domain %s",
+                         vm->def->name);
+            }
+            goto resume;
         }
-        goto resume;
+        break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
         /* migration finished but we didn't have a chance to get the result
-         * of Finish3 step; third party needs to check what to do next
+         * of Finish3 step; third party needs to check what to do next; in
+         * post-copy mode we can use PAUSED_POSTCOPY_FAILED state for this
          */
+        if (postcopy)
+            qemuMigrationPostcopyFailed(driver, vm);
         break;
 
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
-        /* Finish3 failed, we need to resume the domain */
-        VIR_DEBUG("Resuming domain %s after failed migration",
-                  vm->def->name);
-        goto resume;
+        /* Finish3 failed, we need to resume the domain, but once we enter
+         * post-copy mode there's no way back, so let's just mark the domain
+         * as broken in that case
+         */
+        if (postcopy) {
+            qemuMigrationPostcopyFailed(driver, vm);
+        } else {
+            VIR_DEBUG("Resuming domain %s after failed migration",
+                      vm->def->name);
+            goto resume;
+        }
+        break;
 
     case QEMU_MIGRATION_PHASE_CONFIRM3:
         /* migration completed, we need to kill the domain here */

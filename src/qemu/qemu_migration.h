@@ -213,4 +213,7 @@ int qemuMigrationRunIncoming(virQEMUDriverPtr driver,
                              const char *uri,
                              qemuDomainAsyncJob asyncJob);
 
+void qemuMigrationPostcopyFailed(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm);
+
 #endif /* __QEMU_MIGRATION_H__ */

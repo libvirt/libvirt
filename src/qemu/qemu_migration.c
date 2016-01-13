@@ -1475,14 +1475,21 @@ qemuMigrationRestoreDomainState(virConnectPtr conn, virDomainObjPtr vm)
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int state = virDomainObjGetState(vm, NULL);
+    int reason;
+    virDomainState state = virDomainObjGetState(vm, &reason);
     bool ret = false;
 
-    VIR_DEBUG("driver=%p, vm=%p, pre-mig-state=%d, state=%d",
-              driver, vm, priv->preMigrationState, state);
+    VIR_DEBUG("driver=%p, vm=%p, pre-mig-state=%s, state=%s, reason=%s",
+              driver, vm,
+              virDomainStateTypeToString(priv->preMigrationState),
+              virDomainStateTypeToString(state),
+              virDomainStateReasonToString(state, reason));
 
-    if (state == VIR_DOMAIN_PAUSED &&
-        priv->preMigrationState == VIR_DOMAIN_RUNNING) {
+    if (state != VIR_DOMAIN_PAUSED ||
+        reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED)
+        goto cleanup;
+
+    if (priv->preMigrationState == VIR_DOMAIN_RUNNING) {
         /* This is basically the only restore possibility that's safe
          * and we should attempt to do */
 
@@ -2374,6 +2381,48 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
 
     return ret;
 }
+
+
+void
+qemuMigrationPostcopyFailed(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+{
+    virDomainState state;
+    int reason;
+
+    state = virDomainObjGetState(vm, &reason);
+
+    if (state != VIR_DOMAIN_PAUSED &&
+        state != VIR_DOMAIN_RUNNING)
+        return;
+
+    if (state == VIR_DOMAIN_PAUSED &&
+        reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED)
+        return;
+
+    VIR_WARN("Migration of domain %s failed during post-copy; "
+             "leaving the domain paused", vm->def->name);
+
+    if (state == VIR_DOMAIN_RUNNING) {
+        virObjectEventPtr event;
+
+        if (qemuProcessStopCPUs(driver, vm,
+                                VIR_DOMAIN_PAUSED_POSTCOPY_FAILED,
+                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
+            VIR_WARN("Unable to pause guest CPUs for %s", vm->def->name);
+            return;
+        }
+
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                VIR_DOMAIN_EVENT_SUSPENDED,
+                                VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED);
+        qemuDomainEventQueue(driver, event);
+    } else {
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                             VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
+    }
+}
+
 
 static int
 qemuMigrationSetOption(virQEMUDriverPtr driver,
@@ -4007,8 +4056,8 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_OFFLINE)
         goto done;
 
-    /* Did the migration go as planned?  If yes, kill off the
-     * domain object, but if no, resume CPUs
+    /* Did the migration go as planned?  If yes, kill off the domain object.
+     * If something failed, resume CPUs, but only if we didn't use post-copy.
      */
     if (retcode == 0) {
         /* If guest uses SPICE and supports seamless migration we have to hold
@@ -4027,6 +4076,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         qemuDomainEventEmitJobCompleted(driver, vm);
     } else {
         virErrorPtr orig_err = virSaveLastError();
+        int reason;
 
         /* cancel any outstanding NBD jobs */
         qemuMigrationCancelDriveMirror(driver, vm, false,
@@ -4035,7 +4085,10 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         virSetError(orig_err);
         virFreeError(orig_err);
 
-        if (qemuMigrationRestoreDomainState(conn, vm)) {
+        if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+            reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
+            qemuMigrationPostcopyFailed(driver, vm);
+        } else if (qemuMigrationRestoreDomainState(conn, vm)) {
             event = virDomainEventLifecycleNewFromObj(vm,
                                                       VIR_DOMAIN_EVENT_RESUMED,
                                                       VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
@@ -5871,6 +5924,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     int rc;
     qemuDomainJobInfoPtr jobInfo = NULL;
     bool inPostCopy = false;
+    bool kill = true;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -6018,6 +6072,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         if (inPostCopy) {
+            kill = false;
             event = virDomainEventLifecycleNewFromObj(vm,
                                         VIR_DOMAIN_EVENT_RESUMED,
                                         VIR_DOMAIN_EVENT_RESUMED_POSTCOPY);
@@ -6077,14 +6132,18 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (!dom &&
         !(flags & VIR_MIGRATE_OFFLINE) &&
         virDomainObjIsActive(vm)) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                        QEMU_ASYNC_JOB_MIGRATION_IN,
-                        VIR_QEMU_PROCESS_STOP_MIGRATED);
-        virDomainAuditStop(vm, "failed");
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_STOPPED,
-                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        qemuDomainEventQueue(driver, event);
+        if (kill) {
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                            QEMU_ASYNC_JOB_MIGRATION_IN,
+                            VIR_QEMU_PROCESS_STOP_MIGRATED);
+            virDomainAuditStop(vm, "failed");
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                VIR_DOMAIN_EVENT_STOPPED,
+                                VIR_DOMAIN_EVENT_STOPPED_FAILED);
+            qemuDomainEventQueue(driver, event);
+        } else {
+            qemuMigrationPostcopyFailed(driver, vm);
+        }
     }
 
     if (dom) {
