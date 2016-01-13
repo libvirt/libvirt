@@ -181,7 +181,6 @@ testInfoFree(struct testInfo *info)
 static int
 testInfoSet(struct testInfo *info,
             const char *name,
-            bool different,
             int when)
 {
     if (!(info->qemuCaps = virQEMUCapsNew()))
@@ -196,46 +195,35 @@ testInfoSet(struct testInfo *info,
         goto error;
 
     if (when & WHEN_INACTIVE) {
-        if (different) {
+        if (virAsprintf(&info->outInactiveName,
+                        "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-inactive.xml",
+                        abs_srcdir, name) < 0)
+            goto error;
+
+        if (!virFileExists(info->outInactiveName)) {
+            VIR_FREE(info->outInactiveName);
+
             if (virAsprintf(&info->outInactiveName,
-                           "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-inactive.xml",
-                           abs_srcdir, name) < 0)
-                goto error;
-
-            if (!virFileExists(info->outInactiveName)) {
-                VIR_FREE(info->outInactiveName);
-
-                if (virAsprintf(&info->outInactiveName,
-                                "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
-                                abs_srcdir, name) < 0)
-                    goto error;
-            }
-        } else {
-            if (VIR_STRDUP(info->outInactiveName, info->inName) < 0)
+                            "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                            abs_srcdir, name) < 0)
                 goto error;
         }
     }
 
     if (when & WHEN_ACTIVE) {
-        if (different) {
+        if (virAsprintf(&info->outActiveName,
+                        "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-active.xml",
+                        abs_srcdir, name) < 0)
+            goto error;
+
+        if (!virFileExists(info->outActiveName)) {
+            VIR_FREE(info->outActiveName);
+
             if (virAsprintf(&info->outActiveName,
-                           "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-active.xml",
-                           abs_srcdir, name) < 0)
-                goto error;
-
-            if (!virFileExists(info->outActiveName)) {
-                VIR_FREE(info->outActiveName);
-
-                if (virAsprintf(&info->outActiveName,
-                                "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
-                                abs_srcdir, name) < 0)
-                    goto error;
-            }
-        } else {
-            if (VIR_STRDUP(info->outActiveName, info->inName) < 0)
+                            "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                            abs_srcdir, name) < 0)
                 goto error;
         }
-
     }
 
     return 0;
@@ -258,9 +246,9 @@ mymain(void)
     /* TODO: test with format probing disabled too */
     driver.config->allowDiskFormatProbing = true;
 
-# define DO_TEST_FULL(name, is_different, when)                                \
+# define DO_TEST_FULL(name, when)                                              \
     do {                                                                       \
-        if (testInfoSet(&info, name, is_different, when) < 0) {                \
+        if (testInfoSet(&info, name, when) < 0) {                             \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);    \
             return -1;                                                         \
         }                                                                      \
@@ -284,10 +272,7 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, false, WHEN_BOTH)
-
-# define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, true, WHEN_BOTH)
+    DO_TEST_FULL(name, WHEN_BOTH)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -297,15 +282,15 @@ mymain(void)
     DO_TEST("minimal");
     DO_TEST("machine-core-on");
     DO_TEST("machine-core-off");
-    DO_TEST_DIFFERENT("default-kvm-host-arch");
-    DO_TEST_DIFFERENT("default-qemu-host-arch");
+    DO_TEST("default-kvm-host-arch");
+    DO_TEST("default-qemu-host-arch");
     DO_TEST("boot-cdrom");
     DO_TEST("boot-network");
     DO_TEST("boot-floppy");
     DO_TEST("boot-multi");
     DO_TEST("boot-menu-enable-with-timeout");
     DO_TEST("boot-menu-disable");
-    DO_TEST_DIFFERENT("boot-menu-disable-with-timeout");
+    DO_TEST("boot-menu-disable-with-timeout");
     DO_TEST("boot-order");
 
     DO_TEST("reboot-timeout-enabled");
@@ -313,7 +298,7 @@ mymain(void)
 
     DO_TEST("clock-utc");
     DO_TEST("clock-localtime");
-    DO_TEST_DIFFERENT("cpu-empty");
+    DO_TEST("cpu-empty");
     DO_TEST("cpu-kvmclock");
     DO_TEST("cpu-host-kvmclock");
     DO_TEST("cpu-host-passthrough-features");
@@ -336,7 +321,7 @@ mymain(void)
     DO_TEST("kvm-features");
     DO_TEST("kvm-features-off");
 
-    DO_TEST_DIFFERENT("pmu-feature");
+    DO_TEST("pmu-feature");
     DO_TEST("pmu-feature-off");
 
     DO_TEST("hugepages");
@@ -391,10 +376,10 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-max_sectors");
     DO_TEST("disk-virtio-scsi-ioeventfd");
     DO_TEST("disk-scsi-megasas");
-    DO_TEST_DIFFERENT("disk-mirror-old");
-    DO_TEST_FULL("disk-mirror", false, WHEN_ACTIVE);
-    DO_TEST_FULL("disk-mirror", true, WHEN_INACTIVE);
-    DO_TEST_FULL("disk-active-commit", false, WHEN_ACTIVE);
+    DO_TEST("disk-mirror-old");
+    DO_TEST_FULL("disk-mirror", WHEN_ACTIVE);
+    DO_TEST_FULL("disk-mirror", WHEN_INACTIVE);
+    DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE);
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-websocket");
@@ -445,11 +430,11 @@ mymain(void)
     DO_TEST("serial-spiceport-nospice");
     DO_TEST("parallel-tcp");
     DO_TEST("console-compat");
-    DO_TEST_DIFFERENT("console-compat2");
+    DO_TEST("console-compat2");
     DO_TEST("console-virtio-many");
     DO_TEST("channel-guestfwd");
     DO_TEST("channel-virtio");
-    DO_TEST_DIFFERENT("channel-virtio-state");
+    DO_TEST("channel-virtio-state");
 
     DO_TEST("hostdev-usb-address");
     DO_TEST("hostdev-pci-address");
@@ -458,13 +443,13 @@ mymain(void)
     DO_TEST("pci-serial-dev-chardev");
 
     DO_TEST("encrypted-disk");
-    DO_TEST_DIFFERENT("memtune");
-    DO_TEST_DIFFERENT("memtune-unlimited");
+    DO_TEST("memtune");
+    DO_TEST("memtune-unlimited");
     DO_TEST("blkiotune");
     DO_TEST("blkiotune-device");
     DO_TEST("cputune");
     DO_TEST("cputune-zero-shares");
-    DO_TEST_DIFFERENT("cputune-iothreadsched");
+    DO_TEST("cputune-iothreadsched");
     DO_TEST("cputune-iothreadsched-zeropriority");
     DO_TEST("cputune-numatune");
     DO_TEST("vcpu-placement-static");
@@ -473,7 +458,7 @@ mymain(void)
     DO_TEST("iothreads");
     DO_TEST("iothreads-ids");
     DO_TEST("iothreads-ids-partial");
-    DO_TEST_DIFFERENT("cputune-iothreads");
+    DO_TEST("cputune-iothreads");
     DO_TEST("iothreads-disk");
     DO_TEST("iothreads-disk-virtio-ccw");
     DO_TEST("lease");
@@ -484,66 +469,66 @@ mymain(void)
     DO_TEST("virtio-lun");
 
     DO_TEST("usb-redir");
-    DO_TEST_DIFFERENT("usb-redir-filter");
-    DO_TEST_DIFFERENT("usb-redir-filter-version");
+    DO_TEST("usb-redir-filter");
+    DO_TEST("usb-redir-filter-version");
     DO_TEST("blkdeviotune");
-    DO_TEST_DIFFERENT("controller-usb-order");
+    DO_TEST("controller-usb-order");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", false, WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-override", false, WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-labelskip", true, WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-relabel", true, WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-override", WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-labelskip", WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-relabel", WHEN_INACTIVE);
     DO_TEST("seclabel-static");
-    DO_TEST_FULL("seclabel-static-labelskip", false, WHEN_ACTIVE);
-    DO_TEST_DIFFERENT("seclabel-none");
+    DO_TEST_FULL("seclabel-static-labelskip", WHEN_ACTIVE);
+    DO_TEST("seclabel-none");
     DO_TEST("seclabel-dac-none");
     DO_TEST("seclabel-dynamic-none");
     DO_TEST("seclabel-device-multiple");
-    DO_TEST_FULL("seclabel-dynamic-none-relabel", true, WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE);
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");
 
     DO_TEST("disk-scsi-disk-vpd");
-    DO_TEST_DIFFERENT("disk-source-pool");
+    DO_TEST("disk-source-pool");
     DO_TEST("disk-source-pool-mode");
 
-    DO_TEST_DIFFERENT("disk-drive-discard");
+    DO_TEST("disk-drive-discard");
 
     DO_TEST("virtio-rng-random");
     DO_TEST("virtio-rng-egd");
 
     DO_TEST("pseries-nvram");
-    DO_TEST_DIFFERENT("pseries-panic-missing");
-    DO_TEST_DIFFERENT("pseries-panic-no-address");
+    DO_TEST("pseries-panic-missing");
+    DO_TEST("pseries-panic-no-address");
 
     /* These tests generate different XML */
-    DO_TEST_DIFFERENT("balloon-device-auto");
-    DO_TEST_DIFFERENT("balloon-device-period");
-    DO_TEST_DIFFERENT("channel-virtio-auto");
-    DO_TEST_DIFFERENT("console-compat-auto");
-    DO_TEST_DIFFERENT("disk-scsi-device-auto");
-    DO_TEST_DIFFERENT("console-virtio");
-    DO_TEST_DIFFERENT("serial-target-port-auto");
-    DO_TEST_DIFFERENT("graphics-listen-network2");
-    DO_TEST_DIFFERENT("graphics-spice-timeout");
-    DO_TEST_DIFFERENT("numad-auto-vcpu-no-numatune");
-    DO_TEST_DIFFERENT("numad-auto-memory-vcpu-no-cpuset-and-placement");
-    DO_TEST_DIFFERENT("numad-auto-memory-vcpu-cpuset");
-    DO_TEST_DIFFERENT("usb-ich9-ehci-addr");
+    DO_TEST("balloon-device-auto");
+    DO_TEST("balloon-device-period");
+    DO_TEST("channel-virtio-auto");
+    DO_TEST("console-compat-auto");
+    DO_TEST("disk-scsi-device-auto");
+    DO_TEST("console-virtio");
+    DO_TEST("serial-target-port-auto");
+    DO_TEST("graphics-listen-network2");
+    DO_TEST("graphics-spice-timeout");
+    DO_TEST("numad-auto-vcpu-no-numatune");
+    DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement");
+    DO_TEST("numad-auto-memory-vcpu-cpuset");
+    DO_TEST("usb-ich9-ehci-addr");
 
-    DO_TEST_DIFFERENT("metadata");
-    DO_TEST_DIFFERENT("metadata-duplicate");
+    DO_TEST("metadata");
+    DO_TEST("metadata-duplicate");
 
     DO_TEST("tpm-passthrough");
     DO_TEST("pci-bridge");
-    DO_TEST_DIFFERENT("pci-bridge-many-disks");
-    DO_TEST_DIFFERENT("pci-autoadd-addr");
-    DO_TEST_DIFFERENT("pci-autoadd-idx");
-    DO_TEST_DIFFERENT("pcie-root");
-    DO_TEST_DIFFERENT("q35");
-    DO_TEST_DIFFERENT("q35-usb2");
-    DO_TEST_DIFFERENT("q35-usb2-multi");
-    DO_TEST_DIFFERENT("q35-usb2-reorder");
+    DO_TEST("pci-bridge-many-disks");
+    DO_TEST("pci-autoadd-addr");
+    DO_TEST("pci-autoadd-idx");
+    DO_TEST("pcie-root");
+    DO_TEST("q35");
+    DO_TEST("q35-usb2");
+    DO_TEST("q35-usb2-multi");
+    DO_TEST("q35-usb2-reorder");
     DO_TEST("pcie-root-port");
     DO_TEST("pcie-root-port-too-many");
     DO_TEST("pcie-switch-upstream-port");
@@ -558,7 +543,7 @@ mymain(void)
     DO_TEST("hostdev-scsi-sgio");
     DO_TEST("hostdev-scsi-rawio");
 
-    DO_TEST_DIFFERENT("hostdev-scsi-autogen-address");
+    DO_TEST("hostdev-scsi-autogen-address");
     DO_TEST("hostdev-scsi-large-unit");
 
     DO_TEST("hostdev-scsi-lsi-iscsi");
@@ -566,39 +551,39 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-iscsi");
     DO_TEST("hostdev-scsi-virtio-iscsi-auth");
 
-    DO_TEST_DIFFERENT("s390-defaultconsole");
+    DO_TEST("s390-defaultconsole");
 
     DO_TEST("pcihole64");
-    DO_TEST_DIFFERENT("pcihole64-gib");
+    DO_TEST("pcihole64-gib");
     DO_TEST("pcihole64-none");
     DO_TEST("pcihole64-q35");
 
-    DO_TEST_DIFFERENT("panic");
+    DO_TEST("panic");
     DO_TEST("panic-isa");
     DO_TEST("panic-pseries");
     DO_TEST("panic-double");
     DO_TEST("panic-no-address");
 
-    DO_TEST_DIFFERENT("disk-backing-chains");
+    DO_TEST("disk-backing-chains");
 
     DO_TEST("chardev-label");
 
-    DO_TEST_DIFFERENT("cpu-numa1");
-    DO_TEST_DIFFERENT("cpu-numa2");
-    DO_TEST_DIFFERENT("cpu-numa-no-memory-element");
-    DO_TEST_DIFFERENT("cpu-numa-disordered");
+    DO_TEST("cpu-numa1");
+    DO_TEST("cpu-numa2");
+    DO_TEST("cpu-numa-no-memory-element");
+    DO_TEST("cpu-numa-disordered");
     DO_TEST("cpu-numa-disjoint");
     DO_TEST("cpu-numa-memshared");
 
-    DO_TEST_DIFFERENT("numatune-auto-prefer");
-    DO_TEST_DIFFERENT("numatune-memnode");
+    DO_TEST("numatune-auto-prefer");
+    DO_TEST("numatune-memnode");
     DO_TEST("numatune-memnode-no-memory");
 
     DO_TEST("bios-nvram");
-    DO_TEST_DIFFERENT("bios-nvram-os-interleave");
+    DO_TEST("bios-nvram-os-interleave");
 
     DO_TEST("tap-vhost");
-    DO_TEST_DIFFERENT("tap-vhost-incorrect");
+    DO_TEST("tap-vhost-incorrect");
     DO_TEST("shmem");
     DO_TEST("smbios");
     DO_TEST("smbios-multiple-type2");

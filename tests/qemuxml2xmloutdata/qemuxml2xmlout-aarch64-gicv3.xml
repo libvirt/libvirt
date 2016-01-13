@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>aarch64test</name>
+  <uuid>6ba410c5-1e5c-4d57-bee7-2228e7ffa32f</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <kernel>/aarch64.kernel</kernel>
+    <initrd>/aarch64.initrd</initrd>
+    <cmdline>console=ttyAMA0</cmdline>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <gic version='3'/>
+  </features>
+  <cpu mode='custom' match='exact'>
+    <model fallback='allow'>cortex-a53</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+      <model type='virtio'/>
+    </interface>
+  </devices>
+</domain>
