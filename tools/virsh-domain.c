@@ -9066,7 +9066,7 @@ static const vshCmdInfo info_lxc_enter_namespace[] = {
      .data = N_("LXC Guest Enter Namespace")
     },
     {.name = "desc",
-     .data = N_("Run an arbitrary lxc guest enter namespace; use at your own risk")
+     .data = N_("Run an arbitrary command in a lxc guest namespace; use at your own risk")
     },
     {.name = NULL}
 };
@@ -9080,7 +9080,7 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("namespace")
+     .help = N_("command to run")
     },
     {.name = NULL}
 };
