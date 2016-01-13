@@ -603,7 +603,6 @@ mymain(void)
     DO_TEST("minimal", NONE);
     DO_TEST_PARSE_ERROR("minimal-no-memory", NONE);
     DO_TEST("minimal-msg-timestamp", QEMU_CAPS_MSG_TIMESTAMP);
-    DO_TEST("minimal-s390", NONE);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
     DO_TEST("machine-core-on", QEMU_CAPS_MACHINE_OPT,
@@ -819,7 +818,7 @@ mymain(void)
             QEMU_CAPS_DEVICE, QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
                     QEMU_CAPS_DEVICE, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("disk-usb",  NONE);
+    DO_TEST_FAILURE("disk-usb-nosupport", QEMU_CAPS_DEVICE);
     DO_TEST("disk-usb-device",
             QEMU_CAPS_DEVICE, QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_NODEFCONFIG);
@@ -1337,7 +1336,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", NONE);
     DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", NONE);
     DO_TEST("cputune-numatune", QEMU_CAPS_SMP_TOPOLOGY,
-            QEMU_CAPS_KVM,
+            QEMU_CAPS_KVM, QEMU_CAPS_DEVICE,
             QEMU_CAPS_OBJECT_IOTHREAD,
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
