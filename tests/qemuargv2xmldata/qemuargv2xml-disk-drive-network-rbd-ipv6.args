@@ -1,0 +1,25 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
+-drive 'file=rbd:pool/image:auth_supported=none:mon_host=[\:\:1]\:\
+6321\;example.org\:6789\;[ffff\:1234\:567\:abc\:\:0f]\:6322\;[2001\:db8\:\:ff00\:\
+42\:8329]\:6322,format=raw,if=virtio' \
+-net none \
+-serial none \
+-parallel none

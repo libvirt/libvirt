@@ -5,7 +5,7 @@
 . $abs_srcdir/schematestutils.sh
 
 DIRS=""
-DIRS="$DIRS domainschemadata qemuxml2argvdata sexpr2xmldata"
+DIRS="$DIRS domainschemadata qemuargv2xmldata qemuxml2argvdata sexpr2xmldata"
 DIRS="$DIRS xmconfigdata xml2sexprdata qemuxml2xmloutdata"
 DIRS="$DIRS lxcxml2xmldata lxcxml2xmloutdata"
 DIRS="$DIRS bhyvexml2argvdata genericxml2xmlindata genericxml2xmloutdata"

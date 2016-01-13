@@ -1,0 +1,23 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-uuid 8caaa98c-e7bf-5845-126a-1fc316bd1089 \
+-nographic \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-global PIIX4_PM.disable_s3=1 \
+-boot c \
+-usb \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=ide,bus=0,unit=0 \
+-net none \
+-serial none \
+-parallel none

@@ -1,0 +1,22 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name QEMUGuest1 \
+-S \
+-M pseries \
+-m 512 \
+-smp 1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-nographic \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-net none \
+-serial none \
+-parallel none \
+-global spapr-nvram.reg=0x4000
