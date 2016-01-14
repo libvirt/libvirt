@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2014 Red Hat, Inc.
+ * Copyright (C) 2013, 2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -220,8 +220,9 @@ static int testPolkitAuthChallenge(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     err = virGetLastError();
-    if (!err || !strstr(err->message,
-                       _("no agent is available to authenticate"))) {
+    if (!err || err->domain != VIR_FROM_POLKIT ||
+        err->code != VIR_ERR_AUTH_UNAVAILABLE ||
+        !strstr(err->message, _("no polkit agent available to authenticate"))) {
         fprintf(stderr, "Incorrect error response\n");
         goto cleanup;
     }

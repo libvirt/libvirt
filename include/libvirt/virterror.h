@@ -4,7 +4,7 @@
  * Description: Provides the interfaces of the libvirt library to handle
  *              errors raised while using the library.
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -310,6 +310,7 @@ typedef enum {
                                            CPU*/
     VIR_ERR_XML_INVALID_SCHEMA = 92,    /* XML document doesn't validate against schema */
     VIR_ERR_MIGRATE_FINISH_OK = 93,     /* Finish API succeeded but it is expected to return NULL */
+    VIR_ERR_AUTH_UNAVAILABLE = 94,	/* authentication unavailable */
 } virErrorNumber;
 
 /**

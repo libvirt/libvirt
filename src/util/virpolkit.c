@@ -1,7 +1,7 @@
 /*
  * virpolkit.c: helpers for using polkit APIs
  *
- * Copyright (C) 2013, 2014 Red Hat, Inc.
+ * Copyright (C) 2013, 2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -121,8 +121,10 @@ int virPolkitCheckAuth(const char *actionid,
             virReportError(VIR_ERR_AUTH_CANCELLED, "%s",
                            _("user cancelled authentication process"));
         else if (is_challenge)
-            virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                           _("no agent is available to authenticate"));
+            virReportError(VIR_ERR_AUTH_UNAVAILABLE,
+                           _("no polkit agent available to authenticate "
+                             "action '%s'"),
+                           actionid);
         else
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
                            _("access denied by policy"));

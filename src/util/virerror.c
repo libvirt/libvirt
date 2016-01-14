@@ -1,7 +1,7 @@
 /*
  * virerror.c: error handling and reporting code for libvirt
  *
- * Copyright (C) 2006, 2008-2015 Red Hat, Inc.
+ * Copyright (C) 2006, 2008-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1094,6 +1094,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("authentication cancelled");
             else
                 errmsg = _("authentication cancelled: %s");
+            break;
+        case VIR_ERR_AUTH_UNAVAILABLE:
+            if (info == NULL)
+                errmsg = _("authentication unavailable");
+            else
+                errmsg = _("authentication unavailable: %s");
             break;
         case VIR_ERR_NO_STORAGE_POOL:
             if (info == NULL)
