@@ -439,7 +439,7 @@ main(int argc, char **argv)
 
     case VIR_LEASE_ACTION_OLD:
     case VIR_LEASE_ACTION_ADD:
-        if (virJSONValueArrayAppend(leases_array_new, lease_new) < 0) {
+        if (lease_new && virJSONValueArrayAppend(leases_array_new, lease_new) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to create json"));
             goto cleanup;
