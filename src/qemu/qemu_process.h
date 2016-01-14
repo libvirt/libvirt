@@ -163,5 +163,7 @@ int qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm);
 
 int qemuProcessSetupVcpu(virDomainObjPtr vm,
                          unsigned int vcpuid);
+int qemuProcessSetupIOThread(virDomainObjPtr vm,
+                             virDomainIOThreadIDDefPtr iothread);
 
 #endif /* __QEMU_PROCESS_H__ */

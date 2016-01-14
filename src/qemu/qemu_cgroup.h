@@ -53,7 +53,6 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
 int qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
-int qemuSetupCgroupForIOThreads(virDomainObjPtr vm);
 int qemuSetupCgroupForEmulator(virDomainObjPtr vm);
 int qemuRemoveCgroup(virDomainObjPtr vm);
 int qemuAddToCgroup(virDomainObjPtr vm);
