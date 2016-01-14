@@ -210,6 +210,77 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
     return ret;
 }
 
+static int
+virLeasePrintLeases(virJSONValuePtr leases_array_new,
+                    const char *server_duid)
+{
+    virJSONValuePtr lease_tmp = NULL;
+    const char *ip_tmp = NULL;
+    long long expirytime = 0;
+    int ret = -1;
+    size_t i;
+
+    /* Man page of dnsmasq says: the script (helper program, in our case)
+     * should write the saved state of the lease database, in dnsmasq
+     * leasefile format, to stdout and exit with zero exit code, when
+     * called with argument init. Format:
+     * $expirytime $mac $ip $hostname $clientid # For all ipv4 leases
+     * duid $server-duid # If DHCPv6 is present
+     * $expirytime $iaid $ip $hostname $clientduid # For all ipv6 leases */
+
+    /* Traversing the ipv4 leases */
+    for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
+        lease_tmp = virJSONValueArrayGet(leases_array_new, i);
+        if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse json"));
+            goto cleanup;
+        }
+        if (!strchr(ip_tmp, ':')) {
+            if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
+                                                &expirytime) < 0)
+                continue;
+
+            printf("%lld %s %s %s %s\n",
+                   expirytime,
+                   virJSONValueObjectGetString(lease_tmp, "mac-address"),
+                   virJSONValueObjectGetString(lease_tmp, "ip-address"),
+                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                   EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+        }
+    }
+
+    /* Traversing the ipv6 leases */
+    if (server_duid) {
+        printf("duid %s\n", server_duid);
+        for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
+            lease_tmp = virJSONValueArrayGet(leases_array_new, i);
+            if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to parse json"));
+                goto cleanup;
+            }
+            if (strchr(ip_tmp, ':')) {
+                if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
+                                                    &expirytime) < 0)
+                    continue;
+
+                printf("%lld %s %s %s %s\n",
+                       expirytime,
+                       virJSONValueObjectGetString(lease_tmp, "iaid"),
+                       virJSONValueObjectGetString(lease_tmp, "ip-address"),
+                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
+                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -218,7 +289,6 @@ main(int argc, char **argv)
     char *custom_lease_file = NULL;
     const char *ip = NULL;
     const char *mac = NULL;
-    const char *ip_tmp = NULL;
     const char *leases_str = NULL;
     const char *iaid = virGetEnvAllowSUID("DNSMASQ_IAID");
     const char *clientid = virGetEnvAllowSUID("DNSMASQ_CLIENT_ID");
@@ -227,13 +297,11 @@ main(int argc, char **argv)
     const char *hostname = virGetEnvAllowSUID("DNSMASQ_SUPPLIED_HOSTNAME");
     char *server_duid = NULL;
     long long expirytime = 0;
-    size_t i = 0;
     int action = -1;
     int pid_file_fd = -1;
     int rv = EXIT_FAILURE;
     bool delete = false;
     virJSONValuePtr lease_new = NULL;
-    virJSONValuePtr lease_tmp = NULL;
     virJSONValuePtr leases_array_new = NULL;
 
     virSetErrorFunc(NULL, NULL);
@@ -407,60 +475,8 @@ main(int argc, char **argv)
 
     switch ((enum virLeaseActionFlags) action) {
     case VIR_LEASE_ACTION_INIT:
-        /* Man page of dnsmasq says: the script (helper program, in our case)
-         * should write the saved state of the lease database, in dnsmasq
-         * leasefile format, to stdout and exit with zero exit code, when
-         * called with argument init. Format:
-         * $expirytime $mac $ip $hostname $clientid # For all ipv4 leases
-         * duid $server-duid # If DHCPv6 is present
-         * $expirytime $iaid $ip $hostname $clientduid # For all ipv6 leases */
-
-        /* Traversing the ipv4 leases */
-        for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
-            lease_tmp = virJSONValueArrayGet(leases_array_new, i);
-            if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to parse json"));
-                goto cleanup;
-            }
-            if (!strchr(ip_tmp, ':')) {
-                if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
-                                                    &expirytime) < 0)
-                    continue;
-
-                printf("%lld %s %s %s %s\n",
-                       expirytime,
-                       virJSONValueObjectGetString(lease_tmp, "mac-address"),
-                       virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                       EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
-            }
-        }
-
-        /* Traversing the ipv6 leases */
-        if (server_duid) {
-            printf("duid %s\n", server_duid);
-            for (i = 0; i < virJSONValueArraySize(leases_array_new); i++) {
-                lease_tmp = virJSONValueArrayGet(leases_array_new, i);
-                if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address"))) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to parse json"));
-                    goto cleanup;
-                }
-                if (strchr(ip_tmp, ':')) {
-                    if (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time",
-                                                        &expirytime) < 0)
-                        continue;
-
-                    printf("%lld %s %s %s %s\n",
-                           expirytime,
-                           virJSONValueObjectGetString(lease_tmp, "iaid"),
-                           virJSONValueObjectGetString(lease_tmp, "ip-address"),
-                           EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "hostname")),
-                           EMPTY_STR(virJSONValueObjectGetString(lease_tmp, "client-id")));
-                }
-            }
-        }
+        if (virLeasePrintLeases(leases_array_new, server_duid) < 0)
+            goto cleanup;
 
         break;
 
