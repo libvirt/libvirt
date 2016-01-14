@@ -13087,6 +13087,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    int reason;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -13109,10 +13110,21 @@ static int qemuDomainAbortJob(virDomainPtr dom)
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("no job is active on the domain"));
         goto endjob;
-    } else if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
+    }
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot abort incoming migration;"
                          " use virDomainDestroy instead"));
+        goto endjob;
+    }
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY ||
+         (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+          reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot abort migration in post-copy mode"));
         goto endjob;
     }
 
