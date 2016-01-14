@@ -501,7 +501,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             nnicindexes, nicindexes,
                             def->resource->partition,
                             -1,
-                            &cgroup) < 0 || !cgroup)
+                            &cgroup) < 0)
         goto cleanup;
 
     /* setup control group permissions for user namespace */
