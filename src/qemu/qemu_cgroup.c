@@ -789,6 +789,17 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    if (virCgroupAddTask(priv->cgroup, vm->pid) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(priv->cgroup);
+        virCgroupFree(&priv->cgroup);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+        goto cleanup;
+    }
+
  done:
     ret = 0;
  cleanup:
@@ -1159,10 +1170,6 @@ qemuSetupCgroupForEmulator(virDomainObjPtr vm)
                                   quota) < 0)
             goto cleanup;
     }
-
-    /* consider the first thread an emulator-thread */
-    if (virCgroupAddTask(cgroup_emulator, vm->pid) < 0)
-        goto cleanup;
 
     virCgroupFree(&cgroup_emulator);
     return 0;
