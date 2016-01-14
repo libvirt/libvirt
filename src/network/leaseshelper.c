@@ -416,7 +416,6 @@ main(int argc, char **argv)
          */
         if (!mac)
             break;
-        delete = true;
 
         /* Create new lease */
         if (!(lease_new = virJSONValueNewObject())) {
@@ -448,14 +447,11 @@ main(int argc, char **argv)
         if (expirytime && virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
             goto cleanup;
 
-        break;
 
+        /* fallthrough */
     case VIR_LEASE_ACTION_DEL:
+        /* Delete the corresponding lease, if it already exists */
         delete = true;
-        if (mac) {
-            /* Delete the corresponding lease, if it already exists */
-            delete = true;
-        }
         break;
 
     case VIR_LEASE_ACTION_INIT:
