@@ -1669,6 +1669,16 @@ virCgroupNewMachineSystemd(const char *name,
         }
     }
 
+    if (virCgroupAddTask(*group, pidleader) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+    }
+
     ret = 0;
  cleanup:
     virCgroupFree(&parent);
@@ -1691,6 +1701,7 @@ int virCgroupTerminateMachine(const char *name,
 static int
 virCgroupNewMachineManual(const char *name,
                           const char *drivername,
+                          pid_t pidleader,
                           const char *partition,
                           int controllers,
                           virCgroupPtr *group)
@@ -1715,6 +1726,16 @@ virCgroupNewMachineManual(const char *name,
                                     true,
                                     group) < 0)
         goto cleanup;
+
+    if (virCgroupAddTask(*group, pidleader) < 0) {
+        virErrorPtr saved = virSaveLastError();
+        virCgroupRemove(*group);
+        virCgroupFree(group);
+        if (saved) {
+            virSetError(saved);
+            virFreeError(saved);
+        }
+    }
 
  done:
     ret = 0;
@@ -1762,6 +1783,7 @@ virCgroupNewMachine(const char *name,
 
     return virCgroupNewMachineManual(name,
                                      drivername,
+                                     pidleader,
                                      partition,
                                      controllers,
                                      group);

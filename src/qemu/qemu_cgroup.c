@@ -789,17 +789,6 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virCgroupAddTask(priv->cgroup, vm->pid) < 0) {
-        virErrorPtr saved = virSaveLastError();
-        virCgroupRemove(priv->cgroup);
-        virCgroupFree(&priv->cgroup);
-        if (saved) {
-            virSetError(saved);
-            virFreeError(saved);
-        }
-        goto cleanup;
-    }
-
  done:
     ret = 0;
  cleanup:
