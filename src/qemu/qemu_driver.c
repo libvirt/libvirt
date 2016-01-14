@@ -4649,70 +4649,6 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     VIR_FREE(processEvent);
 }
 
-static virCgroupPtr
-qemuDomainAddCgroupForThread(virCgroupPtr cgroup,
-                             virCgroupThreadName nameval,
-                             int idx,
-                             char *mem_mask,
-                             pid_t pid)
-{
-    virCgroupPtr new_cgroup = NULL;
-    int rv = -1;
-
-    /* Create cgroup */
-    if (virCgroupNewThread(cgroup, nameval, idx, true, &new_cgroup) < 0)
-        return NULL;
-
-    if (mem_mask &&
-        virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
-        virCgroupSetCpusetMems(new_cgroup, mem_mask) < 0)
-        goto error;
-
-    /* Add pid/thread to the cgroup */
-    rv = virCgroupAddTask(new_cgroup, pid);
-    if (rv < 0) {
-        virCgroupRemove(new_cgroup);
-        goto error;
-    }
-
-    return new_cgroup;
-
- error:
-    virCgroupFree(&new_cgroup);
-    return NULL;
-}
-
-
-static int
-qemuDomainHotplugPinThread(virBitmapPtr cpumask,
-                           int idx,
-                           pid_t pid,
-                           virCgroupPtr cgroup)
-{
-    int ret = -1;
-
-    if (cgroup &&
-        virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-        if (qemuSetupCgroupCpusetCpus(cgroup, cpumask) < 0) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("failed to set cpuset.cpus in cgroup for id %d"),
-                           idx);
-            goto cleanup;
-        }
-    } else {
-        if (virProcessSetAffinity(pid, cpumask) < 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("failed to set cpu affinity for id %d"),
-                           idx);
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    return ret;
-}
 
 static int
 qemuDomainDelCgroupForThread(virCgroupPtr cgroup,
@@ -5936,11 +5872,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     unsigned int exp_niothreads = vm->def->niothreadids;
     int new_niothreads = 0;
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
-    virCgroupPtr cgroup_iothread = NULL;
-    char *mem_mask = NULL;
-    virDomainNumatuneMemMode mode;
     virDomainIOThreadIDDefPtr iothrid;
-    virBitmapPtr cpumask;
 
     if (virDomainIOThreadIDFind(vm->def, iothread_id)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -5980,14 +5912,6 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     }
     vm->def->iothreads = exp_niothreads;
 
-    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) == 0 &&
-        mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
-                                            priv->autoNodeset,
-                                            &mem_mask, -1) < 0)
-        goto cleanup;
-
-
     /*
      * If we've successfully added an IOThread, find out where we added it
      * in the QEMU IOThread list, so we can add it to our iothreadids list
@@ -6009,27 +5933,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
 
     iothrid->thread_id = new_iothreads[idx]->thread_id;
 
-    /* Add IOThread to cgroup if present */
-    if (priv->cgroup) {
-        cgroup_iothread =
-            qemuDomainAddCgroupForThread(priv->cgroup,
-                                         VIR_CGROUP_THREAD_IOTHREAD,
-                                         iothread_id, mem_mask,
-                                         iothrid->thread_id);
-        if (!cgroup_iothread)
-            goto cleanup;
-    }
-
-    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
-        cpumask = priv->autoCpuset;
-    else
-        cpumask = vm->def->cpumask;
-
-    if (cpumask) {
-        if (qemuDomainHotplugPinThread(cpumask, iothread_id,
-                                       iothrid->thread_id, cgroup_iothread) < 0)
-            goto cleanup;
-    }
+    if (qemuProcessSetupIOThread(vm, iothrid) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -6039,10 +5944,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
             VIR_FREE(new_iothreads[idx]);
         VIR_FREE(new_iothreads);
     }
-    VIR_FREE(mem_mask);
     virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
                            "update", rc == 0);
-    virCgroupFree(&cgroup_iothread);
     VIR_FREE(alias);
     return ret;
 
