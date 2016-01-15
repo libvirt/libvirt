@@ -122,7 +122,7 @@ main(int argc, char **argv)
     const char *interface = virGetEnvAllowSUID("DNSMASQ_INTERFACE");
     const char *exptime_tmp = virGetEnvAllowSUID("DNSMASQ_LEASE_EXPIRES");
     const char *hostname = virGetEnvAllowSUID("DNSMASQ_SUPPLIED_HOSTNAME");
-    const char *server_duid = virGetEnvAllowSUID("DNSMASQ_SERVER_DUID");
+    char *server_duid = NULL;
     long long currtime = 0;
     long long expirytime = 0;
     size_t i = 0;
@@ -209,6 +209,9 @@ main(int argc, char **argv)
         mac = virGetEnvAllowSUID("DNSMASQ_MAC");
         clientid = argv[2];
     }
+
+    if (VIR_STRDUP(server_duid, virGetEnvAllowSUID("DNSMASQ_SERVER_DUID")) < 0)
+        goto cleanup;
 
     if (virAsprintf(&custom_lease_file,
                     LOCALSTATEDIR "/lib/libvirt/dnsmasq/%s.status",
@@ -351,11 +354,11 @@ main(int argc, char **argv)
                     /* This is an ipv6 lease */
                     if ((server_duid_tmp
                          = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
-                        if (!server_duid) {
+                        if (!server_duid && VIR_STRDUP(server_duid, server_duid_tmp) < 0) {
                             /* Control reaches here when the 'action' is not for an
                              * ipv6 lease or, for some weird reason the env var
                              * DNSMASQ_SERVER_DUID wasn't set*/
-                            server_duid = server_duid_tmp;
+                            goto cleanup;
                         }
                     } else {
                         /* Inject server-duid into those ipv6 leases which
@@ -472,6 +475,7 @@ main(int argc, char **argv)
 
     VIR_FREE(pid_file);
     VIR_FREE(exptime);
+    VIR_FREE(server_duid);
     VIR_FREE(lease_entries);
     VIR_FREE(custom_lease_file);
     virJSONValueFree(lease_new);
