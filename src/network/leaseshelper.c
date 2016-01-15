@@ -132,74 +132,78 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
     }
 
     /* Check for previous leases */
-    if (custom_lease_file_len) {
-        if (!(leases_array = virJSONValueFromString(lease_entries))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid json in file: %s, rewriting it"),
-                           custom_lease_file);
-        } else {
-            if (!virJSONValueIsArray(leases_array)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("couldn't fetch array of leases"));
-                goto cleanup;
-            }
+    if (custom_lease_file_len == 0) {
+        ret = 0;
+        goto cleanup;
+    }
 
-            i = 0;
-            while (i < virJSONValueArraySize(leases_array)) {
+    if (!(leases_array = virJSONValueFromString(lease_entries))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid json in file: %s, rewriting it"),
+                       custom_lease_file);
+        ret = 0;
+        goto cleanup;
+    }
 
-                if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to parse json"));
+    if (!virJSONValueIsArray(leases_array)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("couldn't fetch array of leases"));
+        goto cleanup;
+    }
+
+    i = 0;
+    while (i < virJSONValueArraySize(leases_array)) {
+        if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse json"));
+            goto cleanup;
+        }
+
+        if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
+            (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime) < 0)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse json"));
+            goto cleanup;
+        }
+        /* Check whether lease has expired or not */
+        if (expirytime < currtime) {
+            i++;
+            continue;
+        }
+
+        /* Check whether lease has to be included or not */
+        if (ip_to_delete && STREQ(ip_tmp, ip_to_delete)) {
+            i++;
+            continue;
+        }
+
+        if (strchr(ip_tmp, ':')) {
+            /* This is an ipv6 lease */
+            if ((server_duid_tmp
+                 = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
+                if (!*server_duid && VIR_STRDUP(*server_duid, server_duid_tmp) < 0) {
+                    /* Control reaches here when the 'action' is not for an
+                     * ipv6 lease or, for some weird reason the env var
+                     * DNSMASQ_SERVER_DUID wasn't set*/
                     goto cleanup;
                 }
-
-                if (!(ip_tmp = virJSONValueObjectGetString(lease_tmp, "ip-address")) ||
-                    (virJSONValueObjectGetNumberLong(lease_tmp, "expiry-time", &expirytime) < 0)) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to parse json"));
+            } else {
+                /* Inject server-duid into those ipv6 leases which
+                 * didn't have it previously, for example, those
+                 * created by leaseshelper from libvirt 1.2.6 */
+                if (virJSONValueObjectAppendString(lease_tmp, "server-duid", *server_duid) < 0)
                     goto cleanup;
-                }
-                /* Check whether lease has expired or not */
-                if (expirytime < currtime) {
-                    i++;
-                    continue;
-                }
-
-                /* Check whether lease has to be included or not */
-                if (ip_to_delete && STREQ(ip_tmp, ip_to_delete)) {
-                    i++;
-                    continue;
-                }
-
-                if (strchr(ip_tmp, ':')) {
-                    /* This is an ipv6 lease */
-                    if ((server_duid_tmp
-                         = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
-                        if (!*server_duid && VIR_STRDUP(*server_duid, server_duid_tmp) < 0) {
-                            /* Control reaches here when the 'action' is not for an
-                             * ipv6 lease or, for some weird reason the env var
-                             * DNSMASQ_SERVER_DUID wasn't set*/
-                            goto cleanup;
-                        }
-                    } else {
-                        /* Inject server-duid into those ipv6 leases which
-                         * didn't have it previously, for example, those
-                         * created by leaseshelper from libvirt 1.2.6 */
-                        if (virJSONValueObjectAppendString(lease_tmp, "server-duid", *server_duid) < 0)
-                            goto cleanup;
-                    }
-                }
-
-                /* Move old lease to new array */
-                if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("failed to create json"));
-                    goto cleanup;
-                }
-
-                ignore_value(virJSONValueArraySteal(leases_array, i));
             }
         }
+
+        /* Move old lease to new array */
+        if (virJSONValueArrayAppend(leases_array_new, lease_tmp) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to create json"));
+            goto cleanup;
+        }
+
+        ignore_value(virJSONValueArraySteal(leases_array, i));
     }
 
     ret = 0;
