@@ -2640,7 +2640,10 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name)
+
+int
+qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
+                              const char *name)
 {
     char *cmd = NULL;
     char *reply = NULL;
@@ -2654,20 +2657,15 @@ int qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon, const char *name)
     if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
 
-    if (strstr(reply, "Error while creating snapshot") != NULL) {
+    if (strstr(reply, "Error while creating snapshot") ||
+        strstr(reply, "Could not open VM state file") ||
+        (strstr(reply, "Error") && strstr(reply, "while writing VM"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to take snapshot: %s"), reply);
         goto cleanup;
-    } else if (strstr(reply, "No block device can accept snapshots") != NULL) {
+    } else if (strstr(reply, "No block device can accept snapshots")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to take snapshots"));
-        goto cleanup;
-    } else if (strstr(reply, "Could not open VM state file") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
-        goto cleanup;
-    } else if (strstr(reply, "Error") != NULL
-             && strstr(reply, "while writing VM") != NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s", reply);
         goto cleanup;
     }
 
