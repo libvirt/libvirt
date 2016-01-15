@@ -1953,14 +1953,6 @@ virSecuritySELinuxRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
         virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.loader->nvram) < 0)
         rc = -1;
 
-    if (def->os.kernel &&
-        virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.kernel) < 0)
-        rc = -1;
-
-    if (def->os.initrd &&
-        virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.initrd) < 0)
-        rc = -1;
-
     if (def->os.dtb &&
         virSecuritySELinuxRestoreSecurityFileLabel(mgr, def->os.dtb) < 0)
         rc = -1;
