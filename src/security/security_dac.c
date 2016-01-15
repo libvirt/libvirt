@@ -971,14 +971,6 @@ virSecurityDACRestoreSecurityAllLabel(virSecurityManagerPtr mgr,
         virSecurityDACRestoreSecurityFileLabel(def->os.loader->nvram) < 0)
         rc = -1;
 
-    if (def->os.kernel &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.kernel) < 0)
-        rc = -1;
-
-    if (def->os.initrd &&
-        virSecurityDACRestoreSecurityFileLabel(def->os.initrd) < 0)
-        rc = -1;
-
     if (def->os.dtb &&
         virSecurityDACRestoreSecurityFileLabel(def->os.dtb) < 0)
         rc = -1;
