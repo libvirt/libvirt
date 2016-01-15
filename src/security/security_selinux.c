@@ -2034,14 +2034,6 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManagerPtr mgr,
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.loader->nvram) < 0)
         rc = -1;
 
-    if (def->os.kernel &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.kernel) < 0)
-        rc = -1;
-
-    if (def->os.initrd &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.initrd) < 0)
-        rc = -1;
-
     if (def->os.dtb &&
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.dtb) < 0)
         rc = -1;
