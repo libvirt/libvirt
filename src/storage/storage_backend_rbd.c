@@ -473,7 +473,8 @@ static int virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
 
     if (snap_count > 0) {
         for (i = 0; i < snap_count; i++) {
-            if (rbd_snap_is_protected(image, snaps[i].name, &protected)) {
+            r = rbd_snap_is_protected(image, snaps[i].name, &protected);
+            if (r < 0) {
                 virReportSystemError(-r, _("failed to verify if snapshot '%s/%s@%s' is protected"),
                                      source->name, vol->name,
                                      snaps[i].name);
@@ -485,7 +486,8 @@ static int virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
                           "unprotected", source->name, vol->name,
                           snaps[i].name);
 
-                if (rbd_snap_unprotect(image, snaps[i].name) < 0) {
+                r = rbd_snap_unprotect(image, snaps[i].name);
+                if (r < 0) {
                     virReportSystemError(-r, _("failed to unprotect snapshot '%s/%s@%s'"),
                                          source->name, vol->name,
                                          snaps[i].name);
