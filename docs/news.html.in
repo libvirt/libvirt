@@ -16,7 +16,7 @@
     to gauge progress.
     </p>
 
-   <h3>v1.3.1: Jan 17 2016</h3>
+    <h3>v1.3.1: Jan 17 2016</h3>
     <ul>
       <li>Features:<br/>
       Various improvements for the Xen libxl driver (Jim Fehlig),<br/>
@@ -327,7 +327,6 @@
       security_selinux: fix indentation (Ján Tomko),<br/>
       security_dac: check if virSecurityDACGetIds returns negative (Ján Tomko),<br/>
       </li>
-
     </ul>
 
   </body>
