@@ -555,10 +555,10 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
+    memset(driver, 0, sizeof(*driver));
+
     if (virMutexInit(&driver->lock) < 0)
         return -1;
-
-    driver->securityManager = NULL;
 
     driver->config = virQEMUDriverConfigNew(false);
     if (!driver->config)
