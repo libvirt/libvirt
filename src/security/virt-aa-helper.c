@@ -728,12 +728,18 @@ get_definition(vahControl * ctl, const char *xmlStr)
     return rc;
 }
 
+/**
+  * The permissions allowed are apparmor valid permissions and 'R'. 'R' stands for
+  * read with no explicit deny rule.
+  */
 static int
 vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursive)
 {
     char *tmp = NULL;
     int rc = -1;
     bool readonly = true;
+    bool explicit_deny_rule = true;
+    char *sub = NULL;
 
     if (path == NULL)
         return rc;
@@ -758,8 +764,16 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
         return rc;
     }
 
-    if (strchr(perms, 'w') != NULL)
+    if (strchr(perms, 'w') != NULL) {
         readonly = false;
+        explicit_deny_rule = false;
+    }
+
+    if ((sub = strchr(perms, 'R')) != NULL) {
+        /* Don't write the invalid R permission, replace it with 'r' */
+        sub[0] = 'r';
+        explicit_deny_rule = false;
+    }
 
     rc = valid_path(tmp, readonly);
     if (rc != 0) {
@@ -774,7 +788,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
         tmp[strlen(tmp) - 1] = '\0';
 
     virBufferAsprintf(buf, "  \"%s%s\" %s,\n", tmp, recursive ? "/**" : "", perms);
-    if (readonly) {
+    if (explicit_deny_rule) {
         virBufferAddLit(buf, "  # don't audit writes to readonly files\n");
         virBufferAsprintf(buf, "  deny \"%s%s\" w,\n", tmp, recursive ? "/**" : "");
     }
@@ -1084,7 +1098,7 @@ get_files(vahControl * ctl)
             /* We don't need to add deny rw rules for readonly mounts,
              * this can only lead to troubles when mounting / readonly.
              */
-            if (vah_add_path(&buf, fs->src->path, "rw", true) != 0)
+            if (vah_add_path(&buf, fs->src->path, fs->readonly ? "R" : "rw", true) != 0)
                 goto cleanup;
         }
     }
