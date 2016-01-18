@@ -1667,7 +1667,7 @@ qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
         if (virLogProbablyLogMessage(filter_next) ||
             STRPREFIX(filter_next, "char device redirected to")) {
             size_t skip = (eol + 1) - filter_next;
-            memmove(filter_next, eol + 1, (got - skip) + 1);
+            memmove(filter_next, eol + 1, buf + got - eol);
             got -= skip;
         } else {
             filter_next = eol + 1;
