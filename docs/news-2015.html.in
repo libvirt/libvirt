@@ -260,7 +260,7 @@
       </li>
     </ul>
 
-    <h3>v1.2.21: Nov 04 2015</h3>
+    <h3>1.2.21: Nov 04 2015</h3>
     <ul>
       <li>Documentation:<br/>
       docs: event impl. registration before hypervisor connection (Dominik Perpeet),<br/>
