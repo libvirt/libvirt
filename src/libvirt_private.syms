@@ -1853,6 +1853,8 @@ virNetDevMacVLanCreate;
 virNetDevMacVLanCreateWithVPortProfile;
 virNetDevMacVLanDelete;
 virNetDevMacVLanDeleteWithVPortProfile;
+virNetDevMacVLanReleaseName;
+virNetDevMacVLanReserveName;
 virNetDevMacVLanRestartWithVPortProfile;
 virNetDevMacVLanVPortProfileRegisterCallback;
 

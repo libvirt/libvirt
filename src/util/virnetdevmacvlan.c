@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2015 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -64,6 +64,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode, VIR_NETDEV_MACVLAN_MODE_LAST,
 # include "virnetlink.h"
 # include "virnetdev.h"
 # include "virpidfile.h"
+# include "virbitmap.h"
 
 VIR_LOG_INIT("util.netdevmacvlan");
 
@@ -73,7 +74,226 @@ VIR_LOG_INIT("util.netdevmacvlan");
 # define MACVLAN_NAME_PREFIX	"macvlan"
 # define MACVLAN_NAME_PATTERN	"macvlan%d"
 
+# define MACVLAN_MAX_ID 8191
+
 virMutex virNetDevMacVLanCreateMutex = VIR_MUTEX_INITIALIZER;
+virBitmapPtr macvtapIDs = NULL;
+virBitmapPtr macvlanIDs = NULL;
+
+static int
+virNetDevMacVLanOnceInit(void)
+{
+
+    if (!macvtapIDs &&
+        !(macvtapIDs = virBitmapNew(MACVLAN_MAX_ID + 1)))
+        return -1;
+    if (!macvlanIDs &&
+        !(macvlanIDs = virBitmapNew(MACVLAN_MAX_ID + 1)))
+        return -1;
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetDevMacVLan);
+
+
+/**
+ * virNetDevMacVLanReserveID:
+ *
+ *  @id: id 0 - MACVLAN_MAX_ID+1 to reserve (or -1 for "first free")
+ *  @flags: set VIR_NETDEV_MACVLAN_CREATE_WITH_TAP for macvtapN else macvlanN
+ *  @quietFail: don't log an error if this name is already in-use
+ *  @nextFree: reserve the next free ID *after* @id rather than @id itself
+ *
+ *  Reserve the indicated ID in the appropriate bitmap, or find the
+ *  first free ID if @id is -1.
+ *
+ *  Returns newly reserved ID# on success, or -1 to indicate failure.
+ */
+static int
+virNetDevMacVLanReserveID(int id, unsigned int flags,
+                          bool quietFail, bool nextFree)
+{
+    virBitmapPtr bitmap;
+
+    if (virNetDevMacVLanInitialize() < 0)
+       return -1;
+
+    bitmap = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+        macvtapIDs :  macvlanIDs;
+
+    if (id > MACVLAN_MAX_ID) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("can't use name %s%d - out of range 0-%d"),
+                       (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                       MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX,
+                       id, MACVLAN_MAX_ID);
+        return -1;
+    }
+
+    if ((id < 0 || nextFree) &&
+        (id = virBitmapNextClearBit(bitmap, 0)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no unused %s names available"),
+                       (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                       MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX);
+        return -1;
+    }
+
+    if (virBitmapIsBitSet(bitmap, id)) {
+        if (quietFail) {
+            VIR_INFO("couldn't reserve name %s%d - already in use",
+                     (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                     MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("couldn't reserve name %s%d - already in use"),
+                           (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                           MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+        }
+        return -1;
+    }
+
+    if (virBitmapSetBit(bitmap, id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("couldn't mark %s%d as used"),
+                       (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                       MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+        return -1;
+    }
+
+    VIR_INFO("reserving device %s%d",
+             (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+             MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+    return id;
+}
+
+
+/**
+ * virNetDevMacVLanReleaseID:
+ *  @id: id 0 - MACVLAN_MAX_ID+1 to release
+ *
+ *  Returns 0 for success or -1 for failure.
+ */
+static int
+virNetDevMacVLanReleaseID(int id, unsigned int flags)
+{
+    virBitmapPtr bitmap;
+
+    if (virNetDevMacVLanInitialize() < 0)
+        return 0;
+
+    bitmap = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+        macvtapIDs :  macvlanIDs;
+
+    if (id > MACVLAN_MAX_ID) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("can't free name %s%d - out of range 0-%d"),
+                       (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                       MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX,
+                       id, MACVLAN_MAX_ID);
+        return -1;
+    }
+
+    if (id < 0)
+        return 0;
+
+    VIR_INFO("releasing %sdevice %s%d",
+             virBitmapIsBitSet(bitmap, id) ? "" : "unreserved",
+             (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+             MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+
+    if (virBitmapClearBit(bitmap, id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("couldn't mark %s%d as unused"),
+                       (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
+                       MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX, id);
+        return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * virNetDevMacVLanReserveName:
+ *
+ *  @name: already-known name of device
+ *  @quietFail: don't log an error if this name is already in-use
+ *
+ *  Extract the device type and id from a macvtap/macvlan device name
+ *  and mark the appropriate position as in-use in the appropriate
+ *  bitmap.
+ *
+ *  Returns reserved ID# on success, -1 on failure, -2 if the name
+ *  doesn't fit the auto-pattern (so not reserveable).
+ */
+int
+virNetDevMacVLanReserveName(const char *name, bool quietFail)
+{
+    unsigned int id;
+    unsigned int flags = 0;
+    const char *idstr = NULL;
+
+    if (virNetDevMacVLanInitialize() < 0)
+       return -1;
+
+    if (STRPREFIX(name, MACVTAP_NAME_PREFIX)) {
+        idstr = name + strlen(MACVTAP_NAME_PREFIX);
+        flags |= VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
+    } else if (STRPREFIX(name, MACVLAN_NAME_PREFIX)) {
+        idstr = name + strlen(MACVLAN_NAME_PREFIX);
+    } else {
+        return -2;
+    }
+
+    if (virStrToLong_ui(idstr, NULL, 10, &id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("couldn't get id value from macvtap device name %s"),
+                       name);
+        return -1;
+    }
+    return virNetDevMacVLanReserveID(id, flags, quietFail, false);
+}
+
+
+/**
+ * virNetDevMacVLanReleaseName:
+ *
+ *  @name: already-known name of device
+ *
+ *  Extract the device type and id from a macvtap/macvlan device name
+ *  and mark the appropriate position as in-use in the appropriate
+ *  bitmap.
+ *
+ *  returns 0 on success, -1 on failure
+ */
+int
+virNetDevMacVLanReleaseName(const char *name)
+{
+    unsigned int id;
+    unsigned int flags = 0;
+    const char *idstr = NULL;
+
+    if (virNetDevMacVLanInitialize() < 0)
+       return -1;
+
+    if (STRPREFIX(name, MACVTAP_NAME_PREFIX)) {
+        idstr = name + strlen(MACVTAP_NAME_PREFIX);
+        flags |= VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
+    } else if (STRPREFIX(name, MACVLAN_NAME_PREFIX)) {
+        idstr = name + strlen(MACVLAN_NAME_PREFIX);
+    } else {
+        return 0;
+    }
+
+    if (virStrToLong_ui(idstr, NULL, 10, &id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("couldn't get id value from macvtap device name %s"),
+                       name);
+        return -1;
+    }
+    return virNetDevMacVLanReleaseID(id, flags);
+}
+
 
 /**
  * virNetDevMacVLanCreate:
@@ -724,14 +944,20 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
  * virNetDevMacVLanCreateWithVPortProfile:
  * Create an instance of a macvtap device and open its tap character
  * device.
- * @tgifname: Interface name that the macvtap is supposed to have. May
- *    be NULL if this function is supposed to choose a name
+
+ * @ifnameRequested: Interface name that the caller wants the macvtap
+ *    device to have, or NULL to pick the first available name
+ *    appropriate for the type (macvlan%d or macvtap%d). If the
+ *    suggested name fits one of those patterns, but is already in
+ *    use, we will fallback to finding the first available. If the
+ *    suggested name *doesn't* fit a pattern and the name is in use,
+ *    we will fail.
  * @macaddress: The MAC address for the macvtap device
  * @linkdev: The interface name of the NIC to connect to the external bridge
- * @mode: int describing the mode for 'bridge', 'vepa', 'private' or 'passthru'.
+ * @mode: macvtap mode (VIR_NETDEV_MACVLAN_MODE_(BRIDGE|VEPA|PRIVATE|PASSTHRU)
  * @vmuuid: The UUID of the VM the macvtap belongs to
  * @virtPortProfile: pointer to object holding the virtual port profile data
- * @res_ifname: Pointer to a string pointer where the actual name of the
+ * @ifnameResult: Pointer to a string pointer where the actual name of the
  *     interface will be stored into if everything succeeded. It is up
  *     to the caller to free the string.
  * @tapfd: array of file descriptor return value for the new tap device
@@ -744,39 +970,36 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
  *
  * Return 0 on success, -1 on error.
  */
-int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
-                                           const virMacAddr *macaddress,
-                                           const char *linkdev,
-                                           virNetDevMacVLanMode mode,
-                                           const unsigned char *vmuuid,
-                                           virNetDevVPortProfilePtr virtPortProfile,
-                                           char **res_ifname,
-                                           virNetDevVPortProfileOp vmOp,
-                                           char *stateDir,
-                                           int *tapfd,
-                                           size_t tapfdSize,
-                                           unsigned int flags)
+int
+virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
+                                       const virMacAddr *macaddress,
+                                       const char *linkdev,
+                                       virNetDevMacVLanMode mode,
+                                       const unsigned char *vmuuid,
+                                       virNetDevVPortProfilePtr virtPortProfile,
+                                       char **ifnameResult,
+                                       virNetDevVPortProfileOp vmOp,
+                                       char *stateDir,
+                                       int *tapfd,
+                                       size_t tapfdSize,
+                                       unsigned int flags)
 {
     const char *type = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
-        "macvtap" : "macvlan";
-    const char *prefix = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
         MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX;
     const char *pattern = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
         MACVTAP_NAME_PATTERN : MACVLAN_NAME_PATTERN;
-    int c, rc;
+    int rc, reservedID = -1;
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
     uint32_t macvtapMode;
-    const char *cr_ifname = NULL;
+    const char *ifnameCreated = NULL;
     int ret;
     int vf = -1;
     bool vnet_hdr = flags & VIR_NETDEV_MACVLAN_VNET_HDR;
 
     macvtapMode = modeMap[mode];
 
-    *res_ifname = NULL;
-
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
+    *ifnameResult = NULL;
 
     /** Note: When using PASSTHROUGH mode with MACVTAP devices the link
      * device's MAC address must be set to the VMs MAC address. In
@@ -803,52 +1026,82 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         }
     }
 
-    if (tgifname) {
-        if ((ret = virNetDevExists(tgifname)) < 0)
-            return -1;
+    if (ifnameRequested) {
+        bool isAutoName
+            = (STRPREFIX(ifnameRequested, MACVTAP_NAME_PREFIX) ||
+               STRPREFIX(ifnameRequested, MACVLAN_NAME_PREFIX));
 
+        VIR_INFO("Requested macvtap device name: %s", ifnameRequested);
+        virMutexLock(&virNetDevMacVLanCreateMutex);
+
+        if ((ret = virNetDevExists(ifnameRequested)) < 0) {
+            virMutexUnlock(&virNetDevMacVLanCreateMutex);
+            return -1;
+        }
         if (ret) {
-            if (STRPREFIX(tgifname, prefix))
+            if (isAutoName)
                 goto create_name;
             virReportSystemError(EEXIST,
-                                 _("Unable to create macvlan device %s"), tgifname);
+                                 _("Unable to create %s device %s"),
+                                 type, ifnameRequested);
+            virMutexUnlock(&virNetDevMacVLanCreateMutex);
             return -1;
         }
-        cr_ifname = tgifname;
-        rc = virNetDevMacVLanCreate(tgifname, type, macaddress, linkdev,
-                                    macvtapMode, &do_retry);
-        if (rc < 0)
+        if (isAutoName &&
+            (reservedID = virNetDevMacVLanReserveName(ifnameRequested, true)) < 0) {
+            reservedID = -1;
+            goto create_name;
+        }
+
+        if (virNetDevMacVLanCreate(ifnameRequested, type, macaddress,
+                                   linkdev, macvtapMode, &do_retry) < 0) {
+            if (isAutoName) {
+                virNetDevMacVLanReleaseName(ifnameRequested);
+                reservedID = -1;
+                goto create_name;
+            }
+            virMutexUnlock(&virNetDevMacVLanCreateMutex);
             return -1;
-    } else {
+        }
+        /* virNetDevMacVLanCreate() was successful - use this name */
+        ifnameCreated = ifnameRequested;
  create_name:
-        retries = 5;
-        virMutexLock(&virNetDevMacVLanCreateMutex);
-        for (c = 0; c < 8192; c++) {
-            snprintf(ifname, sizeof(ifname), pattern, c);
-            if ((ret = virNetDevExists(ifname)) < 0) {
-                virMutexUnlock(&virNetDevMacVLanCreateMutex);
-                return -1;
-            }
-            if (!ret) {
-                rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
-                                            macvtapMode, &do_retry);
-                if (rc == 0) {
-                    cr_ifname = ifname;
-                    break;
-                }
-
-                if (do_retry && --retries)
-                    continue;
-                break;
-            }
-        }
-
         virMutexUnlock(&virNetDevMacVLanCreateMutex);
-        if (!cr_ifname)
-            return -1;
     }
 
-    if (virNetDevVPortProfileAssociate(cr_ifname,
+    retries = MACVLAN_MAX_ID;
+    while (!ifnameCreated && retries) {
+        virMutexLock(&virNetDevMacVLanCreateMutex);
+        reservedID = virNetDevMacVLanReserveID(reservedID, flags, false, true);
+        if (reservedID < 0) {
+            virMutexUnlock(&virNetDevMacVLanCreateMutex);
+            return -1;
+        }
+        snprintf(ifname, sizeof(ifname), pattern, reservedID);
+        rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
+                                    macvtapMode, &do_retry);
+        if (rc < 0) {
+            virNetDevMacVLanReleaseID(reservedID, flags);
+            virMutexUnlock(&virNetDevMacVLanCreateMutex);
+            if (!do_retry)
+                return -1;
+            VIR_INFO("Device %s wasn't reserved but already existed, skipping",
+                     ifname);
+            retries--;
+            continue;
+        }
+        ifnameCreated = ifname;
+        virMutexUnlock(&virNetDevMacVLanCreateMutex);
+    }
+
+    if (!ifnameCreated) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many unreserved %s devices in use"),
+                       type);
+        return -1;
+    }
+
+    if (virNetDevVPortProfileAssociate(ifnameCreated,
                                        virtPortProfile,
                                        macaddress,
                                        linkdev,
@@ -859,26 +1112,26 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_IFUP) {
-        if (virNetDevSetOnline(cr_ifname, true) < 0) {
+        if (virNetDevSetOnline(ifnameCreated, true) < 0) {
             rc = -1;
             goto disassociate_exit;
         }
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(cr_ifname, tapfd, tapfdSize, 10) < 0)
+        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0)
             goto disassociate_exit;
 
         if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
-        if (VIR_STRDUP(*res_ifname, cr_ifname) < 0) {
+        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
             goto disassociate_exit;
         }
     } else {
-        if (VIR_STRDUP(*res_ifname, cr_ifname) < 0)
+        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0)
             goto disassociate_exit;
         rc = 0;
     }
@@ -889,7 +1142,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
          * a saved image) - migration and libvirtd restart are handled
          * elsewhere.
          */
-        if (virNetDevMacVLanVPortProfileRegisterCallback(cr_ifname, macaddress,
+        if (virNetDevMacVLanVPortProfileRegisterCallback(ifnameCreated, macaddress,
                                                          linkdev, vmuuid,
                                                          virtPortProfile,
                                                          vmOp) < 0)
@@ -899,7 +1152,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
     return rc;
 
  disassociate_exit:
-    ignore_value(virNetDevVPortProfileDisassociate(cr_ifname,
+    ignore_value(virNetDevVPortProfileDisassociate(ifnameCreated,
                                                    virtPortProfile,
                                                    macaddress,
                                                    linkdev,
@@ -909,7 +1162,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *tgifname,
         VIR_FORCE_CLOSE(tapfd[tapfdSize]);
 
  link_del_exit:
-    ignore_value(virNetDevMacVLanDelete(cr_ifname));
+    ignore_value(virNetDevMacVLanDelete(ifnameCreated));
+    virNetDevMacVLanReleaseName(ifnameCreated);
 
     return rc;
 }
@@ -945,6 +1199,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
             ret = -1;
         if (virNetDevMacVLanDelete(ifname) < 0)
             ret = -1;
+        virNetDevMacVLanReleaseName(ifname);
     }
 
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {

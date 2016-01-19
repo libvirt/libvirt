@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011, 2013 Red Hat, Inc.
+ * Copyright (C) 2011, 2013, 2016 Red Hat, Inc.
  * Copyright (C) 2010 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -49,6 +49,9 @@ typedef enum {
    /* Enable VNET_HDR */
    VIR_NETDEV_MACVLAN_VNET_HDR          = 1 << 2,
 } virNetDevMacVLanCreateFlags;
+
+int virNetDevMacVLanReserveName(const char *name, bool quietfail);
+int virNetDevMacVLanReleaseName(const char *name);
 
 int virNetDevMacVLanCreate(const char *ifname,
                            const char *type,

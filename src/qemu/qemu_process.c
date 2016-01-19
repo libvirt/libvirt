@@ -1,7 +1,7 @@
 /*
  * qemu_process.c: QEMU process management
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3161,6 +3161,14 @@ qemuProcessNotifyNets(virDomainDefPtr def)
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
+        /* keep others from trying to use the macvtap device name, but
+         * don't return error if this happens, since that causes the
+         * domain to be unceremoniously killed, which would be *very*
+         * impolite.
+         */
+        if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
+           ignore_value(virNetDevMacVLanReserveName(net->ifname, false));
+
         if (networkNotifyActualDevice(def, net) < 0)
             return -1;
     }
