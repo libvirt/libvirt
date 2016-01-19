@@ -301,7 +301,10 @@ testVirPCIDeviceReattachSingle(const void *opaque)
     if (!dev)
         goto cleanup;
 
-    virPCIDeviceReattachInit(dev);
+    virPCIDeviceSetUnbindFromStub(dev, true);
+    virPCIDeviceSetRemoveSlot(dev, true);
+    virPCIDeviceSetReprobe(dev, true);
+
     if (virPCIDeviceReattach(dev, NULL, NULL) < 0)
         goto cleanup;
 

@@ -1619,7 +1619,9 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
     if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
         goto out;
 
-    virPCIDeviceReattachInit(pci);
+    virPCIDeviceSetUnbindFromStub(pci, true);
+    virPCIDeviceSetRemoveSlot(pci, true);
+    virPCIDeviceSetReprobe(pci, true);
 
     if (virPCIDeviceReattach(pci, hostdev_mgr->activePCIHostdevs,
                              hostdev_mgr->inactivePCIHostdevs) < 0)

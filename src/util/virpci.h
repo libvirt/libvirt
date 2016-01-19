@@ -119,7 +119,6 @@ void virPCIDeviceSetRemoveSlot(virPCIDevice *dev,
 unsigned int virPCIDeviceGetReprobe(virPCIDevicePtr dev);
 void virPCIDeviceSetReprobe(virPCIDevice *dev,
                             bool reprobe);
-void virPCIDeviceReattachInit(virPCIDevice *dev);
 
 
 virPCIDeviceListPtr virPCIDeviceListNew(void);

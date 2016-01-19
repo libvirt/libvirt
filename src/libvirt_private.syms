@@ -1993,7 +1993,6 @@ virPCIDeviceListSteal;
 virPCIDeviceListStealIndex;
 virPCIDeviceNew;
 virPCIDeviceReattach;
-virPCIDeviceReattachInit;
 virPCIDeviceReset;
 virPCIDeviceSetManaged;
 virPCIDeviceSetRemoveSlot;

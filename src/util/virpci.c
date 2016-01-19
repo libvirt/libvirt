@@ -1771,14 +1771,6 @@ virPCIDeviceGetUsedBy(virPCIDevicePtr dev,
     *dom_name = dev->used_by_domname;
 }
 
-void virPCIDeviceReattachInit(virPCIDevicePtr pci)
-{
-    pci->unbind_from_stub = true;
-    pci->remove_slot = true;
-    pci->reprobe = true;
-}
-
-
 virPCIDeviceListPtr
 virPCIDeviceListNew(void)
 {
