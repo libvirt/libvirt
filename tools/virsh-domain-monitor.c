@@ -1876,17 +1876,17 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
         else
             ignore_value(virStrcpyStatic(id_buf, "-"));
 
-        state = virshDomainState(ctl, dom, NULL);
-
-        /* Domain could've been removed in the meantime */
-        if (state < 0)
-            continue;
-
-        if (optTable && managed && state == VIR_DOMAIN_SHUTOFF &&
-            virDomainHasManagedSaveImage(dom, 0) > 0)
-            state = -2;
-
         if (optTable) {
+            state = virshDomainState(ctl, dom, NULL);
+
+            /* Domain could've been removed in the meantime */
+            if (state < 0)
+                continue;
+
+            if (managed && state == VIR_DOMAIN_SHUTOFF &&
+                virDomainHasManagedSaveImage(dom, 0) > 0)
+                state = -2;
+
             if (optTitle) {
                 if (!(title = virshGetDomainDescription(ctl, dom, true, 0)))
                     goto cleanup;
