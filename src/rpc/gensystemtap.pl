@@ -72,7 +72,7 @@ function libvirt_rpc_auth_name(type, verbose)
 {
 EOF
 my $first = 1;
-foreach my $type (keys %auth) {
+foreach my $type (sort(keys %auth)) {
     my $cond = $first ? "if" : "} else if";
     $first = 0;
     print "  $cond (type == ", $type, ") {\n";
@@ -95,7 +95,7 @@ function libvirt_rpc_type_name(type, verbose)
 {
 EOF
 $first = 1;
-foreach my $type (keys %type) {
+foreach my $type (sort(keys %type)) {
     my $cond = $first ? "if" : "} else if";
     $first = 0;
     print "  $cond (type == ", $type, ") {\n";
@@ -118,7 +118,7 @@ function libvirt_rpc_status_name(status, verbose)
 {
 EOF
 $first = 1;
-foreach my $status (keys %status) {
+foreach my $status (sort(keys %status)) {
     my $cond = $first ? "if" : "} else if";
     $first = 0;
     print "  $cond (status == ", $status, ") {\n";
@@ -141,7 +141,7 @@ function libvirt_rpc_program_name(program, verbose)
 {
 EOF
 $first = 1;
-foreach my $prog (keys %funcs) {
+foreach my $prog (sort(keys %funcs)) {
     my $cond = $first ? "if" : "} else if";
     $first = 0;
     print "  $cond (program == ", $funcs{$prog}->{id}, ") {\n";
@@ -165,7 +165,7 @@ function libvirt_rpc_procedure_name(program, version, proc, verbose)
 {
 EOF
 $first = 1;
-foreach my $prog (keys %funcs) {
+foreach my $prog (sort(keys %funcs)) {
     my $cond = $first ? "if" : "} else if";
     $first = 0;
     print "  $cond (program == ", $funcs{$prog}->{id}, " && version == ", $funcs{$prog}->{version}, ") {\n";
