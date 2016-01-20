@@ -41,6 +41,8 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 
+#define VIR_FROM_THIS VIR_FROM_SEXPR
+
 VIR_LOG_INIT("xenconfig.xen_sxpr");
 
 /* Get a domain id from a S-expression string */

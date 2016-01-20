@@ -46,6 +46,4 @@
 #  define DEFAULT_VIF_SCRIPT "vif-bridge"
 # endif
 
-# define VIR_FROM_THIS VIR_FROM_NONE
-
 #endif /* __VIR_XENXS_PRIVATE_H__ */

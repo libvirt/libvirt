@@ -36,6 +36,7 @@
 #include "virstring.h"
 #include "xen_common.h"
 
+#define VIR_FROM_THIS VIR_FROM_XENXM
 
 static int
 xenParseXMOS(virConfPtr conf, virDomainDefPtr def)

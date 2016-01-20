@@ -39,6 +39,7 @@
 #include "virstring.h"
 #include "xen_common.h"
 
+#define VIR_FROM_THIS VIR_FROM_XEN
 
 /*
  * Convenience method to grab a long int from the config file object

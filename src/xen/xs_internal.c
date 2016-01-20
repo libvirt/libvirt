@@ -52,7 +52,7 @@
 #include "xen_hypervisor.h"
 #include "virstring.h"
 
-#define VIR_FROM_THIS VIR_FROM_XEN
+#define VIR_FROM_THIS VIR_FROM_XENSTORE
 
 VIR_LOG_INIT("xen.xs_internal");
 
