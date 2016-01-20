@@ -2068,8 +2068,6 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
         goto endjob;
     }
 
-    qemuDomainSetFakeReboot(driver, vm, isReboot);
-
     if (useAgent) {
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentShutdown(priv->agent, agentFlag);
@@ -2096,6 +2094,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 #if WITH_YAJL
         }
 #endif
+        qemuDomainSetFakeReboot(driver, vm, isReboot);
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
