@@ -3957,7 +3957,7 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         {
             char *dumpfile;
-            unsigned int flags = 0;
+            unsigned int flags = VIR_DUMP_MEMORY_ONLY;
 
             if (virAsprintf(&dumpfile, "%s/%s-%u",
                             cfg->autoDumpPath,
