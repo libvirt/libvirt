@@ -220,7 +220,8 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 %.png: %.fig
 	convert -rotate 90 $< $@
 
-%.html.tmp: %.html.in site.xsl subsite.xsl page.xsl sitemap.html.in $(acl_generated)
+%.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
+		sitemap.html.in $(acl_generated)
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
