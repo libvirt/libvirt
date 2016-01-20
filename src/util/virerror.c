@@ -135,6 +135,7 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Thread jobs",
               "Admin Interface",
               "Log Manager",
+              "Xen XL Config",
     )
 
 

@@ -128,6 +128,7 @@ typedef enum {
     VIR_FROM_THREAD = 61,       /* Error from thread utils */
     VIR_FROM_ADMIN = 62,        /* Error from admin backend */
     VIR_FROM_LOGGING = 63,      /* Error from log manager */
+    VIR_FROM_XENXL = 64,        /* Error from Xen xl config code */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST

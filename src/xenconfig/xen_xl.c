@@ -33,7 +33,7 @@
 #include "virstoragefile.h"
 #include "xen_xl.h"
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+#define VIR_FROM_THIS VIR_FROM_XENXL
 
 /*
  * Xen provides a libxl utility library, with several useful functions,
