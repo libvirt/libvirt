@@ -401,6 +401,19 @@ main(int argc, char **argv)
     switch ((enum virLeaseActionFlags) action) {
     case VIR_LEASE_ACTION_ADD:
     case VIR_LEASE_ACTION_OLD:
+        /* Custom ipv6 leases *will not* be created if the env-var DNSMASQ_MAC
+         * is not set. In the special case, when the $(interface).status file
+         * is not already present and dnsmasq is (re)started, the corresponding
+         * ipv6 custom lease will be created only when the guest sends the
+         * 'old' action for its existing ipv6 interfaces.
+         *
+         * According to rfc3315, the combination of DUID and IAID can be used
+         * to uniquely identify each ipv6 guest interface. So, in future, if
+         * we introduce virNetworkGetDHCPLeaseBy(IAID|DUID|IAID+DUID) for ipv6
+         * interfaces, then, the following if condition won't be required, as
+         * the new lease will be created irrespective of whether the MACID is
+         * known or not.
+         */
         if (!mac)
             break;
         delete = true;
@@ -439,19 +452,6 @@ main(int argc, char **argv)
 
     case VIR_LEASE_ACTION_DEL:
         delete = true;
-        /* Custom ipv6 leases *will not* be created if the env-var DNSMASQ_MAC
-         * is not set. In the special case, when the $(interface).status file
-         * is not already present and dnsmasq is (re)started, the corresponding
-         * ipv6 custom lease will be created only when the guest sends the
-         * 'old' action for its existing ipv6 interfaces.
-         *
-         * According to rfc3315, the combination of DUID and IAID can be used
-         * to uniquely identify each ipv6 guest interface. So, in future, if
-         * we introduce virNetworkGetDHCPLeaseBy(IAID|DUID|IAID+DUID) for ipv6
-         * interfaces, then, the following if condition won't be required, as
-         * the new lease will be created irrespective of whether the MACID is
-         * known or not.
-         */
         if (mac) {
             /* Delete the corresponding lease, if it already exists */
             delete = true;
