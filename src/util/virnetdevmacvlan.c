@@ -935,14 +935,6 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
     int ret = 0;
     int vf = -1;
 
-    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
-        if (virtPortProfile &&
-             virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH)
-            ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
-        else
-            ignore_value(virNetDevRestoreNetConfig(linkdev, vf, stateDir));
-    }
-
     if (ifname) {
         if (virNetDevVPortProfileDisassociate(ifname,
                                               virtPortProfile,
@@ -953,6 +945,14 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
             ret = -1;
         if (virNetDevMacVLanDelete(ifname) < 0)
             ret = -1;
+    }
+
+    if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
+        if (virtPortProfile &&
+             virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH)
+            ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
+        else
+            ignore_value(virNetDevRestoreNetConfig(linkdev, vf, stateDir));
     }
 
     virNetlinkEventRemoveClient(0, macaddr, NETLINK_ROUTE);
