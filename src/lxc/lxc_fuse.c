@@ -217,6 +217,12 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             virBufferAsprintf(new_meminfo, "SwapFree:       %8llu kB\n",
                               (meminfo.swaptotal - meminfo.memtotal -
                                meminfo.swapusage + meminfo.memusage));
+        } else if (STREQ(line, "Slab")) {
+            virBufferAsprintf(new_meminfo, "Slab:           %8d kB\n", 0);
+        } else if (STREQ(line, "SReclaimable")) {
+            virBufferAsprintf(new_meminfo, "SReclaimable:   %8d kB\n", 0);
+        } else if (STREQ(line, "SUnreclaim")) {
+            virBufferAsprintf(new_meminfo, "SUnreclaim:     %8d kB\n", 0);
         } else {
             *ptr = ':';
             virBufferAdd(new_meminfo, line, -1);
