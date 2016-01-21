@@ -131,7 +131,6 @@ static int lxcProcHostRead(char *path, char *buf, size_t size, off_t offset)
 static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
                               char *buf, size_t size, off_t offset)
 {
-    int copied = 0;
     int res;
     FILE *fd = NULL;
     char *line = NULL;
@@ -159,7 +158,7 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     }
 
     res = -1;
-    while (copied < size && getline(&line, &n, fd) > 0) {
+    while (getline(&line, &n, fd) > 0) {
         char *ptr = strchr(line, ':');
         if (!ptr)
             continue;
@@ -219,13 +218,11 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             res = -errno;
             goto cleanup;
         }
-
-        copied += strlen(line);
-        if (copied > size)
-            copied = size;
     }
-    res = copied;
-    memcpy(buf, virBufferCurrentContent(new_meminfo), copied);
+    res = strlen(virBufferCurrentContent(new_meminfo));
+    if (res > size)
+        res = size;
+    memcpy(buf, virBufferCurrentContent(new_meminfo), res);
 
  cleanup:
     VIR_FREE(line);
