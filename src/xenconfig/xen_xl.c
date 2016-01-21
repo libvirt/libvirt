@@ -27,6 +27,7 @@
 
 #include "virconf.h"
 #include "virerror.h"
+#include "virlog.h"
 #include "domain_conf.h"
 #include "viralloc.h"
 #include "virstring.h"
@@ -34,6 +35,8 @@
 #include "xen_xl.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXL
+
+VIR_LOG_INIT("xen.xen_xl");
 
 /*
  * Xen provides a libxl utility library, with several useful functions,
@@ -58,11 +61,46 @@ extern int xlu_disk_parse(XLU_Config *cfg,
                           libxl_device_disk *disk);
 #endif
 
+static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
+{
+    char *cmdline = NULL;
+    const char *root, *extra, *buf;
+
+    if (xenConfigGetString(conf, "cmdline", &buf, NULL) < 0)
+        return -1;
+
+    if (xenConfigGetString(conf, "root", &root, NULL) < 0)
+        return -1;
+
+    if (xenConfigGetString(conf, "extra", &extra, NULL) < 0)
+        return -1;
+
+    if (buf) {
+        if (VIR_STRDUP(cmdline, buf) < 0)
+            return -1;
+        if (root || extra)
+            VIR_WARN("ignoring root= and extra= in favour of cmdline=");
+    } else {
+        if (root && extra) {
+            if (virAsprintf(&cmdline, "root=%s %s", root, extra) < 0)
+                return -1;
+        } else if (root) {
+            if (virAsprintf(&cmdline, "root=%s", root) < 0)
+                return -1;
+        } else if (extra) {
+            if (VIR_STRDUP(cmdline, extra) < 0)
+                return -1;
+        }
+    }
+
+    *r_cmdline = cmdline;
+    return 0;
+}
+
 static int
 xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     size_t i;
-    const char *extra, *root;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         const char *boot;
@@ -84,19 +122,8 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         if (xenConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
             return -1;
 
-        if (xenConfigGetString(conf, "extra", &extra, NULL) < 0)
+        if (xenParseCmdline(conf, &def->os.cmdline) < 0)
             return -1;
-
-        if (xenConfigGetString(conf, "root", &root, NULL) < 0)
-            return -1;
-
-        if (root) {
-            if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
-                return -1;
-        } else {
-            if (VIR_STRDUP(def->os.cmdline, extra) < 0)
-                return -1;
-        }
 #endif
 
         if (xenConfigGetString(conf, "boot", &boot, "c") < 0)
@@ -132,19 +159,8 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         if (xenConfigCopyStringOpt(conf, "ramdisk", &def->os.initrd) < 0)
             return -1;
 
-        if (xenConfigGetString(conf, "extra", &extra, NULL) < 0)
+        if (xenParseCmdline(conf, &def->os.cmdline) < 0)
             return -1;
-
-        if (xenConfigGetString(conf, "root", &root, NULL) < 0)
-            return -1;
-
-        if (root) {
-            if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
-                return -1;
-        } else {
-            if (VIR_STRDUP(def->os.cmdline, extra) < 0)
-                return -1;
-        }
     }
 
     return 0;
@@ -503,7 +519,7 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
             return -1;
 
         if (def->os.cmdline &&
-            xenConfigSetString(conf, "extra", def->os.cmdline) < 0)
+            xenConfigSetString(conf, "cmdline", def->os.cmdline) < 0)
             return -1;
 #endif
 
@@ -554,7 +570,7 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
             return -1;
 
          if (def->os.cmdline &&
-             xenConfigSetString(conf, "extra", def->os.cmdline) < 0)
+             xenConfigSetString(conf, "cmdline", def->os.cmdline) < 0)
             return -1;
      } /* !hvm */
 

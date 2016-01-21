@@ -180,16 +180,26 @@ mymain(void)
     if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
-#define DO_TEST(name)                                                   \
+#define DO_TEST_PARSE(name)                                             \
     do {                                                                \
         struct testInfo info0 = { name, 0 };                            \
-        struct testInfo info1 = { name, 1 };                            \
-        if (virtTestRun("Xen XM-2-XML Parse  " name,                    \
+        if (virtTestRun("Xen XL-2-XML Parse  " name,                    \
                         testCompareHelper, &info0) < 0)                 \
             ret = -1;                                                   \
-        if (virtTestRun("Xen XM-2-XML Format " name,                    \
+    } while (0)
+
+#define DO_TEST_FORMAT(name)                                            \
+    do {                                                                \
+        struct testInfo info1 = { name, 1 };                            \
+        if (virtTestRun("Xen XL-2-XML Format " name,                    \
                         testCompareHelper, &info1) < 0)                 \
             ret = -1;                                                   \
+    } while (0)
+
+#define DO_TEST(name)                                                   \
+    do {                                                                \
+        DO_TEST_PARSE(name);                                            \
+        DO_TEST_FORMAT(name);                                           \
     } while (0)
 
     DO_TEST("paravirt-maxvcpus");
@@ -198,11 +208,17 @@ mymain(void)
     DO_TEST("spice-features");
     DO_TEST("vif-rate");
 
+    DO_TEST("paravirt-cmdline");
+    DO_TEST_FORMAT("paravirt-cmdline-extra-root");
+    DO_TEST_FORMAT("paravirt-cmdline-bogus-extra-root");
+
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
     DO_TEST("fullvirt-multiusb");
 #endif
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
     DO_TEST("fullvirt-direct-kernel-boot");
+    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra");
+    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra");
 #endif
 
     virObjectUnref(caps);
