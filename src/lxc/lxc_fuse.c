@@ -174,6 +174,14 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
                     virDomainDefGetMemoryActual(def))) {
             virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                               (meminfo.memtotal - meminfo.memusage));
+        } else if (STREQ(line, "MemAvailable") &&
+                   (virMemoryLimitIsSet(def->mem.hard_limit) ||
+                    virDomainDefGetMemoryActual(def))) {
+            /* MemAvailable is actually MemFree + SRReclaimable +
+               some other bits, but MemFree is the closest approximation
+               we have */
+            virBufferAsprintf(new_meminfo, "MemAvailable:   %8llu kB\n",
+                              (meminfo.memtotal - meminfo.memusage));
         } else if (STREQ(line, "Buffers")) {
             virBufferAsprintf(new_meminfo, "Buffers:        %8d kB\n", 0);
         } else if (STREQ(line, "Cached")) {
