@@ -358,6 +358,8 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     virObjectLock(vm);
 
+    libxl_dominfo_init(&d_info);
+
     /* Does domain still exist? */
     rc = libxl_domain_info(cfg->ctx, &d_info, vm->def->id);
     if (rc == ERROR_INVAL) {
@@ -389,11 +391,13 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* Enable domain death events */
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
 
+    libxl_dominfo_dispose(&d_info);
     virObjectUnlock(vm);
     virObjectUnref(cfg);
     return 0;
 
  out:
+    libxl_dominfo_dispose(&d_info);
     libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
         virDomainObjListRemoveLocked(driver->domains, vm);
@@ -1589,6 +1593,8 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         info->memory = vm->def->mem.cur_balloon;
         info->maxMem = virDomainDefGetMemoryActual(vm->def);
     } else {
+        libxl_dominfo_init(&d_info);
+
         if (libxl_domain_info(cfg->ctx, &d_info, vm->def->id) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxl_domain_info failed for domain '%d'"),
@@ -1598,6 +1604,8 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         info->cpuTime = d_info.cpu_time;
         info->memory = d_info.current_memkb;
         info->maxMem = d_info.max_memkb;
+
+        libxl_dominfo_dispose(&d_info);
     }
 
     info->state = virDomainObjGetState(vm, NULL);
@@ -4791,6 +4799,7 @@ libxlDomainMemoryStats(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
+    libxl_dominfo_init(&d_info);
     cfg = libxlDriverConfigGet(driver);
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -4822,13 +4831,12 @@ libxlDomainMemoryStats(virDomainPtr dom,
 
     ret = i;
 
-    libxl_dominfo_dispose(&d_info);
-
  endjob:
     if (!libxlDomainObjEndJob(driver, vm))
         vm = NULL;
 
  cleanup:
+    libxl_dominfo_dispose(&d_info);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);
