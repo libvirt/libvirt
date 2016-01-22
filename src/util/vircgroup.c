@@ -3917,8 +3917,8 @@ virCgroupGetFreezerState(virCgroupPtr group, char **state)
 
 
 int
-virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
-                      const char *mountopts)
+virCgroupBindMount(virCgroupPtr group, const char *oldroot,
+                   const char *mountopts)
 {
     int ret = -1;
     size_t i;
@@ -3954,10 +3954,9 @@ virCgroupIsolateMount(virCgroupPtr group, const char *oldroot,
 
         if (!virFileExists(group->controllers[i].mountPoint)) {
             char *src;
-            if (virAsprintf(&src, "%s%s%s",
+            if (virAsprintf(&src, "%s%s",
                             oldroot,
-                            group->controllers[i].mountPoint,
-                            group->controllers[i].placement) < 0)
+                            group->controllers[i].mountPoint) < 0)
                 goto cleanup;
 
             VIR_DEBUG("Create mount point '%s'",

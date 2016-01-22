@@ -286,9 +286,9 @@ int virCgroupKill(virCgroupPtr group, int signum);
 int virCgroupKillRecursive(virCgroupPtr group, int signum);
 int virCgroupKillPainfully(virCgroupPtr group);
 
-int virCgroupIsolateMount(virCgroupPtr group,
-                          const char *oldroot,
-                          const char *mountopts);
+int virCgroupBindMount(virCgroupPtr group,
+                       const char *oldroot,
+                       const char *mountopts);
 
 bool virCgroupSupportsCpuBW(virCgroupPtr cgroup);
 
