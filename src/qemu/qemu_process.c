@@ -2406,31 +2406,29 @@ qemuProcessInitPasswords(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        for (i = 0; i < vm->def->ndisks; i++) {
-            size_t secretLen;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        size_t secretLen;
 
-            if (!vm->def->disks[i]->src->encryption ||
-                !virDomainDiskGetSource(vm->def->disks[i]))
-                continue;
+        if (!vm->def->disks[i]->src->encryption ||
+            !virDomainDiskGetSource(vm->def->disks[i]))
+            continue;
 
-            VIR_FREE(secret);
-            if (qemuProcessGetVolumeQcowPassphrase(conn,
-                                                   vm->def->disks[i],
-                                                   &secret, &secretLen) < 0)
-                goto cleanup;
+        VIR_FREE(secret);
+        if (qemuProcessGetVolumeQcowPassphrase(conn,
+                                               vm->def->disks[i],
+                                               &secret, &secretLen) < 0)
+            goto cleanup;
 
-            VIR_FREE(alias);
-            if (VIR_STRDUP(alias, vm->def->disks[i]->info.alias) < 0)
-                goto cleanup;
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-                goto cleanup;
-            ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                ret = -1;
-            if (ret < 0)
-                goto cleanup;
-        }
+        VIR_FREE(alias);
+        if (VIR_STRDUP(alias, vm->def->disks[i]->info.alias) < 0)
+            goto cleanup;
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            goto cleanup;
+        ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            ret = -1;
+        if (ret < 0)
+            goto cleanup;
     }
 
  cleanup:
@@ -3290,9 +3288,8 @@ qemuProcessReconnect(void *opaque)
         goto cleanup;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
-        if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj)) < 0)
-            goto error;
+    if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj)) < 0)
+        goto error;
 
     /* if domain requests security driver we haven't loaded, report error, but
      * do not kill the domain
@@ -5981,11 +5978,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      * we also need to populate the PCI address set cache for later
      * use in hotplug
      */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        VIR_DEBUG("Assigning domain PCI addresses");
-        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
-            goto error;
-    }
+    VIR_DEBUG("Assigning domain PCI addresses");
+    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+        goto error;
 
     if ((timestamp = virTimeStringNow()) == NULL)
         goto error;
