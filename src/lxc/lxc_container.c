@@ -1834,7 +1834,7 @@ static int lxcContainerSetupPivotRoot(virDomainDefPtr vmDef,
 
     /* Now we can re-mount the cgroups controllers in the
      * same configuration as before */
-    if (virCgroupIsolateMount(cgroup, "/.oldroot/", sec_mount_options) < 0)
+    if (virCgroupBindMount(cgroup, "/.oldroot/", sec_mount_options) < 0)
         goto cleanup;
 
     /* Mounts /dev */
