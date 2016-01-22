@@ -72,6 +72,129 @@ struct virStorageBackendLogicalPoolVolData {
 };
 
 static int
+virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
+                                        char **const groups)
+{
+    int nextents, ret = -1;
+    const char *regex_unit = "(\\S+)\\((\\S+)\\)";
+    char *regex = NULL;
+    regex_t *reg = NULL;
+    regmatch_t *vars = NULL;
+    char *p = NULL;
+    size_t i;
+    int err, nvars;
+    unsigned long long offset, size, length;
+
+    nextents = 1;
+    if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED)) {
+        if (virStrToLong_i(groups[5], NULL, 10, &nextents) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed volume extent stripes value"));
+            goto cleanup;
+        }
+    }
+
+    /* Allocate and fill in extents information */
+    if (VIR_REALLOC_N(vol->source.extents,
+                      vol->source.nextent + nextents) < 0)
+        goto cleanup;
+
+    if (virStrToLong_ull(groups[6], NULL, 10, &length) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed volume extent length value"));
+        goto cleanup;
+    }
+
+    if (virStrToLong_ull(groups[7], NULL, 10, &size) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed volume extent size value"));
+        goto cleanup;
+    }
+
+    if (VIR_STRDUP(regex, regex_unit) < 0)
+        goto cleanup;
+
+    for (i = 1; i < nextents; i++) {
+        if (VIR_REALLOC_N(regex, strlen(regex) + strlen(regex_unit) + 2) < 0)
+            goto cleanup;
+        /* "," is the separator of "devices" field */
+        strcat(regex, ",");
+        strncat(regex, regex_unit, strlen(regex_unit));
+    }
+
+    if (VIR_ALLOC(reg) < 0)
+        goto cleanup;
+
+    /* Each extent has a "path:offset" pair, and vars[0] will
+     * be the whole matched string.
+     */
+    nvars = (nextents * 2) + 1;
+    if (VIR_ALLOC_N(vars, nvars) < 0)
+        goto cleanup;
+
+    err = regcomp(reg, regex, REG_EXTENDED);
+    if (err != 0) {
+        char error[100];
+        regerror(err, reg, error, sizeof(error));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to compile regex %s"),
+                       error);
+        goto cleanup;
+    }
+
+    err = regexec(reg, groups[3], nvars, vars, 0);
+    regfree(reg);
+    if (err != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed volume extent devices value"));
+        goto cleanup;
+    }
+
+    p = groups[3];
+
+    /* vars[0] is skipped */
+    for (i = 0; i < nextents; i++) {
+        size_t j;
+        int len;
+        char *offset_str = NULL;
+
+        j = (i * 2) + 1;
+        len = vars[j].rm_eo - vars[j].rm_so;
+        p[vars[j].rm_eo] = '\0';
+
+        if (VIR_STRNDUP(vol->source.extents[vol->source.nextent].path,
+                        p + vars[j].rm_so, len) < 0)
+            goto cleanup;
+
+        len = vars[j + 1].rm_eo - vars[j + 1].rm_so;
+        if (VIR_STRNDUP(offset_str, p + vars[j + 1].rm_so, len) < 0)
+            goto cleanup;
+
+        if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed volume extent offset value"));
+            VIR_FREE(offset_str);
+            goto cleanup;
+        }
+
+        VIR_FREE(offset_str);
+
+        vol->source.extents[vol->source.nextent].start = offset * size;
+        vol->source.extents[vol->source.nextent].end = (offset * size) + length;
+        vol->source.nextent++;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(regex);
+    VIR_FREE(reg);
+    VIR_FREE(vars);
+    return ret;
+}
+
+
+static int
 virStorageBackendLogicalMakeVol(char **const groups,
                                 void *opaque)
 {
@@ -79,14 +202,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
     virStoragePoolObjPtr pool = data->pool;
     virStorageVolDefPtr vol = NULL;
     bool is_new_vol = false;
-    unsigned long long offset, size, length;
-    const char *regex_unit = "(\\S+)\\((\\S+)\\)";
-    char *regex = NULL;
-    regex_t *reg = NULL;
-    regmatch_t *vars = NULL;
-    char *p = NULL;
-    size_t i;
-    int err, nextents, nvars, ret = -1;
+    int ret = -1;
     const char *attrs = groups[9];
 
     /* Skip inactive volume */
@@ -165,109 +281,14 @@ virStorageBackendLogicalMakeVol(char **const groups,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0)
         goto cleanup;
 
-    nextents = 1;
-    if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED)) {
-        if (virStrToLong_i(groups[5], NULL, 10, &nextents) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("malformed volume extent stripes value"));
-            goto cleanup;
-        }
-    }
-
-    /* Finally fill in extents information */
-    if (VIR_REALLOC_N(vol->source.extents,
-                      vol->source.nextent + nextents) < 0)
-        goto cleanup;
-
-    if (virStrToLong_ull(groups[6], NULL, 10, &length) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("malformed volume extent length value"));
-        goto cleanup;
-    }
-    if (virStrToLong_ull(groups[7], NULL, 10, &size) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("malformed volume extent size value"));
-        goto cleanup;
-    }
     if (virStrToLong_ull(groups[8], NULL, 10, &vol->target.allocation) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("malformed volume allocation value"));
         goto cleanup;
     }
 
-    /* Now parse the "devices" field separately */
-    if (VIR_STRDUP(regex, regex_unit) < 0)
+    if (virStorageBackendLogicalParseVolExtents(vol, groups) < 0)
         goto cleanup;
-
-    for (i = 1; i < nextents; i++) {
-        if (VIR_REALLOC_N(regex, strlen(regex) + strlen(regex_unit) + 2) < 0)
-            goto cleanup;
-        /* "," is the separator of "devices" field */
-        strcat(regex, ",");
-        strncat(regex, regex_unit, strlen(regex_unit));
-    }
-
-    if (VIR_ALLOC(reg) < 0)
-        goto cleanup;
-
-    /* Each extent has a "path:offset" pair, and vars[0] will
-     * be the whole matched string.
-     */
-    nvars = (nextents * 2) + 1;
-    if (VIR_ALLOC_N(vars, nvars) < 0)
-        goto cleanup;
-
-    err = regcomp(reg, regex, REG_EXTENDED);
-    if (err != 0) {
-        char error[100];
-        regerror(err, reg, error, sizeof(error));
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"),
-                       error);
-        goto cleanup;
-    }
-
-    err = regexec(reg, groups[3], nvars, vars, 0);
-    regfree(reg);
-    if (err != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed volume extent devices value"));
-        goto cleanup;
-    }
-
-    p = groups[3];
-
-    /* vars[0] is skipped */
-    for (i = 0; i < nextents; i++) {
-        size_t j;
-        int len;
-        char *offset_str = NULL;
-
-        j = (i * 2) + 1;
-        len = vars[j].rm_eo - vars[j].rm_so;
-        p[vars[j].rm_eo] = '\0';
-
-        if (VIR_STRNDUP(vol->source.extents[vol->source.nextent].path,
-                        p + vars[j].rm_so, len) < 0)
-            goto cleanup;
-
-        len = vars[j + 1].rm_eo - vars[j + 1].rm_so;
-        if (VIR_STRNDUP(offset_str, p + vars[j + 1].rm_so, len) < 0)
-            goto cleanup;
-
-        if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("malformed volume extent offset value"));
-            VIR_FREE(offset_str);
-            goto cleanup;
-        }
-
-        VIR_FREE(offset_str);
-
-        vol->source.extents[vol->source.nextent].start = offset * size;
-        vol->source.extents[vol->source.nextent].end = (offset * size) + length;
-        vol->source.nextent++;
-    }
 
     if (is_new_vol &&
         VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)
@@ -276,9 +297,6 @@ virStorageBackendLogicalMakeVol(char **const groups,
     ret = 0;
 
  cleanup:
-    VIR_FREE(regex);
-    VIR_FREE(reg);
-    VIR_FREE(vars);
     if (is_new_vol && (ret == -1))
         virStorageVolDefFree(vol);
     return ret;
