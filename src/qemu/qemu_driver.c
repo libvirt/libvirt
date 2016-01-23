@@ -1955,6 +1955,7 @@ static int qemuDomainResume(virDomainPtr dom)
     int ret = -1;
     virObjectEventPtr event = NULL;
     int state;
+    int reason;
     virQEMUDriverConfigPtr cfg = NULL;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -1974,12 +1975,14 @@ static int qemuDomainResume(virDomainPtr dom)
         goto endjob;
     }
 
-    state = virDomainObjGetState(vm, NULL);
+    state = virDomainObjGetState(vm, &reason);
     if (state == VIR_DOMAIN_PMSUSPENDED) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is pmsuspended"));
         goto endjob;
-    } else if (state == VIR_DOMAIN_PAUSED) {
+    } else if ((state == VIR_DOMAIN_CRASHED &&
+                reason == VIR_DOMAIN_CRASHED_PANICKED) ||
+               state == VIR_DOMAIN_PAUSED) {
         if (qemuProcessStartCPUs(driver, vm, dom->conn,
                                  VIR_DOMAIN_RUNNING_UNPAUSED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
