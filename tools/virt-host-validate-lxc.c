@@ -78,19 +78,19 @@ int virHostValidateLXC(void)
                                         "CGROUP_CPUACCT") < 0)
         ret = -1;
 
+    if (virHostValidateCGroupController("LXC", "cpuset",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "CPUSETS") < 0)
+        ret = -1;
+
     if (virHostValidateCGroupController("LXC", "devices",
                                         VIR_HOST_VALIDATE_FAIL,
                                         "CGROUP_DEVICE") < 0)
         ret = -1;
 
-    if (virHostValidateCGroupController("LXC", "net_cls",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "NET_CLS_CGROUP") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("LXC", "freezer",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "CGROUP_FREEZER") < 0)
+    if (virHostValidateCGroupController("LXC", "blkio",
+                                        VIR_HOST_VALIDATE_FAIL,
+                                        "BLK_CGROUP") < 0)
         ret = -1;
 
     return ret;

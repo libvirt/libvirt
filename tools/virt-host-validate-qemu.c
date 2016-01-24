@@ -74,14 +74,14 @@ int virHostValidateQEMU(void)
                                         "CGROUP_CPUACCT") < 0)
         ret = -1;
 
+    if (virHostValidateCGroupController("QEMU", "cpuset",
+                                        VIR_HOST_VALIDATE_WARN,
+                                        "CPUSETS") < 0)
+        ret = -1;
+
     if (virHostValidateCGroupController("QEMU", "devices",
                                         VIR_HOST_VALIDATE_WARN,
                                         "CGROUP_DEVICES") < 0)
-        ret = -1;
-
-    if (virHostValidateCGroupController("QEMU", "net_cls",
-                                        VIR_HOST_VALIDATE_WARN,
-                                        "NET_CLS_CGROUP") < 0)
         ret = -1;
 
     if (virHostValidateCGroupController("QEMU", "blkio",
