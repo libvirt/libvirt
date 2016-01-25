@@ -747,9 +747,10 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     }
 
  cleanup:
+    virObjectUnref(pcidevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
-    virObjectUnref(pcidevs);
+
     return ret;
 }
 
@@ -1591,17 +1592,18 @@ virHostdevPCINodeDeviceDetach(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
     if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
-        goto out;
+        goto cleanup;
 
     if (virPCIDeviceDetach(pci, hostdev_mgr->activePCIHostdevs,
-                           hostdev_mgr->inactivePCIHostdevs) < 0) {
-        goto out;
-    }
+                           hostdev_mgr->inactivePCIHostdevs) < 0)
+        goto cleanup;
 
     ret = 0;
- out:
+
+ cleanup:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
+
     return ret;
 }
 
@@ -1617,7 +1619,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
     virObjectLock(hostdev_mgr->inactivePCIHostdevs);
 
     if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
-        goto out;
+        goto cleanup;
 
     virPCIDeviceSetUnbindFromStub(pci, true);
     virPCIDeviceSetRemoveSlot(pci, true);
@@ -1625,12 +1627,14 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr hostdev_mgr,
 
     if (virPCIDeviceReattach(pci, hostdev_mgr->activePCIHostdevs,
                              hostdev_mgr->inactivePCIHostdevs) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
- out:
+
+ cleanup:
     virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
     virObjectUnlock(hostdev_mgr->activePCIHostdevs);
+
     return ret;
 }
 
