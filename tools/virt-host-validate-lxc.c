@@ -59,7 +59,7 @@ int virHostValidateLXC(void)
         ret = -1;
 
     if (virHostValidateNamespace("LXC", "user",
-                                 VIR_HOST_VALIDATE_FAIL,
+                                 VIR_HOST_VALIDATE_WARN,
                                  _("User namespace support is recommended")) < 0)
         ret = -1;
 
