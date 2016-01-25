@@ -22,6 +22,7 @@
  * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
+%#include <libvirt/libvirt-admin.h>
 %#include "virxdrdefs.h"
 
 /*----- Data types. -----*/
@@ -41,12 +42,35 @@ typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 /* A long string, which may be NULL. */
 typedef admin_nonnull_string *admin_string;
 
+union admin_typed_param_value switch (int type) {
+ case VIR_TYPED_PARAM_INT:
+     int i;
+ case VIR_TYPED_PARAM_UINT:
+     unsigned int ui;
+ case VIR_TYPED_PARAM_LLONG:
+     hyper l;
+ case VIR_TYPED_PARAM_ULLONG:
+     unsigned hyper ul;
+ case VIR_TYPED_PARAM_DOUBLE:
+     double d;
+ case VIR_TYPED_PARAM_BOOLEAN:
+     int b;
+ case VIR_TYPED_PARAM_STRING:
+     admin_nonnull_string s;
+};
+
+struct admin_typed_param {
+    admin_nonnull_string field;
+    admin_typed_param_value value;
+};
+
 /* A server which may NOT be NULL */
 struct admin_nonnull_server {
     admin_nonnull_string name;
 };
 
 /*----- Protocol. -----*/
+
 struct admin_connect_open_args {
     unsigned int flags;
 };
