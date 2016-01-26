@@ -222,8 +222,10 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
         goto cleanup;
     }
 
-    /* Wipeout the newline */
-    (*migrate)[strlen(*migrate) - 1] = '\0';
+    /* Wipeout the newline, if it exists */
+    if (strlen(*migrate) > 0)
+        (*migrate)[strlen(*migrate) - 1] = '\0';
+
     ret = 0;
  cleanup:
     virCommandFree(cmd);
