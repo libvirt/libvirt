@@ -7243,6 +7243,7 @@ vshCPUStatsPrintField(vshControl *ctl,
 {
     vshPrint(ctl, "\t%-12s ", param->field);
     if ((STREQ(param->field, VIR_DOMAIN_CPU_STATS_CPUTIME) ||
+         STREQ(param->field, VIR_DOMAIN_CPU_STATS_VCPUTIME) ||
          STREQ(param->field, VIR_DOMAIN_CPU_STATS_USERTIME) ||
          STREQ(param->field, VIR_DOMAIN_CPU_STATS_SYSTEMTIME)) &&
         param->type == VIR_TYPED_PARAM_ULLONG) {
