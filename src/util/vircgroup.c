@@ -4882,9 +4882,9 @@ virCgroupGetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupIsolateMount(virCgroupPtr group ATTRIBUTE_UNUSED,
-                      const char *oldroot ATTRIBUTE_UNUSED,
-                      const char *mountopts ATTRIBUTE_UNUSED)
+virCgroupBindMount(virCgroupPtr group ATTRIBUTE_UNUSED,
+                   const char *oldroot ATTRIBUTE_UNUSED,
+                   const char *mountopts ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
