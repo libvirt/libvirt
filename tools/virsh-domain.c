@@ -1876,21 +1876,23 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
          * the waiting loop */
         if ((data->cb_id >= 0 || data->cb_id2 >= 0) && data->status != -1) {
             ret = data->status;
-            goto cleanup;
+            break;
         }
 
         /* since virsh can't guarantee that the path provided by the user will
          * later be matched in the event we will need to keep the fallback
          * approach and claim success if the block job finishes or vanishes. */
-        if (result == 0)
+        if (result == 0) {
+            ret = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
             break;
+        }
 
         /* for two-phase jobs we will try to wait in the synchronized phase
          * for event arrival since 100% completion doesn't necessarily mean that
          * the block job has finished and can be terminated with success */
         if (info.end == info.cur && --retries == 0) {
             ret = VIR_DOMAIN_BLOCK_JOB_READY;
-            goto cleanup;
+            break;
         }
 
         if (data->verbose && (info.cur != last.cur || info.end != last.end))
@@ -1911,21 +1913,19 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
             }
 
             ret = VIR_DOMAIN_BLOCK_JOB_CANCELED;
-            goto cleanup;
+            break;
         }
 
         usleep(500 * 1000);
     }
 
-    ret = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
-
- cleanup:
     /* print 100% completed */
     if (data->verbose &&
         (ret == VIR_DOMAIN_BLOCK_JOB_COMPLETED ||
          ret == VIR_DOMAIN_BLOCK_JOB_READY))
         virshPrintJobProgress(data->job_name, 0, 1);
 
+ cleanup:
     sigaction(SIGINT, &old_sig_action, NULL);
     return ret;
 }
