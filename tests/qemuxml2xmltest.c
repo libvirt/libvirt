@@ -250,12 +250,13 @@ mymain(void)
     /* TODO: test with format probing disabled too */
     driver.config->allowDiskFormatProbing = true;
 
-# define DO_TEST_FULL(name, when)                                              \
+# define DO_TEST_FULL(name, when, ...)                                        \
     do {                                                                       \
         if (testInfoSet(&info, name, when) < 0) {                             \
             VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);    \
             return -1;                                                         \
         }                                                                      \
+        virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST);        \
                                                                                \
         if (info.outInactiveName) {                                            \
             if (virtTestRun("QEMU XML-2-XML-inactive " name,                   \
@@ -275,8 +276,12 @@ mymain(void)
         testInfoFree(&info);                                                   \
     } while (0)
 
+# define NONE QEMU_CAPS_LAST
+
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, WHEN_BOTH)
+    DO_TEST_FULL(name, WHEN_BOTH, NONE)
+
+
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -381,9 +386,9 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-ioeventfd");
     DO_TEST("disk-scsi-megasas");
     DO_TEST("disk-mirror-old");
-    DO_TEST_FULL("disk-mirror", WHEN_ACTIVE);
-    DO_TEST_FULL("disk-mirror", WHEN_INACTIVE);
-    DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE);
+    DO_TEST_FULL("disk-mirror", WHEN_ACTIVE, NONE);
+    DO_TEST_FULL("disk-mirror", WHEN_INACTIVE, NONE);
+    DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE, NONE);
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
     DO_TEST("graphics-vnc-websocket");
@@ -478,17 +483,17 @@ mymain(void)
     DO_TEST("blkdeviotune");
     DO_TEST("controller-usb-order");
 
-    DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-override", WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-labelskip", WHEN_INACTIVE);
-    DO_TEST_FULL("seclabel-dynamic-relabel", WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE, NONE);
+    DO_TEST_FULL("seclabel-dynamic-override", WHEN_INACTIVE, NONE);
+    DO_TEST_FULL("seclabel-dynamic-labelskip", WHEN_INACTIVE, NONE);
+    DO_TEST_FULL("seclabel-dynamic-relabel", WHEN_INACTIVE, NONE);
     DO_TEST("seclabel-static");
-    DO_TEST_FULL("seclabel-static-labelskip", WHEN_ACTIVE);
+    DO_TEST_FULL("seclabel-static-labelskip", WHEN_ACTIVE, NONE);
     DO_TEST("seclabel-none");
     DO_TEST("seclabel-dac-none");
     DO_TEST("seclabel-dynamic-none");
     DO_TEST("seclabel-device-multiple");
-    DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE);
+    DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE, NONE);
     DO_TEST("numad-static-vcpu-no-numatune");
     DO_TEST("disk-scsi-lun-passthrough-sgio");
 
