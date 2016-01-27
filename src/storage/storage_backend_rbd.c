@@ -772,6 +772,41 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
 }
 
 static int
+virStorageBackendRBDVolWipeDiscard(rbd_image_t image,
+                                   char *imgname,
+                                   rbd_image_info_t *info,
+                                   uint64_t stripe_count)
+{
+    int r = -1;
+    int ret = -1;
+    uint64_t offset = 0;
+    uint64_t length;
+
+    VIR_DEBUG("Wiping RBD %s volume using discard)", imgname);
+
+    while (offset < info->size) {
+        length = MIN((info->size - offset), (info->obj_size * stripe_count));
+
+        if ((r = rbd_discard(image, offset, length)) < 0) {
+            virReportSystemError(-r, _("discarding %zu bytes failed on "
+                                       "RBD image %s at offset %zu"),
+                                     length, imgname, offset);
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Discarded %zu bytes of RBD image %s at offset %zu",
+                  length, imgname, offset);
+
+        offset += length;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
 virStorageBackendRBDVolWipe(virConnectPtr conn,
                             virStoragePoolObjPtr pool,
                             virStorageVolDefPtr vol,
@@ -822,6 +857,10 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
     case VIR_STORAGE_VOL_WIPE_ALG_ZERO:
         r = virStorageBackendRBDVolWipeZero(image, vol->name,
                                             &info, stripe_count);
+            break;
+    case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
+        r = virStorageBackendRBDVolWipeDiscard(image, vol->name,
+                                               &info, stripe_count);
         break;
     case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
     case VIR_STORAGE_VOL_WIPE_ALG_DOD:
@@ -831,7 +870,6 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
     case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
     case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
     case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
-    case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
     case VIR_STORAGE_VOL_WIPE_ALG_LAST:
         virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %d"),
                        algorithm);
