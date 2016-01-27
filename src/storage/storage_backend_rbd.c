@@ -32,6 +32,7 @@
 #include "base64.h"
 #include "viruuid.h"
 #include "virstring.h"
+#include "virrandom.h"
 #include "rados/librados.h"
 #include "rbd/librbd.h"
 
@@ -663,6 +664,345 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
     return ret;
 }
 
+static int
+virStorageBackendRBDImageInfo(rbd_image_t image,
+                              char *volname,
+                              uint64_t *features,
+                              uint64_t *stripe_unit,
+                              uint64_t *stripe_count)
+{
+    int ret = -1;
+    int r = 0;
+    uint8_t oldformat;
+
+    if ((r = rbd_get_old_format(image, &oldformat)) < 0) {
+        virReportSystemError(-r, _("failed to get the format of RBD image %s"),
+                             volname);
+        goto cleanup;
+    }
+
+    if (oldformat != 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("RBD image %s is old format. Does not support "
+                         "extended features and striping"),
+                       volname);
+        goto cleanup;
+    }
+
+    if ((r = rbd_get_features(image, features)) < 0) {
+        virReportSystemError(-r, _("failed to get the features of RBD image %s"),
+                             volname);
+        goto cleanup;
+    }
+
+    if ((r = rbd_get_stripe_unit(image, stripe_unit)) < 0) {
+        virReportSystemError(-r, _("failed to get the stripe unit of RBD image %s"),
+                             volname);
+        goto cleanup;
+    }
+
+    if ((r = rbd_get_stripe_count(image, stripe_count)) < 0) {
+        virReportSystemError(-r, _("failed to get the stripe count of RBD image %s"),
+                             volname);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+/* Callback function for rbd_diff_iterate() */
+static int
+virStorageBackendRBDIterateCb(uint64_t offset ATTRIBUTE_UNUSED,
+                              size_t length ATTRIBUTE_UNUSED,
+                              int exists ATTRIBUTE_UNUSED,
+                              void *arg)
+{
+    /*
+     * Just set that there is a diff for this snapshot, we do not care where
+     *
+     * When it returns a negative number the rbd_diff_iterate() function will stop
+     *
+     * That's why we return -1, meaning that there is a difference and we can stop
+     * searching any further.
+     */
+    *(int*) arg = 1;
+    return -1;
+}
+
+static int
+virStorageBackendRBDSnapshotFindNoDiff(rbd_image_t image,
+                                       char *imgname,
+                                       virBufferPtr snapname)
+{
+    int r = -1;
+    int ret = -1;
+    int snap_count;
+    int max_snaps = 128;
+    size_t i;
+    int diff;
+    rbd_snap_info_t *snaps = NULL;
+    rbd_image_info_t info;
+
+    if ((r = rbd_stat(image, &info, sizeof(info))) < 0) {
+        virReportSystemError(-r, _("failed to stat the RBD image %s"),
+                             imgname);
+        goto cleanup;
+    }
+
+    do {
+        if (VIR_ALLOC_N(snaps, max_snaps))
+            goto cleanup;
+
+        snap_count = rbd_snap_list(image, snaps, &max_snaps);
+        if (snap_count <= 0)
+            VIR_FREE(snaps);
+
+    } while (snap_count == -ERANGE);
+
+    if (snap_count <= 0) {
+        if (snap_count == 0)
+            ret = 0;
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Found %d snapshots for RBD image %s", snap_count, imgname);
+
+    for (i = 0; i < snap_count; i++) {
+        VIR_DEBUG("Querying diff for RBD snapshot %s@%s", imgname,
+                  snaps[i].name);
+
+        /* The callback will set diff to non-zero if there is a diff */
+        diff = 0;
+
+/*
+ * rbd_diff_iterate2() is available in versions above Ceph 0.94 (Hammer)
+ * It uses a object map inside Ceph which is faster than rbd_diff_iterate()
+ * which iterates all objects.
+ */
+#if LIBRBD_VERSION_CODE > 266
+        r = rbd_diff_iterate2(image, snaps[i].name, 0, info.size, 0, 1,
+                              virStorageBackendRBDIterateCb, (void *)&diff);
+#else
+        r = rbd_diff_iterate(image, snaps[i].name, 0, info.size,
+                             virStorageBackendRBDIterateCb, (void *)&diff);
+#endif
+
+        if (r < 0) {
+            virReportSystemError(-r, _("failed to iterate RBD snapshot %s@%s"),
+                                 imgname, snaps[i].name);
+            goto cleanup;
+        }
+
+        /* If diff is still set to zero we found a snapshot without deltas */
+        if (diff == 0) {
+            VIR_DEBUG("RBD snapshot %s@%s has no delta", imgname,
+                      snaps[i].name);
+            virBufferAsprintf(snapname, "%s", snaps[i].name);
+            ret = 0;
+            goto cleanup;
+        }
+
+        VIR_DEBUG("RBD snapshot %s@%s has deltas. Continuing search.",
+                  imgname, snaps[i].name);
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (snaps)
+        rbd_snap_list_end(snaps);
+
+    VIR_FREE(snaps);
+
+    return ret;
+}
+
+static int
+virStorageBackendRBDSnapshotCreate(rbd_image_t image,
+                                   char *imgname,
+                                   char *snapname)
+{
+    int ret = -1;
+    int r = -1;
+
+    VIR_DEBUG("Creating RBD snapshot %s@%s", imgname, snapname);
+
+    if ((r = rbd_snap_create(image, snapname)) < 0) {
+        virReportSystemError(-r, _("failed to create RBD snapshot %s@%s"),
+                                   imgname, snapname);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
+virStorageBackendRBDSnapshotProtect(rbd_image_t image,
+                                    char *imgname,
+                                    char *snapname)
+{
+    int r = -1;
+    int ret = -1;
+    int protected;
+
+    VIR_DEBUG("Querying if RBD snapshot %s@%s is protected", imgname, snapname);
+
+    if ((r = rbd_snap_is_protected(image, snapname, &protected)) < 0) {
+        virReportSystemError(-r, _("failed verify if RBD snapshot %s@%s "
+                                   "is protected"), imgname, snapname);
+        goto cleanup;
+    }
+
+    if (protected == 0) {
+        VIR_DEBUG("RBD Snapshot %s@%s is not protected, protecting",
+                  imgname, snapname);
+
+        if ((r = rbd_snap_protect(image, snapname)) < 0) {
+            virReportSystemError(-r, _("failed protect RBD snapshot %s@%s"),
+                                       imgname, snapname);
+            goto cleanup;
+        }
+    } else {
+        VIR_DEBUG("RBD Snapshot %s@%s is already protected", imgname, snapname);
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
+virStorageBackendRBDCloneImage(rados_ioctx_t io,
+                               char *origvol,
+                               char *newvol)
+{
+    int r = -1;
+    int ret = -1;
+    int order = 0;
+    uint64_t features;
+    uint64_t stripe_count;
+    uint64_t stripe_unit;
+    virBuffer snapname = VIR_BUFFER_INITIALIZER;
+    char *snapname_buff = NULL;
+    rbd_image_t image = NULL;
+
+    if ((r = rbd_open(io, origvol, &image, NULL)) < 0) {
+        virReportSystemError(-r, _("failed to open the RBD image %s"),
+                             origvol);
+        goto cleanup;
+    }
+
+    if ((virStorageBackendRBDImageInfo(image, origvol, &features, &stripe_unit,
+                                       &stripe_count)) < 0)
+        goto cleanup;
+
+    /*
+     * First we attempt to find a snapshot which has no differences between
+     * the current state of the RBD image.
+     *
+     * This prevents us from creating a new snapshot for every clone operation
+     * while it could be that the original volume has not changed
+     */
+    if (virStorageBackendRBDSnapshotFindNoDiff(image, origvol, &snapname) < 0)
+        goto cleanup;
+
+    /*
+     * the virBuffer snapname will contain a snapshot's name if one without
+     * deltas has been found.
+     *
+     * If it's NULL we have to create a new snapshot and clone from there
+     */
+    snapname_buff = virBufferContentAndReset(&snapname);
+
+    if (snapname_buff == NULL) {
+        VIR_DEBUG("No RBD snapshot with zero delta could be found for image %s",
+                  origvol);
+
+        virBufferAsprintf(&snapname, "libvirt-%d", (int)virRandomInt(65534));
+
+        if (virBufferCheckError(&snapname) < 0)
+            goto cleanup;
+
+        snapname_buff = virBufferContentAndReset(&snapname);
+
+        if (virStorageBackendRBDSnapshotCreate(image, origvol, snapname_buff) < 0)
+            goto cleanup;
+
+    }
+
+    VIR_DEBUG("Using snapshot name %s for cloning RBD image %s to %s",
+              snapname_buff, origvol, newvol);
+
+    /*
+     * RBD snapshots have to be 'protected' before they can be used
+     * as a parent snapshot for a child image
+     */
+    if ((r = virStorageBackendRBDSnapshotProtect(image, origvol, snapname_buff)) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Performing RBD clone from %s to %s", origvol, newvol);
+
+    if ((r = rbd_clone2(io, origvol, snapname_buff, io, newvol, features,
+                        &order, stripe_unit, stripe_count)) < 0) {
+        virReportSystemError(-r, _("failed to clone RBD volume %s to %s"),
+                             origvol, newvol);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Cloned RBD image %s to %s", origvol, newvol);
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&snapname);
+    VIR_FREE(snapname_buff);
+
+    if (image)
+        rbd_close(image);
+
+    return ret;
+}
+
+static int
+virStorageBackendRBDBuildVolFrom(virConnectPtr conn,
+                                 virStoragePoolObjPtr pool,
+                                 virStorageVolDefPtr newvol,
+                                 virStorageVolDefPtr origvol,
+                                 unsigned int flags)
+{
+    virStorageBackendRBDState ptr;
+    ptr.cluster = NULL;
+    ptr.ioctx = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Creating clone of RBD image %s/%s with name %s",
+              pool->def->source.name, origvol->name, newvol->name);
+
+    virCheckFlags(0, -1);
+
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
+        goto cleanup;
+
+    if (virStorageBackendRBDOpenIoCTX(&ptr, pool) < 0)
+        goto cleanup;
+
+    if ((virStorageBackendRBDCloneImage(ptr.ioctx, origvol->name, newvol->name)) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virStorageBackendRBDCloseRADOSConn(&ptr);
+    return ret;
+}
+
 static int virStorageBackendRBDRefreshVol(virConnectPtr conn,
                                           virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                           virStorageVolDefPtr vol)
@@ -899,6 +1239,7 @@ virStorageBackend virStorageBackendRBD = {
     .refreshPool = virStorageBackendRBDRefreshPool,
     .createVol = virStorageBackendRBDCreateVol,
     .buildVol = virStorageBackendRBDBuildVol,
+    .buildVolFrom = virStorageBackendRBDBuildVolFrom,
     .refreshVol = virStorageBackendRBDRefreshVol,
     .deleteVol = virStorageBackendRBDDeleteVol,
     .resizeVol = virStorageBackendRBDResizeVol,
