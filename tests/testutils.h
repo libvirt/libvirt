@@ -137,10 +137,14 @@ int virtTestMain(int argc,
 virCapsPtr virTestGenericCapsInit(void);
 virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void);
 
+typedef int (*testCompareDomXML2XMLPreFormatCallback)(virDomainDefPtr def,
+                                                      const void *opaque);
 int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
                                const char *inxml,
                                const char *outfile,
-                               bool live);
+                               bool live,
+                               testCompareDomXML2XMLPreFormatCallback cb,
+                               const void *opaque);
 
 #endif /* __VIT_TEST_UTILS_H__ */

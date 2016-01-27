@@ -42,7 +42,8 @@ testXML2XMLActive(const void *opaque)
     const struct testInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
-                                      info->inName, info->outActiveName, true);
+                                      info->inName, info->outActiveName, true,
+                                      NULL, NULL);
 }
 
 
@@ -52,7 +53,8 @@ testXML2XMLInactive(const void *opaque)
     const struct testInfo *info = opaque;
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
-                                      info->outInactiveName, false);
+                                      info->outInactiveName, false,
+                                      NULL, NULL);
 }
 
 
