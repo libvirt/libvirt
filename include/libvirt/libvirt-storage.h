@@ -4,7 +4,7 @@
  * Description: Provides APIs for the management of storage pools and volumes
  * Author: Daniel Veillard <veillard@redhat.com>
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -152,6 +152,9 @@ typedef enum {
     VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
 
     VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
+
+    VIR_STORAGE_VOL_WIPE_ALG_TRIM = 9, /* 1-pass, trim all data on the
+                                          volume by using TRIM or DISCARD */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_VOL_WIPE_ALG_LAST

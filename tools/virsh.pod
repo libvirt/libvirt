@@ -3546,9 +3546,19 @@ B<Supported algorithms>
   pfitzner7  - Roy Pfitzner's 7-random-pass method: random x7.
   pfitzner33 - Roy Pfitzner's 33-random-pass method: random x33.
   random     - 1-pass pattern: random.
+  trim       - 1-pass trimming the volume using TRIM or DISCARD
 
-B<Note>: The availability of algorithms may be limited by the version
-of the C<scrub> binary installed on the host.
+B<Note>: The C<scrub> binary will be used to handle the 'nnsa', 'dod',
+'bsi', 'gutmann', 'schneier', 'pfitzner7' and 'pfitzner33' algorithms.
+The availability of the algorithms may be limited by the version of
+the C<scrub> binary installed on the host. The 'zero' algorithm will
+write zeroes to the entire volume. For some volumes, such as sparse
+or rbd volumes, this may result in completely filling the volume with
+zeroes making it appear to be completely full. As an alternative, the
+'trim' algorithm does not overwrite all the data in a volume, rather
+it expects the storage driver to be able to discard all bytes in a
+volume. It is up to the storage driver to handle how the discarding
+occurs. Not all storage drivers or volume types can support 'trim'.
 
 =item B<vol-dumpxml> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
 

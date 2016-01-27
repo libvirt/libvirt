@@ -906,7 +906,7 @@ static const vshCmdOptDef opts_vol_wipe[] = {
 VIR_ENUM_DECL(virStorageVolWipeAlgorithm)
 VIR_ENUM_IMPL(virStorageVolWipeAlgorithm, VIR_STORAGE_VOL_WIPE_ALG_LAST,
               "zero", "nnsa", "dod", "bsi", "gutmann", "schneier",
-              "pfitzner7", "pfitzner33", "random");
+              "pfitzner7", "pfitzner33", "random", "trim");
 
 static bool
 cmdVolWipe(vshControl *ctl, const vshCmd *cmd)

@@ -2105,6 +2105,10 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
         alg_char = "random";
         break;
+    case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("'trim' algorithm not supported"));
+        goto cleanup;
     case VIR_STORAGE_VOL_WIPE_ALG_LAST:
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported algorithm %d"),

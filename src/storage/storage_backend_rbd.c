@@ -831,6 +831,7 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
     case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
     case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
     case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
+    case VIR_STORAGE_VOL_WIPE_ALG_TRIM:
     case VIR_STORAGE_VOL_WIPE_ALG_LAST:
         virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %d"),
                        algorithm);
