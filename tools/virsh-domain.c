@@ -1810,14 +1810,17 @@ virshBlockJobWaitFree(virshBlockJobWaitDataPtr data)
  * virshBlockJobWait:
  * @data: private data initialized by virshBlockJobWaitInit
  *
- * Waits for the block job to complete. This function prefers to get an event
- * from libvirt but still has fallback means if the device name can't be matched
+ * Waits for the block job to complete. This function prefers to wait for a
+ * matching VIR_DOMAIN_EVENT_ID_BLOCK_JOB or VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2
+ * event from libvirt; however, it has a fallback mode should either of these
+ * events not be available.
  *
- * This function returns values from the virConnectDomainEventBlockJobStatus enum
- * or -1 in case of a internal error. Fallback states if a block job vanishes
- * without triggering the event is VIR_DOMAIN_BLOCK_JOB_COMPLETED. For two phase
- * jobs after the retry count for waiting for the event expires is
- * VIR_DOMAIN_BLOCK_JOB_READY.
+ * This function returns values from the virConnectDomainEventBlockJobStatus
+ * enum or -1 in case of an internal error.
+ *
+ * If the fallback mode is activated the returned event is
+ * VIR_DOMAIN_BLOCK_JOB_COMPLETED if the block job vanishes or
+ * VIR_DOMAIN_BLOCK_JOB_READY if the block job reaches 100%.
  */
 static int
 virshBlockJobWait(virshBlockJobWaitDataPtr data)
@@ -1872,27 +1875,30 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
             goto cleanup;
         }
 
-        /* if we've got an event for the device we are waiting for we can end
-         * the waiting loop */
+        /* If either callback could be registered and we've got an event, we can
+         * can end the waiting loop */
         if ((data->cb_id >= 0 || data->cb_id2 >= 0) && data->status != -1) {
             ret = data->status;
             break;
         }
 
-        /* since virsh can't guarantee that the path provided by the user will
-         * later be matched in the event we will need to keep the fallback
-         * approach and claim success if the block job finishes or vanishes. */
-        if (result == 0) {
-            ret = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
-            break;
-        }
+        /* Fallback behaviour is only needed if one or both callbacks could not
+         * be registered */
+        if (data->cb_id < 0 || data->cb_id2 < 0) {
+            /* If the block job vanishes, synthesize a COMPLETED event */
+            if (result == 0) {
+                ret = VIR_DOMAIN_BLOCK_JOB_COMPLETED;
+                break;
+            }
 
-        /* for two-phase jobs we will try to wait in the synchronized phase
-         * for event arrival since 100% completion doesn't necessarily mean that
-         * the block job has finished and can be terminated with success */
-        if (info.end == info.cur && --retries == 0) {
-            ret = VIR_DOMAIN_BLOCK_JOB_READY;
-            break;
+            /* If the block job hits 100%, wait a little while for a possible
+             * event from libvirt unless both callbacks could not be registered
+             * in order to synthesize our own READY event */
+            if (info.end == info.cur &&
+                ((data->cb_id < 0 && data->cb_id2 < 0) || --retries == 0)) {
+                ret = VIR_DOMAIN_BLOCK_JOB_READY;
+                break;
+            }
         }
 
         if (data->verbose && (info.cur != last.cur || info.end != last.end))
