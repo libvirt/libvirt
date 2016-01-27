@@ -1330,4 +1330,19 @@ int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname ATTRIBUTE_UN
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
+
+int virNetDevMacVLanReleaseName(const char *name ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
+
+int virNetDevMacVLanReserveName(const char *name ATTRIBUTE_UNUSED,
+                                bool quietFail ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
 #endif /* ! WITH_MACVTAP */
