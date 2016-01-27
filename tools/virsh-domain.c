@@ -1837,7 +1837,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
 
     unsigned int abort_flags = 0;
     int ret = -1;
-    virDomainBlockJobInfo info;
+    virDomainBlockJobInfo info, last;
     int result;
 
     if (!data)
@@ -1859,6 +1859,8 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
         vshSaveLibvirtError();
         return -1;
     }
+
+    last.cur = last.end = 0;
 
     while (true) {
         pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
@@ -1891,9 +1893,10 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
             goto cleanup;
         }
 
-        if (data->verbose)
+        if (data->verbose && (info.cur != last.cur || info.end != last.end))
             virshPrintJobProgress(data->job_name, info.end - info.cur,
                                   info.end);
+        last = info;
 
         if (data->timeout && virTimeMillisNow(&curr) < 0) {
             vshSaveLibvirtError();
