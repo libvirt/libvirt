@@ -1857,7 +1857,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
 
     if (data->timeout && virTimeMillisNow(&start) < 0) {
         vshSaveLibvirtError();
-        return -1;
+        goto cleanup;
     }
 
     last.cur = last.end = 0;
