@@ -20,6 +20,7 @@
         <host transport='unix' socket='/path/to/sock'/>
       </source>
       <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
@@ -27,6 +28,7 @@
         <host transport='unix' socket='/var/run/nbdsock'/>
       </source>
       <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
@@ -34,6 +36,7 @@
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
@@ -46,16 +49,22 @@
         <host name='mon3.example.org' port='6322'/>
       </source>
       <target dev='vdd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </disk>
     <disk type='block' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source dev='/dev/HostVG/QEMUGuest11'/>
       <target dev='vde' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </disk>
-    <controller type='usb' index='0'/>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <memballoon model='virtio'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </memballoon>
   </devices>
 </domain>

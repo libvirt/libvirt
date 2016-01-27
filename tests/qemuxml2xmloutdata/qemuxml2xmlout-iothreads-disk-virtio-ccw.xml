@@ -19,6 +19,7 @@
       <driver name='qemu' type='raw' iothread='1'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='virtio'/>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </disk>
     <disk type='block' device='disk'>
       <driver name='qemu' type='raw' iothread='2'/>

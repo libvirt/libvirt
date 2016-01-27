@@ -29,17 +29,22 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
-    <controller type='usb' index='0'/>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </controller>
-    <controller type='ide' index='0'/>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='user'>
       <mac address='52:54:00:e5:48:58'/>
       <model type='virtio'/>
       <driver name='vhost' queues='5'/>
       <backend tap='/dev/null' vhost='/dev/zero'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <serial type='pty'>
       <target port='0'/>
@@ -49,6 +54,8 @@
     </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <memballoon model='virtio'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </memballoon>
   </devices>
 </domain>

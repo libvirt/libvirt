@@ -14,7 +14,8 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-kvm</emulator>
-    <controller type='virtio-serial' index='0'/>
+    <controller type='virtio-serial' index='0'>
+    </controller>
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>
