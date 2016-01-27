@@ -1,7 +1,7 @@
 /*
  * storage_backend_rbd.c: storage backend for RBD (RADOS Block Device) handling
  *
- * Copyright (C) 2013-2015 Red Hat, Inc.
+ * Copyright (C) 2013-2016 Red Hat, Inc.
  * Copyright (C) 2012 Wido den Hollander
  *
  * This library is free software; you can redistribute it and/or
@@ -732,6 +732,128 @@ static int virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+static int
+virStorageBackendRBDVolWipeZero(rbd_image_t image,
+                                char *imgname,
+                                rbd_image_info_t *info,
+                                uint64_t stripe_count)
+{
+    int r = -1;
+    int ret = -1;
+    uint64_t offset = 0;
+    uint64_t length;
+    char *writebuf;
+
+    if (VIR_ALLOC_N(writebuf, info->obj_size * stripe_count) < 0)
+        goto cleanup;
+
+    while (offset < info->size) {
+        length = MIN((info->size - offset), (info->obj_size * stripe_count));
+
+        if ((r = rbd_write(image, offset, length, writebuf)) < 0) {
+            virReportSystemError(-r, _("writing %zu bytes failed on "
+                                       "RBD image %s at offset %zu"),
+                                       length, imgname, offset);
+            goto cleanup;
+        }
+
+        VIR_DEBUG("Wrote %zu bytes to RBD image %s at offset %zu",
+                  length, imgname, offset);
+
+        offset += length;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(writebuf);
+
+    return ret;
+}
+
+static int
+virStorageBackendRBDVolWipe(virConnectPtr conn,
+                            virStoragePoolObjPtr pool,
+                            virStorageVolDefPtr vol,
+                            unsigned int algorithm,
+                            unsigned int flags)
+{
+    virStorageBackendRBDState ptr;
+    ptr.cluster = NULL;
+    ptr.ioctx = NULL;
+    rbd_image_t image = NULL;
+    rbd_image_info_t info;
+    uint64_t stripe_count;
+    int r = -1;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    VIR_DEBUG("Wiping RBD image %s/%s", pool->def->source.name, vol->name);
+
+    if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
+        goto cleanup;
+
+    if (virStorageBackendRBDOpenIoCTX(&ptr, pool) < 0)
+        goto cleanup;
+
+    if ((r = rbd_open(ptr.ioctx, vol->name, &image, NULL)) < 0) {
+        virReportSystemError(-r, _("failed to open the RBD image %s"),
+                             vol->name);
+        goto cleanup;
+    }
+
+    if ((r = rbd_stat(image, &info, sizeof(info))) < 0) {
+        virReportSystemError(-r, _("failed to stat the RBD image %s"),
+                             vol->name);
+        goto cleanup;
+    }
+
+    if ((r = rbd_get_stripe_count(image, &stripe_count)) < 0) {
+        virReportSystemError(-r, _("failed to get stripe count of RBD image %s"),
+                             vol->name);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Need to wipe %zu bytes from RBD image %s/%s",
+              info.size, pool->def->source.name, vol->name);
+
+    switch ((virStorageVolWipeAlgorithm) algorithm) {
+    case VIR_STORAGE_VOL_WIPE_ALG_ZERO:
+        r = virStorageBackendRBDVolWipeZero(image, vol->name,
+                                            &info, stripe_count);
+        break;
+    case VIR_STORAGE_VOL_WIPE_ALG_NNSA:
+    case VIR_STORAGE_VOL_WIPE_ALG_DOD:
+    case VIR_STORAGE_VOL_WIPE_ALG_BSI:
+    case VIR_STORAGE_VOL_WIPE_ALG_GUTMANN:
+    case VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER:
+    case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7:
+    case VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33:
+    case VIR_STORAGE_VOL_WIPE_ALG_RANDOM:
+    case VIR_STORAGE_VOL_WIPE_ALG_LAST:
+        virReportError(VIR_ERR_INVALID_ARG, _("unsupported algorithm %d"),
+                       algorithm);
+        goto cleanup;
+    }
+
+    if (r < 0) {
+        virReportSystemError(-r, _("failed to wipe RBD image %s"),
+                             vol->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (image)
+        rbd_close(image);
+
+    virStorageBackendRBDCloseRADOSConn(&ptr);
+
+    return ret;
+}
+
 virStorageBackend virStorageBackendRBD = {
     .type = VIR_STORAGE_POOL_RBD,
 
@@ -741,4 +863,5 @@ virStorageBackend virStorageBackendRBD = {
     .refreshVol = virStorageBackendRBDRefreshVol,
     .deleteVol = virStorageBackendRBDDeleteVol,
     .resizeVol = virStorageBackendRBDResizeVol,
+    .wipeVol = virStorageBackendRBDVolWipe
 };
