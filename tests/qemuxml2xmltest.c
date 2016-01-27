@@ -720,8 +720,23 @@ mymain(void)
     DO_TEST("shmem");
     DO_TEST("smbios");
     DO_TEST("smbios-multiple-type2");
-    DO_TEST("aarch64-aavmf-virtio-mmio");
 
+    DO_TEST_FULL("aarch64-aavmf-virtio-mmio", WHEN_ACTIVE,
+            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_FULL("aarch64-virtio-pci-default", WHEN_ACTIVE,
+            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
+            QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_FULL("aarch64-virtio-pci-manual-addresses", WHEN_ACTIVE,
+            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
+            QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("aarch64-gic");
     DO_TEST("aarch64-gicv3");
 

@@ -1650,13 +1650,20 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
-    DO_TEST("aarch64-mmio-default-pci",
+
+    /* Demonstrates the virtio-pci default... namely that there isn't any!
+       q35 style PCI controllers will be added if the binary supports it,
+       but virtio-mmio is always used unless PCI addresses are manually
+       specified. */
+    DO_TEST("aarch64-virtio-pci-default",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE);
-    DO_TEST("aarch64-virtio-pci",
+    /* Example of using virtio-pci with no explicit PCI controller
+       but with manual PCI addresses */
+    DO_TEST("aarch64-virtio-pci-manual-addresses",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
