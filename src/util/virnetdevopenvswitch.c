@@ -207,6 +207,7 @@ int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const ch
 int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 {
     virCommandPtr cmd = NULL;
+    size_t len;
     int ret = -1;
 
     cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "--if-exists", "get", "Interface",
@@ -223,8 +224,9 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     }
 
     /* Wipeout the newline, if it exists */
-    if (strlen(*migrate) > 0)
-        (*migrate)[strlen(*migrate) - 1] = '\0';
+    len = strlen(*migrate);
+    if (len > 0)
+        (*migrate)[len - 1] = '\0';
 
     ret = 0;
  cleanup:
