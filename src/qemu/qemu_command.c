@@ -1775,6 +1775,16 @@ qemuDomainPCIBusFullyReserved(virDomainPCIAddressBusPtr bus)
 }
 
 
+static int
+qemuAssignDevicePCISlots(virDomainDefPtr def,
+                         virQEMUCapsPtr qemuCaps,
+                         virDomainPCIAddressSetPtr addrs);
+static int
+qemuDomainAssignPCIAddresses(virDomainDefPtr def,
+                             virQEMUCapsPtr qemuCaps,
+                             virDomainObjPtr obj);
+
+
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               virDomainObjPtr obj)
@@ -1801,7 +1811,7 @@ int qemuDomainAssignAddresses(virDomainDefPtr def,
 }
 
 
-virDomainPCIAddressSetPtr
+static virDomainPCIAddressSetPtr
 qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
                               unsigned int nbuses,
                               bool dryRun)
@@ -2238,7 +2248,7 @@ qemuValidateDevicePCISlotsChipsets(virDomainDefPtr def,
     return 0;
 }
 
-int
+static int
 qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                              virQEMUCapsPtr qemuCaps,
                              virDomainObjPtr obj)
@@ -2451,7 +2461,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
  * function must only try to reserve addresses if info.type == NONE and
  * skip over info.type == PCI
  */
-int
+static int
 qemuAssignDevicePCISlots(virDomainDefPtr def,
                          virQEMUCapsPtr qemuCaps,
                          virDomainPCIAddressSetPtr addrs)

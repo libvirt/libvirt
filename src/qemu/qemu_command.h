@@ -274,17 +274,6 @@ void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                     const char *devstr);
 
 
-int qemuDomainAssignPCIAddresses(virDomainDefPtr def,
-                                 virQEMUCapsPtr qemuCaps,
-                                 virDomainObjPtr obj);
-virDomainPCIAddressSetPtr qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
-                                                        unsigned int nbuses,
-                                                        bool dryRun);
-
-int qemuAssignDevicePCISlots(virDomainDefPtr def,
-                             virQEMUCapsPtr qemuCaps,
-                             virDomainPCIAddressSetPtr addrs);
-
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);

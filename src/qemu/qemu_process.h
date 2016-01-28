@@ -42,8 +42,6 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver,
 void qemuProcessAutostartAll(virQEMUDriverPtr driver);
 void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);
 
-int qemuProcessAssignPCIAddresses(virDomainDefPtr def);
-
 typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;
 typedef qemuProcessIncomingDef *qemuProcessIncomingDefPtr;
 struct _qemuProcessIncomingDef {
