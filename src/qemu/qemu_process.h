@@ -89,6 +89,7 @@ int qemuProcessStartValidate(virDomainDefPtr def,
 
 int qemuProcessInit(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
+                    qemuDomainAsyncJob asyncJob,
                     bool migration,
                     bool snap);
 

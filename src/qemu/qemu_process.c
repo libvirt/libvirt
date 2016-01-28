@@ -4325,6 +4325,7 @@ qemuProcessStartValidate(virDomainDefPtr def,
 int
 qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
+                qemuDomainAsyncJob asyncJob ATTRIBUTE_UNUSED,
                 bool migration,
                 bool snap)
 {
@@ -5318,7 +5319,7 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_PAUSED |
                       VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
 
-    if (qemuProcessInit(driver, vm, !!migrateFrom, !!snapshot) < 0)
+    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom, !!snapshot) < 0)
         goto cleanup;
 
     if (migrateFrom) {
