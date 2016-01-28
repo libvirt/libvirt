@@ -2364,97 +2364,10 @@ qemuMigrationSetOffline(virQEMUDriverPtr driver,
     return ret;
 }
 
-
 static int
-qemuMigrationSetCompression(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            bool state,
-                            qemuDomainAsyncJob job)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
-        return -1;
-
-    ret = qemuMonitorGetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
-
-    if (ret < 0) {
-        goto cleanup;
-    } else if (ret == 0 && !state) {
-        /* Unsupported but we want it off anyway */
-        goto cleanup;
-    } else if (ret == 0) {
-        if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Compressed migration is not supported by "
-                             "target QEMU binary"));
-        } else {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("Compressed migration is not supported by "
-                             "source QEMU binary"));
-        }
-        ret = -1;
-        goto cleanup;
-    }
-
-    ret = qemuMonitorSetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
-                state);
-
- cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-    return ret;
-}
-
-static int
-qemuMigrationSetAutoConverge(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             bool state,
-                             qemuDomainAsyncJob job)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
-        return -1;
-
-    ret = qemuMonitorGetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE);
-
-    if (ret < 0) {
-        goto cleanup;
-    } else if (ret == 0 && !state) {
-        /* Unsupported but we want it off anyway */
-        goto cleanup;
-    } else if (ret == 0) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Auto-Converge is not supported by "
-                         "QEMU binary"));
-        ret = -1;
-        goto cleanup;
-    }
-
-    ret = qemuMonitorSetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
-                state);
-
- cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-    return ret;
-}
-
-
-static int
-qemuMigrationSetPinAll(virQEMUDriverPtr driver,
+qemuMigrationSetOption(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
+                       qemuMonitorMigrationCaps capability,
                        bool state,
                        qemuDomainAsyncJob job)
 {
@@ -2464,9 +2377,7 @@ qemuMigrationSetPinAll(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
         return -1;
 
-    ret = qemuMonitorGetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL);
+    ret = qemuMonitorGetMigrationCapability(priv->mon, capability);
 
     if (ret < 0) {
         goto cleanup;
@@ -2475,22 +2386,21 @@ qemuMigrationSetPinAll(virQEMUDriverPtr driver,
         goto cleanup;
     } else if (ret == 0) {
         if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("rdma pinning migration is not supported by "
-                             "target QEMU binary"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("Migration option '%s' is not supported by "
+                             "target QEMU binary"),
+                           qemuMonitorMigrationCapsTypeToString(capability));
         } else {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                           _("rdma pinning migration is not supported by "
-                             "source QEMU binary"));
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("Migration option '%s' is not supported by "
+                             "source QEMU binary"),
+                           qemuMonitorMigrationCapsTypeToString(capability));
         }
         ret = -1;
         goto cleanup;
     }
 
-    ret = qemuMonitorSetMigrationCapability(
-                priv->mon,
-                QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                state);
+    ret = qemuMonitorSetMigrationCapability(priv->mon, capability, state);
 
  cleanup:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -3582,9 +3492,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
 
-    if (qemuMigrationSetCompression(driver, vm,
-                                    flags & VIR_MIGRATE_COMPRESSED,
-                                    QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+                               flags & VIR_MIGRATE_COMPRESSED,
+                               QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
@@ -3592,7 +3503,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
-    if (qemuMigrationSetPinAll(driver, vm,
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
                                flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
@@ -4447,17 +4359,20 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (qemuMigrationSetCompression(driver, vm,
-                                    flags & VIR_MIGRATE_COMPRESSED,
-                                    QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+                               flags & VIR_MIGRATE_COMPRESSED,
+                               QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (qemuMigrationSetAutoConverge(driver, vm,
-                                     flags & VIR_MIGRATE_AUTO_CONVERGE,
-                                     QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+                               flags & VIR_MIGRATE_AUTO_CONVERGE,
+                               QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
 
-    if (qemuMigrationSetPinAll(driver, vm,
+    if (qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
                                flags & VIR_MIGRATE_RDMA_PIN_ALL,
                                QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto cleanup;
