@@ -677,7 +677,7 @@ elsif ($mode eq "server") {
                     push(@prepare_ret_list,
                          "if (VIR_ALLOC($2_p) < 0)\n" .
                          "        goto cleanup;\n" .
-                         "    \n" .
+                         "\n" .
                          "    if (VIR_STRDUP(*$2_p, $2) < 0)\n".
                          "        goto cleanup;\n");
 
