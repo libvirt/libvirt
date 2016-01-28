@@ -1707,7 +1707,7 @@ void virPCIDeviceSetManaged(virPCIDevicePtr dev, bool managed)
     dev->managed = managed;
 }
 
-unsigned int
+bool
 virPCIDeviceGetManaged(virPCIDevicePtr dev)
 {
     return dev->managed;
@@ -1725,7 +1725,7 @@ virPCIDeviceGetStubDriver(virPCIDevicePtr dev)
     return dev->stubDriver;
 }
 
-unsigned int
+bool
 virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev)
 {
     return dev->unbind_from_stub;
@@ -1737,7 +1737,7 @@ virPCIDeviceSetUnbindFromStub(virPCIDevicePtr dev, bool unbind)
     dev->unbind_from_stub = unbind;
 }
 
-unsigned int
+bool
 virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev)
 {
     return dev->remove_slot;
@@ -1749,7 +1749,7 @@ virPCIDeviceSetRemoveSlot(virPCIDevicePtr dev, bool remove_slot)
     dev->remove_slot = remove_slot;
 }
 
-unsigned int
+bool
 virPCIDeviceGetReprobe(virPCIDevicePtr dev)
 {
     return dev->reprobe;

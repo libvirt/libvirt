@@ -99,7 +99,7 @@ int virPCIDeviceReset(virPCIDevicePtr dev,
 
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);
-unsigned int virPCIDeviceGetManaged(virPCIDevice *dev);
+bool virPCIDeviceGetManaged(virPCIDevice *dev);
 void virPCIDeviceSetStubDriver(virPCIDevicePtr dev,
                                virPCIStubDriver driver);
 virPCIStubDriver virPCIDeviceGetStubDriver(virPCIDevicePtr dev);
@@ -110,13 +110,13 @@ int virPCIDeviceSetUsedBy(virPCIDevice *dev,
 void virPCIDeviceGetUsedBy(virPCIDevice *dev,
                            const char **drv_name,
                            const char **dom_name);
-unsigned int virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev);
+bool virPCIDeviceGetUnbindFromStub(virPCIDevicePtr dev);
 void  virPCIDeviceSetUnbindFromStub(virPCIDevice *dev,
                                     bool unbind);
-unsigned int virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev);
+bool virPCIDeviceGetRemoveSlot(virPCIDevicePtr dev);
 void virPCIDeviceSetRemoveSlot(virPCIDevice *dev,
                                bool remove_slot);
-unsigned int virPCIDeviceGetReprobe(virPCIDevicePtr dev);
+bool virPCIDeviceGetReprobe(virPCIDevicePtr dev);
 void virPCIDeviceSetReprobe(virPCIDevice *dev,
                             bool reprobe);
 
