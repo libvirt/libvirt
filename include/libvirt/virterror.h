@@ -315,6 +315,8 @@ typedef enum {
     VIR_ERR_AUTH_UNAVAILABLE = 94,	/* authentication unavailable */
     VIR_ERR_NO_SERVER = 95,             /* Server was not found */
     VIR_ERR_NO_CLIENT = 96,             /* Client was not found */
+    VIR_ERR_AGENT_UNSYNCED = 97,        /* guest agent replies with wrong id
+                                           to guest-sync command */
 } virErrorNumber;
 
 /**

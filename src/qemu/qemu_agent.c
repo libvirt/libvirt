@@ -966,21 +966,21 @@ qemuAgentGuestSync(qemuAgentPtr mon)
         goto cleanup;
 
     if (!sync_msg.rxObject) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
                        _("Missing monitor reply object"));
         goto cleanup;
     }
 
     if (virJSONValueObjectGetNumberUlong(sync_msg.rxObject,
                                          "return", &id_ret) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+        virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
                        _("Malformed return value"));
         goto cleanup;
     }
 
     VIR_DEBUG("Guest returned ID: %llu", id_ret);
     if (id_ret != id) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_AGENT_UNSYNCED,
                        _("Guest agent returned ID: %llu instead of %llu"),
                        id_ret, id);
         goto cleanup;

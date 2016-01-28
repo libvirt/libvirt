@@ -1394,6 +1394,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Client not found: %s");
             break;
+        case VIR_ERR_AGENT_UNSYNCED:
+            if (info == NULL)
+                errmsg = _("guest agent replied with wrong id to guest-sync command");
+            else
+                errmsg = _("guest agent replied with wrong id to guest-sync command: %s");
+            break;
     }
     return errmsg;
 }
