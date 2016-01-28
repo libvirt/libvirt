@@ -3986,17 +3986,6 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
                     timestr) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginAsyncJob(driver, vm,
-                                   QEMU_ASYNC_JOB_DUMP) < 0) {
-        goto cleanup;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
-    }
-
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
     ret = doCoreDump(driver, vm, dumpfile,
                      getCompressionType(driver), flags,
@@ -4004,10 +3993,6 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
     if (ret < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
-
- endjob:
-    qemuDomainObjEndAsyncJob(driver, vm);
-
  cleanup:
     VIR_FREE(dumpfile);
     virObjectUnref(cfg);
@@ -4022,11 +4007,15 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool removeInactive = false;
+
+    if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_DUMP) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Ignoring GUEST_PANICKED event from inactive domain %s",
                   vm->def->name);
-        goto cleanup;
+        goto endjob;
     }
 
     virDomainObjSetState(vm,
@@ -4039,6 +4028,11 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 
     qemuDomainEventQueue(driver, event);
 
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
+        VIR_WARN("Unable to save status on vm %s after state change",
+                 vm->def->name);
+    }
+
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
@@ -4046,40 +4040,23 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     switch (action) {
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
-            goto cleanup;
+            goto endjob;
         /* fall through */
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
-        priv->beingDestroyed = true;
-
-        if (qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0) {
-            priv->beingDestroyed = false;
-            goto cleanup;
-        }
-
-        priv->beingDestroyed = false;
-
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("domain is not running"));
-            goto cleanup;
-        }
-
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
 
         qemuDomainEventQueue(driver, event);
-
         virDomainAuditStop(vm, "destroyed");
-
-        qemuDomainRemoveInactive(driver, vm);
+        removeInactive = true;
         break;
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
-            goto cleanup;
+            goto endjob;
         /* fall through */
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
@@ -4094,12 +4071,12 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         break;
     }
 
- cleanup:
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
-     }
+ endjob:
+    qemuDomainObjEndAsyncJob(driver, vm);
+    if (removeInactive)
+        qemuDomainRemoveInactive(driver, vm);
 
+ cleanup:
     virObjectUnref(cfg);
 }
 
