@@ -1933,11 +1933,8 @@ qemuDomainObjExitMonitorInternal(virQEMUDriverPtr driver,
     if (!hasRefs)
         priv->mon = NULL;
 
-    if (priv->job.active == QEMU_JOB_ASYNC_NESTED) {
-        qemuDomainObjResetJob(priv);
-        qemuDomainObjSaveJob(driver, obj);
-        virCondSignal(&priv->job.cond);
-    }
+    if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
+        qemuDomainObjEndJob(driver, obj);
 }
 
 void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
