@@ -284,7 +284,7 @@ static int volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     int r = 0;
     rbd_image_t image = NULL;
 
-    r = rbd_open(ptr->ioctx, vol->name, &image, NULL);
+    r = rbd_open_read_only(ptr->ioctx, vol->name, &image, NULL);
     if (r < 0) {
         ret = -r;
         virReportSystemError(-r, _("failed to open the RBD image '%s'"),
