@@ -572,6 +572,7 @@ sc_prohibit_int_index:
 
 sc_prohibit_int_ijk:
 	@prohibit='\<(int|unsigned) ([^(=]* )*(i|j|k)\>(\s|,|;)'	\
+	exclude='exempt from syntax-check'				\
 	halt='use size_t, not int/unsigned int for loop vars i, j, k'	\
 	  $(_sc_search_regexp)
 
