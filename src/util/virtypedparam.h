@@ -104,6 +104,12 @@ int virTypedParamsCopy(virTypedParameterPtr *dst,
 
 char *virTypedParameterToString(virTypedParameterPtr param);
 
+int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
+                              unsigned int remote_params_len,
+                              int limit,
+                              virTypedParameterPtr *params,
+                              int *nparams);
+
 VIR_ENUM_DECL(virTypedParameter)
 
 # define VIR_TYPED_PARAMS_DEBUG(params, nparams)                            \

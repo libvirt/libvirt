@@ -101,12 +101,6 @@ static void make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr 
 static void make_nonnull_nwfilter(remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src);
 static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
 
-static virTypedParameterPtr
-remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
-                                 u_int args_params_len,
-                                 int limit,
-                                 int *nparams);
-
 static int
 remoteSerializeTypedParameters(virTypedParameterPtr params,
                                int nparams,
@@ -1493,84 +1487,6 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
         VIR_FREE(val);
     }
     return rv;
-}
-
-/* Helper to deserialize typed parameters. */
-static virTypedParameterPtr
-remoteDeserializeTypedParameters(remote_typed_param *args_params_val,
-                                 u_int args_params_len,
-                                 int limit,
-                                 int *nparams)
-{
-    size_t i = 0;
-    int rv = -1;
-    virTypedParameterPtr params = NULL;
-
-    /* Check the length of the returned list carefully. */
-    if (limit && args_params_len > limit) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
-        goto cleanup;
-    }
-    if (VIR_ALLOC_N(params, args_params_len) < 0)
-        goto cleanup;
-
-    *nparams = args_params_len;
-
-    /* Deserialise the result. */
-    for (i = 0; i < args_params_len; ++i) {
-        if (virStrcpyStatic(params[i].field,
-                            args_params_val[i].field) == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Parameter %s too big for destination"),
-                           args_params_val[i].field);
-            goto cleanup;
-        }
-        params[i].type = args_params_val[i].value.type;
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            params[i].value.i =
-                args_params_val[i].value.remote_typed_param_value_u.i;
-            break;
-        case VIR_TYPED_PARAM_UINT:
-            params[i].value.ui =
-                args_params_val[i].value.remote_typed_param_value_u.ui;
-            break;
-        case VIR_TYPED_PARAM_LLONG:
-            params[i].value.l =
-                args_params_val[i].value.remote_typed_param_value_u.l;
-            break;
-        case VIR_TYPED_PARAM_ULLONG:
-            params[i].value.ul =
-                args_params_val[i].value.remote_typed_param_value_u.ul;
-            break;
-        case VIR_TYPED_PARAM_DOUBLE:
-            params[i].value.d =
-                args_params_val[i].value.remote_typed_param_value_u.d;
-            break;
-        case VIR_TYPED_PARAM_BOOLEAN:
-            params[i].value.b =
-                args_params_val[i].value.remote_typed_param_value_u.b;
-            break;
-        case VIR_TYPED_PARAM_STRING:
-            if (VIR_STRDUP(params[i].value.s,
-                           args_params_val[i].value.remote_typed_param_value_u.s) < 0)
-                goto cleanup;
-            break;
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("unknown parameter type: %d"),
-                           params[i].type);
-            goto cleanup;
-        }
-    }
-
-    rv = 0;
-
- cleanup:
-    if (rv < 0) {
-        virTypedParamsFree(params, i);
-        params = NULL;
-    }
-    return params;
 }
 
 static int
@@ -5392,9 +5308,9 @@ remoteDispatchDomainMigrateBegin3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     if (!(xml = virDomainMigrateBegin3Params(dom, params, nparams,
@@ -5445,9 +5361,9 @@ remoteDispatchDomainMigratePrepare3Params(virNetServerPtr server ATTRIBUTE_UNUSE
         goto cleanup;
     }
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     /* Wacky world of XDR ... */
@@ -5506,9 +5422,9 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE
         goto cleanup;
     }
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)) ||
@@ -5579,9 +5495,9 @@ remoteDispatchDomainMigratePerform3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     dconnuri = args->dconnuri == NULL ? NULL : *args->dconnuri;
@@ -5636,9 +5552,9 @@ remoteDispatchDomainMigrateFinish3Params(virNetServerPtr server ATTRIBUTE_UNUSED
         goto cleanup;
     }
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     dom = virDomainMigrateFinish3Params(priv->conn, params, nparams,
@@ -5696,9 +5612,9 @@ remoteDispatchDomainMigrateConfirm3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if (!(params = remoteDeserializeTypedParameters(args->params.params_val,
-                                                    args->params.params_len,
-                                                    0, &nparams)))
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  0, &params, &nparams) < 0)
         goto cleanup;
 
     if (virDomainMigrateConfirm3Params(dom, params, nparams,

@@ -2350,6 +2350,7 @@ virTypedParameterTypeFromString;
 virTypedParameterTypeToString;
 virTypedParamsCheck;
 virTypedParamsCopy;
+virTypedParamsDeserialize;
 virTypedParamsFilter;
 virTypedParamsGetStringList;
 virTypedParamsReplaceString;

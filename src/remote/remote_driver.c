@@ -72,11 +72,6 @@ VIR_LOG_INIT("remote.remote_driver");
 # define HYPER_TO_ULONG(_to, _from) (_to) = (_from)
 #endif
 
-#define remoteDeserializeTypedParameters(ret_params_val, ret_params_len,      \
-                                         limit, params, nparams)              \
-    deserializeTypedParameters(__FUNCTION__, ret_params_val, ret_params_len,  \
-                               limit, params, nparams)
-
 static bool inside_daemon;
 
 struct private_data {
@@ -1747,105 +1742,6 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
     return rv;
 }
 
-/* Helper to deserialize typed parameters. */
-static int
-deserializeTypedParameters(const char *funcname,
-                           remote_typed_param *ret_params_val,
-                           u_int ret_params_len,
-                           int limit,
-                           virTypedParameterPtr *params,
-                           int *nparams)
-{
-    size_t i = 0;
-    int rv = -1;
-    bool userAllocated = *params != NULL;
-
-    if (ret_params_len > limit) {
-        virReportError(VIR_ERR_RPC,
-                       _("%s: too many parameters '%u' for limit '%d'"),
-                       funcname, ret_params_len, limit);
-        goto cleanup;
-    }
-
-    if (userAllocated) {
-        /* Check the length of the returned list carefully. */
-        if (ret_params_len > *nparams) {
-            virReportError(VIR_ERR_RPC,
-                           _("%s: too many parameters '%u' for nparams '%d'"),
-                           funcname, ret_params_len, *nparams);
-            goto cleanup;
-        }
-    } else {
-        if (VIR_ALLOC_N(*params, ret_params_len) < 0)
-            goto cleanup;
-    }
-    *nparams = ret_params_len;
-
-    /* Deserialise the result. */
-    for (i = 0; i < ret_params_len; ++i) {
-        virTypedParameterPtr param = *params + i;
-        remote_typed_param *ret_param = ret_params_val + i;
-
-        if (virStrcpyStatic(param->field,
-                            ret_param->field) == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: parameter %s too big for destination"),
-                           funcname, ret_param->field);
-            goto cleanup;
-        }
-
-        param->type = ret_param->value.type;
-        switch (param->type) {
-        case VIR_TYPED_PARAM_INT:
-            param->value.i =
-                ret_param->value.remote_typed_param_value_u.i;
-            break;
-        case VIR_TYPED_PARAM_UINT:
-            param->value.ui =
-                ret_param->value.remote_typed_param_value_u.ui;
-            break;
-        case VIR_TYPED_PARAM_LLONG:
-            param->value.l =
-                ret_param->value.remote_typed_param_value_u.l;
-            break;
-        case VIR_TYPED_PARAM_ULLONG:
-            param->value.ul =
-                ret_param->value.remote_typed_param_value_u.ul;
-            break;
-        case VIR_TYPED_PARAM_DOUBLE:
-            param->value.d =
-                ret_param->value.remote_typed_param_value_u.d;
-            break;
-        case VIR_TYPED_PARAM_BOOLEAN:
-            param->value.b =
-                ret_param->value.remote_typed_param_value_u.b;
-            break;
-        case VIR_TYPED_PARAM_STRING:
-            if (VIR_STRDUP(param->value.s,
-                           ret_param->value.remote_typed_param_value_u.s) < 0)
-                goto cleanup;
-            break;
-        default:
-            virReportError(VIR_ERR_RPC, _("%s: unknown parameter type: %d"),
-                           funcname, param->type);
-            goto cleanup;
-        }
-    }
-
-    rv = 0;
-
- cleanup:
-    if (rv < 0) {
-        if (userAllocated) {
-            virTypedParamsClear(*params, i);
-        } else {
-            virTypedParamsFree(*params, i);
-            *params = NULL;
-        }
-    }
-    return rv;
-}
-
 static int
 remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
                                   u_int ret_errors_len,
@@ -1922,12 +1818,12 @@ remoteDomainBlockStatsFlags(virDomainPtr domain,
 
     *nparams = ret.params.params_len;
 
-    /* Deserialise the result. */
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    /* Deserialize the result. */
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -1971,11 +1867,11 @@ remoteDomainGetMemoryParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -2019,11 +1915,11 @@ remoteDomainGetNumaParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_NUMA_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_NUMA_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -2067,11 +1963,11 @@ remoteDomainGetBlkioParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -2991,11 +2887,11 @@ static int remoteDomainGetBlockIoTune(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -3081,9 +2977,10 @@ static int remoteDomainGetCPUStats(virDomainPtr domain,
         virTypedParameterPtr cpu_params = &params[cpu * nparams];
         remote_typed_param *stride = &ret.params.params_val[cpu * ret.nparams];
 
-        if (remoteDeserializeTypedParameters(stride, ret.nparams,
-                                             REMOTE_NODE_CPU_STATS_MAX,
-                                             &cpu_params, &tmp) < 0)
+        if (virTypedParamsDeserialize((virTypedParameterRemotePtr) stride,
+                                      ret.nparams,
+                                      REMOTE_NODE_CPU_STATS_MAX,
+                                      &cpu_params, &tmp) < 0)
             goto cleanup;
     }
 
@@ -5480,10 +5377,10 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUS
     int nparams = 0;
     virObjectEventPtr event = NULL;
 
-    if (remoteDeserializeTypedParameters(msg->params.params_val,
-                                         msg->params.params_len,
-                                         REMOTE_DOMAIN_EVENT_TUNABLE_MAX,
-                                         &params, &nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) msg->params.params_val,
+                                  msg->params.params_len,
+                                  REMOTE_DOMAIN_EVENT_TUNABLE_MAX,
+                                  &params, &nparams) < 0)
         return;
 
     dom = get_nonnull_domain(conn, msg->dom);
@@ -6720,11 +6617,11 @@ remoteDomainGetInterfaceParameters(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -6900,11 +6797,11 @@ remoteNodeGetMemoryParameters(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_NODE_MEMORY_PARAMETERS_MAX,
-                                         &params,
-                                         nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_NODE_MEMORY_PARAMETERS_MAX,
+                                  &params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -7021,10 +6918,10 @@ remoteDomainGetJobStats(virDomainPtr domain,
 
     *type = ret.type;
 
-    if (remoteDeserializeTypedParameters(ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_JOB_STATS_MAX,
-                                         params, nparams) < 0)
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_JOB_STATS_MAX,
+                                  params, nparams) < 0)
         goto cleanup;
 
     rv = 0;
@@ -7802,11 +7699,11 @@ remoteConnectGetAllDomainStats(virConnectPtr conn,
         if (!(elem->dom = get_nonnull_domain(conn, rec->dom)))
             goto cleanup;
 
-        if (remoteDeserializeTypedParameters(rec->params.params_val,
-                                             rec->params.params_len,
-                                             REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX,
-                                             &elem->params,
-                                             &elem->nparams))
+        if (virTypedParamsDeserialize((virTypedParameterRemotePtr) rec->params.params_val,
+                                      rec->params.params_len,
+                                      REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX,
+                                      &elem->params,
+                                      &elem->nparams))
             goto cleanup;
 
         tmpret[i] = elem;

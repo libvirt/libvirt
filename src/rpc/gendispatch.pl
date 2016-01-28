@@ -557,10 +557,11 @@ elsif ($mode eq "server") {
                     }
                     push(@args_list, "$1");
                     push(@args_list, "n$1");
-                    push(@getters_list, "    if (($1 = remoteDeserializeTypedParameters(args->$1.$1_val,\n" .
-                                        "                                                   args->$1.$1_len,\n" .
-                                        "                                                   $2,\n" .
-                                        "                                                   &n$1)) == NULL)\n" .
+                    push(@getters_list, "    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->$1.$1_val,\n" .
+                                        "                                  args->$1.$1_len,\n" .
+                                        "                                  $2,\n" .
+                                        "                                  &$1,\n" .
+                                        "                                  &n$1) < 0)\n" .
                                         "        goto cleanup;\n");
                     push(@free_list, "    virTypedParamsFree($1, n$1);");
                 } elsif ($args_member =~ m/<\S+>;/ or $args_member =~ m/\[\S+\];/) {
@@ -1356,11 +1357,11 @@ elsif ($mode eq "client") {
                     }
                 } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     splice(@args_list, int($3), 0, ("virTypedParameterPtr $1"));
-                    push(@ret_list2, "if (remoteDeserializeTypedParameters(ret.$1.$1_val,\n" .
-                                     "                                         ret.$1.$1_len,\n" .
-                                     "                                         $2,\n" .
-                                     "                                         &$1,\n" .
-                                     "                                         n$1) < 0)\n" .
+                    push(@ret_list2, "if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.$1.$1_val,\n" .
+                                     "                                  ret.$1.$1_len,\n" .
+                                     "                                  $2,\n" .
+                                     "                                  &$1,\n" .
+                                     "                                  n$1) < 0)\n" .
                                      "        goto cleanup;\n");
                     $single_ret_cleanup = 1;
                 } elsif ($ret_member =~ m/^remote_typed_param (\S+)<\S+>;/) {
