@@ -1131,12 +1131,11 @@ static int umlStartVMDaemon(virConnectPtr conn,
     virCommandSetErrorFD(cmd, &logfd);
     virCommandDaemonize(cmd);
 
-    ret = virCommandRun(cmd, NULL);
-    if (ret < 0)
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
     if (autoDestroy &&
-        (ret = umlProcessAutoDestroyAdd(driver, vm, conn)) < 0)
+        umlProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;
 
     ret = virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm, false);

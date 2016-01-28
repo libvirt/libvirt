@@ -1963,26 +1963,23 @@ virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
                                         off_t size,
                                         int fd)
 {
-    int ret = -1;
-
-    ret = ftruncate(fd, 0);
-    if (ret == -1) {
+    if (ftruncate(fd, 0) < 0) {
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
                                "path '%s' to 0 bytes"),
                              vol->target.path);
-        return ret;
+        return -1;
     }
 
-    ret = ftruncate(fd, size);
-    if (ret == -1) {
+    if (ftruncate(fd, size) < 0) {
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
                                "path '%s' to %ju bytes"),
                              vol->target.path, (uintmax_t)size);
+        return -1;
     }
 
-    return ret;
+    return 0;
 }
 
 
