@@ -1957,14 +1957,14 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->cputune.vcpupin) {
-        for (i = 0; i < def->cputune.nvcpupin; i++) {
-            if (def->cputune.vcpupin[i]->cpumask &&
-                !virBitmapEqual(def->cpumask, def->cputune.vcpupin[i]->cpumask)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("vcpupin cpumask differs from default cpumask"));
-                return -1;
-            }
+    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+
+        if (vcpu->cpumask &&
+            !virBitmapEqual(def->cpumask, vcpu->cpumask)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vcpupin cpumask differs from default cpumask"));
+            return -1;
         }
     }
 

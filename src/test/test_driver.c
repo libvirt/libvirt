@@ -2455,15 +2455,14 @@ static int testDomainGetVcpus(virDomainPtr domain,
     memset(cpumaps, 0, maxinfo * maplen);
 
     for (i = 0; i < maxinfo; i++) {
-        virDomainPinDefPtr pininfo;
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
 
-        pininfo = virDomainPinFind(def->cputune.vcpupin,
-                                   def->cputune.nvcpupin,
-                                   i);
+        if (!vcpu->online)
+            continue;
 
-        if (pininfo && pininfo->cpumask)
-            bitmap = pininfo->cpumask;
+        if (vcpu->cpumask)
+            bitmap = vcpu->cpumask;
         else if (def->cpumask)
             bitmap = def->cpumask;
         else
@@ -2492,6 +2491,7 @@ static int testDomainPinVcpu(virDomainPtr domain,
                              unsigned char *cpumap,
                              int maplen)
 {
+    virDomainVcpuInfoPtr vcpuinfo;
     virDomainObjPtr privdom;
     virDomainDefPtr def;
     int ret = -1;
@@ -2507,29 +2507,21 @@ static int testDomainPinVcpu(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (vcpu > virDomainDefGetVcpus(privdom->def)) {
+    if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu)) ||
+        !vcpuinfo->online) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpu '%d' is not present in the domain"),
                        vcpu);
         goto cleanup;
     }
 
-    if (!def->cputune.vcpupin) {
-        if (VIR_ALLOC(def->cputune.vcpupin) < 0)
-            goto cleanup;
-        def->cputune.nvcpupin = 0;
-    }
-    if (virDomainPinAdd(&def->cputune.vcpupin,
-                        &def->cputune.nvcpupin,
-                        cpumap,
-                        maplen,
-                        vcpu) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to update or add vcpupin"));
+    virBitmapFree(vcpuinfo->cpumask);
+
+    if (!(vcpuinfo->cpumask = virBitmapNewData(cpumap, maplen)))
         goto cleanup;
-    }
 
     ret = 0;
+
  cleanup:
     virDomainObjEndAPI(&privdom);
     return ret;
@@ -2566,15 +2558,14 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
         ncpumaps = virDomainDefGetVcpus(def);
 
     for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainPinDefPtr pininfo;
+        virDomainVcpuInfoPtr vcpuinfo = virDomainDefGetVcpu(def, vcpu);
         virBitmapPtr bitmap = NULL;
 
-        pininfo = virDomainPinFind(def->cputune.vcpupin,
-                                   def->cputune.nvcpupin,
-                                   vcpu);
+        if (!vcpuinfo->online)
+            continue;
 
-        if (pininfo && pininfo->cpumask)
-            bitmap = pininfo->cpumask;
+        if (vcpuinfo->cpumask)
+            bitmap = vcpuinfo->cpumask;
         else if (def->cpumask)
             bitmap = def->cpumask;
         else

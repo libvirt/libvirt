@@ -1289,6 +1289,9 @@ virDomainVcpuInfoClear(virDomainVcpuInfoPtr info)
 {
     if (!info)
         return;
+
+    virBitmapFree(info->cpumask);
+    info->cpumask = NULL;
 }
 
 
@@ -1422,7 +1425,14 @@ virDomainDefGetVcpu(virDomainDefPtr def,
 static bool
 virDomainDefHasVcpuPin(const virDomainDef *def)
 {
-    return !!def->cputune.vcpupin;
+    size_t i;
+
+    for (i = 0; i < def->maxvcpus; i++) {
+        if (def->vcpus[i].cpumask)
+            return true;
+    }
+
+    return false;
 }
 
 
@@ -2592,8 +2602,6 @@ void virDomainDefFree(virDomainDefPtr def)
     virCPUDefFree(def->cpu);
 
     virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
-
-    virDomainPinDefArrayFree(def->cputune.vcpupin, def->cputune.nvcpupin);
 
     virBitmapFree(def->cputune.emulatorpin);
 
@@ -14110,83 +14118,68 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
 }
 
 
-/* Check if pin with same id already exists. */
-static bool
-virDomainPinIsDuplicate(virDomainPinDefPtr *def,
-                        int npin,
-                        int id)
-{
-    size_t i;
-
-    if (!def || !npin)
-        return false;
-
-    for (i = 0; i < npin; i++) {
-        if (def[i]->id == id)
-            return true;
-    }
-
-    return false;
-}
-
 /* Parse the XML definition for a vcpupin
  *
  * vcpupin has the form of
  *   <vcpupin vcpu='0' cpuset='0'/>
  */
-static virDomainPinDefPtr
-virDomainVcpuPinDefParseXML(xmlNodePtr node,
-                            xmlXPathContextPtr ctxt)
+static int
+virDomainVcpuPinDefParseXML(virDomainDefPtr def,
+                            xmlNodePtr node)
 {
-    virDomainPinDefPtr def;
-    xmlNodePtr oldnode = ctxt->node;
+    virDomainVcpuInfoPtr vcpu;
     unsigned int vcpuid;
     char *tmp = NULL;
+    int ret = -1;
 
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
-
-    ctxt->node = node;
-
-    if (!(tmp = virXPathString("string(./@vcpu)", ctxt))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing vcpu id in vcpupin"));
-        goto error;
+    if (!(tmp = virXMLPropString(node, "vcpu"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing vcpu id in vcpupin"));
+        goto cleanup;
     }
 
     if (virStrToLong_uip(tmp, NULL, 10, &vcpuid) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("invalid setting for vcpu '%s'"), tmp);
-        goto error;
+        goto cleanup;
     }
     VIR_FREE(tmp);
 
-    def->id = vcpuid;
+    if (!(vcpu = virDomainDefGetVcpu(def, vcpuid)) ||
+        !vcpu->online) {
+        /* To avoid the regression when daemon loading domain confs, we can't
+         * simply error out if <vcpupin> nodes greater than current vcpus.
+         * Ignore them instead. */
+        VIR_WARN("Ignoring vcpupin for missing vcpus");
+        ret = 0;
+        goto cleanup;
+    }
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing cpuset for vcpupin"));
-
-        goto error;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing cpuset for vcpupin"));
+        goto cleanup;
     }
 
-    if (virBitmapParse(tmp, 0, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-        goto error;
+    if (vcpu->cpumask) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("duplicate vcpupin for vcpu '%d'"), vcpuid);
+        goto cleanup;
+    }
 
-    if (virBitmapIsAllClear(def->cpumask)) {
+    if (virBitmapParse(tmp, 0, &vcpu->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto cleanup;
+
+    if (virBitmapIsAllClear(vcpu->cpumask)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid value of 'cpuset': %s"), tmp);
-        goto error;
+        goto cleanup;
     }
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(tmp);
-    ctxt->node = oldnode;
-    return def;
-
- error:
-    VIR_FREE(def);
-    goto cleanup;
+    return ret;
 }
 
 
@@ -15142,34 +15135,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0)
         goto error;
 
-    if (n && VIR_ALLOC_N(def->cputune.vcpupin, n) < 0)
-        goto error;
-
     for (i = 0; i < n; i++) {
-        virDomainPinDefPtr vcpupin;
-        if (!(vcpupin = virDomainVcpuPinDefParseXML(nodes[i], ctxt)))
+        if (virDomainVcpuPinDefParseXML(def, nodes[i]))
             goto error;
-
-        if (virDomainPinIsDuplicate(def->cputune.vcpupin,
-                                    def->cputune.nvcpupin,
-                                    vcpupin->id)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("duplicate vcpupin for same vcpu"));
-            virDomainPinDefFree(vcpupin);
-            goto error;
-        }
-
-        if (vcpupin->id >= virDomainDefGetVcpus(def)) {
-            /* To avoid the regression when daemon loading
-             * domain confs, we can't simply error out if
-             * <vcpupin> nodes greater than current vcpus,
-             * ignoring them instead.
-             */
-            VIR_WARN("Ignore vcpupin for missing vcpus");
-            virDomainPinDefFree(vcpupin);
-        } else {
-            def->cputune.vcpupin[def->cputune.nvcpupin++] = vcpupin;
-        }
     }
     VIR_FREE(nodes);
 
@@ -21845,15 +21813,19 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           "</emulator_quota>\n",
                           def->cputune.emulator_quota);
 
-    for (i = 0; i < def->cputune.nvcpupin; i++) {
+    for (i = 0; i < def->maxvcpus; i++) {
         char *cpumask;
-        virBufferAsprintf(&childrenBuf, "<vcpupin vcpu='%u' ",
-                          def->cputune.vcpupin[i]->id);
+        virDomainVcpuInfoPtr vcpu = def->vcpus + i;
 
-        if (!(cpumask = virBitmapFormat(def->cputune.vcpupin[i]->cpumask)))
+        if (!vcpu->cpumask)
+            continue;
+
+        if (!(cpumask = virBitmapFormat(vcpu->cpumask)))
             goto error;
 
-        virBufferAsprintf(&childrenBuf, "cpuset='%s'/>\n", cpumask);
+        virBufferAsprintf(&childrenBuf,
+                          "<vcpupin vcpu='%zu' cpuset='%s'/>\n", i, cpumask);
+
         VIR_FREE(cpumask);
     }
 

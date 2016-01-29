@@ -2193,23 +2193,23 @@ static int
 qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
 {
     virDomainDefPtr def = vm->def;
-    virDomainPinDefPtr pininfo;
-    int n;
+    virDomainVcpuInfoPtr vcpu;
+    size_t i;
     int ret = -1;
-    VIR_DEBUG("Setting affinity on CPUs nvcpupin=%zu nvcpus=%d hasVcpupids=%d",
-              def->cputune.nvcpupin, virDomainDefGetVcpus(def),
-              qemuDomainHasVcpuPids(vm));
-    if (!def->cputune.nvcpupin)
-        return 0;
+    VIR_DEBUG("Setting affinity on CPUs");
 
     if (!qemuDomainHasVcpuPids(vm)) {
         /* If any CPU has custom affinity that differs from the
          * VM default affinity, we must reject it
          */
-        for (n = 0; n < def->cputune.nvcpupin; n++) {
-            if (def->cputune.vcpupin[n]->cpumask &&
-                !virBitmapEqual(def->cpumask,
-                                def->cputune.vcpupin[n]->cpumask)) {
+        for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
+            vcpu = virDomainDefGetVcpu(def, i);
+
+            if (!vcpu->online)
+                continue;
+
+            if (vcpu->cpumask &&
+                !virBitmapEqual(def->cpumask, vcpu->cpumask)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                "%s", _("cpu affinity is not supported"));
                 return -1;
@@ -2218,19 +2218,19 @@ qemuProcessSetVcpuAffinities(virDomainObjPtr vm)
         return 0;
     }
 
-    for (n = 0; n < virDomainDefGetVcpus(def); n++) {
+    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
         virBitmapPtr bitmap;
-        /* set affinity only for existing vcpus */
-        if (!(pininfo = virDomainPinFind(def->cputune.vcpupin,
-                                         def->cputune.nvcpupin,
-                                         n)))
+
+        vcpu = virDomainDefGetVcpu(def, i);
+
+        if (!vcpu->online)
             continue;
 
-        if (!(bitmap = pininfo->cpumask) &&
+        if (!(bitmap = vcpu->cpumask) &&
             !(bitmap = def->cpumask))
             continue;
 
-        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, n), bitmap) < 0)
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, i), bitmap) < 0)
             goto cleanup;
     }
 

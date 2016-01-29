@@ -2137,8 +2137,6 @@ struct _virDomainCputune {
     long long quota;
     unsigned long long emulator_period;
     long long emulator_quota;
-    size_t nvcpupin;
-    virDomainPinDefPtr *vcpupin;
     virBitmapPtr emulatorpin;
 
     size_t nvcpusched;
@@ -2153,6 +2151,7 @@ typedef virDomainVcpuInfo *virDomainVcpuInfoPtr;
 
 struct _virDomainVcpuInfo {
     bool online;
+    virBitmapPtr cpumask;
 };
 
 typedef struct _virDomainBlkiotune virDomainBlkiotune;

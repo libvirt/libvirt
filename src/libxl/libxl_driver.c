@@ -2329,6 +2329,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr targetDef = NULL;
     virBitmapPtr pcpumap = NULL;
+    virDomainVcpuInfoPtr vcpuinfo;
     virDomainObjPtr vm;
     int ret = -1;
 
@@ -2364,6 +2365,13 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     if (!pcpumap)
         goto endjob;
 
+    if (!(vcpuinfo = virDomainDefGetVcpu(targetDef, vcpu)) ||
+        !vcpuinfo->online) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vcpu '%u' is not active"), vcpu);
+        goto endjob;
+    }
+
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         libxl_bitmap map = { .size = maplen, .map = cpumap };
         if (libxl_set_vcpuaffinity(cfg->ctx, vm->def->id, vcpu, &map) != 0) {
@@ -2374,20 +2382,9 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
         }
     }
 
-    if (!targetDef->cputune.vcpupin) {
-        if (VIR_ALLOC(targetDef->cputune.vcpupin) < 0)
-            goto endjob;
-        targetDef->cputune.nvcpupin = 0;
-    }
-    if (virDomainPinAdd(&targetDef->cputune.vcpupin,
-                        &targetDef->cputune.nvcpupin,
-                        cpumap,
-                        maplen,
-                        vcpu) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("failed to update or add vcpupin xml"));
-        goto endjob;
-    }
+    virBitmapFree(vcpuinfo->cpumask);
+    vcpuinfo->cpumask = pcpumap;
+    pcpumap = NULL;
 
     ret = 0;
 
@@ -2463,15 +2460,14 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     memset(cpumaps, 0x00, maplen * ncpumaps);
 
     for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainPinDefPtr pininfo;
+        virDomainVcpuInfoPtr vcpuinfo = virDomainDefGetVcpu(targetDef, vcpu);
         virBitmapPtr bitmap = NULL;
 
-        pininfo = virDomainPinFind(targetDef->cputune.vcpupin,
-                                   targetDef->cputune.nvcpupin,
-                                   vcpu);
+        if (!vcpuinfo->online)
+            continue;
 
-        if (pininfo && pininfo->cpumask)
-            bitmap = pininfo->cpumask;
+        if (vcpuinfo->cpumask)
+            bitmap = vcpuinfo->cpumask;
         else if (targetDef->cpumask)
             bitmap = targetDef->cpumask;
         else

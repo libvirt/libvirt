@@ -1024,7 +1024,7 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
     virCgroupPtr cgroup_vcpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    size_t i, j;
+    size_t i;
     unsigned long long period = vm->def->cputune.period;
     long long quota = vm->def->cputune.quota;
     char *mem_mask = NULL;
@@ -1082,19 +1082,12 @@ qemuSetupCgroupForVcpu(virDomainObjPtr vm)
                 virCgroupSetCpusetMems(cgroup_vcpu, mem_mask) < 0)
                 goto cleanup;
 
-            /* try to use the default cpu maps */
-            if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
+            if (vcpu->cpumask)
+                cpumap = vcpu->cpumask;
+            else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
                 cpumap = priv->autoCpuset;
             else
                 cpumap = vm->def->cpumask;
-
-            /* lookup a more specific pinning info */
-            for (j = 0; j < def->cputune.nvcpupin; j++) {
-                if (def->cputune.vcpupin[j]->id == i) {
-                    cpumap = def->cputune.vcpupin[j]->cpumask;
-                    break;
-                }
-            }
 
             if (cpumap && qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;

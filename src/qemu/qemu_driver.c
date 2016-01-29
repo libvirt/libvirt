@@ -4869,10 +4869,8 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                                      VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
         goto cleanup;
 
-    /* Free vcpupin setting */
-    virDomainPinDel(&vm->def->cputune.vcpupin,
-                    &vm->def->cputune.nvcpupin,
-                    vcpu);
+    virBitmapFree(vcpuinfo->cpumask);
+    vcpuinfo->cpumask = NULL;
 
     ret = 0;
 
@@ -5033,10 +5031,15 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (persistentDef) {
         /* remove vcpupin entries for vcpus that were unplugged */
         if (nvcpus < virDomainDefGetVcpus(persistentDef)) {
-            for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--)
-                virDomainPinDel(&persistentDef->cputune.vcpupin,
-                                &persistentDef->cputune.nvcpupin,
-                                i);
+            for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--) {
+                virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(persistentDef,
+                                                                i);
+
+                if (vcpu) {
+                    virBitmapFree(vcpu->cpumask);
+                    vcpu->cpumask = NULL;
+                }
+            }
         }
 
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
@@ -5096,9 +5099,11 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virCgroupPtr cgroup_vcpu = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
-    size_t newVcpuPinNum = 0;
-    virDomainPinDefPtr *newVcpuPin = NULL;
     virBitmapPtr pcpumap = NULL;
+    virBitmapPtr pcpumaplive = NULL;
+    virBitmapPtr pcpumappersist = NULL;
+    virDomainVcpuInfoPtr vcpuinfolive = NULL;
+    virDomainVcpuInfoPtr vcpuinfopersist = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virObjectEventPtr event = NULL;
     char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
@@ -5126,18 +5131,36 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (def && vcpu >= virDomainDefGetVcpus(def)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of live cpu count %d"),
-                       vcpu, virDomainDefGetVcpus(def));
-        goto endjob;
+    if (def) {
+        if (!(vcpuinfolive = virDomainDefGetVcpu(def, vcpu))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu %d is out of range of live cpu count %d"),
+                           vcpu, virDomainDefGetVcpus(def));
+            goto endjob;
+        }
+
+        if (!vcpuinfolive->online) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("setting cpu pinning for inactive vcpu '%d' is not "
+                             "supported"), vcpu);
+            goto endjob;
+        }
     }
 
-    if (persistentDef && vcpu >= virDomainDefGetVcpus(persistentDef)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of persistent cpu count %d"),
-                       vcpu, virDomainDefGetVcpus(persistentDef));
-        goto endjob;
+    if (persistentDef) {
+        if (!(vcpuinfopersist = virDomainDefGetVcpu(persistentDef, vcpu))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu %d is out of range of persistent cpu count %d"),
+                           vcpu, virDomainDefGetVcpus(persistentDef));
+            goto endjob;
+        }
+
+        if (!vcpuinfopersist->online) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("setting cpu pinning for inactive vcpu '%d' is not "
+                             "supported"), vcpu);
+            goto endjob;
+        }
     }
 
     if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
@@ -5149,30 +5172,14 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
     }
 
+    if ((def && !(pcpumaplive = virBitmapNewCopy(pcpumap))) ||
+        (persistentDef && !(pcpumappersist = virBitmapNewCopy(pcpumap))))
+        goto endjob;
+
     if (def) {
         if (!qemuDomainHasVcpuPids(vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cpu affinity is not supported"));
-            goto endjob;
-        }
-
-        if (def->cputune.vcpupin) {
-            newVcpuPin = virDomainPinDefCopy(def->cputune.vcpupin,
-                                             def->cputune.nvcpupin);
-            if (!newVcpuPin)
-                goto endjob;
-
-            newVcpuPinNum = def->cputune.nvcpupin;
-        } else {
-            if (VIR_ALLOC(newVcpuPin) < 0)
-                goto endjob;
-            newVcpuPinNum = 0;
-        }
-
-        if (virDomainPinAdd(&newVcpuPin, &newVcpuPinNum,
-                            cpumap, maplen, vcpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to update vcpupin"));
             goto endjob;
         }
 
@@ -5197,13 +5204,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             }
         }
 
-        if (def->cputune.vcpupin)
-            virDomainPinDefArrayFree(def->cputune.vcpupin,
-                                     def->cputune.nvcpupin);
-
-        def->cputune.vcpupin = newVcpuPin;
-        def->cputune.nvcpupin = newVcpuPinNum;
-        newVcpuPin = NULL;
+        virBitmapFree(vcpuinfolive->cpumask);
+        vcpuinfolive->cpumask = pcpumaplive;
+        pcpumaplive = NULL;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
@@ -5222,21 +5225,9 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     }
 
     if (persistentDef) {
-        if (!persistentDef->cputune.vcpupin) {
-            if (VIR_ALLOC(persistentDef->cputune.vcpupin) < 0)
-                goto endjob;
-            persistentDef->cputune.nvcpupin = 0;
-        }
-        if (virDomainPinAdd(&persistentDef->cputune.vcpupin,
-                            &persistentDef->cputune.nvcpupin,
-                            cpumap,
-                            maplen,
-                            vcpu) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to update or add vcpupin xml of "
-                             "a persistent domain"));
-            goto endjob;
-        }
+        virBitmapFree(vcpuinfopersist->cpumask);
+        vcpuinfopersist->cpumask = pcpumappersist;
+        pcpumappersist = NULL;
 
         ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
@@ -5248,14 +5239,14 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (newVcpuPin)
-        virDomainPinDefArrayFree(newVcpuPin, newVcpuPinNum);
     if (cgroup_vcpu)
         virCgroupFree(&cgroup_vcpu);
     virDomainObjEndAPI(&vm);
     qemuDomainEventQueue(driver, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
+    virBitmapFree(pcpumaplive);
+    virBitmapFree(pcpumappersist);
     virObjectUnref(cfg);
     return ret;
 }
@@ -5280,7 +5271,8 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     int ret = -1;
-    int hostcpus, vcpu;
+    int hostcpus;
+    size_t i;
     virBitmapPtr allcpumap = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
@@ -5312,16 +5304,15 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (ncpumaps < 1)
         goto cleanup;
 
-    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainPinDefPtr pininfo;
+    for (i = 0; i < ncpumaps; i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
 
-        pininfo = virDomainPinFind(def->cputune.vcpupin,
-                                   def->cputune.nvcpupin,
-                                   vcpu);
+        if (!vcpu->online)
+            continue;
 
-        if (pininfo && pininfo->cpumask)
-            bitmap = pininfo->cpumask;
+        if (vcpu->cpumask)
+            bitmap = vcpu->cpumask;
         else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
                  priv->autoCpuset)
             bitmap = priv->autoCpuset;
@@ -5330,7 +5321,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
         else
             bitmap = allcpumap;
 
-        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
+        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
     }
 
     ret = ncpumaps;
