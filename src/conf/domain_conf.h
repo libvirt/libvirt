@@ -1898,7 +1898,6 @@ typedef enum {
 typedef struct _virDomainThreadSchedParam virDomainThreadSchedParam;
 typedef virDomainThreadSchedParam *virDomainThreadSchedParamPtr;
 struct _virDomainThreadSchedParam {
-    virBitmapPtr ids;
     virProcessSchedPolicy policy;
     int priority;
 };
@@ -2095,6 +2094,8 @@ struct _virDomainIOThreadIDDef {
     unsigned int iothread_id;
     int thread_id;
     virBitmapPtr cpumask;
+
+    virDomainThreadSchedParam sched;
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDefPtr def);
@@ -2111,9 +2112,6 @@ struct _virDomainCputune {
     unsigned long long emulator_period;
     long long emulator_quota;
     virBitmapPtr emulatorpin;
-
-    size_t niothreadsched;
-    virDomainThreadSchedParamPtr iothreadsched;
 };
 
 
@@ -2124,7 +2122,6 @@ struct _virDomainVcpuInfo {
     bool online;
     virBitmapPtr cpumask;
 
-    /* note: the sched.ids bitmap is unused so it doesn't have to be cleared */
     virDomainThreadSchedParam sched;
 };
 
@@ -2705,7 +2702,6 @@ virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
 virBitmapPtr virDomainIOThreadIDMap(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
-void virDomainIOThreadSchedDelId(virDomainDefPtr def, unsigned int iothread_id);
 
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 

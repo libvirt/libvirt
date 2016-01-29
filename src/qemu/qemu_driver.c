@@ -6143,8 +6143,6 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
 
     virDomainIOThreadIDDel(vm->def, iothread_id);
 
-    virDomainIOThreadSchedDelId(vm->def, iothread_id);
-
     if (qemuDomainDelCgroupForThread(priv->cgroup,
                                      VIR_CGROUP_THREAD_IOTHREAD,
                                      iothread_id) < 0)
@@ -6234,7 +6232,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             }
 
             virDomainIOThreadIDDel(persistentDef, iothread_id);
-            virDomainIOThreadSchedDelId(persistentDef, iothread_id);
             persistentDef->iothreads--;
         }
 

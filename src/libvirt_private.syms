@@ -346,7 +346,6 @@ virDomainIOThreadIDDefFree;
 virDomainIOThreadIDDel;
 virDomainIOThreadIDFind;
 virDomainIOThreadIDMap;
-virDomainIOThreadSchedDelId;
 virDomainKeyWrapCipherNameTypeFromString;
 virDomainKeyWrapCipherNameTypeToString;
 virDomainLeaseDefFree;

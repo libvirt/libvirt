@@ -2560,10 +2560,6 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virBitmapFree(def->cputune.emulatorpin);
 
-    for (i = 0; i < def->cputune.niothreadsched; i++)
-        virBitmapFree(def->cputune.iothreadsched[i].ids);
-    VIR_FREE(def->cputune.iothreadsched);
-
     virDomainNumaFree(def->numa);
 
     virSysinfoDefFree(def->sysinfo);
@@ -14623,25 +14619,26 @@ virDomainVcpuThreadSchedParse(xmlNodePtr node,
 }
 
 
-static int
-virDomainThreadSchedParse(xmlNodePtr node,
-                          unsigned int minid,
-                          unsigned int maxid,
-                          const char *name,
-                          virDomainThreadSchedParamPtr sp)
+static virDomainThreadSchedParamPtr
+virDomainDefGetIOThreadSched(virDomainDefPtr def,
+                             unsigned int iothread)
 {
-    if (!(sp->ids = virDomainSchedulerParse(node, name, &sp->policy,
-                                            &sp->priority)))
-        return -1;
+    virDomainIOThreadIDDefPtr iothrinfo;
 
-    if (virBitmapNextSetBit(sp->ids, -1) < minid ||
-        virBitmapLastSetBit(sp->ids) > maxid) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("%sched bitmap is out of range"), name);
-        return -1;
-    }
+    if (!(iothrinfo = virDomainIOThreadIDFind(def, iothread)))
+        return NULL;
 
-    return 0;
+    return &iothrinfo->sched;
+}
+
+
+static int
+virDomainIOThreadSchedParse(xmlNodePtr node,
+                            virDomainDefPtr def)
+{
+    return virDomainThreadSchedParseHelper(node, "iothreads",
+                                           virDomainDefGetIOThreadSched,
+                                           def);
 }
 
 
@@ -15190,46 +15187,10 @@ virDomainDefParseXML(xmlDocPtr xml,
                        _("cannot extract iothreadsched nodes"));
         goto error;
     }
-    if (n) {
-        if (n > def->niothreadids) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("too many iothreadsched nodes in cputune"));
+
+    for (i = 0; i < n; i++) {
+        if (virDomainIOThreadSchedParse(nodes[i], def) < 0)
             goto error;
-        }
-
-        if (VIR_ALLOC_N(def->cputune.iothreadsched, n) < 0)
-            goto error;
-        def->cputune.niothreadsched = n;
-
-        for (i = 0; i < def->cputune.niothreadsched; i++) {
-            ssize_t pos = -1;
-
-            if (virDomainThreadSchedParse(nodes[i],
-                                          1, UINT_MAX,
-                                          "iothreads",
-                                          &def->cputune.iothreadsched[i]) < 0)
-                goto error;
-
-            while ((pos = virBitmapNextSetBit(def->cputune.iothreadsched[i].ids,
-                                              pos)) > -1) {
-                if (!virDomainIOThreadIDFind(def, pos)) {
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("iothreadsched attribute 'iothreads' "
-                                     "uses undefined iothread ids"));
-                    goto error;
-                }
-            }
-
-            for (j = 0; j < i; j++) {
-                if (virBitmapOverlaps(def->cputune.iothreadsched[i].ids,
-                                      def->cputune.iothreadsched[j].ids)) {
-                    virReportError(VIR_ERR_XML_DETAIL, "%s",
-                                   _("iothreadsched attributes 'iothreads' "
-                                     "must not overlap"));
-                    goto error;
-                }
-            }
-        }
     }
     VIR_FREE(nodes);
 
@@ -18376,29 +18337,6 @@ virDomainIOThreadIDDel(virDomainDefPtr def,
             virDomainIOThreadIDDefFree(def->iothreadids[i]);
             VIR_DELETE_ELEMENT(def->iothreadids, i, def->niothreadids);
 
-            return;
-        }
-    }
-}
-
-void
-virDomainIOThreadSchedDelId(virDomainDefPtr def,
-                            unsigned int iothreadid)
-{
-    size_t i;
-
-    if (!def->cputune.iothreadsched || !def->cputune.niothreadsched)
-        return;
-
-    for (i = 0; i < def->cputune.niothreadsched; i++) {
-        if (virBitmapIsBitSet(def->cputune.iothreadsched[i].ids, iothreadid)) {
-            ignore_value(virBitmapClearBit(def->cputune.iothreadsched[i].ids,
-                                           iothreadid));
-            if (virBitmapIsAllClear(def->cputune.iothreadsched[i].ids)) {
-                virBitmapFree(def->cputune.iothreadsched[i].ids);
-                VIR_DELETE_ELEMENT(def->cputune.iothreadsched, i,
-                                   def->cputune.niothreadsched);
-            }
             return;
         }
     }
@@ -21620,6 +21558,27 @@ virDomainFormatVcpuSchedDef(virDomainDefPtr def,
 
 
 static int
+virDomainFormatIOThreadSchedDef(virDomainDefPtr def,
+                                virBufferPtr buf)
+{
+    virBitmapPtr allthreadmap;
+    int ret;
+
+    if (def->niothreadids == 0)
+        return 0;
+
+    if (!(allthreadmap = virDomainIOThreadIDMap(def)))
+        return -1;
+
+    ret = virDomainFormatSchedDef(def, buf, "iothreads",
+                                  virDomainDefGetIOThreadSched, allthreadmap);
+
+    virBitmapFree(allthreadmap);
+    return ret;
+}
+
+
+static int
 virDomainCputuneDefFormat(virBufferPtr buf,
                           virDomainDefPtr def)
 {
@@ -21696,22 +21655,8 @@ virDomainCputuneDefFormat(virBufferPtr buf,
     if (virDomainFormatVcpuSchedDef(def, &childrenBuf) < 0)
         goto cleanup;
 
-    for (i = 0; i < def->cputune.niothreadsched; i++) {
-        virDomainThreadSchedParamPtr sp = &def->cputune.iothreadsched[i];
-        char *ids = NULL;
-
-        if (!(ids = virBitmapFormat(sp->ids)))
-            goto cleanup;
-
-        virBufferAsprintf(&childrenBuf, "<iothreadsched iothreads='%s' scheduler='%s'",
-                          ids, virProcessSchedPolicyTypeToString(sp->policy));
-        VIR_FREE(ids);
-
-        if (sp->policy == VIR_PROC_POLICY_FIFO ||
-            sp->policy == VIR_PROC_POLICY_RR)
-            virBufferAsprintf(&childrenBuf, " priority='%d'", sp->priority);
-        virBufferAddLit(&childrenBuf, "/>\n");
-    }
+    if (virDomainFormatIOThreadSchedDef(def, &childrenBuf) < 0)
+        goto cleanup;
 
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<cputune>\n");

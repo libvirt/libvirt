@@ -2281,34 +2281,6 @@ qemuProcessSetIOThreadsAffinity(virDomainObjPtr vm)
     return ret;
 }
 
-/* Set Scheduler parameters for vCPU or I/O threads. */
-int
-qemuProcessSetSchedParams(int id,
-                          pid_t pid,
-                          size_t nsp,
-                          virDomainThreadSchedParamPtr sp)
-{
-    bool val = false;
-    size_t i = 0;
-    virDomainThreadSchedParamPtr s = NULL;
-
-    for (i = 0; i < nsp; i++) {
-        if (virBitmapGetBit(sp[i].ids, id, &val) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot get bit from bitmap"));
-        }
-        if (val) {
-            s = &sp[i];
-            break;
-        }
-    }
-
-    if (!s)
-        return 0;
-
-    return virProcessSetScheduler(pid, s->policy, s->priority);
-}
-
 static int
 qemuProcessSetSchedulers(virDomainObjPtr vm)
 {
@@ -2327,10 +2299,13 @@ qemuProcessSetSchedulers(virDomainObjPtr vm)
     }
 
     for (i = 0; i < vm->def->niothreadids; i++) {
-        if (qemuProcessSetSchedParams(vm->def->iothreadids[i]->iothread_id,
-                                      vm->def->iothreadids[i]->thread_id,
-                                      vm->def->cputune.niothreadsched,
-                                      vm->def->cputune.iothreadsched) < 0)
+        virDomainIOThreadIDDefPtr info = vm->def->iothreadids[i];
+
+        if (info->sched.policy == VIR_PROC_POLICY_NONE)
+            continue;
+
+        if (virProcessSetScheduler(info->thread_id, info->sched.policy,
+                                   info->sched.priority) < 0)
             return -1;
     }
 
