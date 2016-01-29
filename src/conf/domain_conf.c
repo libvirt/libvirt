@@ -7584,28 +7584,22 @@ virDomainParseMemory(const char *xpath,
                      bool required,
                      bool capped)
 {
-    int ret = -1;
     unsigned long long bytes, max;
 
     max = virMemoryMaxValue(capped);
 
-    ret = virDomainParseScaledValue(xpath, units_xpath, ctxt,
-                                    &bytes, 1024, max, required);
-    if (ret < 0)
-        goto cleanup;
+    if (virDomainParseScaledValue(xpath, units_xpath, ctxt,
+                                  &bytes, 1024, max, required) < 0)
+        return -1;
 
     /* Yes, we really do use kibibytes for our internal sizing.  */
     *mem = VIR_DIV_UP(bytes, 1024);
 
     if (*mem >= VIR_DIV_UP(max, 1024)) {
         virReportError(VIR_ERR_OVERFLOW, "%s", _("size value too large"));
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
-
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
