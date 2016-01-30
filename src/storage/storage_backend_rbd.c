@@ -303,10 +303,9 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    VIR_DEBUG("Refreshed RBD image %s/%s (size: %llu obj_size: %llu num_objs: %llu)",
-              pool->def->source.name, vol->name, (unsigned long long)info.size,
-              (unsigned long long)info.obj_size,
-              (unsigned long long)info.num_objs);
+    VIR_DEBUG("Refreshed RBD image %s/%s (size: %zu obj_size: %zu num_objs: %zu)",
+              pool->def->source.name, vol->name, info.size, info.obj_size,
+              info.num_objs);
 
     vol->target.capacity = info.size;
     vol->target.allocation = info.obj_size * info.num_objs;
@@ -369,10 +368,9 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
     pool->def->available = clusterstat.kb_avail * 1024;
     pool->def->allocation = poolstat.num_bytes;
 
-    VIR_DEBUG("Utilization of RBD pool %s: (kb: %llu kb_avail: %llu num_bytes: %llu)",
-              pool->def->source.name, (unsigned long long)clusterstat.kb,
-              (unsigned long long)clusterstat.kb_avail,
-              (unsigned long long)poolstat.num_bytes);
+    VIR_DEBUG("Utilization of RBD pool %s: (kb: %zu kb_avail: %zu num_bytes: %zu)",
+              pool->def->source.name, clusterstat.kb, clusterstat.kb_avail,
+              poolstat.num_bytes);
 
     while (true) {
         if (VIR_ALLOC_N(names, max_size) < 0)
