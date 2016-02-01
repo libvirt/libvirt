@@ -233,8 +233,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
      * properly. See https://bugs.freedesktop.org/show_bug.cgi?id=68370 for
      * the bug we are working around here.
      */
-    virSystemdTerminateMachine(vm->def->name, "lxc", true);
-
+    virCgroupTerminateMachine(priv->machineName);
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -1494,8 +1493,9 @@ int virLXCProcessStart(virConnectPtr conn,
      * point so lets detect that first, since it gives us a
      * more reliable way to kill everything off if something
      * goes wrong from here onwards ... */
-    if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                  -1, &priv->cgroup) < 0)
+    if (virCgroupNewDetectMachine(vm->def->name, "lxc",
+                                  vm->def->id, true,
+                                  vm->pid, -1, &priv->cgroup) < 0)
         goto cleanup;
 
     if (!priv->cgroup) {
@@ -1504,6 +1504,11 @@ int virLXCProcessStart(virConnectPtr conn,
                        vm->def->name);
         goto cleanup;
     }
+
+    /* Get the machine name so we can properly delete it through
+     * systemd later */
+    if (!(priv->machineName = virSystemdGetMachineNameByPID(vm->pid)))
+        virResetLastError();
 
     /* And we can get the first monitor connection now too */
     if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm))) {
@@ -1677,8 +1682,8 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
         if (!(priv->monitor = virLXCProcessConnectMonitor(driver, vm)))
             goto error;
 
-        if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->pid,
-                                      -1, &priv->cgroup) < 0)
+        if (virCgroupNewDetectMachine(vm->def->name, "lxc", vm->def->id, true,
+                                      vm->pid, -1, &priv->cgroup) < 0)
             goto error;
 
         if (!priv->cgroup) {
@@ -1687,6 +1692,9 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
                            vm->def->name);
             goto error;
         }
+
+        if (!(priv->machineName = virSystemdGetMachineNameByPID(vm->pid)))
+            virResetLastError();
 
         if (virLXCUpdateActiveUSBHostdevs(driver, vm->def) < 0)
             goto error;

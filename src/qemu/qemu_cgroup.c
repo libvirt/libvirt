@@ -36,6 +36,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virnuma.h"
+#include "virsystemd.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -772,9 +773,19 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virCgroupNewMachine(vm->def->name,
+    /*
+     * We need to do this because of systemd-machined, because
+     * CreateMachine requires the name to be a valid hostname.
+     */
+    priv->machineName = virSystemdMakeMachineName("qemu",
+                                                  vm->def->id,
+                                                  vm->def->name,
+                                                  virQEMUDriverIsPrivileged(driver));
+    if (!priv->machineName)
+        goto cleanup;
+
+    if (virCgroupNewMachine(priv->machineName,
                             "qemu",
-                            true,
                             vm->def->uuid,
                             NULL,
                             vm->pid,
@@ -888,10 +899,16 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
 
     if (virCgroupNewDetectMachine(vm->def->name,
                                   "qemu",
+                                  vm->def->id,
+                                  virQEMUDriverIsPrivileged(driver),
                                   vm->pid,
                                   cfg->cgroupControllers,
                                   &priv->cgroup) < 0)
         goto cleanup;
+
+    priv->machineName = virSystemdGetMachineNameByPID(vm->pid);
+    if (!priv->machineName)
+        virResetLastError();
 
     qemuRestoreCgroupState(vm);
 
@@ -1264,17 +1281,14 @@ qemuSetupCgroupForIOThreads(virDomainObjPtr vm)
 }
 
 int
-qemuRemoveCgroup(virQEMUDriverPtr driver,
-                 virDomainObjPtr vm)
+qemuRemoveCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (priv->cgroup == NULL)
         return 0; /* Not supported, so claim success */
 
-    if (virCgroupTerminateMachine(vm->def->name,
-                                  "qemu",
-                                  virQEMUDriverIsPrivileged(driver)) < 0) {
+    if (virCgroupTerminateMachine(priv->machineName) < 0) {
         if (!virCgroupNewIgnoreError())
             VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
     }

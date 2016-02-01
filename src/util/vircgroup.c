@@ -243,12 +243,17 @@ static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
+                              int id,
+                              bool privileged,
                               bool stripEmulatorSuffix)
 {
     size_t i;
     bool valid = false;
-    char *partname;
-    char *scopename;
+    char *partname = NULL;
+    char *scopename_old = NULL;
+    char *scopename_new = NULL;
+    char *machinename = virSystemdMakeMachineName(drivername, id,
+                                                  name, privileged);
 
     if (virAsprintf(&partname, "%s.libvirt-%s",
                     name, drivername) < 0)
@@ -257,10 +262,21 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     if (virCgroupPartitionEscape(&partname) < 0)
         goto cleanup;
 
-    if (!(scopename = virSystemdMakeScopeName(name, drivername)))
+    if (!(scopename_old = virSystemdMakeScopeName(name, drivername, true)))
         goto cleanup;
 
-    if (virCgroupPartitionEscape(&scopename) < 0)
+    /* We should keep trying even if this failed */
+    if (!machinename)
+        virResetLastError();
+    else if (!(scopename_new = virSystemdMakeScopeName(machinename,
+                                                       drivername, false)))
+        goto cleanup;
+
+    if (virCgroupPartitionEscape(&scopename_old) < 0)
+        goto cleanup;
+
+    if (scopename_new &&
+        virCgroupPartitionEscape(&scopename_new) < 0)
         goto cleanup;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -290,12 +306,15 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
         tmp++;
 
         if (STRNEQ(tmp, name) &&
+            STRNEQ_NULLABLE(tmp, machinename) &&
             STRNEQ(tmp, partname) &&
-            STRNEQ(tmp, scopename)) {
+            STRNEQ(tmp, scopename_old) &&
+            STRNEQ_NULLABLE(tmp, scopename_new)) {
             VIR_DEBUG("Name '%s' for controller '%s' does not match "
-                      "'%s', '%s' or '%s'",
+                      "'%s', '%s', '%s', '%s' or '%s'",
                       tmp, virCgroupControllerTypeToString(i),
-                      name, partname, scopename);
+                      name, NULLSTR(machinename), partname,
+                      scopename_old, NULLSTR(scopename_new));
             goto cleanup;
         }
     }
@@ -304,7 +323,9 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
 
  cleanup:
     VIR_FREE(partname);
-    VIR_FREE(scopename);
+    VIR_FREE(scopename_old);
+    VIR_FREE(scopename_new);
+    VIR_FREE(machinename);
     return valid;
 }
 
@@ -1555,6 +1576,8 @@ virCgroupNewDetect(pid_t pid,
 int
 virCgroupNewDetectMachine(const char *name,
                           const char *drivername,
+                          int id,
+                          bool privileged,
                           pid_t pid,
                           int controllers,
                           virCgroupPtr *group)
@@ -1565,7 +1588,8 @@ virCgroupNewDetectMachine(const char *name,
         return -1;
     }
 
-    if (!virCgroupValidateMachineGroup(*group, name, drivername, true)) {
+    if (!virCgroupValidateMachineGroup(*group, name, drivername,
+                                       id, privileged, true)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
         virCgroupFree(group);
@@ -1582,7 +1606,6 @@ virCgroupNewDetectMachine(const char *name,
 static int
 virCgroupNewMachineSystemd(const char *name,
                            const char *drivername,
-                           bool privileged,
                            const unsigned char *uuid,
                            const char *rootdir,
                            pid_t pidleader,
@@ -1602,7 +1625,6 @@ virCgroupNewMachineSystemd(const char *name,
     VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
     if ((rv = virSystemdCreateMachine(name,
                                       drivername,
-                                      privileged,
                                       uuid,
                                       rootdir,
                                       pidleader,
@@ -1690,11 +1712,9 @@ virCgroupNewMachineSystemd(const char *name,
 /*
  * Returns 0 on success, -1 on fatal error
  */
-int virCgroupTerminateMachine(const char *name,
-                              const char *drivername,
-                              bool privileged)
+int virCgroupTerminateMachine(const char *name)
 {
-    return virSystemdTerminateMachine(name, drivername, privileged);
+    return virSystemdTerminateMachine(name);
 }
 
 
@@ -1749,7 +1769,6 @@ virCgroupNewMachineManual(const char *name,
 int
 virCgroupNewMachine(const char *name,
                     const char *drivername,
-                    bool privileged,
                     const unsigned char *uuid,
                     const char *rootdir,
                     pid_t pidleader,
@@ -1766,7 +1785,6 @@ virCgroupNewMachine(const char *name,
 
     if ((rv = virCgroupNewMachineSystemd(name,
                                          drivername,
-                                         privileged,
                                          uuid,
                                          rootdir,
                                          pidleader,
@@ -4241,6 +4259,8 @@ virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 int
 virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
                           const char *drivername ATTRIBUTE_UNUSED,
+                          int id ATTRIBUTE_UNUSED,
+                          bool privileged ATTRIBUTE_UNUSED,
                           pid_t pid ATTRIBUTE_UNUSED,
                           int controllers ATTRIBUTE_UNUSED,
                           virCgroupPtr *group ATTRIBUTE_UNUSED)
@@ -4251,9 +4271,7 @@ virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
 }
 
 
-int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED,
-                              const char *drivername ATTRIBUTE_UNUSED,
-                              bool privileged ATTRIBUTE_UNUSED)
+int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -4264,7 +4282,6 @@ int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED,
 int
 virCgroupNewMachine(const char *name ATTRIBUTE_UNUSED,
                     const char *drivername ATTRIBUTE_UNUSED,
-                    bool privileged ATTRIBUTE_UNUSED,
                     const unsigned char *uuid ATTRIBUTE_UNUSED,
                     const char *rootdir ATTRIBUTE_UNUSED,
                     pid_t pidleader ATTRIBUTE_UNUSED,

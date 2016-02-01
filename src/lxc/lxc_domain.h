@@ -64,6 +64,7 @@ struct _virLXCDomainObjPrivate {
     pid_t initpid;
 
     virCgroupPtr cgroup;
+    char *machineName;
 };
 
 extern virDomainXMLNamespace virLXCDriverDomainXMLNamespace;

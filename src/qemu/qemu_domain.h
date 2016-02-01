@@ -203,6 +203,7 @@ struct _qemuDomainObjPrivate {
 
     bool signalIOError; /* true if the domain condition should be signalled on
                            I/O error */
+    char *machineName;
 };
 
 # define QEMU_DOMAIN_DISK_PRIVATE(disk)	\

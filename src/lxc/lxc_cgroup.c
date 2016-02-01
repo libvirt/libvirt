@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "vircgroup.h"
 #include "virstring.h"
+#include "virsystemd.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -483,6 +484,13 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                                 int *nicindexes)
 {
     virCgroupPtr cgroup = NULL;
+    char *machineName = virSystemdMakeMachineName("lxc",
+                                                  def->id,
+                                                  def->name,
+                                                  true);
+
+    if (!machineName)
+        goto cleanup;
 
     if (def->resource->partition[0] != '/') {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -491,9 +499,8 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (virCgroupNewMachine(def->name,
+    if (virCgroupNewMachine(machineName,
                             "lxc",
-                            true,
                             def->uuid,
                             NULL,
                             initpid,
@@ -517,6 +524,8 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
     }
 
  cleanup:
+    VIR_FREE(machineName);
+
     return cgroup;
 }
 

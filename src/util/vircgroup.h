@@ -91,13 +91,15 @@ int virCgroupNewDetect(pid_t pid,
 
 int virCgroupNewDetectMachine(const char *name,
                               const char *drivername,
+                              int id,
+                              bool privileged,
                               pid_t pid,
                               int controllers,
-                              virCgroupPtr *group);
+                              virCgroupPtr *group)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virCgroupNewMachine(const char *name,
                         const char *drivername,
-                        bool privileged,
                         const unsigned char *uuid,
                         const char *rootdir,
                         pid_t pidleader,
@@ -110,10 +112,8 @@ int virCgroupNewMachine(const char *name,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(4);
 
-int virCgroupTerminateMachine(const char *name,
-                              const char *drivername,
-                              bool privileged)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int virCgroupTerminateMachine(const char *name)
+    ATTRIBUTE_NONNULL(1);
 
 bool virCgroupNewIgnoreError(void);
 
