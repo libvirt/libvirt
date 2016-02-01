@@ -6732,6 +6732,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            qemuDomainAsyncJob asyncJob)
 {
     int ret = -1;
+    bool restored = false;
     virObjectEventPtr event;
     int intermediatefd = -1;
     virCommandPtr cmd = NULL;
@@ -6758,13 +6759,14 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     }
 
     /* Set the migration source and start it up. */
-    ret = qemuProcessStart(conn, driver, vm, asyncJob,
-                           "stdio", *fd, path, NULL,
-                           VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
-                           VIR_QEMU_PROCESS_START_PAUSED);
+    if (qemuProcessStart(conn, driver, vm, asyncJob,
+                         "stdio", *fd, path, NULL,
+                         VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
+                         VIR_QEMU_PROCESS_START_PAUSED) == 0)
+        restored = true;
 
     if (intermediatefd != -1) {
-        if (ret < 0) {
+        if (!restored) {
             /* if there was an error setting up qemu, the intermediate
              * process will wait forever to write to stdout, so we
              * must manually kill it.
@@ -6775,7 +6777,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
         if (virCommandWait(cmd, NULL) < 0) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
-            ret = -1;
+            restored = false;
         }
         VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
     }
@@ -6783,18 +6785,16 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
     if (VIR_CLOSE(*fd) < 0) {
         virReportSystemError(errno, _("cannot close file: %s"), path);
-        ret = -1;
+        restored = false;
     }
 
-    if (ret < 0) {
-        virDomainAuditStart(vm, "restored", false);
+    virDomainAuditStart(vm, "restored", restored);
+    if (!restored)
         goto cleanup;
-    }
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    virDomainAuditStart(vm, "restored", true);
     qemuDomainEventQueue(driver, event);
 
 
