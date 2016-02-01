@@ -50,7 +50,7 @@ struct _virStorageVolSourceExtent {
 typedef struct _virStorageVolSource virStorageVolSource;
 typedef virStorageVolSource *virStorageVolSourcePtr;
 struct _virStorageVolSource {
-    int nextent;
+    size_t nextent;
     virStorageVolSourceExtentPtr extents;
 
     int partType; /* virStorageVolTypeDisk, only used by disk

@@ -84,6 +84,9 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     size_t i;
     int err, nvars;
     unsigned long long offset, size, length;
+    virStorageVolSourceExtent extent;
+
+    memset(&extent, 0, sizeof(extent));
 
     nextents = 1;
     if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED)) {
@@ -93,11 +96,6 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
             goto cleanup;
         }
     }
-
-    /* Allocate and fill in extents information */
-    if (VIR_REALLOC_N(vol->source.extents,
-                      vol->source.nextent + nextents) < 0)
-        goto cleanup;
 
     if (virStrToLong_ull(groups[6], NULL, 10, &length) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -162,7 +160,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
         len = vars[j].rm_eo - vars[j].rm_so;
         p[vars[j].rm_eo] = '\0';
 
-        if (VIR_STRNDUP(vol->source.extents[vol->source.nextent].path,
+        if (VIR_STRNDUP(extent.path,
                         p + vars[j].rm_so, len) < 0)
             goto cleanup;
 
@@ -176,12 +174,13 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
             VIR_FREE(offset_str);
             goto cleanup;
         }
-
         VIR_FREE(offset_str);
+        extent.start = offset * size;
+        extent.end = (offset * size) + length;
 
-        vol->source.extents[vol->source.nextent].start = offset * size;
-        vol->source.extents[vol->source.nextent].end = (offset * size) + length;
-        vol->source.nextent++;
+        if (VIR_APPEND_ELEMENT(vol->source.extents, vol->source.nextent,
+                               extent) < 0)
+            goto cleanup;
     }
 
     ret = 0;
@@ -190,6 +189,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     VIR_FREE(regex);
     VIR_FREE(reg);
     VIR_FREE(vars);
+    VIR_FREE(extent.path);
     return ret;
 }
 
