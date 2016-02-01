@@ -1,6 +1,6 @@
 # test-lib.sh: source this file; set up for tests
 
-# Copyright (C) 2008-2013 Red Hat, Inc.
+# Copyright (C) 2008-2013, 2016 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 #
 # Based on an idea from GNU coreutils
 
-_scriptdir="$(realpath $(dirname $0))"
+_scriptdir="$(unset CDPATH; cd $(dirname $0) && pwd)"
 test -z "$abs_srcdir" && abs_srcdir=$_scriptdir
 test -z "$abs_builddir" && abs_builddir=$_scriptdir
 test -z "$abs_top_srcdir" && abs_top_srcdir=$_scriptdir/..
