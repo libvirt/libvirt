@@ -120,12 +120,11 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(regex, regex_unit) < 0)
+    /* Allocate space for 'nextents' regex_unit strings plus a comma for each */
+    if (VIR_ALLOC_N(regex, nextents * (strlen(regex_unit) + 1) + 1) < 0)
         goto cleanup;
-
+    strncat(regex, regex_unit, strlen(regex_unit));
     for (i = 1; i < nextents; i++) {
-        if (VIR_REALLOC_N(regex, strlen(regex) + strlen(regex_unit) + 2) < 0)
-            goto cleanup;
         /* "," is the separator of "devices" field */
         strcat(regex, ",");
         strncat(regex, regex_unit, strlen(regex_unit));
