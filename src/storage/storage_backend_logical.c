@@ -65,6 +65,8 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 
 
 #define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED "striped"
+#define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_MIRROR  "mirror"
+#define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_RAID    "raid"
 
 struct virStorageBackendLogicalPoolVolData {
     virStoragePoolObjPtr pool;
@@ -88,8 +90,17 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
 
     memset(&extent, 0, sizeof(extent));
 
+    /* Assume 1 extent (the regex for 'devices' is "(\\S+)") and only
+     * check the 'stripes' field if we have a striped, mirror, or one of
+     * the raid (raid1, raid4, raid5*, raid6*, or raid10) segtypes in which
+     * case the stripes field will denote the number of lv's within the
+     * 'devices' field in order to generate the proper regex to decode
+     * the field
+     */
     nextents = 1;
-    if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED)) {
+    if (STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED) ||
+        STREQ(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_MIRROR) ||
+        STRPREFIX(groups[4], VIR_STORAGE_VOL_LOGICAL_SEGTYPE_RAID)) {
         if (virStrToLong_i(groups[5], NULL, 10, &nextents) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("malformed volume extent stripes value"));
