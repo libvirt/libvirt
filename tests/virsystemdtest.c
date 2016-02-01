@@ -517,9 +517,9 @@ mymain(void)
     } while (0)
 
     TEST_MACHINE("demo", "qemu-demo");
-    TEST_MACHINE("demo-name", "qemu-demo-name");
+    TEST_MACHINE("demo-name", "qemu-demo\\x2dname");
     TEST_MACHINE("demo!name", "qemu-demo\\x21name");
-    TEST_MACHINE(".demo", "qemu-.demo");
+    TEST_MACHINE(".demo", "qemu-\\x2edemo");
     TEST_MACHINE("bull\U0001f4a9", "qemu-bull\\xf0\\x9f\\x92\\xa9");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function)                        \

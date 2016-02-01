@@ -38,17 +38,8 @@
 
 VIR_LOG_INIT("util.systemd");
 
-/**
- * virSystemdEscapeName:
- *
- * This function escapes various characters in @name and appends that
- * escaped string to @buf, in order to comply with the requirements
- * from systemd/machined.  Parameter @full_escape decides whether to
- * also escape dot as a first character and '-'.
- */
 static void virSystemdEscapeName(virBufferPtr buf,
-                                 const char *name,
-                                 bool full_escape)
+                                 const char *name)
 {
     static const char hextable[16] = "0123456789abcdef";
 
@@ -66,7 +57,7 @@ static void virSystemdEscapeName(virBufferPtr buf,
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"            \
         ":-_.\\"
 
-    if (full_escape && *name == '.') {
+    if (*name == '.') {
         ESCAPE(*name);
         name++;
     }
@@ -74,7 +65,7 @@ static void virSystemdEscapeName(virBufferPtr buf,
     while (*name) {
         if (*name == '/')
             virBufferAddChar(buf, '-');
-        else if ((full_escape && *name == '-') ||
+        else if (*name == '-' ||
                  *name == '\\' ||
                  !strchr(VALID_CHARS, *name))
             ESCAPE(*name);
@@ -94,9 +85,9 @@ char *virSystemdMakeScopeName(const char *name,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "machine-");
-    virSystemdEscapeName(&buf, drivername, true);
+    virSystemdEscapeName(&buf, drivername);
     virBufferAddLit(&buf, "\\x2d");
-    virSystemdEscapeName(&buf, name, true);
+    virSystemdEscapeName(&buf, name);
     virBufferAddLit(&buf, ".scope");
 
     if (virBufferCheckError(&buf) < 0)
@@ -113,7 +104,7 @@ char *virSystemdMakeSliceName(const char *partition)
     if (*partition == '/')
         partition++;
 
-    virSystemdEscapeName(&buf, partition, true);
+    virSystemdEscapeName(&buf, partition);
     virBufferAddLit(&buf, ".slice");
 
     if (virBufferCheckError(&buf) < 0)
@@ -139,7 +130,7 @@ char *virSystemdMakeMachineName(const char *name,
         virBufferAsprintf(&buf, "%s-%s-", username, drivername);
     }
 
-    virSystemdEscapeName(&buf, name, false);
+    virSystemdEscapeName(&buf, name);
 
     machinename = virBufferContentAndReset(&buf);
  cleanup:
