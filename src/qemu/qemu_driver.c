@@ -19999,14 +19999,14 @@ qemuDomainSetUserPassword(virDomainPtr dom,
 }
 
 
-static int qemuDomainRename(virDomainPtr dom,
-                            const char *new_name,
-                            unsigned int flags)
+static int
+qemuDomainRenameCallback(virDomainObjPtr vm,
+                         const char *new_name,
+                         unsigned int flags,
+                         void *opaque)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
+    virQEMUDriverPtr driver = opaque;
     virQEMUDriverConfigPtr cfg = NULL;
-    virDomainObjPtr vm = NULL;
-    virDomainObjPtr tmp_dom = NULL;
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
@@ -20016,13 +20016,74 @@ static int qemuDomainRename(virDomainPtr dom,
 
     virCheckFlags(0, ret);
 
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (VIR_STRDUP(new_dom_name, new_name) < 0)
+        goto cleanup;
+
+    if (!(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
+                                                 vm->def->name))) {
+        goto cleanup;
+    }
+
+    event_old = virDomainEventLifecycleNewFromObj(vm,
+                                            VIR_DOMAIN_EVENT_UNDEFINED,
+                                            VIR_DOMAIN_EVENT_UNDEFINED_RENAMED);
+
+    /* Switch name in domain definition. */
+    old_dom_name = vm->def->name;
+    vm->def->name = new_dom_name;
+    new_dom_name = NULL;
+
+    if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
+        goto rollback;
+
+    if (virFileExists(old_dom_cfg_file) &&
+        unlink(old_dom_cfg_file) < 0) {
+        virReportSystemError(errno,
+                             _("cannot remove old domain config file %s"),
+                             old_dom_cfg_file);
+        goto rollback;
+    }
+
+    event_new = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_DEFINED,
+                                              VIR_DOMAIN_EVENT_DEFINED_RENAMED);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(old_dom_cfg_file);
+    VIR_FREE(old_dom_name);
+    VIR_FREE(new_dom_name);
+    qemuDomainEventQueue(driver, event_old);
+    qemuDomainEventQueue(driver, event_new);
+    virObjectUnref(cfg);
+    return ret;
+
+ rollback:
+    if (old_dom_name) {
+        new_dom_name = vm->def->name;
+        vm->def->name = old_dom_name;
+        old_dom_name = NULL;
+    }
+    goto cleanup;
+}
+
+static int qemuDomainRename(virDomainPtr dom,
+                            const char *new_name,
+                            unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, ret);
+
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainRenameEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -20051,64 +20112,9 @@ static int qemuDomainRename(virDomainPtr dom,
         goto endjob;
     }
 
-    if (STREQ(vm->def->name, new_name)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Can't rename domain to itself"));
+    if (virDomainObjListRename(driver->domains, vm, new_name, flags,
+                               qemuDomainRenameCallback, driver) < 0)
         goto endjob;
-    }
-
-    /*
-     * This is a rather racy check, but still better than reporting
-     * internal error.  And since new_name != name here, there's no
-     * deadlock imminent.
-     */
-    tmp_dom = virDomainObjListFindByName(driver->domains, new_name);
-    if (tmp_dom) {
-        virObjectUnlock(tmp_dom);
-        virObjectUnref(tmp_dom);
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("domain with name '%s' already exists"),
-                       new_name);
-        goto endjob;
-    }
-
-    if (VIR_STRDUP(new_dom_name, new_name) < 0)
-        goto endjob;
-
-    if (!(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
-                                                 vm->def->name))) {
-        goto endjob;
-    }
-
-    if (virDomainObjListRenameAddNew(driver->domains, vm, new_name) < 0)
-        goto endjob;
-
-    event_old = virDomainEventLifecycleNewFromObj(vm,
-                                            VIR_DOMAIN_EVENT_UNDEFINED,
-                                            VIR_DOMAIN_EVENT_UNDEFINED_RENAMED);
-
-    /* Switch name in domain definition. */
-    old_dom_name = vm->def->name;
-    vm->def->name = new_dom_name;
-    new_dom_name = NULL;
-
-    if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
-        goto rollback;
-
-    if (virFileExists(old_dom_cfg_file) &&
-        unlink(old_dom_cfg_file) < 0) {
-        virReportSystemError(errno,
-                             _("cannot remove old domain config file %s"),
-                             old_dom_cfg_file);
-        goto rollback;
-    }
-
-    /* Remove old domain name from table. */
-    virDomainObjListRenameRemove(driver->domains, old_dom_name);
-
-    event_new = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_DEFINED,
-                                              VIR_DOMAIN_EVENT_DEFINED_RENAMED);
 
     /* Success, domain has been renamed. */
     ret = 0;
@@ -20118,23 +20124,7 @@ static int qemuDomainRename(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    VIR_FREE(old_dom_cfg_file);
-    VIR_FREE(old_dom_name);
-    VIR_FREE(new_dom_name);
-    qemuDomainEventQueue(driver, event_old);
-    qemuDomainEventQueue(driver, event_new);
-    virObjectUnref(cfg);
     return ret;
-
- rollback:
-    if (old_dom_name) {
-        new_dom_name = vm->def->name;
-        vm->def->name = old_dom_name;
-        old_dom_name = NULL;
-    }
-
-    virDomainObjListRenameRemove(driver->domains, new_name);
-    goto endjob;
 }
 
 static virHypervisorDriver qemuHypervisorDriver = {

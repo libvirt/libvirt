@@ -51,11 +51,17 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
                                     unsigned int flags,
                                     virDomainDefPtr *oldDef);
 
-int virDomainObjListRenameAddNew(virDomainObjListPtr doms,
-                                 virDomainObjPtr vm,
-                                 const char *name);
-int virDomainObjListRenameRemove(virDomainObjListPtr doms,
-                                 const char *name);
+typedef int (*virDomainObjListRenameCallback)(virDomainObjPtr dom,
+                                              const char *new_name,
+                                              unsigned int flags,
+                                              void *opaque);
+int virDomainObjListRename(virDomainObjListPtr doms,
+                           virDomainObjPtr dom,
+                           const char *new_name,
+                           unsigned int flags,
+                           virDomainObjListRenameCallback callback,
+                           void *opaque);
+
 void virDomainObjListRemove(virDomainObjListPtr doms,
                             virDomainObjPtr dom);
 void virDomainObjListRemoveLocked(virDomainObjListPtr doms,

@@ -894,8 +894,7 @@ virDomainObjListNew;
 virDomainObjListNumOfDomains;
 virDomainObjListRemove;
 virDomainObjListRemoveLocked;
-virDomainObjListRenameAddNew;
-virDomainObjListRenameRemove;
+virDomainObjListRename;
 
 
 # cpu/cpu.h

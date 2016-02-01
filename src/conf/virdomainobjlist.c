@@ -313,40 +313,6 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
 }
 
 
-int
-virDomainObjListRenameAddNew(virDomainObjListPtr doms,
-                             virDomainObjPtr vm,
-                             const char *name)
-{
-    int ret = -1;
-    virObjectLock(doms);
-
-    /* Add new name into the hash table of domain names. */
-    if (virHashAddEntry(doms->objsName, name, vm) < 0)
-        goto cleanup;
-
-    /* Okay, this is crazy. virHashAddEntry() does not increment
-     * the refcounter of @vm, but virHashRemoveEntry() does
-     * decrement it. We need to work around it. */
-    virObjectRef(vm);
-
-    ret = 0;
- cleanup:
-    virObjectUnlock(doms);
-    return ret;
-}
-
-
-int
-virDomainObjListRenameRemove(virDomainObjListPtr doms, const char *name)
-{
-    virObjectLock(doms);
-    virHashRemoveEntry(doms->objsName, name);
-    virObjectUnlock(doms);
-    return 0;
-}
-
-
 /*
  * The caller must hold a lock on the driver owning 'doms',
  * and must also have locked 'dom', to ensure no one else
@@ -371,6 +337,72 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
     virObjectUnlock(doms);
 }
 
+
+/**
+ * virDomainObjListRename:
+ *
+ * The caller must hold a lock on dom. Callbacks should not
+ * sleep/wait otherwise operations on all domains will be blocked
+ * as the callback is called with domains lock hold. Domain lock
+ * is dropped/reacquired during this operation thus domain
+ * consistency must not rely on this lock solely.
+ */
+int
+virDomainObjListRename(virDomainObjListPtr doms,
+                       virDomainObjPtr dom,
+                       const char *new_name,
+                       unsigned int flags,
+                       virDomainObjListRenameCallback callback,
+                       void *opaque)
+{
+    int ret = -1;
+    char *old_name = NULL;
+    int rc;
+
+    if (STREQ(dom->def->name, new_name)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Can't rename domain to itself"));
+        return ret;
+    }
+
+    if (VIR_STRDUP(old_name, dom->def->name) < 0)
+        return ret;
+
+    /* doms and dom locks must be attained in right order thus relock dom. */
+    /* dom reference is touched for the benefit of those callers that
+     * hold a lock on dom but not refcount it. */
+    virObjectRef(dom);
+    virObjectUnlock(dom);
+    virObjectLock(doms);
+    virObjectLock(dom);
+    virObjectUnref(dom);
+
+    if (virHashLookup(doms->objsName, new_name) != NULL) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("domain with name '%s' already exists"),
+                       new_name);
+        goto cleanup;
+    }
+
+    if (virHashAddEntry(doms->objsName, new_name, dom) < 0)
+        goto cleanup;
+
+    /* Okay, this is crazy. virHashAddEntry() does not increment
+     * the refcounter of @dom, but virHashRemoveEntry() does
+     * decrement it. We need to work around it. */
+    virObjectRef(dom);
+
+    rc = callback(dom, new_name, flags, opaque);
+    virHashRemoveEntry(doms->objsName, rc < 0 ? new_name : old_name);
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(doms);
+    VIR_FREE(old_name);
+    return ret;
+}
 
 /* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
  * requirements
