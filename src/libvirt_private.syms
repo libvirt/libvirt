@@ -2355,6 +2355,7 @@ virTypedParamsFilter;
 virTypedParamsGetStringList;
 virTypedParamsRemoteFree;
 virTypedParamsReplaceString;
+virTypedParamsSerialize;
 virTypedParamsValidate;
 
 

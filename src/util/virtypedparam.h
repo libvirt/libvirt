@@ -113,6 +113,12 @@ int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
                               virTypedParameterPtr *params,
                               int *nparams);
 
+int virTypedParamsSerialize(virTypedParameterPtr params,
+                            int nparams,
+                            virTypedParameterRemotePtr *remote_params_val,
+                            unsigned int *remote_params_len,
+                            unsigned int flags);
+
 VIR_ENUM_DECL(virTypedParameter)
 
 # define VIR_TYPED_PARAMS_DEBUG(params, nparams)                            \

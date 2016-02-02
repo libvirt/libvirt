@@ -1213,7 +1213,9 @@ elsif ($mode eq "client") {
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@args_list, "virTypedParameterPtr $1");
                     push(@args_list, "int n$1");
-                    push(@setters_list2, "if (remoteSerializeTypedParameters($1, n$1, &args.$1.$1_val, &args.$1.$1_len) < 0) {\n" .
+                    push(@setters_list2, "if (virTypedParamsSerialize($1, n$1,\n" .
+                                         "                                (virTypedParameterRemotePtr *) &args.$1.$1_val,\n" .
+                                         "                                &args.$1.$1_len, 0) < 0) {\n" .
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");

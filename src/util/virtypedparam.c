@@ -1469,3 +1469,95 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
     }
     return rv;
 }
+
+
+/**
+ * virTypedParamsSerialize:
+ * @params: array of parameters to be serialized and later sent to remote side
+ * @nparams: number of elements in @params
+ * @remote_params_val: protocol independent remote representation of @params
+ * @remote_params_len: the final number of elements in @remote_params_val
+ * @flags: bitwise-OR of virTypedParameterFlags
+ *
+ * This method serializes typed parameters provided by @params into
+ * @remote_params_val which is the representation actually being sent.
+ *
+ * Server side using this method also filters out any string parameters that
+ * must not be returned to older clients and handles possibly sparse arrays
+ * returned by some APIs.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virTypedParamsSerialize(virTypedParameterPtr params,
+                        int nparams,
+                        virTypedParameterRemotePtr *remote_params_val,
+                        unsigned int *remote_params_len,
+                        unsigned int flags)
+{
+    size_t i;
+    size_t j;
+    int rv = -1;
+    virTypedParameterRemotePtr params_val;
+
+    *remote_params_len = nparams;
+    if (VIR_ALLOC_N(params_val, nparams) < 0)
+        goto cleanup;
+
+    for (i = 0, j = 0; i < nparams; ++i) {
+        virTypedParameterPtr param = params + i;
+        virTypedParameterRemotePtr val = params_val + j;
+        /* NOTE: Following snippet is relevant to server only, because
+         * virDomainGetCPUStats can return a sparse array; also, we can't pass
+         * back strings to older clients. */
+        if (!param->type ||
+            (!(flags & VIR_TYPED_PARAM_STRING_OKAY) &&
+             param->type == VIR_TYPED_PARAM_STRING)) {
+            --*remote_params_len;
+            continue;
+        }
+
+        /* This will be either freed by virNetServerDispatchCall or call(),
+         * depending on the calling side, i.e. server or client */
+        if (VIR_STRDUP(val->field, param->field) < 0)
+            goto cleanup;
+        val->value.type = param->type;
+        switch (param->type) {
+        case VIR_TYPED_PARAM_INT:
+            val->value.remote_typed_param_value.i = param->value.i;
+            break;
+        case VIR_TYPED_PARAM_UINT:
+            val->value.remote_typed_param_value.ui = param->value.ui;
+            break;
+        case VIR_TYPED_PARAM_LLONG:
+            val->value.remote_typed_param_value.l = param->value.l;
+            break;
+        case VIR_TYPED_PARAM_ULLONG:
+            val->value.remote_typed_param_value.ul = param->value.ul;
+            break;
+        case VIR_TYPED_PARAM_DOUBLE:
+            val->value.remote_typed_param_value.d = param->value.d;
+            break;
+        case VIR_TYPED_PARAM_BOOLEAN:
+            val->value.remote_typed_param_value.b = param->value.b;
+            break;
+        case VIR_TYPED_PARAM_STRING:
+            if (VIR_STRDUP(val->value.remote_typed_param_value.s, param->value.s) < 0)
+                goto cleanup;
+            break;
+        default:
+            virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
+                           param->type);
+            goto cleanup;
+        }
+        j++;
+    }
+
+    *remote_params_val = params_val;
+    params_val = NULL;
+    rv = 0;
+
+ cleanup:
+    virTypedParamsRemoteFree(params_val, nparams);
+    return rv;
+}

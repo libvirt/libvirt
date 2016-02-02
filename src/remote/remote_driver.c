@@ -1663,66 +1663,6 @@ remoteConnectListAllDomains(virConnectPtr conn,
     return rv;
 }
 
-/* Helper to serialize typed parameters. */
-static int
-remoteSerializeTypedParameters(virTypedParameterPtr params,
-                               int nparams,
-                               remote_typed_param **args_params_val,
-                               u_int *args_params_len)
-{
-    size_t i;
-    int rv = -1;
-    remote_typed_param *val;
-
-    *args_params_len = nparams;
-    if (VIR_ALLOC_N(val, nparams) < 0)
-        goto cleanup;
-
-    for (i = 0; i < nparams; ++i) {
-        /* call() will free this: */
-        if (VIR_STRDUP(val[i].field, params[i].field) < 0)
-            goto cleanup;
-        val[i].value.type = params[i].type;
-        switch (params[i].type) {
-        case VIR_TYPED_PARAM_INT:
-            val[i].value.remote_typed_param_value_u.i = params[i].value.i;
-            break;
-        case VIR_TYPED_PARAM_UINT:
-            val[i].value.remote_typed_param_value_u.ui = params[i].value.ui;
-            break;
-        case VIR_TYPED_PARAM_LLONG:
-            val[i].value.remote_typed_param_value_u.l = params[i].value.l;
-            break;
-        case VIR_TYPED_PARAM_ULLONG:
-            val[i].value.remote_typed_param_value_u.ul = params[i].value.ul;
-            break;
-        case VIR_TYPED_PARAM_DOUBLE:
-            val[i].value.remote_typed_param_value_u.d = params[i].value.d;
-            break;
-        case VIR_TYPED_PARAM_BOOLEAN:
-            val[i].value.remote_typed_param_value_u.b = params[i].value.b;
-            break;
-        case VIR_TYPED_PARAM_STRING:
-            if (VIR_STRDUP(val[i].value.remote_typed_param_value_u.s,
-                           params[i].value.s) < 0)
-                goto cleanup;
-            break;
-        default:
-            virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
-                           params[i].type);
-            goto cleanup;
-        }
-    }
-
-    *args_params_val = val;
-    val = NULL;
-    rv = 0;
-
- cleanup:
-    virTypedParamsRemoteFree((virTypedParameterRemotePtr) val, nparams);
-    return rv;
-}
-
 static int
 remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
                                   u_int ret_errors_len,
@@ -6944,9 +6884,9 @@ remoteDomainMigrateBegin3Params(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_begin3_params_args,
                  (char *) &args);
         goto cleanup;
@@ -7011,9 +6951,9 @@ remoteDomainMigratePrepare3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare3_params_args,
                  (char *) &args);
         goto cleanup;
@@ -7098,9 +7038,9 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     args.cookie_in.cookie_in_len = cookieinlen;
     args.flags = flags;
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,
                  (char *) &args);
         goto cleanup;
@@ -7187,9 +7127,9 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
     args.cookie_in.cookie_in_len = cookieinlen;
     args.flags = flags;
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_perform3_params_args,
                  (char *) &args);
         goto cleanup;
@@ -7259,9 +7199,9 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
     args.flags = flags;
     args.cancelled = cancelled;
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_finish3_params_args,
                  (char *) &args);
         goto cleanup;
@@ -7333,9 +7273,9 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
     args.flags = flags;
     args.cancelled = cancelled;
 
-    if (remoteSerializeTypedParameters(params, nparams,
-                                       &args.params.params_val,
-                                       &args.params.params_len) < 0) {
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len, 0) < 0) {
         xdr_free((xdrproc_t) xdr_remote_domain_migrate_confirm3_params_args,
                  (char *) &args);
         goto cleanup;
