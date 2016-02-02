@@ -1024,6 +1024,12 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     char *newpath = NULL;
     char ebuf[1024];
 
+    /* Some paths are auto-generated, so let's be safe here and do
+     * nothing if nothing is needed.
+     */
+    if (!path)
+        return 0;
+
     VIR_INFO("Restoring SELinux context on '%s'", path);
 
     if (virFileResolveLink(path, &newpath) < 0) {
