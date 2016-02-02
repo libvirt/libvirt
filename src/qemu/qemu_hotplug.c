@@ -779,20 +779,20 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported driver name '%s' for disk '%s'"),
                        virDomainDiskGetDriver(disk), src);
-        goto end;
+        goto cleanup;
     }
 
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
-        goto end;
+        goto cleanup;
 
     if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
-        goto end;
+        goto cleanup;
 
     if (qemuSetUnprivSGIO(dev) < 0)
-        goto end;
+        goto cleanup;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
-        goto end;
+        goto cleanup;
 
     switch ((virDomainDiskDevice) disk->device)  {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
@@ -805,12 +805,12 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                              "by libvirt"),
                            virDomainDiskBusTypeToString(disk->bus),
                            disk->dst);
-            goto end;
+            goto cleanup;
         }
 
         if (qemuDomainChangeEjectableMedia(driver, conn, vm, orig_disk,
                                            disk->src, false) < 0)
-            goto end;
+            goto cleanup;
 
         disk->src = NULL;
         ret = 0;
@@ -853,7 +853,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         break;
     }
 
- end:
+ cleanup:
     if (ret != 0)
         ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
     return ret;
