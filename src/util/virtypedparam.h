@@ -36,6 +36,30 @@
 
 verify(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
 
+typedef struct _virTypedParameterRemoteValue virTypedParameterRemoteValue;
+typedef struct virTypedParameterRemoteValue *virTypedParameterRemoteValuePtr;
+
+struct _virTypedParameterRemoteValue {
+    int type;
+    union {
+        int i; /* exempt from syntax-check */
+        unsigned int ui;
+        long long int l;
+        unsigned long long int ul;
+        double d;
+        char b;
+        char *s;
+    } remote_typed_param_value;
+};
+
+typedef struct _virTypedParameterRemote *virTypedParameterRemotePtr;
+
+struct _virTypedParameterRemote {
+    char *field;
+    virTypedParameterRemoteValue value;
+};
+
+
 int virTypedParamsValidate(virTypedParameterPtr params, int nparams,
                            /* const char *name, int type ... */ ...)
     ATTRIBUTE_SENTINEL ATTRIBUTE_RETURN_CHECK;
