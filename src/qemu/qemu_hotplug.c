@@ -795,7 +795,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto end;
 
-    switch (disk->device)  {
+    switch ((virDomainDiskDevice) disk->device)  {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
@@ -837,10 +837,8 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                            virDomainDiskBusTypeToString(disk->bus));
         }
         break;
-    default:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("disk device type '%s' cannot be hotplugged"),
-                       virDomainDiskDeviceTypeToString(disk->device));
+
+    case VIR_DOMAIN_DISK_DEVICE_LAST:
         break;
     }
 
