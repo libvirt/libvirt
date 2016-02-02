@@ -43,6 +43,29 @@ virNetDevBandwidthFree(virNetDevBandwidthPtr def)
     VIR_FREE(def);
 }
 
+static void
+virNetDevBandwidthCmdAddOptimalQuantum(virCommandPtr cmd,
+                                       const virNetDevBandwidthRate *rate)
+{
+    const unsigned long long mtu = 1500;
+    unsigned long long r2q;
+
+    /* When two or more classes compete for unused bandwidth they are each
+     * given some number of bytes before serving other competing class. This
+     * number is called quantum. It's advised in HTB docs that the number
+     * should be equal to MTU. The class quantum is computed from its rate
+     * divided by global r2q parameter. However, if rate is too small the
+     * default value will not suffice and thus we must provide our own value.
+     * */
+
+    r2q = rate->average * 1024 / 8 / mtu;
+    if (!r2q)
+        r2q = 1;
+
+    virCommandAddArg(cmd, "quantum");
+    virCommandAddArgFormat(cmd, "%llu", r2q);
+}
+
 /**
  * virNetDevBandwidthManipulateFilter:
  * @ifname: interface to operate on
@@ -280,6 +303,7 @@ virNetDevBandwidthSet(const char *ifname,
             virCommandAddArgList(cmd, "class", "add", "dev", ifname, "parent",
                                  "1:", "classid", "1:1", "htb", "rate", average,
                                  "ceil", peak ? peak : average, NULL);
+            virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
             if (virCommandRun(cmd, NULL) < 0)
                 goto cleanup;
         }
@@ -295,6 +319,7 @@ virNetDevBandwidthSet(const char *ifname,
         if (burst)
             virCommandAddArgList(cmd, "burst", burst, NULL);
 
+        virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
 
@@ -549,6 +574,7 @@ virNetDevBandwidthPlug(const char *brname,
     virCommandAddArgList(cmd, "class", "add", "dev", brname, "parent", "1:1",
                          "classid", class_id, "htb", "rate", floor,
                          "ceil", ceil, NULL);
+    virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
@@ -672,6 +698,7 @@ virNetDevBandwidthUpdateRate(const char *ifname,
     virCommandAddArgList(cmd, "class", "change", "dev", ifname,
                          "classid", class_id, "htb", "rate", rate,
                          "ceil", ceil, NULL);
+    virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
