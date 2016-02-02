@@ -773,13 +773,12 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
-    const char *driverName = virDomainDiskGetDriver(disk);
     const char *src = virDomainDiskGetSource(disk);
 
-    if (driverName && STRNEQ(driverName, "qemu")) {
+    if (STRNEQ_NULLABLE(virDomainDiskGetDriver(disk), "qemu")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported driver name '%s' for disk '%s'"),
-                       driverName, src);
+                       virDomainDiskGetDriver(disk), src);
         goto end;
     }
 
