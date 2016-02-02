@@ -312,6 +312,34 @@ virStorageBackendLogicalMakeVol(char **const groups,
     return ret;
 }
 
+#define VIR_STORAGE_VOL_LOGICAL_PREFIX_REGEX "^\\s*"
+#define VIR_STORAGE_VOL_LOGICAL_LV_NAME_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_ORIGIN_REGEX "(\\S*)#"
+#define VIR_STORAGE_VOL_LOGICAL_UUID_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_DEVICES_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_STRIPES_REGEX "([0-9]+)#"
+#define VIR_STORAGE_VOL_LOGICAL_SEG_SIZE_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_VG_EXTENT_SIZE_REGEX "([0-9]+)#"
+#define VIR_STORAGE_VOL_LOGICAL_SIZE_REGEX "([0-9]+)#"
+#define VIR_STORAGE_VOL_LOGICAL_LV_ATTR_REGEX "(\\S+)#"
+#define VIR_STORAGE_VOL_LOGICAL_SUFFIX_REGEX "?\\s*$"
+
+#define VIR_STORAGE_VOL_LOGICAL_REGEX_COUNT 10
+#define VIR_STORAGE_VOL_LOGICAL_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_PREFIX_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_LV_NAME_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_ORIGIN_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_UUID_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_DEVICES_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_SEGTYPE_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_STRIPES_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_SEG_SIZE_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_VG_EXTENT_SIZE_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_SIZE_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_LV_ATTR_REGEX \
+           VIR_STORAGE_VOL_LOGICAL_SUFFIX_REGEX
+
 static int
 virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol)
@@ -342,10 +370,10 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
      *    striped, so "," is not a suitable separator either (rhbz 727474).
      */
     const char *regexes[] = {
-       "^\\s*(\\S+)#(\\S*)#(\\S+)#(\\S+)#(\\S+)#([0-9]+)#(\\S+)#([0-9]+)#([0-9]+)#(\\S+)#?\\s*$"
+        VIR_STORAGE_VOL_LOGICAL_REGEX
     };
     int vars[] = {
-        10
+        VIR_STORAGE_VOL_LOGICAL_REGEX_COUNT
     };
     int ret = -1;
     virCommandPtr cmd;
