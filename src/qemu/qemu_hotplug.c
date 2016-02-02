@@ -818,19 +818,31 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+        switch ((virDomainDiskBus) disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_USB:
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("disk device='lun' is not supported for usb bus"));
                 break;
             }
-            ret = qemuDomainAttachUSBMassStorageDevice(conn, driver, vm,
-                                                       disk);
-        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
+            ret = qemuDomainAttachUSBMassStorageDevice(conn, driver, vm, disk);
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
             ret = qemuDomainAttachVirtioDiskDevice(conn, driver, vm, disk);
-        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_SCSI:
             ret = qemuDomainAttachSCSIDisk(conn, driver, vm, disk);
-        } else {
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_LAST:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("disk bus '%s' cannot be hotplugged."),
                            virDomainDiskBusTypeToString(disk->bus));
