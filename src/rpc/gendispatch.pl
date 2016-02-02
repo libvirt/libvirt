@@ -1217,7 +1217,8 @@ elsif ($mode eq "client") {
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");
-                    push(@free_list, "    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);\n");
+                    push(@free_list, "    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,\n" .
+                                     "                             args.params.params_len);\n");
                 } elsif ($args_member =~ m/^((?:unsigned )?int) (\S+);\s*\/\*\s*call-by-reference\s*\*\//) {
                     my $type_name = "$1 *";
                     my $arg_name = $2;

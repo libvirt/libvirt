@@ -1663,25 +1663,6 @@ remoteConnectListAllDomains(virConnectPtr conn,
     return rv;
 }
 
-/* Helper to free typed parameters. */
-static void
-remoteFreeTypedParameters(remote_typed_param *args_params_val,
-                          u_int args_params_len)
-{
-    size_t i;
-
-    if (args_params_val == NULL)
-        return;
-
-    for (i = 0; i < args_params_len; i++) {
-        VIR_FREE(args_params_val[i].field);
-        if (args_params_val[i].value.type == VIR_TYPED_PARAM_STRING)
-            VIR_FREE(args_params_val[i].value.remote_typed_param_value_u.s);
-    }
-
-    VIR_FREE(args_params_val);
-}
-
 /* Helper to serialize typed parameters. */
 static int
 remoteSerializeTypedParameters(virTypedParameterPtr params,
@@ -1738,7 +1719,7 @@ remoteSerializeTypedParameters(virTypedParameterPtr params,
     rv = 0;
 
  cleanup:
-    remoteFreeTypedParameters(val, nparams);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) val, nparams);
     return rv;
 }
 
@@ -6991,7 +6972,8 @@ remoteDomainMigrateBegin3Params(virDomainPtr domain,
     rv = ret.xml; /* caller frees */
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     remoteDriverUnlock(priv);
     return rv;
 
@@ -7069,7 +7051,8 @@ remoteDomainMigratePrepare3Params(virConnectPtr dconn,
     rv = 0;
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     VIR_FREE(ret.uri_out);
     remoteDriverUnlock(priv);
     return rv;
@@ -7159,7 +7142,8 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     rv = 0;
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     remoteDriverUnlock(priv);
     return rv;
 
@@ -7231,7 +7215,8 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
     rv = 0;
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     remoteDriverUnlock(priv);
     return rv;
 
@@ -7307,7 +7292,8 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
              (char *) &ret);
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     remoteDriverUnlock(priv);
     return rv;
 
@@ -7363,7 +7349,8 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
     rv = 0;
 
  cleanup:
-    remoteFreeTypedParameters(args.params.params_val, args.params.params_len);
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
     remoteDriverUnlock(priv);
     return rv;
 }

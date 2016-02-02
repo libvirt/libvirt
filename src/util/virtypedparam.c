@@ -1316,6 +1316,35 @@ virTypedParamsFree(virTypedParameterPtr params,
     VIR_FREE(params);
 }
 
+/**
+ * virTypedParamsRemoteFree:
+ * @remote_params_val: array of typed parameters as specified by
+ *                     (remote|admin)_protocol.h
+ * @remote_params_len: number of parameters in @remote_params_val
+ *
+ * Frees memory used by string representations of parameter identificators,
+ * memory used by string values of parameters and the memory occupied by
+ * @remote_params_val itself.
+ *
+ * Returns nothing.
+ */
+void
+virTypedParamsRemoteFree(virTypedParameterRemotePtr remote_params_val,
+                         unsigned int remote_params_len)
+{
+    size_t i;
+
+    if (!remote_params_val)
+        return;
+
+    for (i = 0; i < remote_params_len; i++) {
+        VIR_FREE(remote_params_val[i].field);
+        if (remote_params_val[i].value.type == VIR_TYPED_PARAM_STRING)
+            VIR_FREE(remote_params_val[i].value.remote_typed_param_value.s);
+    }
+    VIR_FREE(remote_params_val);
+}
+
 
 /**
  * virTypedParamsDeserialize:

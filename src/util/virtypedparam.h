@@ -104,6 +104,9 @@ int virTypedParamsCopy(virTypedParameterPtr *dst,
 
 char *virTypedParameterToString(virTypedParameterPtr param);
 
+void virTypedParamsRemoteFree(virTypedParameterRemotePtr remote_params_val,
+                              unsigned int remote_params_len);
+
 int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
                               unsigned int remote_params_len,
                               int limit,
