@@ -55,4 +55,6 @@ int virSystemdCanHibernate(bool *result);
 
 int virSystemdCanHybridSleep(bool *result);
 
+char *virSystemdGetMachineNameByPID(pid_t pid);
+
 #endif /* __VIR_SYSTEMD_H__ */

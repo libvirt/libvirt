@@ -54,6 +54,31 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
                                  "Something went wrong creating the machine");
         } else {
             reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN);
+
+            if (STREQ(member, "GetMachineByPID")) {
+                const char *object_path = "/org/freedesktop/machine1/machine/qemu_2ddemo";
+                DBusMessageIter iter;
+
+                dbus_message_iter_init_append(reply, &iter);
+                if (!dbus_message_iter_append_basic(&iter,
+                                                    DBUS_TYPE_OBJECT_PATH,
+                                                    &object_path))
+                    goto error;
+            } else if (STREQ(member, "Get")) {
+                const char *name = "qemu-demo";
+                DBusMessageIter iter;
+                DBusMessageIter sub;
+
+                dbus_message_iter_init_append(reply, &iter);
+                dbus_message_iter_open_container(&iter, DBUS_TYPE_VARIANT,
+                                                 "s", &sub);
+
+                if (!dbus_message_iter_append_basic(&sub,
+                                                    DBUS_TYPE_STRING,
+                                                    &name))
+                    goto error;
+                dbus_message_iter_close_container(&iter, &sub);
+            }
         }
     } else if (STREQ(service, "org.freedesktop.login1")) {
         char *supported = getenv("RESULT_SUPPORT");
@@ -338,6 +363,25 @@ static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
+static int
+testGetMachineName(const void *opaque ATTRIBUTE_UNUSED)
+{
+    char *tmp = virSystemdGetMachineNameByPID(1234);
+    int ret = -1;
+
+    if (!tmp) {
+        fprintf(stderr, "%s", "Failed to create LXC machine\n");
+        return ret;
+    }
+
+    if (STREQ(tmp, "qemu-demo"))
+        ret = 0;
+
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 struct testNameData {
     const char *name;
     const char *expected;
@@ -490,6 +534,8 @@ mymain(void)
     if (virtTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
         ret = -1;
     if (virtTestRun("Test create with network ", testCreateNetwork, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("Test getting machine name ", testGetMachineName, NULL) < 0)
         ret = -1;
 
 # define TEST_SCOPE(name, unitname)                                     \

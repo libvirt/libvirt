@@ -113,6 +113,7 @@ char *virSystemdMakeSliceName(const char *partition)
     return virBufferContentAndReset(&buf);
 }
 
+
 char *virSystemdMakeMachineName(const char *name,
                                 const char *drivername,
                                 bool privileged)
@@ -138,6 +139,61 @@ char *virSystemdMakeMachineName(const char *name,
 
     return machinename;
 }
+
+
+char *
+virSystemdGetMachineNameByPID(pid_t pid)
+{
+    DBusConnection *conn;
+    DBusMessage *reply;
+    char *name = NULL, *object = NULL;
+
+    if (virDBusIsServiceEnabled("org.freedesktop.machine1") < 0)
+        goto cleanup;
+
+    if (virDBusIsServiceRegistered("org.freedesktop.systemd1") < 0)
+        goto cleanup;
+
+    if (!(conn = virDBusGetSystemBus()))
+        goto cleanup;
+
+    if (virDBusCallMethod(conn, &reply, NULL,
+                          "org.freedesktop.machine1",
+                          "/org/freedesktop/machine1",
+                          "org.freedesktop.machine1.Manager",
+                          "GetMachineByPID",
+                          "u", pid) < 0)
+        goto cleanup;
+
+    if (virDBusMessageRead(reply, "o", &object) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Domain with pid %llu has object path '%s'",
+              (unsigned long long)pid, object);
+
+    if (virDBusCallMethod(conn, &reply, NULL,
+                          "org.freedesktop.machine1",
+                          object,
+                          "org.freedesktop.DBus.Properties",
+                          "Get",
+                          "ss",
+                          "org.freedesktop.machine1.Machine",
+                          "Name") < 0)
+        goto cleanup;
+
+    if (virDBusMessageRead(reply, "v", "s", &name) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Domain with pid %llu has machine name '%s'",
+              (unsigned long long)pid, name);
+
+ cleanup:
+    VIR_FREE(object);
+    dbus_message_unref(reply);
+
+    return name;
+}
+
 
 /**
  * virSystemdCreateMachine:
