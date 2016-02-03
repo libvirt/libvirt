@@ -55,6 +55,7 @@
 #include "virtpm.h"
 #include "virscsi.h"
 #include "virnuma.h"
+#include "virgic.h"
 #if defined(__linux__)
 # include <linux/capability.h>
 #endif
@@ -7774,7 +7775,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
         }
 
         if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
-            if (def->gic_version) {
+            if (def->gic_version != VIR_GIC_VERSION_NONE) {
                 if ((def->os.arch != VIR_ARCH_ARMV7L &&
                      def->os.arch != VIR_ARCH_AARCH64) ||
                     (STRNEQ(def->os.machine, "virt") &&
@@ -7789,7 +7790,7 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                 /* 2 is the default, so we don't put it as option for
                  * backwards compatibility
                  */
-                if (def->gic_version != 2) {
+                if (def->gic_version != VIR_GIC_VERSION_2) {
                     if (!virQEMUCapsGet(qemuCaps,
                                         QEMU_CAPS_MACH_VIRT_GIC_VERSION)) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -7799,7 +7800,8 @@ qemuBuildMachineArgStr(virCommandPtr cmd,
                         return -1;
                     }
 
-                    virBufferAsprintf(&buf, ",gic-version=%d", def->gic_version);
+                    virBufferAsprintf(&buf, ",gic-version=%s",
+                                      virGICVersionTypeToString(def->gic_version));
                 }
             }
         }

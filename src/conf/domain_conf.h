@@ -50,6 +50,7 @@
 # include "virstoragefile.h"
 # include "virseclabel.h"
 # include "virprocess.h"
+# include "virgic.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -2232,7 +2233,7 @@ struct _virDomainDef {
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     unsigned int hyperv_spinlocks;
-    unsigned int gic_version;
+    virGICVersion gic_version;
 
     /* These options are of type virTristateSwitch: ON = keep, OFF = drop */
     int caps_features[VIR_DOMAIN_CAPS_FEATURE_LAST];
