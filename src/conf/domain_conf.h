@@ -2908,6 +2908,7 @@ int virDomainSaveXML(const char *configDir,
                      const char *xml);
 
 int virDomainSaveConfig(const char *configDir,
+                        virCapsPtr caps,
                         virDomainDefPtr def);
 int virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
                         const char *statusDir,

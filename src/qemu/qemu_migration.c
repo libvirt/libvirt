@@ -5747,7 +5747,8 @@ qemuMigrationPersist(virQEMUDriverPtr driver,
     if (!(vmdef = virDomainObjGetPersistentDef(caps, driver->xmlopt, vm)))
         goto error;
 
-    if (virDomainSaveConfig(cfg->configDir, vmdef) < 0 && !ignoreSaveError)
+    if (virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0 &&
+        !ignoreSaveError)
         goto error;
 
     event = virDomainEventLifecycleNewFromObj(vm,

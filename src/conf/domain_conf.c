@@ -22725,12 +22725,13 @@ virDomainSaveXML(const char *configDir,
 
 int
 virDomainSaveConfig(const char *configDir,
+                    virCapsPtr caps,
                     virDomainDefPtr def)
 {
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(xml = virDomainDefFormat(def, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto cleanup;
 
     if (virDomainSaveXML(configDir, def, xml))
@@ -23914,7 +23915,7 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
                                     uri) < 0)
             return -1;
 
-        if (virDomainSaveConfig(configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(configDir, caps, persistentDef) < 0)
             return -1;
     }
 

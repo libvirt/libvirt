@@ -488,7 +488,7 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(cfg->configDir,
+    if (virDomainSaveConfig(cfg->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
@@ -737,7 +737,8 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             virDomainDefSetMemoryTotal(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
-            if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+            if (virDomainSaveConfig(cfg->configDir, driver->caps,
+                                    persistentDef) < 0)
                 goto cleanup;
         }
     } else {
@@ -770,7 +771,8 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             persistentDef->mem.cur_balloon = newmem;
-            if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+            if (virDomainSaveConfig(cfg->configDir, driver->caps,
+                                    persistentDef) < 0)
                 goto cleanup;
         }
     }
@@ -915,7 +917,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
 #undef LXC_SET_MEM_PARAMETER
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
-        virDomainSaveConfig(cfg->configDir, vmdef) < 0)
+        virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2025,7 +2027,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        rc = virDomainSaveConfig(cfg->configDir, vmdef);
+        rc = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (rc < 0)
             goto cleanup;
 
@@ -2727,7 +2729,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
             ret = -1;
     }
 
@@ -5081,7 +5083,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -5203,7 +5205,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -5323,7 +5325,7 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;

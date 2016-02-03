@@ -2432,7 +2432,8 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+            ret = virDomainSaveConfig(cfg->configDir, driver->caps,
+                                      persistentDef);
             goto endjob;
         }
 
@@ -2471,7 +2472,8 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
         if (persistentDef) {
             persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+            ret = virDomainSaveConfig(cfg->configDir, driver->caps,
+                                      persistentDef);
             goto endjob;
         }
     }
@@ -2560,7 +2562,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
             goto endjob;
         }
         persistentDef->memballoon->period = period;
-        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
     }
 
@@ -5103,7 +5105,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 goto endjob;
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps,
+                                persistentDef) < 0)
             goto endjob;
     }
 
@@ -5293,7 +5296,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             goto endjob;
         }
 
-        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
     }
 
@@ -5497,7 +5500,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         if (!(persistentDef->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;
 
-        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
     }
 
@@ -5997,7 +6000,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
         iothrid->cpumask = cpumask;
         iothrid->autofill = false;
 
-        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
     }
 
@@ -6300,7 +6303,8 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             persistentDef->iothreads--;
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps,
+                                persistentDef) < 0)
             goto endjob;
     }
 
@@ -7624,7 +7628,7 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
     }
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(cfg->configDir,
+    if (virDomainSaveConfig(cfg->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         if (oldDef) {
             /* There is backup so this VM was defined before.
@@ -8614,7 +8618,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -8740,7 +8744,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -8860,7 +8864,7 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -9418,7 +9422,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
             ret = -1;
     }
 
@@ -9975,7 +9979,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
-        virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
         goto endjob;
 
     ret = 0;
@@ -10251,7 +10255,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                  -1, mode, nodeset) < 0)
             goto endjob;
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
             goto endjob;
     }
 
@@ -10613,7 +10617,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        rc = virDomainSaveConfig(cfg->configDir, vmdef);
+        rc = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
         if (rc < 0)
             goto endjob;
 
@@ -11410,7 +11414,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveConfig(cfg->configDir, persistentDef) < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
             goto endjob;
     }
 
@@ -13738,7 +13742,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
             }
             defdisk->src->format = snapdisk->src->format;
 
-            if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
+            if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->def) < 0)
                 goto cleanup;
         }
     }
@@ -14518,7 +14522,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
     if (ret == 0 || !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0 ||
-            (persist && virDomainSaveConfig(cfg->configDir, vm->newDef) < 0))
+            (persist && virDomainSaveConfig(cfg->configDir, driver->caps,
+                                            vm->newDef) < 0))
             ret = -1;
     }
     virObjectUnref(cfg);
@@ -17811,7 +17816,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             info.write_iops_sec = oldinfo->write_iops_sec;
         }
         conf_disk->blkdeviotune = info;
-        ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         if (ret < 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Write to config file failed"));
@@ -20035,7 +20040,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     vm->def->name = new_dom_name;
     new_dom_name = NULL;
 
-    if (virDomainSaveConfig(cfg->configDir, vm->def) < 0)
+    if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->def) < 0)
         goto rollback;
 
     if (virFileExists(old_dom_cfg_file) &&

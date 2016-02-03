@@ -189,6 +189,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
             VIR_WARN("Unable to save status on vm %s after block job",
                      vm->def->name);
         if (persistDisk && virDomainSaveConfig(cfg->configDir,
+                                               driver->caps,
                                                vm->newDef) < 0)
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);

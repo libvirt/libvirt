@@ -1511,7 +1511,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             virDomainDefSetMemoryTotal(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+            ret = virDomainSaveConfig(cfg->configDir, cfg->caps, persistentDef);
             goto endjob;
         }
 
@@ -1543,7 +1543,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
             sa_assert(persistentDef);
             persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainSaveConfig(cfg->configDir, persistentDef);
+            ret = virDomainSaveConfig(cfg->configDir, cfg->caps, persistentDef);
             goto endjob;
         }
     }
@@ -2237,7 +2237,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         }
     }
     if (flags & VIR_DOMAIN_VCPU_CONFIG) {
-        if (virDomainSaveConfig(cfg->configDir, def) < 0) {
+        if (virDomainSaveConfig(cfg->configDir, cfg->caps, def) < 0) {
             VIR_WARN("Unable to save configuration of vm %s after changing vcpus",
                      vm->def->name);
         }
@@ -2394,7 +2394,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm);
     } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, targetDef);
+        ret = virDomainSaveConfig(cfg->configDir, cfg->caps, targetDef);
     }
 
  endjob:
@@ -2805,6 +2805,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     vm->persistent = 1;
 
     if (virDomainSaveConfig(cfg->configDir,
+                            cfg->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
@@ -3749,7 +3750,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -3857,7 +3858,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -3962,7 +3963,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
-        ret = virDomainSaveConfig(cfg->configDir, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;

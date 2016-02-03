@@ -2103,7 +2103,7 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(driver->configDir,
+    if (virDomainSaveConfig(driver->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains,
                                vm);
