@@ -1239,6 +1239,23 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 }
 
 
+/**
+ * qemuDomainDefEnableDefaultFeatures:
+ * @def: domain definition
+ *
+ * Make sure that features that should be enabled by default are actually
+ * enabled and configure default values related to those features.
+ */
+static void
+qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def)
+{
+    /* Default to GIC v2 if no version was specified */
+    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
+        def->gic_version == VIR_GIC_VERSION_NONE)
+        def->gic_version = VIR_GIC_VERSION_2;
+}
+
+
 static int
 qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
@@ -1289,6 +1306,8 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
+
+    qemuDomainDefEnableDefaultFeatures(def);
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
         goto cleanup;
