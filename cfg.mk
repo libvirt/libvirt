@@ -1031,6 +1031,12 @@ sc_prohibit_not_strneq:
 	halt='Use STREQ instead of !STRNEQ'	\
 	  $(_sc_search_regexp)
 
+sc_prohibit_verbose_strcat:
+	@prohibit='strncat\([^,]*,\s+([^,]*),\s+strlen\(\1\)\)'     \
+	in_vc_files='\.[ch]$$'                                      \
+	halt='Use strcat(a, b) instead of strncat(a, b, strlen(b))' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
