@@ -642,6 +642,7 @@ vzDomainGetState(virDomainPtr domain,
 static char *
 vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
+    vzConnPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr privdom;
     char *ret = NULL;
@@ -654,7 +655,7 @@ vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         privdom->newDef ? privdom->newDef : privdom->def;
 
-    ret = virDomainDefFormat(def, flags);
+    ret = virDomainDefFormat(def, privconn->caps, flags);
 
  cleanup:
     if (privdom)

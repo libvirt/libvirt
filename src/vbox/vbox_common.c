@@ -3996,7 +3996,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     /* dump USB devices/filters if active */
     vboxHostDeviceGetXMLDesc(data, def, machine);
 
-    ret = virDomainDefFormat(def, virDomainDefFormatConvertXMLFlags(flags));
+    ret = virDomainDefFormat(def, data->caps,
+                             virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     VBOX_RELEASE(machine);

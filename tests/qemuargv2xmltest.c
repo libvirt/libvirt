@@ -87,7 +87,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
     }
 
-    if (!(actualxml = virDomainDefFormat(vmdef, 0)))
+    if (!(actualxml = virDomainDefFormat(vmdef, driver.caps, 0)))
         goto fail;
 
     if (blankProblemElements(expectxml) < 0 ||

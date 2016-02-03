@@ -18201,8 +18201,8 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
  error:
     err = virSaveLastError();
 
-    strSrc = virDomainDefFormat(src, 0);
-    strDst = virDomainDefFormat(dst, 0);
+    strSrc = virDomainDefFormat(src, NULL, 0);
+    strDst = virDomainDefFormat(dst, NULL, 0);
     VIR_DEBUG("XMLs that failed stability check were: src=\"%s\", dst=\"%s\"",
               NULLSTR(strSrc), NULLSTR(strDst));
     VIR_FREE(strSrc);
@@ -19890,6 +19890,7 @@ virDomainVirtioNetDriverFormat(char **outstr,
 int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
+                      char *prefix,
                       unsigned int flags)
 {
     unsigned int actualType = virDomainNetGetActualType(def);
@@ -20067,7 +20068,8 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
     if (def->ifname &&
         !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-          (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX)))) {
+          (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX) ||
+           (prefix && STRPREFIX(def->ifname, prefix))))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);
     }
@@ -21617,6 +21619,7 @@ virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
  * Return -1 on failure.  */
 int
 virDomainDefFormatInternal(virDomainDefPtr def,
+                           virCapsPtr caps,
                            unsigned int flags,
                            virBufferPtr buf)
 {
@@ -21627,6 +21630,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     size_t i;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
     int indent;
+    char *netprefix = NULL;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
                   VIR_DOMAIN_DEF_FORMAT_STATUS |
@@ -22324,8 +22328,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainFSDefFormat(buf, def->fss[n], flags) < 0)
             goto error;
 
+    if (caps)
+        netprefix = caps->host.netprefix;
     for (n = 0; n < def->nnets; n++)
-        if (virDomainNetDefFormat(buf, def->nets[n], flags) < 0)
+        if (virDomainNetDefFormat(buf, def->nets[n], netprefix, flags) < 0)
             goto error;
 
     for (n = 0; n < def->nsmartcards; n++)
@@ -22495,12 +22501,12 @@ unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags)
 
 
 char *
-virDomainDefFormat(virDomainDefPtr def, unsigned int flags)
+virDomainDefFormat(virDomainDefPtr def, virCapsPtr caps, unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS, NULL);
-    if (virDomainDefFormatInternal(def, flags, &buf) < 0)
+    if (virDomainDefFormatInternal(def, caps, flags, &buf) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -22534,7 +22540,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
         xmlopt->privateData.format(&buf, obj) < 0)
         goto error;
 
-    if (virDomainDefFormatInternal(obj->def, flags, &buf) < 0)
+    if (virDomainDefFormatInternal(obj->def, NULL, flags, &buf) < 0)
         goto error;
 
     virBufferAdjustIndent(&buf, -2);
@@ -22724,7 +22730,7 @@ virDomainSaveConfig(const char *configDir,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto cleanup;
 
     if (virDomainSaveXML(configDir, def, xml))
@@ -23024,7 +23030,7 @@ virDomainDefCopy(virDomainDefPtr src,
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
 
     /* Easiest to clone via a round-trip through XML.  */
-    if (!(xml = virDomainDefFormat(src, format_flags)))
+    if (!(xml = virDomainDefFormat(src, caps, format_flags)))
         return NULL;
 
     ret = virDomainDefParseString(xml, caps, xmlopt, parse_flags);
@@ -23511,6 +23517,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     int flags = VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_SECURE;
     char *xmlStr = NULL;
     int rc = -1;
+    char *netprefix;
 
     switch ((virDomainDeviceType) src->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -23523,7 +23530,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         rc = virDomainFSDefFormat(&buf, src->data.fs, flags);
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        rc = virDomainNetDefFormat(&buf, src->data.net, flags);
+        netprefix = caps->host.netprefix;
+        rc = virDomainNetDefFormat(&buf, src->data.net, netprefix, flags);
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
         rc = virDomainInputDefFormat(&buf, src->data.input, flags);

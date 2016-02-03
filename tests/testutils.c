@@ -1091,7 +1091,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
         goto fail;
     }
 
-    if (!(actual = virDomainDefFormat(def, format_flags)))
+    if (!(actual = virDomainDefFormat(def, caps, format_flags)))
         goto fail;
 
     if (virtTestCompareToFile(actual, outfile) < 0)

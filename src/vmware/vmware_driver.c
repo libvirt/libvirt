@@ -1005,7 +1005,7 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    ret = virDomainDefFormat(vm->def,
+    ret = virDomainDefFormat(vm->def, driver->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -1040,7 +1040,8 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     def = virVMXParseConfig(&ctx, driver->xmlopt, driver->caps, nativeConfig);
 
     if (def != NULL)
-        xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+        xml = virDomainDefFormat(def, driver->caps,
+                                 VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     virDomainDefFree(def);
 

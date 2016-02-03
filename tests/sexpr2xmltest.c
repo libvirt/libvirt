@@ -62,7 +62,7 @@ testCompareFiles(const char *xml, const char *sexpr)
       goto fail;
   }
 
-  if (!(gotxml = virDomainDefFormat(def, 0)))
+  if (!(gotxml = virDomainDefFormat(def, caps, 0)))
       goto fail;
 
   if (virtTestCompareToFile(gotxml, xml) < 0)

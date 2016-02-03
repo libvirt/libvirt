@@ -702,7 +702,7 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAddLit(&buf, "</disks>\n");
     }
     if (def->dom) {
-        if (virDomainDefFormatInternal(def->dom, flags, &buf) < 0) {
+        if (virDomainDefFormatInternal(def->dom, NULL, flags, &buf) < 0) {
             virBufferFreeAndReset(&buf);
             return NULL;
         }

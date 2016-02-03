@@ -182,7 +182,8 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
     int ret;
 
     vm->def->id = -1;
-    actual = virDomainDefFormat(vm->def, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    actual = virDomainDefFormat(vm->def, driver.caps,
+                                VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
         return -1;
     vm->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;

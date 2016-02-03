@@ -200,11 +200,11 @@ networkRunHook(virNetworkObjPtr network,
 
         virBufferAddLit(&buf, "<hookData>\n");
         virBufferAdjustIndent(&buf, 2);
-        if (iface && virDomainNetDefFormat(&buf, iface, 0) < 0)
+        if (iface && virDomainNetDefFormat(&buf, iface, NULL, 0) < 0)
             goto cleanup;
         if (virNetworkDefFormatBuf(&buf, network->def, 0) < 0)
             goto cleanup;
-        if (dom && virDomainDefFormatInternal(dom, 0, &buf) < 0)
+        if (dom && virDomainDefFormatInternal(dom, NULL, 0, &buf) < 0)
             goto cleanup;
 
         virBufferAdjustIndent(&buf, -2);

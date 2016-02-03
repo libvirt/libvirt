@@ -1986,7 +1986,7 @@ static char *umlDomainGetXMLDesc(virDomainPtr dom,
         goto cleanup;
 
     ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef ?
-                             vm->newDef : vm->def,
+                             vm->newDef : vm->def, driver->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:

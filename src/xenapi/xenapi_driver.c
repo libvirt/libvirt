@@ -1402,7 +1402,8 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     xen_vm vm = NULL;
     xen_vm_set *vms;
     xen_string_string_map *result = NULL;
-    xen_session *session = ((struct _xenapiPrivate *)(dom->conn->privateData))->session;
+    struct _xenapiPrivate *priv = conn->privateData;
+    xen_session *session = priv->session;
     virDomainDefPtr defPtr = NULL;
     char *boot_policy = NULL;
     unsigned long memory = 0;
@@ -1580,7 +1581,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         xen_vif_set_free(vif_set);
     }
     xen_vm_set_free(vms);
-    xml = virDomainDefFormat(defPtr, flags);
+    xml = virDomainDefFormat(defPtr, priv->caps, flags);
     virDomainDefFree(defPtr);
     return xml;
 

@@ -1674,7 +1674,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if ((xml = virDomainDefFormat(vm->def, 0)) == NULL)
+    if ((xml = virDomainDefFormat(vm->def, cfg->caps, 0)) == NULL)
         goto cleanup;
     xml_len = strlen(xml) + 1;
 
@@ -2555,6 +2555,8 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
 static char *
 libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
     virDomainDefPtr def;
     char *ret = NULL;
@@ -2572,12 +2574,13 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     else
         def = vm->def;
 
-    ret = virDomainDefFormat(def,
+    ret = virDomainDefFormat(def, cfg->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
     if (vm)
         virObjectUnlock(vm);
+    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2630,7 +2633,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+    xml = virDomainDefFormat(def, cfg->caps, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
  cleanup:
     virDomainDefFree(def);

@@ -2160,7 +2160,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
 
     }
 
-    ret = virDomainDefFormatInternal(def,
+    ret = virDomainDefFormatInternal(def, driver->caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
                                      buf);
 

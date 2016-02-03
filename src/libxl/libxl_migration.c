@@ -254,7 +254,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     if (!libxlDomainMigrationIsAllowed(def))
         goto endjob;
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    xml = virDomainDefFormat(def, cfg->caps, VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  endjob:
     if (!libxlDomainObjEndJob(driver, vm))

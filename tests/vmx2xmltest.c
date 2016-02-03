@@ -86,7 +86,8 @@ testCompareFiles(const char *vmx, const char *xml)
         goto cleanup;
     }
 
-    if (!(formatted = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(formatted = virDomainDefFormat(def, caps,
+                                         VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto cleanup;
 
     if (virtTestCompareToFile(formatted, xml) < 0)

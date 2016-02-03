@@ -488,7 +488,9 @@ bhyveDomainGetOSType(virDomainPtr dom)
 static char *
 bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
+    bhyveConnPtr privconn = conn->privateData;
     virDomainObjPtr vm;
+    virCapsPtr caps = NULL;
     char *ret = NULL;
 
     if (!(vm = bhyveDomObjFromDomain(domain)))
@@ -497,9 +499,14 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (virDomainGetXMLDescEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def,
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        goto cleanup;
+
+    ret = virDomainDefFormat(vm->def, caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
+    virObjectUnref(caps);
  cleanup:
     if (vm)
         virObjectUnlock(vm);

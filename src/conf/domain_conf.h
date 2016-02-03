@@ -2734,11 +2734,13 @@ void virDomainIOThreadSchedDelId(virDomainDefPtr def, unsigned int iothread_id);
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,
+                         virCapsPtr caps,
                          unsigned int flags);
 char *virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr obj,
                          unsigned int flags);
 int virDomainDefFormatInternal(virDomainDefPtr def,
+                               virCapsPtr caps,
                                unsigned int flags,
                                virBufferPtr buf);
 
@@ -2749,6 +2751,7 @@ int virDomainDiskSourceFormat(virBufferPtr buf,
 
 int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
+                          char *prefix,
                           unsigned int flags);
 
 typedef enum {

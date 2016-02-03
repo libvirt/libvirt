@@ -1982,7 +1982,7 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
 
-    xml = virDomainDefFormat(privdom->def,
+    xml = virDomainDefFormat(privdom->def, privconn->caps,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
 
     if (xml == NULL) {
@@ -2591,6 +2591,7 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
 
 static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
+    testDriverPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
     virDomainObjPtr privdom;
     char *ret = NULL;
@@ -2603,7 +2604,8 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         privdom->newDef ? privdom->newDef : privdom->def;
 
-    ret = virDomainDefFormat(def, virDomainDefFormatConvertXMLFlags(flags));
+    ret = virDomainDefFormat(def, privconn->caps,
+                             virDomainDefFormatConvertXMLFlags(flags));
 
     virDomainObjEndAPI(&privdom);
     return ret;

@@ -1530,7 +1530,7 @@ xenUnifiedDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     def = xenDaemonDomainGetXMLDesc(dom->conn, minidef, cpus);
 
     if (def)
-        ret = virDomainDefFormat(def,
+        ret = virDomainDefFormat(def, priv->caps,
                                  virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -1586,7 +1586,7 @@ xenUnifiedConnectDomainXMLFromNative(virConnectPtr conn,
     if (!def)
         goto cleanup;
 
-    ret = virDomainDefFormat(def, 0);
+    ret = virDomainDefFormat(def, priv->caps, 0);
 
  cleanup:
     virDomainDefFree(def);

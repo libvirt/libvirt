@@ -1066,7 +1066,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         goto cleanup_dom;
 
 
-    if ((dom_xml = virDomainDefFormat(vm->def, 0)) == NULL)
+    if ((dom_xml = virDomainDefFormat(vm->def, cfg->caps, 0)) == NULL)
         goto cleanup_dom;
 
     if (libxl_userdata_store(cfg->ctx, domid, "libvirt-xml",

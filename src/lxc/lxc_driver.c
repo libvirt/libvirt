@@ -1027,6 +1027,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 static char *lxcDomainGetXMLDesc(virDomainPtr dom,
                                  unsigned int flags)
 {
+    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     char *ret = NULL;
 
@@ -1040,6 +1041,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
 
     ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) &&
                              vm->newDef ? vm->newDef : vm->def,
+                             driver->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -1072,7 +1074,7 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
     if (!(def = lxcParseConfigString(nativeConfig, caps, driver->xmlopt)))
         goto cleanup;
 
-    xml = virDomainDefFormat(def, 0);
+    xml = virDomainDefFormat(def, caps, 0);
 
  cleanup:
     virObjectUnref(caps);

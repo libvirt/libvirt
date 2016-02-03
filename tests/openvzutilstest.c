@@ -115,7 +115,7 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    actual = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+    actual = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     if (actual == NULL) {
         err = virGetLastError();
