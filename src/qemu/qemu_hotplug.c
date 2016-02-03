@@ -315,7 +315,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk)
 {
-    size_t i;
     int ret = -1;
     const char* type = virDomainDiskBusTypeToString(disk->bus);
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -336,14 +335,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         if (!qemuCheckCCWS390AddressSupport(vm->def, disk->info, priv->qemuCaps,
                                             disk->dst))
             goto cleanup;
-    }
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("target %s already exists"), disk->dst);
-            goto cleanup;
-        }
     }
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
@@ -577,14 +568,6 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("target %s already exists"), disk->dst);
-            goto cleanup;
-        }
-    }
-
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
 
@@ -688,20 +671,11 @@ qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
                                      virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
     int ret = -1;
     char *drivestr = NULL;
     char *devstr = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("target %s already exists"), disk->dst);
-            goto cleanup;
-        }
-    }
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -770,6 +744,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
+    size_t i;
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
@@ -818,6 +793,14 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
+        for (i = 0; i < vm->def->ndisks; i++) {
+            if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("target %s already exists"), disk->dst);
+                goto cleanup;
+            }
+        }
+
         switch ((virDomainDiskBus) disk->bus) {
         case VIR_DOMAIN_DISK_BUS_USB:
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
