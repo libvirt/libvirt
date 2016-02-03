@@ -7,19 +7,14 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name aarch64test \
 -S \
--M virt \
--no-kvm \
--cpu cortex-a53 \
+-machine virt,accel=kvm \
+-cpu host \
 -m 1024 \
 -smp 1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
 -boot c \
--kernel /aarch64.kernel \
--initrd /aarch64.initrd \
--append console=ttyAMA0 \
--usb \
--net nic,macaddr=52:54:00:09:a4:37,vlan=0,model=virtio,name=net0 \
--net user,vlan=0,name=hostnet0
+-usb

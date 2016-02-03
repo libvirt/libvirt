@@ -737,8 +737,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("aarch64-gic");
-    DO_TEST("aarch64-gicv3");
+    DO_TEST("aarch64-gic-v2");
+    DO_TEST("aarch64-gic-v3");
 
     DO_TEST("memory-hotplug");
     DO_TEST("memory-hotplug-nonuma");
