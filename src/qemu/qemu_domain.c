@@ -1249,6 +1249,20 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 static void
 qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def)
 {
+    switch (def->os.arch) {
+    case VIR_ARCH_ARMV7L:
+    case VIR_ARCH_AARCH64:
+        if (STREQ(def->os.machine, "virt") ||
+            STRPREFIX(def->os.machine, "virt-")) {
+            /* GIC is always available to ARM virt machines */
+            def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
+        }
+        break;
+
+    default:
+        break;
+    }
+
     /* Default to GIC v2 if no version was specified */
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
         def->gic_version == VIR_GIC_VERSION_NONE)
