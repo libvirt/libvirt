@@ -59,6 +59,7 @@ virCapabilitiesGetCpusForNodemask;
 virCapabilitiesHostSecModelAddBaseLabel;
 virCapabilitiesNew;
 virCapabilitiesSetHostCPU;
+virCapabilitiesSetNetPrefix;
 
 
 # conf/cpu_conf.h

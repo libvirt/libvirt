@@ -160,6 +160,7 @@ struct _virCapsHost {
     size_t nsecModels;
     virCapsHostSecModelPtr secModels;
 
+    char *netprefix;
     virCPUDefPtr cpu;
     int nPagesSize;             /* size of pagesSize array */
     unsigned int *pagesSize;    /* page sizes support on the system */
@@ -219,6 +220,9 @@ extern int
 virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                                        const char *name);
 
+extern int
+virCapabilitiesSetNetPrefix(virCapsPtr caps,
+                            const char *prefix);
 
 extern int
 virCapabilitiesAddHostNUMACell(virCapsPtr caps,

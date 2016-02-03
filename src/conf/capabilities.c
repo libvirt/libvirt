@@ -221,6 +221,7 @@ virCapabilitiesDispose(void *object)
         virCapabilitiesClearSecModel(&caps->host.secModels[i]);
     VIR_FREE(caps->host.secModels);
 
+    VIR_FREE(caps->host.netprefix);
     VIR_FREE(caps->host.pagesSize);
     virCPUDefFree(caps->host.cpu);
 }
@@ -265,6 +266,23 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
     if (VIR_STRDUP(caps->host.migrateTrans[caps->host.nmigrateTrans], name) < 0)
         return -1;
     caps->host.nmigrateTrans++;
+
+    return 0;
+}
+
+/**
+ * virCapabilitiesSetNetPrefix:
+ * @caps: capabilities to extend
+ * @name: prefix for host generated network interfaces
+ *
+ * Registers the prefix that is used for generated network interfaces
+ */
+int
+virCapabilitiesSetNetPrefix(virCapsPtr caps,
+                            const char *prefix)
+{
+    if (VIR_STRDUP(caps->host.netprefix, prefix) < 0)
+        return -1;
 
     return 0;
 }
@@ -912,6 +930,10 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</migration_features>\n");
     }
+
+    if (caps->host.netprefix)
+        virBufferAsprintf(&buf, "<netprefix>%s</netprefix>\n",
+                          caps->host.netprefix);
 
     if (caps->host.nnumaCell &&
         virCapabilitiesFormatNUMATopology(&buf, caps->host.nnumaCell,
