@@ -47,6 +47,10 @@
 # define LIBXL_MIGRATION_PORT_MIN  49152
 # define LIBXL_MIGRATION_PORT_MAX  49216
 
+/* Used for prefix of ifname of any network name generated dynamically
+ * by libvirt for Xen, and cannot be used for a persistent network name.  */
+# define LIBXL_GENERATED_PREFIX_XEN "vif"
+
 # define LIBXL_CONFIG_BASE_DIR SYSCONFDIR "/libvirt"
 # define LIBXL_CONFIG_DIR SYSCONFDIR "/libvirt/libxl"
 # define LIBXL_AUTOSTART_DIR LIBXL_CONFIG_DIR "/autostart"

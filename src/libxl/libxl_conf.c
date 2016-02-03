@@ -183,6 +183,9 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
         virCapabilitiesAddHostFeature(caps, "pae") < 0)
         return -1;
 
+    if (virCapabilitiesSetNetPrefix(caps, LIBXL_GENERATED_PREFIX_XEN) < 0)
+        return -1;
+
     return 0;
 }
 
