@@ -39,6 +39,47 @@ VIR_LOG_INIT("storage.storage_backend_zfs");
  *       for size, show just a number instead of 2G etc
  */
 
+/**
+ * virStorageBackendZFSVolModeNeeded:
+ *
+ * Checks if it's necessary to specify 'volmode' (i.e. that
+ * we're working with BSD ZFS implementation).
+ *
+ * Returns 1 if 'volmode' is need, 0 if not needed, -1 on error
+ */
+static int
+virStorageBackendZFSVolModeNeeded(void)
+{
+    virCommandPtr cmd = NULL;
+    int ret = -1, exit = -1;
+    char *error = NULL;
+
+    /* 'zfs get' without arguments prints out
+     * usage information to stderr, including
+     * list of supported options, and exits with
+     * exit code 2
+     */
+    cmd = virCommandNewArgList(ZFS, "get", NULL);
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetErrorBuffer(cmd, &error);
+
+    ret = virCommandRun(cmd, &exit);
+    if ((ret < 0) || (exit != 2)) {
+        VIR_WARN("Command 'zfs get' either failed "
+                 "to run or exited with unexpected status");
+        goto cleanup;
+    }
+
+    if (strstr(error, " volmode "))
+        ret = 1;
+    else
+        ret = 0;
+
+ cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(error);
+    return ret;
+}
 
 static int
 virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
@@ -258,6 +299,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCommandPtr cmd = NULL;
     int ret = -1;
+    int volmode_needed = -1;
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
@@ -273,6 +315,9 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)
         goto cleanup;
 
+    volmode_needed = virStorageBackendZFSVolModeNeeded();
+    if (volmode_needed < 0)
+        goto cleanup;
     /**
      * $ zfs create -o volmode=dev -V 10240K test/volname
      *
@@ -281,8 +326,10 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
      *                   will lookup vfs.zfs.vol.mode sysctl value
      * -V -- tells to create a volume with the specified size
      */
-    cmd = virCommandNewArgList(ZFS, "create", "-o", "volmode=dev",
-                               "-V", NULL);
+    cmd = virCommandNewArgList(ZFS, "create", NULL);
+    if (volmode_needed)
+        virCommandAddArgList(cmd, "-o", "volmode=dev", NULL);
+    virCommandAddArg(cmd, "-V");
     virCommandAddArgFormat(cmd, "%lluK",
                            VIR_DIV_UP(vol->target.capacity, 1024));
     virCommandAddArgFormat(cmd, "%s/%s",
