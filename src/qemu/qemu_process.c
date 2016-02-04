@@ -4402,6 +4402,32 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuProcessStartValidate:
+ * @vm: domain object
+ * @qemuCaps: emulator capabilities
+ * @migration: restoration of existing state
+ *
+ * This function aggregates checks independent from host state done prior to
+ * start of a VM.
+ */
+int
+qemuProcessStartValidate(virDomainDefPtr def,
+                         virQEMUCapsPtr qemuCaps,
+                         bool migration,
+                         bool snapshot)
+{
+    if (qemuValidateCpuCount(def, qemuCaps) < 0)
+        return -1;
+
+    if (!migration && !snapshot &&
+        virDomainDefCheckDuplicateDiskInfo(def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuProcessInit:
  *
  * Prepares the domain up to the point when priv->qemuCaps is initialized. The
@@ -4412,7 +4438,8 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
 int
 qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
-                bool migration)
+                bool migration,
+                bool snap)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
@@ -4439,6 +4466,9 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
+        goto cleanup;
+
+    if (qemuProcessStartValidate(vm->def, priv->qemuCaps, migration, snap) < 0)
         goto cleanup;
 
     /* Some things, paths, ... are generated here and we want them to persist.
@@ -4641,9 +4671,6 @@ qemuProcessLaunch(virConnectPtr conn,
         }
     }
 
-    if (qemuValidateCpuCount(vm->def, priv->qemuCaps) < 0)
-        goto cleanup;
-
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
@@ -4666,10 +4693,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                                                    priv->autoNodeset)))
             goto cleanup;
     }
-
-    if (!incoming && !snapshot &&
-        virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
-        goto cleanup;
 
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
@@ -5113,7 +5136,7 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_PAUSED |
                       VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
 
-    if (qemuProcessInit(driver, vm, !!migrateFrom) < 0)
+    if (qemuProcessInit(driver, vm, !!migrateFrom, !!snapshot) < 0)
         goto cleanup;
 
     if (migrateFrom) {
