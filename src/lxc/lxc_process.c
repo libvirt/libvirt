@@ -767,7 +767,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     }
     virDomainAuditInit(vm, initpid, inode);
 
-    if (virDomainSaveStatus(lxc_driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(lxc_driver->xmlopt, cfg->stateDir, vm, lxc_driver->caps) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 
     virObjectUnlock(vm);
@@ -1469,7 +1469,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* Write domain status to disk for the controller to
      * read when it starts */
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto cleanup;
 
     /* Allow the child to exec the controller */

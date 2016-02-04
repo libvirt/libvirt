@@ -115,11 +115,15 @@ virBhyveProcessStart(virConnectPtr conn,
     bhyveConnPtr privconn = conn->privateData;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1, rc;
+    virCapsPtr caps = NULL;
 
     if (virAsprintf(&logfile, "%s/%s.log",
                     BHYVE_LOG_DIR, vm->def->name) < 0)
        return -1;
 
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        goto cleanup;
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
                       S_IRUSR | S_IWUSR)) < 0) {
@@ -215,12 +219,13 @@ virBhyveProcessStart(virConnectPtr conn,
 
     if (virDomainSaveStatus(driver->xmlopt,
                             BHYVE_STATE_DIR,
-                            vm) < 0)
+                            vm, caps) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
+    virObjectUnref(caps);
     if (devicemap != NULL) {
         rc = unlink(devmap_file);
         if (rc < 0 && errno != ENOENT)
@@ -362,12 +367,17 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     char *expected_proctitle = NULL;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
+    virCapsPtr caps = NULL;
 
     if (!virDomainObjIsActive(vm))
         return 0;
 
     if (!vm->pid)
         return 0;
+
+    caps = bhyveDriverGetCapabilities(privconn);
+    if (!caps)
+        return -1;
 
     virObjectLock(vm);
 
@@ -397,9 +407,10 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
                              VIR_DOMAIN_SHUTOFF_UNKNOWN);
         ignore_value(virDomainSaveStatus(data->driver->xmlopt,
                                          BHYVE_STATE_DIR,
-                                         vm));
+                                         vm, caps));
     }
 
+    virObjectUnref(caps);
     virObjectUnlock(vm);
     VIR_FREE(expected_proctitle);
 

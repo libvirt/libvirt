@@ -137,7 +137,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     }
 
     /* format it back */
-    if (!(actual = virDomainObjFormat(driver.xmlopt, obj,
+    if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,
                                       VIR_DOMAIN_DEF_FORMAT_SECURE))) {
         VIR_TEST_DEBUG("Failed to format domain status XML");
         goto cleanup;

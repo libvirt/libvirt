@@ -1932,7 +1932,7 @@ static int qemuDomainSuspend(virDomainPtr dom)
                                              eventDetail);
         }
     }
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
     ret = 0;
 
@@ -1995,7 +1995,7 @@ static int qemuDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
     ret = 0;
 
@@ -2549,7 +2549,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
         }
 
         def->memballoon->period = period;
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
 
@@ -4143,7 +4143,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
                  vm->def->name);
      }
@@ -4177,7 +4177,7 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
     if (qemuDomainRemoveDevice(driver, vm, &dev) < 0)
         goto endjob;
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("unable to save domain status after removing device %s",
                  devAlias);
 
@@ -4545,7 +4545,7 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
     dev.data.chr->state = newstate;
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("unable to save status of domain %s after updating state of "
                  "channel %s", vm->def->name, devAlias);
 
@@ -5084,7 +5084,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
             }
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
 
@@ -5263,7 +5263,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         def->cputune.nvcpupin = newVcpuPinNum;
         newVcpuPin = NULL;
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
 
         if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
@@ -5480,7 +5480,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
         if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
 
         str = virBitmapFormat(pcpumap);
@@ -5967,7 +5967,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
 
         if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
@@ -6277,7 +6277,7 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                 goto endjob;
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
 
@@ -6835,7 +6835,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                                "%s", _("failed to resume domain"));
             goto cleanup;
         }
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto cleanup;
         }
@@ -8610,7 +8610,7 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             ret = -1;
             goto endjob;
         }
@@ -8736,7 +8736,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             ret = -1;
             goto endjob;
         }
@@ -8856,7 +8856,7 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             ret = -1;
             goto endjob;
         }
@@ -9387,7 +9387,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
             }
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
     if (ret < 0)
@@ -9975,7 +9975,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 #undef QEMU_SET_MEM_PARAMETER
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE &&
-        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
@@ -10244,7 +10244,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                  -1, mode, nodeset) < 0)
             goto endjob;
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
 
@@ -10607,7 +10607,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
         }
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
 
     if (eventNparams) {
@@ -11389,7 +11389,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                 goto endjob;
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
     }
 
@@ -14521,7 +14521,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     }
 
     if (ret == 0 || !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0 ||
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
             (persist && virDomainSaveConfig(cfg->configDir, driver->caps,
                                             vm->newDef) < 0))
             ret = -1;
@@ -16527,7 +16527,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
      * effort to save it now.  But we can ignore failure, since there
      * will be further changes when the event marks completion.  */
     if (save)
-        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm));
+        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
 
     /* With synchronous block cancel, we must synthesize an event, and
      * we silently ignore the ABORT_ASYNC flag.  With asynchronous
@@ -16649,7 +16649,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
         virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm));
+        ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
         virObjectUnref(cfg);
     }
  endjob:
@@ -16902,7 +16902,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     QEMU_DOMAIN_DISK_PRIVATE(disk)->blockjob = true;
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Unable to save status on vm %s after state change",
                  vm->def->name);
 
@@ -17301,7 +17301,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
             virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
             mirror = NULL;
-            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
                 VIR_WARN("Unable to save status on vm %s after block job",
                          vm->def->name);
             virObjectUnref(cfg);
@@ -17789,7 +17789,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         vm->def->disks[idx]->blkdeviotune = info;
 
-        ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm);
+        ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps);
         if (ret < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Saving live XML config failed"));

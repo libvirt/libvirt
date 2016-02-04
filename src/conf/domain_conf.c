@@ -22516,6 +22516,7 @@ virDomainDefFormat(virDomainDefPtr def, virCapsPtr caps, unsigned int flags)
 char *
 virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr obj,
+                   virCapsPtr caps,
                    unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -22540,7 +22541,7 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
         xmlopt->privateData.format(&buf, obj) < 0)
         goto error;
 
-    if (virDomainDefFormatInternal(obj->def, NULL, flags, &buf) < 0)
+    if (virDomainDefFormatInternal(obj->def, caps, flags, &buf) < 0)
         goto error;
 
     virBufferAdjustIndent(&buf, -2);
@@ -22746,7 +22747,8 @@ virDomainSaveConfig(const char *configDir,
 int
 virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
                     const char *statusDir,
-                    virDomainObjPtr obj)
+                    virDomainObjPtr obj,
+                    virCapsPtr caps)
 {
     unsigned int flags = (VIR_DOMAIN_DEF_FORMAT_SECURE |
                           VIR_DOMAIN_DEF_FORMAT_STATUS |
@@ -22757,7 +22759,7 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
     int ret = -1;
     char *xml;
 
-    if (!(xml = virDomainObjFormat(xmlopt, obj, flags)))
+    if (!(xml = virDomainObjFormat(xmlopt, obj, caps, flags)))
         goto cleanup;
 
     if (virDomainSaveXML(statusDir, obj->def, xml))
@@ -23906,7 +23908,7 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
         if (virDomainDefSetMetadata(vm->def, type, metadata, key, uri) < 0)
             return -1;
 
-        if (virDomainSaveStatus(xmlopt, stateDir, vm) < 0)
+        if (virDomainSaveStatus(xmlopt, stateDir, vm, caps) < 0)
             return -1;
     }
 

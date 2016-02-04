@@ -2128,7 +2128,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         }
         diskPriv->migrating = true;
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             goto cleanup;
         }
@@ -3924,7 +3924,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
                                                       VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
         }
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
 
@@ -5869,7 +5869,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
     if (virDomainObjIsActive(vm) &&
-        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm) < 0)
+        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
     /* Guest is successfully running, so cancel previous auto destroy */

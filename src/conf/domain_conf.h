@@ -2738,6 +2738,7 @@ char *virDomainDefFormat(virDomainDefPtr def,
                          unsigned int flags);
 char *virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr obj,
+                         virCapsPtr caps,
                          unsigned int flags);
 int virDomainDefFormatInternal(virDomainDefPtr def,
                                virCapsPtr caps,
@@ -2912,7 +2913,8 @@ int virDomainSaveConfig(const char *configDir,
                         virDomainDefPtr def);
 int virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
                         const char *statusDir,
-                        virDomainObjPtr obj) ATTRIBUTE_RETURN_CHECK;
+                        virDomainObjPtr obj,
+                        virCapsPtr caps) ATTRIBUTE_RETURN_CHECK;
 
 typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,
