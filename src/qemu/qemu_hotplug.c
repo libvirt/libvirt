@@ -799,6 +799,9 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                _("target %s already exists"), disk->dst);
                 goto cleanup;
             }
+
+            if (virDomainDiskDefCheckDuplicateInfo(vm->def->disks[i], disk) < 0)
+                goto cleanup;
         }
 
         switch ((virDomainDiskBus) disk->bus) {

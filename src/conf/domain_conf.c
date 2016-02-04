@@ -23988,7 +23988,7 @@ virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
 }
 
 
-static int
+int
 virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
                                    virDomainDiskDefPtr b)
 {
