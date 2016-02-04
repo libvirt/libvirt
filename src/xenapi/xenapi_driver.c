@@ -1402,7 +1402,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     xen_vm vm = NULL;
     xen_vm_set *vms;
     xen_string_string_map *result = NULL;
-    struct _xenapiPrivate *priv = conn->privateData;
+    struct _xenapiPrivate *priv = dom->conn->privateData;
     xen_session *session = priv->session;
     virDomainDefPtr defPtr = NULL;
     char *boot_policy = NULL;

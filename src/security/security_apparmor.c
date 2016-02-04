@@ -181,7 +181,7 @@ load_profile(virSecurityManagerPtr mgr,
     const char *probe = virSecurityManagerGetAllowDiskFormatProbing(mgr)
         ? "1" : "0";
 
-    xml = virDomainDefFormat(def, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!xml)
         goto cleanup;
 
