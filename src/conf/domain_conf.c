@@ -23988,6 +23988,28 @@ virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
 }
 
 
+static int
+virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
+                                   virDomainDiskDefPtr b)
+{
+    if (a->wwn && b->wwn && STREQ(a->wwn, b->wwn)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disks '%s' and '%s' have identical WWN"),
+                       a->dst, b->dst);
+        return -1;
+    }
+
+    if (a->serial && b->serial && STREQ(a->serial, b->serial)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Disks '%s' and '%s' have identical serial"),
+                       a->dst, b->dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int
 virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
 {
@@ -23997,25 +24019,9 @@ virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->wwn || def->disks[i]->serial) {
             for (j = i + 1; j < def->ndisks; j++) {
-                if (def->disks[i]->wwn &&
-                    STREQ_NULLABLE(def->disks[i]->wwn,
-                                   def->disks[j]->wwn)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Disks '%s' and '%s' have identical WWN"),
-                                   def->disks[i]->dst,
-                                   def->disks[j]->dst);
+                if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
+                                                       def->disks[j]) < 0)
                     return -1;
-                }
-
-                if (def->disks[i]->serial &&
-                    STREQ_NULLABLE(def->disks[i]->serial,
-                                   def->disks[j]->serial)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Disks '%s' and '%s' have identical serial"),
-                                   def->disks[i]->dst,
-                                   def->disks[j]->dst);
-                    return -1;
-                }
             }
         }
     }
