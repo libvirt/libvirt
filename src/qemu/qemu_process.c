@@ -4432,7 +4432,14 @@ qemuProcessInit(virQEMUDriverPtr driver,
     }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto stop;
+        goto cleanup;
+
+    VIR_DEBUG("Determining emulator version");
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
+        goto cleanup;
 
     /* Some things, paths, ... are generated here and we want them to persist.
      * Fill them in prior to setting the domain def as transient. */
@@ -4460,13 +4467,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (qemuProcessStartHook(driver, vm,
                              VIR_HOOK_QEMU_OP_PREPARE,
                              VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto stop;
-
-    VIR_DEBUG("Determining emulator version");
-    virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
-                                                      vm->def->emulator,
-                                                      vm->def->os.machine)))
         goto stop;
 
     ret = 0;
