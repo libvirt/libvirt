@@ -7278,6 +7278,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
         goto cleanup;
 
+    if (qemuProcessStartValidate(def, qemuCaps, false, false) < 0)
+        goto cleanup;
+
     /* Since we're just exporting args, we can't do bridge/network/direct
      * setups, since libvirt will normally create TAP/macvtap devices
      * directly. We convert those configs into generic 'ethernet'

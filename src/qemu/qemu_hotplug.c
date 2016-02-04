@@ -794,12 +794,6 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         for (i = 0; i < vm->def->ndisks; i++) {
-            if (STREQ(vm->def->disks[i]->dst, disk->dst)) {
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("target %s already exists"), disk->dst);
-                goto cleanup;
-            }
-
             if (virDomainDiskDefCheckDuplicateInfo(vm->def->disks[i], disk) < 0)
                 goto cleanup;
         }

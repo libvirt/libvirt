@@ -12992,31 +12992,6 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
     return false;
 }
 
-/* Return true if there's a duplicate disk[]->dst name for the same bus */
-bool
-virDomainDiskDefDstDuplicates(virDomainDefPtr def)
-{
-    size_t i, j;
-
-    /* optimization */
-    if (def->ndisks <= 1)
-        return false;
-
-    for (i = 1; i < def->ndisks; i++) {
-        for (j = 0; j < i; j++) {
-            if (STREQ(def->disks[i]->dst, def->disks[j]->dst)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("target '%s' duplicated for disk sources "
-                                 "'%s' and '%s'"),
-                               def->disks[i]->dst,
-                               NULLSTR(virDomainDiskGetSource(def->disks[i])),
-                               NULLSTR(virDomainDiskGetSource(def->disks[j])));
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 int
 virDomainDiskIndexByAddress(virDomainDefPtr def,
@@ -23992,6 +23967,15 @@ int
 virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
                                    virDomainDiskDefPtr b)
 {
+    if (STREQ(a->dst, b->dst)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("target '%s' duplicated for disk sources '%s' and '%s'"),
+                       a->dst,
+                       NULLSTR(virDomainDiskGetSource(a)),
+                       NULLSTR(virDomainDiskGetSource(b)));
+        return -1;
+    }
+
     if (a->wwn && b->wwn && STREQ(a->wwn, b->wwn)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Disks '%s' and '%s' have identical WWN"),
@@ -24017,12 +24001,10 @@ virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
     size_t j;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->wwn || def->disks[i]->serial) {
-            for (j = i + 1; j < def->ndisks; j++) {
-                if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
-                                                       def->disks[j]) < 0)
-                    return -1;
-            }
+        for (j = i + 1; j < def->ndisks; j++) {
+            if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
+                                                   def->disks[j]) < 0)
+                return -1;
         }
     }
 

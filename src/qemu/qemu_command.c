@@ -4228,9 +4228,6 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
     const char *contAlias;
     int controllerModel;
 
-    if (virDomainDiskDefDstDuplicates(def))
-        goto error;
-
     if (qemuCheckDiskConfig(disk) < 0)
         goto error;
 
