@@ -2011,14 +2011,6 @@ if test "$with_storage_gluster" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
 
-if test "$with_storage_zfs" = "check"; then
-    with_storage_zfs=$with_freebsd
-fi
-
-if test "$with_storage_zfs" = "yes" && test "$with_freebsd" = "no"; then
-    AC_MSG_ERROR([The ZFS storage driver can be enabled on FreeBSD only.])
-fi
-
 if test "$with_storage_zfs" = "yes" ||
    test "$with_storage_zfs" = "check"; then
   AC_PATH_PROG([ZFS], [zfs], [], [$PATH:/sbin:/usr/sbin])
