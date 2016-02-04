@@ -14908,6 +14908,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         if (update_current) {
             vm->current_snapshot->def->current = false;
             if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
+                                                driver->caps,
                                                 cfg->snapshotDir) < 0)
                 goto endjob;
             vm->current_snapshot = NULL;
@@ -14956,7 +14957,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
  endjob:
     if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (qemuDomainSnapshotWriteMetadata(vm, snap,
+        if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                             cfg->snapshotDir) < 0) {
             /* if writing of metadata fails, error out rather than trying
              * to silently carry on without completing the snapshot */
@@ -15275,6 +15276,7 @@ static char *
 qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                              unsigned int flags)
 {
+    virQEMUDriverPtr driver = snapshot->domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
     virDomainSnapshotObjPtr snap = NULL;
@@ -15293,7 +15295,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
 
-    xml = virDomainSnapshotDefFormat(uuidstr, snap->def,
+    xml = virDomainSnapshotDefFormat(uuidstr, snap->def, driver->caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
                                      0);
 
@@ -15474,7 +15476,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (vm->current_snapshot) {
         vm->current_snapshot->def->current = false;
         if (qemuDomainSnapshotWriteMetadata(vm, vm->current_snapshot,
-                                            cfg->snapshotDir) < 0)
+                                            driver->caps, cfg->snapshotDir) < 0)
             goto endjob;
         vm->current_snapshot = NULL;
         /* XXX Should we restore vm->current_snapshot after this point
@@ -15709,7 +15711,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
  cleanup:
     if (ret == 0) {
-        if (qemuDomainSnapshotWriteMetadata(vm, snap,
+        if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                             cfg->snapshotDir) < 0)
             ret = -1;
         else
@@ -15736,6 +15738,7 @@ struct _virQEMUSnapReparent {
     virQEMUDriverConfigPtr cfg;
     virDomainSnapshotObjPtr parent;
     virDomainObjPtr vm;
+    virCapsPtr caps;
     int err;
     virDomainSnapshotObjPtr last;
 };
@@ -15764,7 +15767,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
     if (!snap->sibling)
         rep->last = snap;
 
-    rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap,
+    rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap, rep->caps,
                                                rep->cfg->snapshotDir);
 }
 
@@ -15833,7 +15836,7 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         if (rem.current) {
             if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
                 snap->def->current = true;
-                if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                if (qemuDomainSnapshotWriteMetadata(vm, snap, driver->caps,
                                                     cfg->snapshotDir) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("failed to set snapshot '%s' as current"),
@@ -15850,6 +15853,7 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         rep.vm = vm;
         rep.err = 0;
         rep.last = NULL;
+        rep.caps = driver->caps;
         virDomainSnapshotForEachChild(snap,
                                       qemuDomainSnapshotReparentChildren,
                                       &rep);

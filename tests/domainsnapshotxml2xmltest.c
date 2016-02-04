@@ -100,7 +100,7 @@ testCompareXMLToXMLFiles(const char *inxml,
                                                 flags)))
         goto cleanup;
 
-    if (!(actual = virDomainSnapshotDefFormat(uuid, def,
+    if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
                                               VIR_DOMAIN_DEF_FORMAT_SECURE,
                                               internal)))
         goto cleanup;

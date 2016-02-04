@@ -4292,7 +4292,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuid_string);
 
-    xml = virDomainSnapshotDefFormat(uuid_string, &def,
+    xml = virDomainSnapshotDefFormat(uuid_string, &def, priv->caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
                                      0);
 

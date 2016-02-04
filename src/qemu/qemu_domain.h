@@ -375,6 +375,7 @@ const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 
 int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                     virDomainSnapshotObjPtr snapshot,
+                                    virCapsPtr caps,
                                     char *snapshotDir);
 
 int qemuDomainSnapshotForEachQcow2(virQEMUDriverPtr driver,

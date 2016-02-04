@@ -113,6 +113,7 @@ virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
 void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
+                                 virCapsPtr caps,
                                  unsigned int flags,
                                  int internal);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,

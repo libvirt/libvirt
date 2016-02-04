@@ -6087,6 +6087,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     char *xml = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    testDriverPtr privconn = snapshot->domain->conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
@@ -6098,7 +6099,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
 
-    xml = virDomainSnapshotDefFormat(uuidstr, snap->def,
+    xml = virDomainSnapshotDefFormat(uuidstr, snap->def, privconn->caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
                                      0);
 
