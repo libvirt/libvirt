@@ -18,6 +18,7 @@
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"
 # include "qemu/qemu_migration.h"
+# include "qemu/qemu_process.h"
 # include "datatypes.h"
 # include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
@@ -262,6 +263,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandPtr cmd = NULL;
     size_t i;
     virBitmapPtr nodeset = NULL;
+    bool testFailed = false;
 
     if (!(conn = virGetConnect()))
         goto out;
@@ -339,13 +341,20 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto out;
     }
 
-    if (!(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
+    if (qemuProcessStartValidate(vmdef, extraFlags, !!migrateURI, false) < 0)
+        testFailed = true;
+
+    if (!testFailed &&
+        !(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateURI, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
-                                     nodeset, NULL, NULL))) {
+                                     nodeset, NULL, NULL)))
+        testFailed = true;
+
+    if (testFailed) {
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_FAILURE)) {
             ret = 0;
@@ -355,7 +364,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
         }
         goto out;
     } else if (flags & FLAG_EXPECT_FAILURE) {
-        VIR_TEST_DEBUG("qemuBuildCommandLine should have failed\n");
+        VIR_TEST_DEBUG("qemuBuildCommandLine or qemuProcessStartValidate "
+                       "should have failed\n");
         goto out;
     }
 
