@@ -3336,7 +3336,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
             VBOX_UTF16_FREE(valueDisplayUtf16);
 
-            if (strlen(valueDisplayUtf8) <= 0)
+            if (STREQ(valueDisplayUtf8, ""))
                 VBOX_UTF8_FREE(valueDisplayUtf8);
         }
 
