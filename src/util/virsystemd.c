@@ -181,7 +181,7 @@ char *
 virSystemdGetMachineNameByPID(pid_t pid)
 {
     DBusConnection *conn;
-    DBusMessage *reply;
+    DBusMessage *reply = NULL;
     char *name = NULL, *object = NULL;
 
     if (virDBusIsServiceEnabled("org.freedesktop.machine1") < 0)
