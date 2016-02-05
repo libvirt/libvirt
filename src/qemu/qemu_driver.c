@@ -14692,7 +14692,6 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         }
 
         ret = -1;
-        goto cleanup;
     }
 
     if (thaw != 0 &&
