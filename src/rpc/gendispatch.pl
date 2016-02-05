@@ -1215,7 +1215,8 @@ elsif ($mode eq "client") {
                     push(@args_list, "int n$1");
                     push(@setters_list2, "if (virTypedParamsSerialize($1, n$1,\n" .
                                          "                                (virTypedParameterRemotePtr *) &args.$1.$1_val,\n" .
-                                         "                                &args.$1.$1_len, 0) < 0) {\n" .
+                                         "                                &args.$1.$1_len,\n" .
+                                         "                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {\n" .
                                          "        xdr_free((xdrproc_t)xdr_$call->{args}, (char *)&args);\n" .
                                          "        goto done;\n" .
                                          "    }");
