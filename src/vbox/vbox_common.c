@@ -3296,7 +3296,7 @@ vboxDumpVideo(virDomainDefPtr def, vboxGlobalData *data ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static void
+static int
 vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     /* dump display options vrdp/gui/sdl */
@@ -3311,6 +3311,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     IVRDxServer *VRDxServer   = NULL;
     PRBool VRDxEnabled        = PR_FALSE;
     bool addDesktop = false;
+    int ret = -1;
 
     def->ngraphics = 0;
 
@@ -3367,7 +3368,12 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         addDesktop = true;
     }
 
-    if ((totalPresent > 0) && (VIR_ALLOC_N(def->graphics, totalPresent) >= 0)) {
+    if (totalPresent > 0 || addDesktop) {
+        if (VIR_ALLOC_N(def->graphics, 1) < 0)
+            goto cleanup;
+    }
+
+    if (totalPresent > 0) {
         if ((guiPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
             if (guiDisplay)
@@ -3381,7 +3387,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 def->graphics[def->ngraphics]->data.sdl.display = sdlDisplay;
             def->ngraphics++;
         }
-    } else if (addDesktop && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
+    } else if (addDesktop) {
         if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
             const char *tmp;
             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
@@ -3401,11 +3407,10 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         gVBoxAPI.UIVRDxServer.GetEnabled(VRDxServer, &VRDxEnabled);
 
     if (VRDxEnabled) {
+        if (VIR_REALLOC_N(def->graphics, totalPresent) < 0)
+            goto cleanup;
 
-        totalPresent++;
-
-        if ((VIR_REALLOC_N(def->graphics, totalPresent) >= 0) &&
-            (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+        if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
             PRUnichar *netAddressUtf16 = NULL;
             char *netAddressUtf8 = NULL;
             PRBool allowMultiConnection = PR_FALSE;
@@ -3437,8 +3442,14 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         }
     }
 
+    ret = 0;
+
+ cleanup:
+    VBOX_UTF8_FREE(guiDisplay);
+    VBOX_UTF8_FREE(sdlDisplay);
     VBOX_RELEASE(VRDxServer);
     VBOX_UTF8_FREE(valueTypeUtf8);
+    return ret;
 }
 
 static void
@@ -3971,7 +3982,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     if (vboxDumpVideo(def, data, machine) < 0)
         goto cleanup;
-    vboxDumpDisplay(def, data, machine);
+    if (vboxDumpDisplay(def, data, machine) < 0)
+        goto cleanup;
 
     /* As the medium interface changed from 3.0 to 3.1.
      * There are two totally different implementations.
