@@ -3300,8 +3300,6 @@ static int
 vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     /* dump display options vrdp/gui/sdl */
-    int sdlPresent            = 0;
-    int guiPresent            = 0;
     char *guiDisplay          = NULL;
     char *sdlDisplay          = NULL;
     PRUnichar *keyTypeUtf16   = NULL;
@@ -3310,7 +3308,6 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     IVRDxServer *VRDxServer   = NULL;
     PRBool VRDxEnabled        = PR_FALSE;
     virDomainGraphicsDefPtr graphics = NULL;
-    bool addDesktop = false;
     int ret = -1;
 
     def->ngraphics = 0;
@@ -3346,28 +3343,41 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         }
 
         if (STREQ(valueTypeUtf8, "sdl")) {
-            sdlPresent = 1;
             if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
                 /* just don't go to cleanup yet as it is ok to have
                  * sdlDisplay as NULL and we check it below if it
                  * exist and then only use it there
                  */
             }
+            graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
+            if (sdlDisplay)
+                graphics->data.sdl.display = sdlDisplay;
         }
 
         if (STREQ(valueTypeUtf8, "gui")) {
-            guiPresent = 1;
             if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
                 /* just don't go to cleanup yet as it is ok to have
                  * guiDisplay as NULL and we check it below if it
                  * exist and then only use it there
                  */
             }
+            graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+            if (guiDisplay)
+                graphics->data.desktop.display = guiDisplay;
         }
         VBOX_UTF8_FREE(valueDisplayUtf8);
     } else if (STRNEQ_NULLABLE(valueTypeUtf8, "vrdp")) {
+        const char *tmp;
         if (VIR_ALLOC(graphics) < 0)
             goto cleanup;
+
+        graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
+        tmp = virGetEnvBlockSUID("DISPLAY");
+        if (VIR_STRDUP(graphics->data.desktop.display, tmp) < 0) {
+            /* just don't go to cleanup yet as it is ok to have
+             * display as NULL
+             */
+        }
     }
 
     if (graphics) {
@@ -3376,32 +3386,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
         def->graphics[def->ngraphics] = graphics;
         graphics = NULL;
-    }
-
-    if (guiPresent || sdlPresent) {
-        if ((guiPresent)) {
-            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-            if (guiDisplay)
-                def->graphics[def->ngraphics]->data.desktop.display = guiDisplay;
-            def->ngraphics++;
-        }
-
-        if ((sdlPresent)) {
-            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
-            if (sdlDisplay)
-                def->graphics[def->ngraphics]->data.sdl.display = sdlDisplay;
-            def->ngraphics++;
-        }
-    } else if (addDesktop) {
-            const char *tmp;
-            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-            tmp = virGetEnvBlockSUID("DISPLAY");
-            if (VIR_STRDUP(def->graphics[def->ngraphics]->data.desktop.display, tmp) < 0) {
-                /* just don't go to cleanup yet as it is ok to have
-                 * display as NULL
-                 */
-            }
-            def->ngraphics++;
+        def->ngraphics++;
     }
 
     gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
@@ -3417,21 +3402,15 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if (VIR_ALLOC(graphics) < 0)
             goto cleanup;
 
-        if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
-            goto cleanup;
+        gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, graphics);
 
-        def->graphics[def->ngraphics] = graphics;
-        graphics = NULL;
-
-        gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, def->graphics[def->ngraphics]);
-
-        def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
+        graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
 
         gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
         if (netAddressUtf16) {
             VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
             if (STRNEQ(netAddressUtf8, ""))
-                virDomainGraphicsListenSetAddress(def->graphics[def->ngraphics], 0,
+                virDomainGraphicsListenSetAddress(graphics, 0,
                                                   netAddressUtf8, -1, true);
             VBOX_UTF16_FREE(netAddressUtf16);
             VBOX_UTF8_FREE(netAddressUtf8);
@@ -3439,20 +3418,23 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
         gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
         if (allowMultiConnection)
-            def->graphics[def->ngraphics]->data.rdp.multiUser = true;
+            graphics->data.rdp.multiUser = true;
 
         gVBoxAPI.UIVRDxServer.GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
         if (reuseSingleConnection)
-            def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
+            graphics->data.rdp.replaceUser = true;
 
+        if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
+            goto cleanup;
+
+        def->graphics[def->ngraphics] = graphics;
+        graphics = NULL;
         def->ngraphics++;
     }
 
     ret = 0;
 
  cleanup:
-    VBOX_UTF8_FREE(guiDisplay);
-    VBOX_UTF8_FREE(sdlDisplay);
     VBOX_RELEASE(VRDxServer);
     VBOX_UTF8_FREE(valueTypeUtf8);
     virDomainGraphicsDefFree(graphics);
