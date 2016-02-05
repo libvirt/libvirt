@@ -3398,49 +3398,49 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     }
 
     gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
-    if (VRDxServer) {
+    if (VRDxServer)
         gVBoxAPI.UIVRDxServer.GetEnabled(VRDxServer, &VRDxEnabled);
-        if (VRDxEnabled) {
 
-            totalPresent++;
+    if (VRDxEnabled) {
 
-            if ((VIR_REALLOC_N(def->graphics, totalPresent) >= 0) &&
-                (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
-                PRUnichar *netAddressUtf16   = NULL;
-                char      *netAddressUtf8    = NULL;
-                PRBool allowMultiConnection  = PR_FALSE;
-                PRBool reuseSingleConnection = PR_FALSE;
+        totalPresent++;
 
-                gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, def->graphics[def->ngraphics]);
+        if ((VIR_REALLOC_N(def->graphics, totalPresent) >= 0) &&
+            (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
+            PRUnichar *netAddressUtf16 = NULL;
+            char *netAddressUtf8 = NULL;
+            PRBool allowMultiConnection = PR_FALSE;
+            PRBool reuseSingleConnection = PR_FALSE;
 
-                def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
+            gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, def->graphics[def->ngraphics]);
 
-                gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
-                if (netAddressUtf16) {
-                    VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
-                    if (STRNEQ(netAddressUtf8, ""))
-                        virDomainGraphicsListenSetAddress(def->graphics[def->ngraphics], 0,
-                                                          netAddressUtf8, -1, true);
-                    VBOX_UTF16_FREE(netAddressUtf16);
-                    VBOX_UTF8_FREE(netAddressUtf8);
-                }
+            def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
 
-                gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
-                if (allowMultiConnection)
-                    def->graphics[def->ngraphics]->data.rdp.multiUser = true;
-
-                gVBoxAPI.UIVRDxServer.GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
-                if (reuseSingleConnection)
-                    def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
-
-                def->ngraphics++;
-            } else {
-                virReportOOMError();
+            gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
+            if (netAddressUtf16) {
+                VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
+                if (STRNEQ(netAddressUtf8, ""))
+                    virDomainGraphicsListenSetAddress(def->graphics[def->ngraphics], 0,
+                                                      netAddressUtf8, -1, true);
+                VBOX_UTF16_FREE(netAddressUtf16);
+                VBOX_UTF8_FREE(netAddressUtf8);
             }
+
+            gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
+            if (allowMultiConnection)
+                def->graphics[def->ngraphics]->data.rdp.multiUser = true;
+
+            gVBoxAPI.UIVRDxServer.GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
+            if (reuseSingleConnection)
+                def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
+
+            def->ngraphics++;
+        } else {
+            virReportOOMError();
         }
-        VBOX_RELEASE(VRDxServer);
     }
 
+    VBOX_RELEASE(VRDxServer);
     VBOX_UTF8_FREE(valueTypeUtf8);
 }
 
