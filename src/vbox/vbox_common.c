@@ -3300,7 +3300,6 @@ static void
 vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     /* dump display options vrdp/gui/sdl */
-    int vrdpPresent           = 0;
     int sdlPresent            = 0;
     int guiPresent            = 0;
     int totalPresent          = 0;
@@ -3311,6 +3310,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     char      *valueTypeUtf8  = NULL;
     IVRDxServer *VRDxServer   = NULL;
     PRBool VRDxEnabled        = PR_FALSE;
+    bool addDesktop = false;
 
     def->ngraphics = 0;
 
@@ -3363,10 +3363,9 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             totalPresent++;
         }
         VBOX_UTF8_FREE(valueDisplayUtf8);
+    } else if (STRNEQ_NULLABLE(valueTypeUtf8, "vrdp")) {
+        addDesktop = true;
     }
-
-    if (STREQ_NULLABLE(valueTypeUtf8, "vrdp"))
-        vrdpPresent = 1;
 
     if ((totalPresent > 0) && (VIR_ALLOC_N(def->graphics, totalPresent) >= 0)) {
         if ((guiPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
@@ -3382,7 +3381,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 def->graphics[def->ngraphics]->data.sdl.display = sdlDisplay;
             def->ngraphics++;
         }
-    } else if ((vrdpPresent != 1) && (totalPresent == 0) && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
+    } else if (addDesktop && (VIR_ALLOC_N(def->graphics, 1) >= 0)) {
         if (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0) {
             const char *tmp;
             def->graphics[def->ngraphics]->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
