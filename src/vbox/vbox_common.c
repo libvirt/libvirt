@@ -3258,38 +3258,42 @@ vboxDumpIDEHDDsNew(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     }
 }
 
-static void
+static int
 vboxDumpVideo(virDomainDefPtr def, vboxGlobalData *data ATTRIBUTE_UNUSED,
               IMachine *machine)
 {
     /* dump video options vram/2d/3d/directx/etc. */
+    /* the default is: vram is 8MB, One monitor, 3dAccel Off */
+    PRUint32 VRAMSize = 8;
+    PRUint32 monitorCount = 1;
+    PRBool accelerate3DEnabled = PR_FALSE;
+    PRBool accelerate2DEnabled = PR_FALSE;
+
     /* Currently supports only one graphics card */
+    if (VIR_ALLOC_N(def->videos, 1) < 0)
+        return -1;
     def->nvideos = 1;
-    if (VIR_ALLOC_N(def->videos, def->nvideos) >= 0) {
-        if (VIR_ALLOC(def->videos[0]) >= 0) {
-            /* the default is: vram is 8MB, One monitor, 3dAccel Off */
-            PRUint32 VRAMSize          = 8;
-            PRUint32 monitorCount      = 1;
-            PRBool accelerate3DEnabled = PR_FALSE;
-            PRBool accelerate2DEnabled = PR_FALSE;
 
-            gVBoxAPI.UIMachine.GetVRAMSize(machine, &VRAMSize);
-            gVBoxAPI.UIMachine.GetMonitorCount(machine, &monitorCount);
-            gVBoxAPI.UIMachine.GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
-            if (gVBoxAPI.accelerate2DVideo)
-                gVBoxAPI.UIMachine.GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
+    if (VIR_ALLOC(def->videos[0]) < 0)
+        return -1;
 
-            def->videos[0]->type            = VIR_DOMAIN_VIDEO_TYPE_VBOX;
-            def->videos[0]->vram            = VRAMSize * 1024;
-            def->videos[0]->heads           = monitorCount;
-            if (VIR_ALLOC(def->videos[0]->accel) >= 0) {
-                def->videos[0]->accel->accel3d = accelerate3DEnabled ?
-                    VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
-                def->videos[0]->accel->accel2d = accelerate2DEnabled ?
-                    VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
-            }
-        }
-    }
+    gVBoxAPI.UIMachine.GetVRAMSize(machine, &VRAMSize);
+    gVBoxAPI.UIMachine.GetMonitorCount(machine, &monitorCount);
+    gVBoxAPI.UIMachine.GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
+    if (gVBoxAPI.accelerate2DVideo)
+        gVBoxAPI.UIMachine.GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
+
+    def->videos[0]->type = VIR_DOMAIN_VIDEO_TYPE_VBOX;
+    def->videos[0]->vram = VRAMSize * 1024;
+    def->videos[0]->heads = monitorCount;
+    if (VIR_ALLOC(def->videos[0]->accel) < 0)
+        return -1;
+    def->videos[0]->accel->accel3d = accelerate3DEnabled ?
+        VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+    def->videos[0]->accel->accel2d = accelerate2DEnabled ?
+        VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+
+    return 0;
 }
 
 static void
@@ -3967,7 +3971,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
      * so locatime is always true here */
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
 
-    vboxDumpVideo(def, data, machine);
+    if (vboxDumpVideo(def, data, machine) < 0)
+        goto cleanup;
     vboxDumpDisplay(def, data, machine);
 
     /* As the medium interface changed from 3.0 to 3.1.
