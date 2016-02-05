@@ -488,7 +488,7 @@ bhyveDomainGetOSType(virDomainPtr dom)
 static char *
 bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
-    bhyveConnPtr privconn = conn->privateData;
+    bhyveConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm;
     virCapsPtr caps = NULL;
     char *ret = NULL;
