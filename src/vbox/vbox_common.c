@@ -3300,8 +3300,6 @@ static int
 vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     /* dump display options vrdp/gui/sdl */
-    char *guiDisplay          = NULL;
-    char *sdlDisplay          = NULL;
     PRUnichar *keyTypeUtf16   = NULL;
     PRUnichar *valueTypeUtf16 = NULL;
     char      *valueTypeUtf8  = NULL;
@@ -3343,41 +3341,25 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         }
 
         if (STREQ(valueTypeUtf8, "sdl")) {
-            if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
-                /* just don't go to cleanup yet as it is ok to have
-                 * sdlDisplay as NULL and we check it below if it
-                 * exist and then only use it there
-                 */
-            }
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
-            if (sdlDisplay)
-                graphics->data.sdl.display = sdlDisplay;
+            graphics->data.sdl.display = valueDisplayUtf8;
+            valueDisplayUtf8 = NULL;
         }
 
         if (STREQ(valueTypeUtf8, "gui")) {
-            if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
-                /* just don't go to cleanup yet as it is ok to have
-                 * guiDisplay as NULL and we check it below if it
-                 * exist and then only use it there
-                 */
-            }
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-            if (guiDisplay)
-                graphics->data.desktop.display = guiDisplay;
+            graphics->data.desktop.display = valueDisplayUtf8;
+            valueDisplayUtf8 = NULL;
         }
         VBOX_UTF8_FREE(valueDisplayUtf8);
     } else if (STRNEQ_NULLABLE(valueTypeUtf8, "vrdp")) {
-        const char *tmp;
         if (VIR_ALLOC(graphics) < 0)
             goto cleanup;
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-        tmp = virGetEnvBlockSUID("DISPLAY");
-        if (VIR_STRDUP(graphics->data.desktop.display, tmp) < 0) {
-            /* just don't go to cleanup yet as it is ok to have
-             * display as NULL
-             */
-        }
+        if (VIR_STRDUP(graphics->data.desktop.display,
+                       virGetEnvBlockSUID("DISPLAY")) < 0)
+            goto cleanup;
     }
 
     if (graphics) {
