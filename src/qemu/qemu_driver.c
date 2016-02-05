@@ -14696,7 +14696,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     }
 
     if (thaw != 0 &&
-        qemuDomainSnapshotFSThaw(driver, vm, thaw > 0) < 0) {
+        qemuDomainSnapshotFSThaw(driver, vm, ret == 0 && thaw > 0) < 0) {
         /* helper reported the error, if it was needed */
         if (thaw > 0)
             ret = -1;
