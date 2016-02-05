@@ -3321,53 +3321,52 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     if (valueTypeUtf16) {
         VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
         VBOX_UTF16_FREE(valueTypeUtf16);
+    }
 
-        if (STREQ(valueTypeUtf8, "sdl") || STREQ(valueTypeUtf8, "gui")) {
-            PRUnichar *keyDislpayUtf16   = NULL;
-            PRUnichar *valueDisplayUtf16 = NULL;
-            char      *valueDisplayUtf8  = NULL;
+    if (STREQ_NULLABLE(valueTypeUtf8, "sdl") ||
+        STREQ_NULLABLE(valueTypeUtf8, "gui")) {
+        PRUnichar *keyDislpayUtf16 = NULL;
+        PRUnichar *valueDisplayUtf16 = NULL;
+        char *valueDisplayUtf8 = NULL;
 
-            VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-            gVBoxAPI.UIMachine.GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
-            VBOX_UTF16_FREE(keyDislpayUtf16);
+        VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
+        gVBoxAPI.UIMachine.GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
+        VBOX_UTF16_FREE(keyDislpayUtf16);
 
-            if (valueDisplayUtf16) {
-                VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
-                VBOX_UTF16_FREE(valueDisplayUtf16);
+        if (valueDisplayUtf16) {
+            VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
+            VBOX_UTF16_FREE(valueDisplayUtf16);
 
-                if (strlen(valueDisplayUtf8) <= 0)
-                    VBOX_UTF8_FREE(valueDisplayUtf8);
-            }
-
-            if (STREQ(valueTypeUtf8, "sdl")) {
-                sdlPresent = 1;
-                if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
-                    /* just don't go to cleanup yet as it is ok to have
-                     * sdlDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
-                totalPresent++;
-            }
-
-            if (STREQ(valueTypeUtf8, "gui")) {
-                guiPresent = 1;
-                if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
-                    /* just don't go to cleanup yet as it is ok to have
-                     * guiDisplay as NULL and we check it below if it
-                     * exist and then only use it there
-                     */
-                }
-                totalPresent++;
-            }
-            VBOX_UTF8_FREE(valueDisplayUtf8);
+            if (strlen(valueDisplayUtf8) <= 0)
+                VBOX_UTF8_FREE(valueDisplayUtf8);
         }
 
-        if (STREQ(valueTypeUtf8, "vrdp"))
-            vrdpPresent = 1;
+        if (STREQ(valueTypeUtf8, "sdl")) {
+            sdlPresent = 1;
+            if (VIR_STRDUP(sdlDisplay, valueDisplayUtf8) < 0) {
+                /* just don't go to cleanup yet as it is ok to have
+                 * sdlDisplay as NULL and we check it below if it
+                 * exist and then only use it there
+                 */
+            }
+            totalPresent++;
+        }
 
-        VBOX_UTF8_FREE(valueTypeUtf8);
+        if (STREQ(valueTypeUtf8, "gui")) {
+            guiPresent = 1;
+            if (VIR_STRDUP(guiDisplay, valueDisplayUtf8) < 0) {
+                /* just don't go to cleanup yet as it is ok to have
+                 * guiDisplay as NULL and we check it below if it
+                 * exist and then only use it there
+                 */
+            }
+            totalPresent++;
+        }
+        VBOX_UTF8_FREE(valueDisplayUtf8);
     }
+
+    if (STREQ_NULLABLE(valueTypeUtf8, "vrdp"))
+        vrdpPresent = 1;
 
     if ((totalPresent > 0) && (VIR_ALLOC_N(def->graphics, totalPresent) >= 0)) {
         if ((guiPresent) && (VIR_ALLOC(def->graphics[def->ngraphics]) >= 0)) {
@@ -3441,6 +3440,8 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         }
         VBOX_RELEASE(VRDxServer);
     }
+
+    VBOX_UTF8_FREE(valueTypeUtf8);
 }
 
 static void
