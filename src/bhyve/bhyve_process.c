@@ -32,6 +32,7 @@
 #include <net/if_tap.h>
 
 #include "bhyve_device.h"
+#include "bhyve_driver.h"
 #include "bhyve_command.h"
 #include "bhyve_monitor.h"
 #include "bhyve_process.h"
@@ -375,7 +376,7 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     if (!vm->pid)
         return 0;
 
-    caps = bhyveDriverGetCapabilities(privconn);
+    caps = bhyveDriverGetCapabilities(data->driver);
     if (!caps)
         return -1;
 

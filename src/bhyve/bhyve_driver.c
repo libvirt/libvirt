@@ -30,7 +30,6 @@
 #include "datatypes.h"
 #include "virbuffer.h"
 #include "viruuid.h"
-#include "capabilities.h"
 #include "configmake.h"
 #include "viralloc.h"
 #include "network_conf.h"
@@ -58,7 +57,6 @@
 #include "bhyve_command.h"
 #include "bhyve_domain.h"
 #include "bhyve_process.h"
-#include "bhyve_utils.h"
 #include "bhyve_capabilities.h"
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
@@ -127,7 +125,7 @@ bhyveAutostartDomains(bhyveConnPtr driver)
  *
  * Returns: a reference to a virCapsPtr instance or NULL
  */
-static virCapsPtr ATTRIBUTE_NONNULL(1)
+virCapsPtr ATTRIBUTE_NONNULL(1)
 bhyveDriverGetCapabilities(bhyveConnPtr driver)
 {
 
