@@ -3363,14 +3363,9 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             goto cleanup;
     }
 
-    if (graphics) {
-        if (VIR_ALLOC_N(def->graphics, 1) < 0)
-            goto cleanup;
-
-        def->graphics[def->ngraphics] = graphics;
-        graphics = NULL;
-        def->ngraphics++;
-    }
+    if (graphics &&
+        VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
+        goto cleanup;
 
     gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
     if (VRDxServer)
@@ -3407,12 +3402,8 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if (reuseSingleConnection)
             graphics->data.rdp.replaceUser = true;
 
-        if (VIR_REALLOC_N(def->graphics, def->ngraphics + 1) < 0)
+        if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
             goto cleanup;
-
-        def->graphics[def->ngraphics] = graphics;
-        graphics = NULL;
-        def->ngraphics++;
     }
 
     ret = 0;
