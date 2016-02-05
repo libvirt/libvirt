@@ -3303,6 +3303,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     PRUnichar *keyTypeUtf16   = NULL;
     PRUnichar *valueTypeUtf16 = NULL;
     char      *valueTypeUtf8  = NULL;
+    char *netAddressUtf8 = NULL;
     IVRDxServer *VRDxServer   = NULL;
     PRBool VRDxEnabled        = PR_FALSE;
     virDomainGraphicsDefPtr graphics = NULL;
@@ -3377,7 +3378,6 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
     if (VRDxEnabled) {
         PRUnichar *netAddressUtf16 = NULL;
-        char *netAddressUtf8 = NULL;
         PRBool allowMultiConnection = PR_FALSE;
         PRBool reuseSingleConnection = PR_FALSE;
 
@@ -3391,12 +3391,13 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
         if (netAddressUtf16) {
             VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
-            if (STRNEQ(netAddressUtf8, ""))
-                virDomainGraphicsListenSetAddress(graphics, 0,
-                                                  netAddressUtf8, -1, true);
             VBOX_UTF16_FREE(netAddressUtf16);
-            VBOX_UTF8_FREE(netAddressUtf8);
         }
+
+        if (STRNEQ_NULLABLE(netAddressUtf8, "") &&
+            virDomainGraphicsListenSetAddress(graphics, 0,
+                                              netAddressUtf8, -1, true) < 0)
+            goto cleanup;
 
         gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
         if (allowMultiConnection)
@@ -3419,6 +3420,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
  cleanup:
     VBOX_RELEASE(VRDxServer);
     VBOX_UTF8_FREE(valueTypeUtf8);
+    VBOX_UTF8_FREE(netAddressUtf8);
     virDomainGraphicsDefFree(graphics);
     return ret;
 }
