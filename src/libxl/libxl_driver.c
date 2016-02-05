@@ -5009,6 +5009,7 @@ libxlConnectSupportsFeature(virConnectPtr conn, int feature)
     switch (feature) {
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
         return 1;
     default:
         return 0;
@@ -5334,9 +5335,15 @@ libxlDomainMigratePerform3Params(virDomainPtr dom,
     if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (libxlDomainMigrationPerform(driver, vm, dom_xml, dconnuri,
-                                    uri, dname, flags) < 0)
-        goto cleanup;
+    if (flags & VIR_MIGRATE_PEER2PEER) {
+        if (libxlDomainMigrationPerformP2P(driver, vm, dom->conn, dom_xml,
+                                           dconnuri, uri, dname, flags) < 0)
+            goto cleanup;
+    } else {
+        if (libxlDomainMigrationPerform(driver, vm, dom_xml, dconnuri,
+                                        uri, dname, flags) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 

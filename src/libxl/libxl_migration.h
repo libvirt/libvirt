@@ -28,6 +28,7 @@
 
 # define LIBXL_MIGRATION_FLAGS                  \
     (VIR_MIGRATE_LIVE |                         \
+     VIR_MIGRATE_PEER2PEER |                    \
      VIR_MIGRATE_UNDEFINE_SOURCE |              \
      VIR_MIGRATE_PAUSED)
 
@@ -54,6 +55,16 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                             const char *uri_in,
                             char **uri_out,
                             unsigned int flags);
+
+int
+libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
+                               virDomainObjPtr vm,
+                               virConnectPtr sconn,
+                               const char *dom_xml,
+                               const char *dconnuri,
+                               const char *uri_str,
+                               const char *dname,
+                               unsigned int flags);
 
 int
 libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
