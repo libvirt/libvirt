@@ -1659,6 +1659,10 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
     virConfValuePtr p;
     int ret = -1;
 
+    /* defaults for keepalive messages */
+    cfg->keepAliveInterval = 5;
+    cfg->keepAliveCount = 5;
+
     /* Check the file is readable before opening it, otherwise
      * libvirt emits an error.
      */
@@ -1684,6 +1688,28 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
 
         if (VIR_STRDUP(cfg->lockManagerName, p->str) < 0)
             goto cleanup;
+    }
+
+    if ((p = virConfGetValue(conf, "keepalive_interval"))) {
+        if (p->type != VIR_CONF_LONG && p->type != VIR_CONF_ULONG) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s",
+                           _("Unexpected type for 'keepalive_interval' setting"));
+            goto cleanup;
+        }
+
+        cfg->keepAliveInterval = p->l;
+    }
+
+    if ((p = virConfGetValue(conf, "keepalive_count"))) {
+        if (p->type != VIR_CONF_ULONG) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s",
+                           _("Unexpected type for 'keepalive_count' setting"));
+            goto cleanup;
+        }
+
+        cfg->keepAliveCount = p->l;
     }
 
     ret = 0;

@@ -105,6 +105,9 @@ struct _libxlDriverConfig {
 
     char *lockManagerName;
 
+    int keepAliveInterval;
+    unsigned int keepAliveCount;
+
     /* Once created, caps are immutable */
     virCapsPtr caps;
 

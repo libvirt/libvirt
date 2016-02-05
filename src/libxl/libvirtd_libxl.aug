@@ -26,10 +26,14 @@ module Libvirtd_libxl =
    (* Config entry grouped by function - same order as example config *)
    let autoballoon_entry = bool_entry "autoballoon"
    let lock_entry = str_entry "lock_manager"
+   let keepalive_interval_entry = int_entry "keepalive_interval"
+   let keepalive_count_entry = int_entry "keepalive_count"
 
    (* Each entry in the config is one of the following ... *)
    let entry = autoballoon_entry
              | lock_entry
+             | keepalive_interval_entry
+             | keepalive_count_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

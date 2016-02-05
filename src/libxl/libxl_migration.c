@@ -615,6 +615,7 @@ libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
     bool useParams;
     virConnectPtr dconn = NULL;
     virErrorPtr orig_err = NULL;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
 
     virObjectUnlock(vm);
     dconn = virConnectOpenAuth(dconnuri, &virConnectAuthConfig, 0);
@@ -626,6 +627,10 @@ libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
                        dconnuri, virGetLastErrorMessage());
         return ret;
     }
+
+    if (virConnectSetKeepAlive(dconn, cfg->keepAliveInterval,
+                               cfg->keepAliveCount) < 0)
+        goto cleanup;
 
     virObjectUnlock(vm);
     useParams = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
@@ -645,6 +650,7 @@ libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
     orig_err = virSaveLastError();
     virObjectUnlock(vm);
     virObjectUnref(dconn);
+    virObjectUnref(cfg);
     virObjectLock(vm);
     if (orig_err) {
         virSetError(orig_err);
