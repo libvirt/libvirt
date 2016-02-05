@@ -4292,7 +4292,7 @@ qemuDomainGetVcpuPid(virDomainObjPtr vm,
  * Updates vCPU thread ids in the private data of @vm.
  *
  * Returns number of detected vCPU threads on success, -1 on error and reports
- * an appropriate error.
+ * an appropriate error, -2 if the domain doesn't exist any more.
  */
 int
 qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
@@ -4339,7 +4339,7 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
     ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         VIR_FREE(cpupids);
-        return -1;
+        return -2;
     }
     /* failure to get the VCPU <-> PID mapping or to execute the query
      * command will not be treated fatal as some versions of qemu don't
