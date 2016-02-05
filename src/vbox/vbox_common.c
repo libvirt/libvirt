@@ -3434,8 +3434,6 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                 def->graphics[def->ngraphics]->data.rdp.replaceUser = true;
 
             def->ngraphics++;
-        } else {
-            virReportOOMError();
         }
     }
 
