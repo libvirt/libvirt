@@ -3300,7 +3300,7 @@ static int
 vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     /* dump display options vrdp/gui/sdl */
-    PRUnichar *keyTypeUtf16   = NULL;
+    PRUnichar *keyUtf16 = NULL;
     PRUnichar *valueTypeUtf16 = NULL;
     char      *valueTypeUtf8  = NULL;
     char *netAddressUtf8 = NULL;
@@ -3311,9 +3311,9 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
     def->ngraphics = 0;
 
-    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyTypeUtf16);
-    gVBoxAPI.UIMachine.GetExtraData(machine, keyTypeUtf16, &valueTypeUtf16);
-    VBOX_UTF16_FREE(keyTypeUtf16);
+    VBOX_UTF8_TO_UTF16("FRONTEND/Type", &keyUtf16);
+    gVBoxAPI.UIMachine.GetExtraData(machine, keyUtf16, &valueTypeUtf16);
+    VBOX_UTF16_FREE(keyUtf16);
 
     if (valueTypeUtf16) {
         VBOX_UTF16_TO_UTF8(valueTypeUtf16, &valueTypeUtf8);
@@ -3322,16 +3322,15 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
     if (STREQ_NULLABLE(valueTypeUtf8, "sdl") ||
         STREQ_NULLABLE(valueTypeUtf8, "gui")) {
-        PRUnichar *keyDislpayUtf16 = NULL;
         PRUnichar *valueDisplayUtf16 = NULL;
         char *valueDisplayUtf8 = NULL;
 
         if (VIR_ALLOC(graphics) < 0)
             goto cleanup;
 
-        VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyDislpayUtf16);
-        gVBoxAPI.UIMachine.GetExtraData(machine, keyDislpayUtf16, &valueDisplayUtf16);
-        VBOX_UTF16_FREE(keyDislpayUtf16);
+        VBOX_UTF8_TO_UTF16("FRONTEND/Display", &keyUtf16);
+        gVBoxAPI.UIMachine.GetExtraData(machine, keyUtf16, &valueDisplayUtf16);
+        VBOX_UTF16_FREE(keyUtf16);
 
         if (valueDisplayUtf16) {
             VBOX_UTF16_TO_UTF8(valueDisplayUtf16, &valueDisplayUtf8);
