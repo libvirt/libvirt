@@ -238,4 +238,11 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d ATTRIBUTE_UNUSED)
     return -1;
 }
 
+int
+nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
+                                    virNodeDevCapDataPtr data ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
 #endif /* __linux__ */
