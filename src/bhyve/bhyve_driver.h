@@ -23,8 +23,8 @@
 #ifndef __BHYVE_DRIVER_H__
 # define __BHYVE_DRIVER_H__
 
-#include "capabilities.h"
-#include "bhyve_utils.h"
+# include "capabilities.h"
+# include "bhyve_utils.h"
 
 int bhyveRegister(void);
 
