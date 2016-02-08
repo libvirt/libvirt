@@ -21472,7 +21472,7 @@ virDomainFormatSchedDef(virDomainDefPtr def,
             virBitmapPtr currentMap = NULL;
             ssize_t nextprio;
             bool hasPriority = false;
-            int priority;
+            int priority = 0;
 
             switch ((virProcessSchedPolicy) i) {
             case VIR_PROC_POLICY_NONE:
