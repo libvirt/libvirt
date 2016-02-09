@@ -64,7 +64,7 @@ typedef short PRInt16;
 
 typedef unsigned int PRUint32;
 typedef int PRInt32;
-# define PR_INT32(x)  x
+# define PR_INT32(x) x
 # define PR_UINT32(x) x ## U
 
 # define PR_INT32_MAX PR_INT32(2147483647)
@@ -76,7 +76,7 @@ typedef unsigned long PRUint64;
 typedef int PRIntn;
 typedef unsigned int PRUintn;
 
-typedef double          PRFloat64;
+typedef double PRFloat64;
 typedef size_t PRSize;
 
 typedef ptrdiff_t PRPtrdiff;

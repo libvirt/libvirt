@@ -2171,15 +2171,15 @@ _dumpIDEHDDsOld(virDomainDefPtr def,
     VBOX_UTF8_TO_UTF16(hddBus, &hddBusUtf16);
 
     def->ndisks = 0;
-    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 0, 0,  &hardDiskPM);
+    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 0, 0, &hardDiskPM);
     if (hardDiskPM)
         def->ndisks++;
 
-    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 0, 1,  &hardDiskPS);
+    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 0, 1, &hardDiskPS);
     if (hardDiskPS)
         def->ndisks++;
 
-    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 1, 1,  &hardDiskSS);
+    machine->vtbl->GetHardDisk(machine, hddBusUtf16, 1, 1, &hardDiskSS);
     if (hardDiskSS)
         def->ndisks++;
 

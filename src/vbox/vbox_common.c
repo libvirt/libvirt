@@ -1519,8 +1519,8 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
          * LPT2 (Base Addr: 0x278 (decimal: 632), IRQ: 5)
          * TODO: make this more flexible
          */
-        if ((def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV)  ||
-            (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)  ||
+        if ((def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV) ||
+            (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY) ||
             (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE) ||
             (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE)) {
             gVBoxAPI.UIParallelPort.SetPath(parallelPort, pathUtf16);

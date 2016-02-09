@@ -27,7 +27,7 @@
 
 #include <libxml/xpathInternals.h>
 
-#define VIR_FROM_THIS                   VIR_FROM_VBOX
+#define VIR_FROM_THIS VIR_FROM_VBOX
 VIR_LOG_INIT("vbox.vbox_snapshot_conf");
 
 static virVBoxSnapshotConfHardDiskPtr
@@ -256,7 +256,7 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
         if (n && VIR_ALLOC_N(snapshot->children, n) < 0)
             goto cleanup;
         snapshot->nchildren = n;
-        for (i = 0; i <  snapshot->nchildren; i++) {
+        for (i = 0; i < snapshot->nchildren; i++) {
             snapshot->children[i] = virVBoxSnapshotConfRetrieveSnapshot(nodes[i], xPathContext);
             if (snapshot->children[i] == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

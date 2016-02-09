@@ -116,7 +116,7 @@ typedef struct {
     virObjectEventStatePtr domainEvents;
     int fdWatch;
     IVirtualBoxCallback *vboxCallback;
-    nsIEventQueue  *vboxQueue;
+    nsIEventQueue *vboxQueue;
 
     int volatile vboxCallBackRefCount;
 
