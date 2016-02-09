@@ -11920,12 +11920,8 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
             goto cleanup;
         }
         if (val[0] == '[')
-            virDomainGraphicsListenSetAddress(vnc, 0,
-                                              val+1, tmp-(val+1), true);
-        else
-            virDomainGraphicsListenSetAddress(vnc, 0,
-                                              val, tmp-val, true);
-        if (!virDomainGraphicsListenGetAddress(vnc, 0))
+            val++;
+        if (virDomainGraphicsListenSetAddress(vnc, 0, val, tmp-val, true) < 0)
             goto cleanup;
 
         if (*opts == ',') {
