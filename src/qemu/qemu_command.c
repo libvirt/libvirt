@@ -11874,6 +11874,137 @@ qemuParseKeywords(const char *str,
     return -1;
 }
 
+
+/* qemuParseCommandLineVnc
+ *
+ * Tries to parse the various "-vnc ..." argument formats.
+ */
+static int
+qemuParseCommandLineVnc(virDomainDefPtr def,
+                        const char *val)
+{
+    int ret = -1;
+    virDomainGraphicsDefPtr vnc = NULL;
+    char *tmp;
+
+    if (VIR_ALLOC(vnc) < 0)
+        goto cleanup;
+    vnc->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
+
+    if (STRPREFIX(val, "unix:")) {
+        /* -vnc unix:/some/big/path */
+        if (VIR_STRDUP(vnc->data.vnc.socket, val + 5) < 0)
+            goto cleanup;
+    } else {
+        /*
+         * -vnc 127.0.0.1:4
+         * -vnc [2001:1:2:3:4:5:1234:1234]:4
+         * -vnc some.host.name:4
+         */
+        char *opts;
+        char *port;
+        const char *sep = ":";
+        if (val[0] == '[')
+            sep = "]:";
+        tmp = strstr(val, sep);
+        if (!tmp) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing VNC port number in '%s'"), val);
+            goto cleanup;
+        }
+        port = tmp + strlen(sep);
+        if (virStrToLong_i(port, &opts, 10,
+                           &vnc->data.vnc.port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse VNC port '%s'"), port);
+            goto cleanup;
+        }
+        if (val[0] == '[')
+            virDomainGraphicsListenSetAddress(vnc, 0,
+                                              val+1, tmp-(val+1), true);
+        else
+            virDomainGraphicsListenSetAddress(vnc, 0,
+                                              val, tmp-val, true);
+        if (!virDomainGraphicsListenGetAddress(vnc, 0))
+            goto cleanup;
+
+        if (*opts == ',') {
+            char *orig_opts;
+
+            if (VIR_STRDUP(orig_opts, opts + 1) < 0)
+                goto cleanup;
+            opts = orig_opts;
+
+            while (opts && *opts) {
+                char *nextopt = strchr(opts, ',');
+                if (nextopt)
+                    *(nextopt++) = '\0';
+
+                if (STRPREFIX(opts, "websocket")) {
+                    char *websocket = opts + strlen("websocket");
+                    if (*(websocket++) == '=' &&
+                        *websocket) {
+                        /* If the websocket continues with
+                         * '=<something>', we'll parse it */
+                        if (virStrToLong_i(websocket,
+                                           NULL, 0,
+                                           &vnc->data.vnc.websocket) < 0) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("cannot parse VNC "
+                                             "WebSocket port '%s'"),
+                                           websocket);
+                            VIR_FREE(orig_opts);
+                            goto cleanup;
+                        }
+                    } else {
+                        /* Otherwise, we'll compute the port the same
+                         * way QEMU does, by adding a 5700 to the
+                         * display value. */
+                        vnc->data.vnc.websocket =
+                            vnc->data.vnc.port + 5700;
+                    }
+                } else if (STRPREFIX(opts, "share=")) {
+                    char *sharePolicy = opts + strlen("share=");
+                    if (sharePolicy && *sharePolicy) {
+                        int policy =
+                            virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
+
+                        if (policy < 0) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("unknown vnc display sharing policy '%s'"),
+                                             sharePolicy);
+                            VIR_FREE(orig_opts);
+                            goto cleanup;
+                        } else {
+                            vnc->data.vnc.sharePolicy = policy;
+                        }
+                    } else {
+                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                       _("missing vnc sharing policy"));
+                        VIR_FREE(orig_opts);
+                        goto cleanup;
+                    }
+                }
+
+                opts = nextopt;
+            }
+            VIR_FREE(orig_opts);
+        }
+        vnc->data.vnc.port += 5900;
+        vnc->data.vnc.autoport = false;
+    }
+
+    if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, vnc) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainGraphicsDefFree(vnc);
+    return ret;
+}
+
+
 /*
  * Tries to parse new style QEMU -drive  args.
  *
@@ -13100,131 +13231,9 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
             arg++;
 
         if (STREQ(arg, "-vnc")) {
-            virDomainGraphicsDefPtr vnc;
-            char *tmp;
             WANT_VALUE();
-            if (VIR_ALLOC(vnc) < 0)
+            if (qemuParseCommandLineVnc(def, val) < 0)
                 goto error;
-            vnc->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
-
-            if (STRPREFIX(val, "unix:")) {
-                /* -vnc unix:/some/big/path */
-                if (VIR_STRDUP(vnc->data.vnc.socket, val + 5) < 0) {
-                    virDomainGraphicsDefFree(vnc);
-                    goto error;
-                }
-            } else {
-                /*
-                 * -vnc 127.0.0.1:4
-                 * -vnc [2001:1:2:3:4:5:1234:1234]:4
-                 * -vnc some.host.name:4
-                 */
-                char *opts;
-                char *port;
-                const char *sep = ":";
-                if (val[0] == '[')
-                    sep = "]:";
-                tmp = strstr(val, sep);
-                if (!tmp) {
-                    virDomainGraphicsDefFree(vnc);
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("missing VNC port number in '%s'"), val);
-                    goto error;
-                }
-                port = tmp + strlen(sep);
-                if (virStrToLong_i(port, &opts, 10,
-                                   &vnc->data.vnc.port) < 0) {
-                    virDomainGraphicsDefFree(vnc);
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("cannot parse VNC port '%s'"), port);
-                    goto error;
-                }
-                if (val[0] == '[')
-                    virDomainGraphicsListenSetAddress(vnc, 0,
-                                                      val+1, tmp-(val+1), true);
-                else
-                    virDomainGraphicsListenSetAddress(vnc, 0,
-                                                      val, tmp-val, true);
-                if (!virDomainGraphicsListenGetAddress(vnc, 0)) {
-                    virDomainGraphicsDefFree(vnc);
-                    goto error;
-                }
-
-                if (*opts == ',') {
-                    char *orig_opts;
-
-                    if (VIR_STRDUP(orig_opts, opts + 1) < 0) {
-                        virDomainGraphicsDefFree(vnc);
-                        goto error;
-                    }
-                    opts = orig_opts;
-
-                    while (opts && *opts) {
-                        char *nextopt = strchr(opts, ',');
-                        if (nextopt)
-                            *(nextopt++) = '\0';
-
-                        if (STRPREFIX(opts, "websocket")) {
-                            char *websocket = opts + strlen("websocket");
-                            if (*(websocket++) == '=' &&
-                                *websocket) {
-                                /* If the websocket continues with
-                                 * '=<something>', we'll parse it */
-                                if (virStrToLong_i(websocket,
-                                                   NULL, 0,
-                                                   &vnc->data.vnc.websocket) < 0) {
-                                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                                   _("cannot parse VNC "
-                                                     "WebSocket port '%s'"),
-                                                   websocket);
-                                    virDomainGraphicsDefFree(vnc);
-                                    VIR_FREE(orig_opts);
-                                    goto error;
-                                }
-                            } else {
-                                /* Otherwise, we'll compute the port the same
-                                 * way QEMU does, by adding a 5700 to the
-                                 * display value. */
-                                vnc->data.vnc.websocket =
-                                    vnc->data.vnc.port + 5700;
-                            }
-                        } else if (STRPREFIX(opts, "share=")) {
-                            char *sharePolicy = opts + strlen("share=");
-                            if (sharePolicy && *sharePolicy) {
-                                int policy =
-                                    virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
-
-                                if (policy < 0) {
-                                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                                   _("unknown vnc display sharing policy '%s'"),
-                                                     sharePolicy);
-                                    virDomainGraphicsDefFree(vnc);
-                                    VIR_FREE(orig_opts);
-                                    goto error;
-                                } else {
-                                    vnc->data.vnc.sharePolicy = policy;
-                                }
-                            } else {
-                                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                               _("missing vnc sharing policy"));
-                                virDomainGraphicsDefFree(vnc);
-                                VIR_FREE(orig_opts);
-                                goto error;
-                            }
-                        }
-
-                        opts = nextopt;
-                    }
-                    VIR_FREE(orig_opts);
-                }
-                vnc->data.vnc.port += 5900;
-                vnc->data.vnc.autoport = false;
-            }
-
-            if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, vnc) < 0) {
-                virDomainGraphicsDefFree(vnc);
-                goto error;
-            }
         } else if (STREQ(arg, "-sdl")) {
             have_sdl = true;
         } else if (STREQ(arg, "-m")) {
