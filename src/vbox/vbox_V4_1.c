@@ -30,8 +30,8 @@
 #include <config.h>
 
 /** The API Version */
-#define VBOX_API_VERSION    4001000
+#define VBOX_API_VERSION 4001000
 /** Version specific prefix. */
-#define NAME(name)  vbox41##name
+#define NAME(name) vbox41##name
 
 #include "vbox_tmpl.c"

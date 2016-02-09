@@ -54,11 +54,11 @@ VIR_LOG_INIT("vbox.vbox_XPCOMCGlue");
 #if defined(__linux__) || defined(__linux_gnu__) || defined(__sun__) || \
     defined(__FreeBSD__) || defined(__OpenBSD__) || \
     defined(__FreeBSD_kernel__)
-# define DYNLIB_NAME    "VBoxXPCOMC.so"
+# define DYNLIB_NAME "VBoxXPCOMC.so"
 #elif defined(__APPLE__)
-# define DYNLIB_NAME    "VBoxXPCOMC.dylib"
+# define DYNLIB_NAME "VBoxXPCOMC.dylib"
 #elif defined(_MSC_VER) || defined(__OS2__)
-# define DYNLIB_NAME    "VBoxXPCOMC.dll"
+# define DYNLIB_NAME "VBoxXPCOMC.dll"
 #else
 # error "Port me"
 #endif
