@@ -110,6 +110,67 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
                                           const char *name,
                                           unsigned int flags);
 
+/* Manage threadpool attributes */
+
+/**
+ * VIR_THREADPOOL_WORKERS_MIN:
+ * Macro for the threadpool minWorkers limit: represents the bottom limit to
+ * number of active workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ */
+
+# define VIR_THREADPOOL_WORKERS_MIN "minWorkers"
+
+/**
+ * VIR_THREADPOOL_WORKERS_MAX:
+ * Macro for the threadpool maxWorkers limit: represents the upper limit to
+ * number of active workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ * The value of this limit has to be greater than VIR_THREADPOOL_WORKERS_MIN
+ * at all times.
+ */
+
+# define VIR_THREADPOOL_WORKERS_MAX "maxWorkers"
+
+/**
+ * VIR_THREADPOOL_WORKERS_PRIORITY:
+ * Macro for the threadpool nPrioWorkers attribute: represents the current number
+ * of active priority workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ */
+
+# define VIR_THREADPOOL_WORKERS_PRIORITY "prioWorkers"
+
+/**
+ * VIR_THREADPOOL_WORKERS_FREE:
+ * Macro for the threadpool freeWorkers attribute: represents the current number
+ * of free workers available to accomplish a job, as VIR_TYPED_PARAM_UINT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_THREADPOOL_WORKERS_FREE "freeWorkers"
+
+/**
+ * VIR_THREADPOOL_WORKERS_CURRENT:
+ * Macro for the threadpool nWorkers attribute: represents the current number
+ * of active ordinary workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_THREADPOOL_WORKERS_CURRENT "nWorkers"
+
+/**
+ * VIR_THREADPOOL_JOB_QUEUE_DEPTH:
+ * Macro for the threadpool jobQueueDepth attribute: represents the current
+ * number of jobs waiting in a queue to be processed, as VIR_TYPED_PARAM_UINT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_THREADPOOL_JOB_QUEUE_DEPTH "jobQueueDepth"
+
 # ifdef __cplusplus
 }
 # endif
