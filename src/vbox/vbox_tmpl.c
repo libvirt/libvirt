@@ -621,12 +621,13 @@ _vboxIIDFromArrayItem(vboxGlobalData *data, vboxIIDUnion *iidu,
 # if VBOX_API_VERSION < 4000000
 /* Only 3.x will use this function. */
 static bool vboxGetDeviceDetails(const char *deviceName,
-                                 PRUint32   *aMaxPortPerInst,
-                                 PRUint32   *aMaxSlotPerPort,
-                                 PRUint32    storageBus,
-                                 PRInt32    *deviceInst,
-                                 PRInt32    *devicePort,
-                                 PRInt32    *deviceSlot) {
+                                 PRUint32 *aMaxPortPerInst,
+                                 PRUint32 *aMaxSlotPerPort,
+                                 PRUint32 storageBus,
+                                 PRInt32 *deviceInst,
+                                 PRInt32 *devicePort,
+                                 PRInt32 *deviceSlot)
+{
     int total = 0;
     PRUint32 maxPortPerInst = 0;
     PRUint32 maxSlotPerPort = 0;

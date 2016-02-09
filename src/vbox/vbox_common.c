@@ -145,12 +145,13 @@ static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
  *
  */
 static bool vboxGetDeviceDetails(const char *deviceName,
-                                 PRUint32   *aMaxPortPerInst,
-                                 PRUint32   *aMaxSlotPerPort,
-                                 PRUint32    storageBus,
-                                 PRInt32    *deviceInst,
-                                 PRInt32    *devicePort,
-                                 PRInt32    *deviceSlot) {
+                                 PRUint32 *aMaxPortPerInst,
+                                 PRUint32 *aMaxSlotPerPort,
+                                 PRUint32 storageBus,
+                                 PRInt32 *deviceInst,
+                                 PRInt32 *devicePort,
+                                 PRInt32 *deviceSlot)
+{
     int total = 0;
     PRUint32 maxPortPerInst = 0;
     PRUint32 maxSlotPerPort = 0;
@@ -204,10 +205,10 @@ static bool vboxGetDeviceDetails(const char *deviceName,
  * @param       aMaxSlotPerPort Input array of max slot per device port
  *
  */
-static char *vboxGenerateMediumName(PRUint32  storageBus,
-                                    PRInt32   deviceInst,
-                                    PRInt32   devicePort,
-                                    PRInt32   deviceSlot,
+static char *vboxGenerateMediumName(PRUint32 storageBus,
+                                    PRInt32 deviceInst,
+                                    PRInt32 devicePort,
+                                    PRInt32 deviceSlot,
                                     PRUint32 *aMaxPortPerInst,
                                     PRUint32 *aMaxSlotPerPort)
 {
