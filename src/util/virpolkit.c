@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+#include <poll.h>
 
 #if WITH_POLKIT0
 # include <polkit/polkit.h>
@@ -27,19 +28,24 @@
 #endif
 
 #include "virpolkit.h"
-#include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "virprocess.h"
 #include "viralloc.h"
 #include "virdbus.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_POLKIT
 
 VIR_LOG_INIT("util.polkit");
 
 #if WITH_POLKIT1
+
+struct _virPolkitAgent {
+    virCommandPtr cmd;
+};
+
 /*
  * virPolkitCheckAuth:
  * @actionid: permission to check
@@ -133,6 +139,74 @@ int virPolkitCheckAuth(const char *actionid,
  cleanup:
     virStringFreeListCount(retdetails, nretdetails);
     return ret;
+}
+
+
+/* virPolkitAgentDestroy:
+ * @cmd: Pointer to the virCommandPtr created during virPolkitAgentCreate
+ *
+ * Destroy resources used by Polkit Agent
+ */
+void
+virPolkitAgentDestroy(virPolkitAgentPtr agent)
+{
+    if (!agent)
+        return;
+
+    virCommandFree(agent->cmd);
+    VIR_FREE(agent);
+}
+
+/* virPolkitAgentCreate:
+ *
+ * Allocate and setup a polkit agent
+ *
+ * Returns a virCommandPtr on success and NULL on failure
+ */
+virPolkitAgentPtr
+virPolkitAgentCreate(void)
+{
+    virPolkitAgentPtr agent;
+    virCommandPtr cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
+    int pipe_fd[2] = {-1, -1};
+    struct pollfd pollfd;
+    int outfd = STDOUT_FILENO;
+    int errfd = STDERR_FILENO;
+
+    if (!isatty(STDIN_FILENO))
+        goto error;
+
+    if (pipe2(pipe_fd, 0) < 0)
+        goto error;
+
+    if (VIR_ALLOC(agent) < 0)
+        goto error;
+    agent->cmd = cmd;
+
+    virCommandAddArgFormat(cmd, "%lld", (long long int) getpid());
+    virCommandAddArg(cmd, "--notify-fd");
+    virCommandAddArgFormat(cmd, "%d", pipe_fd[1]);
+    virCommandAddArg(cmd, "--fallback");
+    virCommandSetInputFD(cmd, STDIN_FILENO);
+    virCommandSetOutputFD(cmd, &outfd);
+    virCommandSetErrorFD(cmd, &errfd);
+    virCommandPassFD(cmd, pipe_fd[1], VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    if (virCommandRunAsync(cmd, NULL) < 0)
+        goto error;
+
+    pollfd.fd = pipe_fd[0];
+    pollfd.events = POLLHUP;
+
+    if (poll(&pollfd, 1, -1) < 0)
+        goto error;
+
+    return agent;
+
+ error:
+    VIR_FORCE_CLOSE(pipe_fd[0]);
+    VIR_FORCE_CLOSE(pipe_fd[1]);
+    virPolkitAgentDestroy(agent);
+    return NULL;
 }
 
 
@@ -254,4 +328,18 @@ int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
 }
 
 
+void
+virPolkitAgentDestroy(virCommandPtr cmd ATTRIBUTE_UNUSED)
+{
+    return; /* do nothing */
+}
+
+
+virCommandPtr
+virPolkitAgentCreate(void)
+{
+    virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                   _("polkit text authentication agent unavailable"));
+    return NULL;
+}
 #endif /* WITH_POLKIT1 */

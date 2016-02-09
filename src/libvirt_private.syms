@@ -2032,6 +2032,8 @@ virPidFileWritePath;
 
 
 # util/virpolkit.h
+virPolkitAgentCreate;
+virPolkitAgentDestroy;
 virPolkitCheckAuth;
 
 

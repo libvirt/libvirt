@@ -23,6 +23,9 @@
 # define __VIR_POLKIT_H__
 
 # include "internal.h"
+# include "vircommand.h"
+
+# define PKTTYAGENT "/usr/bin/pkttyagent"
 
 int virPolkitCheckAuth(const char *actionid,
                        pid_t pid,
@@ -30,5 +33,11 @@ int virPolkitCheckAuth(const char *actionid,
                        uid_t uid,
                        const char **details,
                        bool allowInteraction);
+
+typedef struct _virPolkitAgent virPolkitAgent;
+typedef virPolkitAgent *virPolkitAgentPtr;
+
+void virPolkitAgentDestroy(virPolkitAgentPtr cmd);
+virPolkitAgentPtr virPolkitAgentCreate(void);
 
 #endif /* __VIR_POLKIT_H__ */
