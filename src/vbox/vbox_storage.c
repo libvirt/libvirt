@@ -515,7 +515,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     PRUint32 hddstate = 0;
     size_t i = 0;
     size_t j = 0;
-    PRUint32  machineIdsSize = 0;
+    PRUint32 machineIdsSize = 0;
     vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
     vboxIIDUnion hddIID;
     int ret = -1;
