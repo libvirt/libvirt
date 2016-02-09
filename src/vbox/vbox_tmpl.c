@@ -228,18 +228,18 @@ static void nsIDtoChar(unsigned char *uuid, const nsID *iid)
     memcpy(uuidinterim, iid, VIR_UUID_BUFLEN);
     virUUIDFormat(uuidinterim, uuidstrsrc);
 
-    uuidstrdst[0]  = uuidstrsrc[6];
-    uuidstrdst[1]  = uuidstrsrc[7];
-    uuidstrdst[2]  = uuidstrsrc[4];
-    uuidstrdst[3]  = uuidstrsrc[5];
-    uuidstrdst[4]  = uuidstrsrc[2];
-    uuidstrdst[5]  = uuidstrsrc[3];
-    uuidstrdst[6]  = uuidstrsrc[0];
-    uuidstrdst[7]  = uuidstrsrc[1];
+    uuidstrdst[0] = uuidstrsrc[6];
+    uuidstrdst[1] = uuidstrsrc[7];
+    uuidstrdst[2] = uuidstrsrc[4];
+    uuidstrdst[3] = uuidstrsrc[5];
+    uuidstrdst[4] = uuidstrsrc[2];
+    uuidstrdst[5] = uuidstrsrc[3];
+    uuidstrdst[6] = uuidstrsrc[0];
+    uuidstrdst[7] = uuidstrsrc[1];
 
-    uuidstrdst[8]  = uuidstrsrc[8];
+    uuidstrdst[8] = uuidstrsrc[8];
 
-    uuidstrdst[9]  = uuidstrsrc[11];
+    uuidstrdst[9] = uuidstrsrc[11];
     uuidstrdst[10] = uuidstrsrc[12];
     uuidstrdst[11] = uuidstrsrc[9];
     uuidstrdst[12] = uuidstrsrc[10];
@@ -267,18 +267,18 @@ static void nsIDFromChar(nsID *iid, const unsigned char *uuid)
 
     virUUIDFormat(uuid, uuidstrsrc);
 
-    uuidstrdst[0]  = uuidstrsrc[6];
-    uuidstrdst[1]  = uuidstrsrc[7];
-    uuidstrdst[2]  = uuidstrsrc[4];
-    uuidstrdst[3]  = uuidstrsrc[5];
-    uuidstrdst[4]  = uuidstrsrc[2];
-    uuidstrdst[5]  = uuidstrsrc[3];
-    uuidstrdst[6]  = uuidstrsrc[0];
-    uuidstrdst[7]  = uuidstrsrc[1];
+    uuidstrdst[0] = uuidstrsrc[6];
+    uuidstrdst[1] = uuidstrsrc[7];
+    uuidstrdst[2] = uuidstrsrc[4];
+    uuidstrdst[3] = uuidstrsrc[5];
+    uuidstrdst[4] = uuidstrsrc[2];
+    uuidstrdst[5] = uuidstrsrc[3];
+    uuidstrdst[6] = uuidstrsrc[0];
+    uuidstrdst[7] = uuidstrsrc[1];
 
-    uuidstrdst[8]  = uuidstrsrc[8];
+    uuidstrdst[8] = uuidstrsrc[8];
 
-    uuidstrdst[9]  = uuidstrsrc[11];
+    uuidstrdst[9] = uuidstrsrc[11];
     uuidstrdst[10] = uuidstrsrc[12];
     uuidstrdst[11] = uuidstrsrc[9];
     uuidstrdst[12] = uuidstrsrc[10];
@@ -940,13 +940,13 @@ _vboxAttachDrivesOld(virDomainDefPtr def, vboxGlobalData *data, IMachine *machin
 
                                 if (STREQ(def->disks[i]->dst, "hda")) {
                                     channel = 0;
-                                    device  = 0;
+                                    device = 0;
                                 } else if (STREQ(def->disks[i]->dst, "hdb")) {
                                     channel = 0;
-                                    device  = 1;
+                                    device = 1;
                                 } else if (STREQ(def->disks[i]->dst, "hdd")) {
                                     channel = 1;
-                                    device  = 1;
+                                    device = 1;
                                 }
 
                                 rc = machine->vtbl->AttachHardDisk(machine,
@@ -1425,31 +1425,31 @@ vboxCallbackOnMachineStateChange(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
             virObjectEventPtr ev;
 
             if (state == MachineState_Starting) {
-                event  = VIR_DOMAIN_EVENT_STARTED;
+                event = VIR_DOMAIN_EVENT_STARTED;
                 detail = VIR_DOMAIN_EVENT_STARTED_BOOTED;
             } else if (state == MachineState_Restoring) {
-                event  = VIR_DOMAIN_EVENT_STARTED;
+                event = VIR_DOMAIN_EVENT_STARTED;
                 detail = VIR_DOMAIN_EVENT_STARTED_RESTORED;
             } else if (state == MachineState_Paused) {
-                event  = VIR_DOMAIN_EVENT_SUSPENDED;
+                event = VIR_DOMAIN_EVENT_SUSPENDED;
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_PAUSED;
             } else if (state == MachineState_Running) {
-                event  = VIR_DOMAIN_EVENT_RESUMED;
+                event = VIR_DOMAIN_EVENT_RESUMED;
                 detail = VIR_DOMAIN_EVENT_RESUMED_UNPAUSED;
             } else if (state == MachineState_PoweredOff) {
-                event  = VIR_DOMAIN_EVENT_STOPPED;
+                event = VIR_DOMAIN_EVENT_STOPPED;
                 detail = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
             } else if (state == MachineState_Stopping) {
-                event  = VIR_DOMAIN_EVENT_STOPPED;
+                event = VIR_DOMAIN_EVENT_STOPPED;
                 detail = VIR_DOMAIN_EVENT_STOPPED_DESTROYED;
             } else if (state == MachineState_Aborted) {
-                event  = VIR_DOMAIN_EVENT_STOPPED;
+                event = VIR_DOMAIN_EVENT_STOPPED;
                 detail = VIR_DOMAIN_EVENT_STOPPED_CRASHED;
             } else if (state == MachineState_Saving) {
-                event  = VIR_DOMAIN_EVENT_STOPPED;
+                event = VIR_DOMAIN_EVENT_STOPPED;
                 detail = VIR_DOMAIN_EVENT_STOPPED_SAVED;
             } else {
-                event  = VIR_DOMAIN_EVENT_STOPPED;
+                event = VIR_DOMAIN_EVENT_STOPPED;
                 detail = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
             }
 
@@ -1550,10 +1550,10 @@ vboxCallbackOnMachineRegistered(IVirtualBoxCallback *pThis ATTRIBUTE_UNUSED,
              * to show the VIR_DOMAIN_EVENT_UNDEFINED event
              */
             if (registered) {
-                event  = VIR_DOMAIN_EVENT_DEFINED;
+                event = VIR_DOMAIN_EVENT_DEFINED;
                 detail = VIR_DOMAIN_EVENT_DEFINED_ADDED;
             } else {
-                event  = VIR_DOMAIN_EVENT_UNDEFINED;
+                event = VIR_DOMAIN_EVENT_UNDEFINED;
                 detail = VIR_DOMAIN_EVENT_UNDEFINED_REMOVED;
             }
 

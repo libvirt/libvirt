@@ -227,7 +227,7 @@ static char *vboxGenerateMediumName(PRUint32  storageBus,
 
     maxPortPerInst = aMaxPortPerInst[storageBus];
     maxSlotPerPort = aMaxSlotPerPort[storageBus];
-    total =   (deviceInst * maxPortPerInst * maxSlotPerPort)
+    total = (deviceInst * maxPortPerInst * maxSlotPerPort)
             + (devicePort * maxSlotPerPort)
             + deviceSlot;
 
@@ -3071,7 +3071,7 @@ vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *ma
         ignore_value(virStrToLong_ui(vendorIdUtf8, &endptr, 16, &vendorId));
         ignore_value(virStrToLong_ui(productIdUtf8, &endptr, 16, &productId));
 
-        def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor  = vendorId;
+        def->hostdevs[USBFilterCount]->source.subsys.u.usb.vendor = vendorId;
         def->hostdevs[USBFilterCount]->source.subsys.u.usb.product = productId;
 
         VBOX_UTF16_FREE(vendorIdUtf16);
@@ -4996,7 +4996,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
                 goto cleanup;
             }
             gVBoxAPI.UIID.vboxIIDToUtf8(data, &iid, &uuid);
-            disk->uuid  = uuid;
+            disk->uuid = uuid;
             vboxIIDUnalloc(&iid);
 
             rc = gVBoxAPI.UIMedium.GetParent(medium, &parentDisk);
@@ -5115,7 +5115,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
             IProgress *progress = NULL;
             PRUint32 tab[1];
-            tab[0] =  MediumVariant_Diff;
+            tab[0] = MediumVariant_Diff;
             gVBoxAPI.UIMedium.CreateDiffStorage(medium, newMedium, 1, tab, &progress);
 
             gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
@@ -6878,7 +6878,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 VBOX_UTF16_FREE(newLocation);
 
                 PRUint32 tab[1];
-                tab[0] =  MediumVariant_Diff;
+                tab[0] = MediumVariant_Diff;
                 gVBoxAPI.UIMedium.CreateDiffStorage(medium, newMedium, 1, tab, &progress);
 
                 gVBoxAPI.UIProgress.WaitForCompletion(progress, -1);
