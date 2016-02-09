@@ -36,6 +36,7 @@
 # include "internal.h"
 # include "virerror.h"
 # include "virthread.h"
+# include "virpolkit.h"
 # include "vsh.h"
 
 # define VIRSH_PROMPT_RW    "virsh # "

@@ -143,6 +143,8 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
     int interval = 5; /* Default */
     int count = 6;    /* Default */
     bool keepalive_forced = false;
+    virPolkitAgentPtr pkagent = NULL;
+    int authfail = 0;
 
     if (ctl->keepalive_interval >= 0) {
         interval = ctl->keepalive_interval;
@@ -153,10 +155,35 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         keepalive_forced = true;
     }
 
-    c = virConnectOpenAuth(uri, virConnectAuthPtrDefault,
-                           readonly ? VIR_CONNECT_RO : 0);
+    do {
+        virErrorPtr err;
+
+        if ((c = virConnectOpenAuth(uri, virConnectAuthPtrDefault,
+                                    readonly ? VIR_CONNECT_RO : 0)))
+            break;
+
+        if (readonly)
+            goto cleanup;
+
+        err = virGetLastError();
+        if (err && err->domain == VIR_FROM_POLKIT &&
+            err->code == VIR_ERR_AUTH_UNAVAILABLE) {
+            if (!(pkagent = virPolkitAgentCreate()))
+                goto cleanup;
+        } else if (err && err->domain == VIR_FROM_POLKIT &&
+                   err->code == VIR_ERR_AUTH_FAILED) {
+            authfail++;
+        } else {
+            goto cleanup;
+        }
+        virResetLastError();
+        /* Failure to authenticate 5 times should be enough.
+         * No sense prolonging the agony.
+         */
+    } while (authfail < 5);
+
     if (!c)
-        return NULL;
+        goto cleanup;
 
     if (interval > 0 &&
         virConnectSetKeepAlive(c, interval, count) != 0) {
@@ -165,12 +192,15 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
                      _("Cannot setup keepalive on connection "
                        "as requested, disconnecting"));
             virConnectClose(c);
-            return NULL;
+            c = NULL;
+            goto cleanup;
         }
         vshDebug(ctl, VSH_ERR_INFO, "%s",
                  _("Failed to setup keepalive on connection\n"));
     }
 
+ cleanup:
+    virPolkitAgentDestroy(pkagent);
     return c;
 }
 
