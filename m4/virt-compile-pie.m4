@@ -26,7 +26,7 @@ AC_DEFUN([LIBVIRT_COMPILE_PIE],[
          ;; dnl All code is position independent on Win32 target
       *)
       gl_COMPILER_OPTION_IF([-fPIE -DPIE -pie], [
-        PIE_CFLAGS="-fPIE -DPIE -pie"
+        PIE_CFLAGS="-fPIE -DPIE"
         PIE_LDFLAGS="-pie"
       ])
     esac
