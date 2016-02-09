@@ -587,9 +587,8 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
 
-    /* target */
-    virBufferAsprintf(&buf, "%s,", src);
     /* format */
+    virBufferAddLit(&buf, "format=");
     switch (format) {
         case VIR_STORAGE_FILE_RAW:
             virBufferAddLit(&buf, "raw,");
@@ -609,31 +608,37 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     }
 
     /* device */
-    virBufferAdd(&buf, disk->dst, -1);
+    virBufferAsprintf(&buf, "vdev=%s,", disk->dst);
 
-    virBufferAddLit(&buf, ",");
-
+    /* access */
+    virBufferAddLit(&buf, "access=");
     if (disk->src->readonly)
-        virBufferAddLit(&buf, "r,");
+        virBufferAddLit(&buf, "ro,");
     else if (disk->src->shared)
         virBufferAddLit(&buf, "!,");
     else
-        virBufferAddLit(&buf, "w,");
+        virBufferAddLit(&buf, "rw,");
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
         goto cleanup;
     }
 
+    /* backendtype */
+    virBufferAddLit(&buf, "backendtype=");
     if (STREQ_NULLABLE(driver, "qemu"))
-        virBufferAddLit(&buf, "backendtype=qdisk");
+        virBufferAddLit(&buf, "qdisk,");
     else if (STREQ_NULLABLE(driver, "tap"))
-        virBufferAddLit(&buf, "backendtype=tap");
+        virBufferAddLit(&buf, "tap,");
     else if (STREQ_NULLABLE(driver, "phy"))
-        virBufferAddLit(&buf, "backendtype=phy");
+        virBufferAddLit(&buf, "phy,");
 
+    /* devtype */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        virBufferAddLit(&buf, ",devtype=cdrom");
+        virBufferAddLit(&buf, "devtype=cdrom,");
+
+    /* target */
+    virBufferAsprintf(&buf, "target=%s", src);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;

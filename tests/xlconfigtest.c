@@ -208,6 +208,8 @@ mymain(void)
 
     DO_TEST("paravirt-maxvcpus");
     DO_TEST("new-disk");
+    DO_TEST_FORMAT("disk-positional-parms-full");
+    DO_TEST_FORMAT("disk-positional-parms-partial");
     DO_TEST("spice");
     DO_TEST("spice-features");
     DO_TEST("vif-rate");
