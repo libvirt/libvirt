@@ -611,7 +611,7 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
             family = AF_INET6;
 
         ipparts = virStringSplit(value->str, "/", 2);
-        if (virStringListLength(ipparts) != 2 ||
+        if (virStringListLength((const char * const *)ipparts) != 2 ||
             virSocketAddrParse(&ip->address, ipparts[0], family) < 0 ||
             virStrToLong_ui(ipparts[1], NULL, 10, &ip->prefix) < 0) {
 

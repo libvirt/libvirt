@@ -965,7 +965,7 @@ int virProcessGetStartTime(pid_t pid,
 
     tokens = virStringSplit(tmp, " ", 0);
 
-    if (virStringListLength(tokens) < 20) {
+    if (virStringListLength((const char * const *)tokens) < 20) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot find start time in %s"),
                        filename);

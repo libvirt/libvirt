@@ -3209,7 +3209,7 @@ virStorageAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     if (!(tokens = virStringSplit(def->src->srcpool->volume, ":", 0)))
         goto cleanup;
 
-    if (virStringListLength(tokens) != 4) {
+    if (virStringListLength((const char * const *)tokens) != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected iscsi volume name '%s'"),
                        def->src->srcpool->volume);

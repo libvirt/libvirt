@@ -765,7 +765,7 @@ virStrndup(char **dest,
 }
 
 
-size_t virStringListLength(char **strings)
+size_t virStringListLength(const char * const *strings)
 {
     size_t i = 0;
 

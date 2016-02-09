@@ -336,10 +336,10 @@ testStringSearch(const void *opaque)
             goto cleanup;
         }
 
-        if (virStringListLength(matches) != nmatches) {
+        if (virStringListLength((const char * const *)matches) != nmatches) {
             fprintf(stderr, "expected %zu matches on %s but got %zd matches\n",
                     data->expectNMatches, data->str,
-                    virStringListLength(matches));
+                    virStringListLength((const char * const *)matches));
             goto cleanup;
         }
 

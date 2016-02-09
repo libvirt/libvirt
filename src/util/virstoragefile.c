@@ -1283,7 +1283,7 @@ virStorageFileParseChainIndex(const char *diskTarget,
     if (name && diskTarget)
         strings = virStringSplit(name, "[", 2);
 
-    if (virStringListLength(strings) != 2)
+    if (virStringListLength((const char * const *)strings) != 2)
         goto cleanup;
 
     if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||

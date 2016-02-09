@@ -167,7 +167,8 @@ virStorageBackendSheepdogRefreshAllVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         cells = virStringSplit(line, " ", 0);
 
-        if (cells != NULL && virStringListLength(cells) > 2) {
+        if (cells != NULL &&
+            virStringListLength((const char * const *)cells) > 2) {
             if (virStorageBackendSheepdogAddVolume(conn, pool, cells[1]) < 0)
                 goto cleanup;
         }
