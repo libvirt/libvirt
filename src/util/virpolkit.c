@@ -90,7 +90,7 @@ int virPolkitCheckAuth(const char *actionid,
                           "start-time", "t", startTime,
                           "uid", "i", (int)uid,
                           actionid,
-                          virStringListLen(details) / 2,
+                          virStringListLength(details) / 2,
                           details,
                           allowInteraction,
                           "" /* cancellation ID */) < 0)

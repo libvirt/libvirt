@@ -208,20 +208,6 @@ virStringFreeListCount(char **strings,
 }
 
 
-size_t virStringListLen(const char **strings)
-{
-    size_t i = 0;
-
-    if (!strings)
-        return 0;
-
-    while (strings[i] != NULL)
-        i++;
-
-    return i;
-}
-
-
 bool
 virStringArrayHasString(char **strings, const char *needle)
 {
