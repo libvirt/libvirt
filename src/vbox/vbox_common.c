@@ -3302,10 +3302,10 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     /* dump display options vrdp/gui/sdl */
     PRUnichar *keyUtf16 = NULL;
     PRUnichar *valueTypeUtf16 = NULL;
-    char      *valueTypeUtf8  = NULL;
+    char *valueTypeUtf8 = NULL;
     char *netAddressUtf8 = NULL;
-    IVRDxServer *VRDxServer   = NULL;
-    PRBool VRDxEnabled        = PR_FALSE;
+    IVRDxServer *VRDxServer = NULL;
+    PRBool VRDxEnabled = PR_FALSE;
     virDomainGraphicsDefPtr graphics = NULL;
     int ret = -1;
 
