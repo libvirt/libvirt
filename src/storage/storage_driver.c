@@ -1856,16 +1856,16 @@ storageVolCreateXML(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    if (VIR_REALLOC_N(pool->volumes.objs,
-                      pool->volumes.count+1) < 0)
-        goto cleanup;
-
     if (!backend->createVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("storage pool does not support volume "
                                "creation"));
         goto cleanup;
     }
+
+    if (VIR_REALLOC_N(pool->volumes.objs,
+                      pool->volumes.count+1) < 0)
+        goto cleanup;
 
     /* Wipe any key the user may have suggested, as volume creation
      * will generate the canonical key.  */
