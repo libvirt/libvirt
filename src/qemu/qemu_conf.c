@@ -36,8 +36,8 @@
 
 #include "virerror.h"
 #include "qemu_conf.h"
-#include "qemu_command.h"
 #include "qemu_capabilities.h"
+#include "qemu_domain.h"
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
@@ -57,6 +57,22 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_conf");
+
+/* These are only defaults, they can be changed now in qemu.conf and
+ * explicitly specified port is checked against these two (makes
+ * sense to limit the values).
+ *
+ * This limitation is mentioned in qemu.conf, so bear in mind that the
+ * configuration file should reflect any changes made to these values.
+ */
+#define QEMU_REMOTE_PORT_MIN 5900
+#define QEMU_REMOTE_PORT_MAX 65535
+
+#define QEMU_WEBSOCKET_PORT_MIN 5700
+#define QEMU_WEBSOCKET_PORT_MAX 65535
+
+#define QEMU_MIGRATION_PORT_MIN 49152
+#define QEMU_MIGRATION_PORT_MAX 49215
 
 static virClassPtr virQEMUDriverConfigClass;
 static void virQEMUDriverConfigDispose(void *obj);
