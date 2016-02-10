@@ -195,6 +195,10 @@ static const vshCmdOptDef opts_vol_create_as[] = {
      .type = VSH_OT_BOOL,
      .help = N_("preallocate metadata (for qcow2 instead of full allocation)")
     },
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document, but don't define/create")
+    },
     {.name = NULL}
 };
 
@@ -213,6 +217,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     virStoragePoolPtr pool;
     virStorageVolPtr vol = NULL;
     char *xml = NULL;
+    bool printXML = vshCommandOptBool(cmd, "print-xml");
     const char *name, *capacityStr = NULL, *allocationStr = NULL, *format = NULL;
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
     unsigned long long capacity, allocation = 0;
@@ -337,12 +342,16 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     }
     xml = virBufferContentAndReset(&buf);
 
-    if (!(vol = virStorageVolCreateXML(pool, xml, flags))) {
-        vshError(ctl, _("Failed to create vol %s"), name);
-        goto cleanup;
+    if (printXML) {
+        vshPrint(ctl, "%s", xml);
+    } else {
+        if (!(vol = virStorageVolCreateXML(pool, xml, flags))) {
+            vshError(ctl, _("Failed to create vol %s"), name);
+            goto cleanup;
+        }
+        vshPrint(ctl, _("Vol %s created\n"), name);
     }
 
-    vshPrint(ctl, _("Vol %s created\n"), name);
     ret = true;
 
  cleanup:

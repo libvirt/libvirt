@@ -3427,9 +3427,11 @@ If this is not possible, the copy fails.
 =item B<vol-create-as> I<pool-or-uuid> I<name> I<capacity>
 [I<--allocation> I<size>] [I<--format> I<string>] [I<--backing-vol>
 I<vol-name-or-key-or-path>] [I<--backing-vol-format> I<string>]
-[I<--prealloc-metadata>]
+[I<--prealloc-metadata>] [I<--print-xml>]
 
-Create a volume from a set of arguments.
+Create a volume from a set of arguments unless I<--print-xml> is specified, in
+which case just the XML of the volume object is printed out without any actual
+object creation.
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
 in.
 I<name> is the name of the new volume. For a disk pool, this must match the
