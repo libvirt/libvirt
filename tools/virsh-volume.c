@@ -211,14 +211,15 @@ static bool
 cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
-    virStorageVolPtr vol;
-    char *xml;
+    virStorageVolPtr vol = NULL;
+    char *xml = NULL;
     const char *name, *capacityStr = NULL, *allocationStr = NULL, *format = NULL;
     const char *snapshotStrVol = NULL, *snapshotStrFormat = NULL;
     unsigned long long capacity, allocation = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     unsigned long flags = 0;
     virshControlPtr priv = ctl->privData;
+    bool ret = false;
 
     if (vshCommandOptBool(cmd, "prealloc-metadata"))
         flags |= VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
@@ -335,23 +336,22 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
     xml = virBufferContentAndReset(&buf);
-    vol = virStorageVolCreateXML(pool, xml, flags);
-    VIR_FREE(xml);
-    virStoragePoolFree(pool);
 
-    if (vol != NULL) {
-        vshPrint(ctl, _("Vol %s created\n"), name);
-        virStorageVolFree(vol);
-        return true;
-    } else {
+    if (!(vol = virStorageVolCreateXML(pool, xml, flags))) {
         vshError(ctl, _("Failed to create vol %s"), name);
-        return false;
+        goto cleanup;
     }
+
+    vshPrint(ctl, _("Vol %s created\n"), name);
+    ret = true;
 
  cleanup:
     virBufferFreeAndReset(&buf);
+    if (vol)
+        virStorageVolFree(vol);
     virStoragePoolFree(pool);
-    return false;
+    VIR_FREE(xml);
+    return ret;
 }
 
 /*
