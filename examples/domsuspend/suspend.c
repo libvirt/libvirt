@@ -34,6 +34,21 @@
 
 static int debug;
 
+/* On mingw, there's a header file that poisons the well:
+ *
+ *
+ *  CC       domtop.o
+ *domtop.c:40:0: warning: "ERROR" redefined [enabled by default]
+ * #define ERROR(...)                                              \
+ * ^
+ *In file included from /usr/i686-w64-mingw32/sys-root/mingw/include/windows.h:71:0,
+ *                 from /usr/i686-w64-mingw32/sys-root/mingw/include/winsock2.h:23,
+ *                 from ../../gnulib/lib/unistd.h:48,
+ *                 from domtop.c:35:
+ * /usr/i686-w64-mingw32/sys-root/mingw/include/wingdi.h:75:0: note: this is the location of the previous definition
+ * #define ERROR 0
+ */
+#undef ERROR
 #define ERROR(...)                                              \
 do {                                                            \
     fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__);  \
