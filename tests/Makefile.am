@@ -946,7 +946,6 @@ virnetserverclientmock_la_SOURCES = \
 	virnetserverclientmock.c
 virnetserverclientmock_la_CFLAGS = $(AM_CFLAGS)
 virnetserverclientmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-virnetserverclientmock_la_LIBADD = $(GNULIB_LIBS)
 
 if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
@@ -1025,7 +1024,6 @@ libvirportallocatormock_la_SOURCES = \
 	virportallocatortest.c
 libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
 libvirportallocatormock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-libvirportallocatormock_la_LIBADD = ../src/libvirt.la
 
 vircgrouptest_SOURCES = \
 	vircgrouptest.c testutils.h testutils.c
@@ -1051,8 +1049,6 @@ virpcitest_LDADD = $(LDADDS)
 virpcimock_la_SOURCES = \
 	virpcimock.c
 virpcimock_la_CFLAGS = $(AM_CFLAGS)
-virpcimock_la_LIBADD = $(GNULIB_LIBS) \
-					   ../src/libvirt.la
 virpcimock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 
 nodeinfomock_la_SOURCES = \
@@ -1068,8 +1064,6 @@ virnetdevtest_LDADD = $(LDADDS)
 virnetdevmock_la_SOURCES = \
 	virnetdevmock.c
 virnetdevmock_la_CFLAGS = $(AM_CFLAGS) $(LIBNL_CFLAGS)
-virnetdevmock_la_LIBADD = $(GNULIB_LIBS) \
-					   ../src/libvirt.la
 virnetdevmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 
 virrotatingfiletest_SOURCES = \
