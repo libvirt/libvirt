@@ -90,6 +90,10 @@ char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 void vzDriverLock(vzConnPtr driver);
 void vzDriverUnlock(vzConnPtr driver);
+virDomainObjPtr
+vzNewDomain(vzConnPtr privconn,
+            char *name,
+            const unsigned char *uuid);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \

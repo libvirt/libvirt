@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "virjson.h"
 #include "vz_utils.h"
+#include "vz_sdk.h"
 #include "virstring.h"
 #include "datatypes.h"
 
@@ -133,4 +134,47 @@ vzGetOutput(const char *binary, ...)
         return NULL;
 
     return outbuf;
+}
+
+virDomainObjPtr
+vzNewDomain(vzConnPtr privconn, char *name, const unsigned char *uuid)
+{
+    virDomainDefPtr def = NULL;
+    virDomainObjPtr dom = NULL;
+    vzDomObjPtr pdom = NULL;
+
+    if (!(def = virDomainDefNewFull(name, uuid, -1)))
+        goto error;
+
+    if (VIR_ALLOC(pdom) < 0)
+        goto error;
+
+    if (virCondInit(&pdom->cache.cond) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize condition"));
+        goto error;
+    }
+    pdom->cache.stats = PRL_INVALID_HANDLE;
+    pdom->cache.count = -1;
+
+    if (STREQ(privconn->drivername, "vz"))
+        def->virtType = VIR_DOMAIN_VIRT_VZ;
+    else
+        def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
+
+    if (!(dom = virDomainObjListAdd(privconn->domains, def,
+                                    privconn->xmlopt,
+                                    0, NULL)))
+        goto error;
+
+    dom->privateData = pdom;
+    dom->privateDataFreeFunc = prlsdkDomObjFreePrivate;
+    dom->persistent = 1;
+    return dom;
+
+ error:
+    if (pdom && pdom->cache.count == -1)
+        virCondDestroy(&pdom->cache.cond);
+    virDomainDefFree(def);
+    VIR_FREE(pdom);
+    return NULL;
 }

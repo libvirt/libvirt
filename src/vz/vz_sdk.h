@@ -30,9 +30,10 @@ int prlsdkConnect(vzConnPtr privconn);
 void prlsdkDisconnect(vzConnPtr privconn);
 int
 prlsdkLoadDomains(vzConnPtr privconn);
-virDomainObjPtr
-prlsdkAddDomain(vzConnPtr privconn, const unsigned char *uuid);
 int prlsdkUpdateDomain(vzConnPtr privconn, virDomainObjPtr dom);
+int
+prlsdkLoadDomain(vzConnPtr privconn,
+                 virDomainObjPtr dom);
 int prlsdkSubscribeToPCSEvents(vzConnPtr privconn);
 void prlsdkUnsubscribeFromPCSEvents(vzConnPtr privconn);
 PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom);
@@ -77,3 +78,5 @@ int
 prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *time);
 int
 prlsdkGetMemoryStats(virDomainObjPtr dom, virDomainMemoryStatPtr stats, unsigned int nr_stats);
+void
+prlsdkDomObjFreePrivate(void *p);
