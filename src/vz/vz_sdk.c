@@ -346,31 +346,37 @@ prlsdkGetDomainIds(PRL_HANDLE sdkdom,
     PRL_UINT32 len;
     PRL_RESULT pret;
 
-    len = 0;
-    /* get name length */
-    pret = PrlVmCfg_GetName(sdkdom, NULL, &len);
-    prlsdkCheckRetGoto(pret, error);
+    if (name) {
+        len = 0;
+        *name = NULL;
+        /* get name length */
+        pret = PrlVmCfg_GetName(sdkdom, NULL, &len);
+        prlsdkCheckRetGoto(pret, error);
 
-    if (VIR_ALLOC_N(*name, len) < 0)
-        goto error;
+        if (VIR_ALLOC_N(*name, len) < 0)
+            goto error;
 
-    PrlVmCfg_GetName(sdkdom, *name, &len);
-    prlsdkCheckRetGoto(pret, error);
+        pret = PrlVmCfg_GetName(sdkdom, *name, &len);
+        prlsdkCheckRetGoto(pret, error);
+    }
 
-    len = sizeof(uuidstr);
-    PrlVmCfg_GetUuid(sdkdom, uuidstr, &len);
-    prlsdkCheckRetGoto(pret, error);
+    if (uuid) {
+        len = sizeof(uuidstr);
+        pret = PrlVmCfg_GetUuid(sdkdom, uuidstr, &len);
+        prlsdkCheckRetGoto(pret, error);
 
-    if (prlsdkUUIDParse(uuidstr, uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain UUID is malformed or empty"));
-        goto error;
+        if (prlsdkUUIDParse(uuidstr, uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Domain UUID is malformed or empty"));
+            goto error;
+        }
     }
 
     return 0;
 
  error:
-    VIR_FREE(*name);
+    if (name)
+        VIR_FREE(*name);
     return -1;
 }
 
