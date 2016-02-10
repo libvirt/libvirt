@@ -1,7 +1,7 @@
 /*
  * qemu_command.h: QEMU command generation
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@
 # define QEMU_MIGRATION_PORT_MIN 49152
 # define QEMU_MIGRATION_PORT_MAX 49215
 
-# define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
+VIR_ENUM_DECL(qemuVideo)
 
 typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
 typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
@@ -245,23 +245,6 @@ int qemuOpenVhostNet(virDomainDefPtr def,
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
-/*
- * NB: def->name can be NULL upon return and the caller
- * *must* decide how to fill in a name in this case
- */
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
-                                           virDomainXMLOptionPtr xmlopt,
-                                           const char *args,
-                                           char **pidfile,
-                                           virDomainChrSourceDefPtr *monConfig,
-                                           bool *monJSON);
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
-                                        virDomainXMLOptionPtr xmlopt,
-                                        pid_t pid,
-                                        char **pidfile,
-                                        virDomainChrSourceDefPtr *monConfig,
-                                        bool *monJSON);
-
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               virDomainObjPtr obj)
@@ -290,13 +273,6 @@ int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
                              ssize_t idx);
 int qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng, size_t idx);
-
-int
-qemuParseKeywords(const char *str,
-                  char ***retkeywords,
-                  char ***retvalues,
-                  int *retnkeywords,
-                  int allowEmptyValue);
 
 int qemuGetDriveSourceString(virStorageSourcePtr src,
                              virConnectPtr conn,

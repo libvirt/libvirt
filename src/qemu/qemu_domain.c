@@ -1,7 +1,7 @@
 /*
  * qemu_domain.c: QEMU domain private state
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 
 #include "qemu_domain.h"
 #include "qemu_command.h"
+#include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
 #include "viralloc.h"

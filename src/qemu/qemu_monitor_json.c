@@ -1,7 +1,7 @@
 /*
  * qemu_monitor_json.c: interaction with QEMU monitor console
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -34,6 +34,7 @@
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_command.h"
+#include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"

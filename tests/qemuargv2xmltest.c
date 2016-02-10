@@ -13,7 +13,7 @@
 #ifdef WITH_QEMU
 
 # include "internal.h"
-# include "qemu/qemu_command.h"
+# include "qemu/qemu_parse_command.h"
 # include "testutilsqemu.h"
 # include "virstring.h"
 

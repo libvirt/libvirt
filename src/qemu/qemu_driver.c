@@ -49,6 +49,7 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"
+#include "qemu_parse_command.h"
 #include "qemu_cgroup.h"
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
