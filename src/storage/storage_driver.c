@@ -2037,6 +2037,13 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     if (newvol->target.capacity < origvol->target.capacity)
         newvol->target.capacity = origvol->target.capacity;
 
+    if (!backend->createVol) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       "%s", _("storage pool does not support volume "
+                               "creation"));
+        goto cleanup;
+    }
+
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("storage pool does not support"
