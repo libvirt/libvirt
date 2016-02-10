@@ -1275,6 +1275,12 @@ prlsdkLoadDomain(vzConnPtr privconn,
     if (!olddom) {
         if (VIR_ALLOC(pdom) < 0)
             goto error;
+        pdom->cache.stats = PRL_INVALID_HANDLE;
+        pdom->cache.count = -1;
+        if (virCondInit(&pdom->cache.cond) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize condition"));
+            goto error;
+        }
     } else {
         pdom = olddom->privateData;
     }
@@ -1285,13 +1291,6 @@ prlsdkLoadDomain(vzConnPtr privconn,
         def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
 
     def->id = -1;
-
-    pdom->cache.stats = PRL_INVALID_HANDLE;
-    pdom->cache.count = -1;
-    if (virCondInit(&pdom->cache.cond) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize condition"));
-        goto error;
-    }
 
     if (prlsdkGetDomainIds(sdkdom, &def->name, def->uuid) < 0)
         goto error;
