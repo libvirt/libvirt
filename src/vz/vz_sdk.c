@@ -419,7 +419,6 @@ prlsdkDomObjFreePrivate(void *p)
     PrlHandle_Free(pdom->sdkdom);
     PrlHandle_Free(pdom->cache.stats);
     virCondDestroy(&pdom->cache.cond);
-    VIR_FREE(pdom->uuid);
     VIR_FREE(pdom->home);
     VIR_FREE(p);
 };
@@ -1286,10 +1285,6 @@ prlsdkLoadDomain(vzConnPtr privconn,
         def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
 
     def->id = -1;
-
-    /* we will remove this field in the near future, so let's set it
-     * to NULL temporarily */
-    pdom->uuid = NULL;
 
     pdom->cache.stats = PRL_INVALID_HANDLE;
     pdom->cache.count = -1;

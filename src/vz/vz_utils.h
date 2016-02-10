@@ -76,7 +76,6 @@ typedef struct _vzCountersCache vzCountersCache;
 
 struct vzDomObj {
     int id;
-    char *uuid;
     char *home;
     PRL_HANDLE sdkdom;
     vzCountersCache cache;
