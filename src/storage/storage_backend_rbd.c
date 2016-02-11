@@ -792,8 +792,10 @@ virStorageBackendRBDSnapshotFindNoDiff(rbd_image_t image,
  * rbd_diff_iterate2() is available in versions above Ceph 0.94 (Hammer)
  * It uses a object map inside Ceph which is faster than rbd_diff_iterate()
  * which iterates all objects.
+ * LIBRBD_VERSION_CODE for Ceph 0.94 is 265. In 266 and upwards diff_iterate2
+ * is available
  */
-#if LIBRBD_VERSION_CODE > 266
+#if LIBRBD_VERSION_CODE > 265
         r = rbd_diff_iterate2(image, snaps[i].name, 0, info.size, 0, 1,
                               virStorageBackendRBDIterateCb, (void *)&diff);
 #else
