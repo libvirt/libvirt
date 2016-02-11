@@ -3594,7 +3594,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         if (!relabel)
             stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
         virDomainAuditStart(vm, "migrated", false);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                        QEMU_ASYNC_JOB_MIGRATION_IN, stopFlags);
     }
 
     qemuMigrationJobFinish(driver, vm);
@@ -3903,6 +3904,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         qemuMigrationWaitForSpice(vm);
 
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
+                        QEMU_ASYNC_JOB_MIGRATION_OUT,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "migrated");
 
@@ -5414,6 +5416,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
      */
     if (!v3proto) {
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
+                        QEMU_ASYNC_JOB_MIGRATION_OUT,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "migrated");
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -5896,6 +5899,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         !(flags & VIR_MIGRATE_OFFLINE) &&
         virDomainObjIsActive(vm)) {
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                        QEMU_ASYNC_JOB_MIGRATION_IN,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "failed");
         event = virDomainEventLifecycleNewFromObj(vm,

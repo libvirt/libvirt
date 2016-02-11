@@ -2289,7 +2289,8 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED, stopFlags);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED,
+                    QEMU_ASYNC_JOB_NONE, stopFlags);
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
@@ -3271,7 +3272,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
 
     /* Shut it down */
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED, 0);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED,
+                    QEMU_ASYNC_JOB_SAVE, 0);
     virDomainAuditStop(vm, "saved");
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_SAVED);
@@ -3764,7 +3766,8 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
  endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
+                        QEMU_ASYNC_JOB_DUMP, 0);
         virDomainAuditStop(vm, "crashed");
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
@@ -4044,7 +4047,8 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         /* fall through */
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, 0);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
+                        QEMU_ASYNC_JOB_DUMP, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -4573,7 +4577,7 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               eventReason);
-    qemuProcessStop(driver, vm, stopReason, stopFlags);
+    qemuProcessStop(driver, vm, stopReason, QEMU_ASYNC_JOB_NONE, stopFlags);
     virDomainAuditStop(vm, auditReason);
     qemuDomainEventQueue(driver, event);
 
@@ -6574,7 +6578,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
 
         if (virCommandWait(cmd, NULL) < 0) {
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, 0);
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, 0);
             restored = false;
         }
         VIR_DEBUG("Decompression binary stderr: %s", NULLSTR(errbuf));
@@ -13592,7 +13596,8 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                        QEMU_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
     }
@@ -14434,7 +14439,8 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                        QEMU_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
         thaw = 0;
@@ -15294,7 +15300,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 }
                 virResetError(err);
                 qemuProcessStop(driver, vm,
-                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
+                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                                QEMU_ASYNC_JOB_START, 0);
                 virDomainAuditStop(vm, "from-snapshot");
                 detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
                 event = virDomainEventLifecycleNewFromObj(vm,
@@ -15414,7 +15421,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
         if (virDomainObjIsActive(vm)) {
             /* Transitions 4, 7 */
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, 0);
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                            QEMU_ASYNC_JOB_START, 0);
             virDomainAuditStop(vm, "from-snapshot");
             detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
             event = virDomainEventLifecycleNewFromObj(vm,

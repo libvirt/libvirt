@@ -3528,7 +3528,11 @@ qemuProcessReconnect(void *opaque)
              * really is and FAILED means "failed to start" */
             state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
         }
-        qemuProcessStop(driver, obj, state, stopFlags);
+        /* If BeginJob failed, we jumped here without a job, let's hope another
+         * thread didn't have a chance to start playing with the domain yet
+         * (it's all we can do anyway).
+         */
+        qemuProcessStop(driver, obj, state, QEMU_ASYNC_JOB_NONE, stopFlags);
     }
     goto cleanup;
 }
@@ -3566,8 +3570,13 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create thread. QEMU initialization "
                          "might be incomplete"));
-       /* We can't spawn a thread and thus connect to monitor. Kill qemu. */
-        qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED, 0);
+        /* We can't spawn a thread and thus connect to monitor. Kill qemu.
+         * It's safe to call qemuProcessStop without a job here since there
+         * is no thread that could be doing anything else with the same domain
+         * object.
+         */
+        qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED,
+                        QEMU_ASYNC_JOB_NONE, 0);
         qemuDomainRemoveInactive(src->driver, obj);
 
         virDomainObjEndAPI(&obj);
@@ -4310,7 +4319,7 @@ qemuProcessStartValidate(virDomainDefPtr def,
 int
 qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
-                qemuDomainAsyncJob asyncJob ATTRIBUTE_UNUSED,
+                qemuDomainAsyncJob asyncJob,
                 bool migration,
                 bool snap)
 {
@@ -4383,7 +4392,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
     stopFlags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
     if (migration)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
     goto cleanup;
 }
 
@@ -5353,7 +5362,7 @@ qemuProcessStart(virConnectPtr conn,
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
     goto cleanup;
 }
 
@@ -5430,6 +5439,7 @@ qemuProcessBeginStopJob(virQEMUDriverPtr driver,
 void qemuProcessStop(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      virDomainShutoffReason reason,
+                     qemuDomainAsyncJob asyncJob,
                      unsigned int flags)
 {
     int ret;
@@ -5444,25 +5454,33 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr logCtxt = NULL;
 
-    VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu flags=%x",
+    VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu, "
+              "reason=%s, asyncJob=%s, flags=%x",
               vm, vm->def->name, vm->def->id,
-              (unsigned long long)vm->pid, flags);
-
-    if (!virDomainObjIsActive(vm)) {
-        VIR_DEBUG("VM '%s' not active", vm->def->name);
-        virObjectUnref(cfg);
-        return;
-    }
+              (unsigned long long)vm->pid,
+              virDomainShutoffReasonTypeToString(reason),
+              qemuDomainAsyncJobTypeToString(asyncJob),
+              flags);
 
     /* This method is routinely used in clean up paths. Disable error
      * reporting so we don't squash a legit error. */
     orig_err = virSaveLastError();
 
-    /*
-     * We may unlock the vm in qemuProcessKill(), and another thread
-     * can lock the vm, and then call qemuProcessStop(). So we should
-     * set vm->def->id to -1 here to avoid qemuProcessStop() to be called twice.
-     */
+    if (asyncJob != QEMU_ASYNC_JOB_NONE) {
+        if (qemuDomainObjBeginNestedJob(driver, vm, asyncJob) < 0)
+            goto cleanup;
+    } else if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE &&
+               priv->job.asyncOwner == virThreadSelfID() &&
+               priv->job.active != QEMU_JOB_ASYNC_NESTED) {
+        VIR_WARN("qemuProcessStop called without a nested job (async=%s)",
+                 qemuDomainAsyncJobTypeToString(asyncJob));
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        VIR_DEBUG("VM '%s' not active", vm->def->name);
+        goto endjob;
+    }
+
     vm->def->id = -1;
 
     if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
@@ -5719,6 +5737,11 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         vm->newDef = NULL;
     }
 
+ endjob:
+    if (asyncJob != QEMU_ASYNC_JOB_NONE)
+        qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -6001,13 +6024,13 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
         qemuDomainObjDiscardAsyncJob(driver, dom);
     }
 
-    if (qemuDomainObjBeginJob(driver, dom,
-                              QEMU_JOB_DESTROY) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Killing domain");
 
-    qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED, stopFlags);
+    if (qemuProcessBeginStopJob(driver, dom, QEMU_JOB_DESTROY, true) < 0)
+        goto cleanup;
+
+    qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
+                    QEMU_ASYNC_JOB_NONE, stopFlags);
 
     virDomainAuditStop(dom, "destroyed");
     event = virDomainEventLifecycleNewFromObj(dom,

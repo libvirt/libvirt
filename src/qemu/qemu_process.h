@@ -121,6 +121,7 @@ int qemuProcessBeginStopJob(virQEMUDriverPtr driver,
 void qemuProcessStop(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      virDomainShutoffReason reason,
+                     qemuDomainAsyncJob asyncJob,
                      unsigned int flags);
 
 int qemuProcessAttach(virConnectPtr conn,
