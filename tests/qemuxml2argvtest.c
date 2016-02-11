@@ -866,6 +866,10 @@ mymain(void)
     DO_TEST("disk-scsi-megasas",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_MEGASAS);
+    DO_TEST("disk-scsi-mptsas1068",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_SCSI_MPTSAS1068,
+            QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-sata-device",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_ICH9_AHCI);
     DO_TEST("disk-aio",

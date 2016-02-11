@@ -343,6 +343,7 @@ typedef enum {
     QEMU_CAPS_VSERPORT_CHANGE, /* VSERPORT_CHANGE event */
     QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE, /* virtio-balloon-{device,pci,ccw}.
                                            * deflate-on-oom */
+    QEMU_CAPS_SCSI_MPTSAS1068, /* -device mptsas1068 */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

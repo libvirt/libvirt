@@ -314,6 +314,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "vserport-change-event", /* 210 */
               "virtio-balloon-pci.deflate-on-oom",
+              "mptsas1068",
     );
 
 
@@ -1567,6 +1568,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-tablet-pci", QEMU_CAPS_VIRTIO_TABLET },
     { "virtio-input-host-device", QEMU_CAPS_VIRTIO_INPUT_HOST },
     { "virtio-input-host-pci", QEMU_CAPS_VIRTIO_INPUT_HOST },
+    { "mptsas1068", QEMU_CAPS_SCSI_MPTSAS1068 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {

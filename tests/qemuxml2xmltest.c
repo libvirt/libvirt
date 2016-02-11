@@ -415,6 +415,10 @@ mymain(void)
     DO_TEST_FULL("disk-scsi-megasas", WHEN_ACTIVE,
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_SCSI_MEGASAS);
+    DO_TEST_FULL("disk-scsi-mptsas1068", WHEN_ACTIVE,
+                 QEMU_CAPS_NODEFCONFIG,
+                 QEMU_CAPS_SCSI_MPTSAS1068,
+                 QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-mirror-old");
     DO_TEST_FULL("disk-mirror", WHEN_ACTIVE, NONE);
     DO_TEST_FULL("disk-mirror", WHEN_INACTIVE, NONE);

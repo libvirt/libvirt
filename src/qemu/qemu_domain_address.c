@@ -65,11 +65,19 @@ qemuDomainSetSCSIControllerModel(virDomainDefPtr def,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
             /*TODO: need checking work here if necessary */
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MPTSAS1068)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support "
+                                 "the LSI SAS1068 (MPT Fusion) controller"));
+                return -1;
+            }
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MEGASAS)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support "
-                                 "the LSI SAS1078 controller"));
+                                 "the LSI SAS1078 (MegaRAID) controller"));
                 return -1;
             }
             break;

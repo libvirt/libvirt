@@ -2005,6 +2005,9 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
             virBufferAddLit(&buf, "spapr-vscsi");
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+            virBufferAddLit(&buf, "mptsas1068");
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
             virBufferAddLit(&buf, "megasas");
             break;
