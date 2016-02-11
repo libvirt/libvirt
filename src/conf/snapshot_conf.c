@@ -445,6 +445,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
     char *tmp;
     struct stat sb;
     size_t i;
+    size_t j;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
@@ -491,6 +492,17 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
         }
 
         VIR_FREE(tmppath);
+
+        /* verify that we didn't generate a duplicate name */
+        for (j = 0; j < i; j++) {
+            if (STREQ_NULLABLE(disk->src->path, def->disks[j].src->path)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("cannot generate external snapshot name for "
+                                 "disk '%s': collision with disk '%s'"),
+                               disk->name, def->disks[j].name);
+                return -1;
+            }
+        }
     }
 
     return 0;
