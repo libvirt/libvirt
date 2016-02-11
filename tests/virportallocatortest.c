@@ -173,7 +173,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libvirportallocatormock.so")
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virportallocatormock.so")
 #else /* ! defined(RTLD_NEXT) */
 int
 main(void)

@@ -415,7 +415,7 @@ endif ! WITH_SECDRIVER_APPARMOR
 EXTRA_DIST += $(test_scripts)
 
 test_libraries = libshunload.la \
-		libvirportallocatormock.la \
+		virportallocatormock.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
 		virpcimock.la \
@@ -1027,11 +1027,11 @@ virportallocatortest_SOURCES = \
 	virportallocatortest.c testutils.h testutils.c
 virportallocatortest_LDADD = $(LDADDS)
 
-libvirportallocatormock_la_SOURCES = \
+virportallocatormock_la_SOURCES = \
 	virportallocatormock.c
-libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS)
-libvirportallocatormock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-libvirportallocatormock_la_LIBADD = $(MOCKLIBS_LIBS)
+virportallocatormock_la_CFLAGS = $(AM_CFLAGS)
+virportallocatormock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virportallocatormock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 vircgrouptest_SOURCES = \
 	vircgrouptest.c testutils.h testutils.c
