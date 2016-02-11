@@ -244,6 +244,8 @@ qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
 
+void qemuMonitorUnregister(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
 void qemuMonitorClose(qemuMonitorPtr mon);
 
 virErrorPtr qemuMonitorLastError(qemuMonitorPtr mon);

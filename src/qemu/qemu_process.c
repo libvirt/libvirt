@@ -286,54 +286,39 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                             void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv;
-    int eventReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
-    int stopReason = VIR_DOMAIN_SHUTOFF_SHUTDOWN;
-    const char *auditReason = "shutdown";
-    unsigned int stopFlags = 0;
-
-    VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
+    struct qemuProcessEvent *processEvent;
 
     virObjectLock(vm);
 
-    priv = vm->privateData;
+    VIR_DEBUG("Received EOF on %p '%s'", vm, vm->def->name);
 
+    priv = vm->privateData;
     if (priv->beingDestroyed) {
         VIR_DEBUG("Domain is being destroyed, EOF is expected");
         goto cleanup;
     }
 
-    if (!virDomainObjIsActive(vm)) {
-        VIR_DEBUG("Domain %p is not active, ignoring EOF", vm);
+    if (VIR_ALLOC(processEvent) < 0)
+        goto cleanup;
+
+    processEvent->eventType = QEMU_PROCESS_EVENT_MONITOR_EOF;
+    processEvent->vm = vm;
+
+    virObjectRef(vm);
+    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
+        ignore_value(virObjectUnref(vm));
+        VIR_FREE(processEvent);
         goto cleanup;
     }
 
-    if (priv->monJSON && !priv->gotShutdown) {
-        VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
-                  "assuming the domain crashed", vm->def->name);
-        eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
-        stopReason = VIR_DOMAIN_SHUTOFF_CRASHED;
-        auditReason = "failed";
-    }
-
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
-        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-        qemuMigrationErrorSave(driver, vm->def->name,
-                               qemuMonitorLastError(priv->mon));
-    }
-
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_STOPPED,
-                                     eventReason);
-    qemuProcessStop(driver, vm, stopReason, stopFlags);
-    virDomainAuditStop(vm, auditReason);
-
-    qemuDomainRemoveInactive(driver, vm);
+    /* We don't want this EOF handler to be called over and over while the
+     * thread is waiting for a job.
+     */
+    qemuMonitorUnregister(mon);
 
  cleanup:
     virObjectUnlock(vm);
-    qemuDomainEventQueue(driver, event);
 }
 
 

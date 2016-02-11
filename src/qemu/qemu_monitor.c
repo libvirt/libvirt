@@ -915,6 +915,15 @@ qemuMonitorOpenFD(virDomainObjPtr vm,
 
 
 void
+qemuMonitorUnregister(qemuMonitorPtr mon)
+{
+    if (mon->watch) {
+        virEventRemoveHandle(mon->watch);
+        mon->watch = 0;
+    }
+}
+
+void
 qemuMonitorClose(qemuMonitorPtr mon)
 {
     if (!mon)
@@ -927,10 +936,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
     qemuMonitorSetDomainLog(mon, NULL, NULL, NULL);
 
     if (mon->fd >= 0) {
-        if (mon->watch) {
-            virEventRemoveHandle(mon->watch);
-            mon->watch = 0;
-        }
+        qemuMonitorUnregister(mon);
         VIR_FORCE_CLOSE(mon->fd);
     }
 
