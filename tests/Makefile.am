@@ -1028,8 +1028,8 @@ virportallocatortest_SOURCES = \
 virportallocatortest_LDADD = $(LDADDS)
 
 libvirportallocatormock_la_SOURCES = \
-	virportallocatortest.c
-libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS) -DMOCK_HELPER=1
+	virportallocatormock.c
+libvirportallocatormock_la_CFLAGS = $(AM_CFLAGS)
 libvirportallocatormock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 libvirportallocatormock_la_LIBADD = $(MOCKLIBS_LIBS)
 

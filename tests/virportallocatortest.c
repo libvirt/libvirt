@@ -28,95 +28,14 @@
 #endif
 
 #if defined(RTLD_NEXT)
-# ifdef MOCK_HELPER
-#  include "internal.h"
-#  include <sys/socket.h>
-#  include <errno.h>
-#  include <arpa/inet.h>
-#  include <netinet/in.h>
-#  include <stdio.h>
+# include "virutil.h"
+# include "virerror.h"
+# include "viralloc.h"
+# include "virlog.h"
+# include "virportallocator.h"
+# include "virstring.h"
 
-static bool host_has_ipv6;
-static int (*realsocket)(int domain, int type, int protocol);
-
-static void init_syms(void)
-{
-    int fd;
-
-    if (realsocket)
-        return;
-
-    realsocket = dlsym(RTLD_NEXT, "socket");
-
-    if (!realsocket) {
-        fprintf(stderr, "Unable to find 'socket' symbol\n");
-        abort();
-    }
-
-    fd = realsocket(AF_INET6, SOCK_STREAM, 0);
-    if (fd < 0)
-        return;
-
-    host_has_ipv6 = true;
-    close(fd);
-}
-
-int socket(int domain,
-           int type,
-           int protocol)
-{
-    init_syms();
-
-    if (getenv("LIBVIRT_TEST_IPV4ONLY") && domain == AF_INET6) {
-        errno = EAFNOSUPPORT;
-        return -1;
-    }
-
-    return realsocket(domain, type, protocol);
-}
-
-int bind(int sockfd ATTRIBUTE_UNUSED,
-         const struct sockaddr *addr,
-         socklen_t addrlen ATTRIBUTE_UNUSED)
-{
-    struct sockaddr_in saddr;
-
-    memcpy(&saddr, addr, sizeof(saddr));
-
-    if (host_has_ipv6 && !getenv("LIBVIRT_TEST_IPV4ONLY")) {
-        if (saddr.sin_port == htons(5900) ||
-            (saddr.sin_family == AF_INET &&
-             saddr.sin_port == htons(5904)) ||
-            (saddr.sin_family == AF_INET6 &&
-             (saddr.sin_port == htons(5905) ||
-              saddr.sin_port == htons(5906)))) {
-            errno = EADDRINUSE;
-            return -1;
-        }
-        return 0;
-    }
-
-    if (saddr.sin_port == htons(5900) ||
-        saddr.sin_port == htons(5904) ||
-        saddr.sin_port == htons(5905) ||
-        saddr.sin_port == htons(5906)) {
-        errno = EADDRINUSE;
-        return -1;
-    }
-
-    return 0;
-}
-
-# else
-
-#  include "virutil.h"
-#  include "virerror.h"
-#  include "viralloc.h"
-#  include "virlog.h"
-#  include "virportallocator.h"
-#  include "virstring.h"
-
-#  define VIR_FROM_THIS VIR_FROM_RPC
+# define VIR_FROM_THIS VIR_FROM_RPC
 
 VIR_LOG_INIT("tests.portallocatortest");
 
@@ -255,8 +174,6 @@ mymain(void)
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/libvirportallocatormock.so")
-# endif
-
 #else /* ! defined(RTLD_NEXT) */
 int
 main(void)
