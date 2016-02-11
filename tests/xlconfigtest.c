@@ -217,6 +217,7 @@ mymain(void)
     DO_TEST("paravirt-cmdline");
     DO_TEST_FORMAT("paravirt-cmdline-extra-root");
     DO_TEST_FORMAT("paravirt-cmdline-bogus-extra-root");
+    DO_TEST("rbd-multihost-noauth");
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
     DO_TEST("fullvirt-multiusb");

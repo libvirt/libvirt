@@ -246,6 +246,32 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
     return -1;
 }
 
+
+static int
+xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
+{
+    char *tmpstr = NULL;
+    int ret = -1;
+
+    if (STRPREFIX(srcstr, "rbd:")) {
+        tmpstr = virStringReplace(srcstr, "\\\\", "\\");
+
+        virDomainDiskSetType(disk, VIR_STORAGE_TYPE_NETWORK);
+        disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
+        ret = virStorageSourceParseRBDColonString(tmpstr, disk->src);
+    } else {
+        if (virDomainDiskSetSource(disk, srcstr) < 0)
+            goto cleanup;
+
+        ret = 0;
+    }
+
+ cleanup:
+    VIR_FREE(tmpstr);
+    return ret;
+}
+
+
 /*
  * For details on xl disk config syntax, see
  * docs/misc/xl-disk-configuration.txt in the Xen sources.  The important
@@ -311,10 +337,10 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
             if (!(disk = virDomainDiskDefNew(NULL)))
                 goto fail;
 
-            if (VIR_STRDUP(disk->dst, libxldisk->vdev) < 0)
+            if (xenParseXLDiskSrc(disk, libxldisk->pdev_path) < 0)
                 goto fail;
 
-            if (virDomainDiskSetSource(disk, libxldisk->pdev_path) < 0)
+            if (VIR_STRDUP(disk->dst, libxldisk->vdev) < 0)
                 goto fail;
 
             disk->src->readonly = !libxldisk->readwrite;
@@ -358,7 +384,8 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
                 case LIBXL_DISK_BACKEND_UNKNOWN:
                     if (virDomainDiskSetDriver(disk, "qemu") < 0)
                         goto fail;
-                    virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
+                    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_NONE)
+                        virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
                     break;
 
                 case LIBXL_DISK_BACKEND_TAP:
@@ -578,14 +605,115 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static char *
+xenFormatXLDiskSrcNet(virStorageSourcePtr src)
+{
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    switch ((virStorageNetProtocol) src->protocol) {
+    case VIR_STORAGE_NET_PROTOCOL_NBD:
+    case VIR_STORAGE_NET_PROTOCOL_HTTP:
+    case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+    case VIR_STORAGE_NET_PROTOCOL_FTP:
+    case VIR_STORAGE_NET_PROTOCOL_FTPS:
+    case VIR_STORAGE_NET_PROTOCOL_TFTP:
+    case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+    case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+    case VIR_STORAGE_NET_PROTOCOL_LAST:
+    case VIR_STORAGE_NET_PROTOCOL_NONE:
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("Unsupported network block protocol '%s'"),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        goto cleanup;
+
+    case VIR_STORAGE_NET_PROTOCOL_RBD:
+        if (strchr(src->path, ':')) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("':' not allowed in RBD source volume name '%s'"),
+                           src->path);
+            goto cleanup;
+        }
+
+        virBufferStrcat(&buf, "rbd:", src->path, NULL);
+
+        virBufferAddLit(&buf, ":auth_supported=none");
+
+        if (src->nhosts > 0) {
+            virBufferAddLit(&buf, ":mon_host=");
+            for (i = 0; i < src->nhosts; i++) {
+                if (i)
+                    virBufferAddLit(&buf, "\\\\;");
+
+                /* assume host containing : is ipv6 */
+                if (strchr(src->hosts[i].name, ':'))
+                    virBufferEscape(&buf, '\\', ":", "[%s]",
+                                    src->hosts[i].name);
+                else
+                    virBufferAsprintf(&buf, "%s", src->hosts[i].name);
+
+                if (src->hosts[i].port)
+                    virBufferAsprintf(&buf, "\\\\:%s", src->hosts[i].port);
+            }
+        }
+
+        if (virBufferCheckError(&buf) < 0)
+            goto cleanup;
+
+        ret = virBufferContentAndReset(&buf);
+        break;
+    }
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+
+    return ret;
+}
+
+
+static int
+xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
+{
+    int actualType = virStorageSourceGetActualType(src);
+
+    *srcstr = NULL;
+
+    if (virStorageSourceIsEmpty(src))
+        return 0;
+
+    switch ((virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_DIR:
+        if (VIR_STRDUP(*srcstr, src->path) < 0)
+            return -1;
+        break;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+        if (!(*srcstr = xenFormatXLDiskSrcNet(src)))
+            return -1;
+        break;
+
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 static int
 xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
-    const char *src = virDomainDiskGetSource(disk);
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
+    char *target = NULL;
 
     /* format */
     virBufferAddLit(&buf, "format=");
@@ -637,8 +765,18 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
         virBufferAddLit(&buf, "devtype=cdrom,");
 
-    /* target */
-    virBufferAsprintf(&buf, "target=%s", src);
+    /*
+     * target
+     * From $xensrc/docs/misc/xl-disk-configuration.txt:
+     * When this parameter is specified by name, ie with the "target="
+     * syntax in the configuration file, it consumes the whole rest of the
+     * <diskspec> including trailing whitespaces.  Therefore in that case
+     * it must come last.
+     */
+    if (xenFormatXLDiskSrc(disk->src, &target) < 0)
+        goto cleanup;
+
+    virBufferAsprintf(&buf, "target=%s", target);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
@@ -658,6 +796,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     return 0;
 
  cleanup:
+    VIR_FREE(target);
     virBufferFreeAndReset(&buf);
     return -1;
 }
