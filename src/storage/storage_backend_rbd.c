@@ -280,6 +280,24 @@ virStorageBackendRBDCloseRADOSConn(virStorageBackendRBDStatePtr ptr)
 }
 
 static int
+volStorageBackendRBDGetFeatures(rbd_image_t image,
+                                const char *volname,
+                                uint64_t *features)
+{
+    int r, ret = -1;
+
+    if ((r = rbd_get_features(image, features)) < 0) {
+        virReportSystemError(-r, _("failed to get the features of RBD image "
+                                 "%s"), volname);
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+static int
 volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
                                    virStoragePoolObjPtr pool,
                                    virStorageBackendRBDStatePtr ptr)
@@ -685,11 +703,8 @@ virStorageBackendRBDImageInfo(rbd_image_t image,
         goto cleanup;
     }
 
-    if ((r = rbd_get_features(image, features)) < 0) {
-        virReportSystemError(-r, _("failed to get the features of RBD image %s"),
-                             volname);
+    if (volStorageBackendRBDGetFeatures(image, volname, features) < 0)
         goto cleanup;
-    }
 
     if ((r = rbd_get_stripe_unit(image, stripe_unit)) < 0) {
         virReportSystemError(-r, _("failed to get the stripe unit of RBD image %s"),
