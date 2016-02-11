@@ -653,6 +653,40 @@ virNetDevVPortProfileOpSetLink(const char *ifname, int ifindex,
     uint32_t dst_pid = 0;
     struct nl_msg *nl_msg;
     struct nlattr *vfports = NULL, *vfport;
+    char macStr[VIR_MAC_STRING_BUFLEN];
+    char hostUUIDStr[VIR_UUID_STRING_BUFLEN];
+    char instanceUUIDStr[VIR_UUID_STRING_BUFLEN];
+    const char *opName;
+
+    switch (op) {
+    case PORT_REQUEST_PREASSOCIATE:
+        opName = "PREASSOCIATE";
+        break;
+    case PORT_REQUEST_PREASSOCIATE_RR:
+        opName = "PREASSOCIATE_RR";
+        break;
+    case PORT_REQUEST_ASSOCIATE:
+        opName = "ASSOCIATE";
+        break;
+    case PORT_REQUEST_DISASSOCIATE:
+        opName = "DISASSOCIATE";
+        break;
+    default:
+        opName = "(unknown)";
+        break;
+    }
+    VIR_INFO("%s: ifname: %s ifindex: %d vf: %d vlanid: %d mac: %s "
+             "profileId: %s instanceId: %s hostUUID: %s",
+             opName, ifname ? ifname : "(unspecified)",
+             ifindex, vf, vlanid,
+             macaddr ? virMacAddrFormat(macaddr, macStr) : "(unspecified)",
+             profileId ? profileId : "(unspecified)",
+             (instanceId
+              ? virUUIDFormat(instanceId, instanceUUIDStr)
+              : "(unspecified)"),
+             (hostUUID
+              ? virUUIDFormat(hostUUID, hostUUIDStr)
+              : "(unspecified)"));
 
     nl_msg = nlmsg_alloc_simple(RTM_SETLINK, NLM_F_REQUEST);
     if (!nl_msg) {
@@ -1197,11 +1231,16 @@ virNetDevVPortProfileAssociate(const char *macvtap_ifname,
                                bool setlink_only)
 {
     int rc = 0;
+    char uuidStr[VIR_UUID_STRING_BUFLEN];
+    char macStr[VIR_MAC_STRING_BUFLEN];
 
-    VIR_DEBUG("Associating port profile '%p' on link device '%s'",
-              virtPort, (macvtap_ifname ? macvtap_ifname : linkdev));
-
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
+    VIR_DEBUG("profile:'%p' vmOp: %s device: %s@%s mac: %s uuid: %s",
+              virtPort, virNetDevVPortProfileOpTypeToString(vmOp),
+              (macvtap_ifname ? macvtap_ifname : ""), linkdev,
+              (macvtap_macaddr
+               ? virMacAddrFormat(macvtap_macaddr, macStr)
+               : "(unspecified)"),
+              vmuuid ? virUUIDFormat(vmuuid, uuidStr) : "(unspecified)");
 
     if (!virtPort || vmOp == VIR_NETDEV_VPORT_PROFILE_OP_NO_OP)
         return 0;
@@ -1259,11 +1298,14 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
                                   virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
+    char macStr[VIR_MAC_STRING_BUFLEN];
 
-    VIR_DEBUG("Disassociating port profile id '%p' on link device '%s' ",
-              virtPort, macvtap_ifname);
-
-    VIR_DEBUG("%s: VM OPERATION: %s", __FUNCTION__, virNetDevVPortProfileOpTypeToString(vmOp));
+    VIR_DEBUG("profile:'%p' vmOp: %s device: %s@%s mac: %s",
+              virtPort, virNetDevVPortProfileOpTypeToString(vmOp),
+              (macvtap_ifname ? macvtap_ifname : ""), linkdev,
+              (macvtap_macaddr
+               ? virMacAddrFormat(macvtap_macaddr, macStr)
+               : "(unspecified)"));
 
     if (!virtPort)
        return 0;
