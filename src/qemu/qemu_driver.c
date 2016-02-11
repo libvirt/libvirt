@@ -2279,32 +2279,9 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
-    /* We need to prevent monitor EOF callback from doing our work (and sending
-     * misleading events) while the vm is unlocked inside BeginJob/ProcessKill API
-     */
-    priv->beingDestroyed = true;
-
-    /* Although qemuProcessStop does this already, there may
-     * be an outstanding job active. We want to make sure we
-     * can kill the process even if a job is active. Killing
-     * it now means the job will be released
-     */
-    if (flags & VIR_DOMAIN_DESTROY_GRACEFUL) {
-        if (qemuProcessKill(vm, 0) < 0) {
-            priv->beingDestroyed = false;
-            goto cleanup;
-        }
-    } else {
-        if (qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE) < 0) {
-            priv->beingDestroyed = false;
-            goto cleanup;
-        }
-    }
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_DESTROY) < 0)
+    if (qemuProcessBeginStopJob(driver, vm, QEMU_JOB_DESTROY,
+                                !(flags & VIR_DOMAIN_DESTROY_GRACEFUL)) < 0)
         goto cleanup;
-
-    priv->beingDestroyed = false;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,

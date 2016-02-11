@@ -114,6 +114,10 @@ typedef enum {
     VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,
 } qemuProcessStopFlags;
 
+int qemuProcessBeginStopJob(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            qemuDomainJob job,
+                            bool forceKill);
 void qemuProcessStop(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      virDomainShutoffReason reason,
