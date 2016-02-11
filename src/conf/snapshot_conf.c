@@ -440,66 +440,60 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 static int
 virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
 {
+    const char *origpath;
+    char *tmppath;
+    char *tmp;
+    struct stat sb;
     size_t i;
-    int ret = -1;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
 
-        if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
-            !disk->src->path) {
-            const char *original = virDomainDiskGetSource(def->dom->disks[i]);
-            const char *tmp;
-            struct stat sb;
+        if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL ||
+            disk->src->path)
+            continue;
 
-            if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("cannot generate external snapshot name "
-                                 "for disk '%s' on a '%s' device"),
-                               disk->name,
-                               virStorageTypeToString(disk->src->type));
-                goto cleanup;
-            }
-
-            if (!original) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("cannot generate external snapshot name "
-                                 "for disk '%s' without source"),
-                               disk->name);
-                goto cleanup;
-            }
-            if (stat(original, &sb) < 0 || !S_ISREG(sb.st_mode)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("source for disk '%s' is not a regular "
-                                 "file; refusing to generate external "
-                                 "snapshot name"),
-                               disk->name);
-                goto cleanup;
-            }
-
-            tmp = strrchr(original, '.');
-            if (!tmp || strchr(tmp, '/')) {
-                if (virAsprintf(&disk->src->path, "%s.%s", original,
-                                def->name) < 0)
-                    goto cleanup;
-            } else {
-                if ((tmp - original) > INT_MAX) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("integer overflow"));
-                    goto cleanup;
-                }
-                if (virAsprintf(&disk->src->path, "%.*s.%s",
-                                (int) (tmp - original), original,
-                                def->name) < 0)
-                    goto cleanup;
-            }
+        if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("cannot generate external snapshot name "
+                             "for disk '%s' on a '%s' device"),
+                           disk->name, virStorageTypeToString(disk->src->type));
+            return -1;
         }
+
+        if (!(origpath = virDomainDiskGetSource(def->dom->disks[i]))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("cannot generate external snapshot name "
+                             "for disk '%s' without source"),
+                           disk->name);
+            return -1;
+        }
+
+        if (stat(origpath, &sb) < 0 || !S_ISREG(sb.st_mode)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("source for disk '%s' is not a regular "
+                             "file; refusing to generate external "
+                             "snapshot name"),
+                           disk->name);
+            return -1;
+        }
+
+        if (VIR_STRDUP(tmppath, origpath) < 0)
+            return -1;
+
+        /* drop suffix of the file name */
+        if ((tmp = strrchr(tmppath, '.')) && !strchr(tmp, '/'))
+            *tmp = '\0';
+
+        if (virAsprintf(&disk->src->path, "%s.%s", tmppath, def->name) < 0) {
+            VIR_FREE(tmppath);
+            return -1;
+        }
+
+        VIR_FREE(tmppath);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
