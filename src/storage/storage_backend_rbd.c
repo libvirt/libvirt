@@ -297,6 +297,68 @@ volStorageBackendRBDGetFeatures(rbd_image_t image,
     return ret;
 }
 
+#if LIBRBD_VERSION_CODE > 265
+static bool
+volStorageBackendRBDUseFastDiff(uint64_t features)
+{
+    return features & RBD_FEATURE_FAST_DIFF;
+}
+
+static int
+virStorageBackendRBDRefreshVolInfoCb(uint64_t offset ATTRIBUTE_UNUSED,
+                                     size_t len,
+                                     int exists,
+                                     void *arg)
+{
+    uint64_t *used_size = (uint64_t *)(arg);
+    if (exists)
+        (*used_size) += len;
+
+    return 0;
+}
+
+static int
+virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol,
+                                  rbd_image_t *image,
+                                  rbd_image_info_t *info)
+{
+    int r, ret = -1;
+    uint64_t allocation = 0;
+
+    if ((r = rbd_diff_iterate2(image, NULL, 0, info->size, 0, 1,
+                               &virStorageBackendRBDRefreshVolInfoCb,
+                               &allocation)) < 0) {
+        virReportSystemError(-r, _("failed to iterate RBD image '%s'"),
+                             vol->name);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Found %zu bytes allocated for RBD image %s",
+              allocation, vol->name);
+
+    vol->target.allocation = allocation;
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+#else
+static int
+volStorageBackendRBDUseFastDiff(uint64_t features ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+
+static int
+virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol ATTRIBUTE_UNUSED,
+                                  rbd_image_t *image ATTRIBUTE_UNUSED,
+                                  rbd_image_info_t *info ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+#endif
+
 static int
 volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
                                    virStoragePoolObjPtr pool,
@@ -306,6 +368,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     int r = 0;
     rbd_image_t image = NULL;
     rbd_image_info_t info;
+    uint64_t features;
 
     if ((r = rbd_open_read_only(ptr->ioctx, vol->name, &image, NULL)) < 0) {
         ret = -r;
@@ -321,14 +384,28 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    VIR_DEBUG("Refreshed RBD image %s/%s (size: %zu obj_size: %zu num_objs: %zu)",
-              pool->def->source.name, vol->name, info.size, info.obj_size,
-              info.num_objs);
+    if (volStorageBackendRBDGetFeatures(image, vol->name, &features) < 0)
+        goto cleanup;
 
     vol->target.capacity = info.size;
-    vol->target.allocation = info.obj_size * info.num_objs;
     vol->type = VIR_STORAGE_VOL_NETWORK;
     vol->target.format = VIR_STORAGE_FILE_RAW;
+
+    if (volStorageBackendRBDUseFastDiff(features)) {
+        VIR_DEBUG("RBD image %s/%s has fast-diff feature enabled. "
+                  "Querying for actual allocation",
+                  pool->def->source.name, vol->name);
+
+        if (virStorageBackendRBDSetAllocation(vol, image, &info) < 0)
+            goto cleanup;
+    } else {
+        vol->target.allocation = info.obj_size * info.num_objs;
+    }
+
+    VIR_DEBUG("Refreshed RBD image %s/%s (capacity: %llu allocation: %llu "
+                      "obj_size: %zu num_objs: %zu)",
+              pool->def->source.name, vol->name, vol->target.capacity,
+              vol->target.allocation, info.obj_size, info.num_objs);
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
