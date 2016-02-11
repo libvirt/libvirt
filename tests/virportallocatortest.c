@@ -58,7 +58,7 @@ static void init_syms(void)
         return;
 
     host_has_ipv6 = true;
-    VIR_FORCE_CLOSE(fd);
+    close(fd);
 }
 
 int socket(int domain,
