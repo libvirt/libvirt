@@ -430,7 +430,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 }
 
 static int
-disksorter(const void *a, const void *b)
+virDomainSnapshotCompareDiskIndex(const void *a, const void *b)
 {
     const virDomainSnapshotDiskDef *diska = a;
     const virDomainSnapshotDiskDef *diskb = b;
@@ -562,7 +562,8 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
             disk->snapshot = default_snapshot;
     }
 
-    qsort(&def->disks[0], def->ndisks, sizeof(def->disks[0]), disksorter);
+    qsort(&def->disks[0], def->ndisks, sizeof(def->disks[0]),
+          virDomainSnapshotCompareDiskIndex);
 
     /* Generate any default external file names, but only if the
      * backing file is a regular file.  */
