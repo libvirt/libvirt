@@ -429,6 +429,80 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     return ret;
 }
 
+
+/**
+ * virDomainSnapshotDefAssignExternalNames:
+ * @def: snapshot def object
+ *
+ * Generate default external file names for snapshot targets. Returns 0 on
+ * success, -1 on error.
+ */
+static int
+virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
+{
+    size_t i;
+    int ret = -1;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainSnapshotDiskDefPtr disk = &def->disks[i];
+
+        if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
+            !disk->src->path) {
+            const char *original = virDomainDiskGetSource(def->dom->disks[i]);
+            const char *tmp;
+            struct stat sb;
+
+            if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("cannot generate external snapshot name "
+                                 "for disk '%s' on a '%s' device"),
+                               disk->name,
+                               virStorageTypeToString(disk->src->type));
+                goto cleanup;
+            }
+
+            if (!original) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("cannot generate external snapshot name "
+                                 "for disk '%s' without source"),
+                               disk->name);
+                goto cleanup;
+            }
+            if (stat(original, &sb) < 0 || !S_ISREG(sb.st_mode)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("source for disk '%s' is not a regular "
+                                 "file; refusing to generate external "
+                                 "snapshot name"),
+                               disk->name);
+                goto cleanup;
+            }
+
+            tmp = strrchr(original, '.');
+            if (!tmp || strchr(tmp, '/')) {
+                if (virAsprintf(&disk->src->path, "%s.%s", original,
+                                def->name) < 0)
+                    goto cleanup;
+            } else {
+                if ((tmp - original) > INT_MAX) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("integer overflow"));
+                    goto cleanup;
+                }
+                if (virAsprintf(&disk->src->path, "%.*s.%s",
+                                (int) (tmp - original), original,
+                                def->name) < 0)
+                    goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static int
 virDomainSnapshotCompareDiskIndex(const void *a, const void *b)
 {
@@ -565,60 +639,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
     qsort(&def->disks[0], def->ndisks, sizeof(def->disks[0]),
           virDomainSnapshotCompareDiskIndex);
 
-    /* Generate any default external file names, but only if the
-     * backing file is a regular file.  */
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainSnapshotDiskDefPtr disk = &def->disks[i];
-
-        if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL &&
-            !disk->src->path) {
-            const char *original = virDomainDiskGetSource(def->dom->disks[i]);
-            const char *tmp;
-            struct stat sb;
-
-            if (disk->src->type != VIR_STORAGE_TYPE_FILE) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("cannot generate external snapshot name "
-                                 "for disk '%s' on a '%s' device"),
-                               disk->name,
-                               virStorageTypeToString(disk->src->type));
-                goto cleanup;
-            }
-
-            if (!original) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("cannot generate external snapshot name "
-                                 "for disk '%s' without source"),
-                               disk->name);
-                goto cleanup;
-            }
-            if (stat(original, &sb) < 0 || !S_ISREG(sb.st_mode)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("source for disk '%s' is not a regular "
-                                 "file; refusing to generate external "
-                                 "snapshot name"),
-                               disk->name);
-                goto cleanup;
-            }
-
-            tmp = strrchr(original, '.');
-            if (!tmp || strchr(tmp, '/')) {
-                if (virAsprintf(&disk->src->path, "%s.%s", original,
-                                def->name) < 0)
-                    goto cleanup;
-            } else {
-                if ((tmp - original) > INT_MAX) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("integer overflow"));
-                    goto cleanup;
-                }
-                if (virAsprintf(&disk->src->path, "%.*s.%s",
-                                (int) (tmp - original), original,
-                                def->name) < 0)
-                    goto cleanup;
-            }
-        }
-    }
+    /* Generate default external file names for external snapshot locations */
+    if (virDomainSnapshotDefAssignExternalNames(def) < 0)
+        goto cleanup;
 
     ret = 0;
 
