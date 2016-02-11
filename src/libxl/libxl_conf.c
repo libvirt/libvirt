@@ -46,6 +46,7 @@
 #include "libxl_conf.h"
 #include "libxl_utils.h"
 #include "virstoragefile.h"
+#include "base64.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -920,17 +921,206 @@ libxlDomainGetEmulatorType(const virDomainDef *def)
     return ret;
 }
 
+static char *
+libxlGetSecretString(virConnectPtr conn,
+                     const char *scheme,
+                     bool encoded,
+                     virStorageAuthDefPtr authdef,
+                     virSecretUsageType secretUsageType)
+{
+    size_t secret_size;
+    virSecretPtr sec = NULL;
+    char *secret = NULL;
+    char uuidStr[VIR_UUID_STRING_BUFLEN];
+
+    /* look up secret */
+    switch (authdef->secretType) {
+    case VIR_STORAGE_SECRET_TYPE_UUID:
+        sec = virSecretLookupByUUID(conn, authdef->secret.uuid);
+        virUUIDFormat(authdef->secret.uuid, uuidStr);
+        break;
+    case VIR_STORAGE_SECRET_TYPE_USAGE:
+        sec = virSecretLookupByUsage(conn, secretUsageType,
+                                     authdef->secret.usage);
+        break;
+    }
+
+    if (!sec) {
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("%s no secret matches uuid '%s'"),
+                           scheme, uuidStr);
+        } else {
+            virReportError(VIR_ERR_NO_SECRET,
+                           _("%s no secret matches usage value '%s'"),
+                           scheme, authdef->secret.usage);
+        }
+        goto cleanup;
+    }
+
+    secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
+                                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    if (!secret) {
+        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get value of the secret for "
+                             "username '%s' using uuid '%s'"),
+                           authdef->username, uuidStr);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("could not get value of the secret for "
+                             "username '%s' using usage value '%s'"),
+                           authdef->username, authdef->secret.usage);
+        }
+        goto cleanup;
+    }
+
+    if (encoded) {
+        char *base64 = NULL;
+
+        base64_encode_alloc(secret, secret_size, &base64);
+        VIR_FREE(secret);
+        if (!base64) {
+            virReportOOMError();
+            goto cleanup;
+        }
+        secret = base64;
+    }
+
+ cleanup:
+    virObjectUnref(sec);
+    return secret;
+}
+
+static char *
+libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
+                           const char *username,
+                           const char *secret)
+{
+    char *ret = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    switch ((virStorageNetProtocol) src->protocol) {
+    case VIR_STORAGE_NET_PROTOCOL_NBD:
+    case VIR_STORAGE_NET_PROTOCOL_HTTP:
+    case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+    case VIR_STORAGE_NET_PROTOCOL_FTP:
+    case VIR_STORAGE_NET_PROTOCOL_FTPS:
+    case VIR_STORAGE_NET_PROTOCOL_TFTP:
+    case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+    case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+    case VIR_STORAGE_NET_PROTOCOL_LAST:
+    case VIR_STORAGE_NET_PROTOCOL_NONE:
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("Unsupported network block protocol '%s'"),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        goto cleanup;
+
+    case VIR_STORAGE_NET_PROTOCOL_RBD:
+        if (strchr(src->path, ':')) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("':' not allowed in RBD source volume name '%s'"),
+                           src->path);
+            goto cleanup;
+        }
+
+        virBufferStrcat(&buf, "rbd:", src->path, NULL);
+
+        if (username) {
+            virBufferEscape(&buf, '\\', ":", ":id=%s", username);
+            virBufferEscape(&buf, '\\', ":",
+                            ":key=%s:auth_supported=cephx\\;none",
+                            secret);
+        } else {
+            virBufferAddLit(&buf, ":auth_supported=none");
+        }
+
+        if (src->nhosts > 0) {
+            virBufferAddLit(&buf, ":mon_host=");
+            for (i = 0; i < src->nhosts; i++) {
+                if (i)
+                    virBufferAddLit(&buf, "\\;");
+
+                /* assume host containing : is ipv6 */
+                if (strchr(src->hosts[i].name, ':'))
+                    virBufferEscape(&buf, '\\', ":", "[%s]",
+                                    src->hosts[i].name);
+                else
+                    virBufferAsprintf(&buf, "%s", src->hosts[i].name);
+
+                if (src->hosts[i].port)
+                    virBufferAsprintf(&buf, "\\:%s", src->hosts[i].port);
+            }
+        }
+
+        if (src->configFile)
+            virBufferEscape(&buf, '\\', ":", ":conf=%s", src->configFile);
+
+        if (virBufferCheckError(&buf) < 0)
+            goto cleanup;
+
+        ret = virBufferContentAndReset(&buf);
+        break;
+    }
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+static int
+libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
+{
+    virConnectPtr conn = NULL;
+    char *secret = NULL;
+    char *username = NULL;
+    int ret = -1;
+
+    *srcstr = NULL;
+    if (src->auth && src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
+
+        username = src->auth->username;
+        if (!(conn = virConnectOpen("xen:///system")))
+            goto cleanup;
+
+        if (!(secret = libxlGetSecretString(conn,
+                                            protocol,
+                                            true,
+                                            src->auth,
+                                            VIR_SECRET_USAGE_TYPE_CEPH)))
+            goto cleanup;
+    }
+
+    if (!(*srcstr = libxlMakeNetworkDiskSrcStr(src, username, secret)))
+            goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(secret);
+    virObjectUnref(conn);
+    return ret;
+}
 
 int
 libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
     const char *driver;
     int format;
+    int actual_type = virStorageSourceGetActualType(l_disk->src);
 
     libxl_device_disk_init(x_disk);
 
-    if (VIR_STRDUP(x_disk->pdev_path, virDomainDiskGetSource(l_disk)) < 0)
+    if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
+        if (libxlMakeNetworkDiskSrc(l_disk->src, &x_disk->pdev_path) < 0)
+            return -1;
+    } else {
+        if (VIR_STRDUP(x_disk->pdev_path, virDomainDiskGetSource(l_disk)) < 0)
         return -1;
+    }
 
     if (VIR_STRDUP(x_disk->vdev, l_disk->dst) < 0)
         return -1;
