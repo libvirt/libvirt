@@ -1,7 +1,7 @@
 /*
  * bridge_driver.c: core driver methods for managing network
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -4389,10 +4389,8 @@ networkNotifyActualDevice(virDomainDefPtr dom,
             goto error;
         }
 
-        /* we are now assured of success, so mark the allocation */
-        dev->connections++;
         VIR_DEBUG("Using physical device %s, connections %d",
-                  dev->device.dev, dev->connections);
+                  dev->device.dev, dev->connections + 1);
 
     }  else /* if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) */ {
         virDomainHostdevDefPtr hostdev;
@@ -4444,8 +4442,6 @@ networkNotifyActualDevice(virDomainDefPtr dom,
             goto error;
         }
 
-        /* we are now assured of success, so mark the allocation */
-        dev->connections++;
         VIR_DEBUG("Using physical device %04x:%02x:%02x.%x, connections %d",
                   dev->device.pci.domain, dev->device.pci.bus,
                   dev->device.pci.slot, dev->device.pci.function,
@@ -4454,6 +4450,8 @@ networkNotifyActualDevice(virDomainDefPtr dom,
 
  success:
     netdef->connections++;
+    if (dev)
+        dev->connections++;
     VIR_DEBUG("Using network %s, %d connections",
               netdef->name, netdef->connections);
 
@@ -4562,9 +4560,8 @@ networkReleaseActualDevice(virDomainDefPtr dom,
             goto error;
         }
 
-        dev->connections--;
         VIR_DEBUG("Releasing physical device %s, connections %d",
-                  dev->device.dev, dev->connections);
+                  dev->device.dev, dev->connections - 1);
 
     } else /* if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) */ {
         virDomainHostdevDefPtr hostdev;
@@ -4598,16 +4595,18 @@ networkReleaseActualDevice(virDomainDefPtr dom,
             goto error;
         }
 
-        dev->connections--;
         VIR_DEBUG("Releasing physical device %04x:%02x:%02x.%x, connections %d",
                   dev->device.pci.domain, dev->device.pci.bus,
                   dev->device.pci.slot, dev->device.pci.function,
-                  dev->connections);
+                  dev->connections - 1);
     }
 
  success:
     if (iface->data.network.actual) {
         netdef->connections--;
+        if (dev)
+            dev->connections--;
+
         VIR_DEBUG("Releasing network %s, %d connections",
                   netdef->name, netdef->connections);
 
