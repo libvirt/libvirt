@@ -435,7 +435,7 @@ endif WITH_BHYVE
 
 if WITH_DBUS
 test_libraries += \
-		virmockdbus.la
+		virdbusmock.la
 endif WITH_DBUS
 
 if WITH_LINUX
@@ -1114,11 +1114,11 @@ virdbustest_SOURCES = \
 virdbustest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virdbustest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
-virmockdbus_la_SOURCES = \
-	virmockdbus.c
-virmockdbus_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
-virmockdbus_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-virmockdbus_la_LIBADD = $(MOCKLIBS_LIBS)
+virdbusmock_la_SOURCES = \
+	virdbusmock.c
+virdbusmock_la_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
+virdbusmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virdbusmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 virpolkittest_SOURCES = \
 	virpolkittest.c testutils.h testutils.c
@@ -1131,7 +1131,7 @@ virsystemdtest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 virsystemdtest_LDADD = $(LDADDS) $(DBUS_LIBS)
 
 else ! WITH_DBUS
-EXTRA_DIST += virdbustest.c virmockdbus.c virsystemdtest.c
+EXTRA_DIST += virdbustest.c virdbusmock.c virsystemdtest.c
 endif ! WITH_DBUS
 
 viruritest_SOURCES = \

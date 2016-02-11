@@ -1,5 +1,5 @@
 /*
- * virmockdbus.c: mocking of dbus message send/reply
+ * virdbusmock.c: mocking of dbus message send/reply
  *
  * Copyright (C) 2013-2014 Red Hat, Inc.
  *
