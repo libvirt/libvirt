@@ -121,7 +121,7 @@ static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
     VIR_FREE(out_string);
     VIR_FREE(out_signature);
     VIR_FREE(out_objectpath);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -171,7 +171,7 @@ static int testMessageVariant(const void *args ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -230,7 +230,7 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FREE(out_str1);
     VIR_FREE(out_str2);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -274,7 +274,7 @@ static int testMessageEmptyArrayRef(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -323,7 +323,7 @@ static int testMessageSingleArrayRef(const void *args ATTRIBUTE_UNUSED)
  cleanup:
     if (out_strv1)
         VIR_FREE(out_strv1[0]);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -436,7 +436,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     for (i = 0; i < out_nstrv2; i++)
         VIR_FREE(out_strv2[i]);
     VIR_FREE(out_strv2);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -511,7 +511,7 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
     VIR_FREE(out_string);
     VIR_FREE(out_signature);
     VIR_FREE(out_objectpath);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -581,7 +581,7 @@ static int testMessageDict(const void *args ATTRIBUTE_UNUSED)
     VIR_FREE(out_key1);
     VIR_FREE(out_key2);
     VIR_FREE(out_key3);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -652,7 +652,7 @@ static int testMessageDictRef(const void *args ATTRIBUTE_UNUSED)
         VIR_FREE(out_strv1[5]);
     }
     VIR_FREE(out_strv1);
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 
@@ -695,7 +695,7 @@ static int testMessageEmptyDictRef(const void *args ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
-    dbus_message_unref(msg);
+    virDBusMessageUnref(msg);
     return ret;
 }
 

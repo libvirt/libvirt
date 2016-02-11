@@ -1398,7 +1398,7 @@ int virDBusCreateMethodV(DBusMessage **call,
     }
 
     if (virDBusMessageEncodeArgs(*call, types, args) < 0) {
-        dbus_message_unref(*call);
+        virDBusMessageUnref(*call);
         *call = NULL;
         goto cleanup;
     }
@@ -1467,7 +1467,7 @@ int virDBusCreateReplyV(DBusMessage **reply,
     }
 
     if (virDBusMessageEncodeArgs(*reply, types, args) < 0) {
-        dbus_message_unref(*reply);
+        virDBusMessageUnref(*reply);
         *reply = NULL;
         goto cleanup;
     }
@@ -1586,7 +1586,7 @@ virDBusCall(DBusConnection *conn,
         if (ret == 0 && replyout)
             *replyout = reply;
         else
-            dbus_message_unref(reply);
+            virDBusMessageUnref(reply);
     }
     return ret;
 }
@@ -1650,8 +1650,7 @@ int virDBusCallMethod(DBusConnection *conn,
     ret = virDBusCall(conn, call, replyout, error);
 
  cleanup:
-    if (call)
-        dbus_message_unref(call);
+    virDBusMessageUnref(call);
     return ret;
 }
 
@@ -1727,7 +1726,7 @@ static int virDBusIsServiceInList(const char *listMethod, const char *name)
     }
 
  cleanup:
-    dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
     return ret;
 }
 
@@ -1763,7 +1762,8 @@ int virDBusIsServiceRegistered(const char *name)
 
 void virDBusMessageUnref(DBusMessage *msg)
 {
-    dbus_message_unref(msg);
+    if (msg)
+        dbus_message_unref(msg);
 }
 
 #else /* ! WITH_DBUS */

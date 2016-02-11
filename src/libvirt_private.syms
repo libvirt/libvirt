@@ -1370,6 +1370,7 @@ virDBusHasSystemBus;
 virDBusMessageDecode;
 virDBusMessageEncode;
 virDBusMessageRead;
+virDBusMessageUnref;
 virDBusSetSharedBus;
 
 

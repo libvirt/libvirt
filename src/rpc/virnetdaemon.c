@@ -374,7 +374,7 @@ virNetDaemonGotInhibitReply(DBusPendingCall *pending,
             VIR_FORCE_CLOSE(fd);
         }
     }
-    dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
 
  cleanup:
     virObjectUnlock(dmn);
@@ -426,7 +426,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                                      dmn, NULL);
         dmn->autoShutdownCallingInhibit = true;
     }
-    dbus_message_unref(message);
+    virDBusMessageUnref(message);
 }
 #endif
 

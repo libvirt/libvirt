@@ -28,7 +28,6 @@
 # else
 #  define DBusConnection void
 #  define DBusMessage void
-#  define dbus_message_unref(m) do {} while (0)
 # endif
 # include "internal.h"
 

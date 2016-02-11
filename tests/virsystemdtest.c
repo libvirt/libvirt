@@ -28,6 +28,7 @@
 # include <dbus/dbus.h>
 
 # include "virsystemd.h"
+# include "virdbus.h"
 # include "virlog.h"
 # include "virmock.h"
 # define VIR_FROM_THIS VIR_FROM_NONE
@@ -151,7 +152,7 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
     return reply;
 
  error:
-    dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
     return NULL;
 }
 

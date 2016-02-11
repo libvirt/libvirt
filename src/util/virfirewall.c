@@ -822,8 +822,7 @@ virFirewallApplyRuleFirewallD(virFirewallRulePtr rule,
 
  cleanup:
     virResetError(&error);
-    if (reply)
-        dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
     return ret;
 }
 

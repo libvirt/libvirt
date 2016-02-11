@@ -179,8 +179,7 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
     return reply;
 
  error:
-    if (reply)
-        dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
     reply = NULL;
     if (error && !dbus_error_is_set(error))
         dbus_set_error_const(error,

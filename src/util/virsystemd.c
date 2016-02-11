@@ -225,7 +225,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
 
  cleanup:
     VIR_FREE(object);
-    dbus_message_unref(reply);
+    virDBusMessageUnref(reply);
 
     return name;
 }
