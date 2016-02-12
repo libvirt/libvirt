@@ -5068,11 +5068,10 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
                 goto endjob;
             if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0)
                 goto endjob;
-        } else {
-            if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu),
-                                      pcpumap) < 0)
-                goto endjob;
         }
+
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), pcpumap) < 0)
+            goto endjob;
 
         virBitmapFree(vcpuinfolive->cpumask);
         vcpuinfolive->cpumask = pcpumaplive;
