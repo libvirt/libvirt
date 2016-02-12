@@ -5066,20 +5066,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
                                    false, &cgroup_vcpu) < 0)
                 goto endjob;
-            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("failed to set cpuset.cpus in cgroup"
-                                 " for vcpu %d"), vcpu);
+            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0)
                 goto endjob;
-            }
         } else {
             if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu),
-                                      pcpumap) < 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("failed to set cpu affinity for vcpu %d"),
-                               vcpu);
+                                      pcpumap) < 0)
                 goto endjob;
-            }
         }
 
         virBitmapFree(vcpuinfolive->cpumask);
