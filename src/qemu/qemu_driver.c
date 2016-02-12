@@ -18965,7 +18965,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     for (i = 0; i < virDomainDefGetVcpus(dom->def); i++) {
         snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%zu.state", i);
+                 "vcpu.%u.state", cpuinfo[i].number);
         if (virTypedParamsAddInt(&record->params,
                                  &record->nparams,
                                  maxparams,
@@ -18978,7 +18978,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
             continue;
 
         snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%zu.time", i);
+                 "vcpu.%u.time", cpuinfo[i].number);
         if (virTypedParamsAddULLong(&record->params,
                                     &record->nparams,
                                     maxparams,
@@ -18986,7 +18986,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                     cpuinfo[i].cpuTime) < 0)
             goto cleanup;
         snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%zu.wait", i);
+                 "vcpu.%u.wait", cpuinfo[i].number);
         if (virTypedParamsAddULLong(&record->params,
                                     &record->nparams,
                                     maxparams,
