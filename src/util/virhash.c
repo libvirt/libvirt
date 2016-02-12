@@ -579,13 +579,16 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
  * Iterates over every element in the hash table, invoking the
  * 'iter' callback. The callback is allowed to remove the current element
  * using virHashRemoveEntry but calling other virHash* functions is prohibited.
+ * If @iter fails and returns a negative value, the evaluation is stopped and -1
+ * is returned.
  *
- * Returns number of items iterated over upon completion, -1 on failure
+ * Returns 0 on success or -1 on failure.
  */
-ssize_t
+int
 virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
 {
-    size_t i, count = 0;
+    size_t i;
+    int ret = -1;
 
     if (table == NULL || iter == NULL)
         return -1;
@@ -599,19 +602,23 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
         virHashEntryPtr entry = table->table[i];
         while (entry) {
             virHashEntryPtr next = entry->next;
-
             table->current = entry;
-            iter(entry->payload, entry->name, data);
+            ret = iter(entry->payload, entry->name, data);
             table->current = NULL;
 
-            count++;
+            if (ret < 0)
+                goto cleanup;
+
             entry = next;
         }
     }
-    table->iterating = false;
 
-    return count;
+    ret = 0;
+ cleanup:
+    table->iterating = false;
+    return ret;
 }
+
 
 /**
  * virHashRemoveSet

@@ -61,24 +61,26 @@ testHashCheckForEachCount(void *payload ATTRIBUTE_UNUSED,
                           const void *name ATTRIBUTE_UNUSED,
                           void *data ATTRIBUTE_UNUSED)
 {
+    size_t *count = data;
+    *count += 1;
     return 0;
 }
 
 static int
 testHashCheckCount(virHashTablePtr hash, size_t count)
 {
-    ssize_t iter_count = 0;
+    size_t iter_count = 0;
 
     if (virHashSize(hash) != count) {
-        VIR_TEST_VERBOSE("\nhash contains %zu instead of %zu elements\n",
-                  (size_t)virHashSize(hash), count);
+        VIR_TEST_VERBOSE("\nhash contains %zd instead of %zu elements\n",
+                         virHashSize(hash), count);
         return -1;
     }
 
-    iter_count = virHashForEach(hash, testHashCheckForEachCount, NULL);
+    virHashForEach(hash, testHashCheckForEachCount, &iter_count);
     if (count != iter_count) {
-        VIR_TEST_VERBOSE("\nhash claims to have %zu elements but iteration finds %zu\n",
-                  count, (size_t)iter_count);
+        VIR_TEST_VERBOSE("\nhash claims to have %zu elements but iteration"
+                         "finds %zu\n", count, iter_count);
         return -1;
     }
 
@@ -250,18 +252,13 @@ testHashRemoveForEach(const void *data)
 {
     const struct testInfo *info = data;
     virHashTablePtr hash;
-    int count;
     int ret = -1;
 
     if (!(hash = testHashInit(0)))
         return -1;
 
-    count = virHashForEach(hash, (virHashIterator) info->data, hash);
-
-    if (count != ARRAY_CARDINALITY(uuids)) {
-        VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries,"
-                  " %d != %zu\n",
-                  count, ARRAY_CARDINALITY(uuids));
+    if (virHashForEach(hash, (virHashIterator) info->data, hash)) {
+        VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries");
         goto cleanup;
     }
 
@@ -343,18 +340,13 @@ static int
 testHashForEach(const void *data ATTRIBUTE_UNUSED)
 {
     virHashTablePtr hash;
-    int count;
     int ret = -1;
 
     if (!(hash = testHashInit(0)))
         return -1;
 
-    count = virHashForEach(hash, testHashForEachIter, hash);
-
-    if (count != ARRAY_CARDINALITY(uuids)) {
-        VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries,"
-                  " %d != %zu\n",
-                  count, ARRAY_CARDINALITY(uuids));
+    if (virHashForEach(hash, testHashForEachIter, hash)) {
+        VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries");
         goto cleanup;
     }
 
