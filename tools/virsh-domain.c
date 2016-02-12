@@ -6374,6 +6374,68 @@ virshPrintPinInfo(vshControl *ctl,
     return true;
 }
 
+
+static bool
+virshVcpuPinQuery(vshControl *ctl,
+                  virDomainPtr dom,
+                  unsigned int vcpu,
+                  bool got_vcpu,
+                  int maxcpu,
+                  unsigned int flags)
+{
+    unsigned char *cpumap = NULL;
+    int cpumaplen;
+    size_t i;
+    int ncpus;
+    bool ret = false;
+
+    if ((ncpus = virshCPUCountCollect(ctl, dom, flags, true)) < 0) {
+        if (ncpus == -1) {
+            if (flags & VIR_DOMAIN_AFFECT_LIVE)
+                vshError(ctl, "%s", _("cannot get vcpupin for offline domain"));
+            else
+                vshError(ctl, "%s", _("cannot get vcpupin for transient domain"));
+        }
+        return false;
+    }
+
+    if (got_vcpu && vcpu >= ncpus) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE ||
+            (!(flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+             virDomainIsActive(dom) == 1))
+            vshError(ctl,
+                     _("vcpu %d is out of range of live cpu count %d"),
+                     vcpu, ncpus);
+        else
+            vshError(ctl,
+                     _("vcpu %d is out of range of persistent cpu count %d"),
+                     vcpu, ncpus);
+        return false;
+    }
+
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    cpumap = vshMalloc(ctl, ncpus * cpumaplen);
+    if ((ncpus = virDomainGetVcpuPinInfo(dom, ncpus, cpumap,
+                                         cpumaplen, flags)) >= 0) {
+        vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
+        vshPrintExtra(ctl, "----------------------------------\n");
+        for (i = 0; i < ncpus; i++) {
+            if (got_vcpu && i != vcpu)
+                continue;
+
+            vshPrint(ctl, "%4zu: ", i);
+            ret = virshPrintPinInfo(ctl, VIR_GET_CPUMAP(cpumap, cpumaplen, i),
+                                    cpumaplen);
+            vshPrint(ctl, "\n");
+            if (!ret)
+                break;
+        }
+    }
+
+    return ret;
+}
+
+
 static unsigned char *
 virshParseCPUList(vshControl *ctl, int *cpumaplen,
                   const char *cpulist, int maxcpu)
@@ -6416,8 +6478,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     unsigned char *cpumap = NULL;
     int cpumaplen;
-    int maxcpu, ncpus;
-    size_t i;
+    int maxcpu;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -6456,63 +6517,23 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
     /* Query mode: show CPU affinity information then exit.*/
     if (!cpulist) {
-        if ((ncpus = virshCPUCountCollect(ctl, dom, flags, true)) < 0) {
-            if (ncpus == -1) {
-                if (flags & VIR_DOMAIN_AFFECT_LIVE)
-                    vshError(ctl, "%s", _("cannot get vcpupin for offline domain"));
-                else
-                    vshError(ctl, "%s", _("cannot get vcpupin for transient domain"));
-            }
-            goto cleanup;
-        }
-
-        if (got_vcpu && vcpu >= ncpus) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE ||
-                (!(flags & VIR_DOMAIN_AFFECT_CONFIG) &&
-                 virDomainIsActive(dom) == 1))
-                vshError(ctl,
-                         _("vcpu %d is out of range of live cpu count %d"),
-                         vcpu, ncpus);
-            else
-                vshError(ctl,
-                         _("vcpu %d is out of range of persistent cpu count %d"),
-                         vcpu, ncpus);
-            goto cleanup;
-        }
-
-        cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-        cpumap = vshMalloc(ctl, ncpus * cpumaplen);
-        if ((ncpus = virDomainGetVcpuPinInfo(dom, ncpus, cpumap,
-                                             cpumaplen, flags)) >= 0) {
-            vshPrintExtra(ctl, "%s %s\n", _("VCPU:"), _("CPU Affinity"));
-            vshPrintExtra(ctl, "----------------------------------\n");
-            for (i = 0; i < ncpus; i++) {
-                if (got_vcpu && i != vcpu)
-                    continue;
-
-                vshPrint(ctl, "%4zu: ", i);
-                ret = virshPrintPinInfo(ctl, VIR_GET_CPUMAP(cpumap, cpumaplen, i),
-                                        cpumaplen);
-                vshPrint(ctl, "\n");
-                if (!ret)
-                    break;
-            }
-        }
-    } else {
-        /* Pin mode: pinning specified vcpu to specified physical cpus*/
-        if (!(cpumap = virshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
-            goto cleanup;
-
-        /* use old API without any explicit flags */
-        if (flags == VIR_DOMAIN_AFFECT_CURRENT && !current) {
-            if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
-                goto cleanup;
-        } else {
-            if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0)
-                goto cleanup;
-        }
-        ret = true;
+        ret = virshVcpuPinQuery(ctl, dom, vcpu, got_vcpu, maxcpu, flags);
+        goto cleanup;
     }
+
+    /* Pin mode: pinning specified vcpu to specified physical cpus*/
+    if (!(cpumap = virshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
+        goto cleanup;
+
+    /* use old API without any explicit flags */
+    if (flags == VIR_DOMAIN_AFFECT_CURRENT && !current) {
+        if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
+            goto cleanup;
+    } else {
+        if (virDomainPinVcpuFlags(dom, vcpu, cpumap, cpumaplen, flags) != 0)
+            goto cleanup;
+    }
+    ret = true;
 
  cleanup:
     VIR_FREE(cpumap);
