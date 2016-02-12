@@ -2110,6 +2110,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     }
     virBufferAsprintf(&buf, "%s ", lvl);
     virBufferVasprintf(&buf, msg_format, ap);
+    virBufferTrim(&buf, "\n", -1);
     virBufferAddChar(&buf, '\n');
 
     if (virBufferError(&buf))
@@ -2117,10 +2118,6 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
 
     str = virBufferContentAndReset(&buf);
     len = strlen(str);
-    if (len > 1 && str[len - 2] == '\n') {
-        str[len - 1] = '\0';
-        len--;
-    }
 
     /* write log */
     if (safewrite(ctl->log_fd, str, len) < 0)
