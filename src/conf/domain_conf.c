@@ -1473,6 +1473,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
                                  int hostcpus,
                                  virBitmapPtr autoCpuset)
 {
+    int maxvcpus = virDomainDefGetVcpusMax(def);
     virBitmapPtr allcpumap = NULL;
     size_t i;
 
@@ -1484,16 +1485,9 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
 
     virBitmapSetAll(allcpumap);
 
-    /* Clamp to actual number of vcpus */
-    if (ncpumaps > virDomainDefGetVcpus(def))
-        ncpumaps = virDomainDefGetVcpus(def);
-
-    for (i = 0; i < ncpumaps; i++) {
+    for (i = 0; i < maxvcpus && i < ncpumaps; i++) {
         virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
-
-        if (!vcpu->online)
-            continue;
 
         if (vcpu->cpumask)
             bitmap = vcpu->cpumask;
@@ -1509,7 +1503,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
     }
 
     virBitmapFree(allcpumap);
-    return ncpumaps;
+    return i;
 }
 
 
