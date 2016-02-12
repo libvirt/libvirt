@@ -6432,9 +6432,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
-    /* none of the options were specified */
-    if (!current && !live && !config)
-        flags = -1;
 
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0)
         return false;
@@ -6459,11 +6456,6 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
     /* Query mode: show CPU affinity information then exit.*/
     if (!cpulist) {
-        /* When query mode and neither "live", "config" nor "current"
-         * is specified, set VIR_DOMAIN_AFFECT_CURRENT as flags */
-        if (flags == -1)
-            flags = VIR_DOMAIN_AFFECT_CURRENT;
-
         if ((ncpus = virshCPUCountCollect(ctl, dom, flags, true)) < 0) {
             if (ncpus == -1) {
                 if (flags & VIR_DOMAIN_AFFECT_LIVE)
@@ -6511,7 +6503,8 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         if (!(cpumap = virshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
             goto cleanup;
 
-        if (flags == -1) {
+        /* use old API without any explicit flags */
+        if (flags == VIR_DOMAIN_AFFECT_CURRENT && !current) {
             if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0)
                 goto cleanup;
         } else {
