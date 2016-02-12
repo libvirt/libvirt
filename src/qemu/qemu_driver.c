@@ -4760,9 +4760,6 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                                      VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
         goto cleanup;
 
-    virBitmapFree(vcpuinfo->cpumask);
-    vcpuinfo->cpumask = NULL;
-
     ret = 0;
 
  cleanup:
@@ -5022,36 +5019,19 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (def) {
-        if (!(vcpuinfolive = virDomainDefGetVcpu(def, vcpu))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu %d is out of range of live cpu count %d"),
-                           vcpu, virDomainDefGetVcpus(def));
-            goto endjob;
-        }
-
-        if (!vcpuinfolive->online) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("setting cpu pinning for inactive vcpu '%d' is not "
-                             "supported"), vcpu);
-            goto endjob;
-        }
+    if (def && !(vcpuinfolive = virDomainDefGetVcpu(def, vcpu))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vcpu %d is out of range of live cpu count %d"),
+                       vcpu, virDomainDefGetVcpus(def));
+        goto endjob;
     }
 
-    if (persistentDef) {
-        if (!(vcpuinfopersist = virDomainDefGetVcpu(persistentDef, vcpu))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu %d is out of range of persistent cpu count %d"),
-                           vcpu, virDomainDefGetVcpus(persistentDef));
-            goto endjob;
-        }
-
-        if (!vcpuinfopersist->online) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("setting cpu pinning for inactive vcpu '%d' is not "
-                             "supported"), vcpu);
-            goto endjob;
-        }
+    if (persistentDef &&
+        !(vcpuinfopersist = virDomainDefGetVcpu(persistentDef, vcpu))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vcpu %d is out of range of persistent cpu count %d"),
+                       vcpu, virDomainDefGetVcpus(persistentDef));
+        goto endjob;
     }
 
     if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
@@ -5074,17 +5054,19 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
             goto endjob;
         }
 
-        /* Configure the corresponding cpuset cgroup before set affinity. */
-        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
-                                   false, &cgroup_vcpu) < 0)
-                goto endjob;
-            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0)
+        if (vcpuinfolive->online) {
+            /* Configure the corresponding cpuset cgroup before set affinity. */
+            if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
+                                       false, &cgroup_vcpu) < 0)
+                    goto endjob;
+                if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0)
+                    goto endjob;
+            }
+
+            if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), pcpumap) < 0)
                 goto endjob;
         }
-
-        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), pcpumap) < 0)
-            goto endjob;
 
         virBitmapFree(vcpuinfolive->cpumask);
         vcpuinfolive->cpumask = pcpumaplive;
