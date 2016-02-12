@@ -292,13 +292,14 @@ virChrdevsPtr virChrdevAlloc(void)
 /**
  * Helper to clear stream callbacks when freeing the hash
  */
-static void virChrdevFreeClearCallbacks(void *payload,
-                                         const void *name ATTRIBUTE_UNUSED,
-                                         void *data ATTRIBUTE_UNUSED)
+static int virChrdevFreeClearCallbacks(void *payload,
+                                       const void *name ATTRIBUTE_UNUSED,
+                                       void *data ATTRIBUTE_UNUSED)
 {
     virStreamPtr st = payload;
 
     virFDStreamSetInternalCloseCb(st, NULL, NULL, NULL);
+    return 0;
 }
 
 /**

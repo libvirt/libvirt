@@ -738,8 +738,8 @@ struct getKeysIter
     size_t arrayIdx;
 };
 
-static void virHashGetKeysIterator(void *payload,
-                                   const void *key, void *data)
+static int virHashGetKeysIterator(void *payload,
+                                  const void *key, void *data)
 {
     struct getKeysIter *iter = data;
 
@@ -747,6 +747,7 @@ static void virHashGetKeysIterator(void *payload,
     iter->sortArray[iter->arrayIdx].value = payload;
 
     iter->arrayIdx++;
+    return 0;
 }
 
 typedef int (*qsort_comp)(const void *, const void *);

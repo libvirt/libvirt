@@ -4399,7 +4399,7 @@ struct virNetworkObjListData {
     bool error;
 };
 
-static void
+static int
 virNetworkObjListPopulate(void *payload,
                           const void *name ATTRIBUTE_UNUSED,
                           void *opaque)
@@ -4409,7 +4409,7 @@ virNetworkObjListPopulate(void *payload,
     virNetworkPtr net = NULL;
 
     if (data->error)
-        return;
+        return 0;
 
     virObjectLock(obj);
 
@@ -4434,6 +4434,7 @@ virNetworkObjListPopulate(void *payload,
 
  cleanup:
     virObjectUnlock(obj);
+    return 0;
 }
 
 int
@@ -4478,7 +4479,7 @@ struct virNetworkObjListForEachHelperData {
     int ret;
 };
 
-static void
+static int
 virNetworkObjListForEachHelper(void *payload,
                                const void *name ATTRIBUTE_UNUSED,
                                void *opaque)
@@ -4487,6 +4488,7 @@ virNetworkObjListForEachHelper(void *payload,
 
     if (data->callback(payload, data->opaque) < 0)
         data->ret = -1;
+    return 0;
 }
 
 /**
@@ -4524,7 +4526,7 @@ struct virNetworkObjListGetHelperData {
     bool error;
 };
 
-static void
+static int
 virNetworkObjListGetHelper(void *payload,
                            const void *name ATTRIBUTE_UNUSED,
                            void *opaque)
@@ -4533,11 +4535,11 @@ virNetworkObjListGetHelper(void *payload,
     virNetworkObjPtr obj = payload;
 
     if (data->error)
-        return;
+        return 0;
 
     if (data->nnames >= 0 &&
         data->got == data->nnames)
-        return;
+        return 0;
 
     virObjectLock(obj);
 
@@ -4557,6 +4559,7 @@ virNetworkObjListGetHelper(void *payload,
 
  cleanup:
     virObjectUnlock(obj);
+    return 0;
 }
 
 int

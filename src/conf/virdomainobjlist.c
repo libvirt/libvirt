@@ -607,7 +607,7 @@ struct virDomainObjListData {
 };
 
 
-static void
+static int
 virDomainObjListCount(void *payload,
                       const void *name ATTRIBUTE_UNUSED,
                       void *opaque)
@@ -627,6 +627,7 @@ virDomainObjListCount(void *payload,
     }
  cleanup:
     virObjectUnlock(obj);
+    return 0;
 }
 
 
@@ -653,7 +654,7 @@ struct virDomainIDData {
 };
 
 
-static void
+static int
 virDomainObjListCopyActiveIDs(void *payload,
                               const void *name ATTRIBUTE_UNUSED,
                               void *opaque)
@@ -668,6 +669,7 @@ virDomainObjListCopyActiveIDs(void *payload,
         data->ids[data->numids++] = obj->def->id;
  cleanup:
     virObjectUnlock(obj);
+    return 0;
 }
 
 
@@ -697,7 +699,7 @@ struct virDomainNameData {
 };
 
 
-static void
+static int
 virDomainObjListCopyInactiveNames(void *payload,
                                   const void *name ATTRIBUTE_UNUSED,
                                   void *opaque)
@@ -706,7 +708,7 @@ virDomainObjListCopyInactiveNames(void *payload,
     struct virDomainNameData *data = opaque;
 
     if (data->oom)
-        return;
+        return 0;
 
     virObjectLock(obj);
     if (data->filter &&
@@ -720,6 +722,7 @@ virDomainObjListCopyInactiveNames(void *payload,
     }
  cleanup:
     virObjectUnlock(obj);
+    return 0;
 }
 
 
@@ -753,7 +756,7 @@ struct virDomainListIterData {
 };
 
 
-static void
+static int
 virDomainObjListHelper(void *payload,
                        const void *name ATTRIBUTE_UNUSED,
                        void *opaque)
@@ -762,6 +765,7 @@ virDomainObjListHelper(void *payload,
 
     if (data->callback(payload, data->opaque) < 0)
         data->ret = -1;
+    return 0;
 }
 
 
@@ -850,7 +854,7 @@ struct virDomainListData {
 };
 
 
-static void
+static int
 virDomainObjListCollectIterator(void *payload,
                                 const void *name ATTRIBUTE_UNUSED,
                                 void *opaque)
@@ -858,6 +862,7 @@ virDomainObjListCollectIterator(void *payload,
     struct virDomainListData *data = opaque;
 
     data->vms[data->nvms++] = virObjectRef(payload);
+    return 0;
 }
 
 

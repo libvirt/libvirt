@@ -43,8 +43,10 @@ typedef void (*virHashDataFree) (void *payload, const void *name);
  * @data: user supplied data blob
  *
  * Callback to process a hash entry during iteration
+ *
+ * Returns -1 to stop the iteration, e.g. in case of an error
  */
-typedef void (*virHashIterator) (void *payload, const void *name, void *data);
+typedef int (*virHashIterator) (void *payload, const void *name, void *data);
 /**
  * virHashSearcher:
  * @payload: the data in the hash

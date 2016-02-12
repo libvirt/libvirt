@@ -401,9 +401,9 @@ struct _virQEMUSnapRemove {
     bool current;
 };
 
-void qemuDomainSnapshotDiscardAll(void *payload,
-                                  const void *name,
-                                  void *data);
+int qemuDomainSnapshotDiscardAll(void *payload,
+                                 const void *name,
+                                 void *data);
 
 int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm);

@@ -2836,9 +2836,9 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 }
 
 /* Hash iterator callback to discard multiple snapshots.  */
-void qemuDomainSnapshotDiscardAll(void *payload,
-                                  const void *name ATTRIBUTE_UNUSED,
-                                  void *data)
+int qemuDomainSnapshotDiscardAll(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
     virQEMUSnapRemovePtr curr = data;
@@ -2850,6 +2850,7 @@ void qemuDomainSnapshotDiscardAll(void *payload,
                                     curr->metadata_only);
     if (err && !curr->err)
         curr->err = err;
+    return 0;
 }
 
 int

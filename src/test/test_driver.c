@@ -6295,10 +6295,10 @@ struct _testSnapRemoveData {
     bool current;
 };
 
-static void
+static int
 testDomainSnapshotDiscardAll(void *payload,
-                          const void *name ATTRIBUTE_UNUSED,
-                          void *data)
+                             const void *name ATTRIBUTE_UNUSED,
+                             void *data)
 {
     virDomainSnapshotObjPtr snap = payload;
     testSnapRemoveDataPtr curr = data;
@@ -6306,6 +6306,7 @@ testDomainSnapshotDiscardAll(void *payload,
     if (snap->def->current)
         curr->current = true;
     virDomainSnapshotObjListRemove(curr->vm->snapshots, snap);
+    return 0;
 }
 
 typedef struct _testSnapReparentData testSnapReparentData;
@@ -6317,7 +6318,7 @@ struct _testSnapReparentData {
     virDomainSnapshotObjPtr last;
 };
 
-static void
+static int
 testDomainSnapshotReparentChildren(void *payload,
                                    const void *name ATTRIBUTE_UNUSED,
                                    void *data)
@@ -6326,7 +6327,7 @@ testDomainSnapshotReparentChildren(void *payload,
     testSnapReparentDataPtr rep = data;
 
     if (rep->err < 0)
-        return;
+        return 0;
 
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
@@ -6334,11 +6335,12 @@ testDomainSnapshotReparentChildren(void *payload,
     if (rep->parent->def &&
         VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
         rep->err = -1;
-        return;
+        return 0;
     }
 
     if (!snap->sibling)
         rep->last = snap;
+    return 0;
 }
 
 static int

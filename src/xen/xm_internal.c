@@ -1118,7 +1118,7 @@ struct xenXMListIteratorContext {
     char ** names;
 };
 
-static void
+static int
 xenXMListIterator(void *payload ATTRIBUTE_UNUSED,
                   const void *name,
                   void *data)
@@ -1127,10 +1127,10 @@ xenXMListIterator(void *payload ATTRIBUTE_UNUSED,
     virDomainDefPtr def = NULL;
 
     if (ctx->oom)
-        return;
+        return 0;
 
     if (ctx->count == ctx->max)
-        return;
+        return 0;
 
     def = xenDaemonLookupByName(ctx->conn, name);
     if (!def) {
@@ -1141,6 +1141,7 @@ xenXMListIterator(void *payload ATTRIBUTE_UNUSED,
     } else {
         virDomainDefFree(def);
     }
+    return 0;
 }
 
 

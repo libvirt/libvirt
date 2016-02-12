@@ -252,7 +252,7 @@ struct virCloseCallbacksData {
     bool oom;
 };
 
-static void
+static int
 virCloseCallbacksGetOne(void *payload,
                         const void *key,
                         void *opaque)
@@ -263,23 +263,24 @@ virCloseCallbacksGetOne(void *payload,
     unsigned char uuid[VIR_UUID_BUFLEN];
 
     if (virUUIDParse(uuidstr, uuid) < 0)
-        return;
+        return 0;
 
     VIR_DEBUG("conn=%p, thisconn=%p, uuid=%s, cb=%p",
               closeDef->conn, data->conn, uuidstr, closeDef->cb);
 
     if (data->conn != closeDef->conn || !closeDef->cb)
-        return;
+        return 0;
 
     if (VIR_EXPAND_N(data->list->entries,
                      data->list->nentries, 1) < 0) {
         data->oom = true;
-        return;
+        return 0;
     }
 
     memcpy(data->list->entries[data->list->nentries - 1].uuid,
            uuid, VIR_UUID_BUFLEN);
     data->list->entries[data->list->nentries - 1].callback = closeDef->cb;
+    return 0;
 }
 
 static virCloseCallbacksListPtr

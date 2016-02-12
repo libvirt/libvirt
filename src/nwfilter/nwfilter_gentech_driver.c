@@ -219,19 +219,20 @@ struct printString
 };
 
 
-static void
+static int
 printString(void *payload ATTRIBUTE_UNUSED, const void *name, void *data)
 {
     struct printString *ps = data;
 
     if ((STREQ((char *)name, NWFILTER_STD_VAR_IP) && !ps->reportIP) ||
         (STREQ((char *)name, NWFILTER_STD_VAR_MAC) && !ps->reportMAC))
-        return;
+        return 0;
 
     if (virBufferUse(&ps->buf) && ps->separator)
         virBufferAdd(&ps->buf, ps->separator, -1);
 
     virBufferAdd(&ps->buf, name, -1);
+    return 0;
 }
 
 /**

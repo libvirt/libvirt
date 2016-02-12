@@ -724,9 +724,9 @@ struct umlProcessAutoDestroyData {
     virConnectPtr conn;
 };
 
-static void umlProcessAutoDestroyDom(void *payload,
-                                     const void *name,
-                                     void *opaque)
+static int umlProcessAutoDestroyDom(void *payload,
+                                    const void *name,
+                                    void *opaque)
 {
     struct umlProcessAutoDestroyData *data = opaque;
     virConnectPtr conn = payload;
@@ -738,17 +738,17 @@ static void umlProcessAutoDestroyDom(void *payload,
     VIR_DEBUG("conn=%p uuidstr=%s thisconn=%p", conn, uuidstr, data->conn);
 
     if (data->conn != conn)
-        return;
+        return 0;
 
     if (virUUIDParse(uuidstr, uuid) < 0) {
         VIR_WARN("Failed to parse %s", uuidstr);
-        return;
+        return 0;
     }
 
     if (!(dom = virDomainObjListFindByUUID(data->driver->domains,
                                            uuid))) {
         VIR_DEBUG("No domain object to kill");
-        return;
+        return 0;
     }
 
     VIR_DEBUG("Killing domain");
@@ -766,6 +766,7 @@ static void umlProcessAutoDestroyDom(void *payload,
     if (event)
         umlDomainEventQueue(data->driver, event);
     virHashRemoveEntry(data->driver->autodestroy, uuidstr);
+    return 0;
 }
 
 /*

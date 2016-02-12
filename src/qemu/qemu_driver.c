@@ -2240,7 +2240,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
 
 
 /* Count how many snapshots in a set are external snapshots or checkpoints.  */
-static void
+static int
 qemuDomainSnapshotCountExternal(void *payload,
                                 const void *name ATTRIBUTE_UNUSED,
                                 void *data)
@@ -2250,6 +2250,7 @@ qemuDomainSnapshotCountExternal(void *payload,
 
     if (virDomainSnapshotIsExternal(snap))
         (*count)++;
+    return 0;
 }
 
 static int
@@ -10770,7 +10771,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 }
 
 
-static void
+static int
 qemuDomainBlockStatsGatherTotals(void *payload,
                                  const void *name ATTRIBUTE_UNUSED,
                                  void *opaque)
@@ -10791,6 +10792,7 @@ qemuDomainBlockStatsGatherTotals(void *payload,
     QEMU_BLOCK_STAT_TOTAL(rd_total_times);
     QEMU_BLOCK_STAT_TOTAL(flush_total_times);
 #undef QEMU_BLOCK_STAT_TOTAL
+    return 0;
 }
 
 
@@ -15548,7 +15550,7 @@ struct _virQEMUSnapReparent {
 };
 
 
-static void
+static int
 qemuDomainSnapshotReparentChildren(void *payload,
                                    const void *name ATTRIBUTE_UNUSED,
                                    void *data)
@@ -15557,7 +15559,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
     virQEMUSnapReparentPtr rep = data;
 
     if (rep->err < 0)
-        return;
+        return 0;
 
     VIR_FREE(snap->def->parent);
     snap->parent = rep->parent;
@@ -15565,7 +15567,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
     if (rep->parent->def &&
         VIR_STRDUP(snap->def->parent, rep->parent->def->name) < 0) {
         rep->err = -1;
-        return;
+        return 0;
     }
 
     if (!snap->sibling)
@@ -15573,6 +15575,7 @@ qemuDomainSnapshotReparentChildren(void *payload,
 
     rep->err = qemuDomainSnapshotWriteMetadata(rep->vm, snap, rep->caps,
                                                rep->cfg->snapshotDir);
+    return 0;
 }
 
 

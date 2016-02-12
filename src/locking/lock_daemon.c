@@ -649,7 +649,7 @@ struct virLockDaemonClientReleaseData {
     bool gotError;
 };
 
-static void
+static int
 virLockDaemonClientReleaseLockspace(void *payload,
                                     const void *name ATTRIBUTE_UNUSED,
                                     void *opaque)
@@ -664,6 +664,7 @@ virLockDaemonClientReleaseLockspace(void *payload,
         data->hadSomeLeases = true;
     else if (rc < 0)
         data->gotError = true;
+    return 0;
 }
 
 

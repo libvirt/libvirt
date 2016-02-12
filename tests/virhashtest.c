@@ -56,11 +56,12 @@ testHashInit(int size)
     return hash;
 }
 
-static void
+static int
 testHashCheckForEachCount(void *payload ATTRIBUTE_UNUSED,
                           const void *name ATTRIBUTE_UNUSED,
                           void *data ATTRIBUTE_UNUSED)
 {
+    return 0;
 }
 
 static int
@@ -183,7 +184,7 @@ testHashRemove(const void *data ATTRIBUTE_UNUSED)
 const int testHashCountRemoveForEachSome =
     ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
 
-static void
+static int
 testHashRemoveForEachSome(void *payload ATTRIBUTE_UNUSED,
                           const void *name,
                           void *data)
@@ -200,12 +201,13 @@ testHashRemoveForEachSome(void *payload ATTRIBUTE_UNUSED,
             break;
         }
     }
+    return 0;
 }
 
 
 const int testHashCountRemoveForEachAll = 0;
 
-static void
+static int
 testHashRemoveForEachAll(void *payload ATTRIBUTE_UNUSED,
                          const void *name,
                          void *data)
@@ -213,12 +215,13 @@ testHashRemoveForEachAll(void *payload ATTRIBUTE_UNUSED,
     virHashTablePtr hash = data;
 
     virHashRemoveEntry(hash, name);
+    return 0;
 }
 
 
 const int testHashCountRemoveForEachForbidden = ARRAY_CARDINALITY(uuids);
 
-static void
+static int
 testHashRemoveForEachForbidden(void *payload ATTRIBUTE_UNUSED,
                                const void *name,
                                void *data)
@@ -238,6 +241,7 @@ testHashRemoveForEachForbidden(void *payload ATTRIBUTE_UNUSED,
             break;
         }
     }
+    return 0;
 }
 
 
@@ -302,15 +306,15 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static void
+static int
 testHashIter(void *payload ATTRIBUTE_UNUSED,
              const void *name ATTRIBUTE_UNUSED,
              void *data ATTRIBUTE_UNUSED)
 {
-    return;
+    return 0;
 }
 
-static void
+static int
 testHashForEachIter(void *payload ATTRIBUTE_UNUSED,
                     const void *name ATTRIBUTE_UNUSED,
                     void *data)
@@ -332,6 +336,7 @@ testHashForEachIter(void *payload ATTRIBUTE_UNUSED,
     if (virHashForEach(hash, testHashIter, NULL) >= 0)
         VIR_TEST_VERBOSE("\niterating through hash in ForEach"
                 " should be forbidden");
+    return 0;
 }
 
 static int

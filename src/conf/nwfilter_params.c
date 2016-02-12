@@ -709,19 +709,19 @@ struct addToTableStruct {
 };
 
 
-static void
+static int
 addToTable(void *payload, const void *name, void *data)
 {
     struct addToTableStruct *atts = (struct addToTableStruct *)data;
     virNWFilterVarValuePtr val;
 
     if (atts->errOccurred)
-        return;
+        return 0;
 
     val = virNWFilterVarValueCopy((virNWFilterVarValuePtr)payload);
     if (!val) {
         atts->errOccurred = 1;
-        return;
+        return 0;
     }
 
     if (virNWFilterHashTablePut(atts->target, (const char *)name, val) < 0) {
@@ -731,6 +731,8 @@ addToTable(void *payload, const void *name, void *data)
         atts->errOccurred = 1;
         virNWFilterVarValueFree(val);
     }
+
+    return 0;
 }
 
 

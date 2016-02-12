@@ -1864,7 +1864,7 @@ virNWFilterSnoopPruneIter(const void *payload,
  * Iterator to write all leases of a single request to a file.
  * Call this function with the SnoopLock held.
  */
-static void
+static int
 virNWFilterSnoopSaveIter(void *payload,
                          const void *name ATTRIBUTE_UNUSED,
                          void *data)
@@ -1880,6 +1880,7 @@ virNWFilterSnoopSaveIter(void *payload,
         ignore_value(virNWFilterSnoopLeaseFileWrite(tfd, req->ifkey, ipl));
 
     virNWFilterSnoopReqUnlock(req);
+    return 0;
 }
 
 /*
