@@ -27,7 +27,8 @@
 # include <dlfcn.h>
 #endif
 
-#if defined(RTLD_NEXT)
+#if defined(__linux__) && defined(RTLD_NEXT)
+
 # include "virutil.h"
 # include "virerror.h"
 # include "viralloc.h"
@@ -174,7 +175,7 @@ mymain(void)
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virportallocatormock.so")
-#else /* ! defined(RTLD_NEXT) */
+#else /* defined(__linux__) && defined(RTLD_NEXT) */
 int
 main(void)
 {

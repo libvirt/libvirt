@@ -25,7 +25,7 @@
 # include <dlfcn.h>
 #endif
 
-#if defined(RTLD_NEXT)
+#if defined(__linux__) && defined(RTLD_NEXT)
 # include "internal.h"
 # include <sys/socket.h>
 # include <errno.h>
@@ -105,4 +105,6 @@ int bind(int sockfd ATTRIBUTE_UNUSED,
     return 0;
 }
 
-#endif /* ! defined(RTLD_NEXT) */
+#else /* defined(__linux__) && defined(RTLD_NEXT) */
+/* Nothing to override on other platforms. */
+#endif
