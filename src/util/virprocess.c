@@ -535,13 +535,10 @@ int virProcessSetAffinity(pid_t pid,
 {
     size_t i;
     cpuset_t mask;
-    bool set = false;
 
     CPU_ZERO(&mask);
     for (i = 0; i < virBitmapSize(map); i++) {
-        if (virBitmapGetBit(map, i, &set) < 0)
-            return -1;
-        if (set)
+        if (virBitmapIsBitSet(map, i))
             CPU_SET(i, &mask);
     }
 
