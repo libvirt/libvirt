@@ -15,7 +15,6 @@ Claudio Bley <claudio.bley@gmail.com>
 Cole Robinson <crobinso@redhat.com>
 Daniel Berrange <berrange@redhat.com>
 Daniel Veillard <veillard@redhat.com>
-Dmitry Guryanov <dguryanov@parallels.com>
 Doug Goldstein <cardoe@gentoo.org>
 Eric Blake <eblake@redhat.com>
 Erik Skultety <eskultet@redhat.com>
@@ -29,6 +28,7 @@ Laine Stump <laine@redhat.com>
 Mark McLoughlin <markmc@redhat.com>
 Martin Kletzander <mkletzan@redhat.com>
 Matthias Bolte <matthias.bolte@googlemail.com>
+Maxim Nestratov <mnestratov@virtuozzo.com>
 Michal Prívozník <mprivozn@redhat.com>
 Pavel Hrdina <phrdina@redhat.com>
 Peter Krempa <pkrempa@redhat.com>
@@ -45,6 +45,7 @@ Chris Lalancette <clalance@redhat.com>
 Dan Smith <danms@us.ibm.com>
 Dave Allan <dallan@redhat.com>
 Dave Leskovec <dlesko@linux.vnet.ibm.com>
+Dmitry Guryanov <dguryanov@parallels.com>
 Guannan Ren <gren@redhat.com>
 Jim Meyering <meyering@redhat.com>
 John Levon <john.levon@sun.com>
