@@ -77,6 +77,18 @@ const vshCmdDef *cmdSet;
 /* Bypass header poison */
 #undef strdup
 
+
+/* simple handler for oom conditions */
+static void
+vshErrorOOM(void)
+{
+    fflush(stdout);
+    fputs(_("error: Out of memory\n"), stderr);
+    fflush(stderr);
+    exit(EXIT_FAILURE);
+}
+
+
 double
 vshPrettyCapacity(unsigned long long val, const char **unit)
 {
@@ -1700,11 +1712,8 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
         return;
 
     va_start(ap, format);
-    if (virVasprintf(&str, format, ap) < 0) {
-        vshError(ctl, "%s", _("Out of memory"));
-        va_end(ap);
-        return;
-    }
+    if (virVasprintfQuiet(&str, format, ap) < 0)
+        vshErrorOOM();
     va_end(ap);
     fputs(str, stdout);
     VIR_FREE(str);
