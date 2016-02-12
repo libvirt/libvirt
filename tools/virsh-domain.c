@@ -6360,7 +6360,9 @@ static const vshCmdOptDef opts_vcpupin[] = {
  * Helper function to print vcpupin info.
  */
 static bool
-virshPrintPinInfo(unsigned char *cpumap, size_t cpumaplen)
+virshPrintPinInfo(vshControl *ctl,
+                  unsigned char *cpumap,
+                  size_t cpumaplen)
 {
     char *str = NULL;
 
@@ -6497,7 +6499,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
                     continue;
 
                 vshPrint(ctl, "%4zu: ", i);
-                ret = virshPrintPinInfo(VIR_GET_CPUMAP(cpumap, cpumaplen, i),
+                ret = virshPrintPinInfo(ctl, VIR_GET_CPUMAP(cpumap, cpumaplen, i),
                                         cpumaplen);
                 vshPrint(ctl, "\n");
                 if (!ret)
@@ -6606,7 +6608,7 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, "%s %s\n", _("emulator:"), _("CPU Affinity"));
             vshPrintExtra(ctl, "----------------------------------\n");
             vshPrintExtra(ctl, "       *: ");
-            ret = virshPrintPinInfo(cpumap, cpumaplen);
+            ret = virshPrintPinInfo(ctl, cpumap, cpumaplen);
             vshPrint(ctl, "\n");
         }
         goto cleanup;
@@ -6782,7 +6784,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < niothreads; i++) {
 
         vshPrint(ctl, " %-15u ", info[i]->iothread_id);
-        ignore_value(virshPrintPinInfo(info[i]->cpumap, info[i]->cpumaplen));
+        ignore_value(virshPrintPinInfo(ctl, info[i]->cpumap, info[i]->cpumaplen));
         vshPrint(ctl, "\n");
         virDomainIOThreadInfoFree(info[i]);
     }
@@ -7875,9 +7877,9 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         if (rem)
-            vshPrint("%s\n", _("Metadata removed"));
+            vshPrint(ctl, "%s\n", _("Metadata removed"));
         else
-            vshPrint("%s\n", _("Metadata modified"));
+            vshPrint(ctl, "%s\n", _("Metadata modified"));
     } else if (edit) {
 #define EDIT_GET_XML \
         virshDomainGetEditMetadata(ctl, dom, uri, flags)
@@ -7893,7 +7895,7 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
                               key, uri, flags) == 0)
 #include "virsh-edit.c"
 
-        vshPrint("%s\n", _("Metadata modified"));
+        vshPrint(ctl, "%s\n", _("Metadata modified"));
     } else {
         char *data;
         /* get */

@@ -1720,6 +1720,21 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
 }
 
 
+void
+vshPrint(vshControl *ctl ATTRIBUTE_UNUSED, const char *format, ...)
+{
+    va_list ap;
+    char *str;
+
+    va_start(ap, format);
+    if (virVasprintfQuiet(&str, format, ap) < 0)
+        vshErrorOOM();
+    va_end(ap);
+    fputs(str, stdout);
+    VIR_FREE(str);
+}
+
+
 bool
 vshTTYIsInterruptCharacter(vshControl *ctl ATTRIBUTE_UNUSED,
                            const char chr ATTRIBUTE_UNUSED)
