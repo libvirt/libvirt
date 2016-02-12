@@ -3341,6 +3341,7 @@ qemuProcessReconnect(void *opaque)
     size_t i;
     int ret;
     unsigned int stopFlags = 0;
+    bool jobStarted = false;
 
     VIR_FREE(data);
 
@@ -3351,13 +3352,14 @@ qemuProcessReconnect(void *opaque)
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
 
+    if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
+        goto error;
+    jobStarted = true;
+
     /* XXX If we ever gonna change pid file pattern, come up with
      * some intelligence here to deal with old paths. */
     if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, obj->def->name)))
-        goto killvm;
-
-    if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
-        goto killvm;
+        goto error;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -3427,7 +3429,6 @@ qemuProcessReconnect(void *opaque)
         VIR_DEBUG("Finishing shutdown sequence for domain %s",
                   obj->def->name);
         qemuProcessShutdownOrReboot(driver, obj);
-        qemuDomainObjEndJob(driver, obj);
         goto cleanup;
     }
 
@@ -3500,12 +3501,18 @@ qemuProcessReconnect(void *opaque)
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
-    qemuDomainObjEndJob(driver, obj);
-    goto cleanup;
+ cleanup:
+    if (jobStarted)
+        qemuDomainObjEndJob(driver, obj);
+    if (!virDomainObjIsActive(obj))
+        qemuDomainRemoveInactive(driver, obj);
+    virDomainObjEndAPI(&obj);
+    virObjectUnref(conn);
+    virObjectUnref(cfg);
+    virNWFilterUnlockFilterUpdates();
+    return;
 
  error:
-    qemuDomainObjEndJob(driver, obj);
- killvm:
     if (virDomainObjIsActive(obj)) {
         /* We can't get the monitor back, so must kill the VM
          * to remove danger of it ending up running twice if
@@ -3523,14 +3530,7 @@ qemuProcessReconnect(void *opaque)
         }
         qemuProcessStop(driver, obj, state, stopFlags);
     }
-
-    qemuDomainRemoveInactive(driver, obj);
-
- cleanup:
-    virDomainObjEndAPI(&obj);
-    virObjectUnref(conn);
-    virObjectUnref(cfg);
-    virNWFilterUnlockFilterUpdates();
+    goto cleanup;
 }
 
 static int
