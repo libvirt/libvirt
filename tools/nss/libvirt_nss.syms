@@ -1,0 +1,9 @@
+#
+# Officially exported symbols.
+#
+
+{
+global:
+    blah;
+local: *;
+};

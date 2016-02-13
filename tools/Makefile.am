@@ -417,6 +417,44 @@ CLEANFILES += wireshark/src/plugin.c
 
 endif WITH_WIRESHARK_DISSECTOR
 
+LIBVIRT_NSS_SYMBOL_FILE = \
+	$(srcdir)/nss/libvirt_nss.syms
+
+LIBVIRT_NSS_SOURCES = \
+	nss/libvirt_nss.c	\
+	nss/libvirt_nss.h
+
+noinst_LTLIBRARIES += nss/libnss_libvirt_impl.la
+nss_libnss_libvirt_impl_la_SOURCES = \
+	$(LIBVIRT_NSS_SOURCES)
+
+nss_libnss_libvirt_impl_la_CFLAGS = \
+	$(AM_CFLAGS)		\
+	$(WARN_CFLAGS)		\
+	$(PIE_CFLAGS)		\
+	$(COVERAGE_CFLAGS)
+
+if WITH_NSS
+nss_libnss_libvirt_la_SOURCES =
+nss_libnss_libvirt_la_LDFLAGS = \
+	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_NSS_SYMBOL_FILE)	\
+	$(AM_LDFLAGS) \
+	-module \
+	-export-dynamic \
+	-avoid-version \
+	-shared \
+	-shrext .so.2
+
+nss_libnss_libvirt_la_LIBADD =  \
+	nss/libnss_libvirt_impl.la
+
+lib_LTLIBRARIES = \
+	nss/libnss_libvirt.la
+
+endif WITH_NSS
+
+EXTRA_DIST += $(LIBVIRT_NSS_SYMBOL_FILE) \
+	$(LIBVIRT_NSS_SOURCES)
 
 clean-local:
 	-rm -rf wireshark/src/libvirt
