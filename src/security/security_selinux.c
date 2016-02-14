@@ -439,7 +439,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     dcon = virConfGetValue(selinux_conf, "content");
     if (! dcon || dcon->type != VIR_CONF_STRING || (! dcon->str)) {
         virReportSystemError(errno,
-                             _("cannot read 'file' value from selinux lxc contexts file '%s'"),
+                             _("cannot read 'content' value from selinux lxc contexts file '%s'"),
                              selinux_lxc_contexts_path());
         goto error;
     }
