@@ -364,3 +364,98 @@ _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
     VIR_FREE(addr);
     return ret;
 }
+
+enum nss_status
+_nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
+                              char *buffer, size_t buflen, int *errnop,
+                              int *herrnop, int32_t *ttlp)
+{
+    enum nss_status ret = NSS_STATUS_UNAVAIL;
+    leaseAddress *addr = NULL;
+    size_t naddr, i;
+    bool found = false;
+    int r;
+    size_t nameLen, need, idx;
+    struct gaih_addrtuple *r_tuple, *r_tuple_first = NULL;
+    char *r_name;
+
+    if ((r = findLease(name, AF_UNSPEC, &addr, &naddr, &found, errnop)) < 0) {
+        /* Error occurred. Return immediately. */
+        if (*errnop == EAGAIN) {
+            *herrnop = TRY_AGAIN;
+            return NSS_STATUS_TRYAGAIN;
+        } else {
+            *herrnop = NO_RECOVERY;
+            return NSS_STATUS_UNAVAIL;
+        }
+    }
+
+    if (!found) {
+        /* NOT found */
+        *errnop = ESRCH;
+        *herrnop = HOST_NOT_FOUND;
+        return NSS_STATUS_NOTFOUND;
+    } else if (!naddr) {
+        /* Found, but no data */
+        *errnop = ENXIO;
+        *herrnop = NO_DATA;
+        return NSS_STATUS_UNAVAIL;
+    }
+
+    /* Found and have data */
+
+    nameLen = strlen(name);
+    /* We need space for:
+     * a) name
+     * b) addresses */
+    need = ALIGN(nameLen + 1) + naddr * ALIGN(sizeof(struct gaih_addrtuple));
+
+    if (buflen < need) {
+        *errnop = ENOMEM;
+        *herrnop = TRY_AGAIN;
+        ret = NSS_STATUS_TRYAGAIN;
+        goto cleanup;
+    }
+
+    /* First, append name */
+    r_name = buffer;
+    memcpy(r_name, name, nameLen + 1);
+    idx = ALIGN(nameLen + 1);
+
+
+    /* Second, append addresses */
+    r_tuple_first = (struct gaih_addrtuple*) (buffer + idx);
+    for (i = 0; i < naddr; i++) {
+        int family = addr[i].af;
+
+        r_tuple = (struct gaih_addrtuple*) (buffer + idx);
+        if (i == naddr - 1)
+            r_tuple->next = NULL;
+        else
+            r_tuple->next = (struct gaih_addrtuple*) ((char*) r_tuple + ALIGN(sizeof(struct gaih_addrtuple)));
+        r_tuple->name = r_name;
+        r_tuple->family = family;
+        r_tuple->scopeid = 0;
+        memcpy(r_tuple->addr, addr[i].addr, FAMILY_ADDRESS_SIZE(family));
+
+        idx += ALIGN(sizeof(struct gaih_addrtuple));
+    }
+
+    /* At this point, idx == need */
+    DEBUG("Done idx:%zd need:%zd", idx, need);
+
+    if (*pat)
+        **pat = *r_tuple_first;
+    else
+        *pat = r_tuple_first;
+
+    if (ttlp)
+        *ttlp = 0;
+
+    /* Explicitly reset all error variables */
+    *errnop = 0;
+    *herrnop = NETDB_SUCCESS;
+    ret = NSS_STATUS_SUCCESS;
+ cleanup:
+    return ret;
+}

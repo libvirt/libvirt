@@ -45,4 +45,8 @@ enum nss_status
 _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
                               char *buffer, size_t buflen, int *errnop,
                               int *herrnop, int32_t *ttlp, char **canonp);
+enum nss_status
+_nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
+                              char *buffer, size_t buflen, int *errnop,
+                              int *herrnop, int32_t *ttlp);
 #endif /* __LIBVIRT_NSS_H__ */
