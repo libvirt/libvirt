@@ -429,10 +429,16 @@ nss_libnss_libvirt_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES)
 
 nss_libnss_libvirt_impl_la_CFLAGS = \
+	-DLIBVIRT_NSS		\
 	$(AM_CFLAGS)		\
 	$(WARN_CFLAGS)		\
 	$(PIE_CFLAGS)		\
-	$(COVERAGE_CFLAGS)
+	$(COVERAGE_CFLAGS)	\
+	$(LIBXML_CFLAGS)
+
+nss_libnss_libvirt_impl_la_LIBADD = \
+	../gnulib/lib/libgnu.la		\
+	../src/libvirt-nss.la
 
 if WITH_NSS
 nss_libnss_libvirt_la_SOURCES =

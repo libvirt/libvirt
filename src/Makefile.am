@@ -2946,6 +2946,63 @@ endif WITH_LIBVIRTD
 endif WITH_SECDRIVER_APPARMOR
 EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
+noinst_LTLIBRARIES += libvirt-nss.la
+
+libvirt_nss_la_SOURCES =		\
+		util/viralloc.c			\
+		util/viralloc.h			\
+		util/virbitmap.c		\
+		util/virbitmap.h		\
+		util/virbuffer.c		\
+		util/virbuffer.h		\
+		util/vircommand.c		\
+		util/vircommand.h		\
+		util/virerror.c			\
+		util/virerror.h			\
+		util/virfile.c			\
+		util/virfile.h			\
+		util/virjson.c			\
+		util/virjson.h			\
+		util/virkmod.c			\
+		util/virkmod.h			\
+		util/virlease.c			\
+		util/virlease.h			\
+		util/virlog.c			\
+		util/virlog.h			\
+		util/virobject.c		\
+		util/virobject.h		\
+		util/virpidfile.c		\
+		util/virpidfile.h		\
+		util/virprocess.c		\
+		util/virprocess.h		\
+		util/virsocketaddr.c	\
+		util/virsocketaddr.h	\
+		util/virstring.c		\
+		util/virstring.h		\
+		util/virthread.c		\
+		util/virthread.h		\
+		util/virthreadjob.c		\
+		util/virthreadjob.h		\
+		util/virtime.c			\
+		util/virtime.h			\
+		util/virutil.c			\
+		util/virutil.h			\
+		$(NULL)
+
+libvirt_nss_la_CFLAGS =			\
+		-DLIBVIRT_NSS			\
+		$(AM_CFLAGS)			\
+		$(YAJL_CFLAGS)			\
+		$(NULL)
+libvirt_nss_la_LDFLAGS =		\
+		$(AM_LDFLAGS)			\
+		$(NULL)
+
+libvirt_nss_la_LIBADD =			\
+		$(YAJL_LIBS)			\
+		$(NULL)
+
+
 install-data-local: install-init install-systemd
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"

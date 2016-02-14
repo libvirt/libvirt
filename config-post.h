@@ -43,3 +43,27 @@
 # undef WITH_YAJL
 # undef WITH_YAJL2
 #endif
+
+/*
+ * With the NSS module it's the same story as virt-login-shell. See the
+ * explanation above.
+ */
+#ifdef LIBVIRT_NSS
+# undef HAVE_LIBDEVMAPPER_H
+# undef HAVE_LIBNL
+# undef HAVE_LIBNL3
+# undef HAVE_LIBSASL2
+# undef WITH_CAPNG
+# undef WITH_CURL
+# undef WITH_DTRACE_PROBES
+# undef WITH_GNUTLS
+# undef WITH_GNUTLS_GCRYPT
+# undef WITH_MACVTAP
+# undef WITH_NUMACTL
+# undef WITH_SASL
+# undef WITH_SSH2
+# undef WITH_VIRTUALPORT
+# undef WITH_SECDRIVER_SELINUX
+# undef WITH_SECDRIVER_APPARMOR
+# undef WITH_CAPNG
+#endif /* LIBVIRT_NSS */

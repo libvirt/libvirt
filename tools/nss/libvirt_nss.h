@@ -32,5 +32,17 @@
 # include <nss.h>
 # include <netdb.h>
 
-int blah(int c);
+enum nss_status
+_nss_libvirt_gethostbyname_r(const char *name, struct hostent *result,
+                             char *buffer, size_t buflen, int *errnop,
+                             int *herrnop);
+
+enum nss_status
+_nss_libvirt_gethostbyname2_r(const char *name, int af, struct hostent *result,
+                              char *buffer, size_t buflen, int *errnop,
+                              int *herrnop);
+enum nss_status
+_nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
+                              char *buffer, size_t buflen, int *errnop,
+                              int *herrnop, int32_t *ttlp, char **canonp);
 #endif /* __LIBVIRT_NSS_H__ */

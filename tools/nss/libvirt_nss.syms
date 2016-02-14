@@ -4,6 +4,8 @@
 
 {
 global:
-    blah;
+    _nss_libvirt_gethostbyname_r;
+    _nss_libvirt_gethostbyname2_r;
+    _nss_libvirt_gethostbyname3_r;
 local: *;
 };

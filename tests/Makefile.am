@@ -65,7 +65,7 @@ GNULIB_LIBS = \
        ../gnulib/lib/libgnu.la
 
 LDADDS = \
-        $(WARN_CFLAGS) \
+	$(WARN_CFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	$(GNULIB_LIBS) \
