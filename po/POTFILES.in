@@ -205,6 +205,7 @@ src/util/viriptables.c
 src/util/viriscsi.c
 src/util/virjson.c
 src/util/virkeyfile.c
+src/util/virlease.c
 src/util/virlockspace.c
 src/util/virlog.c
 src/util/virnetdev.c

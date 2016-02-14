@@ -126,6 +126,7 @@ UTIL_SOURCES =							\
 		util/virkeycode.c util/virkeycode.h		\
 		util/virkeyfile.c util/virkeyfile.h		\
 		util/virkeymaps.h				\
+		util/virlease.c util/virlease.h			\
 		util/virlockspace.c util/virlockspace.h		\
 		util/virlog.c util/virlog.h			\
 		util/virmacaddr.h util/virmacaddr.c		\

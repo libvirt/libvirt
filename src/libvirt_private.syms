@@ -1719,6 +1719,12 @@ virKModLoad;
 virKModUnload;
 
 
+# util/virlease.h
+virLeaseNew;
+virLeasePrintLeases;
+virLeaseReadCustomLeaseFile;
+
+
 # util/virlockspace.h
 virLockSpaceAcquireResource;
 virLockSpaceCreateResource;
