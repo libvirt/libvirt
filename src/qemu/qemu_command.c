@@ -4775,7 +4775,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 static int
 qemuBuildCpuArgStr(virQEMUDriverPtr driver,
                    const virDomainDef *def,
-                   const char *emulator,
                    virQEMUCapsPtr qemuCaps,
                    virArch hostarch,
                    char **opt,
@@ -4816,8 +4815,8 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
          */
         if (def->os.arch == VIR_ARCH_I686 &&
             ((hostarch == VIR_ARCH_X86_64 &&
-              strstr(emulator, "kvm")) ||
-             strstr(emulator, "x86_64"))) {
+              strstr(def->emulator, "kvm")) ||
+             strstr(def->emulator, "x86_64"))) {
             virBufferAdd(&buf, default_model, -1);
             have_cpu = true;
         }
@@ -6639,7 +6638,6 @@ qemuBuildCommandLine(virConnectPtr conn,
 {
     virErrorPtr originalError = NULL;
     size_t i, j;
-    const char *emulator;
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *cpu;
     char *smp;
@@ -6694,8 +6692,6 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     virUUIDFormat(def->uuid, uuid);
 
-    emulator = def->emulator;
-
     if (!virQEMUDriverIsPrivileged(driver)) {
         /* If we have no cgroups then we can have no tunings that
          * require them */
@@ -6746,7 +6742,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         (def->virtType == VIR_DOMAIN_VIRT_QEMU))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DRIVE_BOOT);
 
-    cmd = virCommandNew(emulator);
+    cmd = virCommandNew(def->emulator);
 
     virCommandAddEnvPassCommon(cmd);
 
@@ -6768,7 +6764,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildCpuArgStr(driver, def, emulator, qemuCaps,
+    if (qemuBuildCpuArgStr(driver, def, qemuCaps,
                            hostarch, &cpu, &hasHwVirt, !!migrateURI) < 0)
         goto error;
 
@@ -6893,7 +6889,7 @@ qemuBuildCommandLine(virConnectPtr conn,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("the QEMU binary %s does not support smbios settings"),
-                           emulator);
+                           def->emulator);
             goto error;
         }
 
@@ -8018,7 +8014,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     if (def->tpm) {
-        if (qemuBuildTPMCommandLine(def, cmd, qemuCaps, emulator) < 0)
+        if (qemuBuildTPMCommandLine(def, cmd, qemuCaps, def->emulator) < 0)
             goto error;
     }
 
