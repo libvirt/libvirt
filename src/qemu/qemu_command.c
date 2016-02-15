@@ -154,32 +154,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "interleave");
 
 /**
- * qemuVirCommandGetDevSet:
- * @cmd: the command to modify
- * @fd: fd to reassign to the child
- *
- * Get the parameters for the QEMU path= parameter where a file
- * descriptor is accessed via a file descriptor set, for example
- * /dev/fdset/10. The file descriptor must previously have been
- * 'transferred' in a virCommandPassFD() call.
- */
-static char *
-qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
-{
-    char *result = NULL;
-    int idx = virCommandPassFDGetFDIndex(cmd, fd);
-
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("file descriptor %d has not been transferred"), fd);
-    }
-    return result;
-}
-
-
-/**
  * qemuPhysIfaceConnect:
  * @def: the definition of the VM (needed by 802.1Qbh and audit)
  * @driver: pointer to the driver instance
@@ -8933,6 +8907,32 @@ qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
                        _("file descriptor %d has not been transferred"), fd);
     }
 
+    return result;
+}
+
+
+/**
+ * qemuVirCommandGetDevSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU path= parameter where a file
+ * descriptor is accessed via a file descriptor set, for example
+ * /dev/fdset/10. The file descriptor must previously have been
+ * 'transferred' in a virCommandPassFD() call.
+ */
+static char *
+qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
     return result;
 }
 
