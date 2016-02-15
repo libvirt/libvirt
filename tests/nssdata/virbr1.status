@@ -1,0 +1,20 @@
+[
+    {
+        "ip-address": "192.168.122.199",
+        "mac-address": "52:54:00:a4:6f:93",
+        "hostname": "fedora",
+        "expiry-time": 1900000000
+    },
+    {
+        "ip-address": "2001:1234:dead:beef::2",
+        "mac-address": "52:54:00:04:be:64",
+        "hostname": "gentoo",
+        "expiry-time": 1900000000
+    },
+    {
+        "ip-address": "192.168.122.200",
+        "mac-address": "52:54:00:a4:6f:94",
+        "hostname": "fedora",
+        "expiry-time": 1
+    }
+]

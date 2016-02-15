@@ -108,6 +108,7 @@ EXTRA_DIST =		\
 	nodedevschemadata \
 	nodedevschematest \
 	nodeinfodata     \
+	nssdata \
 	nwfilterschematest \
 	nwfilterxml2firewalldata \
 	nwfilterxml2xmlin \
@@ -190,6 +191,7 @@ test_programs = virshtest sockettest \
 	vircaps2xmltest \
 	virnetdevtest \
 	virtypedparamtest \
+	nsstest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -421,6 +423,7 @@ test_libraries = libshunload.la \
 		virpcimock.la \
 		virnetdevmock.la \
 		nodeinfomock.la \
+		nssmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
@@ -1063,6 +1066,21 @@ nodeinfomock_la_SOURCES = \
 nodeinfomock_la_CFLAGS = $(AM_CFLAGS)
 nodeinfomock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 nodeinfomock_la_LIBADD = $(MOCKLIBS_LIBS)
+
+nsstest_SOURCES = \
+	nsstest.c testutils.h testutils.c
+nsstest_CFLAGS = \
+	$(AM_CFLAGS)	\
+	-I$(top_srcdir)/tools/nss
+nsstest_LDADD = \
+	$(LDADDS)	\
+	../tools/nss/libnss_libvirt_impl.la
+
+nssmock_la_SOURCES = \
+	nssmock.c
+nssmock_la_CFLAGS = $(AM_CFLAGS)
+nssmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+nssmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 virnetdevtest_SOURCES = \
 	virnetdevtest.c testutils.h testutils.c
