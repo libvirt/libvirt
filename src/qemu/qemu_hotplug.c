@@ -938,8 +938,9 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
         if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
             goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
-        if (qemuPhysIfaceConnect(vm->def, driver, net, tapfd, tapfdSize,
-                                 VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0)
+        if (qemuInterfaceDirectConnect(vm->def, driver, net,
+                                       tapfd, tapfdSize,
+                                       VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0)
             goto cleanup;
         iface_connected = true;
         if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)

@@ -26,6 +26,7 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_capabilities.h"
+#include "qemu_interface.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "passfd.h"
@@ -152,60 +153,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "bind",
               "preferred",
               "interleave");
-
-/**
- * qemuPhysIfaceConnect:
- * @def: the definition of the VM (needed by 802.1Qbh and audit)
- * @driver: pointer to the driver instance
- * @net: pointer to the VM's interface description with direct device type
- * @tapfd: array of file descriptor return value for the new device
- * @tapfdSize: number of file descriptors in @tapfd
- * @vmop: VM operation type
- *
- * Returns 0 on success or -1 in case of error.
- */
-int
-qemuPhysIfaceConnect(virDomainDefPtr def,
-                     virQEMUDriverPtr driver,
-                     virDomainNetDefPtr net,
-                     int *tapfd,
-                     size_t tapfdSize,
-                     virNetDevVPortProfileOp vmop)
-{
-    int ret = -1;
-    char *res_ifname = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_WITH_TAP;
-
-    if (net->model && STREQ(net->model, "virtio"))
-        macvlan_create_flags |= VIR_NETDEV_MACVLAN_VNET_HDR;
-
-    if (virNetDevMacVLanCreateWithVPortProfile(net->ifname,
-                                               &net->mac,
-                                               virDomainNetGetActualDirectDev(net),
-                                               virDomainNetGetActualDirectMode(net),
-                                               def->uuid,
-                                               virDomainNetGetActualVirtPortProfile(net),
-                                               &res_ifname,
-                                               vmop, cfg->stateDir,
-                                               tapfd, tapfdSize,
-                                               macvlan_create_flags) < 0)
-        goto cleanup;
-
-    virDomainAuditNetDevice(def, net, res_ifname, true);
-    VIR_FREE(net->ifname);
-    net->ifname = res_ifname;
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        while (tapfdSize--)
-            VIR_FORCE_CLOSE(tapfd[tapfdSize]);
-    }
-    virObjectUnref(cfg);
-    return ret;
-}
-
 
 /**
  * qemuCreateInBridgePortWithHelper:
@@ -8492,7 +8439,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
-        if (qemuPhysIfaceConnect(def, driver, net, tapfd, tapfdSize, vmop) < 0)
+        if (qemuInterfaceDirectConnect(def, driver, net,
+                                       tapfd, tapfdSize, vmop) < 0)
             goto cleanup;
     }
 

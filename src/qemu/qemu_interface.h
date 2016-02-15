@@ -1,6 +1,7 @@
 /*
  * qemu_interface.h: QEMU interface management
  *
+ * Copyright (C) 2014, 2016 Red Hat, Inc.
  * Copyright IBM Corp. 2014
  *
  * This library is free software; you can redistribute it and/or
@@ -25,10 +26,18 @@
 # define __QEMU_INTERFACE_H__
 
 # include "domain_conf.h"
+# include "qemu_conf.h"
 
 int qemuInterfaceStartDevice(virDomainNetDefPtr net);
 int qemuInterfaceStartDevices(virDomainDefPtr def);
 int qemuInterfaceStopDevice(virDomainNetDefPtr net);
 int qemuInterfaceStopDevices(virDomainDefPtr def);
+
+int qemuInterfaceDirectConnect(virDomainDefPtr def,
+                                virQEMUDriverPtr driver,
+                                virDomainNetDefPtr net,
+                                int *tapfd,
+                                size_t tapfdSize,
+                                virNetDevVPortProfileOp vmop);
 
 #endif /* __QEMU_INTERFACE_H__ */
