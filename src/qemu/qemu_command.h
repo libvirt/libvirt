@@ -30,6 +30,7 @@
 # include "capabilities.h"
 # include "qemu_conf.h"
 # include "qemu_domain.h"
+# include "qemu_domain_address.h"
 # include "qemu_capabilities.h"
 
 /* Config type for XML import/export conversions */
@@ -231,18 +232,6 @@ int qemuOpenVhostNet(virDomainDefPtr def,
                      size_t *vhostfdSize);
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
-
-int qemuDomainAssignAddresses(virDomainDefPtr def,
-                              virQEMUCapsPtr qemuCaps,
-                              virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
-                                      virQEMUCapsPtr qemuCaps);
-
-void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
-                                    virDomainDeviceInfoPtr info,
-                                    const char *devstr);
-
 
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);

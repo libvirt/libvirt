@@ -35,6 +35,7 @@
 #include "qemu_process.h"
 #include "qemu_processpriv.h"
 #include "qemu_domain.h"
+#include "qemu_domain_address.h"
 #include "qemu_cgroup.h"
 #include "qemu_capabilities.h"
 #include "qemu_monitor.h"

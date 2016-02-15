@@ -28,6 +28,7 @@
 #include "qemu_hotplugpriv.h"
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
+#include "qemu_domain_address.h"
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_interface.h"
