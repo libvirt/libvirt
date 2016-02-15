@@ -1,7 +1,7 @@
 /*
  * qemu_domain.h: QEMU domain private state
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -512,5 +512,14 @@ bool qemuDomainHasVcpuPids(virDomainObjPtr vm);
 pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpu);
 int qemuDomainDetectVcpuPids(virQEMUDriverPtr driver, virDomainObjPtr vm,
                              int asyncJob);
+
+bool qemuDomainSupportsNicdev(virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              virDomainNetDefPtr net);
+
+bool qemuDomainSupportsNetdev(virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              virDomainNetDefPtr net);
+
 
 #endif /* __QEMU_DOMAIN_H__ */

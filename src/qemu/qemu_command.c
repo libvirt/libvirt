@@ -153,35 +153,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "preferred",
               "interleave");
 
-static bool
-qemuDomainSupportsNicdev(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
-                         virDomainNetDefPtr net)
-{
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        return false;
-
-    /* non-virtio ARM nics require legacy -net nic */
-    if (((def->os.arch == VIR_ARCH_ARMV7L) ||
-        (def->os.arch == VIR_ARCH_AARCH64)) &&
-        net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO &&
-        net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
-        return false;
-
-    return true;
-}
-
-static bool
-qemuDomainSupportsNetdev(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
-                         virDomainNetDefPtr net)
-{
-    if (!qemuDomainSupportsNicdev(def, qemuCaps, net))
-        return false;
-    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
-}
-
-
 static int
 qemuBuildObjectCommandLinePropsInternal(const char *key,
                                         const virJSONValue *value,
