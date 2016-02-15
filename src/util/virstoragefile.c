@@ -490,7 +490,7 @@ vmdk4GetBackingStore(char **res,
     *res = NULL;
     /*
      * Technically this should have been VMDK, since
-     * VMDK spec / VMWare impl only support VMDK backed
+     * VMDK spec / VMware impl only support VMDK backed
      * by VMDK. QEMU isn't following this though and
      * does probing on VMDK backing files, hence we set
      * AUTO

@@ -190,7 +190,7 @@
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, UML, PowerHypervisor,
-# VMWare, libxenserver (xenapi), libxenlight (Xen 4.1 and newer),
+# VMware, libxenserver (xenapi), libxenlight (Xen 4.1 and newer),
 # or HyperV.
 %if 0%{?rhel}
     %define with_openvz 0

@@ -161,7 +161,7 @@
       <li><code>qcow</code>: QEMU v1 disk image format</li>
       <li><code>qcow2</code>: QEMU v2 disk image format</li>
       <li><code>qed</code>: QEMU Enhanced Disk image format</li>
-      <li><code>vmdk</code>: VMWare disk image format</li>
+      <li><code>vmdk</code>: VMware disk image format</li>
       <li><code>vpc</code>: VirtualPC disk image format</li>
     </ul>
     <p>

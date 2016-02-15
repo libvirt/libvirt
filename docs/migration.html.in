@@ -475,7 +475,7 @@
     </pre>
 
     <p>
-      Supported by Xen, QEMU, VMWare and VirtualBox drivers
+      Supported by Xen, QEMU, VMware and VirtualBox drivers
     </p>
 
     <h3><a name="scenarionativepeer2peer">Native migration, client to and peer2peer between, two libvirtd servers</a></h3>

@@ -550,7 +550,7 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
     vshPrint(ctl, " OpenVZ");
 #endif
 #ifdef WITH_VMWARE
-    vshPrint(ctl, " VMWare");
+    vshPrint(ctl, " VMware");
 #endif
 #ifdef WITH_PHYP
     vshPrint(ctl, " PHYP");

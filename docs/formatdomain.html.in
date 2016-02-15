@@ -1569,7 +1569,7 @@
       <dt><code>vmport</code></dt>
       <dd>Depending on the <code>state</code> attribute (values <code>on</code>,
         <code>off</code>, default <code>on</code>) enable or disable
-        the emulation of VMWare IO port, for vmmouse etc.
+        the emulation of VMware IO port, for vmmouse etc.
         <span class="since">Since 1.2.16</span>
       </dd>
       <dt><code>gic</code></dt>
