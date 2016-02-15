@@ -154,32 +154,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "interleave");
 
 /**
- * qemuVirCommandGetFDSet:
- * @cmd: the command to modify
- * @fd: fd to reassign to the child
- *
- * Get the parameters for the QEMU -add-fd command line option
- * for the given file descriptor. The file descriptor must previously
- * have been 'transferred' in a virCommandPassFD() call.
- * This function for example returns "set=10,fd=20".
- */
-static char *
-qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
-{
-    char *result = NULL;
-    int idx = virCommandPassFDGetFDIndex(cmd, fd);
-
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("file descriptor %d has not been transferred"), fd);
-    }
-
-    return result;
-}
-
-/**
  * qemuVirCommandGetDevSet:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
@@ -8932,6 +8906,33 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
  cleanup:
     virBufferFreeAndReset(&buf);
     return ret;
+}
+
+
+/**
+ * qemuVirCommandGetFDSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU -add-fd command line option
+ * for the given file descriptor. The file descriptor must previously
+ * have been 'transferred' in a virCommandPassFD() call.
+ * This function for example returns "set=10,fd=20".
+ */
+static char *
+qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
+
+    return result;
 }
 
 
