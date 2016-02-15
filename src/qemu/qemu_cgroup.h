@@ -29,9 +29,10 @@
 # include "domain_conf.h"
 # include "qemu_conf.h"
 
-int qemuSetImageCgroup(virDomainObjPtr vm,
-                       virStorageSourcePtr src,
-                       bool deny);
+int qemuSetupImageCgroup(virDomainObjPtr vm,
+                         virStorageSourcePtr src);
+int qemuTeardownImageCgroup(virDomainObjPtr vm,
+                            virStorageSourcePtr src);
 int qemuSetupDiskCgroup(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk);
 int qemuTeardownDiskCgroup(virDomainObjPtr vm,

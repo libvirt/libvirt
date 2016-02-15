@@ -99,11 +99,18 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
 
 
 int
-qemuSetImageCgroup(virDomainObjPtr vm,
-                   virStorageSourcePtr src,
-                   bool deny)
+qemuSetupImageCgroup(virDomainObjPtr vm,
+                     virStorageSourcePtr src)
 {
-    return qemuSetImageCgroupInternal(vm, src, deny, false);
+    return qemuSetImageCgroupInternal(vm, src, false, false);
+}
+
+
+int
+qemuTeardownImageCgroup(virDomainObjPtr vm,
+                        virStorageSourcePtr src)
+{
+    return qemuSetImageCgroupInternal(vm, src, true, false);
 }
 
 
@@ -133,7 +140,7 @@ qemuTeardownDiskCgroup(virDomainObjPtr vm,
     virStorageSourcePtr next;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (qemuSetImageCgroup(vm, next, true) < 0)
+        if (qemuSetImageCgroupInternal(vm, next, true, false) < 0)
             return -1;
     }
 
