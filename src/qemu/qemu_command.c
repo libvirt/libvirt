@@ -6859,95 +6859,6 @@ qemuBuildRNGDevStr(virDomainDefPtr def,
 }
 
 
-static char *qemuBuildTPMBackendStr(const virDomainDef *def,
-                                    virCommandPtr cmd,
-                                    virQEMUCapsPtr qemuCaps,
-                                    const char *emulator,
-                                    int *tpmfd, int *cancelfd)
-{
-    const virDomainTPMDef *tpm = def->tpm;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *type = virDomainTPMBackendTypeToString(tpm->type);
-    char *cancel_path = NULL, *devset = NULL;
-    const char *tpmdev;
-
-    *tpmfd = -1;
-    *cancelfd = -1;
-
-    virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
-
-    switch (tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
-            goto no_support;
-
-        tpmdev = tpm->data.passthrough.source.data.file.path;
-        if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
-            goto error;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
-            *tpmfd = open(tpmdev, O_RDWR);
-            if (*tpmfd < 0) {
-                virReportSystemError(errno, _("Could not open TPM device %s"),
-                                     tpmdev);
-                goto error;
-            }
-
-            virCommandPassFD(cmd, *tpmfd,
-                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-            devset = qemuVirCommandGetDevSet(cmd, *tpmfd);
-            if (devset == NULL)
-                goto error;
-
-            *cancelfd = open(cancel_path, O_WRONLY);
-            if (*cancelfd < 0) {
-                virReportSystemError(errno,
-                                     _("Could not open TPM device's cancel "
-                                       "path %s"), cancel_path);
-                goto error;
-            }
-            VIR_FREE(cancel_path);
-
-            virCommandPassFD(cmd, *cancelfd,
-                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-            cancel_path = qemuVirCommandGetDevSet(cmd, *cancelfd);
-            if (cancel_path == NULL)
-                goto error;
-        }
-        virBufferAddLit(&buf, ",path=");
-        virBufferEscape(&buf, ',', ",", "%s", devset ? devset : tpmdev);
-
-        virBufferAddLit(&buf, ",cancel-path=");
-        virBufferEscape(&buf, ',', ",", "%s", cancel_path);
-
-        VIR_FREE(devset);
-        VIR_FREE(cancel_path);
-
-        break;
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        goto error;
-    }
-
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
-    return virBufferContentAndReset(&buf);
-
- no_support:
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("The QEMU executable %s does not support TPM "
-                     "backend type %s"),
-                   emulator, type);
-
- error:
-    VIR_FREE(devset);
-    VIR_FREE(cancel_path);
-
-    virBufferFreeAndReset(&buf);
-    return NULL;
-}
-
-
 static char *qemuBuildTPMDevStr(const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps,
                                 const char *emulator)
@@ -9022,6 +8933,98 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
     virBufferFreeAndReset(&buf);
     return ret;
 }
+
+
+static char *
+qemuBuildTPMBackendStr(const virDomainDef *def,
+                       virCommandPtr cmd,
+                       virQEMUCapsPtr qemuCaps,
+                       const char *emulator,
+                       int *tpmfd,
+                       int *cancelfd)
+{
+    const virDomainTPMDef *tpm = def->tpm;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *type = virDomainTPMBackendTypeToString(tpm->type);
+    char *cancel_path = NULL, *devset = NULL;
+    const char *tpmdev;
+
+    *tpmfd = -1;
+    *cancelfd = -1;
+
+    virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
+            goto no_support;
+
+        tpmdev = tpm->data.passthrough.source.data.file.path;
+        if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
+            goto error;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ADD_FD)) {
+            *tpmfd = open(tpmdev, O_RDWR);
+            if (*tpmfd < 0) {
+                virReportSystemError(errno, _("Could not open TPM device %s"),
+                                     tpmdev);
+                goto error;
+            }
+
+            virCommandPassFD(cmd, *tpmfd,
+                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            devset = qemuVirCommandGetDevSet(cmd, *tpmfd);
+            if (devset == NULL)
+                goto error;
+
+            *cancelfd = open(cancel_path, O_WRONLY);
+            if (*cancelfd < 0) {
+                virReportSystemError(errno,
+                                     _("Could not open TPM device's cancel "
+                                       "path %s"), cancel_path);
+                goto error;
+            }
+            VIR_FREE(cancel_path);
+
+            virCommandPassFD(cmd, *cancelfd,
+                             VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            cancel_path = qemuVirCommandGetDevSet(cmd, *cancelfd);
+            if (cancel_path == NULL)
+                goto error;
+        }
+        virBufferAddLit(&buf, ",path=");
+        virBufferEscape(&buf, ',', ",", "%s", devset ? devset : tpmdev);
+
+        virBufferAddLit(&buf, ",cancel-path=");
+        virBufferEscape(&buf, ',', ",", "%s", cancel_path);
+
+        VIR_FREE(devset);
+        VIR_FREE(cancel_path);
+
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        goto error;
+    }
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ no_support:
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("The QEMU executable %s does not support TPM "
+                     "backend type %s"),
+                   emulator, type);
+
+ error:
+    VIR_FREE(devset);
+    VIR_FREE(cancel_path);
+
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
 
 static int
 qemuBuildTPMCommandLine(virDomainDefPtr def,
