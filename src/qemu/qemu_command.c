@@ -258,55 +258,6 @@ qemuBuildObjectCommandlineFromJSON(const char *type,
 }
 
 
-int
-qemuNetworkPrepareDevices(virDomainDefPtr def)
-{
-    int ret = -1;
-    size_t i;
-
-    for (i = 0; i < def->nnets; i++) {
-        virDomainNetDefPtr net = def->nets[i];
-        int actualType;
-
-        /* If appropriate, grab a physical device from the configured
-         * network's pool of devices, or resolve bridge device name
-         * to the one defined in the network definition.
-         */
-        if (networkAllocateActualDevice(def, net) < 0)
-            goto cleanup;
-
-        actualType = virDomainNetGetActualType(net);
-        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-            net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            /* Each type='hostdev' network device must also have a
-             * corresponding entry in the hostdevs array. For netdevs
-             * that are hardcoded as type='hostdev', this is already
-             * done by the parser, but for those allocated from a
-             * network / determined at runtime, we need to do it
-             * separately.
-             */
-            virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
-            virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
-
-            if (virDomainHostdevFind(def, hostdev, NULL) >= 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("PCI device %04x:%02x:%02x.%x "
-                                 "allocated from network %s is already "
-                                 "in use by domain %s"),
-                               pcisrc->addr.domain, pcisrc->addr.bus,
-                               pcisrc->addr.slot, pcisrc->addr.function,
-                               net->data.network.name, def->name);
-                goto cleanup;
-            }
-            if (virDomainHostdevInsert(def, hostdev) < 0)
-                goto cleanup;
-        }
-    }
-    ret = 0;
- cleanup:
-    return ret;
-}
-
 static int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                       const char *prefix)
 {
