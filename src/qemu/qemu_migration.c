@@ -5940,15 +5940,13 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
 /* Helper function called while vm is active.  */
 int
 qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                    int fd, off_t offset, const char *path,
+                    int fd,
                     const char *compressor,
-                    bool bypassSecurityDriver,
                     qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     int ret = -1;
-    bool restoreLabel = false;
     virCommandPtr cmd = NULL;
     int pipeFD[2] = { -1, -1 };
     unsigned long saveMigBandwidth = priv->migMaxBandwidth;
@@ -5972,54 +5970,27 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return -1;
     }
 
-    if ((!compressor || pipe(pipeFD) == 0)) {
-        /* All right! We can use fd migration, which means that qemu
-         * doesn't have to open() the file, so while we still have to
-         * grant SELinux access, we can do it on fd and avoid cleanup
-         * later, as well as skip futzing with cgroup.  */
-        if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                              compressor ? pipeFD[1] : fd) < 0)
-            goto cleanup;
-        bypassSecurityDriver = true;
-    } else {
-        /* Phooey - we have to fall back on exec migration, where qemu
-         * has to popen() the file by name, and block devices have to be
-         * given cgroup ACL permission.  We might also stumble on
-         * a race present in some qemu versions where it does a wait()
-         * that botches pclose.  */
-        if (virCgroupHasController(priv->cgroup,
-                                   VIR_CGROUP_CONTROLLER_DEVICES)) {
-            int rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                              VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rv == 0);
-            if (rv == 1) {
-                /* path was not a device, no further need for cgroup */
-            } else if (rv < 0) {
-                goto cleanup;
-            }
-        }
-        if ((!bypassSecurityDriver) &&
-            virSecurityManagerSetSavedStateLabel(driver->securityManager,
-                                                 vm->def, path) < 0)
-            goto cleanup;
-        restoreLabel = true;
+    if (compressor && pipe(pipeFD) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Failed to create pipe for migration"));
+        return -1;
     }
+
+    /* All right! We can use fd migration, which means that qemu
+     * doesn't have to open() the file, so while we still have to
+     * grant SELinux access, we can do it on fd and avoid cleanup
+     * later, as well as skip futzing with cgroup.  */
+    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
+                                          compressor ? pipeFD[1] : fd) < 0)
+        goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     if (!compressor) {
-        const char *args[] = { "cat", NULL };
-
-        if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
-            rc = qemuMonitorMigrateToFd(priv->mon,
-                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                        fd);
-        } else {
-            rc = qemuMonitorMigrateToFile(priv->mon,
-                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                          args, path, offset);
-        }
+        rc = qemuMonitorMigrateToFd(priv->mon,
+                                    QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                    fd);
     } else {
         const char *prog = compressor;
         const char *args[] = {
@@ -6027,33 +5998,28 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
             "-c",
             NULL
         };
-        if (pipeFD[0] != -1) {
-            cmd = virCommandNewArgs(args);
-            virCommandSetInputFD(cmd, pipeFD[0]);
-            virCommandSetOutputFD(cmd, &fd);
-            virCommandSetErrorBuffer(cmd, &errbuf);
-            virCommandDoAsyncIO(cmd);
-            if (virSetCloseExec(pipeFD[1]) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to set cloexec flag"));
-                ignore_value(qemuDomainObjExitMonitor(driver, vm));
-                goto cleanup;
-            }
-            if (virCommandRunAsync(cmd, NULL) < 0) {
-                ignore_value(qemuDomainObjExitMonitor(driver, vm));
-                goto cleanup;
-            }
-            rc = qemuMonitorMigrateToFd(priv->mon,
-                                        QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                        pipeFD[1]);
-            if (VIR_CLOSE(pipeFD[0]) < 0 ||
-                VIR_CLOSE(pipeFD[1]) < 0)
-                VIR_WARN("failed to close intermediate pipe");
-        } else {
-            rc = qemuMonitorMigrateToFile(priv->mon,
-                                          QEMU_MONITOR_MIGRATE_BACKGROUND,
-                                          args, path, offset);
+
+        cmd = virCommandNewArgs(args);
+        virCommandSetInputFD(cmd, pipeFD[0]);
+        virCommandSetOutputFD(cmd, &fd);
+        virCommandSetErrorBuffer(cmd, &errbuf);
+        virCommandDoAsyncIO(cmd);
+        if (virSetCloseExec(pipeFD[1]) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to set cloexec flag"));
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            goto cleanup;
         }
+        if (virCommandRunAsync(cmd, NULL) < 0) {
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            goto cleanup;
+        }
+        rc = qemuMonitorMigrateToFd(priv->mon,
+                                    QEMU_MONITOR_MIGRATE_BACKGROUND,
+                                    pipeFD[1]);
+        if (VIR_CLOSE(pipeFD[0]) < 0 ||
+            VIR_CLOSE(pipeFD[1]) < 0)
+            VIR_WARN("failed to close intermediate pipe");
     }
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -6099,17 +6065,6 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         VIR_DEBUG("Compression binary stderr: %s", NULLSTR(errbuf));
         VIR_FREE(errbuf);
         virCommandFree(cmd);
-    }
-    if (restoreLabel && (!bypassSecurityDriver) &&
-        virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                 vm->def, path) < 0)
-        VIR_WARN("failed to restore save state label on %s", path);
-
-    if (virCgroupHasController(priv->cgroup,
-                               VIR_CGROUP_CONTROLLER_DEVICES)) {
-        int rv = virCgroupDenyDevicePath(priv->cgroup, path,
-                                         VIR_CGROUP_DEVICE_RWM);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path, "rwm", rv == 0);
     }
 
     if (orig_err) {

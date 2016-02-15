@@ -176,13 +176,12 @@ int qemuMigrationConfirm(virConnectPtr conn,
 bool qemuMigrationIsAllowed(virQEMUDriverPtr driver, virDomainObjPtr vm,
                             bool remote, unsigned int flags);
 
-int qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                        int fd, off_t offset, const char *path,
+int qemuMigrationToFile(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        int fd,
                         const char *compressor,
-                        bool bypassSecurityDriver,
                         qemuDomainAsyncJob asyncJob)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int qemuMigrationCancel(virQEMUDriverPtr driver,
                         virDomainObjPtr vm);

@@ -3188,9 +3188,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Perform the migration */
-    if (qemuMigrationToFile(driver, vm, fd, offset, path,
-                            qemuCompressProgramName(compressed),
-                            bypassSecurityDriver,
+    if (qemuMigrationToFile(driver, vm, fd, qemuCompressProgramName(compressed),
                             asyncJob) < 0)
         goto cleanup;
 
@@ -3691,8 +3689,8 @@ doCoreDump(virQEMUDriverPtr driver,
         if (!qemuMigrationIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        ret = qemuMigrationToFile(driver, vm, fd, 0, path,
-                                  qemuCompressProgramName(compress), false,
+        ret = qemuMigrationToFile(driver, vm, fd,
+                                  qemuCompressProgramName(compress),
                                   QEMU_ASYNC_JOB_DUMP);
     }
 
