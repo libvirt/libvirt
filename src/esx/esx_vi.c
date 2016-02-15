@@ -2043,11 +2043,21 @@ esxVI_BuildSelectSetCollection(esxVI_Context *ctx)
 
 
 
+/*
+ * Cannot use the SessionIsActive() function here, because at least
+ * ESX Server 3.5.0 build-64607 and ESX 4.0.0 build-171294 return an
+ * method-not-implemented fault when calling it. The vCenter Server
+ * implements this method, but because it can be used to check any
+ * session it requires the Sessions.ValidateSession privilege that is
+ * considered as an admin privilege.
+ *
+ * Instead query the session manager for the current session of this
+ * connection and re-login if there is no current session.
+ */
 int
 esxVI_EnsureSession(esxVI_Context *ctx)
 {
     int result = -1;
-    esxVI_Boolean active = esxVI_Boolean_Undefined;
     esxVI_String *propertyNameList = NULL;
     esxVI_ObjectContent *sessionManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
@@ -2065,65 +2075,41 @@ esxVI_EnsureSession(esxVI_Context *ctx)
         goto cleanup;
     }
 
-    if (ctx->hasSessionIsActive) {
-        /*
-         * Use SessionIsActive to check if there is an active session for this
-         * connection, and re-login if there isn't.
-         */
-        if (esxVI_SessionIsActive(ctx, ctx->session->key,
-                                  ctx->session->userName, &active) < 0) {
-            goto cleanup;
-        }
+    if (esxVI_String_AppendValueToList(&propertyNameList,
+                                       "currentSession") < 0 ||
+        esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
+                                        "SessionManager", propertyNameList,
+                                        &sessionManager,
+                                        esxVI_Occurrence_RequiredItem) < 0) {
+        goto cleanup;
+    }
 
-        if (active != esxVI_Boolean_True) {
-            esxVI_UserSession_Free(&ctx->session);
-
-            if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
-                            &ctx->session) < 0) {
+    for (dynamicProperty = sessionManager->propSet; dynamicProperty;
+         dynamicProperty = dynamicProperty->_next) {
+        if (STREQ(dynamicProperty->name, "currentSession")) {
+            if (esxVI_UserSession_CastFromAnyType(dynamicProperty->val,
+                                                  &currentSession) < 0) {
                 goto cleanup;
             }
+
+            break;
+        } else {
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
         }
-    } else {
-        /*
-         * Query the session manager for the current session of this connection
-         * and re-login if there is no current session for this connection.
-         */
-        if (esxVI_String_AppendValueToList(&propertyNameList,
-                                           "currentSession") < 0 ||
-            esxVI_LookupObjectContentByType(ctx, ctx->service->sessionManager,
-                                            "SessionManager", propertyNameList,
-                                            &sessionManager,
-                                            esxVI_Occurrence_RequiredItem) < 0) {
+    }
+
+    if (!currentSession) {
+        esxVI_UserSession_Free(&ctx->session);
+
+        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
+                        &ctx->session) < 0) {
             goto cleanup;
         }
-
-        for (dynamicProperty = sessionManager->propSet; dynamicProperty;
-             dynamicProperty = dynamicProperty->_next) {
-            if (STREQ(dynamicProperty->name, "currentSession")) {
-                if (esxVI_UserSession_CastFromAnyType(dynamicProperty->val,
-                                                      &currentSession) < 0) {
-                    goto cleanup;
-                }
-
-                break;
-            } else {
-                VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
-            }
-        }
-
-        if (!currentSession) {
-            esxVI_UserSession_Free(&ctx->session);
-
-            if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
-                            &ctx->session) < 0) {
-                goto cleanup;
-            }
-        } else if (STRNEQ(ctx->session->key, currentSession->key)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Key of the current session differs from the key at "
-                             "last login"));
-            goto cleanup;
-        }
+    } else if (STRNEQ(ctx->session->key, currentSession->key)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Key of the current session differs from the key at "
+                         "last login"));
+        goto cleanup;
     }
 
     result = 0;
