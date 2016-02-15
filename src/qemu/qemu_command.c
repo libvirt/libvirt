@@ -6833,36 +6833,6 @@ qemuBuildRNGDevStr(virDomainDefPtr def,
 }
 
 
-static char *qemuBuildTPMDevStr(const virDomainDef *def,
-                                virQEMUCapsPtr qemuCaps,
-                                const char *emulator)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const virDomainTPMDef *tpm = def->tpm;
-    const char *model = virDomainTPMModelTypeToString(tpm->model);
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_TIS)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("The QEMU executable %s does not support TPM "
-                       "model %s"),
-                       emulator, model);
-        goto error;
-    }
-
-    virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
-                      model, tpm->info.alias, tpm->info.alias);
-
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
-    return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
-}
-
-
 static char *qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -8906,6 +8876,37 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
  cleanup:
     virBufferFreeAndReset(&buf);
     return ret;
+}
+
+
+static char *
+qemuBuildTPMDevStr(const virDomainDef *def,
+                   virQEMUCapsPtr qemuCaps,
+                   const char *emulator)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const virDomainTPMDef *tpm = def->tpm;
+    const char *model = virDomainTPMModelTypeToString(tpm->model);
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_TIS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("The QEMU executable %s does not support TPM "
+                       "model %s"),
+                       emulator, model);
+        goto error;
+    }
+
+    virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
+                      model, tpm->info.alias, tpm->info.alias);
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 
