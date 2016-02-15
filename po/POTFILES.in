@@ -128,6 +128,7 @@ src/qemu/qemu_domain.c
 src/qemu/qemu_driver.c
 src/qemu/qemu_hostdev.c
 src/qemu/qemu_hotplug.c
+src/qemu/qemu_interface.c
 src/qemu/qemu_migration.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c

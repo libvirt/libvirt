@@ -223,12 +223,6 @@ char *qemuBuildHubDevStr(virDomainDefPtr def,
 char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
                               virDomainRedirdevDefPtr dev,
                               virQEMUCapsPtr qemuCaps);
-int qemuNetworkIfaceConnect(virDomainDefPtr def,
-                            virQEMUDriverPtr driver,
-                            virDomainNetDefPtr net,
-                            int *tapfd,
-                            size_t *tapfdSize)
-    ATTRIBUTE_NONNULL(2);
 
 int qemuOpenVhostNet(virDomainDefPtr def,
                      virDomainNetDefPtr net,

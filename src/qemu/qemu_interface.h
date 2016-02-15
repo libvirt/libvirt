@@ -40,4 +40,10 @@ int qemuInterfaceDirectConnect(virDomainDefPtr def,
                                 size_t tapfdSize,
                                 virNetDevVPortProfileOp vmop);
 
+int qemuInterfaceBridgeConnect(virDomainDefPtr def,
+                               virQEMUDriverPtr driver,
+                               virDomainNetDefPtr net,
+                               int *tapfd,
+                               size_t *tapfdSize)
+    ATTRIBUTE_NONNULL(2);
 #endif /* __QEMU_INTERFACE_H__ */
