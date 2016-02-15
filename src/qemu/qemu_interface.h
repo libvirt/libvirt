@@ -27,6 +27,7 @@
 
 # include "domain_conf.h"
 # include "qemu_conf.h"
+# include "qemu_domain.h"
 
 int qemuInterfaceStartDevice(virDomainNetDefPtr net);
 int qemuInterfaceStartDevices(virDomainDefPtr def);
@@ -46,4 +47,10 @@ int qemuInterfaceBridgeConnect(virDomainDefPtr def,
                                int *tapfd,
                                size_t *tapfdSize)
     ATTRIBUTE_NONNULL(2);
+
+int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
+                              virDomainNetDefPtr net,
+                              virQEMUCapsPtr qemuCaps,
+                              int *vhostfd,
+                              size_t *vhostfdSize);
 #endif /* __QEMU_INTERFACE_H__ */

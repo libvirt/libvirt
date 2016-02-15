@@ -38,6 +38,9 @@
 #include "virnetdevbridge.h"
 #include "virnetdevvportprofile.h"
 
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_interface");
@@ -499,4 +502,98 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
     virObjectUnref(cfg);
 
     return ret;
+}
+
+
+/**
+ * qemuInterfaceOpenVhostNet:
+ * @def: domain definition
+ * @net: network definition
+ * @qemuCaps: qemu binary capabilities
+ * @vhostfd: array of opened vhost-net device
+ * @vhostfdSize: number of file descriptors in @vhostfd array
+ *
+ * Open vhost-net, multiple times - if requested.
+ * In case, no vhost-net is needed, @vhostfdSize is set to 0
+ * and 0 is returned.
+ *
+ * Returns: 0 on success
+ *         -1 on failure
+ */
+int
+qemuInterfaceOpenVhostNet(virDomainDefPtr def,
+                          virDomainNetDefPtr net,
+                          virQEMUCapsPtr qemuCaps,
+                          int *vhostfd,
+                          size_t *vhostfdSize)
+{
+    size_t i;
+    const char *vhostnet_path = net->backend.vhost;
+
+    if (!vhostnet_path)
+        vhostnet_path = "/dev/vhost-net";
+
+    /* If running a plain QEMU guest, or
+     * if the config says explicitly to not use vhost, return now*/
+    if (def->virtType != VIR_DOMAIN_VIRT_KVM ||
+        net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_QEMU) {
+        *vhostfdSize = 0;
+        return 0;
+    }
+
+    /* If qemu doesn't support vhost-net mode (including the -netdev command
+     * option), don't try to open the device.
+     */
+    if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_NET) &&
+          qemuDomainSupportsNetdev(def, qemuCaps, net))) {
+        if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("vhost-net is not supported with "
+                                   "this QEMU binary"));
+            return -1;
+        }
+        *vhostfdSize = 0;
+        return 0;
+    }
+
+    /* If the nic model isn't virtio, don't try to open. */
+    if (!(net->model && STREQ(net->model, "virtio"))) {
+        if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("vhost-net is only supported for "
+                                   "virtio network interfaces"));
+            return -1;
+        }
+        *vhostfdSize = 0;
+        return 0;
+    }
+
+    for (i = 0; i < *vhostfdSize; i++) {
+        vhostfd[i] = open(vhostnet_path, O_RDWR);
+
+        /* If the config says explicitly to use vhost and we couldn't open it,
+         * report an error.
+         */
+        if (vhostfd[i] < 0) {
+            virDomainAuditNetDevice(def, net, vhostnet_path, false);
+            if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("vhost-net was requested for an interface, "
+                                       "but is unavailable"));
+                goto error;
+            }
+            VIR_WARN("Unable to open vhost-net. Opened so far %zu, requested %zu",
+                     i, *vhostfdSize);
+            *vhostfdSize = i;
+            break;
+        }
+    }
+    virDomainAuditNetDevice(def, net, vhostnet_path, *vhostfdSize);
+    return 0;
+
+ error:
+    while (i--)
+        VIR_FORCE_CLOSE(vhostfd[i]);
+
+    return -1;
 }

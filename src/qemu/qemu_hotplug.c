@@ -927,7 +927,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                                        tapfd, &tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
+                                      vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
@@ -944,14 +945,16 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                                        VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
+                                      vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
         vhostfdSize = 1;
         if (VIR_ALLOC(vhostfd) < 0)
             goto cleanup;
         *vhostfd = -1;
-        if (qemuOpenVhostNet(vm->def, net, priv->qemuCaps, vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
+                                      vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
 

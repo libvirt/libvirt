@@ -225,12 +225,6 @@ char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
                               virDomainRedirdevDefPtr dev,
                               virQEMUCapsPtr qemuCaps);
 
-int qemuOpenVhostNet(virDomainDefPtr def,
-                     virDomainNetDefPtr net,
-                     virQEMUCapsPtr qemuCaps,
-                     int *vhostfd,
-                     size_t *vhostfdSize);
-
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
