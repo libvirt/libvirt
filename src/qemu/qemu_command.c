@@ -6608,6 +6608,98 @@ qemuBuildTPMCommandLine(virDomainDefPtr def,
 }
 
 
+/**
+ * qemuBuildCommandLineValidate:
+ *
+ * Prior to taking the plunge and building a long command line only
+ * to find some configuration option isn't valid, let's do a couple
+ * of checks and fail early.
+ *
+ * Returns 0 on success, returns -1 and messages what the issue is.
+ */
+static int
+qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
+                             const virDomainDef *def)
+{
+    size_t i;
+    int sdl = 0;
+    int vnc = 0;
+    int spice = 0;
+
+    if (!virQEMUDriverIsPrivileged(driver)) {
+        /* If we have no cgroups then we can have no tunings that
+         * require them */
+
+        if (virMemoryLimitIsSet(def->mem.hard_limit) ||
+            virMemoryLimitIsSet(def->mem.soft_limit) ||
+            def->mem.min_guarantee ||
+            virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Memory tuning is not available in session mode"));
+            return -1;
+        }
+
+        if (def->blkio.weight) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Block I/O tuning is not available in session mode"));
+            return -1;
+        }
+
+        if (def->cputune.sharesSpecified || def->cputune.period ||
+            def->cputune.quota || def->cputune.emulator_period ||
+            def->cputune.emulator_quota) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CPU tuning is not available in session mode"));
+            return -1;
+        }
+    }
+
+    for (i = 0; i < def->ngraphics; ++i) {
+        switch (def->graphics[i]->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            ++sdl;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            ++vnc;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            ++spice;
+            break;
+        }
+    }
+
+    if (sdl > 1 || vnc > 1 || spice > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only 1 graphics device of each type "
+                         "(sdl, vnc, spice) is supported"));
+        return -1;
+    }
+
+    if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_LINUX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("qemu emulator '%s' does not support xen"),
+                       def->emulator);
+        return -1;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        if (disk->src->driverName != NULL &&
+            STRNEQ(disk->src->driverName, "qemu")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported driver name '%s' for disk '%s'"),
+                           disk->src->driverName, disk->src->path);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
     .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
 };
@@ -6641,14 +6733,12 @@ qemuBuildCommandLine(virConnectPtr conn,
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *cpu;
     char *smp;
+    bool havespice = false;
     int last_good_net = -1;
     bool hasHwVirt = false;
     virCommandPtr cmd = NULL;
     bool allowReboot = true;
     bool emitBootindex = false;
-    int sdl = 0;
-    int vnc = 0;
-    int spice = 0;
     int usbcontroller = 0;
     int actualSerials = 0;
     bool usblegacy = false;
@@ -6692,47 +6782,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     virUUIDFormat(def->uuid, uuid);
 
-    if (!virQEMUDriverIsPrivileged(driver)) {
-        /* If we have no cgroups then we can have no tunings that
-         * require them */
-
-        if (virMemoryLimitIsSet(def->mem.hard_limit) ||
-            virMemoryLimitIsSet(def->mem.soft_limit) ||
-            def->mem.min_guarantee ||
-            virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Memory tuning is not available in session mode"));
-            goto error;
-        }
-
-        if (def->blkio.weight) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Block I/O tuning is not available in session mode"));
-            goto error;
-        }
-
-        if (def->cputune.sharesSpecified || def->cputune.period ||
-            def->cputune.quota || def->cputune.emulator_period ||
-            def->cputune.emulator_quota) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CPU tuning is not available in session mode"));
-            goto error;
-        }
-    }
-
-    for (i = 0; i < def->ngraphics; ++i) {
-        switch (def->graphics[i]->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-            ++sdl;
-            break;
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            ++vnc;
-            break;
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            ++spice;
-            break;
-        }
-    }
+    if (qemuBuildCommandLineValidate(driver, def) < 0)
+        goto error;
 
     /*
      * do not use boot=on for drives when not using KVM since this
@@ -6872,14 +6923,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     }
 
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
-    if (def->virtType == VIR_DOMAIN_VIRT_XEN ||
-        def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-        def->os.type == VIR_DOMAIN_OSTYPE_LINUX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("qemu emulator '%s' does not support xen"),
-                       def->emulator);
-        goto error;
-    }
 
     if ((def->os.smbios_mode != VIR_DOMAIN_SMBIOS_NONE) &&
         (def->os.smbios_mode != VIR_DOMAIN_SMBIOS_EMULATE)) {
@@ -7394,18 +7437,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         }
     }
 
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk = def->disks[i];
-
-        if (disk->src->driverName != NULL &&
-            STRNEQ(disk->src->driverName, "qemu")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported driver name '%s' for disk '%s'"),
-                           disk->src->driverName, disk->src->path);
-            goto error;
-        }
-    }
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
         for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
             for (i = 0; i < def->ncontrollers; i++) {
@@ -7814,11 +7845,20 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArgBuffer(cmd, &opt);
     }
 
+    if (def->nserials) {
+        for (i = 0; i < def->ngraphics; i++) {
+            if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+                havespice = true;
+                break;
+            }
+        }
+    }
+
     for (i = 0; i < def->nserials; i++) {
         virDomainChrDefPtr serial = def->serials[i];
         char *devstr;
 
-        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !spice)
+        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
             continue;
 
         /* Use -chardev with -device if they are available */
@@ -8050,13 +8090,6 @@ qemuBuildCommandLine(virConnectPtr conn,
             virCommandAddArg(cmd, optstr);
             VIR_FREE(optstr);
         }
-    }
-
-    if (sdl > 1 || vnc > 1 || spice > 1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only 1 graphics device of each type "
-                         "(sdl, vnc, spice) is supported"));
-        goto error;
     }
 
     for (i = 0; i < def->ngraphics; ++i) {
