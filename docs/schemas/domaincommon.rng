@@ -670,6 +670,11 @@
           </element>
         </optional>
         <optional>
+          <element name="global_period">
+            <ref name="cpuperiod"/>
+          </element>
+        </optional>
+        <optional>
           <element name="period">
             <ref name="cpuperiod"/>
           </element>

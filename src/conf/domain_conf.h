@@ -2112,6 +2112,7 @@ struct _virDomainCputune {
     bool sharesSpecified;
     unsigned long long period;
     long long quota;
+    unsigned long long global_period;
     unsigned long long emulator_period;
     long long emulator_quota;
     virBitmapPtr emulatorpin;

@@ -312,6 +312,14 @@ typedef enum {
 # define VIR_DOMAIN_SCHEDULER_CPU_SHARES "cpu_shares"
 
 /**
+ * VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds,
+ * for whole domain, when using the posix scheduler, as a ullong.
+ */
+# define VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD "global_period"
+
+/**
  * VIR_DOMAIN_SCHEDULER_VCPU_PERIOD:
  *
  * Macro represents the enforcement period for a quota, in microseconds,
@@ -3337,6 +3345,14 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
  * host cpu, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES "cputune.cpu_shares"
+
+/**
+ * VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds,
+ * for whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD "cputune.global_period"
 
 /**
  * VIR_DOMAIN_TUNABLE_CPU_VCPU_PERIOD:

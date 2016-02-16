@@ -15140,6 +15140,21 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
+    if (virXPathULongLong("string(./cputune/global_period[1])", ctxt,
+                          &def->cputune.global_period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune global period value"));
+        goto error;
+    }
+
+    if (def->cputune.global_period > 0 &&
+        (def->cputune.global_period < 1000 || def->cputune.global_period > 1000000)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune global period must be in range "
+                         "[1000, 1000000]"));
+        goto error;
+    }
+
     if (virXPathULongLong("string(./cputune/emulator_period[1])", ctxt,
                           &def->cputune.emulator_period) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -21655,6 +21670,9 @@ virDomainCputuneDefFormat(virBufferPtr buf,
     if (def->cputune.quota)
         virBufferAsprintf(&childrenBuf, "<quota>%lld</quota>\n",
                           def->cputune.quota);
+    if (def->cputune.global_period)
+        virBufferAsprintf(&childrenBuf, "<global_period>%llu</global_period>\n",
+                          def->cputune.global_period);
 
     if (def->cputune.emulator_period)
         virBufferAsprintf(&childrenBuf, "<emulator_period>%llu"
