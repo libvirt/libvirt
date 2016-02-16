@@ -21,15 +21,6 @@
 
 static virQEMUDriver driver;
 
-static int blankProblemElements(char *data)
-{
-    if (virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
-        virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
-                               data) < 0)
-        return -1;
-    return 0;
-}
-
 static int testSanitizeDef(virDomainDefPtr vmdef)
 {
     size_t i = 0;
@@ -61,11 +52,10 @@ typedef enum {
     FLAG_EXPECT_WARNING     = 1 << 0,
 } virQemuXML2ArgvTestFlags;
 
-static int testCompareXMLToArgvFiles(const char *xml,
+static int testCompareXMLToArgvFiles(const char *xmlfile,
                                      const char *cmdfile,
                                      virQemuXML2ArgvTestFlags flags)
 {
-    char *expectxml = NULL;
     char *actualxml = NULL;
     char *cmd = NULL;
     char *log = NULL;
@@ -73,8 +63,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainDefPtr vmdef = NULL;
 
     if (virtTestLoadFile(cmdfile, &cmd) < 0)
-        goto fail;
-    if (virtTestLoadFile(xml, &expectxml) < 0)
         goto fail;
 
     if (!(vmdef = qemuParseCommandLineString(driver.caps, driver.xmlopt,
@@ -108,26 +96,19 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto fail;
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
-        VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
+        VIR_TEST_DEBUG("ABI stability check failed on %s", xmlfile);
         goto fail;
     }
 
     if (!(actualxml = virDomainDefFormat(vmdef, driver.caps, 0)))
         goto fail;
 
-    if (blankProblemElements(expectxml) < 0 ||
-        blankProblemElements(actualxml) < 0)
+    if (virtTestCompareToFile(actualxml, xmlfile) < 0)
         goto fail;
-
-    if (STRNEQ(expectxml, actualxml)) {
-        virtTestDifference(stderr, expectxml, actualxml);
-        goto fail;
-    }
 
     ret = 0;
 
  fail:
-    VIR_FREE(expectxml);
     VIR_FREE(actualxml);
     VIR_FREE(cmd);
     VIR_FREE(log);
