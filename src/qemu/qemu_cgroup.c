@@ -548,6 +548,25 @@ qemuSetupMemoryCgroup(virDomainObjPtr vm)
 
 
 static int
+qemuSetupFirmwareCgroup(virDomainObjPtr vm)
+{
+    if (!vm->def->os.loader)
+        return 0;
+
+    if (vm->def->os.loader->path &&
+        qemuSetupImagePathCgroup(vm, vm->def->os.loader->path,
+                                 vm->def->os.loader->readonly == VIR_TRISTATE_BOOL_YES) < 0)
+        return -1;
+
+    if (vm->def->os.loader->nvram &&
+        qemuSetupImagePathCgroup(vm, vm->def->os.loader->nvram, false) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                        virDomainObjPtr vm)
 {
@@ -572,6 +591,9 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
         goto cleanup;
     }
+
+    if (qemuSetupFirmwareCgroup(vm) < 0)
+        goto cleanup;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuSetupDiskCgroup(vm, vm->def->disks[i]) < 0)
