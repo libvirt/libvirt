@@ -1100,14 +1100,3 @@ qemuRemoveCgroup(virDomainObjPtr vm)
 
     return virCgroupRemove(priv->cgroup);
 }
-
-int
-qemuAddToCgroup(virDomainObjPtr vm)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (priv->cgroup == NULL)
-        return 0; /* Not supported, so claim success */
-
-    return 0;
-}

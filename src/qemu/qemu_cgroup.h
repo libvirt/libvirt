@@ -55,6 +55,5 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
 int qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
 int qemuSetupCgroupForEmulator(virDomainObjPtr vm);
 int qemuRemoveCgroup(virDomainObjPtr vm);
-int qemuAddToCgroup(virDomainObjPtr vm);
 
 #endif /* __QEMU_CGROUP_H__ */
