@@ -320,6 +320,14 @@ typedef enum {
 # define VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD "global_period"
 
 /**
+ * VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * whole domain, when using the posix scheduler, as an llong.
+ */
+# define VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA "global_quota"
+
+/**
  * VIR_DOMAIN_SCHEDULER_VCPU_PERIOD:
  *
  * Macro represents the enforcement period for a quota, in microseconds,
@@ -3353,6 +3361,14 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
  * for whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD "cputune.global_period"
+
+/**
+ * VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA "cputune.global_quota"
 
 /**
  * VIR_DOMAIN_TUNABLE_CPU_VCPU_PERIOD:
