@@ -52,38 +52,47 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
+
 static int
-qemuSetupImageCgroupInternal(virDomainObjPtr vm,
-                             virStorageSourcePtr src,
-                             bool forceReadonly)
+qemuSetupImagePathCgroup(virDomainObjPtr vm,
+                         const char *path,
+                         bool readonly)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
     int ret;
 
-    if (!virCgroupHasController(priv->cgroup,
-                                VIR_CGROUP_CONTROLLER_DEVICES))
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
+    if (readonly)
+        perms |= VIR_CGROUP_DEVICE_WRITE;
+
+    VIR_DEBUG("Allow path %s, perms: %s",
+              path, virCgroupGetDevicePermsString(perms));
+
+    ret = virCgroupAllowDevicePath(priv->cgroup, path, perms, true);
+
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                             virCgroupGetDevicePermsString(perms),
+                             ret == 0);
+
+    return ret;
+}
+
+
+static int
+qemuSetupImageCgroupInternal(virDomainObjPtr vm,
+                             virStorageSourcePtr src,
+                             bool forceReadonly)
+{
     if (!src->path || !virStorageSourceIsLocalStorage(src)) {
         VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
                   NULLSTR(src->path), virStorageTypeToString(src->type));
         return 0;
     }
 
-    if (!src->readonly && !forceReadonly)
-        perms |= VIR_CGROUP_DEVICE_WRITE;
-
-    VIR_DEBUG("Allow path %s, perms: %s",
-              src->path, virCgroupGetDevicePermsString(perms));
-
-    ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, true);
-
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", src->path,
-                             virCgroupGetDevicePermsString(perms),
-                             ret == 0);
-
-    return ret;
+    return qemuSetupImagePathCgroup(vm, src->path, src->readonly || forceReadonly);
 }
 
 
