@@ -77,7 +77,7 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
 
         VIR_DEBUG("Deny path %s", src->path);
 
-        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, false);
+        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, true);
     } else {
         if (!src->readonly && !forceReadonly)
             perms |= VIR_CGROUP_DEVICE_WRITE;
@@ -85,7 +85,7 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
         VIR_DEBUG("Allow path %s, perms: %s",
                   src->path, virCgroupGetDevicePermsString(perms));
 
-        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, false);
+        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, true);
     }
 
     virDomainAuditCgroupPath(vm, priv->cgroup,
@@ -93,14 +93,6 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
                              src->path,
                              virCgroupGetDevicePermsString(perms),
                              ret == 0);
-
-    /* Get this for root squash NFS */
-    if (ret < 0 &&
-        virLastErrorIsSystemErrno(EACCES)) {
-        VIR_DEBUG("Ignoring EACCES for %s", src->path);
-        virResetLastError();
-        ret = 0;
-    }
 
     return ret;
 }
