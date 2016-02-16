@@ -2981,41 +2981,6 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
 
 
 /**
- * virCgroupAllowDeviceMajor:
- *
- * @group: The cgroup to allow an entire device major type for
- * @type: The device type (i.e., 'c' or 'b')
- * @major: The major number of the device type
- * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to allow
- *
- * Returns: 0 on success
- */
-int
-virCgroupAllowDeviceMajor(virCgroupPtr group, char type, int major,
-                          int perms)
-{
-    int ret = -1;
-    char *devstr = NULL;
-
-    if (virAsprintf(&devstr, "%c %i:* %s", type, major,
-                    virCgroupGetDevicePermsString(perms)) < 0)
-        goto cleanup;
-
-    if (virCgroupSetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_DEVICES,
-                             "devices.allow",
-                             devstr) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(devstr);
-    return ret;
-}
-
-
-/**
  * virCgroupAllowDevicePath:
  *
  * @group: The cgroup to allow the device for
@@ -3095,41 +3060,6 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
     VIR_FREE(devstr);
     VIR_FREE(majorstr);
     VIR_FREE(minorstr);
-    return ret;
-}
-
-
-/**
- * virCgroupDenyDeviceMajor:
- *
- * @group: The cgroup to deny an entire device major type for
- * @type: The device type (i.e., 'c' or 'b')
- * @major: The major number of the device type
- * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to deny
- *
- * Returns: 0 on success
- */
-int
-virCgroupDenyDeviceMajor(virCgroupPtr group, char type, int major,
-                         int perms)
-{
-    int ret = -1;
-    char *devstr = NULL;
-
-    if (virAsprintf(&devstr, "%c %i:* %s", type, major,
-                    virCgroupGetDevicePermsString(perms)) < 0)
-        goto cleanup;
-
-    if (virCgroupSetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_DEVICES,
-                             "devices.deny",
-                             devstr) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(devstr);
     return ret;
 }
 
@@ -4705,18 +4635,6 @@ virCgroupAllowDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAllowDeviceMajor(virCgroupPtr group ATTRIBUTE_UNUSED,
-                          char type ATTRIBUTE_UNUSED,
-                          int major ATTRIBUTE_UNUSED,
-                          int perms ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
 virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
                          const char *path ATTRIBUTE_UNUSED,
                          int perms ATTRIBUTE_UNUSED)
@@ -4733,18 +4651,6 @@ virCgroupDenyDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
                     int major ATTRIBUTE_UNUSED,
                     int minor ATTRIBUTE_UNUSED,
                     int perms ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupDenyDeviceMajor(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         char type ATTRIBUTE_UNUSED,
-                         int major ATTRIBUTE_UNUSED,
-                         int perms ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));

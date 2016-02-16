@@ -466,8 +466,8 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         }
     }
 
-    if (virCgroupAllowDeviceMajor(cgroup, 'c', LXC_DEV_MAJ_PTY,
-                                  VIR_CGROUP_DEVICE_RWM) < 0)
+    if (virCgroupAllowDevice(cgroup, 'c', LXC_DEV_MAJ_PTY, -1,
+                             VIR_CGROUP_DEVICE_RWM) < 0)
         goto cleanup;
 
     VIR_DEBUG("Device whitelist complete");

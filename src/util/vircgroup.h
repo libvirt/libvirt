@@ -220,10 +220,6 @@ int virCgroupAllowDevice(virCgroupPtr group,
                          int major,
                          int minor,
                          int perms);
-int virCgroupAllowDeviceMajor(virCgroupPtr group,
-                              char type,
-                              int major,
-                              int perms);
 int virCgroupAllowDevicePath(virCgroupPtr group,
                              const char *path,
                              int perms);
@@ -233,10 +229,6 @@ int virCgroupDenyDevice(virCgroupPtr group,
                         int major,
                         int minor,
                         int perms);
-int virCgroupDenyDeviceMajor(virCgroupPtr group,
-                             char type,
-                             int major,
-                             int perms);
 int virCgroupDenyDevicePath(virCgroupPtr group,
                             const char *path,
                             int perms);
