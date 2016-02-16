@@ -3056,8 +3056,8 @@ virCgroupAllowDevicePath(virCgroupPtr group, const char *path, int perms)
  *
  * @group: The cgroup to deny a device for
  * @type: The device type (i.e., 'c' or 'b')
- * @major: The major number of the device
- * @minor: The minor number of the device
+ * @major: The major number of the device, a negative value means '*'
+ * @minor: The minor number of the device, a negative value means '*'
  * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to deny
  *
  * Returns: 0 on success
@@ -3068,8 +3068,18 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
 {
     int ret = -1;
     char *devstr = NULL;
+    char *majorstr = NULL;
+    char *minorstr = NULL;
 
-    if (virAsprintf(&devstr, "%c %i:%i %s", type, major, minor,
+    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
+        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
+        goto cleanup;
+
+    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
+        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
+        goto cleanup;
+
+    if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
                     virCgroupGetDevicePermsString(perms)) < 0)
         goto cleanup;
 
@@ -3083,6 +3093,8 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
 
  cleanup:
     VIR_FREE(devstr);
+    VIR_FREE(majorstr);
+    VIR_FREE(minorstr);
     return ret;
 }
 
