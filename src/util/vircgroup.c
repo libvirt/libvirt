@@ -2986,19 +2986,26 @@ virCgroupAllowDevice(virCgroupPtr group, char type, int major, int minor,
  * @group: The cgroup to allow the device for
  * @path: the device to allow
  * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to allow
+ * @ignoreEacces: Ignore lack of permission (mostly for NFS mounts)
  *
  * Queries the type of device and its major/minor number, and
  * adds that to the cgroup ACL
  *
- * Returns: 0 on success, 1 if path exists but is not a device, or
- * -1 on error
+ * Returns: 0 on success, 1 if path exists but is not a device or is not
+ * accesible, or * -1 on error
  */
 int
-virCgroupAllowDevicePath(virCgroupPtr group, const char *path, int perms)
+virCgroupAllowDevicePath(virCgroupPtr group,
+                         const char *path,
+                         int perms,
+                         bool ignoreEacces)
 {
     struct stat sb;
 
     if (stat(path, &sb) < 0) {
+        if (errno == EACCES && ignoreEacces)
+            return 1;
+
         virReportSystemError(errno,
                              _("Path '%s' is not accessible"),
                              path);
@@ -3064,12 +3071,32 @@ virCgroupDenyDevice(virCgroupPtr group, char type, int major, int minor,
 }
 
 
+/**
+ * virCgroupDenyDevicePath:
+ *
+ * @group: The cgroup to deny the device for
+ * @path: the device to deny
+ * @perms: Bitwise or of VIR_CGROUP_DEVICE permission bits to allow
+ * @ignoreEacces: Ignore lack of permission (mostly for NFS mounts)
+ *
+ * Queries the type of device and its major/minor number, and
+ * removes it from the cgroup ACL
+ *
+ * Returns: 0 on success, 1 if path exists but is not a device or is not
+ * accessible, or -1 on error.
+ */
 int
-virCgroupDenyDevicePath(virCgroupPtr group, const char *path, int perms)
+virCgroupDenyDevicePath(virCgroupPtr group,
+                        const char *path,
+                        int perms,
+                        bool ignoreEacces)
 {
     struct stat sb;
 
     if (stat(path, &sb) < 0) {
+        if (errno == EACCES && ignoreEacces)
+            return 1;
+
         virReportSystemError(errno,
                              _("Path '%s' is not accessible"),
                              path);
@@ -4637,7 +4664,8 @@ virCgroupAllowDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
                          const char *path ATTRIBUTE_UNUSED,
-                         int perms ATTRIBUTE_UNUSED)
+                         int perms ATTRIBUTE_UNUSED,
+                         bool ignoreEaccess ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));

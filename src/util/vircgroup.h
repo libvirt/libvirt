@@ -222,7 +222,8 @@ int virCgroupAllowDevice(virCgroupPtr group,
                          int perms);
 int virCgroupAllowDevicePath(virCgroupPtr group,
                              const char *path,
-                             int perms);
+                             int perms,
+                             bool ignoreEacces);
 
 int virCgroupDenyDevice(virCgroupPtr group,
                         char type,
@@ -231,7 +232,8 @@ int virCgroupDenyDevice(virCgroupPtr group,
                         int perms);
 int virCgroupDenyDevicePath(virCgroupPtr group,
                             const char *path,
-                            int perms);
+                            int perms,
+                            bool ignoreEacces);
 
 int
 virCgroupGetPercpuStats(virCgroupPtr group,

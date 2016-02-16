@@ -4646,7 +4646,8 @@ lxcDomainDetachDeviceDiskLive(virDomainObjPtr vm,
     }
     virDomainAuditDisk(vm, def->src, NULL, "detach", true);
 
-    if (virCgroupDenyDevicePath(priv->cgroup, src, VIR_CGROUP_DEVICE_RWM) != 0)
+    if (virCgroupDenyDevicePath(priv->cgroup, src,
+                                VIR_CGROUP_DEVICE_RWM, false) != 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  src, vm->def->name);
 
@@ -4822,7 +4823,8 @@ lxcDomainDetachDeviceHostdevStorageLive(virDomainObjPtr vm,
     }
     virDomainAuditHostdev(vm, def, "detach", true);
 
-    if (virCgroupDenyDevicePath(priv->cgroup, def->source.caps.u.storage.block, VIR_CGROUP_DEVICE_RWM) != 0)
+    if (virCgroupDenyDevicePath(priv->cgroup, def->source.caps.u.storage.block,
+                                VIR_CGROUP_DEVICE_RWM, false) != 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  def->source.caps.u.storage.block, vm->def->name);
 
@@ -4871,7 +4873,8 @@ lxcDomainDetachDeviceHostdevMiscLive(virDomainObjPtr vm,
     }
     virDomainAuditHostdev(vm, def, "detach", true);
 
-    if (virCgroupDenyDevicePath(priv->cgroup, def->source.caps.u.misc.chardev, VIR_CGROUP_DEVICE_RWM) != 0)
+    if (virCgroupDenyDevicePath(priv->cgroup, def->source.caps.u.misc.chardev,
+                                VIR_CGROUP_DEVICE_RWM, false) != 0)
         VIR_WARN("cannot deny device %s for domain %s",
                  def->source.caps.u.misc.chardev, vm->def->name);
 

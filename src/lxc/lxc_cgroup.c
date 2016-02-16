@@ -331,7 +331,7 @@ virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupAllowDevicePath(cgroup, path,
-                                 VIR_CGROUP_DEVICE_RWM) < 0)
+                                 VIR_CGROUP_DEVICE_RWM, false) < 0)
         return -1;
 
     return 0;
@@ -347,7 +347,7 @@ virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     if (virCgroupDenyDevicePath(cgroup, path,
-                                VIR_CGROUP_DEVICE_RWM) < 0)
+                                VIR_CGROUP_DEVICE_RWM, false) < 0)
         return -1;
 
     return 0;
@@ -401,7 +401,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                      (def->disks[i]->src->readonly ?
                                       VIR_CGROUP_DEVICE_READ :
                                       VIR_CGROUP_DEVICE_RW) |
-                                     VIR_CGROUP_DEVICE_MKNOD) < 0)
+                                     VIR_CGROUP_DEVICE_MKNOD, false) < 0)
             goto cleanup;
     }
 
@@ -414,7 +414,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                      def->fss[i]->src,
                                      def->fss[i]->readonly ?
                                      VIR_CGROUP_DEVICE_READ :
-                                     VIR_CGROUP_DEVICE_RW) < 0)
+                                     VIR_CGROUP_DEVICE_RW, false) < 0)
             goto cleanup;
     }
 
@@ -448,14 +448,14 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                 if (virCgroupAllowDevicePath(cgroup,
                                              hostdev->source.caps.u.storage.block,
                                              VIR_CGROUP_DEVICE_RW |
-                                             VIR_CGROUP_DEVICE_MKNOD) < 0)
+                                             VIR_CGROUP_DEVICE_MKNOD, false) < 0)
                     goto cleanup;
                 break;
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
                 if (virCgroupAllowDevicePath(cgroup,
                                              hostdev->source.caps.u.misc.chardev,
                                              VIR_CGROUP_DEVICE_RW |
-                                             VIR_CGROUP_DEVICE_MKNOD) < 0)
+                                             VIR_CGROUP_DEVICE_MKNOD, false) < 0)
                     goto cleanup;
                 break;
             default:

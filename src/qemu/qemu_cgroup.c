@@ -77,7 +77,7 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
 
         VIR_DEBUG("Deny path %s", src->path);
 
-        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms);
+        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, false);
     } else {
         if (!src->readonly && !forceReadonly)
             perms |= VIR_CGROUP_DEVICE_WRITE;
@@ -85,7 +85,7 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
         VIR_DEBUG("Allow path %s, perms: %s",
                   src->path, virCgroupGetDevicePermsString(perms));
 
-        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms);
+        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, false);
     }
 
     virDomainAuditCgroupPath(vm, priv->cgroup,
@@ -162,7 +162,7 @@ qemuSetupChrSourceCgroup(virDomainObjPtr vm,
     VIR_DEBUG("Process path '%s' for device", source->data.file.path);
 
     ret = virCgroupAllowDevicePath(priv->cgroup, source->data.file.path,
-                                   VIR_CGROUP_DEVICE_RW);
+                                   VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
                              source->data.file.path, "rw", ret == 0);
 
@@ -209,7 +209,7 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
         ret = virCgroupAllowDevicePath(priv->cgroup, dev->source.evdev,
-                                       VIR_CGROUP_DEVICE_RW);
+                                       VIR_CGROUP_DEVICE_RW, false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow", dev->source.evdev, "rw", ret == 0);
         break;
     }
@@ -229,7 +229,7 @@ qemuSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Process path '%s' for USB device", path);
     ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   VIR_CGROUP_DEVICE_RW);
+                                   VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", ret == 0);
 
     return ret;
@@ -249,7 +249,7 @@ qemuSetupHostSCSIDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
     ret = virCgroupAllowDevicePath(priv->cgroup, path,
                                    virSCSIDeviceGetReadonly(dev) ?
                                    VIR_CGROUP_DEVICE_READ :
-                                   VIR_CGROUP_DEVICE_RW);
+                                   VIR_CGROUP_DEVICE_RW, false);
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
                              virSCSIDeviceGetReadonly(dev) ? "r" : "rw", ret == 0);
@@ -298,7 +298,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
 
                 VIR_DEBUG("Cgroup allow %s for PCI device assignment", path);
                 rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                              VIR_CGROUP_DEVICE_RW);
+                                              VIR_CGROUP_DEVICE_RW, false);
                 virDomainAuditCgroupPath(vm, priv->cgroup,
                                          "allow", path, "rw", rv == 0);
                 if (rv < 0)
@@ -407,7 +407,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 
                 VIR_DEBUG("Cgroup deny %s for PCI device assignment", path);
                 rv = virCgroupDenyDevicePath(priv->cgroup, path,
-                                             VIR_CGROUP_DEVICE_RWM);
+                                             VIR_CGROUP_DEVICE_RWM, false);
                 virDomainAuditCgroupPath(vm, priv->cgroup,
                                          "deny", path, "rwm", rv == 0);
                 if (rv < 0)
@@ -591,7 +591,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
         }
 
         rv = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
-                                      VIR_CGROUP_DEVICE_RW);
+                                      VIR_CGROUP_DEVICE_RW, false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rv == 0);
         if (rv < 0 &&
             !virLastErrorIsSystemErrno(ENOENT))
@@ -622,7 +622,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
             VIR_DEBUG("Setting Cgroup ACL for RNG device");
             rv = virCgroupAllowDevicePath(priv->cgroup,
                                           vm->def->rngs[i]->source.file,
-                                          VIR_CGROUP_DEVICE_RW);
+                                          VIR_CGROUP_DEVICE_RW, false);
             virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
                                      vm->def->rngs[i]->source.file,
                                      "rw", rv == 0);
