@@ -8782,7 +8782,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     /* Domain not running, thus no cgroups - return defaults */
     if (!virDomainObjIsActive(vm)) {
         if (nparams)
-            *nparams = 5;
+            *nparams = 7;
         ignore_value(VIR_STRDUP(ret, "posix"));
         goto cleanup;
     }
@@ -8795,7 +8795,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
 
     if (nparams) {
         if (virCgroupSupportsCpuBW(priv->cgroup))
-            *nparams = 5;
+            *nparams = 7;
         else
             *nparams = 1;
     }
@@ -10115,6 +10115,19 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
 }
 
 static int
+qemuSetGlobalBWLive(virCgroupPtr cgroup, unsigned long long period,
+                    long long quota)
+{
+    if (period == 0 && quota == 0)
+        return 0;
+
+    if (qemuSetupCgroupVcpuBW(cgroup, period, quota) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                    unsigned long long period, long long quota)
 {
@@ -10214,6 +10227,10 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
                                VIR_TYPED_PARAM_ULLONG,
                                VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
                                VIR_TYPED_PARAM_LLONG,
                                VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
                                VIR_TYPED_PARAM_ULLONG,
@@ -10330,6 +10347,46 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
                 vmdef->cputune.quota = value_l;
+
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD)) {
+            SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
+                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+                if ((rc = qemuSetGlobalBWLive(priv->cgroup, value_ul, 0)))
+                    goto endjob;
+
+                vm->def->cputune.global_period = value_ul;
+
+                if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                            &eventMaxNparams,
+                                            VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD,
+                                            value_ul) < 0)
+                    goto endjob;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.period = params[i].value.ul;
+
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA)) {
+            SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
+                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+
+            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+                if ((rc = qemuSetGlobalBWLive(priv->cgroup, 0, value_l)))
+                    goto endjob;
+
+                vm->def->cputune.global_quota = value_l;
+
+                if (virTypedParamsAddLLong(&eventParams, &eventNparams,
+                                           &eventMaxNparams,
+                                           VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA,
+                                           value_l) < 0)
+                    goto endjob;
+            }
+
+            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+                vmdef->cputune.global_quota = value_l;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
@@ -10495,6 +10552,16 @@ qemuGetEmulatorBandwidthLive(virCgroupPtr cgroup,
 }
 
 static int
+qemuGetGlobalBWLive(virCgroupPtr cgroup, unsigned long long *period,
+                    long long *quota)
+{
+    if (qemuGetVcpuBWLive(cgroup, period, quota) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
                                       virTypedParameterPtr params,
                                       int *nparams,
@@ -10505,6 +10572,8 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     unsigned long long shares;
     unsigned long long period;
     long long quota;
+    unsigned long long global_period;
+    long long global_quota;
     unsigned long long emulator_period;
     long long emulator_quota;
     int ret = -1;
@@ -10551,6 +10620,8 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
         if (*nparams > 1) {
             period = persistentDef->cputune.period;
             quota = persistentDef->cputune.quota;
+            global_period = persistentDef->cputune.global_period;
+            global_quota = persistentDef->cputune.global_quota;
             emulator_period = persistentDef->cputune.emulator_period;
             emulator_quota = persistentDef->cputune.emulator_quota;
             cpu_bw_status = true; /* Allow copy of data to params[] */
@@ -10576,6 +10647,12 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (*nparams > 3 && cpu_bw_status) {
         rc = qemuGetEmulatorBandwidthLive(priv->cgroup, &emulator_period,
                                           &emulator_quota);
+        if (rc != 0)
+            goto cleanup;
+    }
+
+    if (*nparams > 5 && cpu_bw_status) {
+        rc = qemuGetGlobalBWLive(priv->cgroup, &global_period, &global_quota);
         if (rc != 0)
             goto cleanup;
     }
@@ -10617,6 +10694,22 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
                                         VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
                                         VIR_TYPED_PARAM_LLONG,
                                         emulator_quota) < 0)
+                goto cleanup;
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            if (virTypedParameterAssign(&params[5],
+                                        VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
+                                        VIR_TYPED_PARAM_ULLONG, global_period) < 0)
+                goto cleanup;
+            saved_nparams++;
+        }
+
+        if (*nparams > saved_nparams) {
+            if (virTypedParameterAssign(&params[6],
+                                        VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
+                                        VIR_TYPED_PARAM_LLONG, global_quota) < 0)
                 goto cleanup;
             saved_nparams++;
         }
