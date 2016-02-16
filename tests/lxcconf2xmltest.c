@@ -13,22 +13,21 @@
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;
 
-static int
-blankProblemElements(char *data)
+static int testSanitizeDef(virDomainDefPtr vmdef)
 {
-    if (virtTestClearLineRegex("<uuid>([[:alnum:]]|-)+</uuid>", data) < 0)
+    /* Remove UUID randomness */
+    if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", vmdef->uuid) < 0)
         return -1;
     return 0;
 }
 
 static int
-testCompareXMLToConfigFiles(const char *xml,
+testCompareXMLToConfigFiles(const char *xmlfile,
                             const char *configfile,
                             bool expectError)
 {
     int ret = -1;
     char *config = NULL;
-    char *expectxml = NULL;
     char *actualxml = NULL;
     virDomainDefPtr vmdef = NULL;
 
@@ -40,26 +39,19 @@ testCompareXMLToConfigFiles(const char *xml,
         goto fail;
 
     if (vmdef) {
+        if (testSanitizeDef(vmdef) < 0)
+            goto fail;
+
         if (!(actualxml = virDomainDefFormat(vmdef, caps, 0)))
             goto fail;
 
-        if (virtTestLoadFile(xml, &expectxml) < 0)
+        if (virtTestCompareToFile(actualxml, xmlfile) < 0)
             goto fail;
-
-        if (blankProblemElements(expectxml) < 0 ||
-            blankProblemElements(actualxml) < 0)
-            goto fail;
-
-        if (STRNEQ(expectxml, actualxml)) {
-            virtTestDifferenceFull(stderr, expectxml, xml, actualxml, NULL);
-            goto fail;
-        }
     }
 
     ret = 0;
 
  fail:
-    VIR_FREE(expectxml);
     VIR_FREE(actualxml);
     VIR_FREE(config);
     virDomainDefFree(vmdef);
