@@ -23,13 +23,25 @@ static virQEMUDriver driver;
 
 static int blankProblemElements(char *data)
 {
-    if (virtTestClearLineRegex("<uuid>([[:alnum:]]|-)+</uuid>", data) < 0 ||
-        virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
+    if (virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
         virtTestClearLineRegex("<secret.*>", data) < 0 ||
         virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
                                data) < 0)
         return -1;
     return 0;
+}
+
+static int testSanitizeDef(virDomainDefPtr vmdef)
+{
+    int ret = -1;
+
+    /* Remove UUID randomness */
+    if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", vmdef->uuid) < 0)
+        goto fail;
+
+    ret = 0;
+ fail:
+    return ret;
 }
 
 typedef enum {
@@ -78,6 +90,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
             }
         }
     }
+
+    if (testSanitizeDef(vmdef) < 0)
+        goto fail;
 
     if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
