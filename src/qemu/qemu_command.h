@@ -227,8 +227,6 @@ char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
-int qemuDomainNetVLAN(virDomainNetDefPtr def);
-
 int qemuGetDriveSourceString(virStorageSourcePtr src,
                              virConnectPtr conn,
                              char **source);

@@ -521,5 +521,6 @@ bool qemuDomainSupportsNetdev(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               virDomainNetDefPtr net);
 
+int qemuDomainNetVLAN(virDomainNetDefPtr def);
 
 #endif /* __QEMU_DOMAIN_H__ */

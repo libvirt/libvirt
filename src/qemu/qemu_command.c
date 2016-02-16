@@ -259,12 +259,6 @@ qemuBuildObjectCommandlineFromJSON(const char *type,
 }
 
 
-int qemuDomainNetVLAN(virDomainNetDefPtr def)
-{
-    return qemuDomainDeviceAliasIndex(&def->info, "net");
-}
-
-
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
                                virQEMUCapsPtr qemuCaps)
 {
