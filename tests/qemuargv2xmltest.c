@@ -24,7 +24,6 @@ static virQEMUDriver driver;
 static int blankProblemElements(char *data)
 {
     if (virtTestClearLineRegex("<memory.*>[[:digit:]]+</memory>", data) < 0 ||
-        virtTestClearLineRegex("<secret.*>", data) < 0 ||
         virtTestClearLineRegex("<currentMemory.*>[[:digit:]]+</currentMemory>",
                                data) < 0)
         return -1;
@@ -33,11 +32,25 @@ static int blankProblemElements(char *data)
 
 static int testSanitizeDef(virDomainDefPtr vmdef)
 {
+    size_t i = 0;
     int ret = -1;
 
     /* Remove UUID randomness */
     if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", vmdef->uuid) < 0)
         goto fail;
+
+    /* qemuargv2xml doesn't know what to set for a secret usage/uuid,
+     * so hardcode usage='qemuargv2xml_usage' to appead the schema checker */
+    for (i = 0; i < vmdef->ndisks; i++) {
+        virDomainDiskDefPtr disk = vmdef->disks[i];
+
+        if (disk->src->auth) {
+            disk->src->auth->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
+            if (VIR_STRDUP(disk->src->auth->secret.usage,
+                          "qemuargv2xml_usage") < 0)
+                goto fail;
+        }
+    }
 
     ret = 0;
  fail:

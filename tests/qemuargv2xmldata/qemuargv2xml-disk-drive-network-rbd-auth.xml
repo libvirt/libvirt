@@ -23,7 +23,7 @@
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <auth username='myname'>
-        <secret type='ceph' usage='mycluster_myname'/>
+        <secret type='ceph' usage='qemuargv2xml_usage'/>
       </auth>
       <source protocol='rbd' name='pool/image'>
         <host name='mon1.example.org' port='6321'/>

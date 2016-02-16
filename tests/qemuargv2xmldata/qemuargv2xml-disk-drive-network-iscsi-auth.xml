@@ -17,7 +17,7 @@
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <auth username='myname'>
-        <secret type='iscsi' usage='mycluster_myname'/>
+        <secret type='iscsi' usage='qemuargv2xml_usage'/>
       </auth>
       <source protocol='iscsi' name='iqn.1992-01.com.example'>
         <host name='example.org' port='6000'/>
