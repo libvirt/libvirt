@@ -1062,6 +1062,55 @@ qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,
 
 
 int
+qemuSetupGlobalCpuCgroup(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    unsigned long long period = vm->def->cputune.global_period;
+    long long quota = vm->def->cputune.global_quota;
+    char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
+
+    if ((period || quota) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+                                            priv->autoNodeset,
+                                            &mem_mask, -1) < 0)
+        goto cleanup;
+
+    if (period || quota) {
+        if (qemuSetupCgroupVcpuBW(priv->cgroup, period, quota) < 0)
+            goto cleanup;
+    }
+
+    VIR_FREE(mem_mask);
+
+    return 0;
+
+ cleanup:
+    VIR_FREE(mem_mask);
+
+    return -1;
+}
+
+
+int
 qemuRemoveCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;

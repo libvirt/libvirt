@@ -54,6 +54,7 @@ int qemuSetupCgroupVcpuBW(virCgroupPtr cgroup,
                           unsigned long long period,
                           long long quota);
 int qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup, virBitmapPtr cpumask);
+int qemuSetupGlobalCpuCgroup(virDomainObjPtr vm);
 int qemuRemoveCgroup(virDomainObjPtr vm);
 
 #endif /* __QEMU_CGROUP_H__ */
