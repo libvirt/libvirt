@@ -792,6 +792,7 @@ VBOX_DRIVER_EXTRA_DIST =					\
 
 QEMU_DRIVER_SOURCES =							\
 		qemu/qemu_agent.c qemu/qemu_agent.h			\
+		qemu/qemu_alias.c qemu/qemu_alias.h			\
 		qemu/qemu_blockjob.c qemu/qemu_blockjob.h		\
 		qemu/qemu_capabilities.c qemu/qemu_capabilities.h	\
 		qemu/qemu_command.c qemu/qemu_command.h			\

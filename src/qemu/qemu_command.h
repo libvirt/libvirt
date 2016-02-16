@@ -227,22 +227,7 @@ char *qemuBuildRedirdevDevStr(virDomainDefPtr def,
 
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
-int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
-int qemuAssignDeviceNetAlias(virDomainDefPtr def, virDomainNetDefPtr net, int idx);
-int qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
-                              virDomainDiskDefPtr def,
-                              virQEMUCapsPtr qemuCaps);
-int qemuAssignDeviceHostdevAlias(virDomainDefPtr def, virDomainHostdevDefPtr hostdev, int idx);
-int
-qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
-                                virQEMUCapsPtr qemuCaps,
-                                virDomainControllerDefPtr controller);
-int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def, virDomainRedirdevDefPtr redirdev, int idx);
-int qemuAssignDeviceChrAlias(virDomainDefPtr def,
-                             virDomainChrDefPtr chr,
-                             ssize_t idx);
-int qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng, size_t idx);
 
 int qemuGetDriveSourceString(virStorageSourcePtr src,
                              virConnectPtr conn,

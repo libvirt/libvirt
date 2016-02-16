@@ -19,6 +19,7 @@
 
 #include <config.h>
 
+#include "qemu/qemu_alias.h"
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_hotplug.h"
 #include "qemu/qemu_hotplugpriv.h"

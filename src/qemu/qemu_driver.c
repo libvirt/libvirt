@@ -46,6 +46,7 @@
 
 #include "qemu_driver.h"
 #include "qemu_agent.h"
+#include "qemu_alias.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"

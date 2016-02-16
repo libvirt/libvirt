@@ -14,6 +14,7 @@
 
 # include "internal.h"
 # include "viralloc.h"
+# include "qemu/qemu_alias.h"
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_command.h"
 # include "qemu/qemu_domain.h"
