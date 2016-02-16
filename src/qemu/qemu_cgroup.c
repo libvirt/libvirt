@@ -53,10 +53,9 @@ static const char *const defaultDeviceACL[] = {
 #define DEVICE_SND_MAJOR 116
 
 static int
-qemuSetImageCgroupInternal(virDomainObjPtr vm,
-                           virStorageSourcePtr src,
-                           bool deny,
-                           bool forceReadonly)
+qemuSetupImageCgroupInternal(virDomainObjPtr vm,
+                             virStorageSourcePtr src,
+                             bool forceReadonly)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
@@ -72,25 +71,15 @@ qemuSetImageCgroupInternal(virDomainObjPtr vm,
         return 0;
     }
 
-    if (deny) {
-        perms |= VIR_CGROUP_DEVICE_WRITE | VIR_CGROUP_DEVICE_MKNOD;
+    if (!src->readonly && !forceReadonly)
+        perms |= VIR_CGROUP_DEVICE_WRITE;
 
-        VIR_DEBUG("Deny path %s", src->path);
+    VIR_DEBUG("Allow path %s, perms: %s",
+              src->path, virCgroupGetDevicePermsString(perms));
 
-        ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, true);
-    } else {
-        if (!src->readonly && !forceReadonly)
-            perms |= VIR_CGROUP_DEVICE_WRITE;
+    ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, true);
 
-        VIR_DEBUG("Allow path %s, perms: %s",
-                  src->path, virCgroupGetDevicePermsString(perms));
-
-        ret = virCgroupAllowDevicePath(priv->cgroup, src->path, perms, true);
-    }
-
-    virDomainAuditCgroupPath(vm, priv->cgroup,
-                             deny ? "deny" : "allow",
-                             src->path,
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", src->path,
                              virCgroupGetDevicePermsString(perms),
                              ret == 0);
 
@@ -102,7 +91,7 @@ int
 qemuSetupImageCgroup(virDomainObjPtr vm,
                      virStorageSourcePtr src)
 {
-    return qemuSetImageCgroupInternal(vm, src, false, false);
+    return qemuSetupImageCgroupInternal(vm, src, false);
 }
 
 
@@ -110,7 +99,30 @@ int
 qemuTeardownImageCgroup(virDomainObjPtr vm,
                         virStorageSourcePtr src)
 {
-    return qemuSetImageCgroupInternal(vm, src, true, false);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int perms = VIR_CGROUP_DEVICE_READ |
+                VIR_CGROUP_DEVICE_WRITE |
+                VIR_CGROUP_DEVICE_MKNOD;
+    int ret;
+
+    if (!virCgroupHasController(priv->cgroup,
+                                VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    if (!src->path || !virStorageSourceIsLocalStorage(src)) {
+        VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
+                  NULLSTR(src->path), virStorageTypeToString(src->type));
+        return 0;
+    }
+
+    VIR_DEBUG("Deny path %s", src->path);
+
+    ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, true);
+
+    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", src->path,
+                             virCgroupGetDevicePermsString(perms), ret == 0);
+
+    return ret;
 }
 
 
@@ -122,7 +134,7 @@ qemuSetupDiskCgroup(virDomainObjPtr vm,
     bool forceReadonly = false;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (qemuSetImageCgroupInternal(vm, next, false, forceReadonly) < 0)
+        if (qemuSetupImageCgroupInternal(vm, next, forceReadonly) < 0)
             return -1;
 
         /* setup only the top level image for read-write */
@@ -140,7 +152,7 @@ qemuTeardownDiskCgroup(virDomainObjPtr vm,
     virStorageSourcePtr next;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (qemuSetImageCgroupInternal(vm, next, true, false) < 0)
+        if (qemuTeardownImageCgroup(vm, next) < 0)
             return -1;
     }
 
