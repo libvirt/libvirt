@@ -2749,6 +2749,13 @@ virDomainObjWait(virDomainObjPtr vm)
                              _("failed to wait for domain condition"));
         return -1;
     }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("domain is not running"));
+        return -1;
+    }
+
     return 0;
 }
 
