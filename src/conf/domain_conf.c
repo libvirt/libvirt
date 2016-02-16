@@ -14728,7 +14728,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     xmlNodePtr *nodes = NULL, node = NULL;
     char *tmp = NULL;
     size_t i, j;
-    int n, virtType;
+    int n, virtType, gic_version;
     long id = -1;
     virDomainDefPtr def;
     bool uuid_generated = false;
@@ -15334,12 +15334,13 @@ virDomainDefParseXML(xmlDocPtr xml,
             node = ctxt->node;
             ctxt->node = nodes[i];
             if ((tmp = virXPathString("string(./@version)", ctxt))) {
-                if ((def->gic_version = virGICVersionTypeFromString(tmp)) < 0 ||
-                    def->gic_version == VIR_GIC_VERSION_NONE) {
+                gic_version = virGICVersionTypeFromString(tmp);
+                if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("malformed gic version: %s"), tmp);
                     goto error;
                 }
+                def->gic_version = gic_version;
                 VIR_FREE(tmp);
             }
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
