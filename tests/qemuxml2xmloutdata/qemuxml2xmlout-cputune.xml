@@ -8,6 +8,8 @@
     <shares>2048</shares>
     <period>1000000</period>
     <quota>-1</quota>
+    <global_period>1000000</global_period>
+    <global_quota>-1</global_quota>
     <vcpupin vcpu='0' cpuset='0'/>
     <vcpupin vcpu='1' cpuset='1'/>
     <emulatorpin cpuset='1'/>
