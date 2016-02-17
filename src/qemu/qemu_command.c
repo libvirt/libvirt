@@ -5225,7 +5225,7 @@ qemuBuildSmpArgStr(const virDomainDef *def,
 
 static int
 qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
-                    virDomainDefPtr def,
+                    const virDomainDef *def,
                     virQEMUCapsPtr qemuCaps,
                     virCommandPtr cmd)
 {
@@ -5287,6 +5287,53 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
 
     return 0;
 }
+
+
+static int
+qemuBuildMemCommandLine(virCommandPtr cmd,
+                        virQEMUDriverConfigPtr cfg,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
+{
+    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-m");
+
+    if (virDomainDefHasMemoryHotplug(def)) {
+        /* Use the 'k' suffix to let qemu handle the units */
+        virCommandAddArgFormat(cmd, "size=%lluk,slots=%u,maxmem=%lluk",
+                               virDomainDefGetMemoryInitial(def),
+                               def->mem.memory_slots,
+                               def->mem.max_memory);
+
+    } else {
+       virCommandAddArgFormat(cmd, "%llu",
+                              virDomainDefGetMemoryInitial(def) / 1024);
+    }
+
+    /*
+     * Add '-mem-path' (and '-mem-prealloc') parameter here only if
+     * there is no numa node specified.
+     */
+    if (!virDomainNumaGetNodeCount(def->numa) &&
+        qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)
+        return -1;
+
+    if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("memory locking not supported by QEMU binary"));
+        return -1;
+    }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
+        virCommandAddArg(cmd, "-realtime");
+        virCommandAddArgFormat(cmd, "mlock=%s",
+                               def->mem.locked ? "on" : "off");
+    }
+
+    return 0;
+}
+
 
 static int
 qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
@@ -6827,44 +6874,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (!migrateURI && !snapshot &&
-        qemuDomainAlignMemorySizes(def) < 0)
+    if (!migrateURI && !snapshot && qemuDomainAlignMemorySizes(def) < 0)
         goto error;
 
-    if (qemuDomainDefValidateMemoryHotplug(def, qemuCaps, NULL) < 0)
+    if (qemuBuildMemCommandLine(cmd, cfg, def, qemuCaps) < 0)
         goto error;
-
-    virCommandAddArg(cmd, "-m");
-
-    if (virDomainDefHasMemoryHotplug(def)) {
-        /* Use the 'k' suffix to let qemu handle the units */
-        virCommandAddArgFormat(cmd, "size=%lluk,slots=%u,maxmem=%lluk",
-                               virDomainDefGetMemoryInitial(def),
-                               def->mem.memory_slots,
-                               def->mem.max_memory);
-
-    } else {
-       virCommandAddArgFormat(cmd, "%llu", virDomainDefGetMemoryInitial(def) / 1024);
-    }
-
-    /*
-     * Add '-mem-path' (and '-mem-prealloc') parameter here only if
-     * there is no numa node specified.
-     */
-    if (!virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)
-        goto error;
-
-    if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("memory locking not supported by QEMU binary"));
-        goto error;
-    }
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MLOCK)) {
-        virCommandAddArg(cmd, "-realtime");
-        virCommandAddArgFormat(cmd, "mlock=%s",
-                               def->mem.locked ? "on" : "off");
-    }
 
     virCommandAddArg(cmd, "-smp");
     if (!(smp = qemuBuildSmpArgStr(def, qemuCaps)))
