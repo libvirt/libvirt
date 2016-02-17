@@ -239,7 +239,7 @@ void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr close,
 {
     virObjectLock(close);
 
-    if (!close->callback)
+    if (!close->conn)
         goto exit;
 
     VIR_DEBUG("Triggering connection close callback %p reason=%d, opaque=%p",
@@ -248,7 +248,6 @@ void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr close,
 
     if (close->freeCallback)
         close->freeCallback(close->opaque);
-    close->callback = NULL;
     close->freeCallback = NULL;
     virObjectUnref(close->conn);
     close->conn = NULL;
