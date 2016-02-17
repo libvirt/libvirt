@@ -639,4 +639,17 @@ virAdmConnectPtr virAdmConnectNew(void);
 
 virAdmServerPtr virAdmGetServer(virAdmConnectPtr conn,
                                 const char *name);
+
+void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,
+                                         virConnectPtr conn,
+                                         virConnectCloseFunc cb,
+                                         void *opaque,
+                                         virFreeCallback freecb);
+void virConnectCloseCallbackDataUnregister(virConnectCloseCallbackDataPtr close,
+                                           virConnectCloseFunc cb);
+void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr close,
+                                     int reason);
+virConnectCloseFunc
+virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr close);
+
 #endif /* __VIR_DATATYPES_H__ */

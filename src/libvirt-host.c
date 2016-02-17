@@ -1216,35 +1216,25 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-
-    virObjectRef(conn);
-
     virObjectLock(conn);
-    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (conn->closeCallback->callback) {
+    if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A close callback is already registered"));
         goto error;
     }
 
-    conn->closeCallback->conn = conn;
-    conn->closeCallback->callback = cb;
-    conn->closeCallback->opaque = opaque;
-    conn->closeCallback->freeCallback = freecb;
+    virConnectCloseCallbackDataRegister(conn->closeCallback, conn, cb,
+                                        opaque, freecb);
 
-    virObjectUnlock(conn->closeCallback);
     virObjectUnlock(conn);
-
     return 0;
 
  error:
-    virObjectUnlock(conn->closeCallback);
     virObjectUnlock(conn);
     virDispatchError(conn);
-    virObjectUnref(conn);
     return -1;
 }
 
@@ -1271,31 +1261,22 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-
     virObjectLock(conn);
-    virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
 
-    if (conn->closeCallback->callback != cb) {
+    if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != cb) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A different callback was requested"));
         goto error;
     }
 
-    conn->closeCallback->callback = NULL;
-    if (conn->closeCallback->freeCallback)
-        conn->closeCallback->freeCallback(conn->closeCallback->opaque);
-    conn->closeCallback->freeCallback = NULL;
+    virConnectCloseCallbackDataUnregister(conn->closeCallback, cb);
 
-    virObjectUnlock(conn->closeCallback);
     virObjectUnlock(conn);
-    virObjectUnref(conn);
-
     return 0;
 
  error:
-    virObjectUnlock(conn->closeCallback);
     virObjectUnlock(conn);
     virDispatchError(conn);
     return -1;
