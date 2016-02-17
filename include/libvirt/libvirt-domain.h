@@ -3321,6 +3321,29 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
                                                                 void *opaque);
 
 /**
+ * virConnectDomainEventJobCompletedCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @params: job statistics stored as an array of virTypedParameter
+ * @nparams: size of the params array
+ * @opaque: application specific data
+ *
+ * This callback occurs when a job (such as migration) running on the domain
+ * is completed. The params array will contain statistics of the just completed
+ * job as virDomainGetJobStats would return. The callback must not free @params
+ * (the array will be freed once the callback finishes).
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_JOB_COMPLETED with
+ * virConnectDomainEventRegisterAny().
+ */
+typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
+                                                          virDomainPtr dom,
+                                                          virTypedParameterPtr params,
+                                                          int nparams,
+                                                          void *opaque);
+
+/**
  * VIR_DOMAIN_TUNABLE_CPU_VCPUPIN:
  *
  * Macro represents formatted pinning for one vcpu specified by id which is
@@ -3620,6 +3643,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback */
     VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback */
+    VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

@@ -508,6 +508,8 @@ virDomainEventIOErrorNewFromDom;
 virDomainEventIOErrorNewFromObj;
 virDomainEventIOErrorReasonNewFromDom;
 virDomainEventIOErrorReasonNewFromObj;
+virDomainEventJobCompletedNewFromDom;
+virDomainEventJobCompletedNewFromObj;
 virDomainEventLifecycleNew;
 virDomainEventLifecycleNewFromDef;
 virDomainEventLifecycleNewFromDom;

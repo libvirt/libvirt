@@ -217,6 +217,16 @@ virObjectEventPtr
 virDomainEventMigrationIterationNewFromDom(virDomainPtr dom,
                                            int iteration);
 
+virObjectEventPtr
+virDomainEventJobCompletedNewFromObj(virDomainObjPtr obj,
+                                     virTypedParameterPtr params,
+                                     int nparams);
+
+virObjectEventPtr
+virDomainEventJobCompletedNewFromDom(virDomainPtr dom,
+                                     virTypedParameterPtr params,
+                                     int nparams);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,

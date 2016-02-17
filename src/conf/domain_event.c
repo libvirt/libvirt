@@ -57,7 +57,7 @@ static virClassPtr virDomainEventTunableClass;
 static virClassPtr virDomainEventAgentLifecycleClass;
 static virClassPtr virDomainEventDeviceAddedClass;
 static virClassPtr virDomainEventMigrationIterationClass;
-
+static virClassPtr virDomainEventJobCompletedClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -76,6 +76,7 @@ static void virDomainEventTunableDispose(void *obj);
 static void virDomainEventAgentLifecycleDispose(void *obj);
 static void virDomainEventDeviceAddedDispose(void *obj);
 static void virDomainEventMigrationIterationDispose(void *obj);
+static void virDomainEventJobCompletedDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -246,6 +247,14 @@ struct _virDomainEventMigrationIteration {
 typedef struct _virDomainEventMigrationIteration virDomainEventMigrationIteration;
 typedef virDomainEventMigrationIteration *virDomainEventMigrationIterationPtr;
 
+struct _virDomainEventJobCompleted {
+    virDomainEvent parent;
+
+    virTypedParameterPtr params;
+    int nparams;
+};
+typedef struct _virDomainEventJobCompleted virDomainEventJobCompleted;
+typedef virDomainEventJobCompleted *virDomainEventJobCompletedPtr;
 
 static int
 virDomainEventsOnceInit(void)
@@ -351,6 +360,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventMigrationIteration",
                       sizeof(virDomainEventMigrationIteration),
                       virDomainEventMigrationIterationDispose)))
+        return -1;
+    if (!(virDomainEventJobCompletedClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventJobCompleted",
+                      sizeof(virDomainEventJobCompleted),
+                      virDomainEventJobCompletedDispose)))
         return -1;
     return 0;
 }
@@ -518,6 +533,15 @@ virDomainEventMigrationIterationDispose(void *obj)
     virDomainEventMigrationIterationPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 };
+
+static void
+virDomainEventJobCompletedDispose(void *obj)
+{
+    virDomainEventJobCompletedPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    virTypedParamsFree(event->params, event->nparams);
+}
 
 
 static void *
@@ -1394,6 +1418,53 @@ virDomainEventMigrationIterationNewFromDom(virDomainPtr dom,
                                                iteration);
 }
 
+/* This function consumes @params, the caller must not free it.
+ */
+static virObjectEventPtr
+virDomainEventJobCompletedNew(int id,
+                              const char *name,
+                              const unsigned char *uuid,
+                              virTypedParameterPtr params,
+                              int nparams)
+{
+    virDomainEventJobCompletedPtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        goto error;
+
+    if (!(ev = virDomainEventNew(virDomainEventJobCompletedClass,
+                                 VIR_DOMAIN_EVENT_ID_JOB_COMPLETED,
+                                 id, name, uuid)))
+        goto error;
+
+    ev->params = params;
+    ev->nparams = nparams;
+
+    return (virObjectEventPtr) ev;
+
+ error:
+    virTypedParamsFree(params, nparams);
+    return NULL;
+}
+
+virObjectEventPtr
+virDomainEventJobCompletedNewFromObj(virDomainObjPtr obj,
+                                     virTypedParameterPtr params,
+                                     int nparams)
+{
+    return virDomainEventJobCompletedNew(obj->def->id, obj->def->name,
+                                         obj->def->uuid, params, nparams);
+}
+
+virObjectEventPtr
+virDomainEventJobCompletedNewFromDom(virDomainPtr dom,
+                                     virTypedParameterPtr params,
+                                     int nparams)
+{
+    return virDomainEventJobCompletedNew(dom->id, dom->name, dom->uuid,
+                                         params, nparams);
+}
+
 
 /* This function consumes the params so caller don't have to care about
  * freeing it even if error occurs. The reason is to not have to do deep
@@ -1682,6 +1753,18 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
             ((virConnectDomainEventMigrationIterationCallback)cb)(conn, dom,
                                                                   ev->iteration,
                                                                   cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_JOB_COMPLETED:
+        {
+            virDomainEventJobCompletedPtr ev;
+
+            ev = (virDomainEventJobCompletedPtr) event;
+            ((virConnectDomainEventJobCompletedCallback) cb)(conn, dom,
+                                                             ev->params,
+                                                             ev->nparams,
+                                                             cbopaque);
             goto cleanup;
         }
 

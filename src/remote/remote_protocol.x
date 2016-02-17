@@ -3232,6 +3232,12 @@ struct remote_domain_event_callback_migration_iteration_msg {
     int iteration;
 };
 
+struct remote_domain_event_callback_job_completed_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_DOMAIN_JOB_STATS_MAX>;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5728,5 +5734,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: none
      */
-    REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED = 362
+    REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED = 362,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED = 363
 };

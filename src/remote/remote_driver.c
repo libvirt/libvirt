@@ -344,6 +344,11 @@ remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog,
                                                  void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog,
+                                           virNetClientPtr client,
+                                           void *evdata, void *opaque);
+
+static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
@@ -519,6 +524,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteConnectNotifyEventConnectionClosed,
       sizeof(remote_connect_event_connection_closed_msg),
       (xdrproc_t)xdr_remote_connect_event_connection_closed_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED,
+      remoteDomainBuildEventCallbackJobCompleted,
+      sizeof(remote_domain_event_callback_job_completed_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg },
 };
 
 static void
@@ -5376,6 +5385,39 @@ remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog ATT
         return;
 
     event = virDomainEventMigrationIterationNewFromDom(dom, msg->iteration);
+
+    virObjectUnref(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+
+static void
+remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                           virNetClientPtr client ATTRIBUTE_UNUSED,
+                                           void *evdata,
+                                           void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_job_completed_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) msg->params.params_val,
+                                  msg->params.params_len,
+                                  REMOTE_DOMAIN_JOB_STATS_MAX,
+                                  &params, &nparams) < 0)
+        return;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom))) {
+        virTypedParamsFree(params, nparams);
+        return;
+    }
+
+    event = virDomainEventJobCompletedNewFromDom(dom, params, nparams);
 
     virObjectUnref(dom);
 

@@ -11975,6 +11975,29 @@ virshEventMigrationIterationPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
+static void
+virshEventJobCompletedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                            virDomainPtr dom,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            void *opaque)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+    char *value;
+
+    virBufferAsprintf(&buf, _("event 'job-completed' for domain %s:\n"),
+                      virDomainGetName(dom));
+    for (i = 0; i < nparams; i++) {
+        value = virTypedParameterToString(&params[i]);
+        if (value) {
+            virBufferAsprintf(&buf, "\t%s: %s\n", params[i].field, value);
+            VIR_FREE(value);
+        }
+    }
+    virshEventPrint(opaque, &buf);
+}
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
@@ -12016,6 +12039,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventDeviceAddedPrint), },
     { "migration-iteration",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMigrationIterationPrint), },
+    { "job-completed",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventJobCompletedPrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

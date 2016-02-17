@@ -8873,7 +8873,9 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  * when libvirtd is restarted. Note that time information returned for
  * completed migrations may be completely irrelevant unless both source and
  * destination hosts have synchronized time (i.e., NTP daemon is running on
- * both of them).
+ * both of them). The statistics of a completed job can also be obtained by
+ * listening to a VIR_DOMAIN_EVENT_ID_JOB_COMPLETED event (on the source host
+ * in case of a migration job).
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
