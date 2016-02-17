@@ -942,51 +942,6 @@ int virtTestMain(int argc,
 }
 
 
-int virtTestClearLineRegex(const char *pattern,
-                           char *str)
-{
-    regex_t reg;
-    char *lineStart = str;
-    char *lineEnd = strchr(str, '\n');
-
-    if (regcomp(&reg, pattern, REG_EXTENDED | REG_NOSUB) != 0)
-        return -1;
-
-    while (lineStart) {
-        int ret;
-        if (lineEnd)
-            *lineEnd = '\0';
-
-
-        ret = regexec(&reg, lineStart, 0, NULL, 0);
-        //fprintf(stderr, "Match %d '%s' '%s'\n", ret, lineStart, pattern);
-        if (ret == 0) {
-            if (lineEnd) {
-                memmove(lineStart, lineEnd + 1, strlen(lineEnd+1) + 1);
-                /* Don't update lineStart - just iterate again on this
-                   location */
-                lineEnd = strchr(lineStart, '\n');
-            } else {
-                *lineStart = '\0';
-                lineStart = NULL;
-            }
-        } else {
-            if (lineEnd) {
-                *lineEnd = '\n';
-                lineStart = lineEnd + 1;
-                lineEnd = strchr(lineStart, '\n');
-            } else {
-                lineStart = NULL;
-            }
-        }
-    }
-
-    regfree(&reg);
-
-    return 0;
-}
-
-
 /*
  * @cmdset contains a list of command line args, eg
  *
