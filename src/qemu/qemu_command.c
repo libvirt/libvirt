@@ -5186,17 +5186,22 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     return 0;
 }
 
-static char *
-qemuBuildSmpArgStr(const virDomainDef *def,
-                   virQEMUCapsPtr qemuCaps)
+static int
+qemuBuildSmpCommandLine(virCommandPtr cmd,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
 {
+    char *smp;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCommandAddArg(cmd, "-smp");
 
     virBufferAsprintf(&buf, "%u", virDomainDefGetVcpus(def));
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY)) {
         if (virDomainDefHasVcpusOffline(def))
-            virBufferAsprintf(&buf, ",maxcpus=%u", virDomainDefGetVcpusMax(def));
+            virBufferAsprintf(&buf, ",maxcpus=%u",
+                              virDomainDefGetVcpusMax(def));
         /* sockets, cores, and threads are either all zero
          * or all non-zero, thus checking one of them is enough */
         if (def->cpu && def->cpu->sockets) {
@@ -5204,7 +5209,8 @@ qemuBuildSmpArgStr(const virDomainDef *def,
             virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
             virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
         } else {
-            virBufferAsprintf(&buf, ",sockets=%u", virDomainDefGetVcpusMax(def));
+            virBufferAsprintf(&buf, ",sockets=%u",
+                              virDomainDefGetVcpusMax(def));
             virBufferAsprintf(&buf, ",cores=%u", 1);
             virBufferAsprintf(&buf, ",threads=%u", 1);
         }
@@ -5214,14 +5220,19 @@ qemuBuildSmpArgStr(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("setting current vcpu count less than maximum is "
                          "not supported with this QEMU binary"));
-        return NULL;
+        return -1;
     }
 
     if (virBufferCheckError(&buf) < 0)
-        return NULL;
+        return -1;
 
-    return virBufferContentAndReset(&buf);
+    smp = virBufferContentAndReset(&buf);
+    virCommandAddArg(cmd, smp);
+    VIR_FREE(smp);
+
+    return 0;
 }
+
 
 static int
 qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
@@ -6787,7 +6798,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     virErrorPtr originalError = NULL;
     size_t i, j;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    char *smp;
     bool havespice = false;
     int last_good_net = -1;
     virCommandPtr cmd = NULL;
@@ -6880,11 +6890,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildMemCommandLine(cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    virCommandAddArg(cmd, "-smp");
-    if (!(smp = qemuBuildSmpArgStr(def, qemuCaps)))
+    if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
-    virCommandAddArg(cmd, smp);
-    VIR_FREE(smp);
 
     if (def->niothreadids) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
