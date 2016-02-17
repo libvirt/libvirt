@@ -5347,6 +5347,37 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildIOThreadCommandLine(virCommandPtr cmd,
+                             const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    if (def->niothreadids == 0)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("IOThreads not supported for this QEMU"));
+        return -1;
+    }
+
+    /* Create iothread objects using the defined iothreadids list
+     * and the defined id and name from the list. These may be used
+     * by a disk definition which will associate to an iothread by
+     * supplying a value of an id from the list
+     */
+    for (i = 0; i < def->niothreadids; i++) {
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgFormat(cmd, "iothread,id=iothread%u",
+                               def->iothreadids[i]->iothread_id);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                     virDomainDefPtr def,
                     virCommandPtr cmd,
@@ -6893,24 +6924,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (def->niothreadids) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("IOThreads not supported for this QEMU"));
-            goto error;
-        }
-
-        /* Create iothread objects using the defined iothreadids list
-         * and the defined id and name from the list. These may be used
-         * by a disk definition which will associate to an iothread by
-         * supplying a value of an id from the list
-         */
-        for (i = 0; i < def->niothreadids; i++) {
-            virCommandAddArg(cmd, "-object");
-            virCommandAddArgFormat(cmd, "iothread,id=iothread%u",
-                                   def->iothreadids[i]->iothread_id);
-        }
-    }
+    if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
         qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
