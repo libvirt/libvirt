@@ -165,6 +165,18 @@ virConnectDispose(void *obj)
 }
 
 
+static
+void virConnectCloseCallbackDataReset(virConnectCloseCallbackDataPtr close)
+{
+    if (close->freeCallback)
+        close->freeCallback(close->opaque);
+
+    close->freeCallback = NULL;
+    close->opaque = NULL;
+    virObjectUnref(close->conn);
+    close->conn = NULL;
+}
+
 /**
  * virConnectCloseCallbackDataDispose:
  * @obj: the close callback data to release
@@ -178,9 +190,7 @@ virConnectCloseCallbackDataDispose(void *obj)
 
     virObjectLock(cb);
 
-    if (cb->freeCallback)
-        cb->freeCallback(cb->opaque);
-    virObjectUnref(cb->conn);
+    virConnectCloseCallbackDataReset(cb);
 
     virObjectUnlock(cb);
 }
@@ -222,12 +232,8 @@ void virConnectCloseCallbackDataUnregister(virConnectCloseCallbackDataPtr close,
         goto cleanup;
     }
 
+    virConnectCloseCallbackDataReset(close);
     close->callback = NULL;
-    if (close->freeCallback)
-        close->freeCallback(close->opaque);
-    close->freeCallback = NULL;
-    virObjectUnref(close->conn);
-    close->conn = NULL;
 
  cleanup:
 
@@ -246,11 +252,7 @@ void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr close,
               close->callback, reason, close->opaque);
     close->callback(close->conn, reason, close->opaque);
 
-    if (close->freeCallback)
-        close->freeCallback(close->opaque);
-    close->freeCallback = NULL;
-    virObjectUnref(close->conn);
-    close->conn = NULL;
+    virConnectCloseCallbackDataReset(close);
 
  exit:
     virObjectUnlock(close);
