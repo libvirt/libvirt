@@ -4457,6 +4457,83 @@ static char *qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
     return NULL;
 }
 
+
+static int
+qemuBuildSmbiosCommandLine(virCommandPtr cmd,
+                           virQEMUDriverPtr driver,
+                           const virDomainDef *def,
+                           virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+    virSysinfoDefPtr source = NULL;
+    bool skip_uuid = false;
+
+    if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_NONE ||
+        def->os.smbios_mode == VIR_DOMAIN_SMBIOS_EMULATE)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("the QEMU binary %s does not support smbios settings"),
+                       def->emulator);
+        return -1;
+    }
+
+    /* should we really error out or just warn in those cases ? */
+    if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
+        if (driver->hostsysinfo == NULL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Host SMBIOS information is not available"));
+            return -1;
+        }
+        source = driver->hostsysinfo;
+        /* Host and guest uuid must differ, by definition of UUID. */
+        skip_uuid = true;
+    } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_SYSINFO) {
+        if (def->sysinfo == NULL) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Domain '%s' sysinfo are not available"),
+                           def->name);
+            return -1;
+        }
+        source = def->sysinfo;
+        /* domain_conf guaranteed that system_uuid matches guest uuid. */
+    }
+    if (source != NULL) {
+        char *smbioscmd;
+
+        smbioscmd = qemuBuildSmbiosBiosStr(source->bios);
+        if (smbioscmd != NULL) {
+            virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+            VIR_FREE(smbioscmd);
+        }
+        smbioscmd = qemuBuildSmbiosSystemStr(source->system, skip_uuid);
+        if (smbioscmd != NULL) {
+            virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+            VIR_FREE(smbioscmd);
+        }
+
+        if (source->nbaseBoard > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("qemu does not support more than "
+                             "one entry to Type 2 in SMBIOS table"));
+            return -1;
+        }
+
+        for (i = 0; i < source->nbaseBoard; i++) {
+            if (!(smbioscmd =
+                  qemuBuildSmbiosBaseBoardStr(source->baseBoard + i)))
+                return -1;
+
+            virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+            VIR_FREE(smbioscmd);
+        }
+    }
+
+    return 0;
+}
+
+
 static char *
 qemuBuildClockArgStr(virDomainClockDefPtr def)
 {
@@ -6912,8 +6989,6 @@ qemuBuildCommandLine(virConnectPtr conn,
               conn, driver, def, monitor_chr, monitor_json,
               qemuCaps, migrateURI, snapshot, vmop);
 
-    virUUIDFormat(def->uuid, uuid);
-
     if (qemuBuildCommandLineValidate(driver, def) < 0)
         goto error;
 
@@ -6968,70 +7043,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildNumaCommandLine(cmd, cfg, def, qemuCaps, nodeset) < 0)
         goto error;
 
+    virUUIDFormat(def->uuid, uuid);
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
 
-    if ((def->os.smbios_mode != VIR_DOMAIN_SMBIOS_NONE) &&
-        (def->os.smbios_mode != VIR_DOMAIN_SMBIOS_EMULATE)) {
-        virSysinfoDefPtr source = NULL;
-        bool skip_uuid = false;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("the QEMU binary %s does not support smbios settings"),
-                           def->emulator);
-            goto error;
-        }
-
-        /* should we really error out or just warn in those cases ? */
-        if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
-            if (driver->hostsysinfo == NULL) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Host SMBIOS information is not available"));
-                goto error;
-            }
-            source = driver->hostsysinfo;
-            /* Host and guest uuid must differ, by definition of UUID. */
-            skip_uuid = true;
-        } else if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_SYSINFO) {
-            if (def->sysinfo == NULL) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Domain '%s' sysinfo are not available"),
-                               def->name);
-                goto error;
-            }
-            source = def->sysinfo;
-            /* domain_conf guaranteed that system_uuid matches guest uuid. */
-        }
-        if (source != NULL) {
-            char *smbioscmd;
-
-            smbioscmd = qemuBuildSmbiosBiosStr(source->bios);
-            if (smbioscmd != NULL) {
-                virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
-                VIR_FREE(smbioscmd);
-            }
-            smbioscmd = qemuBuildSmbiosSystemStr(source->system, skip_uuid);
-            if (smbioscmd != NULL) {
-                virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
-                VIR_FREE(smbioscmd);
-            }
-
-            if (source->nbaseBoard > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("qemu does not support more than "
-                                 "one entry to Type 2 in SMBIOS table"));
-                goto error;
-            }
-
-            for (i = 0; i < source->nbaseBoard; i++) {
-                if (!(smbioscmd = qemuBuildSmbiosBaseBoardStr(source->baseBoard + i)))
-                    goto error;
-
-                virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
-                VIR_FREE(smbioscmd);
-            }
-        }
-    }
+    if (qemuBuildSmbiosCommandLine(cmd, driver, def, qemuCaps) < 0)
+        goto error;
 
     /*
      * NB, -nographic *MUST* come before any serial, or monitor
