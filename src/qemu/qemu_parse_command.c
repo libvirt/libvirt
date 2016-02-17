@@ -1721,7 +1721,7 @@ qemuParseCommandLineBootDevs(virDomainDefPtr def, const char *str)
  * as is practical. This is not an exact science....
  */
 static virDomainDefPtr
-qemuParseCommandLine(virCapsPtr qemuCaps,
+qemuParseCommandLine(virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
                      char **progenv,
                      char **progargv,
@@ -1796,7 +1796,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     }
 
     if (def->virtType == VIR_DOMAIN_VIRT_KVM)
-        def->os.arch = qemuCaps->host.arch;
+        def->os.arch = caps->host.arch;
     else if (STRPREFIX(path, "qemu-system-"))
         def->os.arch = virArchFromString(path + strlen("qemu-system-"));
     else
@@ -2522,7 +2522,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     if (!def->os.machine) {
         virCapsDomainDataPtr capsdata;
 
-        if (!(capsdata = virCapabilitiesDomainDataLookup(qemuCaps, def->os.type,
+        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
                 def->os.arch, def->virtType, NULL, NULL)))
             goto error;
 
@@ -2597,7 +2597,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
     if (virDomainDefAddImplicitControllers(def) < 0)
         goto error;
 
-    if (virDomainDefPostParse(def, qemuCaps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                               xmlopt) < 0)
         goto error;
 
@@ -2626,7 +2626,7 @@ qemuParseCommandLine(virCapsPtr qemuCaps,
 }
 
 
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
+virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
@@ -2640,7 +2640,7 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
     if (qemuStringToArgvEnv(args, &progenv, &progargv) < 0)
         goto cleanup;
 
-    def = qemuParseCommandLine(qemuCaps, xmlopt, progenv, progargv,
+    def = qemuParseCommandLine(caps, xmlopt, progenv, progargv,
                                pidfile, monConfig, monJSON);
 
  cleanup:
@@ -2698,7 +2698,7 @@ static int qemuParseProcFileStrings(int pid_value,
     return ret;
 }
 
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
+virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,
@@ -2718,7 +2718,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
         qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
         goto cleanup;
 
-    if (!(def = qemuParseCommandLine(qemuCaps, xmlopt, progenv, progargv,
+    if (!(def = qemuParseCommandLine(caps, xmlopt, progenv, progargv,
                                      pidfile, monConfig, monJSON)))
         goto cleanup;
 

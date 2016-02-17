@@ -30,13 +30,13 @@
  * NB: def->name can be NULL upon return and the caller
  * *must* decide how to fill in a name in this case
  */
-virDomainDefPtr qemuParseCommandLineString(virCapsPtr qemuCaps,
+virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                            virDomainXMLOptionPtr xmlopt,
                                            const char *args,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
-virDomainDefPtr qemuParseCommandLinePid(virCapsPtr qemuCaps,
+virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         pid_t pid,
                                         char **pidfile,
