@@ -186,13 +186,7 @@ void virConnectCloseCallbackDataReset(virConnectCloseCallbackDataPtr close)
 static void
 virConnectCloseCallbackDataDispose(void *obj)
 {
-    virConnectCloseCallbackDataPtr cb = obj;
-
-    virObjectLock(cb);
-
-    virConnectCloseCallbackDataReset(cb);
-
-    virObjectUnlock(cb);
+    virConnectCloseCallbackDataReset(obj);
 }
 
 void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,
