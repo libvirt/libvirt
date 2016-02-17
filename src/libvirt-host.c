@@ -1214,10 +1214,7 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
-
     virCheckConnectReturn(conn, -1);
-    virObjectLock(conn);
-
     virCheckNonNullArgGoto(cb, error);
 
     if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != NULL) {
@@ -1229,11 +1226,9 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     virConnectCloseCallbackDataRegister(conn->closeCallback, conn, cb,
                                         opaque, freecb);
 
-    virObjectUnlock(conn);
     return 0;
 
  error:
-    virObjectUnlock(conn);
     virDispatchError(conn);
     return -1;
 }
@@ -1259,10 +1254,7 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     VIR_DEBUG("conn=%p", conn);
 
     virResetLastError();
-
     virCheckConnectReturn(conn, -1);
-    virObjectLock(conn);
-
     virCheckNonNullArgGoto(cb, error);
 
     if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != cb) {
@@ -1273,11 +1265,9 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
 
     virConnectCloseCallbackDataUnregister(conn->closeCallback, cb);
 
-    virObjectUnlock(conn);
     return 0;
 
  error:
-    virObjectUnlock(conn);
     virDispatchError(conn);
     return -1;
 }
