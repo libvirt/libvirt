@@ -4773,21 +4773,20 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 }
 
 static int
-qemuBuildCpuArgStr(virQEMUDriverPtr driver,
-                   const virDomainDef *def,
-                   virQEMUCapsPtr qemuCaps,
-                   virArch hostarch,
-                   char **opt,
-                   bool *hasHwVirt,
-                   bool migrating)
+qemuBuildCpuCommandLine(virCommandPtr cmd,
+                        virQEMUDriverPtr driver,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps,
+                        bool migrating)
 {
+    virArch hostarch = virArchFromHost();
+    char *cpu = NULL;
+    bool hasHwVirt = false;
     const char *default_model;
     bool have_cpu = false;
     int ret = -1;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
-
-    *hasHwVirt = false;
 
     if (def->os.arch == VIR_ARCH_I686)
         default_model = "qemu32";
@@ -4797,7 +4796,7 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
     if (def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
         if (qemuBuildCpuModelArgStr(driver, def, &buf, qemuCaps,
-                                    hasHwVirt, migrating) < 0)
+                                    &hasHwVirt, migrating) < 0)
             goto cleanup;
         have_cpu = true;
     } else {
@@ -4857,7 +4856,8 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
 
     if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
         char sign;
-        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_TRISTATE_SWITCH_ON)
+        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] ==
+            VIR_TRISTATE_SWITCH_ON)
             sign = '+';
         else
             sign = '-';
@@ -4941,13 +4941,22 @@ qemuBuildCpuArgStr(virQEMUDriverPtr driver,
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
-    *opt = virBufferContentAndReset(&buf);
+    cpu = virBufferContentAndReset(&buf);
+
+    if (cpu) {
+        virCommandAddArgList(cmd, "-cpu", cpu, NULL);
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NESTING) && hasHwVirt)
+            virCommandAddArg(cmd, "-enable-nesting");
+    }
 
     ret = 0;
 
  cleanup:
+    VIR_FREE(cpu);
     return ret;
 }
+
 
 static int
 qemuBuildObsoleteAccelArg(virCommandPtr cmd,
@@ -6731,11 +6740,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     virErrorPtr originalError = NULL;
     size_t i, j;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    char *cpu;
     char *smp;
     bool havespice = false;
     int last_good_net = -1;
-    bool hasHwVirt = false;
     virCommandPtr cmd = NULL;
     bool allowReboot = true;
     bool emitBootindex = false;
@@ -6766,7 +6773,6 @@ qemuBuildCommandLine(virConnectPtr conn,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
         VIR_DOMAIN_CONTROLLER_TYPE_CCID,
     };
-    virArch hostarch = virArchFromHost();
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
     char *boot_order_str = NULL, *boot_opts_str = NULL;
@@ -6815,18 +6821,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildMachineCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildCpuArgStr(driver, def, qemuCaps,
-                           hostarch, &cpu, &hasHwVirt, !!migrateURI) < 0)
+    if (qemuBuildCpuCommandLine(cmd, driver, def, qemuCaps, !!migrateURI) < 0)
         goto error;
-
-    if (cpu) {
-        virCommandAddArgList(cmd, "-cpu", cpu, NULL);
-        VIR_FREE(cpu);
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NESTING) &&
-            hasHwVirt)
-            virCommandAddArg(cmd, "-enable-nesting");
-    }
 
     if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
