@@ -4534,6 +4534,35 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildSgaCommandLine(virCommandPtr cmd,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
+{
+    /* Serial graphics adapter */
+    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("qemu does not support -device"));
+            return -1;
+        }
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("qemu does not support SGA"));
+            return -1;
+        }
+        if (!def->nserials) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("need at least one serial port to use SGA"));
+            return -1;
+        }
+        virCommandAddArgList(cmd, "-device", "sga", NULL);
+    }
+
+    return 0;
+}
+
+
 static char *
 qemuBuildClockArgStr(virDomainClockDefPtr def)
 {
@@ -7074,25 +7103,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         virCommandAddArg(cmd, "-nodefaults");
     }
 
-    /* Serial graphics adapter */
-    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu does not support -device"));
-            goto error;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu does not support SGA"));
-            goto error;
-        }
-        if (!def->nserials) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("need at least one serial port to use SGA"));
-            goto error;
-        }
-        virCommandAddArgList(cmd, "-device", "sga", NULL);
-    }
+    if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (monitor_chr) {
         char *chrdev;
