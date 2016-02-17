@@ -118,6 +118,11 @@ enum {
      * Support for server-side event filtering via callback ids in events.
      */
     VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK = 14,
+
+    /*
+     * Support for driver close callback rpc
+     */
+    VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK = 15,
 };
 
 

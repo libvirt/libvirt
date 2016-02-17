@@ -1208,6 +1208,20 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
     VIR_FREE(details_p);
 }
 
+static
+void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int reason, void *opaque)
+{
+    virNetServerClientPtr client = opaque;
+
+    VIR_DEBUG("Relaying connection closed event, reason %d", reason);
+
+    remote_connect_event_connection_closed_msg msg = { reason };
+    remoteDispatchObjectEventSend(client, remoteProgram,
+                                  REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED,
+                                  (xdrproc_t)xdr_remote_connect_event_connection_closed_msg,
+                                  &msg);
+}
+
 /*
  * You must hold lock for at least the client
  * We don't free stuff here, merely disconnect the client's
@@ -1269,6 +1283,12 @@ void remoteClientFreeFunc(void *data)
                 VIR_WARN("unexpected qemu monitor event deregister failure");
         }
         VIR_FREE(priv->qemuEventCallbacks);
+
+        if (priv->closeRegistered) {
+            if (virConnectUnregisterCloseCallback(priv->conn,
+                                                  remoteRelayConnectionClosedEvent) < 0)
+                VIR_WARN("unexpected close callback event deregister failure");
+        }
 
         virConnectClose(priv->conn);
 
@@ -3345,6 +3365,70 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
     return rv;
 }
 
+static int
+remoteDispatchConnectCloseCallbackRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                           virNetServerClientPtr client,
+                                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                           virNetMessageErrorPtr rerr)
+{
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    virMutexLock(&priv->lock);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    // on behalf of close callback
+    virObjectRef(client);
+    if (virConnectRegisterCloseCallback(priv->conn,
+                                        remoteRelayConnectionClosedEvent,
+                                        client, virObjectFreeCallback) < 0)
+        goto cleanup;
+
+    priv->closeRegistered = true;
+    rv = 0;
+
+ cleanup:
+    virMutexUnlock(&priv->lock);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
+
+static int
+remoteDispatchConnectCloseCallbackUnregister(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                             virNetServerClientPtr client,
+                                             virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                             virNetMessageErrorPtr rerr)
+{
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    virMutexLock(&priv->lock);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (virConnectUnregisterCloseCallback(priv->conn,
+                                          remoteRelayConnectionClosedEvent) < 0)
+        goto cleanup;
+
+    priv->closeRegistered = false;
+    rv = 0;
+
+ cleanup:
+    virMutexUnlock(&priv->lock);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
 
 /***************************
  * Register / deregister events
@@ -4145,6 +4229,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
     switch (args->feature) {
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
         supported = 1;
         break;
 

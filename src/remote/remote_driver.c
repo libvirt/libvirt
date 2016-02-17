@@ -94,6 +94,7 @@ struct private_data {
     char *hostname;             /* Original hostname */
     bool serverKeepAlive;       /* Does server support keepalive protocol? */
     bool serverEventFilter;     /* Does server support modern event filtering */
+    bool serverCloseCallback;   /* Does server support driver close callback */
 
     virObjectEventStatePtr eventState;
     virConnectCloseCallbackDataPtr closeCallback;
@@ -347,6 +348,11 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
 
+static void
+remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+                                         void *evdata, void *opaque);
+
 static virNetClientProgramEvent remoteEvents[] = {
     { REMOTE_PROC_DOMAIN_EVENT_LIFECYCLE,
       remoteDomainBuildEventLifecycle,
@@ -509,8 +515,23 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackMigrationIteration,
       sizeof(remote_domain_event_callback_migration_iteration_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_migration_iteration_msg },
+    { REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED,
+      remoteConnectNotifyEventConnectionClosed,
+      sizeof(remote_connect_event_connection_closed_msg),
+      (xdrproc_t)xdr_remote_connect_event_connection_closed_msg },
 };
 
+static void
+remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+                                         void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_connect_event_connection_closed_msg *msg = evdata;
+
+    virConnectCloseCallbackDataCall(priv->closeCallback, msg->reason);
+}
 
 static void
 remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -1065,6 +1086,13 @@ doRemoteOpen(virConnectPtr conn,
     if (!priv->serverEventFilter) {
         VIR_INFO("Avoiding server event filtering since it is not "
                  "supported by the server");
+    }
+
+    priv->serverCloseCallback = remoteConnectSupportsFeatureUnlocked(conn,
+                                    priv, VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK);
+    if (!priv->serverCloseCallback) {
+        VIR_INFO("Close callback registering isn't supported "
+                 "by the remote side.");
     }
 
     /* Successful. */
@@ -7908,6 +7936,12 @@ remoteConnectRegisterCloseCallback(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (priv->serverCloseCallback &&
+        call(conn, priv, 0, REMOTE_PROC_CONNECT_CLOSE_CALLBACK_REGISTER,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto cleanup;
+
     virConnectCloseCallbackDataRegister(priv->closeCallback, conn, cb,
                                         opaque, freecb);
     ret = 0;
@@ -7932,6 +7966,12 @@ remoteConnectUnregisterCloseCallback(virConnectPtr conn,
                        _("A different callback was requested"));
         goto cleanup;
     }
+
+    if (priv->serverCloseCallback &&
+        call(conn, priv, 0, REMOTE_PROC_CONNECT_CLOSE_CALLBACK_UNREGISTER,
+             (xdrproc_t) xdr_void, (char *) NULL,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        goto cleanup;
 
     virConnectCloseCallbackDataUnregister(priv->closeCallback, cb);
     ret = 0;

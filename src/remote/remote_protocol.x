@@ -3045,6 +3045,10 @@ struct remote_domain_event_callback_device_added_msg {
     remote_nonnull_string devAlias;
 };
 
+struct remote_connect_event_connection_closed_msg {
+    int reason;
+};
+
 struct remote_connect_get_cpu_model_names_args {
     remote_nonnull_string arch;
     int need_results;
@@ -5706,5 +5710,23 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION = 359
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION = 359,
+
+    /**
+     * @generate: none
+     * @acl: none
+     */
+    REMOTE_PROC_CONNECT_CLOSE_CALLBACK_REGISTER = 360,
+
+    /**
+     * @generate: none
+     * @acl: none
+     */
+    REMOTE_PROC_CONNECT_CLOSE_CALLBACK_UNREGISTER = 361,
+
+    /**
+     * @generate: none
+     * @acl: none
+     */
+    REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED = 362
 };
