@@ -149,6 +149,30 @@ void qemuDomainEventQueue(virQEMUDriverPtr driver,
 }
 
 
+void
+qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virObjectEventPtr event;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int type;
+
+    if (!priv->job.completed)
+        return;
+
+    if (qemuDomainJobInfoToParams(priv->job.completed, &type,
+                                  &params, &nparams) < 0) {
+        VIR_WARN("Could not get stats for completed job; domain %s",
+                 vm->def->name);
+    }
+
+    event = virDomainEventJobCompletedNewFromObj(vm, params, nparams);
+    qemuDomainEventQueue(driver, event);
+}
+
+
 static int
 qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
 {

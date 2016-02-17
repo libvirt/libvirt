@@ -265,6 +265,8 @@ void qemuDomainEventFlush(int timer, void *opaque);
 
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virObjectEventPtr event);
+void qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm);
 
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,

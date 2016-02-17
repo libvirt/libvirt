@@ -3866,7 +3866,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
                           int retcode)
 {
     qemuMigrationCookiePtr mig;
-    virObjectEventPtr event = NULL;
+    virObjectEventPtr event;
     int rv = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -3921,6 +3921,8 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
+        qemuDomainEventQueue(driver, event);
+        qemuDomainEventEmitJobCompleted(driver, vm);
     } else {
         virErrorPtr orig_err = virSaveLastError();
 
@@ -3935,6 +3937,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
             event = virDomainEventLifecycleNewFromObj(vm,
                                                       VIR_DOMAIN_EVENT_RESUMED,
                                                       VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+            qemuDomainEventQueue(driver, event);
         }
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
@@ -3946,7 +3949,6 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
     rv = 0;
 
  cleanup:
-    qemuDomainEventQueue(driver, event);
     virObjectUnref(cfg);
     return rv;
 }
@@ -6071,6 +6073,7 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (cmd && virCommandWait(cmd, NULL) < 0)
         goto cleanup;
 
+    qemuDomainEventEmitJobCompleted(driver, vm);
     ret = 0;
 
  cleanup:
