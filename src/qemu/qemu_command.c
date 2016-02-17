@@ -5031,9 +5031,9 @@ qemuAppendKeyWrapMachineParms(virBuffer *buf, virQEMUCapsPtr qemuCaps,
 }
 
 static int
-qemuBuildMachineArgStr(virCommandPtr cmd,
-                       const virDomainDef *def,
-                       virQEMUCapsPtr qemuCaps)
+qemuBuildMachineCommandLine(virCommandPtr cmd,
+                            const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps)
 {
     bool obsoleteAccel = false;
 
@@ -6812,7 +6812,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (enableFips)
         virCommandAddArg(cmd, "-enable-fips");
 
-    if (qemuBuildMachineArgStr(cmd, def, qemuCaps) < 0)
+    if (qemuBuildMachineCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildCpuArgStr(driver, def, qemuCaps,
