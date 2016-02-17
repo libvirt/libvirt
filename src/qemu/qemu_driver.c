@@ -3129,38 +3129,13 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     int directFlag = 0;
     virFileWrapperFdPtr wrapperFd = NULL;
     unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
-    unsigned long long pad;
-    unsigned long long offset;
-    size_t len;
-    char *xml = NULL;
 
     memset(&header, 0, sizeof(header));
     memcpy(header.magic, QEMU_SAVE_PARTIAL, sizeof(header.magic));
     header.version = QEMU_SAVE_VERSION;
     header.was_running = was_running ? 1 : 0;
-
     header.compressed = compressed;
-
-    len = strlen(domXML) + 1;
-    offset = sizeof(header) + len;
-
-    /* Due to way we append QEMU state on our header with dd,
-     * we need to ensure there's a 512 byte boundary. Unfortunately
-     * we don't have an explicit offset in the header, so we fake
-     * it by padding the XML string with NUL bytes.  Additionally,
-     * we want to ensure that virDomainSaveImageDefineXML can supply
-     * slightly larger XML, so we add a minimum padding prior to
-     * rounding out to page boundaries.
-     */
-    pad = 1024;
-    pad += (QEMU_MONITOR_MIGRATE_TO_FILE_BS -
-            ((offset + pad) % QEMU_MONITOR_MIGRATE_TO_FILE_BS));
-    if (VIR_ALLOC_N(xml, len + pad) < 0)
-        goto cleanup;
-    strcpy(xml, domXML);
-
-    offset += pad;
-    header.xml_len = len;
+    header.xml_len = strlen(domXML) + 1;
 
     /* Obtain the file handle.  */
     if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
@@ -3185,7 +3160,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Write header to file, followed by XML */
-    if (qemuDomainSaveHeader(fd, path, xml, &header) < 0)
+    if (qemuDomainSaveHeader(fd, path, domXML, &header) < 0)
         goto cleanup;
 
     /* Perform the migration */
@@ -3227,7 +3202,6 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
  cleanup:
     VIR_FORCE_CLOSE(fd);
     virFileWrapperFdFree(wrapperFd);
-    VIR_FREE(xml);
 
     if (ret < 0 && needUnlink)
         unlink(path);

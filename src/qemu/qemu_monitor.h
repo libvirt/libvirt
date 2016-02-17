@@ -560,16 +560,6 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 unsigned int flags,
                                 const char * const *argv);
 
-/* In general, BS is the smallest fundamental block size we can use to
- * access a block device; everything must be aligned to a multiple of
- * this.  Linux generally supports a BS as small as 512, but with
- * newer disks with 4k sectors, performance is better if we guarantee
- * alignment to the sector size.  However, operating on BS-sized
- * blocks is painfully slow, so we also have a transfer size that is
- * larger but only aligned to the smaller block size.
- */
-# define QEMU_MONITOR_MIGRATE_TO_FILE_BS (1024llu * 4)
-
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
                              unsigned int flags,
                              const char *unixfile);
