@@ -4689,7 +4689,8 @@ virCgroupDenyDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
                         const char *path ATTRIBUTE_UNUSED,
-                        int perms ATTRIBUTE_UNUSED)
+                        int perms ATTRIBUTE_UNUSED,
+                        bool ignoreEacces ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
