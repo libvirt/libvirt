@@ -6381,12 +6381,13 @@ virshVcpuPinQuery(vshControl *ctl,
                   unsigned int flags)
 {
     unsigned char *cpumap = NULL;
+    unsigned int countFlags = flags | VIR_DOMAIN_VCPU_MAXIMUM;
     int cpumaplen;
     size_t i;
     int ncpus;
     bool ret = false;
 
-    if ((ncpus = virshCPUCountCollect(ctl, dom, flags, true)) < 0) {
+    if ((ncpus = virshCPUCountCollect(ctl, dom, countFlags, true)) < 0) {
         if (ncpus == -1) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE)
                 vshError(ctl, "%s", _("cannot get vcpupin for offline domain"));
