@@ -2213,67 +2213,6 @@ qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                         unsigned int flags,
-                         const char * const *argv,
-                         const char *target,
-                         unsigned long long offset)
-{
-    char *argstr;
-    char *dest = NULL;
-    int ret = -1;
-    char *safe_target = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    VIR_DEBUG("argv=%p target=%s offset=%llu flags=%x",
-              argv, target, offset, flags);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (offset % QEMU_MONITOR_MIGRATE_TO_FILE_BS) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("file offset must be a multiple of %llu"),
-                       QEMU_MONITOR_MIGRATE_TO_FILE_BS);
-        return -1;
-    }
-
-    argstr = virArgvToString(argv);
-    if (!argstr)
-        goto cleanup;
-
-    /* Migrate to file */
-    virBufferEscapeShell(&buf, target);
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-    safe_target = virBufferContentAndReset(&buf);
-
-    /* Two dd processes, sharing the same stdout, are necessary to
-     * allow starting at an alignment of 512, but without wasting
-     * padding to get to the larger alignment useful for speed.  Use
-     * <> redirection to avoid truncating a regular file.  */
-    if (virAsprintf(&dest, "exec:" VIR_WRAPPER_SHELL_PREFIX "%s | "
-                    "{ dd bs=%llu seek=%llu if=/dev/null && "
-                    "dd ibs=%llu obs=%llu; } 1<>%s" VIR_WRAPPER_SHELL_SUFFIX,
-                    argstr, QEMU_MONITOR_MIGRATE_TO_FILE_BS,
-                    offset / QEMU_MONITOR_MIGRATE_TO_FILE_BS,
-                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
-                    QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE,
-                    safe_target) < 0)
-        goto cleanup;
-
-    if (mon->json)
-        ret = qemuMonitorJSONMigrate(mon, flags, dest);
-    else
-        ret = qemuMonitorTextMigrate(mon, flags, dest);
-
- cleanup:
-    VIR_FREE(safe_target);
-    VIR_FREE(argstr);
-    VIR_FREE(dest);
-    return ret;
-}
-
-
-int
 qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
                          unsigned int flags,
                          const char *unixfile)

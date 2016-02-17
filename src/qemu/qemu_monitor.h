@@ -569,13 +569,6 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
  * larger but only aligned to the smaller block size.
  */
 # define QEMU_MONITOR_MIGRATE_TO_FILE_BS (1024llu * 4)
-# define QEMU_MONITOR_MIGRATE_TO_FILE_TRANSFER_SIZE (1024llu * 1024)
-
-int qemuMonitorMigrateToFile(qemuMonitorPtr mon,
-                             unsigned int flags,
-                             const char * const *argv,
-                             const char *target,
-                             unsigned long long offset);
 
 int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
                              unsigned int flags,
