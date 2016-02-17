@@ -5520,6 +5520,44 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
 
 static int
+qemuBuildNumaCommandLine(virCommandPtr cmd,
+                         virQEMUDriverConfigPtr cfg,
+                         virDomainDefPtr def,
+                         virQEMUCapsPtr qemuCaps,
+                         virBitmapPtr nodeset)
+{
+    size_t i;
+
+    if (virDomainNumaGetNodeCount(def->numa) &&
+        qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
+        return -1;
+
+    /* memory hotplug requires NUMA to be enabled - we already checked
+     * that memory devices are present only when NUMA is */
+    for (i = 0; i < def->nmems; i++) {
+        char *backStr;
+        char *dimmStr;
+
+        if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
+                                                      qemuCaps, cfg)))
+            return -1;
+
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i]))) {
+            VIR_FREE(backStr);
+            return -1;
+        }
+
+        virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
+
+        VIR_FREE(backStr);
+        VIR_FREE(dimmStr);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 virCommandPtr cmd,
                                 virDomainDefPtr def,
@@ -6927,32 +6965,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
-            goto error;
-
-    /* memory hotplug requires NUMA to be enabled - we already checked
-     * that memory devices are present only when NUMA is */
-
-
-    for (i = 0; i < def->nmems; i++) {
-        char *backStr;
-        char *dimmStr;
-
-        if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
-                                                      qemuCaps, cfg)))
-            goto error;
-
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i]))) {
-            VIR_FREE(backStr);
-            goto error;
-        }
-
-        virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
-
-        VIR_FREE(backStr);
-        VIR_FREE(dimmStr);
-    }
+    if (qemuBuildNumaCommandLine(cmd, cfg, def, qemuCaps, nodeset) < 0)
+        goto error;
 
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
 
