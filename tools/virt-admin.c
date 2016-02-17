@@ -352,6 +352,174 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+/* ---------------------------
+ * Command srv-threadpool-info
+ * ---------------------------
+ */
+
+static const vshCmdInfo info_srv_threadpool_info[] = {
+    {.name = "help",
+     .data = N_("get server workerpool parameters")
+    },
+    {.name = "desc",
+     .data = N_("Retrieve threadpool attributes from a server. ")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_srv_threadpool_info[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("Server to retrieve threadpool attributes from."),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvThreadpoolInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    size_t i;
+    const char *srvname = NULL;
+    virAdmServerPtr srv = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    if (virAdmServerGetThreadPoolParameters(srv, &params,
+                                            &nparams, 0) < 0) {
+        vshError(ctl, "%s",
+                 _("Unable to get server workerpool parameters"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++)
+        vshPrint(ctl, "%-15s: %d\n", params[i].field, params[i].value.ui);
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    if (srv)
+        virAdmServerFree(srv);
+    return ret;
+}
+
+/* --------------------------
+ * Command srv-threadpool-set
+ * --------------------------
+ */
+
+static const vshCmdInfo info_srv_threadpool_set[] = {
+    {.name = "help",
+     .data = N_("set server workerpool parameters")
+    },
+    {.name = "desc",
+     .data = N_("Tune threadpool attributes on a server. See OPTIONS for "
+                "currently supported attributes.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_srv_threadpool_set[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("Server to alter threadpool attributes on."),
+    },
+    {.name = "min-workers",
+     .type = VSH_OT_INT,
+     .help = N_("Change bottom limit to number of workers."),
+    },
+    {.name = "max-workers",
+     .type = VSH_OT_INT,
+     .help = N_("Change upper limit to number of workers."),
+    },
+    {.name = "priority-workers",
+     .type = VSH_OT_INT,
+     .help = N_("Change the current number of priority workers"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    int rv = 0;
+    unsigned int val, min, max;
+    int maxparams = 0;
+    int nparams = 0;
+    const char *srvname = NULL;
+    virTypedParameterPtr params = NULL;
+    virAdmServerPtr srv = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+#define PARSE_CMD_TYPED_PARAM(NAME, FIELD)                                   \
+    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) {                \
+        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME);    \
+        goto cleanup;                                                        \
+    } else if (rv > 0) {                                                     \
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,             \
+                                  FIELD, val) < 0)                           \
+        goto save_error;                                                     \
+    }
+
+    PARSE_CMD_TYPED_PARAM("max-workers", VIR_THREADPOOL_WORKERS_MAX);
+    PARSE_CMD_TYPED_PARAM("min-workers", VIR_THREADPOOL_WORKERS_MIN);
+    PARSE_CMD_TYPED_PARAM("priority-workers", VIR_THREADPOOL_WORKERS_PRIORITY);
+
+#undef PARSE_CMD_TYPED_PARAM
+
+    if (!nparams) {
+        vshError(ctl, "%s",
+                 _("At least one of options --min-workers, --max-workers, "
+                   "--priority-workers is mandatory "));
+            goto cleanup;
+    }
+
+    if (virTypedParamsGetUInt(params, nparams,
+                              VIR_THREADPOOL_WORKERS_MAX, &max) &&
+        virTypedParamsGetUInt(params, nparams,
+                              VIR_THREADPOOL_WORKERS_MIN, &min) && min > max) {
+        vshError(ctl, "%s", _("--min-workers must be less than --max-workers"));
+        goto cleanup;
+    }
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    if (virAdmServerSetThreadPoolParameters(srv, params,
+                                            nparams, 0) < 0)
+        goto error;
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    if (srv)
+        virAdmServerFree(srv);
+    return ret;
+
+ save_error:
+    vshSaveLibvirtError();
+
+ error:
+    vshError(ctl, "%s", _("Unable to change server workerpool parameters"));
+    goto cleanup;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -651,12 +819,29 @@ static const vshCmdDef monitoringCmds[] = {
      .info = info_srv_list,
      .flags = 0
     },
+    {.name = "srv-threadpool-info",
+     .handler = cmdSrvThreadpoolInfo,
+     .opts = opts_srv_threadpool_info,
+     .info = info_srv_threadpool_info,
+     .flags = 0
+    },
+    {.name = NULL}
+};
+
+static const vshCmdDef managementCmds[] = {
+    {.name = "srv-threadpool-set",
+     .handler = cmdSrvThreadpoolSet,
+     .opts = opts_srv_threadpool_set,
+     .info = info_srv_threadpool_set,
+     .flags = 0
+    },
     {.name = NULL}
 };
 
 static const vshCmdGrp cmdGroups[] = {
     {"Virt-admin itself", "virt-admin", vshAdmCmds},
     {"Monitoring commands", "monitor", monitoringCmds},
+    {"Management commands", "management", managementCmds},
     {NULL, NULL, NULL}
 };
 
