@@ -2594,9 +2594,6 @@ qemuParseCommandLine(virCapsPtr caps,
 
     VIR_FREE(nics);
 
-    if (virDomainDefAddImplicitControllers(def) < 0)
-        goto error;
-
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                               xmlopt) < 0)
         goto error;
