@@ -540,6 +540,22 @@ remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
                                     reason);
 }
 
+static bool
+remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
+                                     struct private_data *priv,
+                                     int feature)
+{
+    remote_connect_supports_feature_args args = { feature };
+    remote_connect_supports_feature_ret ret = { 0 };
+    int rc;
+
+    rc = call(conn, priv, 0, REMOTE_PROC_CONNECT_SUPPORTS_FEATURE,
+              (xdrproc_t)xdr_remote_connect_supports_feature_args, (char *) &args,
+              (xdrproc_t)xdr_remote_connect_supports_feature_ret, (char *) &ret);
+
+    return rc != -1 && ret.supported;
+}
+
 /* helper macro to ease extraction of arguments from the URI */
 #define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR)          \
     if (STRCASEEQ(var->name, ARG_NAME)) {               \
@@ -1002,18 +1018,9 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
 
     if (virNetClientKeepAliveIsSupported(priv->client)) {
-        remote_connect_supports_feature_args args =
-            { VIR_DRV_FEATURE_PROGRAM_KEEPALIVE };
-        remote_connect_supports_feature_ret ret = { 0 };
-        int rc;
-
-        rc = call(conn, priv, 0, REMOTE_PROC_CONNECT_SUPPORTS_FEATURE,
-                  (xdrproc_t)xdr_remote_connect_supports_feature_args, (char *) &args,
-                  (xdrproc_t)xdr_remote_connect_supports_feature_ret, (char *) &ret);
-
-        if (rc != -1 && ret.supported) {
-            priv->serverKeepAlive = true;
-        } else {
+        priv->serverKeepAlive = remoteConnectSupportsFeatureUnlocked(conn,
+                                    priv, VIR_DRV_FEATURE_PROGRAM_KEEPALIVE);
+        if (!priv->serverKeepAlive) {
             VIR_INFO("Disabling keepalive protocol since it is not supported"
                      " by the server");
         }
@@ -1052,22 +1059,12 @@ doRemoteOpen(virConnectPtr conn,
     /* Set up events */
     if (!(priv->eventState = virObjectEventStateNew()))
         goto failed;
-    {
-        remote_connect_supports_feature_args args =
-            { VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK };
-        remote_connect_supports_feature_ret ret = { 0 };
-        int rc;
 
-        rc = call(conn, priv, 0, REMOTE_PROC_CONNECT_SUPPORTS_FEATURE,
-                  (xdrproc_t)xdr_remote_connect_supports_feature_args, (char *) &args,
-                  (xdrproc_t)xdr_remote_connect_supports_feature_ret, (char *) &ret);
-
-        if (rc != -1 && ret.supported) {
-            priv->serverEventFilter = true;
-        } else {
-            VIR_INFO("Avoiding server event filtering since it is not "
-                     "supported by the server");
-        }
+    priv->serverEventFilter = remoteConnectSupportsFeatureUnlocked(conn,
+                                priv, VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK);
+    if (!priv->serverEventFilter) {
+        VIR_INFO("Avoiding server event filtering since it is not "
+                 "supported by the server");
     }
 
     /* Successful. */
