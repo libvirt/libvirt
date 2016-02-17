@@ -3847,7 +3847,8 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
-qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
+qemuBuildChrChardevStr(const virDomainChrSourceDef *dev,
+                       const char *alias,
                        virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -3975,7 +3976,8 @@ qemuBuildChrChardevStr(virDomainChrSourceDefPtr dev, const char *alias,
 
 
 static char *
-qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
+qemuBuildChrArgStr(const virDomainChrSourceDef *dev,
+                   const char *prefix)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -4065,6 +4067,47 @@ qemuBuildChrArgStr(virDomainChrSourceDefPtr dev, const char *prefix)
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildMonitorCommandLine(virCommandPtr cmd,
+                            virQEMUCapsPtr qemuCaps,
+                            const virDomainChrSourceDef *monitor_chr,
+                            bool monitor_json)
+{
+    char *chrdev;
+
+    if (!monitor_chr)
+        return 0;
+
+    /* Use -chardev if it's available */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
+
+        virCommandAddArg(cmd, "-chardev");
+        if (!(chrdev = qemuBuildChrChardevStr(monitor_chr, "monitor",
+                                              qemuCaps)))
+            return -1;
+        virCommandAddArg(cmd, chrdev);
+        VIR_FREE(chrdev);
+
+        virCommandAddArg(cmd, "-mon");
+        virCommandAddArgFormat(cmd,
+                               "chardev=charmonitor,id=monitor,mode=%s",
+                               monitor_json ? "control" : "readline");
+    } else {
+        const char *prefix = NULL;
+        if (monitor_json)
+            prefix = "control,";
+
+        virCommandAddArg(cmd, "-monitor");
+        if (!(chrdev = qemuBuildChrArgStr(monitor_chr, prefix)))
+            return -1;
+        virCommandAddArg(cmd, chrdev);
+        VIR_FREE(chrdev);
+    }
+
+    return 0;
 }
 
 
@@ -7106,34 +7149,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (monitor_chr) {
-        char *chrdev;
-        /* Use -chardev if it's available */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
-
-            virCommandAddArg(cmd, "-chardev");
-            if (!(chrdev = qemuBuildChrChardevStr(monitor_chr, "monitor",
-                                                  qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, chrdev);
-            VIR_FREE(chrdev);
-
-            virCommandAddArg(cmd, "-mon");
-            virCommandAddArgFormat(cmd,
-                                   "chardev=charmonitor,id=monitor,mode=%s",
-                                   monitor_json ? "control" : "readline");
-        } else {
-            const char *prefix = NULL;
-            if (monitor_json)
-                prefix = "control,";
-
-            virCommandAddArg(cmd, "-monitor");
-            if (!(chrdev = qemuBuildChrArgStr(monitor_chr, prefix)))
-                goto error;
-            virCommandAddArg(cmd, chrdev);
-            VIR_FREE(chrdev);
-        }
-    }
+    if (qemuBuildMonitorCommandLine(cmd, qemuCaps, monitor_chr,
+                                    monitor_json) < 0)
+        goto error;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC)) {
         char *rtcopt;
