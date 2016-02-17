@@ -1710,6 +1710,10 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
         /* above function takes own of event */
         prlEvent = PRL_INVALID_HANDLE;
         break;
+    case PET_DSP_EVT_DISP_CONNECTION_CLOSED:
+        virConnectCloseCallbackDataCall(privconn->closeCallback,
+                                        VIR_CONNECT_CLOSE_REASON_EOF);
+        break;
     default:
         VIR_DEBUG("Skipping event of type %d", prlEventType);
     }

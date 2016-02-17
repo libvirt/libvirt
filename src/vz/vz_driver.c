@@ -254,6 +254,9 @@ vzOpenDefault(virConnectPtr conn)
     if (prlsdkSubscribeToPCSEvents(privconn))
         goto error;
 
+    if (!(privconn->closeCallback = virNewConnectCloseCallbackData()))
+        goto error;
+
     conn->privateData = privconn;
 
     if (prlsdkLoadDomains(privconn))
@@ -262,6 +265,8 @@ vzOpenDefault(virConnectPtr conn)
     return VIR_DRV_OPEN_SUCCESS;
 
  error:
+    virObjectUnref(privconn->closeCallback);
+    privconn->closeCallback = NULL;
     virObjectUnref(privconn->domains);
     virObjectUnref(privconn->caps);
     virObjectEventStateFree(privconn->domainEventState);
@@ -329,6 +334,8 @@ vzConnectClose(virConnectPtr conn)
     virObjectUnref(privconn->caps);
     virObjectUnref(privconn->xmlopt);
     virObjectUnref(privconn->domains);
+    virObjectUnref(privconn->closeCallback);
+    privconn->closeCallback = NULL;
     virObjectEventStateFree(privconn->domainEventState);
     prlsdkDisconnect(privconn);
     conn->privateData = NULL;
@@ -1470,6 +1477,56 @@ vzNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
     return freeMem;
 }
 
+static int
+vzConnectRegisterCloseCallback(virConnectPtr conn,
+                               virConnectCloseFunc cb,
+                               void *opaque,
+                               virFreeCallback freecb)
+{
+    vzConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    vzDriverLock(privconn);
+
+    if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != NULL) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A close callback is already registered"));
+        goto cleanup;
+    }
+
+    virConnectCloseCallbackDataRegister(privconn->closeCallback, conn, cb,
+                                        opaque, freecb);
+    ret = 0;
+
+ cleanup:
+    vzDriverUnlock(privconn);
+
+    return ret;
+}
+
+static int
+vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
+{
+    vzConnPtr privconn = conn->privateData;
+    int ret = -1;
+
+    vzDriverLock(privconn);
+
+    if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != cb) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A different callback was requested"));
+        goto cleanup;
+    }
+
+    virConnectCloseCallbackDataUnregister(privconn->closeCallback, cb);
+    ret = 0;
+
+ cleanup:
+    vzDriverUnlock(privconn);
+
+    return ret;
+}
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -1532,6 +1589,8 @@ static virHypervisorDriver vzDriver = {
     .domainBlockStatsFlags = vzDomainBlockStatsFlags, /* 1.2.17 */
     .domainInterfaceStats = vzDomainInterfaceStats, /* 1.2.17 */
     .domainMemoryStats = vzDomainMemoryStats, /* 1.2.17 */
+    .connectRegisterCloseCallback = vzConnectRegisterCloseCallback, /* 1.3.2 */
+    .connectUnregisterCloseCallback = vzConnectUnregisterCloseCallback, /* 1.3.2 */
 };
 
 static virConnectDriver vzConnectDriver = {

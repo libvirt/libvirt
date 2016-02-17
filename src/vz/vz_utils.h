@@ -30,6 +30,7 @@
 # include "conf/virdomainobjlist.h"
 # include "conf/domain_event.h"
 # include "virthread.h"
+# include "datatypes.h"
 
 # define vzParseError()                                                 \
     virReportErrorHelper(VIR_FROM_TEST, VIR_ERR_OPERATION_FAILED, __FILE__,    \
@@ -59,6 +60,8 @@ struct _vzConn {
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
     const char *drivername;
+    /* Immutable pointer, self-locking APIs */
+    virConnectCloseCallbackDataPtr closeCallback;
 };
 
 typedef struct _vzConn vzConn;
