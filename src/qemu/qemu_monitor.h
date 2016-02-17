@@ -926,17 +926,4 @@ int qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
 int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
                                const char *uri);
 
-/**
- * When running two dd process and using <> redirection, we need a
- * shell that will not truncate files.  These two strings serve that
- * purpose.
- */
-# ifdef VIR_WRAPPER_SHELL
-#  define VIR_WRAPPER_SHELL_PREFIX VIR_WRAPPER_SHELL " -c '"
-#  define VIR_WRAPPER_SHELL_SUFFIX "'"
-# else
-#  define VIR_WRAPPER_SHELL_PREFIX /* nothing */
-#  define VIR_WRAPPER_SHELL_SUFFIX /* nothing */
-# endif
-
 #endif /* QEMU_MONITOR_H */

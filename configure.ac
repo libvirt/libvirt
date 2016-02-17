@@ -1111,56 +1111,6 @@ dnl
 
 LIBVIRT_DRIVER_CHECK_BHYVE
 
-dnl
-dnl check for shell that understands <> redirection without truncation,
-dnl needed by src/qemu/qemu_monitor_{text,json}.c.
-dnl
-if test "$with_qemu" = yes; then
-  lv_wrapper_shell=
-  AC_CACHE_CHECK([for shell that supports <> redirection],
-    [lv_cv_wrapper_shell],
-    [
-    # If cross-compiling, guess that /bin/sh is good enough except for
-    # Linux, where it might be dash 0.5.5 which is known broken; and on
-    # Linux, we have a good chance that /bin/bash will exist.
-    # If we guess wrong, a user can override the cache variable.
-    # Going through /bin/bash is a slight slowdown if /bin/sh works.
-    if test "$cross_compiling" = yes; then
-      case $host_os in
-        linux*) lv_cv_wrapper_shell=/bin/bash ;;
-        *) lv_cv_wrapper_shell=/bin/sh ;;
-      esac
-    else
-      for lv_cv_wrapper_shell in /bin/sh bash ksh zsh none; do
-        test $lv_cv_wrapper_shell = none &&
-          AC_MSG_ERROR([could not find decent shell])
-        echo a > conftest.a
-        ($lv_cv_wrapper_shell -c ': 1<>conftest.a') 2>/dev/null &&
-        case `cat conftest.a`.$lv_cv_wrapper_shell in
-          a./*) break;; dnl /bin/sh is good enough
-          a.*) dnl bash, ksh, and zsh all understand 'command', use that
-               dnl to determine the absolute path of the shell
-            lv_cv_wrapper_shell=`$lv_cv_wrapper_shell -c \
-              "command -v $lv_cv_wrapper_shell"`
-            case $lv_cv_wrapper_shell in
-              /*) break;;
-            esac
-            ;;
-        esac
-      done
-      rm -f conftest.a
-    fi
-  ])
-  if test "x$lv_cv_wrapper_shell" != x/bin/sh; then
-    lv_wrapper_shell=$lv_cv_wrapper_shell
-  fi
-  if test "x$lv_wrapper_shell" != x; then
-    AC_DEFINE_UNQUOTED([VIR_WRAPPER_SHELL], ["$lv_wrapper_shell"],
-      [Define to the absolute path of a shell that does not truncate on
-       <> redirection, if /bin/sh does not fit the bill])
-  fi
-fi
-
 
 dnl
 dnl check for kernel headers required by src/bridge.c
