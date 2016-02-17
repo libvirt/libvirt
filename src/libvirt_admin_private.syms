@@ -12,6 +12,7 @@ xdr_admin_connect_list_servers_ret;
 xdr_admin_connect_open_args;
 
 # datatypes.h
+virAdmConnectClass;
 virAdmGetServer;
 virAdmServerClass;
 
