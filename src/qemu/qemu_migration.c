@@ -3869,6 +3869,8 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     int rv = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainJobInfoPtr jobInfo = NULL;
 
     VIR_DEBUG("driver=%p, conn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "flags=%x, retcode=%d",
@@ -3886,12 +3888,18 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
                                        QEMU_MIGRATION_COOKIE_STATS)))
         goto cleanup;
 
-    /* Update total times with the values sent by the destination daemon */
-    if (mig->jobInfo) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
+    if (retcode == 0)
+        jobInfo = priv->job.completed;
+    else
         VIR_FREE(priv->job.completed);
-        priv->job.completed = mig->jobInfo;
-        mig->jobInfo = NULL;
+
+    /* Update times with the values sent by the destination daemon */
+    if (mig->jobInfo && jobInfo) {
+        qemuDomainJobInfoUpdateTime(jobInfo);
+        jobInfo->timeDeltaSet = mig->jobInfo->timeDeltaSet;
+        jobInfo->timeDelta = mig->jobInfo->timeDelta;
+        jobInfo->stats.downtime_set = mig->jobInfo->stats.downtime_set;
+        jobInfo->stats.downtime = mig->jobInfo->stats.downtime;
     }
 
     if (flags & VIR_MIGRATE_OFFLINE)
