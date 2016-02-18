@@ -117,17 +117,13 @@ char *qemuBuildDriveStr(virConnectPtr conn,
                         virDomainDiskDefPtr disk,
                         bool bootable,
                         virQEMUCapsPtr qemuCaps);
-char *qemuBuildFSStr(virDomainFSDefPtr fs,
-                     virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
 char *qemuBuildDriveDevStr(const virDomainDef *def,
                            virDomainDiskDefPtr disk,
                            int bootindex,
                            virQEMUCapsPtr qemuCaps);
-char *qemuBuildFSDevStr(virDomainDefPtr domainDef,
-                        virDomainFSDefPtr fs,
-                        virQEMUCapsPtr qemuCaps);
+
 /* Current, best practice */
 char *qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                 virDomainControllerDefPtr def,

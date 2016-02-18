@@ -1982,8 +1982,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 }
 
 
-char *qemuBuildFSStr(virDomainFSDefPtr fs,
-                     virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+static char *
+qemuBuildFSStr(virDomainFSDefPtr fs,
+               virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
@@ -2056,8 +2057,8 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
 }
 
 
-char *
-qemuBuildFSDevStr(virDomainDefPtr def,
+static char *
+qemuBuildFSDevStr(const virDomainDef *def,
                   virDomainFSDefPtr fs,
                   virQEMUCapsPtr qemuCaps)
 {
@@ -2075,7 +2076,8 @@ qemuBuildFSDevStr(virDomainDefPtr def,
         virBufferAddLit(&opt, "virtio-9p-pci");
 
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
-    virBufferAsprintf(&opt, ",fsdev=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
+    virBufferAsprintf(&opt, ",fsdev=%s%s",
+                      QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",mount_tag=%s", fs->dst);
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
@@ -2089,6 +2091,40 @@ qemuBuildFSDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&opt);
     return NULL;
+}
+
+
+static int
+qemuBuildFSDevCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV) && def->nfss) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("filesystem passthrough not supported by this QEMU"));
+        return -1;
+    }
+
+    for (i = 0; i < def->nfss; i++) {
+        char *optstr;
+        virDomainFSDefPtr fs = def->fss[i];
+
+        virCommandAddArg(cmd, "-fsdev");
+        if (!(optstr = qemuBuildFSStr(fs, qemuCaps)))
+            return -1;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+
+        virCommandAddArg(cmd, "-device");
+        if (!(optstr = qemuBuildFSDevStr(def, fs, qemuCaps)))
+            return -1;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+    }
+
+    return 0;
 }
 
 
@@ -8013,30 +8049,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                                       emitBootindex) < 0)
         goto error;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV)) {
-        for (i = 0; i < def->nfss; i++) {
-            char *optstr;
-            virDomainFSDefPtr fs = def->fss[i];
-
-            virCommandAddArg(cmd, "-fsdev");
-            if (!(optstr = qemuBuildFSStr(fs, qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-
-            virCommandAddArg(cmd, "-device");
-            if (!(optstr = qemuBuildFSDevStr(def, fs, qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        }
-    } else {
-        if (def->nfss) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("filesystem passthrough not supported by this QEMU"));
-            goto error;
-        }
-    }
+    if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (!def->nnets) {
         /* If we have -device, then we set -nodefault already */
