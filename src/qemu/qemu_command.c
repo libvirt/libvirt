@@ -7858,6 +7858,93 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
 
 
 static int
+qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
+                             virCommandPtr cmd,
+                             const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps,
+                             const char *domainChannelTargetDir)
+{
+    size_t i;
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDefPtr channel = def->channels[i];
+        char *devstr;
+
+        switch (channel->targetType) {
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("guestfwd requires QEMU to support -chardev & -device"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                  &channel->source,
+                                                  channel->info.alias,
+                                                  qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceStr(&devstr, def, channel, qemuCaps) < 0)
+                return -1;
+            virCommandAddArgList(cmd, "-netdev", devstr, NULL);
+            VIR_FREE(devstr);
+            break;
+
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio channel requires QEMU to support -device"));
+                return -1;
+            }
+
+            /*
+             * TODO: Refactor so that we generate this (and onther
+             * things) somewhere else then where we are building the
+             * command line.
+             */
+            if (channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+                !channel->source.data.nix.path) {
+                if (virAsprintf(&channel->source.data.nix.path,
+                                "%s/%s", domainChannelTargetDir,
+                                channel->target.name ? channel->target.name
+                                : "unknown.sock") < 0)
+                    return -1;
+
+                channel->source.data.nix.listen = true;
+            }
+
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
+                channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+                /* spicevmc was originally introduced via a -device
+                 * with a backend internal to qemu; although we prefer
+                 * the newer -chardev interface.  */
+                ;
+            } else {
+                virCommandAddArg(cmd, "-chardev");
+                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                      &channel->source,
+                                                      channel->info.alias,
+                                                      qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            }
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, channel, qemuCaps) < 0)
+                return -1;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps)
@@ -8359,79 +8446,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildParallelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    for (i = 0; i < def->nchannels; i++) {
-        virDomainChrDefPtr channel = def->channels[i];
-        char *devstr;
-
-        switch (channel->targetType) {
-        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("guestfwd requires QEMU to support -chardev & -device"));
-                goto error;
-            }
-
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                  &channel->source,
-                                                  channel->info.alias,
-                                                  qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceStr(&devstr, def, channel, qemuCaps) < 0)
-                goto error;
-            virCommandAddArgList(cmd, "-netdev", devstr, NULL);
-            VIR_FREE(devstr);
-            break;
-
-        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtio channel requires QEMU to support -device"));
-                goto error;
-            }
-
-            /*
-             * TODO: Refactor so that we generate this (and onther
-             * things) somewhere else then where we are building the
-             * command line.
-             */
-            if (channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-                !channel->source.data.nix.path) {
-                if (virAsprintf(&channel->source.data.nix.path,
-                                "%s/%s", domainChannelTargetDir,
-                                channel->target.name ? channel->target.name
-                                : "unknown.sock") < 0)
-                    goto error;
-
-                channel->source.data.nix.listen = true;
-            }
-
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
-                channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
-                /* spicevmc was originally introduced via a -device
-                 * with a backend internal to qemu; although we prefer
-                 * the newer -chardev interface.  */
-                ;
-            } else {
-                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                      &channel->source,
-                                                      channel->info.alias,
-                                                      qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, "-chardev");
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, channel, qemuCaps) < 0)
-                goto error;
-            break;
-        }
-    }
+    if (qemuBuildChannelsCommandLine(logManager, cmd, def, qemuCaps,
+                                     domainChannelTargetDir) < 0)
+        goto error;
 
     /* Explicit console devices */
     for (i = 0; i < def->nconsoles; i++) {
