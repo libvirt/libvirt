@@ -3798,8 +3798,8 @@ qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
 }
 
 
-char *
-qemuBuildHubDevStr(virDomainDefPtr def,
+static char *
+qemuBuildHubDevStr(const virDomainDef *def,
                    virDomainHubDefPtr dev,
                    virQEMUCapsPtr qemuCaps)
 {
@@ -3831,6 +3831,28 @@ qemuBuildHubDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildHubCommandLine(virCommandPtr cmd,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhubs; i++) {
+        virDomainHubDefPtr hub = def->hubs[i];
+        char *optstr;
+
+        virCommandAddArg(cmd, "-device");
+        if (!(optstr = qemuBuildHubDevStr(def, hub, qemuCaps)))
+            return -1;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+    }
+
+    return 0;
 }
 
 
@@ -7824,16 +7846,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildControllerDevCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    for (i = 0; i < def->nhubs; i++) {
-        virDomainHubDefPtr hub = def->hubs[i];
-        char *optstr;
-
-        virCommandAddArg(cmd, "-device");
-        if (!(optstr = qemuBuildHubDevStr(def, hub, qemuCaps)))
-            goto error;
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-    }
+    if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     if ((virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) || emitBootindex)) {
         /* bootDevs will get translated into either bootindex=N or boot=on
