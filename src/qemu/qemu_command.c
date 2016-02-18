@@ -4247,7 +4247,7 @@ qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
 static int
 qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
                            virCommandPtr cmd,
-                           virDomainDefPtr def,
+                           const virDomainDef *def,
                            virBufferPtr buf,
                            const char *filearg, const char *fileval,
                            const char *appendarg, int appendval)
@@ -4298,7 +4298,7 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
 static char *
 qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        virCommandPtr cmd,
-                       virDomainDefPtr def,
+                       const virDomainDef *def,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
                        virQEMUCapsPtr qemuCaps)
@@ -7506,6 +7506,124 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
+                              virCommandPtr cmd,
+                              const virDomainDef *def,
+                              virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+    virDomainSmartcardDefPtr smartcard;
+    char *devstr;
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    const char *database;
+
+    if (!def->nsmartcards)
+        return 0;
+
+    smartcard = def->smartcards[0];
+
+    /* -device usb-ccid was already emitted along with other
+     * controllers.  For now, qemu handles only one smartcard.  */
+    if (def->nsmartcards > 1 ||
+        smartcard->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID ||
+        smartcard->info.addr.ccid.controller != 0 ||
+        smartcard->info.addr.ccid.slot != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("this QEMU binary lacks multiple smartcard "
+                         "support"));
+        virBufferFreeAndReset(&opt);
+        return -1;
+    }
+
+    switch (smartcard->type) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary lacks smartcard host "
+                             "mode support"));
+            return -1;
+        }
+
+        virBufferAddLit(&opt, "ccid-card-emulated,backend=nss-emulated");
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary lacks smartcard host "
+                             "mode support"));
+            return -1;
+        }
+
+        virBufferAddLit(&opt, "ccid-card-emulated,backend=certificates");
+        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++) {
+            if (strchr(smartcard->data.cert.file[i], ',')) {
+                virBufferFreeAndReset(&opt);
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid certificate name: %s"),
+                               smartcard->data.cert.file[i]);
+                return -1;
+            }
+            virBufferAsprintf(&opt, ",cert%zu=%s", i + 1,
+                              smartcard->data.cert.file[i]);
+        }
+        if (smartcard->data.cert.database) {
+            if (strchr(smartcard->data.cert.database, ',')) {
+                virBufferFreeAndReset(&opt);
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid database name: %s"),
+                               smartcard->data.cert.database);
+                return -1;
+            }
+            database = smartcard->data.cert.database;
+        } else {
+            database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
+        }
+        virBufferAsprintf(&opt, ",db=%s", database);
+        break;
+
+    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_PASSTHRU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary lacks smartcard "
+                             "passthrough mode support"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-chardev");
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                              &smartcard->data.passthru,
+                                              smartcard->info.alias,
+                                              qemuCaps))) {
+            virBufferFreeAndReset(&opt);
+            return -1;
+        }
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+
+        virBufferAsprintf(&opt, "ccid-card-passthru,chardev=char%s",
+                          smartcard->info.alias);
+        break;
+
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected smartcard type %d"),
+                       smartcard->type);
+        virBufferFreeAndReset(&opt);
+        return -1;
+    }
+    virCommandAddArg(cmd, "-device");
+    virBufferAsprintf(&opt, ",id=%s,bus=ccid0.0", smartcard->info.alias);
+    virCommandAddArgBuffer(cmd, &opt);
+
+    return 0;
+}
+
+
 char *
 qemuBuildShmemDevStr(virDomainDefPtr def,
                      virDomainShmemDefPtr shmem,
@@ -8134,109 +8252,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                                 &bootHostdevNet) < 0)
         goto error;
 
-    if (def->nsmartcards) {
-        /* -device usb-ccid was already emitted along with other
-         * controllers.  For now, qemu handles only one smartcard.  */
-        virDomainSmartcardDefPtr smartcard = def->smartcards[0];
-        char *devstr;
-        virBuffer opt = VIR_BUFFER_INITIALIZER;
-        const char *database;
-
-        if (def->nsmartcards > 1 ||
-            smartcard->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID ||
-            smartcard->info.addr.ccid.controller != 0 ||
-            smartcard->info.addr.ccid.slot != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU binary lacks multiple smartcard "
-                             "support"));
-            virBufferFreeAndReset(&opt);
-            goto error;
-        }
-
-        switch (smartcard->type) {
-        case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU binary lacks smartcard host "
-                                 "mode support"));
-                goto error;
-            }
-
-            virBufferAddLit(&opt, "ccid-card-emulated,backend=nss-emulated");
-            break;
-
-        case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU binary lacks smartcard host "
-                                 "mode support"));
-                goto error;
-            }
-
-            virBufferAddLit(&opt, "ccid-card-emulated,backend=certificates");
-            for (j = 0; j < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; j++) {
-                if (strchr(smartcard->data.cert.file[j], ',')) {
-                    virBufferFreeAndReset(&opt);
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("invalid certificate name: %s"),
-                                   smartcard->data.cert.file[j]);
-                    goto error;
-                }
-                virBufferAsprintf(&opt, ",cert%zu=%s", j + 1,
-                                  smartcard->data.cert.file[j]);
-            }
-            if (smartcard->data.cert.database) {
-                if (strchr(smartcard->data.cert.database, ',')) {
-                    virBufferFreeAndReset(&opt);
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("invalid database name: %s"),
-                                   smartcard->data.cert.database);
-                    goto error;
-                }
-                database = smartcard->data.cert.database;
-            } else {
-                database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
-            }
-            virBufferAsprintf(&opt, ",db=%s", database);
-            break;
-
-        case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_PASSTHRU)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU binary lacks smartcard "
-                                 "passthrough mode support"));
-                goto error;
-            }
-
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                  &smartcard->data.passthru,
-                                                  smartcard->info.alias,
-                                                  qemuCaps))) {
-                virBufferFreeAndReset(&opt);
-                goto error;
-            }
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            virBufferAsprintf(&opt, "ccid-card-passthru,chardev=char%s",
-                              smartcard->info.alias);
-            break;
-
-        default:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected smartcard type %d"),
-                           smartcard->type);
-            virBufferFreeAndReset(&opt);
-            goto error;
-        }
-        virCommandAddArg(cmd, "-device");
-        virBufferAsprintf(&opt, ",id=%s,bus=ccid0.0", smartcard->info.alias);
-        virCommandAddArgBuffer(cmd, &opt);
-    }
+    if (qemuBuildSmartcardCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (def->nserials) {
         for (i = 0; i < def->ngraphics; i++) {
