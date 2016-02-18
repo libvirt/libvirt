@@ -7945,6 +7945,81 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
 
 static int
+qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
+                            virCommandPtr cmd,
+                            const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    /* Explicit console devices */
+    for (i = 0; i < def->nconsoles; i++) {
+        virDomainChrDefPtr console = def->consoles[i];
+        char *devstr;
+
+        switch (console->targetType) {
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclp console requires QEMU to support -device"));
+                return -1;
+            }
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCLP_S390)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclp console requires QEMU to support s390-sclp"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                  &console->source,
+                                                  console->info.alias,
+                                                  qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio channel requires QEMU to support -device"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                  &console->source,
+                                                  console->info.alias,
+                                                  qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
+            break;
+
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported console target type %s"),
+                           NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps)
@@ -8450,68 +8525,8 @@ qemuBuildCommandLine(virConnectPtr conn,
                                      domainChannelTargetDir) < 0)
         goto error;
 
-    /* Explicit console devices */
-    for (i = 0; i < def->nconsoles; i++) {
-        virDomainChrDefPtr console = def->consoles[i];
-        char *devstr;
-
-        switch (console->targetType) {
-        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
-        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("sclp console requires QEMU to support -device"));
-                goto error;
-            }
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCLP_S390)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("sclp console requires QEMU to support s390-sclp"));
-                goto error;
-            }
-
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                  &console->source,
-                                                  console->info.alias,
-                                                  qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
-                goto error;
-            break;
-
-        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtio channel requires QEMU to support -device"));
-                goto error;
-            }
-
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                  &console->source,
-                                                  console->info.alias,
-                                                  qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
-                goto error;
-            break;
-
-        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
-            break;
-
-        default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported console target type %s"),
-                           NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
-            goto error;
-        }
-    }
+    if (qemuBuildConsoleCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (def->tpm) {
         if (qemuBuildTPMCommandLine(def, cmd, qemuCaps, def->emulator) < 0)
