@@ -8091,8 +8091,7 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
 
 static char *
 qemuBuildTPMDevStr(const virDomainDef *def,
-                   virQEMUCapsPtr qemuCaps,
-                   const char *emulator)
+                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const virDomainTPMDef *tpm = def->tpm;
@@ -8102,7 +8101,7 @@ qemuBuildTPMDevStr(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("The QEMU executable %s does not support TPM "
                        "model %s"),
-                       emulator, model);
+                       def->emulator, model);
         goto error;
     }
 
@@ -8124,7 +8123,6 @@ static char *
 qemuBuildTPMBackendStr(const virDomainDef *def,
                        virCommandPtr cmd,
                        virQEMUCapsPtr qemuCaps,
-                       const char *emulator,
                        int *tpmfd,
                        int *cancelfd)
 {
@@ -8200,7 +8198,7 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                    _("The QEMU executable %s does not support TPM "
                      "backend type %s"),
-                   emulator, type);
+                   def->emulator, type);
 
  error:
     VIR_FREE(devset);
@@ -8212,17 +8210,19 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 
 
 static int
-qemuBuildTPMCommandLine(virDomainDefPtr def,
-                        virCommandPtr cmd,
-                        virQEMUCapsPtr qemuCaps,
-                        const char *emulator)
+qemuBuildTPMCommandLine(virCommandPtr cmd,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
 {
     char *optstr;
     int tpmfd = -1;
     int cancelfd = -1;
     char *fdset;
 
-    if (!(optstr = qemuBuildTPMBackendStr(def, cmd, qemuCaps, emulator,
+    if (!def->tpm)
+        return 0;
+
+    if (!(optstr = qemuBuildTPMBackendStr(def, cmd, qemuCaps,
                                           &tpmfd, &cancelfd)))
         return -1;
 
@@ -8247,7 +8247,7 @@ qemuBuildTPMCommandLine(virDomainDefPtr def,
         VIR_FREE(fdset);
     }
 
-    if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps, emulator)))
+    if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps)))
         return -1;
 
     virCommandAddArgList(cmd, "-device", optstr, NULL);
@@ -8528,10 +8528,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildConsoleCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (def->tpm) {
-        if (qemuBuildTPMCommandLine(def, cmd, qemuCaps, def->emulator) < 0)
-            goto error;
-    }
+    if (qemuBuildTPMCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->ninputs; i++) {
         virDomainInputDefPtr input = def->inputs[i];
