@@ -3688,6 +3688,9 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             goto error;
 
         graphics->data.spice.port = port;
+
+        if (!graphics->data.spice.autoport)
+            graphics->data.spice.portReserved = true;
     }
 
     if (needTLSPort || graphics->data.spice.tlsPort == -1) {
@@ -3702,6 +3705,9 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             goto error;
 
         graphics->data.spice.tlsPort = tlsPort;
+
+        if (!graphics->data.spice.autoport)
+            graphics->data.spice.tlsPortReserved = true;
     }
 
     return 0;
