@@ -5306,10 +5306,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                     return -1;
                 }
 
-                /* 2 is the default, so we don't put it as option for
-                 * backwards compatibility
-                 */
-                if (def->gic_version != VIR_GIC_VERSION_2) {
+                /* The default GIC version should not be specified on the
+                 * QEMU commandline for backwards compatibility reasons */
+                if (def->gic_version != VIR_GIC_VERSION_DEFAULT) {
                     if (!virQEMUCapsGet(qemuCaps,
                                         QEMU_CAPS_MACH_VIRT_GIC_VERSION)) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -1264,10 +1264,10 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def)
         break;
     }
 
-    /* Default to GIC v2 if no version was specified */
+    /* Use the default GIC version if no version was specified */
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
         def->gic_version == VIR_GIC_VERSION_NONE)
-        def->gic_version = VIR_GIC_VERSION_2;
+        def->gic_version = VIR_GIC_VERSION_DEFAULT;
 }
 
 
