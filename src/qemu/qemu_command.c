@@ -5025,6 +5025,79 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildPMCommandLine(virCommandPtr cmd,
+                       const virDomainDef *def,
+                       virQEMUCapsPtr qemuCaps,
+                       bool monitor_json)
+{
+    bool allowReboot = true;
+
+    /* Only add -no-reboot option if each event destroys domain */
+    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+        (def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY ||
+         def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)) {
+        allowReboot = false;
+        virCommandAddArg(cmd, "-no-reboot");
+    }
+
+    /* If JSON monitor is enabled, we can receive an event
+     * when QEMU stops. If we use no-shutdown, then we can
+     * watch for this event and do a soft/warm reboot.
+     */
+    if (monitor_json && allowReboot &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+        virCommandAddArg(cmd, "-no-shutdown");
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
+        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
+            virCommandAddArg(cmd, "-no-acpi");
+    }
+
+    /* We fall back to PIIX4_PM even for q35, since it's what we did
+       pre-q35-pm support. QEMU starts up fine (with a warning) if
+       mixing PIIX PM and -M q35. Starting to reject things here
+       could mean we refuse to start existing configs in the wild.*/
+    if (def->pm.s3) {
+        const char *pm_object = "PIIX4_PM";
+
+        if (qemuDomainMachineIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3)) {
+            pm_object = "ICH9-LPC";
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S3 not supported"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
+                               pm_object, def->pm.s3 == VIR_TRISTATE_BOOL_NO);
+    }
+
+    if (def->pm.s4) {
+        const char *pm_object = "PIIX4_PM";
+
+        if (qemuDomainMachineIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4)) {
+            pm_object = "ICH9-LPC";
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S4 not supported"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
+                               pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
                         const virDomainDef *def,
                         virBufferPtr buf,
@@ -7315,7 +7388,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     bool havespice = false;
     int last_good_net = -1;
     virCommandPtr cmd = NULL;
-    bool allowReboot = true;
     bool emitBootindex = false;
     int usbcontroller = 0;
     int actualSerials = 0;
@@ -7447,66 +7519,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildClockCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    /* Only add -no-reboot option if each event destroys domain */
-    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
-        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
-        (def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY ||
-         def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)) {
-        allowReboot = false;
-        virCommandAddArg(cmd, "-no-reboot");
-    }
-
-    /* If JSON monitor is enabled, we can receive an event
-     * when QEMU stops. If we use no-shutdown, then we can
-     * watch for this event and do a soft/warm reboot.
-     */
-    if (monitor_json && allowReboot &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-        virCommandAddArg(cmd, "-no-shutdown");
-    }
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
-        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)
-            virCommandAddArg(cmd, "-no-acpi");
-    }
-
-    /* We fall back to PIIX4_PM even for q35, since it's what we did
-       pre-q35-pm support. QEMU starts up fine (with a warning) if
-       mixing PIIX PM and -M q35. Starting to reject things here
-       could mean we refuse to start existing configs in the wild.*/
-    if (def->pm.s3) {
-        const char *pm_object = "PIIX4_PM";
-
-        if (qemuDomainMachineIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3)) {
-            pm_object = "ICH9-LPC";
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S3 not supported"));
-            goto error;
-        }
-
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
-                               pm_object, def->pm.s3 == VIR_TRISTATE_BOOL_NO);
-    }
-
-    if (def->pm.s4) {
-        const char *pm_object = "PIIX4_PM";
-
-        if (qemuDomainMachineIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4)) {
-            pm_object = "ICH9-LPC";
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S4 not supported"));
-            goto error;
-        }
-
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
-                               pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
-    }
+    if (qemuBuildPMCommandLine(cmd, def, qemuCaps, monitor_json) < 0)
+        goto error;
 
     /*
      * We prefer using explicit bootindex=N parameters for predictable
