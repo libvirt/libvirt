@@ -180,7 +180,9 @@ remoteAdminConnectClose(virAdmConnectPtr conn)
         goto done;
     }
 
-    virNetClientSetCloseCallback(priv->client, NULL, NULL, NULL);
+    virNetClientSetCloseCallback(priv->client, NULL, conn->closeCallback,
+                                 virObjectFreeCallback);
+    virNetClientClose(priv->client);
 
     rv = 0;
 
