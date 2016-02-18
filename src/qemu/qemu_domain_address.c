@@ -40,7 +40,7 @@ VIR_LOG_INIT("qemu.qemu_domain_address");
 
 
 int
-qemuDomainSetSCSIControllerModel(virDomainDefPtr def,
+qemuDomainSetSCSIControllerModel(const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps,
                                  int *model)
 {

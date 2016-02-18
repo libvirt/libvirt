@@ -2835,12 +2835,12 @@ int virDomainControllerInsert(virDomainDefPtr def,
     ATTRIBUTE_RETURN_CHECK;
 void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller);
-int virDomainControllerFind(virDomainDefPtr def, int type, int idx);
+int virDomainControllerFind(const virDomainDef *def, int type, int idx);
 int virDomainControllerFindByType(virDomainDefPtr def, int type);
 int virDomainControllerFindByPCIAddress(virDomainDefPtr def,
                                         virDevicePCIAddressPtr addr);
 virDomainControllerDefPtr virDomainControllerRemove(virDomainDefPtr def, size_t i);
-const char *virDomainControllerAliasFind(virDomainDefPtr def,
+const char *virDomainControllerAliasFind(const virDomainDef *def,
                                          int type, int idx)
     ATTRIBUTE_NONNULL(1);
 

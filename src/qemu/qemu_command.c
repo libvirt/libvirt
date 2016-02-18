@@ -330,7 +330,7 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
 
 static int
 qemuBuildDeviceAddressStr(virBufferPtr buf,
-                          virDomainDefPtr domainDef,
+                          const virDomainDef *domainDef,
                           virDomainDeviceInfoPtr info,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -979,7 +979,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
  * an error and return false; otherwise, return true.
  */
 bool
-qemuCheckCCWS390AddressSupport(virDomainDefPtr def,
+qemuCheckCCWS390AddressSupport(const virDomainDef *def,
                                virDomainDeviceInfo info,
                                virQEMUCapsPtr qemuCaps,
                                const char *devicename)
@@ -1958,7 +1958,7 @@ qemuControllerModelUSBToCaps(int model)
 
 
 static int
-qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
+qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
                              virDomainControllerDefPtr def,
                              virQEMUCapsPtr qemuCaps,
                              virBuffer *buf)
@@ -1996,7 +1996,7 @@ qemuBuildUSBControllerDevStr(virDomainDefPtr domainDef,
 }
 
 char *
-qemuBuildControllerDevStr(virDomainDefPtr domainDef,
+qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           virDomainControllerDefPtr def,
                           virQEMUCapsPtr qemuCaps,
                           int *nusbcontroller)
@@ -2351,6 +2351,120 @@ qemuBuildControllerDevStr(virDomainDefPtr domainDef,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildControllerDevCommandLine(virCommandPtr cmd,
+                                  const virDomainDef *def,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    size_t i, j;
+    int usbcontroller = 0;
+    bool usblegacy = false;
+    int contOrder[] = {
+        /*
+         * List of controller types that we add commandline args for,
+         * *in the order we want to add them*.
+         *
+         * The floppy controller is implicit on PIIX4 and older Q35
+         * machines. For newer Q35 machines it is added out of the
+         * controllers loop, after the floppy drives.
+         *
+         * We don't add PCI/PCIe root controller either, because it's
+         * implicit, but we do add PCI bridges and other PCI
+         * controllers, so we leave that in to check each
+         * one. Likewise, we don't do anything for the primary IDE
+         * controller on an i440fx machine or primary SATA on q35, but
+         * we do add those beyond these two exceptions.
+         */
+        VIR_DOMAIN_CONTROLLER_TYPE_PCI,
+        VIR_DOMAIN_CONTROLLER_TYPE_USB,
+        VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+        VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+        VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+        VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+        VIR_DOMAIN_CONTROLLER_TYPE_CCID,
+    };
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+        goto check_add_usb;
+
+    for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
+        for (i = 0; i < def->ncontrollers; i++) {
+            virDomainControllerDefPtr cont = def->controllers[i];
+            char *devstr;
+
+            if (cont->type != contOrder[j])
+                continue;
+
+            /* skip USB controllers with type none.*/
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
+                usbcontroller = -1; /* mark we don't want a controller */
+                continue;
+            }
+
+            /* skip pci-root/pcie-root */
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+                (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+                 cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT))
+                continue;
+
+            /* first SATA controller on Q35 machines is implicit */
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
+                cont->idx == 0 && qemuDomainMachineIsQ35(def))
+                    continue;
+
+            /* first IDE controller is implicit on various machines */
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
+                cont->idx == 0 && qemuDomainMachineHasBuiltinIDE(def))
+                    continue;
+
+            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                cont->model == -1 &&
+                !qemuDomainMachineIsQ35(def)) {
+                bool need_legacy = false;
+
+                /* We're not using legacy usb controller for q35 */
+                if (ARCH_IS_PPC64(def->os.arch)) {
+                    /* For ppc64 the legacy was OHCI */
+                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                        need_legacy = true;
+                } else {
+                    /* For anything else, we used PIIX3_USB_UHCI */
+                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+                        need_legacy = true;
+                }
+
+                if (need_legacy) {
+                    if (usblegacy) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("Multiple legacy USB controllers are "
+                                         "not supported"));
+                        return -1;
+                    }
+                    usblegacy = true;
+                    continue;
+                }
+            }
+
+            virCommandAddArg(cmd, "-device");
+            if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
+                                                     &usbcontroller)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+        }
+    }
+
+ check_add_usb:
+    if (usbcontroller == 0 &&
+        !qemuDomainMachineIsQ35(def) &&
+        !ARCH_IS_S390(def->os.arch))
+        virCommandAddArg(cmd, "-usb");
+
+    return 0;
 }
 
 
@@ -7596,33 +7710,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     int last_good_net = -1;
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
-    int usbcontroller = 0;
     int actualSerials = 0;
-    bool usblegacy = false;
-    int contOrder[] = {
-        /*
-         * List of controller types that we add commandline args for,
-         * *in the order we want to add them*.
-         *
-         * The floppy controller is implicit on PIIX4 and older Q35
-         * machines. For newer Q35 machines it is added out of the
-         * controllers loop, after the floppy drives.
-         *
-         * We don't add PCI/PCIe root controller either, because it's
-         * implicit, but we do add PCI bridges and other PCI
-         * controllers, so we leave that in to check each
-         * one. Likewise, we don't do anything for the primary IDE
-         * controller on an i440fx machine or primary SATA on q35, but
-         * we do add those beyond these two exceptions.
-         */
-        VIR_DOMAIN_CONTROLLER_TYPE_PCI,
-        VIR_DOMAIN_CONTROLLER_TYPE_USB,
-        VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-        VIR_DOMAIN_CONTROLLER_TYPE_IDE,
-        VIR_DOMAIN_CONTROLLER_TYPE_SATA,
-        VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
-        VIR_DOMAIN_CONTROLLER_TYPE_CCID,
-    };
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
     char *fdc_opts_str = NULL;
@@ -7733,80 +7821,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildGlobalControllerCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
-            for (i = 0; i < def->ncontrollers; i++) {
-                virDomainControllerDefPtr cont = def->controllers[i];
-                char *devstr;
-
-                if (cont->type != contOrder[j])
-                    continue;
-
-                /* skip USB controllers with type none.*/
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
-                    usbcontroller = -1; /* mark we don't want a controller */
-                    continue;
-                }
-
-                /* skip pci-root/pcie-root */
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                    (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
-                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT))
-                    continue;
-
-                /* first SATA controller on Q35 machines is implicit */
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
-                    cont->idx == 0 && qemuDomainMachineIsQ35(def))
-                        continue;
-
-                /* first IDE controller is implicit on various machines */
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
-                    cont->idx == 0 && qemuDomainMachineHasBuiltinIDE(def))
-                        continue;
-
-                if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                    cont->model == -1 &&
-                    !qemuDomainMachineIsQ35(def)) {
-                    bool need_legacy = false;
-
-                    /* We're not using legacy usb controller for q35 */
-                    if (ARCH_IS_PPC64(def->os.arch)) {
-                        /* For ppc64 the legacy was OHCI */
-                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-                            need_legacy = true;
-                    } else {
-                        /* For anything else, we used PIIX3_USB_UHCI */
-                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-                            need_legacy = true;
-                    }
-
-                    if (need_legacy) {
-                        if (usblegacy) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                           _("Multiple legacy USB controllers are "
-                                             "not supported"));
-                            goto error;
-                        }
-                        usblegacy = true;
-                        continue;
-                    }
-                }
-
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
-                                                         &usbcontroller)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-        }
-    }
-
-    if (usbcontroller == 0 &&
-        !qemuDomainMachineIsQ35(def) &&
-        !ARCH_IS_S390(def->os.arch))
-        virCommandAddArg(cmd, "-usb");
+    if (qemuBuildControllerDevCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->nhubs; i++) {
         virDomainHubDefPtr hub = def->hubs[i];

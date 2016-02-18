@@ -13500,8 +13500,9 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
 }
 
 int
-virDomainControllerFind(virDomainDefPtr def,
-                        int type, int idx)
+virDomainControllerFind(const virDomainDef *def,
+                        int type,
+                        int idx)
 {
     size_t i;
 
@@ -13529,8 +13530,9 @@ virDomainControllerFindUnusedIndex(virDomainDefPtr def, int type)
 
 
 const char *
-virDomainControllerAliasFind(virDomainDefPtr def,
-                             int type, int idx)
+virDomainControllerAliasFind(const virDomainDef *def,
+                             int type,
+                             int idx)
 {
     int contIndex;
     const char *contTypeStr = virDomainControllerTypeToString(type);

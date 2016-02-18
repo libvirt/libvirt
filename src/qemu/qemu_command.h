@@ -129,7 +129,7 @@ char *qemuBuildFSDevStr(virDomainDefPtr domainDef,
                         virDomainFSDefPtr fs,
                         virQEMUCapsPtr qemuCaps);
 /* Current, best practice */
-char *qemuBuildControllerDevStr(virDomainDefPtr domainDef,
+char *qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                 virDomainControllerDefPtr def,
                                 virQEMUCapsPtr qemuCaps,
                                 int *nusbcontroller);
@@ -228,7 +228,7 @@ int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
 bool
 qemuCheckFips(void);
 
-bool qemuCheckCCWS390AddressSupport(virDomainDefPtr def,
+bool qemuCheckCCWS390AddressSupport(const virDomainDef *def,
                                     virDomainDeviceInfo info,
                                     virQEMUCapsPtr qemuCaps,
                                     const char *devicename);
