@@ -7814,6 +7814,50 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
 
 
 static int
+qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
+                              virCommandPtr cmd,
+                              const virDomainDef *def,
+                              virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    /* If we have -device, then we set -nodefaults already */
+    if (!def->nparallels && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+        virCommandAddArgList(cmd, "-parallel", "none", NULL);
+
+    for (i = 0; i < def->nparallels; i++) {
+        virDomainChrDefPtr parallel = def->parallels[i];
+        char *devstr;
+
+        /* Use -chardev with -device if they are available */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                  &parallel->source,
+                                                  parallel->info.alias,
+                                                  qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, parallel,
+                                              qemuCaps) < 0)
+                return -1;
+        } else {
+            virCommandAddArg(cmd, "-parallel");
+            if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def,
                                  virQEMUCapsPtr qemuCaps)
@@ -8312,38 +8356,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildSerialCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (!def->nparallels) {
-        /* If we have -device, then we set -nodefault already */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            virCommandAddArgList(cmd, "-parallel", "none", NULL);
-    } else {
-        for (i = 0; i < def->nparallels; i++) {
-            virDomainChrDefPtr parallel = def->parallels[i];
-            char *devstr;
-
-            /* Use -chardev with -device if they are available */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                      &parallel->source,
-                                                      parallel->info.alias,
-                                                      qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, "-chardev");
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-
-                if (qemuBuildChrDeviceCommandLine(cmd, def, parallel, qemuCaps) < 0)
-                    goto error;
-            } else {
-                virCommandAddArg(cmd, "-parallel");
-                if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-        }
-    }
+    if (qemuBuildParallelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDefPtr channel = def->channels[i];
