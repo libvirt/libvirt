@@ -5892,7 +5892,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
 }
 
 int
-virDomainDeviceFindControllerModel(virDomainDefPtr def,
+virDomainDeviceFindControllerModel(const virDomainDef *def,
                                    virDomainDeviceInfoPtr info,
                                    int controllerType)
 {
@@ -18488,7 +18488,7 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
 }
 
 virDomainIOThreadIDDefPtr
-virDomainIOThreadIDFind(virDomainDefPtr def,
+virDomainIOThreadIDFind(const virDomainDef *def,
                         unsigned int iothread_id)
 {
     size_t i;

@@ -2522,7 +2522,7 @@ int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
     ATTRIBUTE_RETURN_CHECK;
 int virDomainDiskGetFormat(virDomainDiskDefPtr def);
 void virDomainDiskSetFormat(virDomainDiskDefPtr def, int format);
-int virDomainDeviceFindControllerModel(virDomainDefPtr def,
+int virDomainDeviceFindControllerModel(const virDomainDef *def,
                                        virDomainDeviceInfoPtr info,
                                        int controllerType);
 virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
@@ -2705,7 +2705,7 @@ bool virDomainDefCheckABIStability(virDomainDefPtr src,
 
 int virDomainDefAddImplicitControllers(virDomainDefPtr def);
 
-virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(virDomainDefPtr def,
+virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(const virDomainDef *def,
                                                   unsigned int iothread_id);
 virDomainIOThreadIDDefPtr virDomainIOThreadIDAdd(virDomainDefPtr def,
                                                  unsigned int iothread_id);

@@ -1497,7 +1497,7 @@ qemuBuildDriveStr(virConnectPtr conn,
 
 
 static bool
-qemuCheckIOThreads(virDomainDefPtr def,
+qemuCheckIOThreads(const virDomainDef *def,
                    virDomainDiskDefPtr disk)
 {
     /* Right "type" of disk" */
@@ -1523,7 +1523,7 @@ qemuCheckIOThreads(virDomainDefPtr def,
 
 
 char *
-qemuBuildDriveDevStr(virDomainDefPtr def,
+qemuBuildDriveDevStr(const virDomainDef *def,
                      virDomainDiskDefPtr disk,
                      int bootindex,
                      virQEMUCapsPtr qemuCaps)
@@ -1817,6 +1817,168 @@ qemuBuildDriveDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&opt);
     return NULL;
+}
+
+
+static int
+qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
+                              virConnectPtr conn,
+                              const virDomainDef *def,
+                              virQEMUCapsPtr qemuCaps,
+                              bool emitBootindex)
+{
+    size_t i;
+    int bootCD = 0, bootFloppy = 0, bootDisk = 0;
+    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
+    char *fdc_opts_str = NULL;
+
+    if ((virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) || emitBootindex)) {
+        /* bootDevs will get translated into either bootindex=N or boot=on
+         * depending on what qemu supports */
+        for (i = 0; i < def->os.nBootDevs; i++) {
+            switch (def->os.bootDevs[i]) {
+            case VIR_DOMAIN_BOOT_CDROM:
+                bootCD = i + 1;
+                break;
+            case VIR_DOMAIN_BOOT_FLOPPY:
+                bootFloppy = i + 1;
+                break;
+            case VIR_DOMAIN_BOOT_DISK:
+                bootDisk = i + 1;
+                break;
+            }
+        }
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        char *optstr;
+        int bootindex = 0;
+        virDomainDiskDefPtr disk = def->disks[i];
+        bool withDeviceArg = false;
+        bool deviceFlagMasked = false;
+
+        /* Unless we have -device, then USB disks need special
+           handling */
+        if ((disk->bus == VIR_DOMAIN_DISK_BUS_USB) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                virCommandAddArg(cmd, "-usbdevice");
+                virCommandAddArgFormat(cmd, "disk:%s", disk->src->path);
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unsupported usb disk type for '%s'"),
+                               disk->src->path);
+                return -1;
+            }
+            continue;
+        }
+
+        /* PowerPC pseries based VMs do not support floppy device */
+        if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
+            ARCH_IS_PPC64(def->os.arch) &&
+            STRPREFIX(def->os.machine, "pseries")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("PowerPC pseries machines do not support floppy device"));
+            return -1;
+        }
+
+        switch (disk->device) {
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            bootindex = bootCD;
+            bootCD = 0;
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            bootindex = bootFloppy;
+            bootFloppy = 0;
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+            bootindex = bootDisk;
+            bootDisk = 0;
+            break;
+        }
+
+        virCommandAddArg(cmd, "-drive");
+
+        /* Unfortunately it is not possible to use
+           -device for floppies, xen PV, or SD
+           devices. Fortunately, those don't need
+           static PCI addresses, so we don't really
+           care that we can't use -device */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN &&
+                disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
+                withDeviceArg = true;
+            } else {
+                virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
+                deviceFlagMasked = true;
+            }
+        }
+        optstr = qemuBuildDriveStr(conn, disk,
+                                   emitBootindex ? false : !!bootindex,
+                                   qemuCaps);
+        if (deviceFlagMasked)
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
+        if (!optstr)
+            return -1;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+
+        if (!emitBootindex)
+            bootindex = 0;
+        else if (disk->info.bootIndex)
+            bootindex = disk->info.bootIndex;
+
+        if (withDeviceArg) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+                if (virAsprintf(&optstr, "drive%c=drive-%s",
+                                disk->info.addr.drive.unit ? 'B' : 'A',
+                                disk->info.alias) < 0)
+                    return -1;
+
+                if (!qemuDomainMachineNeedsFDC(def)) {
+                    virCommandAddArg(cmd, "-global");
+                    virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                } else {
+                    virBufferAsprintf(&fdc_opts, "%s,", optstr);
+                }
+                VIR_FREE(optstr);
+
+                if (bootindex) {
+                    if (virAsprintf(&optstr, "bootindex%c=%d",
+                                    disk->info.addr.drive.unit
+                                    ? 'B' : 'A',
+                                    bootindex) < 0)
+                        return -1;
+
+                    if (!qemuDomainMachineNeedsFDC(def)) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+                    } else {
+                        virBufferAsprintf(&fdc_opts, "%s,", optstr);
+                    }
+                    VIR_FREE(optstr);
+                }
+            } else {
+                virCommandAddArg(cmd, "-device");
+
+                if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
+                                                    qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, optstr);
+                VIR_FREE(optstr);
+            }
+        }
+    }
+    /* Newer Q35 machine types require an explicit FDC controller */
+    virBufferTrim(&fdc_opts, ",", -1);
+    if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
+        virCommandAddArg(cmd, "-device");
+        virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
+        VIR_FREE(fdc_opts_str);
+    }
+
+    return 0;
 }
 
 
@@ -7734,9 +7896,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     bool emitBootindex = false;
     int actualSerials = 0;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
-    char *fdc_opts_str = NULL;
-    int bootCD = 0, bootFloppy = 0, bootDisk = 0, bootHostdevNet = 0;
+    int bootHostdevNet = 0;
 
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "
@@ -7849,150 +8009,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if ((virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) || emitBootindex)) {
-        /* bootDevs will get translated into either bootindex=N or boot=on
-         * depending on what qemu supports */
-        for (i = 0; i < def->os.nBootDevs; i++) {
-            switch (def->os.bootDevs[i]) {
-            case VIR_DOMAIN_BOOT_CDROM:
-                bootCD = i + 1;
-                break;
-            case VIR_DOMAIN_BOOT_FLOPPY:
-                bootFloppy = i + 1;
-                break;
-            case VIR_DOMAIN_BOOT_DISK:
-                bootDisk = i + 1;
-                break;
-            }
-        }
-    }
-
-    for (i = 0; i < def->ndisks; i++) {
-        char *optstr;
-        int bootindex = 0;
-        virDomainDiskDefPtr disk = def->disks[i];
-        bool withDeviceArg = false;
-        bool deviceFlagMasked = false;
-
-        /* Unless we have -device, then USB disks need special
-           handling */
-        if ((disk->bus == VIR_DOMAIN_DISK_BUS_USB) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                virCommandAddArg(cmd, "-usbdevice");
-                virCommandAddArgFormat(cmd, "disk:%s", disk->src->path);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported usb disk type for '%s'"),
-                               disk->src->path);
-                goto error;
-            }
-            continue;
-        }
-
-        /* PowerPC pseries based VMs do not support floppy device */
-        if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
-            ARCH_IS_PPC64(def->os.arch) && STRPREFIX(def->os.machine, "pseries")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("PowerPC pseries machines do not support floppy device"));
-            goto error;
-        }
-
-        switch (disk->device) {
-        case VIR_DOMAIN_DISK_DEVICE_CDROM:
-            bootindex = bootCD;
-            bootCD = 0;
-            break;
-        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-            bootindex = bootFloppy;
-            bootFloppy = 0;
-            break;
-        case VIR_DOMAIN_DISK_DEVICE_DISK:
-        case VIR_DOMAIN_DISK_DEVICE_LUN:
-            bootindex = bootDisk;
-            bootDisk = 0;
-            break;
-        }
-
-        virCommandAddArg(cmd, "-drive");
-
-        /* Unfortunately it is not possible to use
-           -device for floppies, xen PV, or SD
-           devices. Fortunately, those don't need
-           static PCI addresses, so we don't really
-           care that we can't use -device */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN &&
-                disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
-                withDeviceArg = true;
-            } else {
-                virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
-                deviceFlagMasked = true;
-            }
-        }
-        optstr = qemuBuildDriveStr(conn, disk,
-                                   emitBootindex ? false : !!bootindex,
-                                   qemuCaps);
-        if (deviceFlagMasked)
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
-        if (!optstr)
-            goto error;
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-
-        if (!emitBootindex)
-            bootindex = 0;
-        else if (disk->info.bootIndex)
-            bootindex = disk->info.bootIndex;
-
-        if (withDeviceArg) {
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-                if (virAsprintf(&optstr, "drive%c=drive-%s",
-                                disk->info.addr.drive.unit ? 'B' : 'A',
-                                disk->info.alias) < 0)
-                    goto error;
-
-                if (!qemuDomainMachineNeedsFDC(def)) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-                } else {
-                    virBufferAsprintf(&fdc_opts, "%s,", optstr);
-                }
-                VIR_FREE(optstr);
-
-                if (bootindex) {
-                    if (virAsprintf(&optstr, "bootindex%c=%d",
-                                    disk->info.addr.drive.unit
-                                    ? 'B' : 'A',
-                                    bootindex) < 0)
-                        goto error;
-
-                    if (!qemuDomainMachineNeedsFDC(def)) {
-                        virCommandAddArg(cmd, "-global");
-                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-                    } else {
-                        virBufferAsprintf(&fdc_opts, "%s,", optstr);
-                    }
-                    VIR_FREE(optstr);
-                }
-            } else {
-                virCommandAddArg(cmd, "-device");
-
-                if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
-                                                    qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, optstr);
-                VIR_FREE(optstr);
-            }
-        }
-    }
-    /* Newer Q35 machine types require an explicit FDC controller */
-    virBufferTrim(&fdc_opts, ",", -1);
-    if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
-        virCommandAddArg(cmd, "-device");
-        virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
-        VIR_FREE(fdc_opts_str);
-    }
+    if (qemuBuildDiskDriveCommandLine(cmd, conn, def, qemuCaps,
+                                      emitBootindex) < 0)
+        goto error;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV)) {
         for (i = 0; i < def->nfss; i++) {

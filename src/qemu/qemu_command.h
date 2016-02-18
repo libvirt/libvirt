@@ -121,7 +121,7 @@ char *qemuBuildFSStr(virDomainFSDefPtr fs,
                      virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
-char *qemuBuildDriveDevStr(virDomainDefPtr def,
+char *qemuBuildDriveDevStr(const virDomainDef *def,
                            virDomainDiskDefPtr disk,
                            int bootindex,
                            virQEMUCapsPtr qemuCaps);
