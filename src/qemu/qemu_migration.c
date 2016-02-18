@@ -5718,6 +5718,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     unsigned long long timeReceived = 0;
     virObjectEventPtr event;
     int rc;
+    qemuDomainJobInfoPtr jobInfo = NULL;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -5861,8 +5862,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
     if (mig->jobInfo) {
-        qemuDomainJobInfoPtr jobInfo = mig->jobInfo;
-        priv->job.completed = jobInfo;
+        jobInfo = mig->jobInfo;
         mig->jobInfo = NULL;
 
         if (jobInfo->sent && timeReceived) {
@@ -5870,8 +5870,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             jobInfo->received = timeReceived;
             jobInfo->timeDeltaSet = true;
         }
-        qemuDomainJobInfoUpdateTime(priv->job.completed);
-        qemuDomainJobInfoUpdateDowntime(priv->job.completed);
+        qemuDomainJobInfoUpdateTime(jobInfo);
+        qemuDomainJobInfoUpdateDowntime(jobInfo);
     }
 
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
@@ -5910,16 +5910,20 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         qemuDomainEventQueue(driver, event);
     }
 
-    if (dom &&
-        qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
-                                QEMU_MIGRATION_COOKIE_STATS) < 0)
-        VIR_WARN("Unable to encode migration cookie");
+    if (dom) {
+        priv->job.completed = jobInfo;
+        jobInfo = NULL;
+        if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
+                                    QEMU_MIGRATION_COOKIE_STATS) < 0)
+            VIR_WARN("Unable to encode migration cookie");
+    }
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
+    VIR_FREE(jobInfo);
     virPortAllocatorRelease(driver->migrationPorts, port);
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
