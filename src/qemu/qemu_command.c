@@ -7428,6 +7428,84 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     return ret;
 }
 
+
+/* NOTE: Not using const virDomainDef here since eventually a call is made
+ *       into virSecurityManagerSetTapFDLabel which calls it's driver
+ *       API domainSetSecurityTapFDLabel that doesn't use the const format.
+ */
+static int
+qemuBuildNetCommandLine(virCommandPtr cmd,
+                        virQEMUDriverPtr driver,
+                        virDomainDefPtr def,
+                        virQEMUCapsPtr qemuCaps,
+                        virNetDevVPortProfileOp vmop,
+                        bool standalone,
+                        bool emitBootindex,
+                        size_t *nnicindexes,
+                        int **nicindexes,
+                        int *bootHostdevNet)
+{
+    size_t i;
+    int last_good_net = -1;
+
+    if (!def->nnets) {
+        /* If we have -device, then we set -nodefault already */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+            virCommandAddArgList(cmd, "-net", "none", NULL);
+    } else {
+        int bootNet = 0;
+
+        if (emitBootindex) {
+            /* convert <boot dev='network'/> to bootindex since we didn't emit
+             * -boot n
+             */
+            for (i = 0; i < def->os.nBootDevs; i++) {
+                if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
+                    bootNet = i + 1;
+                    break;
+                }
+            }
+        }
+
+        for (i = 0; i < def->nnets; i++) {
+            virDomainNetDefPtr net = def->nets[i];
+            int vlan;
+
+            /* VLANs are not used with -netdev, so don't record them */
+            if (qemuDomainSupportsNetdev(def, qemuCaps, net))
+                vlan = -1;
+            else
+                vlan = i;
+
+            if (qemuBuildInterfaceCommandLine(cmd, driver, def, net,
+                                              qemuCaps, vlan, bootNet, vmop,
+                                              standalone, nnicindexes,
+                                              nicindexes) < 0)
+                goto error;
+
+            last_good_net = i;
+            /* if this interface is a type='hostdev' interface and we
+             * haven't yet added a "bootindex" parameter to an
+             * emulated network device, save the bootindex - hostdev
+             * interface commandlines will be built later on when we
+             * cycle through all the hostdevs, and we'll use it then.
+             */
+            if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+                *bootHostdevNet == 0) {
+                *bootHostdevNet = bootNet;
+            }
+            bootNet = 0;
+        }
+    }
+    return 0;
+
+ error:
+    for (i = 0; last_good_net != -1 && i <= last_good_net; i++)
+        virDomainConfNWFilterTeardown(def->nets[i]);
+    return -1;
+}
+
+
 char *
 qemuBuildShmemDevStr(virDomainDefPtr def,
                      virDomainShmemDefPtr shmem,
@@ -7927,7 +8005,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     size_t i, j;
     char uuid[VIR_UUID_STRING_BUFLEN];
     bool havespice = false;
-    int last_good_net = -1;
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
     int actualSerials = 0;
@@ -8052,54 +8129,10 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (!def->nnets) {
-        /* If we have -device, then we set -nodefault already */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            virCommandAddArgList(cmd, "-net", "none", NULL);
-    } else {
-        int bootNet = 0;
-
-        if (emitBootindex) {
-            /* convert <boot dev='network'/> to bootindex since we didn't emit
-             * -boot n
-             */
-            for (i = 0; i < def->os.nBootDevs; i++) {
-                if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
-                    bootNet = i + 1;
-                    break;
-                }
-            }
-        }
-
-        for (i = 0; i < def->nnets; i++) {
-            virDomainNetDefPtr net = def->nets[i];
-            int vlan;
-
-            /* VLANs are not used with -netdev, so don't record them */
-            if (qemuDomainSupportsNetdev(def, qemuCaps, net))
-                vlan = -1;
-            else
-                vlan = i;
-
-            if (qemuBuildInterfaceCommandLine(cmd, driver, def, net,
-                                              qemuCaps, vlan, bootNet, vmop,
-                                              standalone, nnicindexes, nicindexes) < 0)
-                goto error;
-
-            last_good_net = i;
-            /* if this interface is a type='hostdev' interface and we
-             * haven't yet added a "bootindex" parameter to an
-             * emulated network device, save the bootindex - hostdev
-             * interface commandlines will be built later on when we
-             * cycle through all the hostdevs, and we'll use it then.
-             */
-            if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-                bootHostdevNet == 0) {
-                bootHostdevNet = bootNet;
-            }
-            bootNet = 0;
-        }
-    }
+    if (qemuBuildNetCommandLine(cmd, driver, def, qemuCaps, vmop, standalone,
+                                emitBootindex, nnicindexes, nicindexes,
+                                &bootHostdevNet) < 0)
+        goto error;
 
     if (def->nsmartcards) {
         /* -device usb-ccid was already emitted along with other
@@ -9143,8 +9176,6 @@ qemuBuildCommandLine(virConnectPtr conn,
     /* free up any resources in the network driver
      * but don't overwrite the original error */
     originalError = virSaveLastError();
-    for (i = 0; last_good_net != -1 && i <= last_good_net; i++)
-        virDomainConfNWFilterTeardown(def->nets[i]);
     virSetError(originalError);
     virFreeError(originalError);
     virCommandFree(cmd);
