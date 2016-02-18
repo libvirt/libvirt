@@ -3433,7 +3433,7 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
 }
 
 static char *
-qemuBuildVirtioInputDevStr(virDomainDefPtr def,
+qemuBuildVirtioInputDevStr(const virDomainDef *def,
                            virDomainInputDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
@@ -3502,8 +3502,8 @@ qemuBuildVirtioInputDevStr(virDomainDefPtr def,
     return NULL;
 }
 
-char *
-qemuBuildUSBInputDevStr(virDomainDefPtr def,
+static char *
+qemuBuildUSBInputDevStr(const virDomainDef *def,
                         virDomainInputDefPtr dev,
                         virQEMUCapsPtr qemuCaps)
 {
@@ -3534,6 +3534,52 @@ qemuBuildUSBInputDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildInputCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->ninputs; i++) {
+        virDomainInputDefPtr input = def->inputs[i];
+
+        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                char *optstr;
+                virCommandAddArg(cmd, "-device");
+                if (!(optstr = qemuBuildUSBInputDevStr(def, input, qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, optstr);
+                VIR_FREE(optstr);
+            } else {
+                switch (input->type) {
+                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                        virCommandAddArgList(cmd, "-usbdevice", "mouse", NULL);
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                        virCommandAddArgList(cmd, "-usbdevice", "tablet", NULL);
+                        break;
+                    case VIR_DOMAIN_INPUT_TYPE_KBD:
+                        virCommandAddArgList(cmd, "-usbdevice", "keyboard",
+                                             NULL);
+                        break;
+                }
+            }
+        } else if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+            char *optstr;
+            virCommandAddArg(cmd, "-device");
+            if (!(optstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, optstr);
+            VIR_FREE(optstr);
+        }
+    }
+
+    return 0;
 }
 
 
@@ -8531,39 +8577,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildTPMCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    for (i = 0; i < def->ninputs; i++) {
-        virDomainInputDefPtr input = def->inputs[i];
-
-        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                char *optstr;
-                virCommandAddArg(cmd, "-device");
-                if (!(optstr = qemuBuildUSBInputDevStr(def, input, qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, optstr);
-                VIR_FREE(optstr);
-            } else {
-                switch (input->type) {
-                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-                        virCommandAddArgList(cmd, "-usbdevice", "mouse", NULL);
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
-                        virCommandAddArgList(cmd, "-usbdevice", "tablet", NULL);
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_KBD:
-                        virCommandAddArgList(cmd, "-usbdevice", "keyboard", NULL);
-                        break;
-                }
-            }
-        } else if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-            char *optstr;
-            virCommandAddArg(cmd, "-device");
-            if (!(optstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        }
-    }
+    if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->ngraphics; ++i) {
         if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps,

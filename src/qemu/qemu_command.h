@@ -138,10 +138,6 @@ char *qemuBuildMemballoonDevStr(virDomainDefPtr domainDef,
                                 virDomainMemballoonDefPtr dev,
                                 virQEMUCapsPtr qemuCaps);
 
-char *qemuBuildUSBInputDevStr(virDomainDefPtr domainDef,
-                              virDomainInputDefPtr dev,
-                              virQEMUCapsPtr qemuCaps);
-
 char *qemuBuildSoundDevStr(virDomainDefPtr domainDef,
                            virDomainSoundDefPtr sound,
                            virQEMUCapsPtr qemuCaps);
