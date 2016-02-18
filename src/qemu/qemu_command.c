@@ -4586,7 +4586,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
 
 
 static char *
-qemuBuildVirtioSerialPortDevStr(virDomainDefPtr def,
+qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
                                 virDomainChrDefPtr dev,
                                 virQEMUCapsPtr qemuCaps)
 {
@@ -7743,7 +7743,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
 
 static int
 qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
-                              virDomainDefPtr def,
+                              const virDomainDef *def,
                               virDomainChrDefPtr chr,
                               virQEMUCapsPtr qemuCaps)
 {
@@ -7756,6 +7756,62 @@ qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
     VIR_FREE(devstr);
     return 0;
 }
+
+
+static int
+qemuBuildSerialCommandLine(virLogManagerPtr logManager,
+                           virCommandPtr cmd,
+                           const virDomainDef *def,
+                           virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+    int actualSerials = 0;
+    bool havespice = false;
+
+    if (def->nserials) {
+        for (i = 0; i < def->ngraphics && !havespice; i++) {
+            if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
+                havespice = true;
+        }
+    }
+
+    for (i = 0; i < def->nserials; i++) {
+        virDomainChrDefPtr serial = def->serials[i];
+        char *devstr;
+
+        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
+            continue;
+
+        /* Use -chardev with -device if they are available */
+        if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
+            virCommandAddArg(cmd, "-chardev");
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                                  &serial->source,
+                                                  serial->info.alias,
+                                                  qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
+                return -1;
+        } else {
+            virCommandAddArg(cmd, "-serial");
+            if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+        }
+        actualSerials++;
+    }
+
+    /* If we have -device, then we set -nodefaults already */
+    if (!actualSerials && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+        virCommandAddArgList(cmd, "-serial", "none", NULL);
+
+    return 0;
+}
+
 
 static int
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
@@ -8122,10 +8178,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     virErrorPtr originalError = NULL;
     size_t i, j;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    bool havespice = false;
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
-    int actualSerials = 0;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int bootHostdevNet = 0;
 
@@ -8255,48 +8309,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildSmartcardCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (def->nserials) {
-        for (i = 0; i < def->ngraphics; i++) {
-            if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-                havespice = true;
-                break;
-            }
-        }
-    }
-
-    for (i = 0; i < def->nserials; i++) {
-        virDomainChrDefPtr serial = def->serials[i];
-        char *devstr;
-
-        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
-            continue;
-
-        /* Use -chardev with -device if they are available */
-        if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                                  &serial->source,
-                                                  serial->info.alias,
-                                                  qemuCaps)))
-                goto error;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
-                goto error;
-        } else {
-            virCommandAddArg(cmd, "-serial");
-            if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
-                goto error;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-        }
-        actualSerials++;
-    }
-
-    /* If we have -device, then we set -nodefault already */
-    if (!actualSerials && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            virCommandAddArgList(cmd, "-serial", "none", NULL);
+    if (qemuBuildSerialCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (!def->nparallels) {
         /* If we have -device, then we set -nodefault already */
@@ -9204,7 +9218,7 @@ qemuBuildCommandLine(virConnectPtr conn,
  */
 static int
 qemuBuildSerialChrDeviceStr(char **deviceStr,
-                            virDomainDefPtr def,
+                            const virDomainDef *def,
                             virDomainChrDefPtr serial,
                             virQEMUCapsPtr qemuCaps,
                             virArch arch,
@@ -9299,7 +9313,7 @@ qemuBuildParallelChrDeviceStr(char **deviceStr,
 
 static int
 qemuBuildChannelChrDeviceStr(char **deviceStr,
-                             virDomainDefPtr def,
+                             const virDomainDef *def,
                              virDomainChrDefPtr chr,
                              virQEMUCapsPtr qemuCaps)
 {
@@ -9339,7 +9353,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
 
 static int
 qemuBuildConsoleChrDeviceStr(char **deviceStr,
-                             virDomainDefPtr def,
+                             const virDomainDef *def,
                              virDomainChrDefPtr chr,
                              virQEMUCapsPtr qemuCaps)
 {
@@ -9379,7 +9393,7 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
 
 int
 qemuBuildChrDeviceStr(char **deviceStr,
-                      virDomainDefPtr vmdef,
+                      const virDomainDef *vmdef,
                       virDomainChrDefPtr chr,
                       virQEMUCapsPtr qemuCaps)
 {

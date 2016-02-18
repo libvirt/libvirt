@@ -3839,7 +3839,7 @@ virQEMUCapsCacheFree(virQEMUCapsCachePtr cache)
 
 
 bool
-virQEMUCapsSupportsChardev(virDomainDefPtr def,
+virQEMUCapsSupportsChardev(const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps,
                            virDomainChrDefPtr chr)
 {

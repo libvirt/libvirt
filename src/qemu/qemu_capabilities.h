@@ -450,7 +450,7 @@ int virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str);
 
 VIR_ENUM_DECL(virQEMUCaps);
 
-bool virQEMUCapsSupportsChardev(virDomainDefPtr def,
+bool virQEMUCapsSupportsChardev(const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainChrDefPtr chr);
 

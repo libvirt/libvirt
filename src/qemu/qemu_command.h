@@ -82,7 +82,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
 /* Generate '-device' string for chardev device */
 int
 qemuBuildChrDeviceStr(char **deviceStr,
-                      virDomainDefPtr vmdef,
+                      const virDomainDef *vmdef,
                       virDomainChrDefPtr chr,
                       virQEMUCapsPtr qemuCaps);
 
