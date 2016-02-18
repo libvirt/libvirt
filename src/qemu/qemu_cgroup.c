@@ -65,7 +65,7 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (readonly)
+    if (!readonly)
         perms |= VIR_CGROUP_DEVICE_WRITE;
 
     VIR_DEBUG("Allow path %s, perms: %s",
