@@ -1578,8 +1578,9 @@
           For example, the 'aarch64' architecture uses
           <code>gic</code> instead of <code>apic</code>. The optional
           attribute <code>version</code> specifies the GIC version;
-          however, it may not be supported by all hypervisors. <span
-          class="since">Since 1.2.16</span>
+          however, it may not be supported by all hypervisors. Accepted
+          values are <code>2</code>, <code>3</code> and <code>host</code>.
+          <span class="since">Since 1.2.16</span>
       </dd>
     </dl>
 
