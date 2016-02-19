@@ -3345,6 +3345,10 @@
     {
       "parameters": [
         {
+          "name": "gl",
+          "type": "boolean"
+        },
+        {
           "name": "seamless-migration",
           "type": "boolean"
         },

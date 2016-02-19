@@ -1586,6 +1586,7 @@ struct _virDomainGraphicsDef {
             int streaming;
             int copypaste; /* enum virTristateBool */
             int filetransfer; /* enum virTristateBool */
+            int gl; /* enum virTristateBool */
         } spice;
     } data;
     /* nListens, listens, and *port are only useful if type is vnc,

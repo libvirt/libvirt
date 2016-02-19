@@ -315,6 +315,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vserport-change-event", /* 210 */
               "virtio-balloon-pci.deflate-on-oom",
               "mptsas1068",
+              "spice-gl",
     );
 
 
@@ -2627,6 +2628,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "aes-key-wrap", QEMU_CAPS_AES_KEY_WRAP },
     { "machine", "dea-key-wrap", QEMU_CAPS_DEA_KEY_WRAP },
     { "chardev", "append", QEMU_CAPS_CHARDEV_FILE_APPEND },
+    { "spice", "gl", QEMU_CAPS_SPICE_GL },
 };
 
 static int

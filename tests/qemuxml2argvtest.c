@@ -1480,6 +1480,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+    DO_TEST("video-virtio-gpu-spice-gl",
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_GL,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST_PARSE_ERROR("video-invalid", NONE);
 
     DO_TEST("virtio-rng-default", QEMU_CAPS_DEVICE_VIRTIO_RNG,

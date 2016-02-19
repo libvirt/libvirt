@@ -11034,6 +11034,26 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                     VIR_FREE(enable);
 
                     def->data.spice.filetransfer = enableVal;
+                } else if (xmlStrEqual(cur->name, BAD_CAST "gl")) {
+                    char *enable = virXMLPropString(cur, "enable");
+                    int enableVal;
+
+                    if (!enable) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("spice gl element missing enable"));
+                        goto error;
+                    }
+
+                    if ((enableVal =
+                         virTristateBoolTypeFromString(enable)) <= 0) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("unknown enable value '%s'"), enable);
+                        VIR_FREE(enable);
+                        goto error;
+                    }
+                    VIR_FREE(enable);
+
+                    def->data.spice.gl = enableVal;
                 } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
                     char *mode = virXMLPropString(cur, "mode");
                     int modeVal;
@@ -21093,7 +21113,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (!children && (def->data.spice.image || def->data.spice.jpeg ||
                           def->data.spice.zlib || def->data.spice.playback ||
                           def->data.spice.streaming || def->data.spice.copypaste ||
-                          def->data.spice.mousemode || def->data.spice.filetransfer)) {
+                          def->data.spice.mousemode || def->data.spice.filetransfer ||
+                          def->data.spice.gl)) {
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
             children = true;
@@ -21122,6 +21143,9 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.spice.filetransfer)
             virBufferAsprintf(buf, "<filetransfer enable='%s'/>\n",
                               virTristateBoolTypeToString(def->data.spice.filetransfer));
+        if (def->data.spice.gl)
+            virBufferAsprintf(buf, "<gl enable='%s'/>\n",
+                              virTristateBoolTypeToString(def->data.spice.gl));
     }
 
     if (children) {
