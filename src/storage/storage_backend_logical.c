@@ -307,7 +307,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
     ret = 0;
 
  cleanup:
-    if (is_new_vol && (ret == -1))
+    if (is_new_vol)
         virStorageVolDefFree(vol);
     return ret;
 }

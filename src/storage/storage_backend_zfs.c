@@ -161,7 +161,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
  cleanup:
     virStringFreeList(tokens);
     virStringFreeList(name_tokens);
-    if (is_new_vol && (ret == -1))
+    if (is_new_vol)
         virStorageVolDefFree(volume);
     return ret;
 }
