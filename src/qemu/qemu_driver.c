@@ -5276,14 +5276,10 @@ qemuDomainPinEmulator(virDomainPtr dom,
                                  " for emulator threads"));
                 goto endjob;
             }
-        } else {
-            if (virProcessSetAffinity(vm->pid, pcpumap) < 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                               _("failed to set cpu affinity for "
-                                 "emulator thread"));
-                goto endjob;
-            }
         }
+
+        if (virProcessSetAffinity(vm->pid, pcpumap) < 0)
+            goto endjob;
 
         virBitmapFree(def->cputune.emulatorpin);
         def->cputune.emulatorpin = NULL;
