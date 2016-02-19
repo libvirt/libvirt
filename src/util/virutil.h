@@ -236,9 +236,14 @@ typedef enum {
     VIR_TRISTATE_SWITCH_LAST
 } virTristateSwitch;
 
-
 VIR_ENUM_DECL(virTristateBool)
 VIR_ENUM_DECL(virTristateSwitch)
+
+/* the two enums must be in sync to be able to use helpers interchangeably in
+ * some special cases */
+verify((int)VIR_TRISTATE_BOOL_YES == (int)VIR_TRISTATE_SWITCH_ON);
+verify((int)VIR_TRISTATE_BOOL_NO == (int)VIR_TRISTATE_SWITCH_OFF);
+verify((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);
 
 unsigned int virGetListenFDs(void);
 
