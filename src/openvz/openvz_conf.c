@@ -133,35 +133,25 @@ openvzParseBarrierLimit(const char* value,
                         unsigned long long *barrier,
                         unsigned long long *limit)
 {
-    char *token;
-    char *saveptr = NULL;
-    char *str;
+    char **tmp = NULL;
+    size_t ntmp = 0;
     int ret = -1;
 
-    if (VIR_STRDUP(str, value) < 0)
+    if (!(tmp = virStringSplitCount(value, ":", 0, &ntmp)))
         goto error;
 
-    token = strtok_r(str, ":", &saveptr);
-    if (token == NULL) {
+    if (ntmp != 2)
         goto error;
-    } else {
-        if (barrier != NULL) {
-            if (virStrToLong_ull(token, NULL, 10, barrier))
-                goto error;
-        }
-    }
-    token = strtok_r(NULL, ":", &saveptr);
-    if (token == NULL) {
+
+    if (barrier && virStrToLong_ull(tmp[0], NULL, 10, barrier) < 0)
         goto error;
-    } else {
-        if (limit != NULL) {
-            if (virStrToLong_ull(token, NULL, 10, limit))
-                goto error;
-        }
-    }
+
+    if (limit && virStrToLong_ull(tmp[1], NULL, 10, limit) < 0)
+        goto error;
+
     ret = 0;
  error:
-    VIR_FREE(str);
+    virStringFreeListCount(tmp, ntmp);
     return ret;
 }
 
