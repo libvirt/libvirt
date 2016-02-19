@@ -5765,14 +5765,10 @@ qemuDomainPinIOThread(virDomainPtr dom,
                                  " for iothread %d"), iothread_id);
                 goto endjob;
             }
-        } else {
-            if (virProcessSetAffinity(iothrid->thread_id, pcpumap) < 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("failed to set cpu affinity for IOThread %d"),
-                               iothread_id);
-                goto endjob;
-            }
         }
+
+        if (virProcessSetAffinity(iothrid->thread_id, pcpumap) < 0)
+            goto endjob;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
