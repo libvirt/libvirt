@@ -2274,11 +2274,6 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    qemuDomainSetFakeReboot(driver, vm, false);
-
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
-        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-
     if (qemuProcessBeginStopJob(driver, vm, QEMU_JOB_DESTROY,
                                 !(flags & VIR_DOMAIN_DESTROY_GRACEFUL)) < 0)
         goto cleanup;
@@ -2288,6 +2283,11 @@ qemuDomainDestroyFlags(virDomainPtr dom,
                        "%s", _("domain is not running"));
         goto endjob;
     }
+
+    qemuDomainSetFakeReboot(driver, vm, false);
+
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
+        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED, stopFlags);
     event = virDomainEventLifecycleNewFromObj(vm,
