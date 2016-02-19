@@ -355,9 +355,11 @@ virStorageBackendZFSDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                               unsigned int flags)
 {
     int ret = -1;
-    virCommandPtr destroy_cmd = virCommandNewArgList(ZFS, "destroy", NULL);
+    virCommandPtr destroy_cmd = NULL;
 
     virCheckFlags(0, -1);
+
+    destroy_cmd = virCommandNewArgList(ZFS, "destroy", NULL);
 
     virCommandAddArgFormat(destroy_cmd, "%s/%s",
                            pool->def->source.name, vol->name);
