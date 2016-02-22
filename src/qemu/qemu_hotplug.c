@@ -1378,45 +1378,56 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr redirdev)
 {
-    int ret;
+    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
+    char *charAlias = NULL;
     char *devstr = NULL;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("redirected devices are not supported by this QEMU"));
-        goto error;
+        return ret;
     }
 
     if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
-        goto error;
+        goto cleanup;
+
+    if (virAsprintf(&charAlias, "char%s", redirdev->info.alias) < 0)
+        goto cleanup;
+
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
-        goto error;
+        goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0)
-        goto error;
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorAddDevice(priv->mon, devstr);
+    if (qemuMonitorAttachCharDev(priv->mon,
+                                 charAlias,
+                                 &(redirdev->source.chr)) < 0) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto audit;
+    }
+
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
+        /* detach associated chardev on error */
+        qemuMonitorDetachCharDev(priv->mon, charAlias);
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto audit;
+    }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto error;
-
-    virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
-    if (ret < 0)
-        goto error;
+        goto audit;
 
     vm->def->redirdevs[vm->def->nredirdevs++] = redirdev;
-
+    ret = 0;
+ audit:
+    virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
+ cleanup:
+    VIR_FREE(charAlias);
     VIR_FREE(devstr);
-
-    return 0;
-
- error:
-    VIR_FREE(devstr);
-    return -1;
-
+    return ret;
 }
 
 static int
