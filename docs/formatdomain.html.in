@@ -5191,15 +5191,15 @@ qemu-kvm -net nic,model=? /dev/null
           supported only for guests type of "vz", "kvm", "vbox" and "vmx".
         </p>
         <p>
-          For guest type of kvm the optional attribute <code>ram</code>
-          (<span class="since">since 1.0.2</span>) is allowed for "qxl" type
-          only and specifies the size of the primary bar, while the optional
+          For guest type of "kvm" or "qemu" and model type "qxl" there are
+          optional attributes. Attribute <code>ram</code> (<span class="since">
+          since 1.0.2</span>) specifies the size of the primary bar, while the
           attribute <code>vram</code> specifies the secondary bar size.
-          If "ram" or "vram" are not supplied a default value is used. The ram
-          should also be rounded to power of two as vram. There is also optional
-          attribute <code>vgamem</code> (<span class="since">since 1.2.11 (QEMU
-          only)</span>) to set the size of VGA framebuffer for fallback mode of
-          QXL device.
+          If <code>ram</code> or <code>vram</code> are not supplied a default
+          value is used. The <code>ram</code> should also be rounded to power of
+          two as <code>vram</code>. There is also optional attribute
+          <code>vgamem</code> (<span class="since">since 1.2.11</span>) to set
+          the size of VGA framebuffer for fallback mode of QXL device.
         </p>
       </dd>
 
