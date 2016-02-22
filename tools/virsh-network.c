@@ -904,11 +904,13 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     int command, section, parentIndex = -1;
     const char *xml = NULL;
     char *xmlFromFile = NULL;
-    bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
-    unsigned int flags = 0;
+    unsigned int flags = VIR_NETWORK_UPDATE_AFFECT_CURRENT;
     const char *affected;
+
+    VSH_EXCLUSIVE_OPTIONS("current", "live");
+    VSH_EXCLUSIVE_OPTIONS("current", "config");
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
@@ -962,18 +964,10 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         xml = xmlFromFile;
     }
 
-    if (current) {
-        if (live || config) {
-            vshError(ctl, "%s", _("--current must be specified exclusively"));
-            goto cleanup;
-        }
-        flags |= VIR_NETWORK_UPDATE_AFFECT_CURRENT;
-    } else {
-        if (config)
-            flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
-        if (live)
-            flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
-    }
+    if (config)
+        flags |= VIR_NETWORK_UPDATE_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_NETWORK_UPDATE_AFFECT_LIVE;
 
     if (virNetworkUpdate(network, command,
                          section, parentIndex, xml, flags) < 0) {
