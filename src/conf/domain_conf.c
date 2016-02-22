@@ -22363,11 +22363,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
     }
 
-    if (def->ngraphics > 0) {
-        for (n = 0; n < def->ngraphics; n++)
-            if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
-                goto error;
-    }
+    for (n = 0; n < def->ngraphics; n++)
+        if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
+            goto error;
 
     for (n = 0; n < def->nsounds; n++)
         if (virDomainSoundDefFormat(buf, def->sounds[n], flags) < 0)
