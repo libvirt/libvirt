@@ -721,3 +721,40 @@ virAdmServerGetThreadPoolParameters(virAdmServerPtr srv,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmServerSetThreadPoolParameters:
+ * @srv: a valid server object reference
+ * @params: pointer to threadpool typed parameter objects
+ * @nparams: number of parameters in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Change server threadpool parameters according to @params. Note that some
+ * tunables are read-only, thus any attempt to set them will result in a
+ * failure.
+ *
+ * Returns 0 on success, -1 in case of an error.
+ */
+int
+virAdmServerSetThreadPoolParameters(virAdmServerPtr srv,
+                                    virTypedParameterPtr params,
+                                    int nparams,
+                                    unsigned int flags)
+{
+    VIR_DEBUG("srv=%p, params=%p, nparams=%x, flags=%x",
+              srv, params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckAdmServerReturn(srv, -1);
+    virCheckNonNullArgGoto(params, error);
+
+    if (remoteAdminServerSetThreadPoolParameters(srv, params,
+                                                 nparams, flags) < 0)
+        goto error;
+
+    return 0;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

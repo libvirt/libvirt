@@ -899,3 +899,18 @@ virNetServerGetThreadPoolParameters(virNetServerPtr srv,
     virObjectUnlock(srv);
     return 0;
 }
+
+int
+virNetServerSetThreadPoolParameters(virNetServerPtr srv,
+                                    long long int minWorkers,
+                                    long long int maxWorkers,
+                                    long long int prioWorkers)
+{
+    int ret;
+
+    virObjectLock(srv);
+    ret = virThreadPoolSetParameters(srv->workers, minWorkers,
+                                     maxWorkers, prioWorkers);
+    virObjectUnlock(srv);
+    return ret;
+}

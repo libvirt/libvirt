@@ -57,4 +57,9 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
                          void *jobdata) ATTRIBUTE_NONNULL(1)
                                         ATTRIBUTE_RETURN_CHECK;
 
+int virThreadPoolSetParameters(virThreadPoolPtr pool,
+                               long long int minWorkers,
+                               long long int maxWorkers,
+                               long long int prioWorkers);
+
 #endif

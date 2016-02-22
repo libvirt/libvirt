@@ -40,5 +40,10 @@ adminServerGetThreadPoolParameters(virNetServerPtr srv,
                                    virTypedParameterPtr *params,
                                    int *nparams,
                                    unsigned int flags);
+int
+adminServerSetThreadPoolParameters(virNetServerPtr srv,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   unsigned int flags);
 
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

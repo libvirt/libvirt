@@ -73,6 +73,7 @@ struct _virThreadPool {
     size_t nWorkers;
     virThreadPtr workers;
 
+    size_t maxPrioWorkers;
     size_t nPrioWorkers;
     virThreadPtr prioWorkers;
     virCond prioCond;
@@ -84,12 +85,22 @@ struct virThreadPoolWorkerData {
     bool priority;
 };
 
+/* Test whether the worker needs to quit if the current number of workers @count
+ * is greater than @limit actually allows.
+ */
+static inline bool virThreadPoolWorkerQuitHelper(size_t count, size_t limit)
+{
+    return count > limit;
+}
+
 static void virThreadPoolWorker(void *opaque)
 {
     struct virThreadPoolWorkerData *data = opaque;
     virThreadPoolPtr pool = data->pool;
     virCondPtr cond = data->cond;
     bool priority = data->priority;
+    size_t *curWorkers = priority ? &pool->nPrioWorkers : &pool->nWorkers;
+    size_t *maxLimit = priority ? &pool->maxPrioWorkers : &pool->maxWorkers;
     virThreadPoolJobPtr job = NULL;
 
     VIR_FREE(data);
@@ -97,6 +108,14 @@ static void virThreadPoolWorker(void *opaque)
     virMutexLock(&pool->mutex);
 
     while (1) {
+        /* In order to support async worker termination, we need ensure that
+         * both busy and free workers know if they need to terminated. Thus,
+         * busy workers need to check for this fact before they start waiting for
+         * another job (and before taking another one from the queue); and
+         * free workers need to check for this right after waking up.
+         */
+        if (virThreadPoolWorkerQuitHelper(*curWorkers, *maxLimit))
+            goto out;
         while (!pool->quit &&
                ((!priority && !pool->jobList.head) ||
                 (priority && !pool->jobList.firstPrio))) {
@@ -109,6 +128,9 @@ static void virThreadPoolWorker(void *opaque)
             }
             if (!priority)
                 pool->freeWorkers--;
+
+            if (virThreadPoolWorkerQuitHelper(*curWorkers, *maxLimit))
+                goto out;
         }
 
         if (pool->quit)
@@ -160,12 +182,12 @@ static void virThreadPoolWorker(void *opaque)
 static int
 virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
 {
-    virThreadPtr workers = priority ? pool->prioWorkers : pool->workers;
+    virThreadPtr *workers = priority ? &pool->prioWorkers : &pool->workers;
     size_t *curWorkers = priority ? &pool->nPrioWorkers : &pool->nWorkers;
     size_t i = 0;
     struct virThreadPoolWorkerData *data = NULL;
 
-    if (VIR_EXPAND_N(workers, *curWorkers, gain) < 0)
+    if (VIR_EXPAND_N(*workers, *curWorkers, gain) < 0)
         return -1;
 
     for (i = 0; i < gain; i++) {
@@ -176,7 +198,7 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
         data->cond = priority ? &pool->prioCond : &pool->cond;
         data->priority = priority;
 
-        if (virThreadCreateFull(&workers[i],
+        if (virThreadCreateFull(&(*workers)[i],
                                 false,
                                 virThreadPoolWorker,
                                 pool->jobFuncName,
@@ -226,6 +248,7 @@ virThreadPoolNewFull(size_t minWorkers,
 
     pool->minWorkers = minWorkers;
     pool->maxWorkers = maxWorkers;
+    pool->maxPrioWorkers = prioWorkers;
 
     if (virThreadPoolExpand(pool, minWorkers, false) < 0)
         goto error;
@@ -391,6 +414,57 @@ int virThreadPoolSendJob(virThreadPoolPtr pool,
     virCondSignal(&pool->cond);
     if (priority)
         virCondSignal(&pool->prioCond);
+
+    virMutexUnlock(&pool->mutex);
+    return 0;
+
+ error:
+    virMutexUnlock(&pool->mutex);
+    return -1;
+}
+
+int
+virThreadPoolSetParameters(virThreadPoolPtr pool,
+                           long long int minWorkers,
+                           long long int maxWorkers,
+                           long long int prioWorkers)
+{
+    size_t max;
+    size_t min;
+
+    virMutexLock(&pool->mutex);
+
+    max = maxWorkers >= 0 ? maxWorkers : pool->maxWorkers;
+    min = minWorkers >= 0 ? minWorkers : pool->minWorkers;
+    if (min > max) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("minWorkers cannot be larger than maxWorkers"));
+        goto error;
+    }
+
+    if (minWorkers >= 0) {
+        if ((size_t) minWorkers > pool->nWorkers &&
+            virThreadPoolExpand(pool, minWorkers - pool->nWorkers,
+                                false) < 0)
+            goto error;
+        pool->minWorkers = minWorkers;
+    }
+
+    if (maxWorkers >= 0) {
+        pool->maxWorkers = maxWorkers;
+        virCondBroadcast(&pool->cond);
+    }
+
+    if (prioWorkers >= 0) {
+        if (prioWorkers < pool->nPrioWorkers) {
+            virCondBroadcast(&pool->prioCond);
+        } else if ((size_t) prioWorkers > pool->nPrioWorkers &&
+                   virThreadPoolExpand(pool, prioWorkers - pool->nPrioWorkers,
+                                       true) < 0) {
+            goto error;
+        }
+        pool->maxPrioWorkers = prioWorkers;
+    }
 
     virMutexUnlock(&pool->mutex);
     return 0;

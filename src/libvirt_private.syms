@@ -2373,6 +2373,7 @@ virThreadPoolGetMinWorkers;
 virThreadPoolGetPriorityWorkers;
 virThreadPoolNewFull;
 virThreadPoolSendJob;
+virThreadPoolSetParameters;
 
 
 # util/virtime.h

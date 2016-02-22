@@ -267,3 +267,38 @@ remoteAdminServerGetThreadPoolParameters(virAdmServerPtr srv,
     virObjectUnlock(priv);
     return rv;
 }
+
+static int
+remoteAdminServerSetThreadPoolParameters(virAdmServerPtr srv,
+                                         virTypedParameterPtr params,
+                                         int nparams,
+                                         unsigned int flags)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = srv->conn->privateData;
+    admin_server_set_threadpool_parameters_args args;
+
+    args.flags = flags;
+    make_nonnull_server(&args.srv, srv);
+
+    virObjectLock(priv);
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &args.params.params_val,
+                                &args.params.params_len,
+                                0) < 0)
+        goto cleanup;
+
+
+    if (call(srv->conn, 0, ADMIN_PROC_SERVER_SET_THREADPOOL_PARAMETERS,
+             (xdrproc_t)xdr_admin_server_set_threadpool_parameters_args, (char *) &args,
+             (xdrproc_t)xdr_void, (char *) NULL) == -1)
+        goto cleanup;
+
+    rv = 0;
+ cleanup:
+    virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
+                             args.params.params_len);
+    virObjectUnlock(priv);
+    return rv;
+}

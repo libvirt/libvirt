@@ -14,6 +14,7 @@ xdr_admin_connect_lookup_server_ret;
 xdr_admin_connect_open_args;
 xdr_admin_server_get_threadpool_parameters_args;
 xdr_admin_server_get_threadpool_parameters_ret;
+xdr_admin_server_set_threadpool_parameters_args;
 
 # datatypes.h
 virAdmConnectClass;

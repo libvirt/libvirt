@@ -32,6 +32,7 @@
 #include "virnetserver.h"
 #include "virstring.h"
 #include "virthreadpool.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_ADMIN
 
@@ -134,4 +135,46 @@ adminServerGetThreadPoolParameters(virNetServerPtr srv,
  cleanup:
     virTypedParamsFree(tmpparams, *nparams);
     return ret;
+}
+
+int
+adminServerSetThreadPoolParameters(virNetServerPtr srv,
+                                   virTypedParameterPtr params,
+                                   int nparams,
+                                   unsigned int flags)
+{
+    long long int minWorkers = -1;
+    long long int maxWorkers = -1;
+    long long int prioWorkers = -1;
+    virTypedParameterPtr param = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_THREADPOOL_WORKERS_MIN,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_THREADPOOL_WORKERS_MAX,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_THREADPOOL_WORKERS_PRIORITY,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if ((param = virTypedParamsGet(params, nparams,
+                                   VIR_THREADPOOL_WORKERS_MIN)))
+        minWorkers = param->value.ui;
+
+    if ((param = virTypedParamsGet(params, nparams,
+                                   VIR_THREADPOOL_WORKERS_MAX)))
+        maxWorkers = param->value.ui;
+
+    if ((param = virTypedParamsGet(params, nparams,
+                                   VIR_THREADPOOL_WORKERS_PRIORITY)))
+        prioWorkers = param->value.ui;
+
+    if (virNetServerSetThreadPoolParameters(srv, minWorkers,
+                                            maxWorkers, prioWorkers) < 0)
+        return -1;
+
+    return 0;
 }

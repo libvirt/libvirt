@@ -97,4 +97,9 @@ int virNetServerGetThreadPoolParameters(virNetServerPtr srv,
                                         size_t *nPrioWorkers,
                                         size_t *jobQueueDepth);
 
+int virNetServerSetThreadPoolParameters(virNetServerPtr srv,
+                                        long long int minWorkers,
+                                        long long int maxWorkers,
+                                        long long int prioWorkers);
+
 #endif /* __VIR_NET_SERVER_H__ */

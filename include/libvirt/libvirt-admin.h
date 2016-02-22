@@ -177,6 +177,11 @@ int virAdmServerGetThreadPoolParameters(virAdmServerPtr srv,
                                         int *nparams,
                                         unsigned int flags);
 
+int virAdmServerSetThreadPoolParameters(virAdmServerPtr srv,
+                                        virTypedParameterPtr params,
+                                        int nparams,
+                                        unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif
