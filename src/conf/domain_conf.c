@@ -22363,17 +22363,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
     }
 
-    for (n = 0; n < def->ngraphics; n++)
+    for (n = 0; n < def->ngraphics; n++) {
         if (virDomainGraphicsDefFormat(buf, def->graphics[n], flags) < 0)
             goto error;
+    }
 
-    for (n = 0; n < def->nsounds; n++)
+    for (n = 0; n < def->nsounds; n++) {
         if (virDomainSoundDefFormat(buf, def->sounds[n], flags) < 0)
             goto error;
+    }
 
-    for (n = 0; n < def->nvideos; n++)
+    for (n = 0; n < def->nvideos; n++) {
         if (virDomainVideoDefFormat(buf, def->videos[n], flags) < 0)
             goto error;
+    }
 
     for (n = 0; n < def->nhostdevs; n++) {
         /* If parent.type != NONE, this is just a pointer to the
@@ -22386,16 +22389,18 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         }
     }
 
-    for (n = 0; n < def->nredirdevs; n++)
+    for (n = 0; n < def->nredirdevs; n++) {
         if (virDomainRedirdevDefFormat(buf, def->redirdevs[n], flags) < 0)
             goto error;
+    }
 
     if (def->redirfilter)
         virDomainRedirFilterDefFormat(buf, def->redirfilter);
 
-    for (n = 0; n < def->nhubs; n++)
+    for (n = 0; n < def->nhubs; n++) {
         if (virDomainHubDefFormat(buf, def->hubs[n], flags) < 0)
             goto error;
+    }
 
     if (def->watchdog)
         virDomainWatchdogDefFormat(buf, def->watchdog, flags);
@@ -22411,17 +22416,20 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->nvram)
         virDomainNVRAMDefFormat(buf, def->nvram, flags);
 
-    for (n = 0; n < def->npanics; n++)
+    for (n = 0; n < def->npanics; n++) {
         if (virDomainPanicDefFormat(buf, def->panics[n]) < 0)
             goto error;
+    }
 
-    for (n = 0; n < def->nshmems; n++)
+    for (n = 0; n < def->nshmems; n++) {
         if (virDomainShmemDefFormat(buf, def->shmems[n], flags) < 0)
             goto error;
+    }
 
-    for (n = 0; n < def->nmems; n++)
+    for (n = 0; n < def->nmems; n++) {
         if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
             goto error;
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");

@@ -5541,11 +5541,9 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     }
 
  cleanup:
-    if (count > 0) {
-        for (i = 0; i < count; i++) {
-            if (snapshots[i] != snapshot)
-                VBOX_RELEASE(snapshots[i]);
-        }
+    for (i = 0; i < count; i++) {
+        if (snapshots[i] != snapshot)
+            VBOX_RELEASE(snapshots[i]);
     }
     VIR_FREE(snapshots);
     return snapshot;
@@ -6255,10 +6253,8 @@ static int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
         ret = nameslen;
 
  cleanup:
-    if (count > 0) {
-        for (i = 0; i < count; i++)
-            VBOX_RELEASE(snapshots[i]);
-    }
+    for (i = 0; i < count; i++)
+        VBOX_RELEASE(snapshots[i]);
     VIR_FREE(snapshots);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);

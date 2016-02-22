@@ -2774,23 +2774,21 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
         goto cleanup;
     }
     VIR_DEBUG("Got flags %d", n);
-    if (n > 0) {
-        for (i = 0; i < n; i++) {
-            int flag;
-            if (!(str = virXMLPropString(nodes[i], "name"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing flag name in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            flag = virQEMUCapsTypeFromString(str);
-            if (flag < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown qemu capabilities flag %s"), str);
-                goto cleanup;
-            }
-            VIR_FREE(str);
-            virQEMUCapsSet(qemuCaps, flag);
+    for (i = 0; i < n; i++) {
+        int flag;
+        if (!(str = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing flag name in QEMU capabilities cache"));
+            goto cleanup;
         }
+        flag = virQEMUCapsTypeFromString(str);
+        if (flag < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown qemu capabilities flag %s"), str);
+            goto cleanup;
+        }
+        VIR_FREE(str);
+        virQEMUCapsSet(qemuCaps, flag);
     }
     VIR_FREE(nodes);
 

@@ -566,37 +566,35 @@ virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
     VIR_DEBUG("Found %d snapshots for volume %s/%s", snap_count,
               source->name, vol->name);
 
-    if (snap_count > 0) {
-        for (i = 0; i < snap_count; i++) {
-            if ((r = rbd_snap_is_protected(image, snaps[i].name, &protected)) < 0) {
-                virReportSystemError(-r, _("failed to verify if snapshot '%s/%s@%s' is protected"),
+    for (i = 0; i < snap_count; i++) {
+        if ((r = rbd_snap_is_protected(image, snaps[i].name, &protected)) < 0) {
+            virReportSystemError(-r, _("failed to verify if snapshot '%s/%s@%s' is protected"),
+                                 source->name, vol->name,
+                                 snaps[i].name);
+            goto cleanup;
+        }
+
+        if (protected == 1) {
+            VIR_DEBUG("Snapshot %s/%s@%s is protected needs to be "
+                      "unprotected", source->name, vol->name,
+                      snaps[i].name);
+
+            if ((r = rbd_snap_unprotect(image, snaps[i].name)) < 0) {
+                virReportSystemError(-r, _("failed to unprotect snapshot '%s/%s@%s'"),
                                      source->name, vol->name,
                                      snaps[i].name);
                 goto cleanup;
             }
+        }
 
-            if (protected == 1) {
-                VIR_DEBUG("Snapshot %s/%s@%s is protected needs to be "
-                          "unprotected", source->name, vol->name,
-                          snaps[i].name);
+        VIR_DEBUG("Removing snapshot %s/%s@%s", source->name,
+                  vol->name, snaps[i].name);
 
-                if ((r = rbd_snap_unprotect(image, snaps[i].name)) < 0) {
-                    virReportSystemError(-r, _("failed to unprotect snapshot '%s/%s@%s'"),
-                                         source->name, vol->name,
-                                         snaps[i].name);
-                    goto cleanup;
-                }
-            }
-
-            VIR_DEBUG("Removing snapshot %s/%s@%s", source->name,
-                      vol->name, snaps[i].name);
-
-            if ((r = rbd_snap_remove(image, snaps[i].name)) < 0) {
-                virReportSystemError(-r, _("failed to remove snapshot '%s/%s@%s'"),
-                                     source->name, vol->name,
-                                     snaps[i].name);
-                goto cleanup;
-            }
+        if ((r = rbd_snap_remove(image, snaps[i].name)) < 0) {
+            virReportSystemError(-r, _("failed to remove snapshot '%s/%s@%s'"),
+                                 source->name, vol->name,
+                                 snaps[i].name);
+            goto cleanup;
         }
     }
 
