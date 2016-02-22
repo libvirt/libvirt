@@ -2534,11 +2534,10 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
                         int maplen,
                         unsigned int flags)
 {
-    testDriverPtr privconn = dom->conn->privateData;
+    testDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr privdom;
     virDomainDefPtr def;
-    int ret = -1, hostcpus, vcpu;
-    virBitmapPtr allcpumap = NULL;
+    int ret = -1;
 
     if (!(privdom = testDomObjFromDomain(dom)))
         return -1;
@@ -2546,38 +2545,11 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(privdom, flags)))
         goto cleanup;
 
-    hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
-
-    if (!(allcpumap = virBitmapNew(hostcpus)))
-        goto cleanup;
-
-    virBitmapSetAll(allcpumap);
-
-    /* Clamp to actual number of vcpus */
-    if (ncpumaps > virDomainDefGetVcpus(def))
-        ncpumaps = virDomainDefGetVcpus(def);
-
-    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainVcpuInfoPtr vcpuinfo = virDomainDefGetVcpu(def, vcpu);
-        virBitmapPtr bitmap = NULL;
-
-        if (!vcpuinfo->online)
-            continue;
-
-        if (vcpuinfo->cpumask)
-            bitmap = vcpuinfo->cpumask;
-        else if (def->cpumask)
-            bitmap = def->cpumask;
-        else
-            bitmap = allcpumap;
-
-        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
-    }
-
-    ret = ncpumaps;
+    ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
+                                           VIR_NODEINFO_MAXCPUS(driver->nodeInfo),
+                                           NULL);
 
  cleanup:
-    virBitmapFree(allcpumap);
     virDomainObjEndAPI(&privdom);
     return ret;
 }

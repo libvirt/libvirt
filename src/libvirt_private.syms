@@ -221,6 +221,7 @@ virDomainDefGetMemoryInitial;
 virDomainDefGetOnlineVcpumap;
 virDomainDefGetSecurityLabelDef;
 virDomainDefGetVcpu;
+virDomainDefGetVcpuPinInfoHelper;
 virDomainDefGetVcpus;
 virDomainDefGetVcpusMax;
 virDomainDefHasDeviceAddress;

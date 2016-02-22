@@ -1449,6 +1449,70 @@ virDomainDefHasVcpuPin(const virDomainDef *def)
 }
 
 
+/**
+ * virDomainDefGetVcpuPinInfoHelper:
+ * @def: domain definition
+ * @maplen: length of one cpumap passed from caller (@cpumaps)
+ * @ncpumaps: count of cpumaps of @maplen length in @cpumaps
+ * @cpumaps: array of pinning information bitmaps to be filled
+ * @hostcpus: number of cpus in the host
+ * @autoCpuset: Cpu pinning bitmap used in case of automatic cpu pinning
+ *
+ * Fills the @cpumaps array as documented by the virDomainGetVcpuPinInfo API.
+ * In case when automatic cpu pinning is supported, the bitmap should be passed
+ * as @autoCpuset. If @hostcpus is < 0 no error is reported (to pass through
+ * error message).
+ *
+ * Returns number of filled entries or -1 on error.
+ */
+int
+virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
+                                 int maplen,
+                                 int ncpumaps,
+                                 unsigned char *cpumaps,
+                                 int hostcpus,
+                                 virBitmapPtr autoCpuset)
+{
+    virBitmapPtr allcpumap = NULL;
+    size_t i;
+
+    if (hostcpus < 0)
+        return -1;
+
+    if (!(allcpumap = virBitmapNew(hostcpus)))
+        return -1;
+
+    virBitmapSetAll(allcpumap);
+
+    /* Clamp to actual number of vcpus */
+    if (ncpumaps > virDomainDefGetVcpus(def))
+        ncpumaps = virDomainDefGetVcpus(def);
+
+    for (i = 0; i < ncpumaps; i++) {
+        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+        virBitmapPtr bitmap = NULL;
+
+        if (!vcpu->online)
+            continue;
+
+        if (vcpu->cpumask)
+            bitmap = vcpu->cpumask;
+        else if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
+                 autoCpuset)
+            bitmap = autoCpuset;
+        else if (def->cpumask)
+            bitmap = def->cpumask;
+        else
+            bitmap = allcpumap;
+
+        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
+    }
+
+    virBitmapFree(allcpumap);
+    return ncpumaps;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {

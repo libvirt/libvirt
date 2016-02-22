@@ -2388,8 +2388,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm = NULL;
     virDomainDefPtr targetDef = NULL;
-    int hostcpus, vcpu, ret = -1;
-    virBitmapPtr allcpumap = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -2410,41 +2409,10 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
     /* Make sure coverity knows targetDef is valid at this point. */
     sa_assert(targetDef);
 
-    /* Clamp to actual number of vcpus */
-    if (ncpumaps > virDomainDefGetVcpus(targetDef))
-        ncpumaps = virDomainDefGetVcpus(targetDef);
-
-    if ((hostcpus = libxl_get_max_cpus(cfg->ctx)) < 0)
-        goto cleanup;
-
-    if (!(allcpumap = virBitmapNew(hostcpus)))
-        goto cleanup;
-
-    virBitmapSetAll(allcpumap);
-
-    memset(cpumaps, 0x00, maplen * ncpumaps);
-
-    for (vcpu = 0; vcpu < ncpumaps; vcpu++) {
-        virDomainVcpuInfoPtr vcpuinfo = virDomainDefGetVcpu(targetDef, vcpu);
-        virBitmapPtr bitmap = NULL;
-
-        if (!vcpuinfo->online)
-            continue;
-
-        if (vcpuinfo->cpumask)
-            bitmap = vcpuinfo->cpumask;
-        else if (targetDef->cpumask)
-            bitmap = targetDef->cpumask;
-        else
-            bitmap = allcpumap;
-
-        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen);
-    }
-
-    ret = ncpumaps;
+    ret = virDomainDefGetVcpuPinInfoHelper(targetDef, maplen, ncpumaps, cpumaps,
+                                           libxl_get_max_cpus(cfg->ctx), NULL);
 
  cleanup:
-    virBitmapFree(allcpumap);
     if (vm)
         virObjectUnlock(vm);
     virObjectUnref(cfg);

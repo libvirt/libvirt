@@ -5153,9 +5153,6 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
     int ret = -1;
-    int hostcpus;
-    size_t i;
-    virBitmapPtr allcpumap = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5170,46 +5167,12 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    if ((hostcpus = nodeGetCPUCount(NULL)) < 0)
-        goto cleanup;
-
-    if (!(allcpumap = virBitmapNew(hostcpus)))
-        goto cleanup;
-
-    virBitmapSetAll(allcpumap);
     priv = vm->privateData;
 
-    /* Clamp to actual number of vcpus */
-    if (ncpumaps > virDomainDefGetVcpus(def))
-        ncpumaps = virDomainDefGetVcpus(def);
-
-    if (ncpumaps < 1)
-        goto cleanup;
-
-    for (i = 0; i < ncpumaps; i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
-        virBitmapPtr bitmap = NULL;
-
-        if (!vcpu->online)
-            continue;
-
-        if (vcpu->cpumask)
-            bitmap = vcpu->cpumask;
-        else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
-                 priv->autoCpuset)
-            bitmap = priv->autoCpuset;
-        else if (def->cpumask)
-            bitmap = def->cpumask;
-        else
-            bitmap = allcpumap;
-
-        virBitmapToDataBuf(bitmap, VIR_GET_CPUMAP(cpumaps, maplen, i), maplen);
-    }
-
-    ret = ncpumaps;
-
+    ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
+                                           nodeGetCPUCount(NULL),
+                                           priv->autoCpuset);
  cleanup:
-    virBitmapFree(allcpumap);
     virDomainObjEndAPI(&vm);
     return ret;
 }

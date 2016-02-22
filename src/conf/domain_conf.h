@@ -3132,4 +3132,12 @@ int virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
 int virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
+int virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
+                                     int maplen,
+                                     int ncpumaps,
+                                     unsigned char *cpumaps,
+                                     int hostcpus,
+                                     virBitmapPtr autoCpuset)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+
 #endif /* __DOMAIN_CONF_H */
