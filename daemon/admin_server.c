@@ -68,6 +68,7 @@ adminDaemonListServers(virNetDaemonPtr dmn,
     ret = nsrvs;
 
  cleanup:
+    VIR_FREE(srv_names);
     virObjectListFree(srvs);
     return ret;
 }
