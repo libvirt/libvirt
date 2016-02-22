@@ -546,18 +546,18 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs)))
         goto cleanup;
 
-    /* We have to use 9 loops here. *All* devices must
-     * be detached before we reset any of them, because
-     * in some cases you have to reset the whole PCI,
-     * which impacts all devices on it. Also, all devices
-     * must be reset before being marked as active.
-     */
+    /* Detaching devices from the host involves several steps; each
+     * of them is described at length below.
+     *
+     * All devices must be detached before we reset any of them,
+     * because in some cases you have to reset the whole PCI, which
+     * impacts all devices on it. Also, all devices must be reset
+     * before being marked as active */
 
-    /* Loop 1: validate that non-managed device isn't in use, eg
+    /* Step 1: validate that non-managed device isn't in use, eg
      * by checking that device is either un-bound, or bound
      * to pci-stub.ko
      */
-
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
@@ -588,7 +588,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
     }
 
-    /* Loop 2: detach managed devices (i.e. bind to appropriate stub driver) */
+    /* Step 2: detach managed devices (i.e. bind to appropriate stub driver) */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -608,7 +608,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     /* At this point, all devices are attached to the stub driver and have
      * been marked as inactive */
 
-    /* Loop 3: Now that all the PCI hostdevs have been detached, we
+    /* Step 3: Now that all the PCI hostdevs have been detached, we
      * can safely reset them */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
@@ -619,7 +619,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
             goto reattachdevs;
     }
 
-    /* Loop 4: For SRIOV network devices, Now that we have detached the
+    /* Step 4: For SRIOV network devices, Now that we have detached the
      * the network device, set the netdev config */
     for (i = 0; i < nhostdevs; i++) {
          virDomainHostdevDefPtr hostdev = hostdevs[i];
@@ -632,7 +632,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
          last_processed_hostdev_vf = i;
     }
 
-    /* Loop 5: Now mark all the devices as active */
+    /* Step 5: Now mark all the devices as active */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -642,7 +642,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
             goto inactivedevs;
     }
 
-    /* Loop 6: Now remove the devices from inactive list. */
+    /* Step 6: Now remove the devices from inactive list. */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -651,7 +651,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         virPCIDeviceListDel(hostdev_mgr->inactivePCIHostdevs, dev);
     }
 
-    /* Loop 7: Now set the used_by_domain of the device in
+    /* Step 7: Now set the used_by_domain of the device in
      * activePCIHostdevs as domain name.
      */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
@@ -666,7 +666,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
             virPCIDeviceSetUsedBy(activeDev, drv_name, dom_name);
     }
 
-    /* Loop 8: Now set the original states for hostdev def */
+    /* Step 8: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
         virPCIDevicePtr dev;
         virPCIDevicePtr pcidev;
@@ -681,10 +681,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
                               pcisrc->addr.slot, pcisrc->addr.function);
 
-        /* original states "unbind_from_stub", "remove_slot",
-         * "reprobe" were already set by pciDettachDevice in
-         * loop 2.
-         */
+        /* Appropriate values for the unbind_from_stub, remove_slot
+         * and reprobe properties of the device were set earlier
+         * by virPCIDeviceDetach() */
         VIR_DEBUG("Saving network configuration of PCI device %s",
                   virPCIDeviceGetName(dev));
         if ((pcidev = virPCIDeviceListFind(pcidevs, dev))) {
@@ -699,7 +698,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         virPCIDeviceFree(dev);
     }
 
-    /* Loop 9: Now steal all the devices from pcidevs */
+    /* Step 9: Now steal all the devices from pcidevs */
     while (virPCIDeviceListCount(pcidevs) > 0)
         virPCIDeviceListStealIndex(pcidevs, 0);
 
@@ -819,14 +818,10 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         goto cleanup;
     }
 
-    /* Loop through the assigned devices 4 times: 1) delete them all from
-     * activePCIHostdevs, 2) restore network config of SRIOV netdevs, 3) Do a
-     * PCI reset on each device, 4) reattach the devices to their host drivers
-     * (managed) or add them to inactivePCIHostdevs (!managed).
-     */
+    /* Reattaching devices to the host involves several steps; each
+     * of them is described at length below */
 
-    /*
-     * Loop 1: verify that each device in the hostdevs list really was in use
+    /* Step 1: verify that each device in the hostdevs list really was in use
      * by this domain, and remove them all from the activePCIHostdevs list.
      */
     i = 0;
@@ -856,8 +851,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
      * pcidevs, but has been removed from activePCIHostdevs.
      */
 
-    /*
-     * Loop 2: restore original network config of hostdevs that used
+    /* Step 2: restore original network config of hostdevs that used
      * <interface type='hostdev'>
      */
     for (i = 0; i < nhostdevs; i++) {
@@ -880,7 +874,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
     }
 
-    /* Loop 3: perform a PCI Reset on all devices */
+    /* Step 3: perform a PCI Reset on all devices */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
@@ -894,7 +888,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
         }
     }
 
-    /* Loop 4: reattach devices to their host drivers (if managed) or place
+    /* Step 4: reattach devices to their host drivers (if managed) or place
      * them on the inactive list (if not managed)
      */
     while (virPCIDeviceListCount(pcidevs) > 0) {
