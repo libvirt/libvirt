@@ -4980,6 +4980,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
                       virQEMUDriverConfigPtr cfg,
                       virBitmapPtr cpumap)
 {
+    virBitmapPtr tmpmap = NULL;
     virDomainVcpuInfoPtr vcpuinfo;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCgroupPtr cgroup_vcpu = NULL;
@@ -5004,6 +5005,12 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
+    if (!(tmpmap = virBitmapNewCopy(cpumap)))
+        goto cleanup;
+
+    if (!(str = virBitmapFormat(cpumap)))
+        goto cleanup;
+
     if (vcpuinfo->online) {
         /* Configure the corresponding cpuset cgroup before set affinity. */
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
@@ -5019,8 +5026,8 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
     }
 
     virBitmapFree(vcpuinfo->cpumask);
-    vcpuinfo->cpumask = cpumap;
-    cpumap = NULL;
+    vcpuinfo->cpumask = tmpmap;
+    tmpmap = NULL;
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto cleanup;
@@ -5030,7 +5037,6 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    str = virBitmapFormat(vcpuinfo->cpumask);
     if (virTypedParamsAddString(&eventParams, &eventNparams,
                                 &eventMaxparams, paramField, str) < 0)
         goto cleanup;
@@ -5040,7 +5046,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    virBitmapFree(cpumap);
+    virBitmapFree(tmpmap);
     virCgroupFree(&cgroup_vcpu);
     VIR_FREE(str);
     qemuDomainEventQueue(driver, event);
@@ -5062,9 +5068,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     int ret = -1;
     virBitmapPtr pcpumap = NULL;
-    virBitmapPtr pcpumaplive = NULL;
-    virBitmapPtr pcpumappersist = NULL;
-    virDomainVcpuInfoPtr vcpuinfopersist = NULL;
+    virDomainVcpuInfoPtr vcpuinfo = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5085,7 +5089,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
 
     if (persistentDef &&
-        !(vcpuinfopersist = virDomainDefGetVcpu(persistentDef, vcpu))) {
+        !(vcpuinfo = virDomainDefGetVcpu(persistentDef, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("vcpu %d is out of range of persistent cpu count %d"),
                        vcpu, virDomainDefGetVcpus(persistentDef));
@@ -5101,23 +5105,14 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    if ((def && !(pcpumaplive = virBitmapNewCopy(pcpumap))) ||
-        (persistentDef && !(pcpumappersist = virBitmapNewCopy(pcpumap))))
+    if (def &&
+        qemuDomainPinVcpuLive(vm, def, vcpu, driver, cfg, pcpumap) < 0)
         goto endjob;
 
-    if (def) {
-        if (qemuDomainPinVcpuLive(vm, def, vcpu, driver, cfg, pcpumaplive) < 0) {
-            pcpumaplive = NULL;
-            goto endjob;
-        }
-
-        pcpumaplive = NULL;
-    }
-
     if (persistentDef) {
-        virBitmapFree(vcpuinfopersist->cpumask);
-        vcpuinfopersist->cpumask = pcpumappersist;
-        pcpumappersist = NULL;
+        virBitmapFree(vcpuinfo->cpumask);
+        vcpuinfo->cpumask = pcpumap;
+        pcpumap = NULL;
 
         ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         goto endjob;
@@ -5131,8 +5126,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
  cleanup:
     virDomainObjEndAPI(&vm);
     virBitmapFree(pcpumap);
-    virBitmapFree(pcpumaplive);
-    virBitmapFree(pcpumappersist);
     virObjectUnref(cfg);
     return ret;
 }
