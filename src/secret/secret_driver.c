@@ -66,7 +66,7 @@ typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
     virSecretObj *secrets;
-    char *directory;
+    char *configDir;
 };
 
 static virSecretDriverStatePtr driver;
@@ -166,7 +166,7 @@ secretFindByUsage(int usageType,
 
 /* Permament secret storage */
 
-/* Secrets are stored in virSecretDriverStatePtr->directory.  Each secret
+/* Secrets are stored in virSecretDriverStatePtr->configDir.  Each secret
    has virSecretDef stored as XML in "$basename.xml".  If a value of the
    secret is defined, it is stored as base64 (with no formatting) in
    "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
@@ -192,7 +192,7 @@ secretComputePath(const virSecretObj *secret,
 
     virUUIDFormat(secret->def->uuid, uuidstr);
 
-    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->directory,
+    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->configDir,
                              uuidstr, suffix));
     return ret;
 }
@@ -212,9 +212,9 @@ secretBase64Path(const virSecretObj *secret)
 static int
 secretEnsureDirectory(void)
 {
-    if (mkdir(driver->directory, S_IRWXU) < 0 && errno != EEXIST) {
+    if (mkdir(driver->configDir, S_IRWXU) < 0 && errno != EEXIST) {
         virReportSystemError(errno, _("cannot create '%s'"),
-                             driver->directory);
+                             driver->configDir);
         return -1;
     }
     return 0;
@@ -401,7 +401,7 @@ secretLoad(const char *xml_basename)
     virSecretObjPtr secret = NULL, ret = NULL;
     char *xml_filename;
 
-    if (virAsprintf(&xml_filename, "%s/%s", driver->directory,
+    if (virAsprintf(&xml_filename, "%s/%s", driver->configDir,
                     xml_basename) < 0)
         goto cleanup;
 
@@ -438,11 +438,11 @@ loadSecrets(virSecretObjPtr *dest)
     struct dirent *de;
     virSecretObjPtr list = NULL;
 
-    if (!(dir = opendir(driver->directory))) {
+    if (!(dir = opendir(driver->configDir))) {
         if (errno == ENOENT)
             return 0;
         virReportSystemError(errno, _("cannot open '%s'"),
-                             driver->directory);
+                             driver->configDir);
         return -1;
     }
 
@@ -1022,7 +1022,7 @@ secretStateCleanup(void)
         secret = listUnlink(&driver->secrets);
         secretFree(secret);
     }
-    VIR_FREE(driver->directory);
+    VIR_FREE(driver->configDir);
 
     secretDriverUnlock();
     virMutexDestroy(&driver->lock);
@@ -1054,7 +1054,7 @@ secretStateInitialize(bool privileged,
         if (!(base = virGetUserConfigDirectory()))
             goto error;
     }
-    if (virAsprintf(&driver->directory, "%s/secrets", base) < 0)
+    if (virAsprintf(&driver->configDir, "%s/secrets", base) < 0)
         goto error;
     VIR_FREE(base);
 
@@ -1086,7 +1086,7 @@ secretStateReload(void)
 
     /* Keep ephemeral secrets from current state.
      * Discard non-ephemeral secrets that were removed
-     * by the secrets directory.  */
+     * by the secrets configDir.  */
     while (driver->secrets != NULL) {
         virSecretObjPtr secret;
 
