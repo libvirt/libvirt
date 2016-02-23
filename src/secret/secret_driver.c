@@ -172,52 +172,15 @@ secretFindByUsage(int usageType,
    "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
 
 static int
-replaceFile(const char *filename,
-            void *data,
-            size_t size)
+secretRewriteFile(int fd,
+                  void *opaque)
 {
-    char *tmp_path = NULL;
-    int fd = -1, ret = -1;
+    char *data = opaque;
 
-    if (virAsprintf(&tmp_path, "%sXXXXXX", filename) < 0)
-        goto cleanup;
-    fd = mkostemp(tmp_path, O_CLOEXEC);
-    if (fd == -1) {
-        virReportSystemError(errno, _("mkostemp('%s') failed"), tmp_path);
-        goto cleanup;
-    }
-    if (fchmod(fd, S_IRUSR | S_IWUSR) != 0) {
-        virReportSystemError(errno, _("fchmod('%s') failed"), tmp_path);
-        goto cleanup;
-    }
+    if (safewrite(fd, data, strlen(data)) < 0)
+        return -1;
 
-    ret = safewrite(fd, data, size);
-    if (ret < 0) {
-        virReportSystemError(errno, _("error writing to '%s'"),
-                              tmp_path);
-        goto cleanup;
-    }
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("error closing '%s'"), tmp_path);
-        goto cleanup;
-    }
-    fd = -1;
-
-    if (rename(tmp_path, filename) < 0) {
-        virReportSystemError(errno, _("rename(%s, %s) failed"), tmp_path,
-                             filename);
-        goto cleanup;
-    }
-    VIR_FREE(tmp_path);
-    ret = 0;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    if (tmp_path != NULL) {
-        unlink(tmp_path);
-        VIR_FREE(tmp_path);
-    }
-    return ret;
+    return 0;
 }
 
 static char *
@@ -272,7 +235,8 @@ secretSaveDef(const virSecretEntry *secret)
     if (!(xml = virSecretDefFormat(secret->def)))
         goto cleanup;
 
-    if (replaceFile(filename, xml, strlen(xml)) < 0)
+    if (virFileRewrite(filename, S_IRUSR | S_IWUSR,
+                       secretRewriteFile, xml) < 0)
         goto cleanup;
 
     ret = 0;
@@ -305,7 +269,8 @@ secretSaveValue(const virSecretEntry *secret)
         goto cleanup;
     }
 
-    if (replaceFile(filename, base64, strlen(base64)) < 0)
+    if (virFileRewrite(filename, S_IRUSR | S_IWUSR,
+                       secretRewriteFile, base64) < 0)
         goto cleanup;
 
     ret = 0;
