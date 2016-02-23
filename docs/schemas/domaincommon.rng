@@ -4144,7 +4144,11 @@
           </optional>
           <optional>
             <element name="hap">
-              <empty/>
+              <optional>
+                <attribute name="state">
+                  <ref name="virOnOff"/>
+                </attribute>
+              </optional>
             </element>
           </optional>
           <optional>

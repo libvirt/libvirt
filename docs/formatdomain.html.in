@@ -1494,8 +1494,10 @@
       Interrupt) for the guest.
       </dd>
       <dt><code>hap</code></dt>
-      <dd>Enable use of Hardware Assisted Paging if available in
-        the hardware.
+      <dd>Depending on the <code>state</code> attribute (values <code>on</code>,
+        <code>off</code>) enable or disable use of Hardware Assisted Paging.
+        The default is <code>on</code> if the hypervisor detects availability
+        of Hardware Assisted Paging.
       </dd>
       <dt><code>viridian</code></dt>
       <dd>Enable Viridian hypervisor extensions for paravirtualizing

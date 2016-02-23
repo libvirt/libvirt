@@ -15497,7 +15497,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             /* fallthrough */
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
-        case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
         case VIR_DOMAIN_FEATURE_HYPERV:
@@ -15522,6 +15521,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             ctxt->node = node;
             break;
 
+        case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_VMPORT:
@@ -22288,7 +22288,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             switch ((virDomainFeature) i) {
             case VIR_DOMAIN_FEATURE_ACPI:
             case VIR_DOMAIN_FEATURE_PAE:
-            case VIR_DOMAIN_FEATURE_HAP:
             case VIR_DOMAIN_FEATURE_VIRIDIAN:
             case VIR_DOMAIN_FEATURE_PRIVNET:
                 switch ((virTristateSwitch) def->features[i]) {
@@ -22310,6 +22309,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
                 break;
 
+            case VIR_DOMAIN_FEATURE_HAP:
             case VIR_DOMAIN_FEATURE_PMU:
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
             case VIR_DOMAIN_FEATURE_VMPORT:
