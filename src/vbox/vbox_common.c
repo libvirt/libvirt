@@ -5507,11 +5507,10 @@ vboxDomainSnapshotGet(vboxGlobalData *data,
     ISnapshot **snapshots = NULL;
     ISnapshot *snapshot = NULL;
     nsresult rc;
-    int count = 0;
-    size_t i;
+    ssize_t i, count = 0;
 
     if ((count = vboxDomainSnapshotGetAll(dom, machine, &snapshots)) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < count; i++) {
         PRUnichar *nameUtf16;
@@ -6188,8 +6187,7 @@ static int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
     IMachine *machine = NULL;
     nsresult rc;
     ISnapshot **snapshots = NULL;
-    int count = 0;
-    size_t i;
+    ssize_t i, count = 0;
     int ret = -1;
 
     if (!data->vboxObj)
