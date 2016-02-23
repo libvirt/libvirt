@@ -3992,18 +3992,19 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferAsprintf(&buf, "file,id=char%s,path=%s", alias,
-                          dev->data.file.path);
-        if (dev->data.file.append != VIR_TRISTATE_SWITCH_ABSENT) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("append not supported in this QEMU binary"));
-                goto error;
-            }
+        virBufferAsprintf(&buf, "file,id=char%s", alias);
 
-            virBufferAsprintf(&buf, ",append=%s",
-                              virTristateSwitchTypeToString(dev->data.file.append));
+        if (dev->data.file.append != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("append not supported in this QEMU binary"));
+            goto error;
         }
+        if (qemuBuildChrChardevFileStr(virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND) ?
+                                       logManager : NULL, cmd, def, &buf,
+                                       "path", dev->data.file.path,
+                                       "append", dev->data.file.append) < 0)
+            goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
