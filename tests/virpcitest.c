@@ -91,7 +91,7 @@ testVirPCIDeviceNew(const void *opaque ATTRIBUTE_UNUSED)
     }
 
 static int
-testVirPCIDeviceDetach(const void *oaque ATTRIBUTE_UNUSED)
+testVirPCIDeviceDetach(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     virPCIDevicePtr dev[] = {NULL, NULL, NULL};

@@ -157,7 +157,7 @@ virHostdevHostSupportsPassthroughKVM(void)
 # endif
 
 static int
-testVirHostdevPreparePCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevPreparePCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -216,7 +216,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -250,7 +250,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevPreparePCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevPreparePCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -296,7 +296,7 @@ testVirHostdevPreparePCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -328,7 +328,7 @@ testVirHostdevReAttachPCIHostdevs_managed(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevDetachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevDetachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -347,7 +347,7 @@ testVirHostdevDetachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
     return ret;
 }
 static int
-testVirHostdevResetPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevResetPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -365,7 +365,7 @@ testVirHostdevResetPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     size_t i;
@@ -386,7 +386,7 @@ testVirHostdevReAttachPCINodeDevice(const void *oaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevUpdateActivePCIHostdevs(const void *oaque ATTRIBUTE_UNUSED)
+testVirHostdevUpdateActivePCIHostdevs(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     int count, count1;
