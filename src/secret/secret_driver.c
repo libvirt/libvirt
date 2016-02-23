@@ -1,7 +1,7 @@
 /*
  * secret_driver.c: local driver for secret manipulation API
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,7 +50,7 @@ VIR_LOG_INIT("secret.secret_driver");
 
 enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
- /* Internal driver state */
+/* Internal driver state */
 
 typedef struct _virSecretEntry virSecretEntry;
 typedef virSecretEntry *virSecretEntryPtr;
@@ -94,7 +94,8 @@ listUnlink(virSecretEntryPtr *pptr)
 }
 
 static void
-listInsert(virSecretEntryPtr *pptr, virSecretEntryPtr secret)
+listInsert(virSecretEntryPtr *pptr,
+           virSecretEntryPtr secret)
 {
     secret->next = *pptr;
     *pptr = secret;
@@ -128,7 +129,8 @@ secretFindByUUID(const unsigned char *uuid)
 }
 
 static virSecretEntryPtr
-secretFindByUsage(int usageType, const char *usageID)
+secretFindByUsage(int usageType,
+                  const char *usageID)
 {
     virSecretEntryPtr *pptr, s;
 
@@ -170,7 +172,9 @@ secretFindByUsage(int usageType, const char *usageID)
    "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
 
 static int
-replaceFile(const char *filename, void *data, size_t size)
+replaceFile(const char *filename,
+            void *data,
+            size_t size)
 {
     char *tmp_path = NULL;
     int fd = -1, ret = -1;
@@ -217,14 +221,16 @@ replaceFile(const char *filename, void *data, size_t size)
 }
 
 static char *
-secretComputePath(const virSecretEntry *secret, const char *suffix)
+secretComputePath(const virSecretEntry *secret,
+                  const char *suffix)
 {
     char *ret;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(secret->def->uuid, uuidstr);
 
-    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->directory, uuidstr, suffix));
+    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->directory,
+                             uuidstr, suffix));
     return ret;
 }
 
@@ -260,11 +266,10 @@ secretSaveDef(const virSecretEntry *secret)
     if (secretEnsureDirectory() < 0)
         goto cleanup;
 
-    filename = secretXMLPath(secret);
-    if (filename == NULL)
+    if (!(filename = secretXMLPath(secret)))
         goto cleanup;
-    xml = virSecretDefFormat(secret->def);
-    if (xml == NULL)
+
+    if (!(xml = virSecretDefFormat(secret->def)))
         goto cleanup;
 
     if (replaceFile(filename, xml, strlen(xml)) < 0)
@@ -290,9 +295,9 @@ secretSaveValue(const virSecretEntry *secret)
     if (secretEnsureDirectory() < 0)
         goto cleanup;
 
-    filename = secretBase64Path(secret);
-    if (filename == NULL)
+    if (!(filename = secretBase64Path(secret)))
         goto cleanup;
+
     base64_encode_alloc((const char *)secret->value, secret->value_size,
                         &base64);
     if (base64 == NULL) {
@@ -317,11 +322,10 @@ secretDeleteSaved(const virSecretEntry *secret)
     char *xml_filename = NULL, *value_filename = NULL;
     int ret = -1;
 
-    xml_filename = secretXMLPath(secret);
-    if (xml_filename == NULL)
+    if (!(xml_filename = secretXMLPath(secret)))
         goto cleanup;
-    value_filename = secretBase64Path(secret);
-    if (value_filename == NULL)
+
+    if (!(value_filename = secretBase64Path(secret)))
         goto cleanup;
 
     if (unlink(xml_filename) < 0 && errno != ENOENT)
@@ -364,12 +368,10 @@ secretLoadValue(virSecretEntryPtr secret)
     char *filename = NULL, *contents = NULL, *value = NULL;
     size_t value_size;
 
-    filename = secretBase64Path(secret);
-    if (filename == NULL)
+    if (!(filename = secretBase64Path(secret)))
         goto cleanup;
 
-    fd = open(filename, O_RDONLY);
-    if (fd == -1) {
+    if ((fd = open(filename, O_RDONLY)) == -1) {
         if (errno == ENOENT) {
             ret = 0;
             goto cleanup;
@@ -377,10 +379,12 @@ secretLoadValue(virSecretEntryPtr secret)
         virReportSystemError(errno, _("cannot open '%s'"), filename);
         goto cleanup;
     }
+
     if (fstat(fd, &st) < 0) {
         virReportSystemError(errno, _("cannot stat '%s'"), filename);
         goto cleanup;
     }
+
     if ((size_t)st.st_size != st.st_size) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("'%s' file does not fit in memory"), filename);
@@ -389,10 +393,12 @@ secretLoadValue(virSecretEntryPtr secret)
 
     if (VIR_ALLOC_N(contents, st.st_size) < 0)
         goto cleanup;
+
     if (saferead(fd, contents, st.st_size) != st.st_size) {
         virReportSystemError(errno, _("cannot read '%s'"), filename);
         goto cleanup;
     }
+
     VIR_FORCE_CLOSE(fd);
 
     if (!base64_decode_alloc(contents, st.st_size, &value, &value_size)) {
@@ -433,9 +439,10 @@ secretLoad(const char *xml_basename)
     if (virAsprintf(&xml_filename, "%s/%s", driver->directory,
                     xml_basename) < 0)
         goto cleanup;
-    def = virSecretDefParseFile(xml_filename);
-    if (def == NULL)
+
+    if (!(def = virSecretDefParseFile(xml_filename)))
         goto cleanup;
+
     VIR_FREE(xml_filename);
 
     if (secretLoadValidateUUID(def, xml_basename) < 0)
@@ -462,29 +469,28 @@ secretLoad(const char *xml_basename)
 static int
 loadSecrets(virSecretEntryPtr *dest)
 {
-    int ret = -1;
     DIR *dir = NULL;
     struct dirent *de;
     virSecretEntryPtr list = NULL;
 
-    dir = opendir(driver->directory);
-    if (dir == NULL) {
+    if (!(dir = opendir(driver->directory))) {
         if (errno == ENOENT)
             return 0;
         virReportSystemError(errno, _("cannot open '%s'"),
                              driver->directory);
-        goto cleanup;
+        return -1;
     }
+
     while (virDirRead(dir, &de, NULL) > 0) {
         virSecretEntryPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
             continue;
+
         if (!virFileHasSuffix(de->d_name, ".xml"))
             continue;
 
-        secret = secretLoad(de->d_name);
-        if (secret == NULL) {
+        if (!(secret = secretLoad(de->d_name))) {
             virErrorPtr err = virGetLastError();
 
             VIR_ERROR(_("Error reading secret: %s"),
@@ -492,6 +498,7 @@ loadSecrets(virSecretEntryPtr *dest)
             virResetError(err);
             continue;
         }
+
         listInsert(&list, secret);
     }
     /* Ignore error reported by readdir, if any.  It's better to keep the
@@ -504,15 +511,11 @@ loadSecrets(virSecretEntryPtr *dest)
         listInsert(dest, s);
     }
 
-    ret = 0;
-
- cleanup:
-    if (dir != NULL)
-        closedir(dir);
-    return ret;
+    closedir(dir);
+    return 0;
 }
 
- /* Driver functions */
+/* Driver functions */
 
 static int
 secretConnectNumOfSecrets(virConnectPtr conn)
@@ -537,7 +540,9 @@ secretConnectNumOfSecrets(virConnectPtr conn)
 }
 
 static int
-secretConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
+secretConnectListSecrets(virConnectPtr conn,
+                         char **uuids,
+                         int maxuuids)
 {
     size_t i;
     virSecretEntryPtr secret;
@@ -679,15 +684,15 @@ secretConnectListAllSecrets(virConnectPtr conn,
 
 
 static virSecretPtr
-secretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+secretLookupByUUID(virConnectPtr conn,
+                   const unsigned char *uuid)
 {
     virSecretPtr ret = NULL;
     virSecretEntryPtr secret;
 
     secretDriverLock();
 
-    secret = secretFindByUUID(uuid);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUUID(uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -710,15 +715,16 @@ secretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
 
 static virSecretPtr
-secretLookupByUsage(virConnectPtr conn, int usageType, const char *usageID)
+secretLookupByUsage(virConnectPtr conn,
+                    int usageType,
+                    const char *usageID)
 {
     virSecretPtr ret = NULL;
     virSecretEntryPtr secret;
 
     secretDriverLock();
 
-    secret = secretFindByUsage(usageType, usageID);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUsage(usageType, usageID))) {
         virReportError(VIR_ERR_NO_SECRET,
                        _("no secret with matching usage '%s'"), usageID);
         goto cleanup;
@@ -739,7 +745,8 @@ secretLookupByUsage(virConnectPtr conn, int usageType, const char *usageID)
 
 
 static virSecretPtr
-secretDefineXML(virConnectPtr conn, const char *xml,
+secretDefineXML(virConnectPtr conn,
+                const char *xml,
                 unsigned int flags)
 {
     virSecretPtr ret = NULL;
@@ -749,8 +756,7 @@ secretDefineXML(virConnectPtr conn, const char *xml,
 
     virCheckFlags(0, NULL);
 
-    new_attrs = virSecretDefParseString(xml);
-    if (new_attrs == NULL)
+    if (!(new_attrs = virSecretDefParseString(xml)))
         return NULL;
 
     secretDriverLock();
@@ -758,16 +764,16 @@ secretDefineXML(virConnectPtr conn, const char *xml,
     if (virSecretDefineXMLEnsureACL(conn, new_attrs) < 0)
         goto cleanup;
 
-    secret = secretFindByUUID(new_attrs->uuid);
-    if (secret == NULL) {
-        /* No existing secret with same UUID, try look for matching usage instead */
+    if (!(secret = secretFindByUUID(new_attrs->uuid))) {
+        /* No existing secret with same UUID,
+         * try look for matching usage instead */
         const char *usageID = secretUsageIDForDef(new_attrs);
-        secret = secretFindByUsage(new_attrs->usage_type, usageID);
-        if (secret) {
+        if ((secret = secretFindByUsage(new_attrs->usage_type, usageID))) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(secret->def->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s already defined for use with %s"),
+                           _("a secret with UUID %s already defined for "
+                             "use with %s"),
                            uuidstr, usageID);
             goto cleanup;
         }
@@ -785,7 +791,8 @@ secretDefineXML(virConnectPtr conn, const char *xml,
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(secret->def->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s is already defined for use with %s"),
+                           _("a secret with UUID %s is already defined "
+                             "for use with %s"),
                            uuidstr, oldUsageID);
             goto cleanup;
         }
@@ -853,7 +860,8 @@ secretDefineXML(virConnectPtr conn, const char *xml,
 }
 
 static char *
-secretGetXMLDesc(virSecretPtr obj, unsigned int flags)
+secretGetXMLDesc(virSecretPtr obj,
+                 unsigned int flags)
 {
     char *ret = NULL;
     virSecretEntryPtr secret;
@@ -862,8 +870,7 @@ secretGetXMLDesc(virSecretPtr obj, unsigned int flags)
 
     secretDriverLock();
 
-    secret = secretFindByUUID(obj->uuid);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUUID(obj->uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -883,8 +890,10 @@ secretGetXMLDesc(virSecretPtr obj, unsigned int flags)
 }
 
 static int
-secretSetValue(virSecretPtr obj, const unsigned char *value,
-               size_t value_size, unsigned int flags)
+secretSetValue(virSecretPtr obj,
+               const unsigned char *value,
+               size_t value_size,
+               unsigned int flags)
 {
     int ret = -1;
     unsigned char *old_value, *new_value;
@@ -898,8 +907,7 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
 
     secretDriverLock();
 
-    secret = secretFindByUUID(obj->uuid);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUUID(obj->uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -945,7 +953,9 @@ secretSetValue(virSecretPtr obj, const unsigned char *value,
 }
 
 static unsigned char *
-secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
+secretGetValue(virSecretPtr obj,
+               size_t *value_size,
+               unsigned int flags,
                unsigned int internalFlags)
 {
     unsigned char *ret = NULL;
@@ -955,8 +965,7 @@ secretGetValue(virSecretPtr obj, size_t *value_size, unsigned int flags,
 
     secretDriverLock();
 
-    secret = secretFindByUUID(obj->uuid);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUUID(obj->uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -1001,8 +1010,7 @@ secretUndefine(virSecretPtr obj)
 
     secretDriverLock();
 
-    secret = secretFindByUUID(obj->uuid);
-    if (secret == NULL) {
+    if (!(secret = secretFindByUUID(obj->uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(obj->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -1079,8 +1087,7 @@ secretStateInitialize(bool privileged,
         if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
             goto error;
     } else {
-        base = virGetUserConfigDirectory();
-        if (!base)
+        if (!(base = virGetUserConfigDirectory()))
             goto error;
     }
     if (virAsprintf(&driver->directory, "%s/secrets", base) < 0)
@@ -1113,8 +1120,9 @@ secretStateReload(void)
     if (loadSecrets(&new_secrets) < 0)
         goto end;
 
-    /* Keep ephemeral secrets from current state.  Discard non-ephemeral secrets
-       that were removed by the secrets directory.  */
+    /* Keep ephemeral secrets from current state.
+     * Discard non-ephemeral secrets that were removed
+     * by the secrets directory.  */
     while (driver->secrets != NULL) {
         virSecretEntryPtr s;
 
