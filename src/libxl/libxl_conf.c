@@ -1095,7 +1095,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
     }
 
     if (!(*srcstr = libxlMakeNetworkDiskSrcStr(src, username, secret)))
-            goto cleanup;
+        goto cleanup;
 
     ret = 0;
 
