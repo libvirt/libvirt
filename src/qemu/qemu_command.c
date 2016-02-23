@@ -7130,7 +7130,7 @@ qemuBuildCommandLine(virConnectPtr conn,
      * if you ask for nographic. So we have to make sure we override
      * these defaults ourselves...
      */
-    if (!def->graphics) {
+    if (!def->ngraphics) {
         virCommandAddArg(cmd, "-nographic");
 
         if (cfg->nogfxAllowHostAudio)
