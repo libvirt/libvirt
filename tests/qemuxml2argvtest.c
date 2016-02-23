@@ -1044,6 +1044,8 @@ mymain(void)
     DO_TEST("serial-pty", NONE);
     DO_TEST("serial-dev", NONE);
     DO_TEST("serial-file", NONE);
+    DO_TEST("serial-file-log", QEMU_CAPS_CHARDEV, QEMU_CAPS_CHARDEV_FILE_APPEND,
+            QEMU_CAPS_CHARDEV_LOGFILE);
     DO_TEST("serial-unix", NONE);
     DO_TEST("serial-tcp", NONE);
     DO_TEST("serial-udp", NONE);

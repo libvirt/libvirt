@@ -3976,6 +3976,19 @@ qemuBuildChrChardevStr(const virDomainChrSourceDef *dev,
         goto error;
     }
 
+    if (dev->logfile) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_LOGFILE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("logfile not supported in this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, ",logfile=%s", dev->logfile);
+        if (dev->logappend != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&buf, ",logappend=%s",
+                              virTristateSwitchTypeToString(dev->logappend));
+        }
+    }
+
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
@@ -3992,6 +4005,12 @@ qemuBuildChrArgStr(const virDomainChrSourceDef *dev,
                    const char *prefix)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (dev->logfile) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("logfile not supported in this QEMU binary"));
+        goto error;
+    }
 
     if (prefix)
         virBufferAdd(&buf, prefix, strlen(prefix));

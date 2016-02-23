@@ -349,6 +349,7 @@ typedef enum {
 
     /* 215 */
     QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
+    QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
