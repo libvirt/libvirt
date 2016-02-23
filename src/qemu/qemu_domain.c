@@ -1620,6 +1620,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
     .devicesPostParseCallback = qemuDomainDeviceDefPostParse,
     .domainPostParseCallback = qemuDomainDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG,
 };
 
 

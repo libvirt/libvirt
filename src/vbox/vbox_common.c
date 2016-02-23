@@ -251,15 +251,11 @@ static char *vboxGenerateMediumName(PRUint32 storageBus,
 }
 
 static int
-vboxDomainDefPostParse(virDomainDefPtr def,
+vboxDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
                        virCapsPtr caps ATTRIBUTE_UNUSED,
                        unsigned int parseFlags ATTRIBUTE_UNUSED,
                        void *opaque ATTRIBUTE_UNUSED)
 {
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 

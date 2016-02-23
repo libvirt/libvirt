@@ -249,10 +249,6 @@ virLXCDomainDefPostParse(virDomainDefPtr def,
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
         return -1;
 
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -268,10 +264,6 @@ virLXCDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
-
-
-    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
-        return -1;
 
     return 0;
 }

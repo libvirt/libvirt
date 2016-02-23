@@ -2409,6 +2409,7 @@ typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
 
 typedef enum {
     VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI = (1 << 0),
+    VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG = (1 << 1),
 } virDomainDefFeatures;
 
 
@@ -2500,9 +2501,6 @@ void virDomainObjBroadcast(virDomainObjPtr vm);
 int virDomainObjWait(virDomainObjPtr vm);
 int virDomainObjWaitUntil(virDomainObjPtr vm,
                           unsigned long long whenms);
-
-int virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def);
-int virDomainDeviceDefCheckUnsupportedMemoryDevice(virDomainDeviceDefPtr dev);
 
 void virDomainPanicDefFree(virDomainPanicDefPtr panic);
 void virDomainResourceDefFree(virDomainResourceDefPtr resource);

@@ -98,10 +98,6 @@ openvzDomainDefPostParse(virDomainDefPtr def,
             return -1;
     }
 
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -127,9 +123,6 @@ openvzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                        virDomainVirtTypeToString(def->virtType));
         return -1;
     }
-
-    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
-        return -1;
 
     return 0;
 }

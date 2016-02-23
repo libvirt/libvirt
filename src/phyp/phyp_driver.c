@@ -1094,15 +1094,11 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
 
 static int
-phypDomainDefPostParse(virDomainDefPtr def,
+phypDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
                        virCapsPtr caps ATTRIBUTE_UNUSED,
                        unsigned int parseFlags ATTRIBUTE_UNUSED,
                        void *opaque ATTRIBUTE_UNUSED)
 {
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 

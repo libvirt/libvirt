@@ -363,9 +363,6 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
-    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -399,10 +396,6 @@ libxlDomainDefPostParse(virDomainDefPtr def,
 
     /* add implicit input devices */
     if (xenDomainDefAddImplicitInputDevice(def) < 0)
-        return -1;
-
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
         return -1;
 
     return 0;

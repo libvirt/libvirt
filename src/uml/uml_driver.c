@@ -427,23 +427,16 @@ umlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         return -1;
     }
 
-    if (virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
-        return -1;
-
     return 0;
 }
 
 
 static int
-umlDomainDefPostParse(virDomainDefPtr def,
+umlDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
                       virCapsPtr caps ATTRIBUTE_UNUSED,
                       unsigned int parseFlags ATTRIBUTE_UNUSED,
                       void *opaque ATTRIBUTE_UNUSED)
 {
-    /* memory hotplug tunables are not supported by this driver */
-    if (virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
-        return -1;
-
     return 0;
 }
 

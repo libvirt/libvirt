@@ -1138,7 +1138,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
  * Returns -1 if the domain definition would enable memory hotplug via the
  * <maxMemory> tunable and reports an error. Otherwise returns 0.
  */
-int
+static int
 virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def)
 {
     /* memory hotplug tunables are not supported by this driver */
@@ -1160,7 +1160,7 @@ virDomainDefCheckUnsupportedMemoryHotplug(virDomainDefPtr def)
  * Returns -1 if the device definition describes a memory device and reports an
  * error. Otherwise returns 0.
  */
-int
+static int
 virDomainDeviceDefCheckUnsupportedMemoryDevice(virDomainDeviceDefPtr dev)
 {
     /* This driver doesn't yet know how to handle memory devices */
@@ -4213,6 +4213,54 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
 }
 
 
+#define UNSUPPORTED(FEATURE) (!((FEATURE) & xmlopt->config.features))
+/**
+ * virDomainDefPostParseCheckFeatures:
+ * @def: domain definition
+ * @xmlopt: XML parser option object
+ *
+ * This function checks that the domain configuration is supported according to
+ * the supported features for a given hypervisor. See virDomainDefFeatures and
+ * virDomainDefParserConfig.
+ *
+ * Returns 0 on success and -1 on error with an appropriate libvirt error.
+ */
+static int
+virDomainDefPostParseCheckFeatures(virDomainDefPtr def,
+                                   virDomainXMLOptionPtr xmlopt)
+{
+    if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG) &&
+        virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * virDomainDeviceDefPostParseCheckFeatures:
+ * @dev: device definition
+ * @xmlopt: XML parser option object
+ *
+ * This function checks that the device configuration is supported according to
+ * the supported features for a given hypervisor. See virDomainDefFeatures and
+ * virDomainDefParserConfig.
+ *
+ * Returns 0 on success and -1 on error with an appropriate libvirt error.
+ */
+static int
+virDomainDeviceDefPostParseCheckFeatures(virDomainDeviceDefPtr dev,
+                                         virDomainXMLOptionPtr xmlopt)
+{
+    if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG) &&
+        virDomainDeviceDefCheckUnsupportedMemoryDevice(dev) < 0)
+        return -1;
+
+    return 0;
+}
+#undef UNSUPPORTED
+
+
 static int
 virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                             const virDomainDef *def,
@@ -4231,6 +4279,9 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps, flags, xmlopt)) < 0)
         return ret;
+
+    if (virDomainDeviceDefPostParseCheckFeatures(dev, xmlopt) < 0)
+        return -1;
 
     return 0;
 }
@@ -4288,6 +4339,9 @@ virDomainDefPostParse(virDomainDefPtr def,
 
     if ((ret = virDomainDefPostParseInternal(def, caps, parseFlags)) < 0)
         return ret;
+
+    if (virDomainDefPostParseCheckFeatures(def, xmlopt) < 0)
+        return -1;
 
     return 0;
 }
