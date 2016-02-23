@@ -60,6 +60,9 @@ int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
 int qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
                                          virDomainVideoDefPtr video,
                                          char *path);
+int qemuMonitorJSONUpdateVideoVram64Size(qemuMonitorPtr mon,
+                                         virDomainVideoDefPtr video,
+                                         char *path);
 int qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                                   unsigned long long *currmem);
 int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,

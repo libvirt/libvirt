@@ -1154,6 +1154,41 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
 }
 
 
+/**
+ * To update video vram64 size in status XML we need to load correct value from
+ * QEMU.  This is supported only with JSON monitor.
+ *
+ * Returns 0 on success, -1 on failure and sets proper error message.
+ */
+int
+qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
+                                 virDomainVideoDefPtr video,
+                                 const char *videoName)
+{
+    int ret = -1;
+    char *path = NULL;
+
+    QEMU_CHECK_MONITOR(mon);
+
+    if (mon->json) {
+        ret = qemuMonitorJSONFindLinkPath(mon, videoName, &path);
+        if (ret < 0) {
+            if (ret == -2)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to find QOM Object path for "
+                                 "device '%s'"), videoName);
+            return -1;
+        }
+
+        ret = qemuMonitorJSONUpdateVideoVram64Size(mon, video, path);
+        VIR_FREE(path);
+        return ret;
+    }
+
+    return 0;
+}
+
+
 int
 qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                             const char *cmd,

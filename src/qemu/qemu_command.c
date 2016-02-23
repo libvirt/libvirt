@@ -3347,6 +3347,14 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
         }
 
         if ((video->primary &&
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VRAM64)) ||
+            (!video->primary &&
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VRAM64))) {
+            /* QEMU accepts mebibytes for vram64_size_mb. */
+            virBufferAsprintf(&buf, ",vram64_size_mb=%u", video->vram64 / 1024);
+        }
+
+        if ((video->primary &&
              virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) ||
             (!video->primary &&
              virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM))) {
@@ -8272,6 +8280,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                     unsigned int ram = def->videos[0]->ram;
                     unsigned int vram = def->videos[0]->vram;
+                    unsigned int vram64 = def->videos[0]->vram64;
                     unsigned int vgamem = def->videos[0]->vgamem;
 
                     if (vram > (UINT_MAX / 1024)) {
@@ -8296,6 +8305,12 @@ qemuBuildCommandLine(virConnectPtr conn,
                         virCommandAddArg(cmd, "-global");
                         virCommandAddArgFormat(cmd, "%s.vram_size=%u",
                                                dev, vram * 1024);
+                    }
+                    if (vram64 &&
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VRAM64)) {
+                        virCommandAddArg(cmd, "-global");
+                        virCommandAddArgFormat(cmd, "%s.vram64_size_mb=%u",
+                                               dev, vram64 / 1024);
                     }
                     if (vgamem &&
                         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) {

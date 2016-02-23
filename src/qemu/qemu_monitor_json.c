@@ -1436,6 +1436,18 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
             return -1;
         }
         video->vram = prop.val.ul / 1024;
+
+        if (video->vram64 != 0) {
+            if (qemuMonitorJSONGetObjectProperty(mon, path,
+                                                 "vram64_size_mb", &prop) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("QOM Object '%s' has no property 'vram64_size_mb'"),
+                               path);
+                return -1;
+            }
+            video->vram64 = prop.val.ul / 1024;
+        }
+
         if (qemuMonitorJSONGetObjectProperty(mon, path, "ram_size", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("QOM Object '%s' has no property 'ram_size'"),
@@ -1460,6 +1472,48 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
         }
         video->vram = prop.val.ul * 1024;
         break;
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+    case VIR_DOMAIN_VIDEO_TYPE_XEN:
+    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+    case VIR_DOMAIN_VIDEO_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+/**
+ * Loads correct video vram64 size value from QEMU and update the video
+ * definition.
+ *
+ * Return 0 on success, -1 on failure and set proper error message.
+ */
+int
+qemuMonitorJSONUpdateVideoVram64Size(qemuMonitorPtr mon,
+                                     virDomainVideoDefPtr video,
+                                     char *path)
+{
+    qemuMonitorJSONObjectProperty prop = {
+        QEMU_MONITOR_OBJECT_PROPERTY_ULONG,
+        {0}
+    };
+
+    switch (video->type) {
+    case VIR_DOMAIN_VIDEO_TYPE_QXL:
+        if (video->vram64 != 0) {
+            if (qemuMonitorJSONGetObjectProperty(mon, path,
+                                                 "vram64_size_mb", &prop) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("QOM Object '%s' has no property 'vram64_size_mb'"),
+                               path);
+                return -1;
+            }
+            video->vram64 = prop.val.ul / 1024;
+        }
+        break;
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
     case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
     case VIR_DOMAIN_VIDEO_TYPE_XEN:
     case VIR_DOMAIN_VIDEO_TYPE_VBOX:

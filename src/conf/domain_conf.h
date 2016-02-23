@@ -1399,6 +1399,7 @@ struct _virDomainVideoDef {
     int type;
     unsigned int ram;  /* kibibytes (multiples of 1024) */
     unsigned int vram; /* kibibytes (multiples of 1024) */
+    unsigned int vram64; /* kibibytes (multiples of 1024) */
     unsigned int vgamem; /* kibibytes (multiples of 1024) */
     unsigned int heads;
     bool primary;

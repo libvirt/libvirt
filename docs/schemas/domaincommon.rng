@@ -2946,6 +2946,11 @@
                   <ref name="unsignedInt"/>
                 </attribute>
               </optional>
+              <optional>
+                <attribute name="vram64">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
             </group>
           </choice>
           <optional>

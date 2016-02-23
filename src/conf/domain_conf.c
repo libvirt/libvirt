@@ -11918,6 +11918,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     char *type = NULL;
     char *heads = NULL;
     char *vram = NULL;
+    char *vram64 = NULL;
     char *ram = NULL;
     char *vgamem = NULL;
     char *primary = NULL;
@@ -11933,6 +11934,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                 type = virXMLPropString(cur, "type");
                 ram = virXMLPropString(cur, "ram");
                 vram = virXMLPropString(cur, "vram");
+                vram64 = virXMLPropString(cur, "vram64");
                 vgamem = virXMLPropString(cur, "vgamem");
                 heads = virXMLPropString(cur, "heads");
 
@@ -11987,6 +11989,19 @@ virDomainVideoDefParseXML(xmlNodePtr node,
         def->vram = virDomainVideoDefaultRAM(dom, def->type);
     }
 
+    if (vram64) {
+        if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("vram64 attribute only supported for type of qxl"));
+            goto error;
+        }
+        if (virStrToLong_uip(vram64, NULL, 10, &def->vram64) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse video vram64 '%s'"), vram64);
+            goto error;
+        }
+    }
+
     if (vgamem) {
         if (def->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -12013,9 +12028,11 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
+ cleanup:
     VIR_FREE(type);
     VIR_FREE(ram);
     VIR_FREE(vram);
+    VIR_FREE(vram64);
     VIR_FREE(vgamem);
     VIR_FREE(heads);
 
@@ -12023,12 +12040,8 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
  error:
     virDomainVideoDefFree(def);
-    VIR_FREE(type);
-    VIR_FREE(ram);
-    VIR_FREE(vram);
-    VIR_FREE(vgamem);
-    VIR_FREE(heads);
-    return NULL;
+    def = NULL;
+    goto cleanup;
 }
 
 static virDomainHostdevDefPtr
@@ -17041,6 +17054,13 @@ virDomainVideoDefCheckABIStability(virDomainVideoDefPtr src,
         return false;
     }
 
+    if (src->vram64 != dst->vram64) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target video card vram64 %u does not match source %u"),
+                       dst->vram64, src->vram64);
+        return false;
+    }
+
     if (src->vgamem != dst->vgamem) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target video card vgamem %u does not match source %u"),
@@ -20726,6 +20746,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " ram='%u'", def->ram);
     if (def->vram)
         virBufferAsprintf(buf, " vram='%u'", def->vram);
+    if (def->vram64)
+        virBufferAsprintf(buf, " vram64='%u'", def->vram64);
     if (def->vgamem)
         virBufferAsprintf(buf, " vgamem='%u'", def->vgamem);
     if (def->heads)

@@ -1,0 +1,25 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 1024 \
+-smp 1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/test-monitor,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
+id=drive-ide0-0-0,cache=none \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,\
+vram64_size_mb=128,vgamem_mb=16,bus=pci.0,addr=0x2 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
