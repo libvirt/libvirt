@@ -576,7 +576,6 @@ secretConnectListAllSecrets(virConnectPtr conn,
     virSecretPtr *tmp_secrets = NULL;
     int nsecrets = 0;
     int ret_nsecrets = 0;
-    virSecretPtr secret = NULL;
     virSecretObjPtr entry = NULL;
     size_t i = 0;
     int ret = -1;
@@ -616,12 +615,12 @@ secretConnectListAllSecrets(virConnectPtr conn,
             continue;
 
         if (secrets) {
-            if (!(secret = virGetSecret(conn,
-                                        entry->def->uuid,
-                                        entry->def->usage_type,
-                                        secretUsageIDForDef(entry->def))))
+            if (!(tmp_secrets[ret_nsecrets] =
+                  virGetSecret(conn,
+                               entry->def->uuid,
+                               entry->def->usage_type,
+                               secretUsageIDForDef(entry->def))))
                 goto cleanup;
-            tmp_secrets[ret_nsecrets] = secret;
         }
         ret_nsecrets++;
     }
