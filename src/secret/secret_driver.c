@@ -52,10 +52,10 @@ enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
 /* Internal driver state */
 
-typedef struct _virSecretEntry virSecretEntry;
-typedef virSecretEntry *virSecretEntryPtr;
-struct _virSecretEntry {
-    virSecretEntryPtr next;
+typedef struct _virSecretObj virSecretObj;
+typedef virSecretObj *virSecretObjPtr;
+struct _virSecretObj {
+    virSecretObjPtr next;
     virSecretDefPtr def;
     unsigned char *value;       /* May be NULL */
     size_t value_size;
@@ -65,7 +65,7 @@ typedef struct _virSecretDriverState virSecretDriverState;
 typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
-    virSecretEntry *secrets;
+    virSecretObj *secrets;
     char *directory;
 };
 
@@ -83,10 +83,10 @@ secretDriverUnlock(void)
     virMutexUnlock(&driver->lock);
 }
 
-static virSecretEntryPtr
-listUnlink(virSecretEntryPtr *pptr)
+static virSecretObjPtr
+listUnlink(virSecretObjPtr *pptr)
 {
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     secret = *pptr;
     *pptr = secret->next;
@@ -94,15 +94,15 @@ listUnlink(virSecretEntryPtr *pptr)
 }
 
 static void
-listInsert(virSecretEntryPtr *pptr,
-           virSecretEntryPtr secret)
+listInsert(virSecretObjPtr *pptr,
+           virSecretObjPtr secret)
 {
     secret->next = *pptr;
     *pptr = secret;
 }
 
 static void
-secretFree(virSecretEntryPtr secret)
+secretFree(virSecretObjPtr secret)
 {
     if (secret == NULL)
         return;
@@ -115,10 +115,10 @@ secretFree(virSecretEntryPtr secret)
     VIR_FREE(secret);
 }
 
-static virSecretEntryPtr
+static virSecretObjPtr
 secretFindByUUID(const unsigned char *uuid)
 {
-    virSecretEntryPtr *pptr, s;
+    virSecretObjPtr *pptr, s;
 
     for (pptr = &driver->secrets; *pptr != NULL; pptr = &s->next) {
         s = *pptr;
@@ -128,11 +128,11 @@ secretFindByUUID(const unsigned char *uuid)
     return NULL;
 }
 
-static virSecretEntryPtr
+static virSecretObjPtr
 secretFindByUsage(int usageType,
                   const char *usageID)
 {
-    virSecretEntryPtr *pptr, s;
+    virSecretObjPtr *pptr, s;
 
     for (pptr = &driver->secrets; *pptr != NULL; pptr = &s->next) {
         s = *pptr;
@@ -184,7 +184,7 @@ secretRewriteFile(int fd,
 }
 
 static char *
-secretComputePath(const virSecretEntry *secret,
+secretComputePath(const virSecretObj *secret,
                   const char *suffix)
 {
     char *ret;
@@ -198,13 +198,13 @@ secretComputePath(const virSecretEntry *secret,
 }
 
 static char *
-secretXMLPath(const virSecretEntry *secret)
+secretXMLPath(const virSecretObj *secret)
 {
     return secretComputePath(secret, ".xml");
 }
 
 static char *
-secretBase64Path(const virSecretEntry *secret)
+secretBase64Path(const virSecretObj *secret)
 {
     return secretComputePath(secret, ".base64");
 }
@@ -221,7 +221,7 @@ secretEnsureDirectory(void)
 }
 
 static int
-secretSaveDef(const virSecretEntry *secret)
+secretSaveDef(const virSecretObj *secret)
 {
     char *filename = NULL, *xml = NULL;
     int ret = -1;
@@ -248,7 +248,7 @@ secretSaveDef(const virSecretEntry *secret)
 }
 
 static int
-secretSaveValue(const virSecretEntry *secret)
+secretSaveValue(const virSecretObj *secret)
 {
     char *filename = NULL, *base64 = NULL;
     int ret = -1;
@@ -282,7 +282,7 @@ secretSaveValue(const virSecretEntry *secret)
 }
 
 static int
-secretDeleteSaved(const virSecretEntry *secret)
+secretDeleteSaved(const virSecretObj *secret)
 {
     char *xml_filename = NULL, *value_filename = NULL;
     int ret = -1;
@@ -326,7 +326,7 @@ secretLoadValidateUUID(virSecretDefPtr def,
 }
 
 static int
-secretLoadValue(virSecretEntryPtr secret)
+secretLoadValue(virSecretObjPtr secret)
 {
     int ret = -1, fd = -1;
     struct stat st;
@@ -394,11 +394,11 @@ secretLoadValue(virSecretEntryPtr secret)
     return ret;
 }
 
-static virSecretEntryPtr
+static virSecretObjPtr
 secretLoad(const char *xml_basename)
 {
     virSecretDefPtr def = NULL;
-    virSecretEntryPtr secret = NULL, ret = NULL;
+    virSecretObjPtr secret = NULL, ret = NULL;
     char *xml_filename;
 
     if (virAsprintf(&xml_filename, "%s/%s", driver->directory,
@@ -432,11 +432,11 @@ secretLoad(const char *xml_basename)
 }
 
 static int
-loadSecrets(virSecretEntryPtr *dest)
+loadSecrets(virSecretObjPtr *dest)
 {
     DIR *dir = NULL;
     struct dirent *de;
-    virSecretEntryPtr list = NULL;
+    virSecretObjPtr list = NULL;
 
     if (!(dir = opendir(driver->directory))) {
         if (errno == ENOENT)
@@ -447,7 +447,7 @@ loadSecrets(virSecretEntryPtr *dest)
     }
 
     while (virDirRead(dir, &de, NULL) > 0) {
-        virSecretEntryPtr secret;
+        virSecretObjPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
             continue;
@@ -470,7 +470,7 @@ loadSecrets(virSecretEntryPtr *dest)
        secrets we managed to find. */
 
     while (list != NULL) {
-        virSecretEntryPtr s;
+        virSecretObjPtr s;
 
         s = listUnlink(&list);
         listInsert(dest, s);
@@ -486,7 +486,7 @@ static int
 secretConnectNumOfSecrets(virConnectPtr conn)
 {
     size_t i;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     if (virConnectNumOfSecretsEnsureACL(conn) < 0)
         return -1;
@@ -510,7 +510,7 @@ secretConnectListSecrets(virConnectPtr conn,
                          int maxuuids)
 {
     size_t i;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     memset(uuids, 0, maxuuids * sizeof(*uuids));
 
@@ -577,7 +577,7 @@ secretConnectListAllSecrets(virConnectPtr conn,
     int nsecrets = 0;
     int ret_nsecrets = 0;
     virSecretPtr secret = NULL;
-    virSecretEntryPtr entry = NULL;
+    virSecretObjPtr entry = NULL;
     size_t i = 0;
     int ret = -1;
 
@@ -653,7 +653,7 @@ secretLookupByUUID(virConnectPtr conn,
                    const unsigned char *uuid)
 {
     virSecretPtr ret = NULL;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     secretDriverLock();
 
@@ -685,7 +685,7 @@ secretLookupByUsage(virConnectPtr conn,
                     const char *usageID)
 {
     virSecretPtr ret = NULL;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     secretDriverLock();
 
@@ -715,7 +715,7 @@ secretDefineXML(virConnectPtr conn,
                 unsigned int flags)
 {
     virSecretPtr ret = NULL;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
     virSecretDefPtr backup = NULL;
     virSecretDefPtr new_attrs;
 
@@ -829,7 +829,7 @@ secretGetXMLDesc(virSecretPtr obj,
                  unsigned int flags)
 {
     char *ret = NULL;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     virCheckFlags(0, NULL);
 
@@ -863,7 +863,7 @@ secretSetValue(virSecretPtr obj,
     int ret = -1;
     unsigned char *old_value, *new_value;
     size_t old_value_size;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     virCheckFlags(0, -1);
 
@@ -924,7 +924,7 @@ secretGetValue(virSecretPtr obj,
                unsigned int internalFlags)
 {
     unsigned char *ret = NULL;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     virCheckFlags(0, NULL);
 
@@ -971,7 +971,7 @@ static int
 secretUndefine(virSecretPtr obj)
 {
     int ret = -1;
-    virSecretEntryPtr secret;
+    virSecretObjPtr secret;
 
     secretDriverLock();
 
@@ -993,7 +993,7 @@ secretUndefine(virSecretPtr obj)
     if (driver->secrets == secret) {
         driver->secrets = secret->next;
     } else {
-        virSecretEntryPtr tmp = driver->secrets;
+        virSecretObjPtr tmp = driver->secrets;
         while (tmp && tmp->next != secret)
             tmp = tmp->next;
         if (tmp)
@@ -1018,7 +1018,7 @@ secretStateCleanup(void)
     secretDriverLock();
 
     while (driver->secrets != NULL) {
-        virSecretEntryPtr s;
+        virSecretObjPtr s;
 
         s = listUnlink(&driver->secrets);
         secretFree(s);
@@ -1075,7 +1075,7 @@ secretStateInitialize(bool privileged,
 static int
 secretStateReload(void)
 {
-    virSecretEntryPtr new_secrets = NULL;
+    virSecretObjPtr new_secrets = NULL;
 
     if (!driver)
         return -1;
@@ -1089,7 +1089,7 @@ secretStateReload(void)
      * Discard non-ephemeral secrets that were removed
      * by the secrets directory.  */
     while (driver->secrets != NULL) {
-        virSecretEntryPtr s;
+        virSecretObjPtr s;
 
         s = listUnlink(&driver->secrets);
         if (s->def->ephemeral)
