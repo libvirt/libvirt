@@ -4973,6 +4973,82 @@ qemuDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 
 
 static int
+qemuDomainPinVcpuLive(virDomainObjPtr vm,
+                      virDomainDefPtr def,
+                      int vcpu,
+                      virQEMUDriverPtr driver,
+                      virQEMUDriverConfigPtr cfg,
+                      virBitmapPtr cpumap)
+{
+    virDomainVcpuInfoPtr vcpuinfo;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup_vcpu = NULL;
+    char *str = NULL;
+    virObjectEventPtr event = NULL;
+    char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+    int ret = -1;
+
+    if (!qemuDomainHasVcpuPids(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cpu affinity is not supported"));
+        goto cleanup;
+    }
+
+    if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("vcpu %d is out of range of live cpu count %d"),
+                       vcpu, virDomainDefGetVcpusMax(def));
+        goto cleanup;
+    }
+
+    if (vcpuinfo->online) {
+        /* Configure the corresponding cpuset cgroup before set affinity. */
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
+                                   false, &cgroup_vcpu) < 0)
+                goto cleanup;
+            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
+                goto cleanup;
+        }
+
+        if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), cpumap) < 0)
+            goto cleanup;
+    }
+
+    virBitmapFree(vcpuinfo->cpumask);
+    vcpuinfo->cpumask = cpumap;
+    cpumap = NULL;
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        goto cleanup;
+
+    if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 VIR_DOMAIN_TUNABLE_CPU_VCPUPIN, vcpu) < 0) {
+        goto cleanup;
+    }
+
+    str = virBitmapFormat(vcpuinfo->cpumask);
+    if (virTypedParamsAddString(&eventParams, &eventNparams,
+                                &eventMaxparams, paramField, str) < 0)
+        goto cleanup;
+
+    event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(cpumap);
+    virCgroupFree(&cgroup_vcpu);
+    VIR_FREE(str);
+    qemuDomainEventQueue(driver, event);
+    return ret;
+}
+
+
+static int
 qemuDomainPinVcpuFlags(virDomainPtr dom,
                        unsigned int vcpu,
                        unsigned char *cpumap,
@@ -4984,21 +5060,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virDomainObjPtr vm;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
-    virCgroupPtr cgroup_vcpu = NULL;
     int ret = -1;
-    qemuDomainObjPrivatePtr priv;
     virBitmapPtr pcpumap = NULL;
     virBitmapPtr pcpumaplive = NULL;
     virBitmapPtr pcpumappersist = NULL;
-    virDomainVcpuInfoPtr vcpuinfolive = NULL;
     virDomainVcpuInfoPtr vcpuinfopersist = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
-    virObjectEventPtr event = NULL;
-    char paramField[VIR_TYPED_PARAM_FIELD_LENGTH] = "";
-    char *str = NULL;
-    virTypedParameterPtr eventParams = NULL;
-    int eventNparams = 0;
-    int eventMaxparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5016,15 +5083,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
-
-    priv = vm->privateData;
-
-    if (def && !(vcpuinfolive = virDomainDefGetVcpu(def, vcpu))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("vcpu %d is out of range of live cpu count %d"),
-                       vcpu, virDomainDefGetVcpus(def));
-        goto endjob;
-    }
 
     if (persistentDef &&
         !(vcpuinfopersist = virDomainDefGetVcpu(persistentDef, vcpu))) {
@@ -5048,44 +5106,12 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
         goto endjob;
 
     if (def) {
-        if (!qemuDomainHasVcpuPids(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cpu affinity is not supported"));
+        if (qemuDomainPinVcpuLive(vm, def, vcpu, driver, cfg, pcpumaplive) < 0) {
+            pcpumaplive = NULL;
             goto endjob;
         }
 
-        if (vcpuinfolive->online) {
-            /* Configure the corresponding cpuset cgroup before set affinity. */
-            if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-                if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
-                                       false, &cgroup_vcpu) < 0)
-                    goto endjob;
-                if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, pcpumap) < 0)
-                    goto endjob;
-            }
-
-            if (virProcessSetAffinity(qemuDomainGetVcpuPid(vm, vcpu), pcpumap) < 0)
-                goto endjob;
-        }
-
-        virBitmapFree(vcpuinfolive->cpumask);
-        vcpuinfolive->cpumask = pcpumaplive;
         pcpumaplive = NULL;
-
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-            goto endjob;
-
-        if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     VIR_DOMAIN_TUNABLE_CPU_VCPUPIN, vcpu) < 0) {
-            goto endjob;
-        }
-
-        str = virBitmapFormat(pcpumap);
-        if (virTypedParamsAddString(&eventParams, &eventNparams,
-                                    &eventMaxparams, paramField, str) < 0)
-            goto endjob;
-
-        event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
     }
 
     if (persistentDef) {
@@ -5103,11 +5129,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (cgroup_vcpu)
-        virCgroupFree(&cgroup_vcpu);
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
-    VIR_FREE(str);
     virBitmapFree(pcpumap);
     virBitmapFree(pcpumaplive);
     virBitmapFree(pcpumappersist);
