@@ -13016,7 +13016,9 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (completed)
+    if (completed && priv->job.current)
+        info = NULL;
+    else if (completed)
         info = priv->job.completed;
     else
         info = priv->job.current;
