@@ -315,7 +315,7 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         virDomainHostdevSubsysPCIPtr pcisrc;
 
         if (dev->type == VIR_DOMAIN_DEVICE_NET)
-            hostdev = &(dev->data.net)->data.hostdev.def;
+            hostdev = &dev->data.net->data.hostdev.def;
         else
             hostdev = dev->data.hostdev;
         pcisrc = &hostdev->source.subsys.u.pci;

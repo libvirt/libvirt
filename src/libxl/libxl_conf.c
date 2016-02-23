@@ -1471,7 +1471,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 
     VIR_SHRINK_N(x_nics, nnics, nnics - nvnics);
     d_config->nics = x_nics;
-    d_config->num_nics = nnics;
+    d_config->num_nics = nvnics;
 
     return 0;
 
