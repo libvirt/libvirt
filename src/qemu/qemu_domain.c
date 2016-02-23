@@ -2710,6 +2710,12 @@ void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt)
 }
 
 
+virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt)
+{
+    return ctxt->manager;
+}
+
+
 void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
 {
     bool lastRef;

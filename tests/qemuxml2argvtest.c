@@ -353,7 +353,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         testFailed = true;
 
     if (!testFailed &&
-        !(cmd = qemuBuildCommandLine(conn, &driver, vmdef, &monitor_chr,
+        !(cmd = qemuBuildCommandLine(conn, &driver, NULL, vmdef, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateURI, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,

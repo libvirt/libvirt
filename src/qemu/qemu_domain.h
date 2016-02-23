@@ -35,6 +35,7 @@
 # include "qemu_capabilities.h"
 # include "virchrdev.h"
 # include "virobject.h"
+# include "logging/log_manager.h"
 
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
     (VIR_DOMAIN_XML_SECURE |                \
@@ -384,6 +385,8 @@ int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
+
+virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt);
 
 const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 

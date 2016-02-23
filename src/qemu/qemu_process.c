@@ -5063,7 +5063,9 @@ qemuProcessLaunch(virConnectPtr conn,
     }
 
     VIR_DEBUG("Building emulator command line");
-    if (!(cmd = qemuBuildCommandLine(conn, driver, vm->def, priv->monConfig,
+    if (!(cmd = qemuBuildCommandLine(conn, driver,
+                                     qemuDomainLogContextGetManager(logCtxt),
+                                     vm->def, priv->monConfig,
                                      priv->monJSON, priv->qemuCaps,
                                      incoming ? incoming->launchURI : NULL,
                                      snapshot, vmop,

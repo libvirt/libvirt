@@ -7106,7 +7106,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         }
     }
 
-    if (!(cmd = qemuBuildCommandLine(conn, driver, def,
+    if (!(cmd = qemuBuildCommandLine(conn, driver, NULL, def,
                                      &monConfig, monitor_json, qemuCaps,
                                      NULL, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
