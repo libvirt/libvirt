@@ -213,6 +213,7 @@ mymain(void)
     DO_TEST("spice");
     DO_TEST("spice-features");
     DO_TEST("vif-rate");
+    DO_TEST("fullvirt-nohap");
 
     DO_TEST("paravirt-cmdline");
     DO_TEST_FORMAT("paravirt-cmdline-extra-root");

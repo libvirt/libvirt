@@ -528,11 +528,11 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
 
         else if (val)
             def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
-        if (xenConfigGetBool(conf, "hap", &val, 0) < 0)
+        if (xenConfigGetBool(conf, "hap", &val, 1) < 0)
             return -1;
 
-        else if (val)
-            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_TRISTATE_SWITCH_ON;
+        else if (!val)
+            def->features[VIR_DOMAIN_FEATURE_HAP] = VIR_TRISTATE_SWITCH_OFF;
         if (xenConfigGetBool(conf, "viridian", &val, 0) < 0)
             return -1;
 
@@ -1572,10 +1572,10 @@ xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
                             VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
             return -1;
 
-        if (xenConfigSetInt(conf, "hap",
-                            (def->features[VIR_DOMAIN_FEATURE_HAP] ==
-                             VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
-            return -1;
+        if (def->features[VIR_DOMAIN_FEATURE_HAP] == VIR_TRISTATE_SWITCH_OFF) {
+            if (xenConfigSetInt(conf, "hap", 0) < 0)
+                return -1;
+        }
 
         if (xenConfigSetInt(conf, "viridian",
                             (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==

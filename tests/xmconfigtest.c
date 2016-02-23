@@ -235,6 +235,7 @@ mymain(void)
 
     DO_TEST("fullvirt-force-hpet");
     DO_TEST("fullvirt-force-nohpet");
+    DO_TEST("fullvirt-nohap");
 
     DO_TEST("fullvirt-parallel-tcp");
 
