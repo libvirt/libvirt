@@ -254,7 +254,8 @@ xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
     int ret = -1;
 
     if (STRPREFIX(srcstr, "rbd:")) {
-        tmpstr = virStringReplace(srcstr, "\\\\", "\\");
+        if (!(tmpstr = virStringReplace(srcstr, "\\\\", "\\")))
+            goto cleanup;
 
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_NETWORK);
         disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
