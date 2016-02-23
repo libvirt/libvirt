@@ -11938,7 +11938,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
                 if ((primary = virXMLPropString(cur, "primary")) != NULL) {
                     if (STREQ(primary, "yes"))
-                        def->primary = 1;
+                        def->primary = true;
                     VIR_FREE(primary);
                 }
 
@@ -16074,6 +16074,10 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
     }
+    /* if not specified by user mark the first video as primary */
+    if (n && !primaryVideo)
+        def->videos[0]->primary = true;
+
     VIR_FREE(nodes);
 
     /* For backwards compatibility, if no <video> tag is set but there

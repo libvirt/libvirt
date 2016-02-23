@@ -3280,13 +3280,12 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
 static char *
 qemuBuildDeviceVideoStr(virDomainDefPtr def,
                         virDomainVideoDefPtr video,
-                        virQEMUCapsPtr qemuCaps,
-                        bool primary)
+                        virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *model;
 
-    if (primary) {
+    if (video->primary) {
         model = qemuDeviceVideoTypeToString(video->type);
         if (!model || STREQ(model, "")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3347,8 +3346,10 @@ qemuBuildDeviceVideoStr(virDomainDefPtr def,
             virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
         }
 
-        if ((primary && virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) ||
-            (!primary && virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM))) {
+        if ((video->primary &&
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) ||
+            (!video->primary &&
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM))) {
             /* QEMU accepts mebibytes for vgamem_mb. */
             virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vgamem / 1024);
         }
@@ -8225,7 +8226,8 @@ qemuBuildCommandLine(virConnectPtr conn,
             for (i = 0; i < def->nvideos; i++) {
                 char *str;
                 virCommandAddArg(cmd, "-device");
-                if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i], qemuCaps, !i)))
+                if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i],
+                                                    qemuCaps)))
                     goto error;
 
                 virCommandAddArg(cmd, str);
@@ -8337,7 +8339,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
                         virCommandAddArg(cmd, "-device");
 
-                        if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i], qemuCaps, false)))
+                        if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i],
+                                                            qemuCaps)))
                             goto error;
 
                         virCommandAddArg(cmd, str);

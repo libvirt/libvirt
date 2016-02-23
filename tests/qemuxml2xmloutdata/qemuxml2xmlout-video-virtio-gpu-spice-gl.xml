@@ -33,7 +33,7 @@
       <gl enable='yes'/>
     </graphics>
     <video>
-      <model type='virtio' heads='1'>
+      <model type='virtio' heads='1' primary='yes'>
         <acceleration accel3d='yes'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
