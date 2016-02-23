@@ -511,10 +511,24 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 
     libxl_domain_create_info_init(c_info);
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM)
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         c_info->type = LIBXL_DOMAIN_TYPE_HVM;
-    else
+        switch ((virTristateSwitch) def->features[VIR_DOMAIN_FEATURE_HAP]) {
+        case VIR_TRISTATE_SWITCH_OFF:
+            libxl_defbool_set(&c_info->hap, false);
+            break;
+
+        case VIR_TRISTATE_SWITCH_ON:
+            libxl_defbool_set(&c_info->hap, true);
+            break;
+
+        case VIR_TRISTATE_SWITCH_ABSENT:
+        case VIR_TRISTATE_SWITCH_LAST:
+            break;
+        }
+    } else {
         c_info->type = LIBXL_DOMAIN_TYPE_PV;
+    }
 
     if (VIR_STRDUP(c_info->name, def->name) < 0)
         goto error;
