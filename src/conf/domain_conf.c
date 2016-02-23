@@ -4038,18 +4038,21 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
 {
     int next_unit = 0;
     unsigned controller = 0;
+    unsigned int max_unit;
     size_t i;
     int ret;
+
+    if (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI)
+        max_unit = SCSI_WIDE_BUS_MAX_CONT_UNIT;
+    else
+        max_unit = SCSI_NARROW_BUS_MAX_CONT_UNIT;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
             continue;
 
         controller++;
-        ret = virDomainControllerSCSINextUnit(def,
-                                              xmlopt->config.hasWideSCSIBus ?
-                                              SCSI_WIDE_BUS_MAX_CONT_UNIT :
-                                              SCSI_NARROW_BUS_MAX_CONT_UNIT,
+        ret = virDomainControllerSCSINextUnit(def, max_unit,
                                               def->controllers[i]->idx);
         if (ret >= 0) {
             next_unit = ret;
@@ -5861,7 +5864,7 @@ virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
 
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
-        if (xmlopt->config.hasWideSCSIBus) {
+        if (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI) {
             /* For a wide SCSI bus we define the default mapping to be
              * 16 units per bus, 1 bus per controller, many controllers.
              * Unit 7 is the SCSI controller itself. Therefore unit 7

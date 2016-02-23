@@ -2407,6 +2407,11 @@ typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
                                           virDomainDefPtr def);
 
 
+typedef enum {
+    VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI = (1 << 0),
+} virDomainDefFeatures;
+
+
 /* This structure holds various callbacks and data needed
  * while parsing and creating domain XMLs */
 typedef struct _virDomainXMLOption virDomainXMLOption;
@@ -2438,7 +2443,7 @@ struct _virDomainDefParserConfig {
     virFreeCallback privFree;
 
     /* data */
-    bool hasWideSCSIBus;
+    unsigned int features; /* virDomainDefFeatures */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
 

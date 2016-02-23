@@ -548,10 +548,10 @@ virVMXDomainDevicesDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
 }
 
 static virDomainDefParserConfig virVMXDomainDefParserConfig = {
-    .hasWideSCSIBus = true,
     .macPrefix = {0x00, 0x0c, 0x29},
     .devicesPostParseCallback = virVMXDomainDevicesDefPostParse,
     .domainPostParseCallback = virVMXDomainDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI,
 };
 
 static void
