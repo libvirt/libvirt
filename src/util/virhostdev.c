@@ -64,15 +64,11 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
 {
     virPCIDevicePtr other;
     int ret = -1;
-    virPCIDevicePtr pci = NULL;
     struct virHostdevIsPCINodeDeviceUsedData *helperData = opaque;
 
-    if (!(pci = virPCIDeviceNew(devAddr->domain, devAddr->bus,
-                                devAddr->slot, devAddr->function)))
-        goto cleanup;
-
-    other = virPCIDeviceListFind(helperData->hostdev_mgr->activePCIHostdevs,
-                                 pci);
+    other = virPCIDeviceListFindByIDs(helperData->hostdev_mgr->activePCIHostdevs,
+                                      devAddr->domain, devAddr->bus,
+                                      devAddr->slot, devAddr->function);
     if (other) {
         const char *other_drvname = NULL;
         const char *other_domname = NULL;
@@ -87,18 +83,17 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is in use by "
                              "driver %s, domain %s"),
-                           virPCIDeviceGetName(pci),
+                           virPCIDeviceGetName(other),
                            other_drvname, other_domname);
         else
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is in use"),
-                           virPCIDeviceGetName(pci));
+                           virPCIDeviceGetName(other));
         goto cleanup;
     }
  iommu_owner:
     ret = 0;
  cleanup:
-    virPCIDeviceFree(pci);
     return ret;
 }
 
@@ -669,7 +664,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
     /* Step 8: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
         virPCIDevicePtr dev;
-        virPCIDevicePtr pcidev;
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
 
@@ -678,24 +672,25 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
-                              pcisrc->addr.slot, pcisrc->addr.function);
+        dev = virPCIDeviceListFindByIDs(pcidevs,
+                                        pcisrc->addr.domain,
+                                        pcisrc->addr.bus,
+                                        pcisrc->addr.slot,
+                                        pcisrc->addr.function);
 
         /* Appropriate values for the unbind_from_stub, remove_slot
          * and reprobe properties of the device were set earlier
          * by virPCIDeviceDetach() */
-        VIR_DEBUG("Saving network configuration of PCI device %s",
-                  virPCIDeviceGetName(dev));
-        if ((pcidev = virPCIDeviceListFind(pcidevs, dev))) {
+        if (dev) {
+            VIR_DEBUG("Saving network configuration of PCI device %s",
+                      virPCIDeviceGetName(dev));
             hostdev->origstates.states.pci.unbind_from_stub =
-                virPCIDeviceGetUnbindFromStub(pcidev);
+                virPCIDeviceGetUnbindFromStub(dev);
             hostdev->origstates.states.pci.remove_slot =
-                virPCIDeviceGetRemoveSlot(pcidev);
+                virPCIDeviceGetRemoveSlot(dev);
             hostdev->origstates.states.pci.reprobe =
-                virPCIDeviceGetReprobe(pcidev);
+                virPCIDeviceGetReprobe(dev);
         }
-
-        virPCIDeviceFree(dev);
     }
 
     /* Step 9: Now steal all the devices from pcidevs */
@@ -859,18 +854,20 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
 
         if (virHostdevIsPCINetDevice(hostdev)) {
             virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
-            virPCIDevicePtr dev = NULL;
-            dev = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
-                                  pcisrc->addr.slot, pcisrc->addr.function);
+            virPCIDevicePtr dev;
+
+            dev = virPCIDeviceListFindByIDs(pcidevs,
+                                            pcisrc->addr.domain,
+                                            pcisrc->addr.bus,
+                                            pcisrc->addr.slot,
+                                            pcisrc->addr.function);
+
             if (dev) {
-                if (virPCIDeviceListFind(pcidevs, dev)) {
-                    VIR_DEBUG("Restoring network configuration of PCI device %s",
-                              virPCIDeviceGetName(dev));
-                    virHostdevNetConfigRestore(hostdev, hostdev_mgr->stateDir,
-                                               oldStateDir);
-                }
+                VIR_DEBUG("Restoring network configuration of PCI device %s",
+                          virPCIDeviceGetName(dev));
+                virHostdevNetConfigRestore(hostdev, hostdev_mgr->stateDir,
+                                           oldStateDir);
             }
-            virPCIDeviceFree(dev);
         }
     }
 
