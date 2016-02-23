@@ -118,12 +118,12 @@ secretFree(virSecretObjPtr secret)
 static virSecretObjPtr
 secretFindByUUID(const unsigned char *uuid)
 {
-    virSecretObjPtr *pptr, s;
+    virSecretObjPtr *pptr, secret;
 
-    for (pptr = &driver->secrets; *pptr != NULL; pptr = &s->next) {
-        s = *pptr;
-        if (memcmp(s->def->uuid, uuid, VIR_UUID_BUFLEN) == 0)
-            return s;
+    for (pptr = &driver->secrets; *pptr != NULL; pptr = &secret->next) {
+        secret = *pptr;
+        if (memcmp(secret->def->uuid, uuid, VIR_UUID_BUFLEN) == 0)
+            return secret;
     }
     return NULL;
 }
@@ -132,12 +132,12 @@ static virSecretObjPtr
 secretFindByUsage(int usageType,
                   const char *usageID)
 {
-    virSecretObjPtr *pptr, s;
+    virSecretObjPtr *pptr, secret;
 
-    for (pptr = &driver->secrets; *pptr != NULL; pptr = &s->next) {
-        s = *pptr;
+    for (pptr = &driver->secrets; *pptr != NULL; pptr = &secret->next) {
+        secret = *pptr;
 
-        if (s->def->usage_type != usageType)
+        if (secret->def->usage_type != usageType)
             continue;
 
         switch (usageType) {
@@ -146,18 +146,18 @@ secretFindByUsage(int usageType,
             break;
 
         case VIR_SECRET_USAGE_TYPE_VOLUME:
-            if (STREQ(s->def->usage.volume, usageID))
-                return s;
+            if (STREQ(secret->def->usage.volume, usageID))
+                return secret;
             break;
 
         case VIR_SECRET_USAGE_TYPE_CEPH:
-            if (STREQ(s->def->usage.ceph, usageID))
-                return s;
+            if (STREQ(secret->def->usage.ceph, usageID))
+                return secret;
             break;
 
         case VIR_SECRET_USAGE_TYPE_ISCSI:
-            if (STREQ(s->def->usage.target, usageID))
-                return s;
+            if (STREQ(secret->def->usage.target, usageID))
+                return secret;
             break;
         }
     }
@@ -470,10 +470,10 @@ loadSecrets(virSecretObjPtr *dest)
        secrets we managed to find. */
 
     while (list != NULL) {
-        virSecretObjPtr s;
+        virSecretObjPtr secret;
 
-        s = listUnlink(&list);
-        listInsert(dest, s);
+        secret = listUnlink(&list);
+        listInsert(dest, secret);
     }
 
     closedir(dir);
@@ -1017,10 +1017,10 @@ secretStateCleanup(void)
     secretDriverLock();
 
     while (driver->secrets != NULL) {
-        virSecretObjPtr s;
+        virSecretObjPtr secret;
 
-        s = listUnlink(&driver->secrets);
-        secretFree(s);
+        secret = listUnlink(&driver->secrets);
+        secretFree(secret);
     }
     VIR_FREE(driver->directory);
 
@@ -1088,13 +1088,13 @@ secretStateReload(void)
      * Discard non-ephemeral secrets that were removed
      * by the secrets directory.  */
     while (driver->secrets != NULL) {
-        virSecretObjPtr s;
+        virSecretObjPtr secret;
 
-        s = listUnlink(&driver->secrets);
-        if (s->def->ephemeral)
-            listInsert(&new_secrets, s);
+        secret = listUnlink(&driver->secrets);
+        if (secret->def->ephemeral)
+            listInsert(&new_secrets, secret);
         else
-            secretFree(s);
+            secretFree(secret);
     }
     driver->secrets = new_secrets;
 
