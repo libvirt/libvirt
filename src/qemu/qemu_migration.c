@@ -4510,6 +4510,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
         goto cleanup;
     }
+    if (priv->job.completed)
+        priv->job.completed->stopped = priv->job.current->stopped;
 
     ret = 0;
 
