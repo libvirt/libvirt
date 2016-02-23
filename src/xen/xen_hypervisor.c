@@ -2206,7 +2206,7 @@ xenHypervisorBuildCapabilities(virConnectPtr conn, virArch hostarch,
             if ((hv_major == 3 && hv_minor >= 3) || (hv_major > 3))
                 if (virCapabilitiesAddGuestFeature(guest,
                                                    "hap",
-                                                   false,
+                                                   true,
                                                    true) == NULL)
                     goto no_memory;
 

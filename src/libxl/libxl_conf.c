@@ -493,7 +493,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 
             if (virCapabilitiesAddGuestFeature(guest,
                                                "hap",
-                                               0,
+                                               1,
                                                1) == NULL)
                 return -1;
         }
