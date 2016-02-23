@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include <inttypes.h>
 #include "datatypes.h"
 #include "virerror.h"
 #include "storage_backend_rbd.h"
@@ -403,7 +404,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     }
 
     VIR_DEBUG("Refreshed RBD image %s/%s (capacity: %llu allocation: %llu "
-                      "obj_size: %zu num_objs: %zu)",
+                      "obj_size: %"PRIu64" num_objs: %"PRIu64")",
               pool->def->source.name, vol->name, vol->target.capacity,
               vol->target.allocation, info.obj_size, info.num_objs);
 
@@ -463,7 +464,8 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
     pool->def->available = clusterstat.kb_avail * 1024;
     pool->def->allocation = poolstat.num_bytes;
 
-    VIR_DEBUG("Utilization of RBD pool %s: (kb: %zu kb_avail: %zu num_bytes: %zu)",
+    VIR_DEBUG("Utilization of RBD pool %s: (kb: %"PRIu64" kb_avail: %"PRIu64
+              " num_bytes: %"PRIu64")",
               pool->def->source.name, clusterstat.kb, clusterstat.kb_avail,
               poolstat.num_bytes);
 
@@ -1168,8 +1170,8 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
 {
     int r = -1;
     int ret = -1;
-    uint64_t offset = 0;
-    uint64_t length;
+    unsigned long long offset = 0;
+    unsigned long long length;
     char *writebuf;
 
     if (VIR_ALLOC_N(writebuf, info->obj_size * stripe_count) < 0)
@@ -1179,13 +1181,13 @@ virStorageBackendRBDVolWipeZero(rbd_image_t image,
         length = MIN((info->size - offset), (info->obj_size * stripe_count));
 
         if ((r = rbd_write(image, offset, length, writebuf)) < 0) {
-            virReportSystemError(-r, _("writing %zu bytes failed on "
-                                       "RBD image %s at offset %zu"),
+            virReportSystemError(-r, _("writing %llu bytes failed on "
+                                       "RBD image %s at offset %llu"),
                                        length, imgname, offset);
             goto cleanup;
         }
 
-        VIR_DEBUG("Wrote %zu bytes to RBD image %s at offset %zu",
+        VIR_DEBUG("Wrote %llu bytes to RBD image %s at offset %llu",
                   length, imgname, offset);
 
         offset += length;
@@ -1207,8 +1209,8 @@ virStorageBackendRBDVolWipeDiscard(rbd_image_t image,
 {
     int r = -1;
     int ret = -1;
-    uint64_t offset = 0;
-    uint64_t length;
+    unsigned long long offset = 0;
+    unsigned long long length;
 
     VIR_DEBUG("Wiping RBD %s volume using discard)", imgname);
 
@@ -1216,13 +1218,13 @@ virStorageBackendRBDVolWipeDiscard(rbd_image_t image,
         length = MIN((info->size - offset), (info->obj_size * stripe_count));
 
         if ((r = rbd_discard(image, offset, length)) < 0) {
-            virReportSystemError(-r, _("discarding %zu bytes failed on "
-                                       "RBD image %s at offset %zu"),
+            virReportSystemError(-r, _("discarding %llu bytes failed on "
+                                       "RBD image %s at offset %llu"),
                                      length, imgname, offset);
             goto cleanup;
         }
 
-        VIR_DEBUG("Discarded %zu bytes of RBD image %s at offset %zu",
+        VIR_DEBUG("Discarded %llu bytes of RBD image %s at offset %llu",
                   length, imgname, offset);
 
         offset += length;
@@ -1278,7 +1280,7 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
         goto cleanup;
     }
 
-    VIR_DEBUG("Need to wipe %zu bytes from RBD image %s/%s",
+    VIR_DEBUG("Need to wipe %"PRIu64" bytes from RBD image %s/%s",
               info.size, pool->def->source.name, vol->name);
 
     switch ((virStorageVolWipeAlgorithm) algorithm) {
