@@ -309,16 +309,16 @@ secretDeleteSaved(const virSecretObj *secret)
 
 static int
 secretLoadValidateUUID(virSecretDefPtr def,
-                       const char *xml_basename)
+                       const char *file)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virUUIDFormat(def->uuid, uuidstr);
 
-    if (!virFileMatchesNameSuffix(xml_basename, uuidstr, ".xml")) {
+    if (!virFileMatchesNameSuffix(file, uuidstr, ".xml")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("<uuid> does not match secret file name '%s'"),
-                       xml_basename);
+                       file);
         return -1;
     }
 
@@ -395,22 +395,16 @@ secretLoadValue(virSecretObjPtr secret)
 }
 
 static virSecretObjPtr
-secretLoad(const char *xml_basename)
+secretLoad(const char *file,
+           const char *path)
 {
     virSecretDefPtr def = NULL;
     virSecretObjPtr secret = NULL, ret = NULL;
-    char *xml_filename;
 
-    if (virAsprintf(&xml_filename, "%s/%s", driver->configDir,
-                    xml_basename) < 0)
+    if (!(def = virSecretDefParseFile(path)))
         goto cleanup;
 
-    if (!(def = virSecretDefParseFile(xml_filename)))
-        goto cleanup;
-
-    VIR_FREE(xml_filename);
-
-    if (secretLoadValidateUUID(def, xml_basename) < 0)
+    if (secretLoadValidateUUID(def, file) < 0)
         goto cleanup;
 
     if (VIR_ALLOC(secret) < 0)
@@ -427,7 +421,6 @@ secretLoad(const char *xml_basename)
  cleanup:
     secretFree(secret);
     virSecretDefFree(def);
-    VIR_FREE(xml_filename);
     return ret;
 }
 
@@ -447,6 +440,7 @@ loadSecrets(virSecretObjPtr *dest)
     }
 
     while (virDirRead(dir, &de, NULL) > 0) {
+        char *path;
         virSecretObjPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
@@ -455,15 +449,20 @@ loadSecrets(virSecretObjPtr *dest)
         if (!virFileHasSuffix(de->d_name, ".xml"))
             continue;
 
-        if (!(secret = secretLoad(de->d_name))) {
+        if (!(path = virFileBuildPath(driver->configDir, de->d_name, NULL)))
+            continue;
+
+        if (!(secret = secretLoad(de->d_name, path))) {
             virErrorPtr err = virGetLastError();
 
             VIR_ERROR(_("Error reading secret: %s"),
                       err != NULL ? err->message: _("unknown error"));
             virResetError(err);
+            VIR_FREE(path);
             continue;
         }
 
+        VIR_FREE(path);
         listInsert(&list, secret);
     }
     /* Ignore error reported by readdir, if any.  It's better to keep the
