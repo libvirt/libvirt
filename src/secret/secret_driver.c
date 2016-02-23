@@ -576,7 +576,7 @@ secretConnectListAllSecrets(virConnectPtr conn,
     virSecretPtr *tmp_secrets = NULL;
     int nsecrets = 0;
     int ret_nsecrets = 0;
-    virSecretObjPtr entry = NULL;
+    virSecretObjPtr secret = NULL;
     size_t i = 0;
     int ret = -1;
 
@@ -587,39 +587,39 @@ secretConnectListAllSecrets(virConnectPtr conn,
 
     secretDriverLock();
 
-    for (entry = driver->secrets; entry != NULL; entry = entry->next)
+    for (secret = driver->secrets; secret != NULL; secret = secret->next)
         nsecrets++;
 
     if (secrets && VIR_ALLOC_N(tmp_secrets, nsecrets + 1) < 0)
         goto cleanup;
 
-    for (entry = driver->secrets; entry != NULL; entry = entry->next) {
+    for (secret = driver->secrets; secret != NULL; secret = secret->next) {
         if (!virConnectListAllSecretsCheckACL(conn,
-                                              entry->def))
+                                              secret->def))
             continue;
 
         /* filter by whether it's ephemeral */
         if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
             !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
-               entry->def->ephemeral) ||
+               secret->def->ephemeral) ||
               (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
-               !entry->def->ephemeral)))
+               !secret->def->ephemeral)))
             continue;
 
         /* filter by whether it's private */
         if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
             !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
-               entry->def->private) ||
+               secret->def->private) ||
               (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
-               !entry->def->private)))
+               !secret->def->private)))
             continue;
 
         if (secrets) {
             if (!(tmp_secrets[ret_nsecrets] =
                   virGetSecret(conn,
-                               entry->def->uuid,
-                               entry->def->usage_type,
-                               secretUsageIDForDef(entry->def))))
+                               secret->def->uuid,
+                               secret->def->usage_type,
+                               secretUsageIDForDef(secret->def))))
                 goto cleanup;
         }
         ret_nsecrets++;
