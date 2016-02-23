@@ -2410,6 +2410,7 @@ typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
 typedef enum {
     VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI = (1 << 0),
     VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG = (1 << 1),
+    VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN = (1 << 2),
 } virDomainDefFeatures;
 
 

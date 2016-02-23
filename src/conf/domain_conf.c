@@ -4213,6 +4213,32 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
 }
 
 
+/**
+ * virDomainDefRemoveOfflineVcpuPin:
+ * @def: domain definition
+ *
+ * This function removes vcpu pinning information from offline vcpus. This is
+ * designed to be used for drivers which don't support offline vcpupin.
+ */
+static void
+virDomainDefRemoveOfflineVcpuPin(virDomainDefPtr def)
+{
+    size_t i;
+    virDomainVcpuInfoPtr vcpu;
+
+    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+
+        if (!vcpu->online && vcpu->cpumask) {
+            virBitmapFree(vcpu->cpumask);
+            vcpu->cpumask = NULL;
+
+            VIR_WARN("Ignoring unsupported vcpupin for offline vcpu '%zu'", i);
+        }
+    }
+}
+
+
 #define UNSUPPORTED(FEATURE) (!((FEATURE) & xmlopt->config.features))
 /**
  * virDomainDefPostParseCheckFeatures:
@@ -4232,6 +4258,9 @@ virDomainDefPostParseCheckFeatures(virDomainDefPtr def,
     if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG) &&
         virDomainDefCheckUnsupportedMemoryHotplug(def) < 0)
         return -1;
+
+    if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN))
+        virDomainDefRemoveOfflineVcpuPin(def);
 
     return 0;
 }
@@ -14247,11 +14276,7 @@ virDomainVcpuPinDefParseXML(virDomainDefPtr def,
     }
     VIR_FREE(tmp);
 
-    if (!(vcpu = virDomainDefGetVcpu(def, vcpuid)) ||
-        !vcpu->online) {
-        /* To avoid the regression when daemon loading domain confs, we can't
-         * simply error out if <vcpupin> nodes greater than current vcpus.
-         * Ignore them instead. */
+    if (!(vcpu = virDomainDefGetVcpu(def, vcpuid))) {
         VIR_WARN("Ignoring vcpupin for missing vcpus");
         ret = 0;
         goto cleanup;
