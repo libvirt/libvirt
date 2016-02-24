@@ -56,6 +56,7 @@ typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
 struct _virSecretObj {
     virSecretObjPtr next;
+    char *configFile;
     virSecretDefPtr def;
     unsigned char *value;       /* May be NULL */
     size_t value_size;
@@ -112,6 +113,7 @@ secretFree(virSecretObjPtr secret)
         memset(secret->value, 0, secret->value_size);
         VIR_FREE(secret->value);
     }
+    VIR_FREE(secret->configFile);
     VIR_FREE(secret);
 }
 
@@ -197,11 +199,6 @@ secretComputePath(const virSecretObj *secret,
     return ret;
 }
 
-static char *
-secretXMLPath(const virSecretObj *secret)
-{
-    return secretComputePath(secret, ".xml");
-}
 
 static char *
 secretBase64Path(const virSecretObj *secret)
@@ -223,19 +220,16 @@ secretEnsureDirectory(void)
 static int
 secretSaveDef(const virSecretObj *secret)
 {
-    char *filename = NULL, *xml = NULL;
+    char *xml = NULL;
     int ret = -1;
 
     if (secretEnsureDirectory() < 0)
         goto cleanup;
 
-    if (!(filename = secretXMLPath(secret)))
-        goto cleanup;
-
     if (!(xml = virSecretDefFormat(secret->def)))
         goto cleanup;
 
-    if (virFileRewrite(filename, S_IRUSR | S_IWUSR,
+    if (virFileRewrite(secret->configFile, S_IRUSR | S_IWUSR,
                        secretRewriteFile, xml) < 0)
         goto cleanup;
 
@@ -243,7 +237,6 @@ secretSaveDef(const virSecretObj *secret)
 
  cleanup:
     VIR_FREE(xml);
-    VIR_FREE(filename);
     return ret;
 }
 
@@ -284,16 +277,13 @@ secretSaveValue(const virSecretObj *secret)
 static int
 secretDeleteSaved(const virSecretObj *secret)
 {
-    char *xml_filename = NULL, *value_filename = NULL;
+    char *value_filename = NULL;
     int ret = -1;
-
-    if (!(xml_filename = secretXMLPath(secret)))
-        goto cleanup;
 
     if (!(value_filename = secretBase64Path(secret)))
         goto cleanup;
 
-    if (unlink(xml_filename) < 0 && errno != ENOENT)
+    if (unlink(secret->configFile) < 0 && errno != ENOENT)
         goto cleanup;
     /* When the XML is missing, the rest may waste disk space, but the secret
        won't be loaded again, so we have succeeded already. */
@@ -303,7 +293,6 @@ secretDeleteSaved(const virSecretObj *secret)
 
  cleanup:
     VIR_FREE(value_filename);
-    VIR_FREE(xml_filename);
     return ret;
 }
 
@@ -411,6 +400,9 @@ secretLoad(const char *file,
         goto cleanup;
     secret->def = def;
     def = NULL;
+
+    if (VIR_STRDUP(secret->configFile, path) < 0)
+        goto cleanup;
 
     if (secretLoadValue(secret) < 0)
         goto cleanup;
@@ -731,8 +723,9 @@ secretDefineXML(virConnectPtr conn,
         /* No existing secret with same UUID,
          * try look for matching usage instead */
         const char *usageID = secretUsageIDForDef(new_attrs);
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
         if ((secret = secretFindByUsage(new_attrs->usage_type, usageID))) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(secret->def->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s already defined for "
@@ -744,6 +737,16 @@ secretDefineXML(virConnectPtr conn,
         /* No existing secret at all, create one */
         if (VIR_ALLOC(secret) < 0)
             goto cleanup;
+
+        virUUIDFormat(secret->def->uuid, uuidstr);
+
+        /* Generate configFile using driver->configDir,
+         * the uuidstr, and .xml suffix */
+        if (!(secret->configFile = virFileBuildPath(driver->configDir,
+                                                    uuidstr, ".xml"))) {
+            secretFree(secret);
+            goto cleanup;
+        }
 
         listInsert(&driver->secrets, secret);
         secret->def = new_attrs;
