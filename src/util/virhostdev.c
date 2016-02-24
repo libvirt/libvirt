@@ -416,10 +416,8 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     int vf = -1;
     int vlanid = -1;
     bool port_profile_associate = true;
-    int isvf;
 
-    isvf = virHostdevIsVirtualFunction(hostdev);
-    if (isvf <= 0) {
+    if (virHostdevIsVirtualFunction(hostdev) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
                          " SR-IOV Virtual Functions only"));
@@ -489,7 +487,6 @@ virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     int ret = -1;
     int vf = -1;
     bool port_profile_associate = false;
-    int isvf;
 
     /* This is only needed for PCI devices that have been defined
      * using <interface type='hostdev'>. For all others, it is a NOP.
@@ -497,8 +494,7 @@ virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
     if (!virHostdevIsPCINetDevice(hostdev))
        return 0;
 
-    isvf = virHostdevIsVirtualFunction(hostdev);
-    if (isvf <= 0) {
+    if (virHostdevIsVirtualFunction(hostdev) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
                          " SR-IOV Virtual Functions only"));
