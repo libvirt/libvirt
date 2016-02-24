@@ -57,6 +57,7 @@ typedef virSecretObj *virSecretObjPtr;
 struct _virSecretObj {
     virSecretObjPtr next;
     char *configFile;
+    char *base64File;
     virSecretDefPtr def;
     unsigned char *value;       /* May be NULL */
     size_t value_size;
@@ -114,6 +115,7 @@ secretFree(virSecretObjPtr secret)
         VIR_FREE(secret->value);
     }
     VIR_FREE(secret->configFile);
+    VIR_FREE(secret->base64File);
     VIR_FREE(secret);
 }
 
@@ -185,26 +187,6 @@ secretRewriteFile(int fd,
     return 0;
 }
 
-static char *
-secretComputePath(const virSecretObj *secret,
-                  const char *suffix)
-{
-    char *ret;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(secret->def->uuid, uuidstr);
-
-    ignore_value(virAsprintf(&ret, "%s/%s%s", driver->configDir,
-                             uuidstr, suffix));
-    return ret;
-}
-
-
-static char *
-secretBase64Path(const virSecretObj *secret)
-{
-    return secretComputePath(secret, ".base64");
-}
 
 static int
 secretEnsureDirectory(void)
@@ -243,16 +225,13 @@ secretSaveDef(const virSecretObj *secret)
 static int
 secretSaveValue(const virSecretObj *secret)
 {
-    char *filename = NULL, *base64 = NULL;
+    char *base64 = NULL;
     int ret = -1;
 
     if (secret->value == NULL)
         return 0;
 
     if (secretEnsureDirectory() < 0)
-        goto cleanup;
-
-    if (!(filename = secretBase64Path(secret)))
         goto cleanup;
 
     base64_encode_alloc((const char *)secret->value, secret->value_size,
@@ -262,7 +241,7 @@ secretSaveValue(const virSecretObj *secret)
         goto cleanup;
     }
 
-    if (virFileRewrite(filename, S_IRUSR | S_IWUSR,
+    if (virFileRewrite(secret->base64File, S_IRUSR | S_IWUSR,
                        secretRewriteFile, base64) < 0)
         goto cleanup;
 
@@ -270,30 +249,20 @@ secretSaveValue(const virSecretObj *secret)
 
  cleanup:
     VIR_FREE(base64);
-    VIR_FREE(filename);
     return ret;
 }
 
 static int
 secretDeleteSaved(const virSecretObj *secret)
 {
-    char *value_filename = NULL;
-    int ret = -1;
-
-    if (!(value_filename = secretBase64Path(secret)))
-        goto cleanup;
-
     if (unlink(secret->configFile) < 0 && errno != ENOENT)
-        goto cleanup;
+        return -1;
+
     /* When the XML is missing, the rest may waste disk space, but the secret
        won't be loaded again, so we have succeeded already. */
-    ret = 0;
+    (void)unlink(secret->base64File);
 
-    (void)unlink(value_filename);
-
- cleanup:
-    VIR_FREE(value_filename);
-    return ret;
+    return 0;
 }
 
 static int
@@ -319,29 +288,29 @@ secretLoadValue(virSecretObjPtr secret)
 {
     int ret = -1, fd = -1;
     struct stat st;
-    char *filename = NULL, *contents = NULL, *value = NULL;
+    char *contents = NULL, *value = NULL;
     size_t value_size;
 
-    if (!(filename = secretBase64Path(secret)))
-        goto cleanup;
-
-    if ((fd = open(filename, O_RDONLY)) == -1) {
+    if ((fd = open(secret->base64File, O_RDONLY)) == -1) {
         if (errno == ENOENT) {
             ret = 0;
             goto cleanup;
         }
-        virReportSystemError(errno, _("cannot open '%s'"), filename);
+        virReportSystemError(errno, _("cannot open '%s'"),
+                             secret->base64File);
         goto cleanup;
     }
 
     if (fstat(fd, &st) < 0) {
-        virReportSystemError(errno, _("cannot stat '%s'"), filename);
+        virReportSystemError(errno, _("cannot stat '%s'"),
+                             secret->base64File);
         goto cleanup;
     }
 
     if ((size_t)st.st_size != st.st_size) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("'%s' file does not fit in memory"), filename);
+                       _("'%s' file does not fit in memory"),
+                       secret->base64File);
         goto cleanup;
     }
 
@@ -349,7 +318,8 @@ secretLoadValue(virSecretObjPtr secret)
         goto cleanup;
 
     if (saferead(fd, contents, st.st_size) != st.st_size) {
-        virReportSystemError(errno, _("cannot read '%s'"), filename);
+        virReportSystemError(errno, _("cannot read '%s'"),
+                             secret->base64File);
         goto cleanup;
     }
 
@@ -357,7 +327,8 @@ secretLoadValue(virSecretObjPtr secret)
 
     if (!base64_decode_alloc(contents, st.st_size, &value, &value_size)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid base64 in '%s'"), filename);
+                       _("invalid base64 in '%s'"),
+                       secret->base64File);
         goto cleanup;
     }
     if (value == NULL)
@@ -379,13 +350,13 @@ secretLoadValue(virSecretObjPtr secret)
         VIR_FREE(contents);
     }
     VIR_FORCE_CLOSE(fd);
-    VIR_FREE(filename);
     return ret;
 }
 
 static virSecretObjPtr
 secretLoad(const char *file,
-           const char *path)
+           const char *path,
+           const char *base64path)
 {
     virSecretDefPtr def = NULL;
     virSecretObjPtr secret = NULL, ret = NULL;
@@ -402,6 +373,9 @@ secretLoad(const char *file,
     def = NULL;
 
     if (VIR_STRDUP(secret->configFile, path) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(secret->base64File, base64path) < 0)
         goto cleanup;
 
     if (secretLoadValue(secret) < 0)
@@ -432,7 +406,7 @@ loadSecrets(virSecretObjPtr *dest)
     }
 
     while (virDirRead(dir, &de, NULL) > 0) {
-        char *path;
+        char *path, *base64name, *base64path;
         virSecretObjPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
@@ -444,17 +418,30 @@ loadSecrets(virSecretObjPtr *dest)
         if (!(path = virFileBuildPath(driver->configDir, de->d_name, NULL)))
             continue;
 
-        if (!(secret = secretLoad(de->d_name, path))) {
+        /* Copy the .xml file name, but use suffix ".base64" instead */
+        if (VIR_STRDUP(base64name, de->d_name) < 0 ||
+            !virFileStripSuffix(base64name, ".xml") ||
+            !(base64path = virFileBuildPath(driver->configDir,
+                                            base64name, ".base64"))) {
+            VIR_FREE(path);
+            VIR_FREE(base64name);
+            continue;
+        }
+        VIR_FREE(base64name);
+
+        if (!(secret = secretLoad(de->d_name, path, base64path))) {
             virErrorPtr err = virGetLastError();
 
             VIR_ERROR(_("Error reading secret: %s"),
                       err != NULL ? err->message: _("unknown error"));
             virResetError(err);
             VIR_FREE(path);
+            VIR_FREE(base64path);
             continue;
         }
 
         VIR_FREE(path);
+        VIR_FREE(base64path);
         listInsert(&list, secret);
     }
     /* Ignore error reported by readdir, if any.  It's better to keep the
@@ -747,6 +734,13 @@ secretDefineXML(virConnectPtr conn,
             secretFree(secret);
             goto cleanup;
         }
+        /* Generate base64File using driver->configDir,
+         * the uuidstr, and .base64 suffix */
+        if (!(secret->base64File = virFileBuildPath(driver->configDir,
+                                                    uuidstr, ".base64"))) {
+            secretFree(secret);
+            goto cleanup;
+        }
 
         listInsert(&driver->secrets, secret);
         secret->def = new_attrs;
@@ -781,13 +775,8 @@ secretDefineXML(virConnectPtr conn,
         }
         if (secretSaveDef(secret) < 0) {
             if (backup && backup->ephemeral) {
-                char *filename;
-
                 /* Undo the secretSaveValue() above; ignore errors */
-                filename = secretBase64Path(secret);
-                if (filename != NULL)
-                    (void)unlink(filename);
-                VIR_FREE(filename);
+                (void)unlink(secret->base64File);
             }
             goto restore_backup;
         }
