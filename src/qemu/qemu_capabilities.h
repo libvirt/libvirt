@@ -352,6 +352,7 @@ typedef enum {
     QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
     QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
     QEMU_CAPS_OBJECT_SECRET, /* -object secret */
+    QEMU_CAPS_DEVICE_PXB, /* -device pxb */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

@@ -175,4 +175,5 @@
     <flag name='qxl.vram64_size_mb'/>
     <flag name='qxl-vga.vram64_size_mb'/>
     <flag name='debug-threads'/>
+    <flag name='pxb'/>
   </qemuCaps>

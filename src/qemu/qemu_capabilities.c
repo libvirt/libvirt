@@ -322,6 +322,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "chardev-logfile",
               "debug-threads",
               "secret",
+              "pxb",
     );
 
 
@@ -1577,6 +1578,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-input-host-pci", QEMU_CAPS_VIRTIO_INPUT_HOST },
     { "mptsas1068", QEMU_CAPS_SCSI_MPTSAS1068 },
     { "secret", QEMU_CAPS_OBJECT_SECRET },
+    { "pxb", QEMU_CAPS_DEVICE_PXB },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
