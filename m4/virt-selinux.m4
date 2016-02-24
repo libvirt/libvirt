@@ -1,6 +1,6 @@
 dnl The libselinux.so library
 dnl
-dnl Copyright (C) 2012-2014 Red Hat, Inc.
+dnl Copyright (C) 2012-2014, 2016 Red Hat, Inc.
 dnl
 dnl This library is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU Lesser General Public
@@ -41,6 +41,21 @@ int setcon(char *context);
     AC_DEFINE_UNQUOTED([VIR_SELINUX_CTX_CONST], [$lv_cv_setcon_const],
       [Define to empty or 'const' depending on how SELinux qualifies its
        security context parameters])
+    # ...and again for 2.5
+    AC_CACHE_CHECK([for selinux selabel_open parameter type],
+                   [lv_cv_selabel_open_const],
+    [AC_COMPILE_IFELSE(
+      [AC_LANG_PROGRAM(
+         [[
+#include <selinux/selinux.h>
+#include <selinux/label.h>
+struct selabel_handle *selabel_open(unsigned, struct selinux_opt *, unsigned);
+         ]])],
+         [lv_cv_selabel_open_const=''],
+         [lv_cv_selabel_open_const='const'])])
+    AC_DEFINE_UNQUOTED([VIR_SELINUX_OPEN_CONST], [$lv_cv_selabel_open_const],
+      [Define to empty or 'const' depending on how SELinux qualifies its
+       selabel_open parameter])
 
     AC_MSG_CHECKING([SELinux mount point])
     if test "$with_selinux_mount" = "check" || test -z "$with_selinux_mount"; then
