@@ -353,6 +353,26 @@ secretLoadValue(virSecretObjPtr secret)
     return ret;
 }
 
+
+static void
+listUnlinkSecret(virSecretObjPtr *pptr,
+                 virSecretObjPtr secret)
+{
+    if (!secret)
+        return;
+
+    if (*pptr == secret) {
+        *pptr = secret->next;
+    } else {
+        virSecretObjPtr tmp = *pptr;
+        while (tmp && tmp->next != secret)
+            tmp = tmp->next;
+        if (tmp)
+            tmp->next = secret->next;
+    }
+}
+
+
 static virSecretObjPtr
 secretLoad(const char *file,
            const char *path,
@@ -980,15 +1000,7 @@ secretUndefine(virSecretPtr obj)
         secretDeleteSaved(secret) < 0)
         goto cleanup;
 
-    if (driver->secrets == secret) {
-        driver->secrets = secret->next;
-    } else {
-        virSecretObjPtr tmp = driver->secrets;
-        while (tmp && tmp->next != secret)
-            tmp = tmp->next;
-        if (tmp)
-            tmp->next = secret->next;
-    }
+    listUnlinkSecret(&driver->secrets, secret);
     secretFree(secret);
 
     ret = 0;
