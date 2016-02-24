@@ -5240,13 +5240,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
     if (virDomainPinEmulatorEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Changing affinity for emulator thread dynamically "
-                         "is not allowed when CPU placement is 'auto'"));
-        goto cleanup;
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
@@ -5713,13 +5706,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
     if (virDomainPinIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
-
-    if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Changing affinity for IOThread dynamically is "
-                         "not allowed when CPU placement is 'auto'"));
-        goto cleanup;
-    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
