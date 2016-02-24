@@ -245,49 +245,6 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 }
 
 
-/*
- * virHostdevGetActivePCIHostDeviceList - make a new list with a *copy* of
- *   every virPCIDevice object that is found on the activePCIHostdevs
- *   list *and* is in the hostdev list for this domain.
- *
- * Return the new list, or NULL if there was a failure.
- *
- * Pre-condition: activePCIHostdevs is locked
- */
-static virPCIDeviceListPtr
-virHostdevGetActivePCIHostDeviceList(virHostdevManagerPtr mgr,
-                                     virDomainHostdevDefPtr *hostdevs,
-                                     int nhostdevs)
-{
-    virPCIDeviceListPtr list;
-    size_t i;
-
-    if (!(list = virPCIDeviceListNew()))
-        return NULL;
-
-    for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDevicePCIAddressPtr addr;
-        virPCIDevicePtr activeDev;
-
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        addr = &hostdev->source.subsys.u.pci.addr;
-        activeDev = virPCIDeviceListFindByIDs(mgr->activePCIHostdevs,
-                                              addr->domain, addr->bus,
-                                              addr->slot, addr->function);
-        if (activeDev && virPCIDeviceListAddCopy(list, activeDev) < 0) {
-            virObjectUnref(list);
-            return NULL;
-        }
-    }
-
-    return list;
-}
-
 static int
 virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
                        char **sysfs_path)
@@ -801,9 +758,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->activePCIHostdevs);
     virObjectLock(mgr->inactivePCIHostdevs);
 
-    if (!(pcidevs = virHostdevGetActivePCIHostDeviceList(mgr,
-                                                         hostdevs,
-                                                         nhostdevs))) {
+    if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs))) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate PCI device list: %s"),
                   err ? err->message : _("unknown error"));
@@ -833,6 +788,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
                 virPCIDeviceListDel(pcidevs, dev);
                 continue;
             }
+        } else {
+            virPCIDeviceListDel(pcidevs, dev);
+            continue;
         }
 
         VIR_DEBUG("Removing PCI device %s from active list",
