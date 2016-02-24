@@ -2879,13 +2879,11 @@ virDomainObjUpdateModificationImpact(virDomainObjPtr vm,
         return -1;
     }
 
-    if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!vm->persistent) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("transient domains do not have any "
-                             "persistent config"));
-            return -1;
-        }
+    if (!vm->persistent && (*flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("transient domains do not have any "
+                         "persistent config"));
+        return -1;
     }
 
     return 0;
