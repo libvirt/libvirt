@@ -1445,7 +1445,6 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm;
     virDomainDefPtr persistentDef = NULL;
-    bool isActive;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_MEM_LIVE |
@@ -1461,38 +1460,9 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    isActive = virDomainObjIsActive(vm);
-
-    if (flags == VIR_DOMAIN_MEM_CURRENT) {
-        if (isActive)
-            flags = VIR_DOMAIN_MEM_LIVE;
-        else
-            flags = VIR_DOMAIN_MEM_CONFIG;
-    }
-    if (flags == VIR_DOMAIN_MEM_MAXIMUM) {
-        if (isActive)
-            flags = VIR_DOMAIN_MEM_LIVE | VIR_DOMAIN_MEM_MAXIMUM;
-        else
-            flags = VIR_DOMAIN_MEM_CONFIG | VIR_DOMAIN_MEM_MAXIMUM;
-    }
-
-    if (!isActive && (flags & VIR_DOMAIN_MEM_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot set memory on an inactive domain"));
+    if (virDomainLiveConfigHelperMethod(cfg->caps, driver->xmlopt, vm, &flags,
+                                        &persistentDef) < 0)
         goto endjob;
-    }
-
-    if (flags & VIR_DOMAIN_MEM_CONFIG) {
-        if (!vm->persistent) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot change persistent config of a transient domain"));
-            goto endjob;
-        }
-        if (!(persistentDef = virDomainObjGetPersistentDef(cfg->caps,
-                                                           driver->xmlopt,
-                                                           vm)))
-            goto endjob;
-    }
 
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         /* resize the maximum memory */
