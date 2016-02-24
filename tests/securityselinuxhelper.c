@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2013 Red Hat, Inc.
+ * Copyright (C) 2011-2013, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,6 +60,7 @@ static const char *(*realselinux_lxc_contexts_path)(void);
 
 #if HAVE_SELINUX_LABEL_H
 static struct selabel_handle *(*realselabel_open)(unsigned int backend,
+                                                  VIR_SELINUX_OPEN_CONST
                                                   struct selinux_opt *opts,
                                                   unsigned nopts);
 static void (*realselabel_close)(struct selabel_handle *handle);
@@ -304,9 +305,10 @@ const char *selinux_lxc_contexts_path(void)
 #endif
 
 #if HAVE_SELINUX_LABEL_H
-struct selabel_handle *selabel_open(unsigned int backend,
-                                    struct selinux_opt *opts,
-                                    unsigned nopts)
+struct selabel_handle *
+selabel_open(unsigned int backend,
+             VIR_SELINUX_OPEN_CONST struct selinux_opt *opts,
+             unsigned nopts)
 {
     char *fake_handle;
 
