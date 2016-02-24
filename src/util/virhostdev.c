@@ -833,9 +833,10 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
             virPCIDeviceGetUsedBy(activeDev, &usedby_drvname, &usedby_domname);
             if (STRNEQ_NULLABLE(drv_name, usedby_drvname) ||
                 STRNEQ_NULLABLE(dom_name, usedby_domname)) {
-                    virPCIDeviceListDel(pcidevs, dev);
-                    continue;
-                }
+
+                virPCIDeviceListDel(pcidevs, dev);
+                continue;
+            }
         }
 
         VIR_DEBUG("Removing PCI device %s from active list",
