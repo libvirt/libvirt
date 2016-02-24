@@ -2346,12 +2346,6 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if ((flags & VIR_DOMAIN_AFFECT_LIVE) && !virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("domain is inactive"));
-        goto endjob;
-    }
-
     if (virDomainLiveConfigHelperMethod(cfg->caps, driver->xmlopt, vm,
                                         &flags, &targetDef) < 0)
         goto endjob;
