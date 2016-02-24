@@ -1286,7 +1286,10 @@ libxlMakeNic(virDomainDefPtr def,
 {
     bool ioemu_nic = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virDomainNetType actual_type = virDomainNetGetActualType(l_nic);
+    virNetworkPtr network = NULL;
+    virConnectPtr conn = NULL;
     virNetDevBandwidthPtr actual_bw;
+    int ret = -1;
 
     /* TODO: Where is mtu stored?
      *
@@ -1312,64 +1315,47 @@ libxlMakeNic(virDomainDefPtr def,
 
     if (l_nic->model) {
         if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)
-            return -1;
+            goto cleanup;
         if (STREQ(l_nic->model, "netfront"))
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
     if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
-        return -1;
+        goto cleanup;
 
     switch (actual_type) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
             if (VIR_STRDUP(x_nic->bridge,
                            virDomainNetGetActualBridgeName(l_nic)) < 0)
-                return -1;
+                goto cleanup;
             /* fallthrough */
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
-                return -1;
+                goto cleanup;
             if (l_nic->nips > 0) {
                 x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
                 if (!x_nic->ip)
-                    return -1;
+                    goto cleanup;
             }
             break;
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         {
-            bool fail = false;
-            char *brname = NULL;
-            virNetworkPtr network;
-            virConnectPtr conn;
-
             if (!(conn = virConnectOpen("xen:///system")))
-                return -1;
+                goto cleanup;
 
             if (!(network =
                   virNetworkLookupByName(conn, l_nic->data.network.name))) {
-                virObjectUnref(conn);
-                return -1;
+                goto cleanup;
             }
 
             if (l_nic->nips > 0) {
                 x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
                 if (!x_nic->ip)
-                    return -1;
+                    goto cleanup;
             }
 
-            if ((brname = virNetworkGetBridgeName(network))) {
-                if (VIR_STRDUP(x_nic->bridge, brname) < 0)
-                    fail = true;
-            } else {
-                fail = true;
-            }
-
-            VIR_FREE(brname);
-
-            virObjectUnref(network);
-            virObjectUnref(conn);
-            if (fail)
-                return -1;
+            if (!(x_nic->bridge = virNetworkGetBridgeName(network)))
+                goto cleanup;
             break;
         }
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -1385,18 +1371,18 @@ libxlMakeNic(virDomainDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                     _("unsupported interface type %s"),
                     virDomainNetTypeToString(l_nic->type));
-            return -1;
+            goto cleanup;
     }
 
     if (l_nic->domain_name) {
 #ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
         if (VIR_STRDUP(x_nic->backend_domname, l_nic->domain_name) < 0)
-            return -1;
+            goto cleanup;
 #else
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                 _("this version of libxenlight does not "
                   "support backend domain name"));
-        return -1;
+        goto cleanup;
 #endif
     }
 
@@ -1438,7 +1424,13 @@ libxlMakeNic(virDomainDefPtr def,
         x_nic->rate_interval_usecs =  50000UL;
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(network);
+    virObjectUnref(conn);
+
+    return ret;
 }
 
 static int
