@@ -168,6 +168,22 @@ secretFindByUsage(int usageType,
     return NULL;
 }
 
+
+static virSecretObjPtr
+secretAssignDef(virSecretObjPtr *list,
+                virSecretDefPtr def)
+{
+    virSecretObjPtr secret;
+
+    if (VIR_ALLOC(secret) < 0)
+        return NULL;
+
+    listInsert(list, secret);
+    secret->def = def;
+
+    return secret;
+}
+
 /* Permament secret storage */
 
 /* Secrets are stored in virSecretDriverStatePtr->configDir.  Each secret
@@ -374,7 +390,8 @@ listUnlinkSecret(virSecretObjPtr *pptr,
 
 
 static virSecretObjPtr
-secretLoad(const char *file,
+secretLoad(virSecretObjPtr *list,
+           const char *file,
            const char *path,
            const char *base64path)
 {
@@ -387,9 +404,8 @@ secretLoad(const char *file,
     if (secretLoadValidateUUID(def, file) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(secret) < 0)
+    if (!(secret = secretAssignDef(list, def)))
         goto cleanup;
-    secret->def = def;
     def = NULL;
 
     if (VIR_STRDUP(secret->configFile, path) < 0)
@@ -405,6 +421,7 @@ secretLoad(const char *file,
     secret = NULL;
 
  cleanup:
+    listUnlinkSecret(list, secret);
     secretFree(secret);
     virSecretDefFree(def);
     return ret;
@@ -449,7 +466,7 @@ loadSecrets(virSecretObjPtr *dest)
         }
         VIR_FREE(base64name);
 
-        if (!(secret = secretLoad(de->d_name, path, base64path))) {
+        if (!(secret = secretLoad(&list, de->d_name, path, base64path))) {
             virErrorPtr err = virGetLastError();
 
             VIR_ERROR(_("Error reading secret: %s"),
@@ -462,7 +479,6 @@ loadSecrets(virSecretObjPtr *dest)
 
         VIR_FREE(path);
         VIR_FREE(base64path);
-        listInsert(&list, secret);
     }
     /* Ignore error reported by readdir, if any.  It's better to keep the
        secrets we managed to find. */
@@ -712,7 +728,7 @@ secretDefineXML(virConnectPtr conn,
                 unsigned int flags)
 {
     virSecretPtr ret = NULL;
-    virSecretObjPtr secret;
+    virSecretObjPtr secret = NULL;
     virSecretDefPtr backup = NULL;
     virSecretDefPtr new_attrs;
 
@@ -742,7 +758,7 @@ secretDefineXML(virConnectPtr conn,
         }
 
         /* No existing secret at all, create one */
-        if (VIR_ALLOC(secret) < 0)
+        if (!(secret = secretAssignDef(&driver->secrets, new_attrs)))
             goto cleanup;
 
         virUUIDFormat(secret->def->uuid, uuidstr);
@@ -761,9 +777,6 @@ secretDefineXML(virConnectPtr conn,
             secretFree(secret);
             goto cleanup;
         }
-
-        listInsert(&driver->secrets, secret);
-        secret->def = new_attrs;
     } else {
         const char *newUsageID = secretUsageIDForDef(new_attrs);
         const char *oldUsageID = secretUsageIDForDef(secret->def);
