@@ -1307,6 +1307,12 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return ret;
     }
 
+    if (!def->os.machine) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing machine type"));
+        return ret;
+    }
+
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))

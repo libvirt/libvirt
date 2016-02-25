@@ -571,6 +571,10 @@ mymain(void)
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
                  0, __VA_ARGS__)
 
+# define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...)               \
+    DO_TEST_FULL(name, NULL, -1,                                        \
+                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
+                 parseFlags, __VA_ARGS__)
 
 # define DO_TEST_LINUX(name, ...)                                       \
     DO_TEST_LINUX_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
@@ -1867,6 +1871,10 @@ mymain(void)
             QEMU_CAPS_PCI_OHCI);
     DO_TEST("ppc64-usb-controller-legacy",
             QEMU_CAPS_PIIX3_USB_UHCI);
+
+    DO_TEST_PARSE_FLAGS_ERROR("missing-machine",
+                              VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
+                              NONE);
 
     qemuTestDriverFree(&driver);
 
