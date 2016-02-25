@@ -1852,12 +1852,12 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
 
     VIR_FREE(pool->configFile);  /* for driver reload */
     if (VIR_STRDUP(pool->configFile, path) < 0) {
-        virStoragePoolDefFree(def);
+        virStoragePoolObjRemove(pools, pool);
         return NULL;
     }
     VIR_FREE(pool->autostartLink); /* for driver reload */
     if (VIR_STRDUP(pool->autostartLink, autostartLink) < 0) {
-        virStoragePoolDefFree(def);
+        virStoragePoolObjRemove(pools, pool);
         return NULL;
     }
 
