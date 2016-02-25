@@ -142,16 +142,16 @@ virHostdevManagerNew(void)
     if (!(hostdevMgr = virObjectNew(virHostdevManagerClass)))
         return NULL;
 
-    if ((hostdevMgr->activePCIHostdevs = virPCIDeviceListNew()) == NULL)
+    if (!(hostdevMgr->activePCIHostdevs = virPCIDeviceListNew()))
         goto error;
 
-    if ((hostdevMgr->activeUSBHostdevs = virUSBDeviceListNew()) == NULL)
+    if (!(hostdevMgr->activeUSBHostdevs = virUSBDeviceListNew()))
         goto error;
 
-    if ((hostdevMgr->inactivePCIHostdevs = virPCIDeviceListNew()) == NULL)
+    if (!(hostdevMgr->inactivePCIHostdevs = virPCIDeviceListNew()))
         goto error;
 
-    if ((hostdevMgr->activeSCSIHostdevs = virSCSIDeviceListNew()) == NULL)
+    if (!(hostdevMgr->activeSCSIHostdevs = virSCSIDeviceListNew()))
         goto error;
 
     if (privileged) {
