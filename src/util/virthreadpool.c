@@ -317,6 +317,39 @@ size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool)
     return ret;
 }
 
+size_t virThreadPoolGetCurrentWorkers(virThreadPoolPtr pool)
+{
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->nWorkers;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
+}
+
+size_t virThreadPoolGetFreeWorkers(virThreadPoolPtr pool)
+{
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->freeWorkers;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
+}
+
+size_t virThreadPoolGetJobQueueDepth(virThreadPoolPtr pool)
+{
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->jobQueueDepth;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
+}
+
 /*
  * @priority - job priority
  * Return: 0 on success, -1 otherwise

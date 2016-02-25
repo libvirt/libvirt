@@ -2365,6 +2365,9 @@ virThreadJobSetWorker;
 
 # util/virthreadpool.h
 virThreadPoolFree;
+virThreadPoolGetCurrentWorkers;
+virThreadPoolGetFreeWorkers;
+virThreadPoolGetJobQueueDepth;
 virThreadPoolGetMaxWorkers;
 virThreadPoolGetMinWorkers;
 virThreadPoolGetPriorityWorkers;

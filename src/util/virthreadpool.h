@@ -46,6 +46,9 @@ virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
 size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool);
 size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool);
 size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool);
+size_t virThreadPoolGetCurrentWorkers(virThreadPoolPtr pool);
+size_t virThreadPoolGetFreeWorkers(virThreadPoolPtr pool);
+size_t virThreadPoolGetJobQueueDepth(virThreadPoolPtr pool);
 
 void virThreadPoolFree(virThreadPoolPtr pool);
 
