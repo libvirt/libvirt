@@ -253,7 +253,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
                                      virQEMUCapsPtr extraFlags,
                                      const char *migrateURI,
-                                     virQemuXML2ArgvTestFlags flags)
+                                     virQemuXML2ArgvTestFlags flags,
+                                     unsigned int parseFlags)
 {
     char *actualargv = NULL;
     int ret = -1;
@@ -275,7 +276,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto out;
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
+                                        (VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                         parseFlags)))) {
         if (!virtTestOOMActive() &&
             (flags & FLAG_EXPECT_PARSE_ERROR))
             goto ok;
@@ -408,6 +410,7 @@ struct testInfo {
     const char *migrateFrom;
     int migrateFd;
     unsigned int flags;
+    unsigned int parseFlags;
 };
 
 static int
@@ -443,7 +446,7 @@ testCompareXMLToArgvHelper(const void *data)
         goto cleanup;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
-                                       migrateURI, flags);
+                                       migrateURI, flags, info->parseFlags);
 
  cleanup:
     VIR_FREE(migrateURI);
@@ -537,10 +540,11 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->channelTargetDir, "/tmp") < 0)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, migrateFrom, migrateFd, flags, ...)         \
+# define DO_TEST_FULL(name, migrateFrom, migrateFd, flags,              \
+                      parseFlags, ...)                                  \
     do {                                                                \
         static struct testInfo info = {                                 \
-            name, NULL, migrateFrom, migrateFd, (flags)                 \
+            name, NULL, migrateFrom, migrateFd, (flags), parseFlags     \
         };                                                              \
         if (!(info.extraFlags = virQEMUCapsNew()))                      \
             return EXIT_FAILURE;                                        \
@@ -554,21 +558,22 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name, ...)                                             \
-    DO_TEST_FULL(name, NULL, -1, 0, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
 
 # define DO_TEST_ERROR(name, ...)                                       \
-    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_ERROR, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_ERROR, 0, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...)                                     \
-    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, 0, __VA_ARGS__)
 
 # define DO_TEST_PARSE_ERROR(name, ...)                                 \
     DO_TEST_FULL(name, NULL, -1,                                        \
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
-                 __VA_ARGS__)
+                 0, __VA_ARGS__)
+
 
 # define DO_TEST_LINUX(name, ...)                                       \
-    DO_TEST_LINUX_FULL(name, NULL, -1, 0, __VA_ARGS__)
+    DO_TEST_LINUX_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
 
 # ifdef __linux__
     /* This is a macro that invokes test only on Linux. It's
@@ -1262,12 +1267,12 @@ mymain(void)
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_ROMBAR);
 
-    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, NONE);
-    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, NONE);
-    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, NONE);
-    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, NONE);
+    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, NONE);
+    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, NONE);
+    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, 0, NONE);
+    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, 0, NONE);
 
-    DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0,
+    DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0, 0,
                        QEMU_CAPS_NUMA,
                        QEMU_CAPS_OBJECT_MEMORY_RAM);
 
