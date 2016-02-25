@@ -2531,7 +2531,7 @@ virNetDevReplaceNetConfig(const char *linkdev, int vf,
     int ret = -1;
     char *pfdevname = NULL;
 
-    if (vf == -1 && virNetDevIsVirtualFunction(linkdev)) {
+    if (vf == -1 && virNetDevIsVirtualFunction(linkdev) == 1) {
         /* If this really *is* a VF and the caller just didn't know
          * it, we should set the MAC address via PF+vf# instead of
          * setting directly via VF, because the latter will be
@@ -2571,7 +2571,7 @@ virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
     char *pfdevname = NULL;
     const char *vfdevname = NULL;
 
-    if (vf == -1 && virNetDevIsVirtualFunction(linkdev)) {
+    if (vf == -1 && virNetDevIsVirtualFunction(linkdev) == 1) {
         /* If this really *is* a VF and the caller just didn't know
          * it, we should set the MAC address via PF+vf# instead of
          * setting directly via VF, because the latter will be
