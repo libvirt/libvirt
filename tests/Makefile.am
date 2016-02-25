@@ -1190,7 +1190,7 @@ virauthconfigtest_SOURCES = \
 virauthconfigtest_LDADD = $(LDADDS)
 
 seclabeltest_SOURCES = \
-	seclabeltest.c
+	seclabeltest.c testutils.h testutils.c
 seclabeltest_LDADD = $(LDADDS)
 
 if WITH_SECDRIVER_SELINUX

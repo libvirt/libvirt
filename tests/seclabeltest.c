@@ -7,9 +7,10 @@
 #include <errno.h>
 #include "security/security_driver.h"
 #include "virrandom.h"
+#include "testutils.h"
 
-int
-main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
+static int
+mymain(void)
 {
     virSecurityManagerPtr mgr;
     const char *doi, *model;
@@ -41,3 +42,5 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED)
 
     return 0;
 }
+
+VIRT_TEST_MAIN(mymain)
