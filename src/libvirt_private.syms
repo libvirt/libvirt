@@ -894,6 +894,18 @@ virDomainObjListRemoveLocked;
 virDomainObjListRename;
 
 
+# conf/virsecretobj.h
+virSecretObjEndAPI;
+virSecretObjListAdd;
+virSecretObjListExport;
+virSecretObjListFindByUsage;
+virSecretObjListFindByUUID;
+virSecretObjListGetUUIDs;
+virSecretObjListNew;
+virSecretObjListNumOfSecrets;
+virSecretObjListRemove;
+
+
 # cpu/cpu.h
 cpuBaseline;
 cpuBaselineXML;

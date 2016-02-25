@@ -57,7 +57,7 @@ typedef struct _virSecretDriverState virSecretDriverState;
 typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
-    virSecretObj *secrets;
+    virSecretObjListPtr secrets;
     char *configDir;
 };
 
@@ -75,104 +75,6 @@ secretDriverUnlock(void)
     virMutexUnlock(&driver->lock);
 }
 
-static virSecretObjPtr
-listUnlink(virSecretObjPtr *pptr)
-{
-    virSecretObjPtr secret;
-
-    secret = *pptr;
-    *pptr = secret->next;
-    return secret;
-}
-
-static void
-listInsert(virSecretObjPtr *pptr,
-           virSecretObjPtr secret)
-{
-    secret->next = *pptr;
-    *pptr = secret;
-}
-
-static void
-secretFree(virSecretObjPtr secret)
-{
-    if (secret == NULL)
-        return;
-
-    virSecretDefFree(secret->def);
-    if (secret->value != NULL) {
-        memset(secret->value, 0, secret->value_size);
-        VIR_FREE(secret->value);
-    }
-    VIR_FREE(secret->configFile);
-    VIR_FREE(secret->base64File);
-    VIR_FREE(secret);
-}
-
-static virSecretObjPtr
-secretFindByUUID(const unsigned char *uuid)
-{
-    virSecretObjPtr *pptr, secret;
-
-    for (pptr = &driver->secrets; *pptr != NULL; pptr = &secret->next) {
-        secret = *pptr;
-        if (memcmp(secret->def->uuid, uuid, VIR_UUID_BUFLEN) == 0)
-            return secret;
-    }
-    return NULL;
-}
-
-static virSecretObjPtr
-secretFindByUsage(int usageType,
-                  const char *usageID)
-{
-    virSecretObjPtr *pptr, secret;
-
-    for (pptr = &driver->secrets; *pptr != NULL; pptr = &secret->next) {
-        secret = *pptr;
-
-        if (secret->def->usage_type != usageType)
-            continue;
-
-        switch (usageType) {
-        case VIR_SECRET_USAGE_TYPE_NONE:
-            /* never match this */
-            break;
-
-        case VIR_SECRET_USAGE_TYPE_VOLUME:
-            if (STREQ(secret->def->usage.volume, usageID))
-                return secret;
-            break;
-
-        case VIR_SECRET_USAGE_TYPE_CEPH:
-            if (STREQ(secret->def->usage.ceph, usageID))
-                return secret;
-            break;
-
-        case VIR_SECRET_USAGE_TYPE_ISCSI:
-            if (STREQ(secret->def->usage.target, usageID))
-                return secret;
-            break;
-        }
-    }
-    return NULL;
-}
-
-
-static virSecretObjPtr
-secretAssignDef(virSecretObjPtr *list,
-                virSecretDefPtr def)
-{
-    virSecretObjPtr secret;
-
-    if (VIR_ALLOC(secret) < 0)
-        return NULL;
-
-    listInsert(list, secret);
-    secret->def = def;
-
-    return secret;
-}
 
 
 static virSecretObjPtr
@@ -181,7 +83,7 @@ secretObjFromSecret(virSecretPtr secret)
     virSecretObjPtr obj;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(obj = secretFindByUUID(secret->uuid))) {
+    if (!(obj = virSecretObjListFindByUUID(driver->secrets, secret->uuid))) {
         virUUIDFormat(secret->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
                        _("no secret with matching uuid '%s'"), uuidstr);
@@ -377,30 +279,11 @@ secretLoadValue(virSecretObjPtr secret)
 }
 
 
-static void
-listUnlinkSecret(virSecretObjPtr *pptr,
-                 virSecretObjPtr secret)
-{
-    if (!secret)
-        return;
-
-    if (*pptr == secret) {
-        *pptr = secret->next;
-    } else {
-        virSecretObjPtr tmp = *pptr;
-        while (tmp && tmp->next != secret)
-            tmp = tmp->next;
-        if (tmp)
-            tmp->next = secret->next;
-    }
-}
-
-
 static virSecretObjPtr
-secretLoad(virSecretObjPtr *list,
+secretLoad(virSecretObjListPtr secrets,
            const char *file,
            const char *path,
-           const char *base64path)
+           const char *configDir)
 {
     virSecretDefPtr def = NULL;
     virSecretObjPtr secret = NULL, ret = NULL;
@@ -411,15 +294,9 @@ secretLoad(virSecretObjPtr *list,
     if (secretLoadValidateUUID(def, file) < 0)
         goto cleanup;
 
-    if (!(secret = secretAssignDef(list, def)))
+    if (!(secret = virSecretObjListAdd(secrets, def, configDir, NULL)))
         goto cleanup;
     def = NULL;
-
-    if (VIR_STRDUP(secret->configFile, path) < 0)
-        goto cleanup;
-
-    if (VIR_STRDUP(secret->base64File, base64path) < 0)
-        goto cleanup;
 
     if (secretLoadValue(secret) < 0)
         goto cleanup;
@@ -428,19 +305,19 @@ secretLoad(virSecretObjPtr *list,
     secret = NULL;
 
  cleanup:
-    listUnlinkSecret(list, secret);
-    secretFree(secret);
+    if (secret)
+        virSecretObjListRemove(secrets, secret);
     virSecretDefFree(def);
     return ret;
 }
 
+
 static int
-secretLoadAllConfigs(virSecretObjPtr *dest,
+secretLoadAllConfigs(virSecretObjListPtr secrets,
                      const char *configDir)
 {
     DIR *dir = NULL;
     struct dirent *de;
-    virSecretObjPtr list = NULL;
 
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
@@ -449,8 +326,10 @@ secretLoadAllConfigs(virSecretObjPtr *dest,
         return -1;
     }
 
+    /* Ignore errors reported by readdir or other calls within the
+     * loop (if any).  It's better to keep the secrets we managed to find. */
     while (virDirRead(dir, &de, NULL) > 0) {
-        char *path, *base64name, *base64path;
+        char *path;
         virSecretObjPtr secret;
 
         if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
@@ -462,39 +341,18 @@ secretLoadAllConfigs(virSecretObjPtr *dest,
         if (!(path = virFileBuildPath(configDir, de->d_name, NULL)))
             continue;
 
-        /* Copy the .xml file name, but use suffix ".base64" instead */
-        if (VIR_STRDUP(base64name, de->d_name) < 0 ||
-            !virFileStripSuffix(base64name, ".xml") ||
-            !(base64path = virFileBuildPath(configDir,
-                                            base64name, ".base64"))) {
-            VIR_FREE(path);
-            VIR_FREE(base64name);
-            continue;
-        }
-        VIR_FREE(base64name);
-
-        if (!(secret = secretLoad(&list, de->d_name, path, base64path))) {
+        if (!(secret = secretLoad(secrets, de->d_name, path, configDir))) {
             virErrorPtr err = virGetLastError();
 
             VIR_ERROR(_("Error reading secret: %s"),
                       err != NULL ? err->message: _("unknown error"));
             virResetError(err);
             VIR_FREE(path);
-            VIR_FREE(base64path);
             continue;
         }
 
         VIR_FREE(path);
-        VIR_FREE(base64path);
-    }
-    /* Ignore error reported by readdir, if any.  It's better to keep the
-       secrets we managed to find. */
-
-    while (list != NULL) {
-        virSecretObjPtr secret;
-
-        secret = listUnlink(&list);
-        listInsert(dest, secret);
+        virSecretObjEndAPI(&secret);
     }
 
     closedir(dir);
@@ -506,23 +364,12 @@ secretLoadAllConfigs(virSecretObjPtr *dest,
 static int
 secretConnectNumOfSecrets(virConnectPtr conn)
 {
-    size_t i;
-    virSecretObjPtr secret;
-
     if (virConnectNumOfSecretsEnsureACL(conn) < 0)
         return -1;
 
-    secretDriverLock();
-
-    i = 0;
-    for (secret = driver->secrets; secret != NULL; secret = secret->next) {
-        if (virConnectNumOfSecretsCheckACL(conn,
-                                           secret->def))
-            i++;
-    }
-
-    secretDriverUnlock();
-    return i;
+    return virSecretObjListNumOfSecrets(driver->secrets,
+                                        virConnectNumOfSecretsCheckACL,
+                                        conn);
 }
 
 static int
@@ -530,122 +377,30 @@ secretConnectListSecrets(virConnectPtr conn,
                          char **uuids,
                          int maxuuids)
 {
-    size_t i;
-    virSecretObjPtr secret;
-
     memset(uuids, 0, maxuuids * sizeof(*uuids));
 
     if (virConnectListSecretsEnsureACL(conn) < 0)
         return -1;
 
-    secretDriverLock();
-
-    i = 0;
-    for (secret = driver->secrets; secret != NULL; secret = secret->next) {
-        char *uuidstr;
-        if (!virConnectListSecretsCheckACL(conn,
-                                           secret->def))
-            continue;
-        if (i == maxuuids)
-            break;
-        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0)
-            goto cleanup;
-        virUUIDFormat(secret->def->uuid, uuidstr);
-        uuids[i] = uuidstr;
-        i++;
-    }
-
-    secretDriverUnlock();
-    return i;
-
- cleanup:
-    secretDriverUnlock();
-
-    for (i = 0; i < maxuuids; i++)
-        VIR_FREE(uuids[i]);
-
-    return -1;
+    return virSecretObjListGetUUIDs(driver->secrets, uuids, maxuuids,
+                                    virConnectListSecretsCheckACL, conn);
 }
 
 
-#define MATCH(FLAG) (flags & (FLAG))
 static int
 secretConnectListAllSecrets(virConnectPtr conn,
                             virSecretPtr **secrets,
                             unsigned int flags)
 {
-    virSecretPtr *tmp_secrets = NULL;
-    int nsecrets = 0;
-    int ret_nsecrets = 0;
-    virSecretObjPtr secret = NULL;
-    size_t i = 0;
-    int ret = -1;
-
     virCheckFlags(VIR_CONNECT_LIST_SECRETS_FILTERS_ALL, -1);
 
     if (virConnectListAllSecretsEnsureACL(conn) < 0)
         return -1;
 
-    secretDriverLock();
-
-    for (secret = driver->secrets; secret != NULL; secret = secret->next)
-        nsecrets++;
-
-    if (secrets && VIR_ALLOC_N(tmp_secrets, nsecrets + 1) < 0)
-        goto cleanup;
-
-    for (secret = driver->secrets; secret != NULL; secret = secret->next) {
-        if (!virConnectListAllSecretsCheckACL(conn,
-                                              secret->def))
-            continue;
-
-        /* filter by whether it's ephemeral */
-        if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
-            !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
-               secret->def->ephemeral) ||
-              (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
-               !secret->def->ephemeral)))
-            continue;
-
-        /* filter by whether it's private */
-        if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
-            !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
-               secret->def->private) ||
-              (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
-               !secret->def->private)))
-            continue;
-
-        if (secrets) {
-            if (!(tmp_secrets[ret_nsecrets] =
-                  virGetSecret(conn,
-                               secret->def->uuid,
-                               secret->def->usage_type,
-                               virSecretUsageIDForDef(secret->def))))
-                goto cleanup;
-        }
-        ret_nsecrets++;
-    }
-
-    if (tmp_secrets) {
-        /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(tmp_secrets, ret_nsecrets + 1));
-        *secrets = tmp_secrets;
-        tmp_secrets = NULL;
-    }
-
-    ret = ret_nsecrets;
-
- cleanup:
-    secretDriverUnlock();
-    if (tmp_secrets) {
-        for (i = 0; i < ret_nsecrets; i ++)
-            virObjectUnref(tmp_secrets[i]);
-    }
-    VIR_FREE(tmp_secrets);
-
-    return ret;
+    return virSecretObjListExport(conn, driver->secrets, secrets,
+                                  virConnectListAllSecretsCheckACL,
+                                  flags);
 }
-#undef MATCH
 
 
 static virSecretPtr
@@ -655,9 +410,7 @@ secretLookupByUUID(virConnectPtr conn,
     virSecretPtr ret = NULL;
     virSecretObjPtr secret;
 
-    secretDriverLock();
-
-    if (!(secret = secretFindByUUID(uuid))) {
+    if (!(secret = virSecretObjListFindByUUID(driver->secrets, uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
@@ -674,7 +427,7 @@ secretLookupByUUID(virConnectPtr conn,
                        virSecretUsageIDForDef(secret->def));
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
     return ret;
 }
 
@@ -687,9 +440,8 @@ secretLookupByUsage(virConnectPtr conn,
     virSecretPtr ret = NULL;
     virSecretObjPtr secret;
 
-    secretDriverLock();
-
-    if (!(secret = secretFindByUsage(usageType, usageID))) {
+    if (!(secret = virSecretObjListFindByUsage(driver->secrets,
+                                               usageType, usageID))) {
         virReportError(VIR_ERR_NO_SECRET,
                        _("no secret with matching usage '%s'"), usageID);
         goto cleanup;
@@ -704,7 +456,7 @@ secretLookupByUsage(virConnectPtr conn,
                        virSecretUsageIDForDef(secret->def));
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
     return ret;
 }
 
@@ -724,69 +476,12 @@ secretDefineXML(virConnectPtr conn,
     if (!(new_attrs = virSecretDefParseString(xml)))
         return NULL;
 
-    secretDriverLock();
-
     if (virSecretDefineXMLEnsureACL(conn, new_attrs) < 0)
         goto cleanup;
 
-    if (!(secret = secretFindByUUID(new_attrs->uuid))) {
-        /* No existing secret with same UUID,
-         * try look for matching usage instead */
-        const char *usageID = virSecretUsageIDForDef(new_attrs);
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        if ((secret = secretFindByUsage(new_attrs->usage_type, usageID))) {
-            virUUIDFormat(secret->def->uuid, uuidstr);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s already defined for "
-                             "use with %s"),
-                           uuidstr, usageID);
-            goto cleanup;
-        }
-
-        /* No existing secret at all, create one */
-        if (!(secret = secretAssignDef(&driver->secrets, new_attrs)))
-            goto cleanup;
-
-        virUUIDFormat(secret->def->uuid, uuidstr);
-
-        /* Generate configFile using driver->configDir,
-         * the uuidstr, and .xml suffix */
-        if (!(secret->configFile = virFileBuildPath(driver->configDir,
-                                                    uuidstr, ".xml"))) {
-            secretFree(secret);
-            goto cleanup;
-        }
-        /* Generate base64File using driver->configDir,
-         * the uuidstr, and .base64 suffix */
-        if (!(secret->base64File = virFileBuildPath(driver->configDir,
-                                                    uuidstr, ".base64"))) {
-            secretFree(secret);
-            goto cleanup;
-        }
-    } else {
-        const char *newUsageID = virSecretUsageIDForDef(new_attrs);
-        const char *oldUsageID = virSecretUsageIDForDef(secret->def);
-        if (STRNEQ(oldUsageID, newUsageID)) {
-            char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virUUIDFormat(secret->def->uuid, uuidstr);
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a secret with UUID %s is already defined "
-                             "for use with %s"),
-                           uuidstr, oldUsageID);
-            goto cleanup;
-        }
-
-        if (secret->def->private && !new_attrs->private) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot change private flag on existing secret"));
-            goto cleanup;
-        }
-
-        /* Got an existing secret matches attrs, so reuse that */
-        backup = secret->def;
-        secret->def = new_attrs;
-    }
+    if (!(secret = virSecretObjListAdd(driver->secrets, new_attrs,
+                                       driver->configDir, &backup)))
+        goto cleanup;
 
     if (!new_attrs->ephemeral) {
         if (backup && backup->ephemeral) {
@@ -815,21 +510,18 @@ secretDefineXML(virConnectPtr conn,
     goto cleanup;
 
  restore_backup:
-    if (backup) {
-        /* Error - restore previous state and free new attributes */
+    /* If we have a backup, then secret was defined before, so just restore
+     * the backup. The current secret->def (new_attrs) will be handled below.
+     * Otherwise, this is a new secret, thus remove it.
+     */
+    if (backup)
         secret->def = backup;
-    } else {
-        /* "secret" was added to the head of the list above */
-        if (listUnlink(&driver->secrets) != secret)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("list of secrets is inconsistent"));
-        else
-            secretFree(secret);
-    }
+    else
+        virSecretObjListRemove(driver->secrets, secret);
 
  cleanup:
     virSecretDefFree(new_attrs);
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
 
     return ret;
 }
@@ -843,8 +535,6 @@ secretGetXMLDesc(virSecretPtr obj,
 
     virCheckFlags(0, NULL);
 
-    secretDriverLock();
-
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
 
@@ -854,7 +544,7 @@ secretGetXMLDesc(virSecretPtr obj,
     ret = virSecretDefFormat(secret->def);
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
 
     return ret;
 }
@@ -874,8 +564,6 @@ secretSetValue(virSecretPtr obj,
 
     if (VIR_ALLOC_N(new_value, value_size) < 0)
         return -1;
-
-    secretDriverLock();
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
@@ -910,7 +598,7 @@ secretSetValue(virSecretPtr obj,
     memset(new_value, 0, value_size);
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
 
     VIR_FREE(new_value);
 
@@ -927,8 +615,6 @@ secretGetValue(virSecretPtr obj,
     virSecretObjPtr secret;
 
     virCheckFlags(0, NULL);
-
-    secretDriverLock();
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
@@ -957,7 +643,7 @@ secretGetValue(virSecretPtr obj,
     *value_size = secret->value_size;
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
 
     return ret;
 }
@@ -967,8 +653,6 @@ secretUndefine(virSecretPtr obj)
 {
     int ret = -1;
     virSecretObjPtr secret;
-
-    secretDriverLock();
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
@@ -980,13 +664,12 @@ secretUndefine(virSecretPtr obj)
         secretDeleteSaved(secret) < 0)
         goto cleanup;
 
-    listUnlinkSecret(&driver->secrets, secret);
-    secretFree(secret);
+    virSecretObjListRemove(driver->secrets, secret);
 
     ret = 0;
 
  cleanup:
-    secretDriverUnlock();
+    virSecretObjEndAPI(&secret);
 
     return ret;
 }
@@ -994,17 +677,12 @@ secretUndefine(virSecretPtr obj)
 static int
 secretStateCleanup(void)
 {
-    if (driver == NULL)
+    if (!driver)
         return -1;
 
     secretDriverLock();
 
-    while (driver->secrets != NULL) {
-        virSecretObjPtr secret;
-
-        secret = listUnlink(&driver->secrets);
-        secretFree(secret);
-    }
+    virObjectUnref(driver->secrets);
     VIR_FREE(driver->configDir);
 
     secretDriverUnlock();
@@ -1041,7 +719,10 @@ secretStateInitialize(bool privileged,
         goto error;
     VIR_FREE(base);
 
-    if (secretLoadAllConfigs(&driver->secrets, driver->configDir) < 0)
+    if (!(driver->secrets = virSecretObjListNew()))
+        goto error;
+
+    if (secretLoadAllConfigs(driver->secrets, driver->configDir) < 0)
         goto error;
 
     secretDriverUnlock();
@@ -1057,31 +738,13 @@ secretStateInitialize(bool privileged,
 static int
 secretStateReload(void)
 {
-    virSecretObjPtr new_secrets = NULL;
-
     if (!driver)
         return -1;
 
     secretDriverLock();
 
-    if (secretLoadAllConfigs(&new_secrets, driver->configDir) < 0)
-        goto end;
+    ignore_value(secretLoadAllConfigs(driver->secrets, driver->configDir));
 
-    /* Keep ephemeral secrets from current state.
-     * Discard non-ephemeral secrets that were removed
-     * by the secrets configDir.  */
-    while (driver->secrets != NULL) {
-        virSecretObjPtr secret;
-
-        secret = listUnlink(&driver->secrets);
-        if (secret->def->ephemeral)
-            listInsert(&new_secrets, secret);
-        else
-            secretFree(secret);
-    }
-    driver->secrets = new_secrets;
-
- end:
     secretDriverUnlock();
     return 0;
 }
