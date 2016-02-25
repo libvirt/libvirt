@@ -14851,12 +14851,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
         VIR_FREE(capsdata);
-    } else {
-        if (!def->os.machine) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing machine type"));
-            goto error;
-        }
     }
 
     /* Extract domain name */
