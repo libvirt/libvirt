@@ -428,17 +428,17 @@ secretLoad(virSecretObjPtr *list,
 }
 
 static int
-loadSecrets(virSecretObjPtr *dest)
+secretLoadAllConfigs(virSecretObjPtr *dest,
+                     const char *configDir)
 {
     DIR *dir = NULL;
     struct dirent *de;
     virSecretObjPtr list = NULL;
 
-    if (!(dir = opendir(driver->configDir))) {
+    if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        virReportSystemError(errno, _("cannot open '%s'"),
-                             driver->configDir);
+        virReportSystemError(errno, _("cannot open '%s'"), configDir);
         return -1;
     }
 
@@ -452,13 +452,13 @@ loadSecrets(virSecretObjPtr *dest)
         if (!virFileHasSuffix(de->d_name, ".xml"))
             continue;
 
-        if (!(path = virFileBuildPath(driver->configDir, de->d_name, NULL)))
+        if (!(path = virFileBuildPath(configDir, de->d_name, NULL)))
             continue;
 
         /* Copy the .xml file name, but use suffix ".base64" instead */
         if (VIR_STRDUP(base64name, de->d_name) < 0 ||
             !virFileStripSuffix(base64name, ".xml") ||
-            !(base64path = virFileBuildPath(driver->configDir,
+            !(base64path = virFileBuildPath(configDir,
                                             base64name, ".base64"))) {
             VIR_FREE(path);
             VIR_FREE(base64name);
@@ -1074,7 +1074,7 @@ secretStateInitialize(bool privileged,
         goto error;
     VIR_FREE(base);
 
-    if (loadSecrets(&driver->secrets) < 0)
+    if (secretLoadAllConfigs(&driver->secrets, driver->configDir) < 0)
         goto error;
 
     secretDriverUnlock();
@@ -1097,7 +1097,7 @@ secretStateReload(void)
 
     secretDriverLock();
 
-    if (loadSecrets(&new_secrets) < 0)
+    if (secretLoadAllConfigs(&new_secrets, driver->configDir) < 0)
         goto end;
 
     /* Keep ephemeral secrets from current state.
