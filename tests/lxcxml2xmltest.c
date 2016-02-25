@@ -26,6 +26,7 @@ struct testInfo {
     const char *name;
     int different;
     bool inactive_only;
+    unsigned int parse_flags;
 };
 
 static int
@@ -45,7 +46,7 @@ testCompareXMLToXMLHelper(const void *data)
     ret = testCompareDomXML2XMLFiles(caps, xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
                                      !info->inactive_only,
-                                     NULL, NULL, 0);
+                                     NULL, NULL, info->parse_flags);
  cleanup:
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
@@ -64,19 +65,20 @@ mymain(void)
     if (!(xmlopt = lxcDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, inactive)                     \
+# define DO_TEST_FULL(name, is_different, inactive, parse_flags)        \
     do {                                                                \
-        const struct testInfo info = {name, is_different, inactive};    \
+        const struct testInfo info = {name, is_different, inactive,     \
+                                      parse_flags};                     \
         if (virtTestRun("LXC XML-2-XML " name,                          \
                         testCompareXMLToXMLHelper, &info) < 0)          \
             ret = -1;                                                   \
     } while (0)
 
 # define DO_TEST(name) \
-    DO_TEST_FULL(name, 0, false)
+    DO_TEST_FULL(name, 0, false, 0)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, 1, false)
+    DO_TEST_FULL(name, 1, false, 0)
 
     /* Unset or set all envvars here that are copied in lxcdBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
@@ -91,6 +93,8 @@ mymain(void)
     DO_TEST("idmap");
     DO_TEST("capabilities");
     DO_TEST("sharenet");
+    DO_TEST_FULL("filesystem-root", 0, false,
+                 VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS);
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
