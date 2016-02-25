@@ -784,6 +784,7 @@ storagePoolDefineXML(virConnectPtr conn,
     if (virStoragePoolObjSaveDef(driver, pool, def) < 0) {
         virStoragePoolObjRemove(&driver->pools, pool);
         def = NULL;
+        pool = NULL;
         goto cleanup;
     }
     def = NULL;
