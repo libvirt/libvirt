@@ -541,7 +541,8 @@ int access(const char *path, int mode)
         ret = realaccess(newpath, mode);
         free(newpath);
     } else if (STREQ(path, "/proc/cgroups") ||
-               STREQ(path, "/proc/self/cgroup")) {
+               STREQ(path, "/proc/self/cgroup") ||
+               STREQ(path, SYSFS_CPU_PRESENT)) {
         /* These files are readable for all. */
         ret = (mode == F_OK || mode == R_OK) ? 0 : -1;
     } else if (STREQ(path, "/proc/mounts")) {
