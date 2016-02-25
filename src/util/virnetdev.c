@@ -3119,7 +3119,7 @@ virNetDevRDMAFeature(const char *ifname,
         virReportSystemError(errno,
                              _("Failed to opendir path '%s'"),
                              SYSFS_INFINIBAND_DIR);
-        goto cleanup;
+        return -1;
     }
 
     if (virAsprintf(&eth_devpath, SYSFS_NET_DIR "%s/device/resource", ifname) < 0)
