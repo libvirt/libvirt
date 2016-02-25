@@ -1054,13 +1054,16 @@ int
 testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                            const char *infile, const char *outfile, bool live,
                            testCompareDomXML2XMLPreFormatCallback cb,
-                           const void *opaque)
+                           const void *opaque, unsigned int parseFlags)
 {
     char *actual = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
     unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+
+    parse_flags |= parseFlags;
+
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 

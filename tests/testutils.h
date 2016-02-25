@@ -142,6 +142,7 @@ int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                const char *outfile,
                                bool live,
                                testCompareDomXML2XMLPreFormatCallback cb,
-                               const void *opaque);
+                               const void *opaque,
+                               unsigned int parseFlags);
 
 #endif /* __VIT_TEST_UTILS_H__ */

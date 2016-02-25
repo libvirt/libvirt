@@ -54,7 +54,7 @@ testXML2XMLActive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->inName, info->outActiveName, true,
-                                      qemuXML2XMLPreFormatCallback, opaque);
+                                      qemuXML2XMLPreFormatCallback, opaque, 0);
 }
 
 
@@ -65,7 +65,7 @@ testXML2XMLInactive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
                                       info->outInactiveName, false,
-                                      qemuXML2XMLPreFormatCallback, opaque);
+                                      qemuXML2XMLPreFormatCallback, opaque, 0);
 }
 
 
