@@ -4891,7 +4891,8 @@ qemu-kvm -net nic,model=? /dev/null
     <dl>
       <dt><code>graphics</code></dt>
       <dd>The <code>graphics</code> element has a mandatory <code>type</code>
-        attribute which takes the value "sdl", "vnc", "rdp" or "desktop":
+        attribute which takes the value "sdl", "vnc", "spice", "rdp" or
+        "desktop":
         <dl>
           <dt><code>"sdl"</code></dt>
           <dd>
