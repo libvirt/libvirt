@@ -9853,6 +9853,8 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     bool live_flag = false;
     virshCtrlData data = { .dconn = NULL };
 
+    VSH_EXCLUSIVE_OPTIONS("live", "offline");
+
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
