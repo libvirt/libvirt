@@ -2220,7 +2220,7 @@ qemuProcessSetupEmulator(virDomainObjPtr vm)
                                true, &cgroup_emulator) < 0)
             goto cleanup;
 
-        if (virCgroupMoveTask(priv->cgroup, cgroup_emulator) < 0)
+        if (virCgroupAddTask(cgroup_emulator, vm->pid) < 0)
             goto cleanup;
 
 

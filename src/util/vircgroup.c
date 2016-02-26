@@ -1224,99 +1224,6 @@ virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
 
 
 static int
-virCgroupAddTaskStrController(virCgroupPtr group,
-                              const char *pidstr,
-                              int controller)
-{
-    char *str = NULL, *cur = NULL, *next = NULL;
-    unsigned long long p = 0;
-    int rc = 0;
-    char *endp;
-
-    if (VIR_STRDUP(str, pidstr) < 0)
-        return -1;
-
-    cur = str;
-    while (*cur != '\0') {
-        if (virStrToLong_ull(cur, &endp, 10, &p) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse '%s' as an integer"), cur);
-            goto cleanup;
-        }
-
-        if (virCgroupAddTaskController(group, p, controller) < 0) {
-            /* A thread that exits between when we first read the source
-             * tasks and now is not fatal.  */
-            if (virLastErrorIsSystemErrno(ESRCH))
-                virResetLastError();
-            else
-                goto cleanup;
-        }
-
-        next = strchr(cur, '\n');
-        if (next) {
-            cur = next + 1;
-            *next = '\0';
-        } else {
-            break;
-        }
-    }
-
- cleanup:
-    VIR_FREE(str);
-    return rc;
-}
-
-
-/**
- * virCgroupMoveTask:
- *
- * @src_group: The source cgroup where all tasks are removed from
- * @dest_group: The destination where all tasks are added to
- *
- * Returns: 0 on success or -1 on failure
- */
-int
-virCgroupMoveTask(virCgroupPtr src_group, virCgroupPtr dest_group)
-{
-    int ret = -1;
-    char *content = NULL;
-    size_t i;
-
-    for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-        if (!src_group->controllers[i].mountPoint ||
-            !dest_group->controllers[i].mountPoint)
-            continue;
-
-        /* We must never move tasks in systemd's hierarchy */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
-            continue;
-
-        /* New threads are created in the same group as their parent;
-         * but if a thread is created after we first read we aren't
-         * aware that it needs to move.  Therefore, we must iterate
-         * until content is empty.  */
-        while (1) {
-            VIR_FREE(content);
-            if (virCgroupGetValueStr(src_group, i, "tasks", &content) < 0)
-                return -1;
-
-            if (!*content)
-                break;
-
-            if (virCgroupAddTaskStrController(dest_group, content, i) < 0)
-                goto cleanup;
-        }
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(content);
-    return ret;
-}
-
-
-static int
 virCgroupSetPartitionSuffix(const char *path, char **res)
 {
     char **tokens;
@@ -4317,16 +4224,6 @@ int
 virCgroupAddTaskController(virCgroupPtr group ATTRIBUTE_UNUSED,
                            pid_t pid ATTRIBUTE_UNUSED,
                            int controller ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupMoveTask(virCgroupPtr src_group ATTRIBUTE_UNUSED,
-                  virCgroupPtr dest_group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));

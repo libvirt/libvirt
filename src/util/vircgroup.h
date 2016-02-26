@@ -132,9 +132,6 @@ int virCgroupAddTaskController(virCgroupPtr group,
                                pid_t pid,
                                int controller);
 
-int virCgroupMoveTask(virCgroupPtr src_group,
-                      virCgroupPtr dest_group);
-
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
 
