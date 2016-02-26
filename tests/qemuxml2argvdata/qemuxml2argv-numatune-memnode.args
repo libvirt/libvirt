@@ -22,7 +22,7 @@ host-nodes=5,host-nodes=7,policy=bind \
 -uuid 9f4b6512-e73a-4a25-93e8-5307802821ce \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \

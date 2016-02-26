@@ -64,15 +64,18 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    bool monitor_json,
                                    virQEMUCapsPtr qemuCaps,
                                    const char *migrateURI,
-                                   virDomainSnapshotObjPtr current_snapshot,
+                                   virDomainSnapshotObjPtr snapshot,
                                    virNetDevVPortProfileOp vmop,
                                    qemuBuildCommandLineCallbacksPtr callbacks,
-                                   bool forXMLToArgv,
+                                   bool standalone,
                                    bool enableFips,
                                    virBitmapPtr nodeset,
                                    size_t *nnicindexes,
-                                   int **nicindexes)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(10);
+                                   int **nicindexes,
+                                   const char *domainLibDir,
+                                   const char *domainChannelTargetDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(10)
+    ATTRIBUTE_NONNULL(16) ATTRIBUTE_NONNULL(17);
 
 /* Generate '-device' string for chardev device */
 int

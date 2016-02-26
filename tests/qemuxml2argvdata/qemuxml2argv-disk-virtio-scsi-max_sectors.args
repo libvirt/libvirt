@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -device virtio-scsi-pci,id=scsi0,max_sectors=512,bus=pci.0,addr=0x3 \

@@ -204,6 +204,8 @@ struct _qemuDomainObjPrivate {
     bool signalIOError; /* true if the domain condition should be signalled on
                            I/O error */
     char *machineName;
+    char *libDir;            /* base path for per-domain files */
+    char *channelTargetDir;  /* base path for per-domain channel targets */
 };
 
 # define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
@@ -528,4 +530,10 @@ bool qemuDomainSupportsNetdev(virDomainDefPtr def,
 
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 
+int qemuDomainSetPrivatePaths(char **domainLibDir,
+                              char **domainChannelTargetDir,
+                              const char *confLibDir,
+                              const char *confChannelDir,
+                              const char *domainName,
+                              int domainId);
 #endif /* __QEMU_DOMAIN_H__ */

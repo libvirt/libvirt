@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=spice \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \

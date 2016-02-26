@@ -25,9 +25,8 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
-int qemuProcessPrepareMonitorChr(virQEMUDriverConfigPtr cfg,
-                                 virDomainChrSourceDefPtr monConfig,
-                                 const char *vm);
+int qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
+                                 const char *domainDir);
 
 int qemuProcessStartCPUs(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,

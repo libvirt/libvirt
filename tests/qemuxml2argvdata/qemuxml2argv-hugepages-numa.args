@@ -19,7 +19,7 @@ policy=bind \
 -device pc-dimm,node=0,memdev=memdimm0,id=dimm0 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-fedora/monitor.sock,server,nowait \
 -rtc base=utc,driftfix=slew \
 -no-kvm-pit-reinjection \
 -global PIIX4_PM.disable_s3=1 \

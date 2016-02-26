@@ -472,6 +472,63 @@ qemuDomainDiskPrivateNew(void)
 }
 
 
+/* This is the old way of setting up per-domain directories */
+static int
+qemuDomainSetPrivatePathsOld(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+
+    if (!priv->libDir &&
+        virAsprintf(&priv->libDir, "%s/domain-%s",
+                    cfg->libDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (!priv->channelTargetDir &&
+        virAsprintf(&priv->channelTargetDir, "%s/domain-%s",
+                    cfg->channelTargetDir, vm->def->name) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+/*
+ * The newer version uses a magic number for one reason.  The thing is
+ * that we need a bit shorter name in order to be able to connect to
+ * it using UNIX sockets which have path length limitation.  Since the
+ * length is not guaranteed to be constant and similarly the lib
+ * directory is configurable and so on, we need to rather choose an
+ * arbitrary maximum length of the domain name that will be used.
+ * Thanks to the fact that we are now saving it in the status XML, we
+ * can change it later on whenever we feel like so.
+ */
+int
+qemuDomainSetPrivatePaths(char **domainLibDir, char **domainChannelTargetDir,
+                          const char *confLibDir, const char *confChannelDir,
+                          const char *domainName, int domainId)
+{
+    const int dommaxlen = 20;
+
+    if (!*domainLibDir &&
+        virAsprintf(domainLibDir, "%s/domain-%d-%.*s",
+                    confLibDir, domainId, dommaxlen, domainName) < 0)
+        return -1;
+
+    if (!*domainChannelTargetDir &&
+        virAsprintf(domainChannelTargetDir, "%s/domain-%d-%.*s",
+                    confChannelDir, domainId, dommaxlen, domainName) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static void *
 qemuDomainObjPrivateAlloc(void)
 {
@@ -534,6 +591,10 @@ qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->cleanupCallbacks);
     virBitmapFree(priv->autoNodeset);
     virBitmapFree(priv->autoCpuset);
+
+    VIR_FREE(priv->libDir);
+    VIR_FREE(priv->channelTargetDir);
+
     VIR_FREE(priv);
 }
 
@@ -654,6 +715,11 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<numad nodeset='%s'/>\n", nodeset);
         VIR_FREE(nodeset);
     }
+
+    /* Various per-domain paths */
+    virBufferEscapeString(buf, "<libDir path='%s'/>\n", priv->libDir);
+    virBufferEscapeString(buf, "<channelTargetDir path='%s'/>\n",
+                          priv->channelTargetDir);
 
     return 0;
 }
@@ -858,6 +924,15 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     virObjectUnref(caps);
     VIR_FREE(tmp);
+
+    if ((tmp = virXPathString("string(./libDir/@path)", ctxt)))
+        priv->libDir = tmp;
+    if ((tmp = virXPathString("string(./channelTargetDir/@path)", ctxt)))
+        priv->channelTargetDir = tmp;
+    tmp = NULL;
+
+    if (qemuDomainSetPrivatePathsOld(driver, vm) < 0)
+        goto error;
 
     return 0;
 

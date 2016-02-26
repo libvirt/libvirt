@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-test-bios/monitor.sock,server,nowait \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \

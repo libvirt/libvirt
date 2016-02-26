@@ -266,6 +266,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     size_t i;
     virBitmapPtr nodeset = NULL;
     bool testFailed = false;
+    char *domainLibDir = NULL;
+    char *domainChannelTargetDir = NULL;
 
     if (!(conn = virGetConnect()))
         goto out;
@@ -291,10 +293,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vmdef->id = -1;
 
+    if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
+                                  "/tmp/lib", "/tmp/channel",
+                                  vmdef->name, vmdef->id) < 0)
+        goto out;
+
     memset(&monitor_chr, 0, sizeof(monitor_chr));
-    monitor_chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    monitor_chr.data.nix.path = (char *)"/tmp/test-monitor";
-    monitor_chr.data.nix.listen = true;
+    if (qemuProcessPrepareMonitorChr(&monitor_chr, domainLibDir) < 0)
+        goto out;
 
     virQEMUCapsSetList(extraFlags,
                        QEMU_CAPS_NO_ACPI,
@@ -353,7 +359,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
-                                     nodeset, NULL, NULL)))
+                                     nodeset, NULL, NULL,
+                                     domainLibDir, domainChannelTargetDir)))
         testFailed = true;
 
     if (testFailed) {
@@ -400,6 +407,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virDomainDefFree(vmdef);
     virObjectUnref(conn);
     virBitmapFree(nodeset);
+    VIR_FREE(domainLibDir);
+    VIR_FREE(domainChannelTargetDir);
     return ret;
 }
 

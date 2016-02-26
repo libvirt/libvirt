@@ -13,7 +13,8 @@ QEMU_AUDIO_DRV=spice \
 -smp 4 \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fdr/monitor.sock,server,\
+nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot order=cna,menu=off \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \

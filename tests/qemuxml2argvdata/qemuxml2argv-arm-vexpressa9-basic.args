@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-armtest/monitor.sock,server,nowait \
 -boot c \
 -kernel /arm.kernel \
 -initrd /arm.initrd \

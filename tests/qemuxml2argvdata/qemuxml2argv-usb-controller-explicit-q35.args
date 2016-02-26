@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -device pci-bridge,chassis_nr=56,id=pci.2,bus=pci.1,addr=0x1 \

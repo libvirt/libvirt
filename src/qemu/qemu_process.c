@@ -2855,15 +2855,14 @@ static int qemuProcessHook(void *data)
 }
 
 int
-qemuProcessPrepareMonitorChr(virQEMUDriverConfigPtr cfg,
-                             virDomainChrSourceDefPtr monConfig,
-                             const char *vm)
+qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
+                             const char *domainDir)
 {
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = true;
 
-    if (virAsprintf(&monConfig->data.nix.path, "%s/domain-%s/monitor.sock",
-                    cfg->libDir, vm) < 0)
+    if (virAsprintf(&monConfig->data.nix.path, "%s/monitor.sock",
+                    domainDir) < 0)
         return -1;
     return 0;
 }
@@ -4263,13 +4262,9 @@ qemuProcessSetupBalloon(virQEMUDriverPtr driver,
 static int
 qemuProcessMakeDir(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
-                   const char *parentDir)
+                   const char *path)
 {
-    char *path = NULL;
     int ret = -1;
-
-    if (virAsprintf(&path, "%s/domain-%s", parentDir, vm->def->name) < 0)
-        goto cleanup;
 
     if (virFileMakePathWithMode(path, 0750) < 0) {
         virReportSystemError(errno, _("Cannot create directory '%s'"), path);
@@ -4283,7 +4278,6 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(path);
     return ret;
 }
 
@@ -4908,11 +4902,19 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (qemuDomainSetPrivatePaths(&priv->libDir,
+                                  &priv->channelTargetDir,
+                                  cfg->libDir,
+                                  cfg->channelTargetDir,
+                                  vm->def->name,
+                                  vm->def->id) < 0)
+        goto cleanup;
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
     VIR_DEBUG("Preparing monitor state");
-    if (qemuProcessPrepareMonitorChr(cfg, priv->monConfig, vm->def->name) < 0)
+    if (qemuProcessPrepareMonitorChr(priv->monConfig, priv->libDir) < 0)
         goto cleanup;
 
     priv->monJSON = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON);
@@ -5000,7 +5002,9 @@ qemuProcessLaunch(virConnectPtr conn,
                                      &buildCommandLineCallbacks, false,
                                      qemuCheckFips(),
                                      priv->autoNodeset,
-                                     &nnicindexes, &nicindexes)))
+                                     &nnicindexes, &nicindexes,
+                                     priv->libDir,
+                                     priv->channelTargetDir)))
         goto cleanup;
 
     if (incoming && incoming->fd != -1)
@@ -5010,8 +5014,8 @@ qemuProcessLaunch(virConnectPtr conn,
      * Create all per-domain directories in order to make sure domain
      * with any possible seclabels can access it.
      */
-    if (qemuProcessMakeDir(driver, vm, cfg->libDir) < 0 ||
-        qemuProcessMakeDir(driver, vm, cfg->channelTargetDir) < 0)
+    if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
+        qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
@@ -5456,7 +5460,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virNetDevVPortProfilePtr vport = NULL;
     size_t i;
     char *timestamp;
-    char *tmppath = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr logCtxt = NULL;
 
@@ -5542,15 +5545,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         priv->monConfig = NULL;
     }
 
-    ignore_value(virAsprintf(&tmppath, "%s/domain-%s",
-                             cfg->libDir, vm->def->name));
-    virFileDeleteTree(tmppath);
-    VIR_FREE(tmppath);
-
-    ignore_value(virAsprintf(&tmppath, "%s/domain-%s",
-                             cfg->channelTargetDir, vm->def->name));
-    virFileDeleteTree(tmppath);
-    VIR_FREE(tmppath);
+    virFileDeleteTree(priv->libDir);
+    virFileDeleteTree(priv->channelTargetDir);
 
     ignore_value(virDomainChrDefForeach(vm->def,
                                         false,

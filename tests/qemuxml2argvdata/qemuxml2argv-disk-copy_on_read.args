@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 468404ad-d49c-40f2-9e14-02294f9c1be3 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-test/monitor.sock,server,nowait \
 -no-acpi \
 -boot dc \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \

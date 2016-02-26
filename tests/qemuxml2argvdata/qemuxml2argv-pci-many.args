@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-fdr-br/monitor.sock,server,nowait \
 -boot c \
 -usb \
 -drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,id=drive-ide0-1-0 \

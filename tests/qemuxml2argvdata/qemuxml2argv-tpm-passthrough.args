@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 11d7cd22-da89-3094-6212-079a48a309a1 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-TPM-VM/monitor.sock,server,nowait \
 -boot c \
 -usb \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/tpm0,\

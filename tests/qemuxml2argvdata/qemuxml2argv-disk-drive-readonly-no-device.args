@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \

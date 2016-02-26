@@ -14,7 +14,8 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/test-monitor,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -device virtio-serial-s390,id=virtio-serial0 \

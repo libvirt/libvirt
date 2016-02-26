@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=spice \
 -smp 2 \
 -uuid 553effab-b5e1-2d80-dfe3-da4344826c43 \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-f14/monitor.sock,server,nowait \
 -boot dc \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \

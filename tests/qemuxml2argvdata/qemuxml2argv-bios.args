@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -device sga \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-test-bios/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \

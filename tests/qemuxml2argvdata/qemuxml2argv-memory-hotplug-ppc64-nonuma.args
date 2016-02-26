@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -kernel /media/ram/uImage \

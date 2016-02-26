@@ -7019,6 +7019,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     size_t i;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
+    char *domainLibDir = NULL;
+    char *domainChannelTargetDir = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -7046,6 +7048,12 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     if (qemuProcessStartValidate(def, qemuCaps, false, false) < 0)
+        goto cleanup;
+
+    /* Generate per-domain paths because we don't have the domain object */
+    if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
+                                  cfg->libDir, cfg->channelTargetDir,
+                                  def->name, -1) < 0)
         goto cleanup;
 
     /* Since we're just exporting args, we can't do bridge/network/direct
@@ -7138,7 +7146,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     monitor_json = virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
 
-    if (qemuProcessPrepareMonitorChr(cfg, &monConfig, def->name) < 0)
+    if (qemuProcessPrepareMonitorChr(&monConfig, def->name) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
@@ -7166,7 +7174,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                      &buildCommandLineCallbacks,
                                      true,
                                      qemuCheckFips(),
-                                     NULL, NULL, NULL)))
+                                     NULL, NULL, NULL,
+                                     domainLibDir,
+                                     domainChannelTargetDir)))
         goto cleanup;
 
     ret = virCommandToString(cmd);
@@ -7177,6 +7187,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     virDomainDefFree(def);
     virObjectUnref(caps);
     virObjectUnref(cfg);
+    VIR_FREE(domainLibDir);
+    VIR_FREE(domainChannelTargetDir);
     return ret;
 }
 

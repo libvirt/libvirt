@@ -19,7 +19,7 @@ uuid=c7a5fdbd-edaf-9455-926a-d65c16db1809,sku=1234567890,family=Red Hat' \
 serial=CZC1065993,asset=CZC1065993,location=Upside down' \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \

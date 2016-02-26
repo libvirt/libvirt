@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
 -boot c \
 -usb \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \

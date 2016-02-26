@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -uuid c7a5fdbd-edaf-9466-926a-d65c16db1809 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/test-monitor,server,nowait \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest2/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -device lsi,id=scsi0,bus=pci.0,addr=0x3 \
