@@ -16164,33 +16164,6 @@ qemuDomainOpenChannel(virDomainPtr dom,
     return ret;
 }
 
-static char *
-qemuDiskPathToAlias(virDomainObjPtr vm, const char *path, int *idxret)
-{
-    int idx;
-    char *ret = NULL;
-    virDomainDiskDefPtr disk;
-
-    idx = virDomainDiskIndexByName(vm->def, path, true);
-    if (idx < 0)
-        goto cleanup;
-
-    disk = vm->def->disks[idx];
-    if (idxret)
-        *idxret = idx;
-
-    if (virDomainDiskGetSource(disk)) {
-        if (virAsprintf(&ret, "drive-%s", disk->info.alias) < 0)
-            return NULL;
-    }
-
- cleanup:
-    if (!ret) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("No device found for specified path"));
-    }
-    return ret;
-}
 
 /* Called while holding the VM job lock, to implement a block job
  * abort with pivot; this updates the VM definition as appropriate, on
@@ -16312,7 +16285,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
     bool modern;
-    int idx;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
@@ -16356,9 +16328,11 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         }
     }
 
-    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
-    disk = vm->def->disks[idx];
+
+    if (!(device = qemuAliasFromDisk(disk)))
+        goto endjob;
 
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
@@ -16439,7 +16413,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool save = false;
-    int idx;
     bool modern;
     bool pivot = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT);
     bool async = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC);
@@ -16467,9 +16440,11 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
         goto endjob;
 
-    if (!(device = qemuDiskPathToAlias(vm, path, &idx)))
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
-    disk = vm->def->disks[idx];
+
+    if (!(device = qemuAliasFromDisk(disk)))
+        goto endjob;
 
     if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
         disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_READY) {
@@ -16650,6 +16625,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
                            unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainDiskDefPtr disk;
     int ret = -1;
     virDomainObjPtr vm;
     bool modern;
@@ -16687,7 +16663,10 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
         goto endjob;
 
-    if (!(device = qemuDiskPathToAlias(vm, path, NULL)))
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
+        goto endjob;
+
+    if (!(device = qemuAliasFromDisk(disk)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -16726,7 +16705,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
-    int idx;
     struct stat st;
     bool need_unlink = false;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -16749,10 +16727,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device)
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
-    disk = vm->def->disks[idx];
+
+    if (!(device = qemuAliasFromDisk(disk)))
+        goto endjob;
+
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
@@ -17083,7 +17063,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     char *device = NULL;
     int ret = -1;
-    int idx;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
     unsigned int topIndex = 0;
@@ -17138,10 +17117,11 @@ qemuDomainBlockCommit(virDomainPtr dom,
         speed <<= 20;
     }
 
-    device = qemuDiskPathToAlias(vm, path, &idx);
-    if (!device)
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
-    disk = vm->def->disks[idx];
+
+    if (!(device = qemuAliasFromDisk(disk)))
+        goto endjob;
 
     if (!disk->src->path) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17458,7 +17438,7 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
 
 static int
 qemuDomainSetBlockIoTune(virDomainPtr dom,
-                         const char *disk,
+                         const char *path,
                          virTypedParameterPtr params,
                          int nparams,
                          unsigned int flags)
@@ -17472,8 +17452,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     char *device = NULL;
     int ret = -1;
     size_t i;
-    int idx = -1;
     virDomainDiskDefPtr conf_disk = NULL;
+    virDomainDiskDefPtr disk;
     bool set_bytes = false;
     bool set_iops = false;
     bool set_bytes_max = false;
@@ -17542,7 +17522,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto endjob;
 
     if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
-                                VIR_DOMAIN_TUNABLE_BLKDEV_DISK, disk) < 0)
+                                VIR_DOMAIN_TUNABLE_BLKDEV_DISK, path) < 0)
         goto endjob;
 
     for (i = 0; i < nparams; i++) {
@@ -17707,10 +17687,10 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!(conf_disk = virDomainDiskByName(persistentDef, disk, true))) {
+        if (!(conf_disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("missing persistent configuration for disk '%s'"),
-                           disk);
+                           path);
             goto endjob;
         }
     }
@@ -17733,13 +17713,16 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
              goto endjob;
         }
 
-        if (!(device = qemuDiskPathToAlias(vm, disk, &idx)))
+        if (!(disk = qemuDomainDiskByName(vm->def, path)))
+            goto endjob;
+
+        if (!(device = qemuAliasFromDisk(disk)))
             goto endjob;
 
         /* If the user didn't specify bytes limits, inherit previous
          * values; likewise if the user didn't specify iops
          * limits.  */
-        oldinfo = &vm->def->disks[idx]->blkdeviotune;
+        oldinfo = &disk->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
             info.read_bytes_sec = oldinfo->read_bytes_sec;
@@ -17769,7 +17752,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             ret = -1;
         if (ret < 0)
             goto endjob;
-        vm->def->disks[idx]->blkdeviotune = info;
+        disk->blkdeviotune = info;
 
         ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps);
         if (ret < 0)
@@ -17816,11 +17799,12 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
 static int
 qemuDomainGetBlockIoTune(virDomainPtr dom,
-                         const char *disk,
+                         const char *path,
                          virTypedParameterPtr params,
                          int *nparams,
                          unsigned int flags)
 {
+    virDomainDiskDefPtr disk;
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
@@ -17880,8 +17864,10 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        device = qemuDiskPathToAlias(vm, disk, NULL);
-        if (!device)
+        if (!(disk = qemuDomainDiskByName(vm->def, path)))
+            goto endjob;
+
+        if (!(device = qemuAliasFromDisk(disk)))
             goto endjob;
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, &reply, supportMaxOptions);
@@ -17892,14 +17878,13 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        virDomainDiskDefPtr diskDef;
-        if (!(diskDef = virDomainDiskByName(persistentDef, disk, true))) {
+        if (!(disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("disk '%s' was not found in the domain config"),
-                           disk);
+                           path);
             goto endjob;
         }
-        reply = diskDef->blkdeviotune;
+        reply = disk->blkdeviotune;
     }
 
     for (i = 0; i < QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX && i < *nparams; i++) {

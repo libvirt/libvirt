@@ -549,4 +549,7 @@ int qemuDomainSetPrivatePaths(char **domainLibDir,
                               const char *confChannelDir,
                               const char *domainName,
                               int domainId);
+
+virDomainDiskDefPtr qemuDomainDiskByName(virDomainDefPtr def, const char *name);
+
 #endif /* __QEMU_DOMAIN_H__ */

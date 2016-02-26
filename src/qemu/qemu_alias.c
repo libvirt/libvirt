@@ -484,3 +484,19 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 
     return 0;
 }
+
+
+char *
+qemuAliasFromDisk(const virDomainDiskDef *disk)
+{
+    char *ret;
+
+    if (!disk->info.alias) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("disk does not have an alias"));
+        return NULL;
+    }
+
+    ignore_value(virAsprintf(&ret, "drive-%s", disk->info.alias));
+
+    return ret;
+}

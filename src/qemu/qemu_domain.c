@@ -4558,3 +4558,19 @@ qemuDomainNetVLAN(virDomainNetDefPtr def)
 {
     return qemuDomainDeviceAliasIndex(&def->info, "net");
 }
+
+
+virDomainDiskDefPtr
+qemuDomainDiskByName(virDomainDefPtr def,
+                     const char *name)
+{
+    virDomainDiskDefPtr ret;
+
+    if (!(ret = virDomainDiskByName(def, name, true))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("No device found for specified path"));
+        return NULL;
+    }
+
+    return ret;
+}

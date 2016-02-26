@@ -61,4 +61,6 @@ int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 
 int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                const char *prefix);
+
+char *qemuAliasFromDisk(const virDomainDiskDef *disk);
 #endif /* __QEMU_ALIAS_H__*/
