@@ -1183,7 +1183,7 @@ virCgroupAddTask(virCgroupPtr group, pid_t pid)
         if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
             continue;
 
-        if (virCgroupSetValueU64(group, i, "tasks", pid) < 0)
+        if (virCgroupAddTaskController(group, pid, i) < 0)
             goto cleanup;
     }
 
