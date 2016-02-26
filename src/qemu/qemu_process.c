@@ -5155,6 +5155,10 @@ qemuProcessLaunch(virConnectPtr conn,
         qemuProcessInitCpuAffinity(vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting emulator tuning/settings");
+    if (qemuProcessSetupEmulator(vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def,
@@ -5195,10 +5199,6 @@ qemuProcessLaunch(virConnectPtr conn,
         virDomainConfVMNWFilterTeardown(vm);
 
     if (rv == -1) /* The VM failed to start */
-        goto cleanup;
-
-    VIR_DEBUG("Setting emulator tuning/settings");
-    if (qemuProcessSetupEmulator(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Waiting for monitor to show up");
