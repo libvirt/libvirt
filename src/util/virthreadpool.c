@@ -183,6 +183,7 @@ virThreadPoolExpand(virThreadPoolPtr pool, size_t gain, bool priority)
                                 true,
                                 data) < 0) {
             VIR_FREE(data);
+            virReportSystemError(errno, "%s", _("Failed to create thread"));
             goto error;
         }
     }
