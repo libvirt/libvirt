@@ -755,8 +755,10 @@
 
     <h2><a name="StorageBackendZFS">ZFS pools</a></h2>
     <p>
-      This provides a pool based on the ZFS filesystem. It is currently
-      supported on FreeBSD only.
+      This provides a pool based on the ZFS filesystem. Initially it was developed
+      for FreeBSD, and <span class="since">since 1.3.2</span> experimental support
+      for <a href="http://zfsonlinux.org/">ZFS on Linux</a> version 0.6.4 or newer
+      is available.
     </p>
 
     <p>A pool could either be created manually using the <code>zpool create</code>
