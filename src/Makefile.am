@@ -365,7 +365,8 @@ INTERFACE_CONF_SOURCES =                                       \
 
 # Secret driver generic impl APIs
 SECRET_CONF_SOURCES =                                          \
-		conf/secret_conf.h conf/secret_conf.c
+		conf/secret_conf.h conf/secret_conf.c          \
+		conf/virsecretobj.h conf/virsecretobj.c
 
 # Network driver generic impl APIs
 NODE_DEVICE_CONF_SOURCES =                                     \

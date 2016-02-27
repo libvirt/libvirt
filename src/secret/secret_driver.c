@@ -35,6 +35,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "secret_conf.h"
+#include "virsecretobj.h"
 #include "secret_driver.h"
 #include "virthread.h"
 #include "viruuid.h"
@@ -51,17 +52,6 @@ VIR_LOG_INIT("secret.secret_driver");
 enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
 /* Internal driver state */
-
-typedef struct _virSecretObj virSecretObj;
-typedef virSecretObj *virSecretObjPtr;
-struct _virSecretObj {
-    virSecretObjPtr next;
-    char *configFile;
-    char *base64File;
-    virSecretDefPtr def;
-    unsigned char *value;       /* May be NULL */
-    size_t value_size;
-};
 
 typedef struct _virSecretDriverState virSecretDriverState;
 typedef virSecretDriverState *virSecretDriverStatePtr;
