@@ -436,6 +436,9 @@ struct virSecretObjListGetHelperData {
     virConnectPtr conn;
     virSecretObjListACLFilter filter;
     int got;
+    char **uuids;
+    int nuuids;
+    bool error;
 };
 
 
@@ -447,10 +450,26 @@ virSecretObjListGetHelper(void *payload,
     struct virSecretObjListGetHelperData *data = opaque;
     virSecretObjPtr obj = payload;
 
+    if (data->error)
+        return 0;
+
+    if (data->nuuids >= 0 && data->got == data->nuuids)
+        return 0;
+
     virObjectLock(obj);
 
     if (data->filter && !data->filter(data->conn, obj->def))
         goto cleanup;
+
+    if (data->uuids) {
+        char *uuidstr;
+
+        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0)
+            goto cleanup;
+
+        virUUIDFormat(obj->def->uuid, uuidstr);
+        data->uuids[data->got] = uuidstr;
+    }
 
     data->got++;
 
@@ -466,7 +485,8 @@ virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
                              virConnectPtr conn)
 {
     struct virSecretObjListGetHelperData data = {
-        .conn = conn, .filter = filter, .got = 0 };
+        .conn = conn, .filter = filter, .got = 0,
+        .uuids = NULL, .nuuids = -1, .error = false };
 
     virObjectLock(secrets);
     virHashForEach(secrets->objs, virSecretObjListGetHelper, &data);
@@ -589,5 +609,36 @@ virSecretObjListExport(virConnectPtr conn,
         virObjectUnref(data.secrets[--data.nsecrets]);
 
     VIR_FREE(data.secrets);
+    return ret;
+}
+
+
+int
+virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
+                         char **uuids,
+                         int nuuids,
+                         virSecretObjListACLFilter filter,
+                         virConnectPtr conn)
+{
+    int ret = -1;
+
+    struct virSecretObjListGetHelperData data = {
+        .conn = conn, .filter = filter, .got = 0,
+        .uuids = uuids, .nuuids = nuuids, .error = false };
+
+    virObjectLock(secrets);
+    virHashForEach(secrets->objs, virSecretObjListGetHelper, &data);
+    virObjectUnlock(secrets);
+
+    if (data.error)
+        goto cleanup;
+
+    ret = data.got;
+
+ cleanup:
+    if (ret < 0) {
+        while (data.got)
+            VIR_FREE(data.uuids[--data.got]);
+    }
     return ret;
 }

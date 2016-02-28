@@ -86,4 +86,10 @@ int virSecretObjListExport(virConnectPtr conn,
                            virSecretObjListACLFilter filter,
                            unsigned int flags);
 
+int virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
+                             char **uuids,
+                             int nuuids,
+                             virSecretObjListACLFilter filter,
+                             virConnectPtr conn);
+
 #endif /* __VIRSECRETOBJ_H__ */
