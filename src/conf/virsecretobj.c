@@ -430,3 +430,47 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
     virObjectUnlock(secrets);
     return ret;
 }
+
+
+struct virSecretObjListGetHelperData {
+    virConnectPtr conn;
+    virSecretObjListACLFilter filter;
+    int got;
+};
+
+
+static int
+virSecretObjListGetHelper(void *payload,
+                          const void *name ATTRIBUTE_UNUSED,
+                          void *opaque)
+{
+    struct virSecretObjListGetHelperData *data = opaque;
+    virSecretObjPtr obj = payload;
+
+    virObjectLock(obj);
+
+    if (data->filter && !data->filter(data->conn, obj->def))
+        goto cleanup;
+
+    data->got++;
+
+ cleanup:
+    virObjectUnlock(obj);
+    return 0;
+}
+
+
+int
+virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
+                             virSecretObjListACLFilter filter,
+                             virConnectPtr conn)
+{
+    struct virSecretObjListGetHelperData data = {
+        .conn = conn, .filter = filter, .got = 0 };
+
+    virObjectLock(secrets);
+    virHashForEach(secrets->objs, virSecretObjListGetHelper, &data);
+    virObjectUnlock(secrets);
+
+    return data.got;
+}
