@@ -50,13 +50,14 @@ virLogManagerProtocolDispatchDomainOpenLogFile(virNetServerPtr server ATTRIBUTE_
     int rv = -1;
     off_t offset;
     ino_t inode;
+    bool trunc = args->flags & VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
 
     if ((fd = virLogHandlerDomainOpenLogFile(virLogDaemonGetHandler(logDaemon),
                                              args->driver,
                                              (unsigned char *)args->dom.uuid,
                                              args->dom.name,
                                              args->path,
-                                             args->flags,
+                                             trunc,
                                              &inode, &offset)) < 0)
         goto cleanup;
 

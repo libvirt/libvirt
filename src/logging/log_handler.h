@@ -48,7 +48,7 @@ int virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                    const unsigned char *domuuid,
                                    const char *domname,
                                    const char *path,
-                                   unsigned int flags,
+                                   bool trunc,
                                    ino_t *inode,
                                    off_t *offset);
 

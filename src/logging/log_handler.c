@@ -357,15 +357,13 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
                                const unsigned char *domuuid,
                                const char *domname,
                                const char *path,
-                               unsigned int flags,
+                               bool trunc,
                                ino_t *inode,
                                off_t *offset)
 {
     size_t i;
     virLogHandlerLogFilePtr file = NULL;
     int pipefd[2] = { -1, -1 };
-
-    virCheckFlags(0, -1);
 
     virObjectLock(handler);
 
@@ -400,7 +398,7 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     if ((file->file = virRotatingFileWriterNew(path,
                                                DEFAULT_FILE_SIZE,
                                                DEFAULT_MAX_BACKUP,
-                                               false,
+                                               trunc,
                                                DEFAULT_MODE)) == NULL)
         goto error;
 
