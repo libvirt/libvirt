@@ -1606,6 +1606,7 @@
   <define name="driverCache">
     <attribute name="cache">
       <choice>
+        <value>default</value>
         <value>none</value>
         <value>writeback</value>
         <value>writethrough</value>
