@@ -280,6 +280,7 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->min_workers = 5;
     data->max_workers = 20;
     data->max_clients = 5000;
+    data->max_queued_clients = 1000;
     data->max_anonymous_clients = 20;
 
     data->prio_workers = 5;
