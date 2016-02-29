@@ -2415,7 +2415,8 @@ qemuMigrationWaitForSpice(virDomainObjPtr vm)
     bool wait_for_spice = false;
     size_t i = 0;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION))
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION) ||
+        !priv->job.spiceMigration)
         return 0;
 
     for (i = 0; i < vm->def->ngraphics; i++) {
@@ -2789,6 +2790,7 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
         ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
                                           port, tlsPort, tlsSubject);
+        priv->job.spiceMigration = !ret;
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
     }
