@@ -13503,12 +13503,6 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
 }
 
 
-typedef enum {
-    VIR_DISK_CHAIN_READ_ONLY,
-    VIR_DISK_CHAIN_READ_WRITE,
-} qemuDomainDiskChainMode;
-
-
 /**
  * qemuDomainDiskChainElementRevoke:
  *
@@ -13533,23 +13527,25 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
 }
 
 
-/* Several operations end up adding a single element of a disk
- * backing file chain; this helper function ensures that the lock manager,
- * cgroup device controller, and security manager labelling are all aware of
- * each new file before it is added to a chain */
+/**
+ * qemuDomainDiskChainElementPrepare:
+ *
+ * Allow a VM access to a single element of a disk backing chain; this helper
+ * ensures that the lock manager, cgroup device controller, and security manager
+ * labelling are all aware of each new file before it is added to a chain */
 static int
-qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
+qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virStorageSourcePtr elem,
-                                  qemuDomainDiskChainMode mode)
+                                  bool readonly)
 {
-    bool readonly = elem->readonly;
+    bool was_readonly = elem->readonly;
     virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    elem->readonly = mode == VIR_DISK_CHAIN_READ_ONLY;
+    elem->readonly = readonly;
 
     if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
         goto cleanup;
@@ -13564,7 +13560,7 @@ qemuDomainPrepareDiskChainElement(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    elem->readonly = readonly;
+    elem->readonly = was_readonly;
     virObjectUnref(cfg);
     return ret;
 }
@@ -14289,8 +14285,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainPrepareDiskChainElement(driver, vm, newDiskSrc,
-                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+    if (qemuDomainDiskChainElementPrepare(driver, vm, newDiskSrc, false) < 0) {
         qemuDomainDiskChainElementRevoke(driver, vm, newDiskSrc);
         goto cleanup;
     }
@@ -16846,8 +16841,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
-    if (qemuDomainPrepareDiskChainElement(driver, vm, mirror,
-                                          VIR_DISK_CHAIN_READ_WRITE) < 0) {
+    if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false) < 0) {
         qemuDomainDiskChainElementRevoke(driver, vm, mirror);
         goto endjob;
     }
@@ -17211,11 +17205,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainPrepareDiskChainElement(driver, vm, baseSource,
-                                          VIR_DISK_CHAIN_READ_WRITE) < 0 ||
+    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false) < 0 ||
         (top_parent && top_parent != disk->src &&
-         qemuDomainPrepareDiskChainElement(driver, vm, top_parent,
-                                           VIR_DISK_CHAIN_READ_WRITE) < 0))
+         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false) < 0))
         goto endjob;
 
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
@@ -17283,11 +17275,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
  endjob:
     if (ret < 0 && clean_access) {
         /* Revert access to read-only, if possible.  */
-        qemuDomainPrepareDiskChainElement(driver, vm, baseSource,
-                                          VIR_DISK_CHAIN_READ_ONLY);
+        qemuDomainDiskChainElementPrepare(driver, vm, baseSource, true);
         if (top_parent && top_parent != disk->src)
-            qemuDomainPrepareDiskChainElement(driver, vm, top_parent,
-                                              VIR_DISK_CHAIN_READ_ONLY);
+            qemuDomainDiskChainElementPrepare(driver, vm, top_parent, true);
     }
     virStorageSourceFree(mirror);
     qemuDomainObjEndJob(driver, vm);
