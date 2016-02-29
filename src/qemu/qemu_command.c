@@ -4115,10 +4115,10 @@ qemuBuildMonitorCommandLine(virCommandPtr cmd,
     /* Use -chardev if it's available */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
 
-        virCommandAddArg(cmd, "-chardev");
         if (!(chrdev = qemuBuildChrChardevStr(monitor_chr, "monitor",
                                               qemuCaps)))
             return -1;
+        virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, chrdev);
         VIR_FREE(chrdev);
 
@@ -7959,13 +7959,13 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&smartcard->data.passthru,
                                                   smartcard->info.alias,
                                                   qemuCaps))) {
                 virBufferFreeAndReset(&opt);
                 goto error;
             }
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8003,11 +8003,11 @@ qemuBuildCommandLine(virConnectPtr conn,
 
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&serial->source,
                                                   serial->info.alias,
                                                   qemuCaps)))
                 goto error;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8039,11 +8039,11 @@ qemuBuildCommandLine(virConnectPtr conn,
             /* Use -chardev with -device if they are available */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(&parallel->source,
                                                       parallel->info.alias,
                                                       qemuCaps)))
                     goto error;
+                virCommandAddArg(cmd, "-chardev");
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
 
@@ -8072,11 +8072,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&channel->source,
                                                   channel->info.alias,
                                                   qemuCaps)))
                 goto error;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8116,11 +8116,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                  * the newer -chardev interface.  */
                 ;
             } else {
-                virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(&channel->source,
                                                       channel->info.alias,
                                                       qemuCaps)))
                     goto error;
+                virCommandAddArg(cmd, "-chardev");
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
             }
@@ -8150,11 +8150,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
                 goto error;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8169,11 +8169,11 @@ qemuBuildCommandLine(virConnectPtr conn,
                 goto error;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(&console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
                 goto error;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8522,13 +8522,13 @@ qemuBuildCommandLine(virConnectPtr conn,
         virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
         char *devstr;
 
-        virCommandAddArg(cmd, "-chardev");
         if (!(devstr = qemuBuildChrChardevStr(&redirdev->source.chr,
                                               redirdev->info.alias,
                                               qemuCaps))) {
             goto error;
         }
 
+        virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
 
