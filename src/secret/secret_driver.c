@@ -184,6 +184,23 @@ secretAssignDef(virSecretObjPtr *list,
     return secret;
 }
 
+
+static virSecretObjPtr
+secretObjFromSecret(virSecretPtr secret)
+{
+    virSecretObjPtr obj;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(obj = secretFindByUUID(secret->uuid))) {
+        virUUIDFormat(secret->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_SECRET,
+                       _("no secret with matching uuid '%s'"), uuidstr);
+        return NULL;
+    }
+    return obj;
+}
+
+
 /* Permament secret storage */
 
 /* Secrets are stored in virSecretDriverStatePtr->configDir.  Each secret
@@ -858,13 +875,8 @@ secretGetXMLDesc(virSecretPtr obj,
 
     secretDriverLock();
 
-    if (!(secret = secretFindByUUID(obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+    if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
-    }
 
     if (virSecretGetXMLDescEnsureACL(obj->conn, secret->def) < 0)
         goto cleanup;
@@ -895,13 +907,8 @@ secretSetValue(virSecretPtr obj,
 
     secretDriverLock();
 
-    if (!(secret = secretFindByUUID(obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+    if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
-    }
 
     if (virSecretSetValueEnsureACL(obj->conn, secret->def) < 0)
         goto cleanup;
@@ -953,13 +960,8 @@ secretGetValue(virSecretPtr obj,
 
     secretDriverLock();
 
-    if (!(secret = secretFindByUUID(obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+    if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
-    }
 
     if (virSecretGetValueEnsureACL(obj->conn, secret->def) < 0)
         goto cleanup;
@@ -998,13 +1000,8 @@ secretUndefine(virSecretPtr obj)
 
     secretDriverLock();
 
-    if (!(secret = secretFindByUUID(obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_SECRET,
-                       _("no secret with matching uuid '%s'"), uuidstr);
+    if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
-    }
 
     if (virSecretUndefineEnsureACL(obj->conn, secret->def) < 0)
         goto cleanup;
