@@ -16785,6 +16785,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                        _("non-file destination not supported yet"));
         goto endjob;
     }
+
+    if (qemuDomainStorageFileInit(driver, vm, mirror) < 0)
+        goto endjob;
+
     if (stat(mirror->path, &st) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno, _("unable to stat for disk %s: %s"),
@@ -16832,12 +16836,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* pre-create the image file */
     if (!reuse) {
-        int fd = qemuOpenFile(driver, vm, mirror->path,
-                              O_WRONLY | O_TRUNC | O_CREAT,
-                              &need_unlink, NULL);
-        if (fd < 0)
+        if (virStorageFileCreate(mirror) < 0) {
+            virReportSystemError(errno, "%s", _("failed to create copy target"));
             goto endjob;
-        VIR_FORCE_CLOSE(fd);
+        }
+
+        need_unlink = true;
     }
 
     if (mirror->format > 0)
@@ -16869,6 +16873,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* Update vm in place to match changes.  */
     need_unlink = false;
+    virStorageFileDeinit(mirror);
     disk->mirror = mirror;
     mirror = NULL;
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
@@ -16879,8 +16884,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                  vm->def->name);
 
  endjob:
-    if (need_unlink && unlink(mirror->path))
-        VIR_WARN("unable to unlink just-created %s", mirror->path);
+    if (need_unlink && virStorageFileUnlink(mirror) < 0)
+        VIR_WARN("%s", _("unable to remove just-created copy target"));
+    virStorageFileDeinit(mirror);
     qemuDomainObjEndJob(driver, vm);
     if (monitor_error) {
         virSetError(monitor_error);
