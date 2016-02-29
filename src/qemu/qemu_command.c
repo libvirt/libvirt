@@ -149,6 +149,59 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "preferred",
               "interleave");
 
+/**
+ * qemuVirCommandGetFDSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU -add-fd command line option
+ * for the given file descriptor. The file descriptor must previously
+ * have been 'transferred' in a virCommandPassFD() call.
+ * This function for example returns "set=10,fd=20".
+ */
+static char *
+qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
+
+    return result;
+}
+
+
+/**
+ * qemuVirCommandGetDevSet:
+ * @cmd: the command to modify
+ * @fd: fd to reassign to the child
+ *
+ * Get the parameters for the QEMU path= parameter where a file
+ * descriptor is accessed via a file descriptor set, for example
+ * /dev/fdset/10. The file descriptor must previously have been
+ * 'transferred' in a virCommandPassFD() call.
+ */
+static char *
+qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
+{
+    char *result = NULL;
+    int idx = virCommandPassFDGetFDIndex(cmd, fd);
+
+    if (idx >= 0) {
+        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("file descriptor %d has not been transferred"), fd);
+    }
+    return result;
+}
+
+
 static int
 qemuBuildObjectCommandLinePropsInternal(const char *key,
                                         const virJSONValue *value,
@@ -6745,59 +6798,6 @@ qemuBuildTPMDevStr(const virDomainDef *def,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
-}
-
-
-/**
- * qemuVirCommandGetFDSet:
- * @cmd: the command to modify
- * @fd: fd to reassign to the child
- *
- * Get the parameters for the QEMU -add-fd command line option
- * for the given file descriptor. The file descriptor must previously
- * have been 'transferred' in a virCommandPassFD() call.
- * This function for example returns "set=10,fd=20".
- */
-static char *
-qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
-{
-    char *result = NULL;
-    int idx = virCommandPassFDGetFDIndex(cmd, fd);
-
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("file descriptor %d has not been transferred"), fd);
-    }
-
-    return result;
-}
-
-
-/**
- * qemuVirCommandGetDevSet:
- * @cmd: the command to modify
- * @fd: fd to reassign to the child
- *
- * Get the parameters for the QEMU path= parameter where a file
- * descriptor is accessed via a file descriptor set, for example
- * /dev/fdset/10. The file descriptor must previously have been
- * 'transferred' in a virCommandPassFD() call.
- */
-static char *
-qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
-{
-    char *result = NULL;
-    int idx = virCommandPassFDGetFDIndex(cmd, fd);
-
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("file descriptor %d has not been transferred"), fd);
-    }
-    return result;
 }
 
 
