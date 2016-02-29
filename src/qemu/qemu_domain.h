@@ -460,6 +460,14 @@ int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virStorageSourcePtr src);
 char *qemuDomainStorageAlias(const char *device, int depth);
 
+void qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      virStorageSourcePtr elem);
+int qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      virStorageSourcePtr elem,
+                                      bool readonly);
+
 int qemuDomainCleanupAdd(virDomainObjPtr vm,
                          qemuDomainCleanupCallback cb);
 void qemuDomainCleanupRemove(virDomainObjPtr vm,

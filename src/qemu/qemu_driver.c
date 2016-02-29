@@ -13503,69 +13503,6 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
 }
 
 
-/**
- * qemuDomainDiskChainElementRevoke:
- *
- * Revoke access to a single backing chain element. This restores the labels,
- * removes cgroup ACLs for devices and removes locks.
- */
-static void
-qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virStorageSourcePtr elem)
-{
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, elem) < 0)
-        VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
-
-    if (qemuTeardownImageCgroup(vm, elem) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(elem->path));
-
-    if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
-        VIR_WARN("Unable to release lock on %s", NULLSTR(elem->path));
-}
-
-
-/**
- * qemuDomainDiskChainElementPrepare:
- *
- * Allow a VM access to a single element of a disk backing chain; this helper
- * ensures that the lock manager, cgroup device controller, and security manager
- * labelling are all aware of each new file before it is added to a chain */
-static int
-qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  virStorageSourcePtr elem,
-                                  bool readonly)
-{
-    bool was_readonly = elem->readonly;
-    virQEMUDriverConfigPtr cfg = NULL;
-    int ret = -1;
-
-    cfg = virQEMUDriverGetConfig(driver);
-
-    elem->readonly = readonly;
-
-    if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
-        goto cleanup;
-
-    if (qemuSetupImageCgroup(vm, elem) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
-                                        elem) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    elem->readonly = was_readonly;
-    virObjectUnref(cfg);
-    return ret;
-}
-
-
 /* Return -1 if request is not sent to agent due to misconfig, -2 if request
  * is sent but failed, and number of frozen filesystems on success. If -2 is
  * returned, FSThaw should be called revert the quiesced status. */

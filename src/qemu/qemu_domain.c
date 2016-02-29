@@ -25,6 +25,7 @@
 
 #include "qemu_domain.h"
 #include "qemu_alias.h"
+#include "qemu_cgroup.h"
 #include "qemu_command.h"
 #include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
@@ -45,6 +46,7 @@
 #include "viratomic.h"
 #include "virprocess.h"
 #include "logging/log_manager.h"
+#include "locking/domain_lock.h"
 
 #include "storage/storage_driver.h"
 
@@ -3364,6 +3366,69 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         ret = -1;
 
  cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+/**
+ * qemuDomainDiskChainElementRevoke:
+ *
+ * Revoke access to a single backing chain element. This restores the labels,
+ * removes cgroup ACLs for devices and removes locks.
+ */
+void
+qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virStorageSourcePtr elem)
+{
+    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
+                                            vm->def, elem) < 0)
+        VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
+
+    if (qemuTeardownImageCgroup(vm, elem) < 0)
+        VIR_WARN("Failed to teardown cgroup for disk path %s",
+                 NULLSTR(elem->path));
+
+    if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
+        VIR_WARN("Unable to release lock on %s", NULLSTR(elem->path));
+}
+
+
+/**
+ * qemuDomainDiskChainElementPrepare:
+ *
+ * Allow a VM access to a single element of a disk backing chain; this helper
+ * ensures that the lock manager, cgroup device controller, and security manager
+ * labelling are all aware of each new file before it is added to a chain */
+int
+qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virStorageSourcePtr elem,
+                                  bool readonly)
+{
+    bool was_readonly = elem->readonly;
+    virQEMUDriverConfigPtr cfg = NULL;
+    int ret = -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    elem->readonly = readonly;
+
+    if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
+        goto cleanup;
+
+    if (qemuSetupImageCgroup(vm, elem) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
+                                        elem) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    elem->readonly = was_readonly;
     virObjectUnref(cfg);
     return ret;
 }
