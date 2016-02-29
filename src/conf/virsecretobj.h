@@ -80,4 +80,10 @@ int virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
                                  virSecretObjListACLFilter filter,
                                  virConnectPtr conn);
 
+int virSecretObjListExport(virConnectPtr conn,
+                           virSecretObjListPtr secretobjs,
+                           virSecretPtr **secrets,
+                           virSecretObjListACLFilter filter,
+                           unsigned int flags);
+
 #endif /* __VIRSECRETOBJ_H__ */

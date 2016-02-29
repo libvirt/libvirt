@@ -474,3 +474,120 @@ virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
 
     return data.got;
 }
+
+
+#define MATCH(FLAG) (flags & (FLAG))
+static bool
+virSecretObjMatchFlags(virSecretObjPtr secret,
+                       unsigned int flags)
+{
+    /* filter by whether it's ephemeral */
+    if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
+        !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
+           secret->def->ephemeral) ||
+          (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
+           !secret->def->ephemeral)))
+        return false;
+
+    /* filter by whether it's private */
+    if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
+        !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
+           secret->def->private) ||
+          (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
+           !secret->def->private)))
+        return false;
+
+    return true;
+}
+#undef MATCH
+
+
+struct virSecretObjListData {
+    virConnectPtr conn;
+    virSecretPtr *secrets;
+    virSecretObjListACLFilter filter;
+    unsigned int flags;
+    int nsecrets;
+    bool error;
+};
+
+static int
+virSecretObjListPopulate(void *payload,
+                         const void *name ATTRIBUTE_UNUSED,
+                         void *opaque)
+{
+    struct virSecretObjListData *data = opaque;
+    virSecretObjPtr obj = payload;
+    virSecretPtr secret = NULL;
+
+    if (data->error)
+        return 0;
+
+    virObjectLock(obj);
+
+    if (data->filter && !data->filter(data->conn, obj->def))
+        goto cleanup;
+
+    if (!virSecretObjMatchFlags(obj, data->flags))
+        goto cleanup;
+
+    if (!data->secrets) {
+        data->nsecrets++;
+        goto cleanup;
+    }
+
+    if (!(secret = virGetSecret(data->conn, obj->def->uuid,
+                                obj->def->usage_type,
+                                virSecretUsageIDForDef(obj->def)))) {
+        data->error = true;
+        goto cleanup;
+    }
+
+    data->secrets[data->nsecrets++] = secret;
+
+ cleanup:
+    virObjectUnlock(obj);
+    return 0;
+}
+
+
+int
+virSecretObjListExport(virConnectPtr conn,
+                       virSecretObjListPtr secretobjs,
+                       virSecretPtr **secrets,
+                       virSecretObjListACLFilter filter,
+                       unsigned int flags)
+{
+    int ret = -1;
+    struct virSecretObjListData data = {
+        .conn = conn, .secrets = NULL,
+        .filter = filter, .flags = flags,
+        .nsecrets = 0, .error = false };
+
+    virObjectLock(secretobjs);
+    if (secrets &&
+        VIR_ALLOC_N(data.secrets, virHashSize(secretobjs->objs) + 1) < 0)
+        goto cleanup;
+
+    virHashForEach(secretobjs->objs, virSecretObjListPopulate, &data);
+
+    if (data.error)
+        goto cleanup;
+
+    if (data.secrets) {
+        /* trim the array to the final size */
+        ignore_value(VIR_REALLOC_N(data.secrets, data.nsecrets + 1));
+        *secrets = data.secrets;
+        data.secrets = NULL;
+    }
+
+    ret = data.nsecrets;
+
+ cleanup:
+    virObjectUnlock(secretobjs);
+    while (data.secrets && data.nsecrets)
+        virObjectUnref(data.secrets[--data.nsecrets]);
+
+    VIR_FREE(data.secrets);
+    return ret;
+}
