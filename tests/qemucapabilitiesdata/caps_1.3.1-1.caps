@@ -127,4 +127,6 @@
     <flag name='rtl8139'/>
     <flag name='e1000'/>
     <flag name='virtio-net'/>
+    <flag name='qxl.vram64_size_mb'/>
+    <flag name='qxl-vga.vram64_size_mb'/>
   </qemuCaps>

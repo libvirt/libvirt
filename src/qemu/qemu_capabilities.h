@@ -345,6 +345,10 @@ typedef enum {
                                            * deflate-on-oom */
     QEMU_CAPS_SCSI_MPTSAS1068, /* -device mptsas1068 */
     QEMU_CAPS_SPICE_GL, /* -spice gl */
+    QEMU_CAPS_QXL_VRAM64, /* -device qxl.vram64_size_mb */
+
+    /* 215 */
+    QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

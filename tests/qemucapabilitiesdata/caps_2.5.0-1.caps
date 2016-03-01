@@ -172,4 +172,6 @@
     <flag name='ich9-disable-s4'/>
     <flag name='vserport-change-event'/>
     <flag name='virtio-balloon-pci.deflate-on-oom'/>
+    <flag name='qxl.vram64_size_mb'/>
+    <flag name='qxl-vga.vram64_size_mb'/>
   </qemuCaps>

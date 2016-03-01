@@ -316,6 +316,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-balloon-pci.deflate-on-oom",
               "mptsas1068",
               "spice-gl",
+              "qxl.vram64_size_mb",
+
+              "qxl-vga.vram64_size_mb", /* 215 */
     );
 
 
@@ -1653,10 +1656,12 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVmwareSvga[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM },
+    { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
+    { "vram64_size_mb", QEMU_CAPS_QXL_VGA_VRAM64 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
