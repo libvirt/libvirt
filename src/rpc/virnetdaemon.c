@@ -849,15 +849,23 @@ virNetDaemonClose(virNetDaemonPtr dmn)
 static int
 daemonServerHasClients(void *payload,
                        const void *key ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       void *opaque)
 {
+    bool *clients = opaque;
     virNetServerPtr srv = payload;
 
-    return virNetServerHasClients(srv);
+    if (virNetServerHasClients(srv))
+        *clients = true;
+
+    return 0;
 }
 
 bool
 virNetDaemonHasClients(virNetDaemonPtr dmn)
 {
-    return virHashForEach(dmn->servers, daemonServerHasClients, NULL) > 0;
+    bool ret = false;
+
+    virHashForEach(dmn->servers, daemonServerHasClients, &ret);
+
+    return ret;
 }
