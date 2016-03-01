@@ -1382,7 +1382,8 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (!(srv = virNetServerNew(config->min_workers,
+    if (!(srv = virNetServerNew("libvirtd",
+                                config->min_workers,
                                 config->max_workers,
                                 config->prio_workers,
                                 config->max_clients,
@@ -1456,7 +1457,8 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (!(srvAdm = virNetServerNew(config->admin_min_workers,
+    if (!(srvAdm = virNetServerNew("admin",
+                                   config->admin_min_workers,
                                    config->admin_max_workers,
                                    0,
                                    config->admin_max_clients,

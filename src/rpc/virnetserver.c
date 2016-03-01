@@ -49,6 +49,8 @@ struct _virNetServerJob {
 struct _virNetServer {
     virObjectLockable parent;
 
+    char *name;
+
     virThreadPoolPtr workers;
 
     char *mdnsGroupName;
@@ -304,7 +306,8 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
 }
 
 
-virNetServerPtr virNetServerNew(size_t min_workers,
+virNetServerPtr virNetServerNew(const char *name,
+                                size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
                                 size_t max_clients,
@@ -330,6 +333,9 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                           priority_workers,
                                           virNetServerHandleJob,
                                           srv)))
+        goto error;
+
+    if (VIR_STRDUP(srv->name, name) < 0)
         goto error;
 
     srv->nclients_max = max_clients;
@@ -359,6 +365,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
 
 
 virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
+                                               const char *name,
                                                virNetServerClientPrivNew clientPrivNew,
                                                virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
                                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
@@ -427,7 +434,8 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    if (!(srv = virNetServerNew(min_workers, max_workers,
+    if (!(srv = virNetServerNew(name,
+                                min_workers, max_workers,
                                 priority_workers, max_clients,
                                 max_anonymous_clients,
                                 keepaliveInterval, keepaliveCount,
@@ -734,6 +742,8 @@ void virNetServerDispose(void *obj)
     virNetServerPtr srv = obj;
     size_t i;
 
+    VIR_FREE(srv->name);
+
     for (i = 0; i < srv->nservices; i++)
         virNetServerServiceToggle(srv->services[i], false);
 
@@ -860,4 +870,10 @@ virNetServerStart(virNetServerPtr srv)
         return 0;
 
     return virNetServerMDNSStart(srv->mdns);
+}
+
+const char *
+virNetServerGetName(virNetServerPtr srv)
+{
+    return srv->name;
 }

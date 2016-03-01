@@ -28,7 +28,7 @@
 
 #if defined(HAVE_SOCKETPAIR) && defined(WITH_YAJL)
 static virNetServerPtr
-testCreateServer(const char *host, int family)
+testCreateServer(const char *server_name, const char *host, int family)
 {
     virNetServerPtr srv = NULL;
     virNetServerServicePtr svc1 = NULL, svc2 = NULL;
@@ -49,7 +49,8 @@ testCreateServer(const char *host, int family)
         goto cleanup;
     }
 
-    if (!(srv = virNetServerNew(10, 50, 5, 100, 10,
+    if (!(srv = virNetServerNew(server_name,
+                                10, 50, 5, 100, 10,
                                 120, 5,
                                 mdns_group,
                                 NULL,
@@ -155,7 +156,8 @@ static char *testGenerateJSON(const char *server_name)
     if (!has_ipv4 && !has_ipv6)
         return NULL;
 
-    if (!(srv = testCreateServer(has_ipv4 ? "127.0.0.1" : "::1",
+    if (!(srv = testCreateServer(server_name,
+                                 has_ipv4 ? "127.0.0.1" : "::1",
                                  has_ipv4 ? AF_INET : AF_INET6)))
         goto cleanup;
 

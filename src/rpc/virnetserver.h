@@ -34,7 +34,8 @@
 # include "virjson.h"
 
 
-virNetServerPtr virNetServerNew(size_t min_workers,
+virNetServerPtr virNetServerNew(const char *name,
+                                size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
                                 size_t max_clients,
@@ -48,6 +49,7 @@ virNetServerPtr virNetServerNew(size_t min_workers,
                                 void *clientPrivOpaque);
 
 virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
+                                               const char *name,
                                                virNetServerClientPrivNew clientPrivNew,
                                                virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
                                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
@@ -84,5 +86,7 @@ void virNetServerProcessClients(virNetServerPtr srv);
 void virNetServerUpdateServices(virNetServerPtr srv, bool enabled);
 
 int virNetServerStart(virNetServerPtr srv);
+
+const char *virNetServerGetName(virNetServerPtr srv);
 
 #endif /* __VIR_NET_SERVER_H__ */

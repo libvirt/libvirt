@@ -276,6 +276,7 @@ virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
     }
 
     srv = virNetServerNewPostExecRestart(object,
+                                         serverName,
                                          clientPrivNew,
                                          clientPrivNewPostExecRestart,
                                          clientPrivPreExecRestart,
