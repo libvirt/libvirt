@@ -42,33 +42,17 @@ adminDaemonListServers(virNetDaemonPtr dmn,
                        unsigned int flags)
 {
     int ret = -1;
-    const char **srv_names = NULL;
     virNetServerPtr *srvs = NULL;
-    size_t i;
-    ssize_t nsrvs = 0;
 
     virCheckFlags(0, -1);
 
-    if ((nsrvs = virNetDaemonGetServerNames(dmn, &srv_names)) < 0)
+    if ((ret = virNetDaemonGetServers(dmn, &srvs)) < 0)
         goto cleanup;
 
     if (servers) {
-        if (VIR_ALLOC_N(srvs, nsrvs) < 0)
-            goto cleanup;
-
-        for (i = 0; i < nsrvs; i++) {
-            if (!(srvs[i] = virNetDaemonGetServer(dmn, srv_names[i])))
-                goto cleanup;
-        }
-
         *servers = srvs;
         srvs = NULL;
     }
-
-    ret = nsrvs;
-
  cleanup:
-    VIR_FREE(srv_names);
-    virObjectListFree(srvs);
     return ret;
 }

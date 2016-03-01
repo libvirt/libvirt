@@ -196,39 +196,54 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
 }
 
 
+struct collectData {
+    virNetServerPtr **servers;
+    size_t nservers;
+};
+
+
+static int
+collectServers(void *payload,
+               const void *name ATTRIBUTE_UNUSED,
+               void *opaque)
+{
+    virNetServerPtr srv = virObjectRef(payload);
+    struct collectData *data = opaque;
+
+    if (!srv)
+        return -1;
+
+    return VIR_APPEND_ELEMENT(*data->servers, data->nservers, srv);
+}
+
+
 /*
  * Returns number of names allocated in *servers, on error sets
  * *servers to NULL and returns -1.  List of *servers must be free()d,
  * but not the items in it (similarly to virHashGetItems).
  */
 ssize_t
-virNetDaemonGetServerNames(virNetDaemonPtr dmn,
-                           const char ***servers)
+virNetDaemonGetServers(virNetDaemonPtr dmn,
+                       virNetServerPtr **servers)
 {
-    virHashKeyValuePairPtr items = NULL;
-    size_t nservers = 0;
+    struct collectData data = { servers, 0 };
     ssize_t ret = -1;
-    size_t i;
 
     *servers = NULL;
 
     virObjectLock(dmn);
 
-    items = virHashGetItems(dmn->servers, NULL);
-    if (!items)
+    if (virHashForEach(dmn->servers, collectServers, &data) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot get all servers from daemon"));
         goto cleanup;
-
-    for (i = 0; items[i].key; i++) {
-        if (VIR_APPEND_ELEMENT(*servers, nservers, items[i].key) < 0)
-            goto cleanup;
     }
 
-    ret = nservers;
+    ret = data.nservers;
 
  cleanup:
     if (ret < 0)
-        VIR_FREE(*servers);
-    VIR_FREE(items);
+        virObjectListFreeCount(*servers, data.nservers);
     virObjectUnlock(dmn);
     return ret;
 }
