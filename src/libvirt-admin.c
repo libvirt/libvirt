@@ -639,3 +639,38 @@ virAdmConnectListServers(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectLookupServer:
+ * @conn: daemon connection reference
+ * @name: name of the server too lookup
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Try to lookup a server on the given daemon based on @name.
+ *
+ * virAdmServerFree() should be used to free the resources after the
+ * server object is no longer needed.
+ *
+ * Returns the requested server or NULL in case of failure.  If the
+ * server cannot be found, then VIR_ERR_NO_SERVER error is raised.
+ */
+virAdmServerPtr
+virAdmConnectLookupServer(virAdmConnectPtr conn,
+                          const char *name,
+                          unsigned int flags)
+{
+    virAdmServerPtr ret = NULL;
+
+    VIR_DEBUG("conn=%p, name=%s, flags=%x", conn, NULLSTR(name), flags);
+    virResetLastError();
+
+    virCheckAdmConnectGoto(conn, cleanup);
+    virCheckNonNullArgGoto(name, cleanup);
+    virCheckFlagsGoto(0, cleanup);
+
+    ret = remoteAdminConnectLookupServer(conn, name, flags);
+ cleanup:
+    if (!ret)
+        virDispatchError(NULL);
+    return ret;
+}

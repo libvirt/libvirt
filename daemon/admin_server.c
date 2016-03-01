@@ -56,3 +56,13 @@ adminConnectListServers(virNetDaemonPtr dmn,
  cleanup:
     return ret;
 }
+
+virNetServerPtr
+adminConnectLookupServer(virNetDaemonPtr dmn,
+                         const char *name,
+                         unsigned int flags)
+{
+    virCheckFlags(flags, NULL);
+
+    return virNetDaemonGetServer(dmn, name);
+}

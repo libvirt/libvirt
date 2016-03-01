@@ -106,6 +106,10 @@ int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
 
 const char *virAdmServerGetName(virAdmServerPtr srv);
 
+virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
+                                          const char *name,
+                                          unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

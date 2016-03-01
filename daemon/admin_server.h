@@ -25,9 +25,14 @@
 # define __LIBVIRTD_ADMIN_SERVER_H__
 
 # include "rpc/virnetdaemon.h"
+# include "rpc/virnetserver.h"
 
 int adminConnectListServers(virNetDaemonPtr dmn,
                             virNetServerPtr **servers,
                             unsigned int flags);
+
+virNetServerPtr adminConnectLookupServer(virNetDaemonPtr dmn,
+                                         const char *name,
+                                         unsigned int flags);
 
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

@@ -65,6 +65,15 @@ struct admin_connect_list_servers_ret { /* insert@1 */
     unsigned int ret;
 };
 
+struct admin_connect_lookup_server_args {
+    admin_nonnull_string name;
+    unsigned int flags;
+};
+
+struct admin_connect_lookup_server_ret {
+    admin_nonnull_server srv;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -105,5 +114,10 @@ enum admin_procedure {
     /**
       * @generate: both
       */
-    ADMIN_PROC_CONNECT_LIST_SERVERS = 4
+    ADMIN_PROC_CONNECT_LIST_SERVERS = 4,
+
+    /**
+      * @generate: both
+      */
+    ADMIN_PROC_CONNECT_LOOKUP_SERVER = 5
 };

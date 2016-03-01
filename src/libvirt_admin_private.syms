@@ -9,6 +9,8 @@
 xdr_admin_connect_get_lib_version_ret;
 xdr_admin_connect_list_servers_args;
 xdr_admin_connect_list_servers_ret;
+xdr_admin_connect_lookup_server_args;
+xdr_admin_connect_lookup_server_ret;
 xdr_admin_connect_open_args;
 
 # datatypes.h

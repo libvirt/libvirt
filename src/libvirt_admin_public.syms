@@ -24,4 +24,5 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmConnectListServers;
         virAdmServerGetName;
         virAdmServerFree;
+        virAdmConnectLookupServer;
 };
