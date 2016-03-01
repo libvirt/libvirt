@@ -96,6 +96,7 @@ struct private_data {
     bool serverEventFilter;     /* Does server support modern event filtering */
 
     virObjectEventStatePtr eventState;
+    virConnectCloseCallbackDataPtr closeCallback;
 };
 
 enum {
@@ -963,11 +964,13 @@ doRemoteOpen(virConnectPtr conn,
             goto failed;
     }
 
-    virObjectRef(conn->closeCallback);
-
+    if (!(priv->closeCallback = virNewConnectCloseCallbackData()))
+        goto failed;
+    // ref on behalf of netclient
+    virObjectRef(priv->closeCallback);
     virNetClientSetCloseCallback(priv->client,
                                  remoteClientCloseFunc,
-                                 conn->closeCallback, virObjectFreeCallback);
+                                 priv->closeCallback, virObjectFreeCallback);
 
     if (!(priv->remoteProgram = virNetClientProgramNew(REMOTE_PROGRAM,
                                                        REMOTE_PROTOCOL_VERSION,
@@ -1097,6 +1100,8 @@ doRemoteOpen(virConnectPtr conn,
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
     priv->client = NULL;
+    virObjectUnref(priv->closeCallback);
+    priv->closeCallback = NULL;
 #ifdef WITH_GNUTLS
     virObjectUnref(priv->tls);
     priv->tls = NULL;
@@ -1229,11 +1234,13 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
 
     virNetClientSetCloseCallback(priv->client,
                                  NULL,
-                                 conn->closeCallback, virObjectFreeCallback);
+                                 priv->closeCallback, virObjectFreeCallback);
 
     virNetClientClose(priv->client);
     virObjectUnref(priv->client);
     priv->client = NULL;
+    virObjectUnref(priv->closeCallback);
+    priv->closeCallback = NULL;
     virObjectUnref(priv->remoteProgram);
     virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
@@ -7887,6 +7894,56 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
     return rv;
 }
 
+static int
+remoteConnectRegisterCloseCallback(virConnectPtr conn,
+                                   virConnectCloseFunc cb,
+                                   void *opaque,
+                                   virFreeCallback freecb)
+{
+    struct private_data *priv = conn->privateData;
+    int ret = -1;
+
+    remoteDriverLock(priv);
+
+    if (virConnectCloseCallbackDataGetCallback(priv->closeCallback) != NULL) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A close callback is already registered"));
+        goto cleanup;
+    }
+
+    virConnectCloseCallbackDataRegister(priv->closeCallback, conn, cb,
+                                        opaque, freecb);
+    ret = 0;
+
+ cleanup:
+    remoteDriverUnlock(priv);
+
+    return ret;
+}
+
+static int
+remoteConnectUnregisterCloseCallback(virConnectPtr conn,
+                                     virConnectCloseFunc cb)
+{
+    struct private_data *priv = conn->privateData;
+    int ret = -1;
+
+    remoteDriverLock(priv);
+
+    if (virConnectCloseCallbackDataGetCallback(priv->closeCallback) != cb) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("A different callback was requested"));
+        goto cleanup;
+    }
+
+    virConnectCloseCallbackDataUnregister(priv->closeCallback, cb);
+    ret = 0;
+
+ cleanup:
+    remoteDriverUnlock(priv);
+
+    return ret;
+}
 
 static int
 remoteDomainRename(virDomainPtr dom, const char *new_name, unsigned int flags)
@@ -8279,6 +8336,8 @@ static virHypervisorDriver hypervisor_driver = {
     .domainInterfaceAddresses = remoteDomainInterfaceAddresses, /* 1.2.14 */
     .domainSetUserPassword = remoteDomainSetUserPassword, /* 1.2.16 */
     .domainRename = remoteDomainRename, /* 1.2.19 */
+    .connectRegisterCloseCallback = remoteConnectRegisterCloseCallback, /* 1.3.2 */
+    .connectUnregisterCloseCallback = remoteConnectUnregisterCloseCallback, /* 1.3.2 */
 };
 
 static virNetworkDriver network_driver = {

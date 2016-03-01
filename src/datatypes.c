@@ -118,22 +118,10 @@ VIR_ONCE_GLOBAL_INIT(virDataTypes)
 virConnectPtr
 virGetConnect(void)
 {
-    virConnectPtr ret;
-
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    if (!(ret = virObjectLockableNew(virConnectClass)))
-        return NULL;
-
-    if (!(ret->closeCallback = virObjectLockableNew(virConnectCloseCallbackDataClass)))
-        goto error;
-
-    return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
+    return virObjectLockableNew(virConnectClass);
 }
 
 /**
@@ -154,14 +142,6 @@ virConnectDispose(void *obj)
     virResetError(&conn->err);
 
     virURIFree(conn->uri);
-
-    if (conn->closeCallback) {
-        virObjectLock(conn->closeCallback);
-        conn->closeCallback->callback = NULL;
-        virObjectUnlock(conn->closeCallback);
-
-        virObjectUnref(conn->closeCallback);
-    }
 }
 
 
@@ -187,6 +167,15 @@ static void
 virConnectCloseCallbackDataDispose(void *obj)
 {
     virConnectCloseCallbackDataReset(obj);
+}
+
+virConnectCloseCallbackDataPtr
+virNewConnectCloseCallbackData(void)
+{
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    return virObjectLockableNew(virConnectCloseCallbackDataClass);
 }
 
 void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,

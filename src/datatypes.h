@@ -421,9 +421,6 @@ struct _virConnect {
     virError err;           /* the last error */
     virErrorFunc handler;   /* associated handler */
     void *userData;         /* the user data */
-
-    /* Per-connection close callback */
-    virConnectCloseCallbackDataPtr closeCallback;
 };
 
 /**
@@ -640,6 +637,7 @@ virAdmConnectPtr virAdmConnectNew(void);
 virAdmServerPtr virAdmGetServer(virAdmConnectPtr conn,
                                 const char *name);
 
+virConnectCloseCallbackDataPtr virNewConnectCloseCallbackData(void);
 void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,
                                          virConnectPtr conn,
                                          virConnectCloseFunc cb,

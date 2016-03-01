@@ -1217,14 +1217,9 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
     virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(cb, error);
 
-    if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("A close callback is already registered"));
+    if (conn->driver->connectRegisterCloseCallback &&
+        conn->driver->connectRegisterCloseCallback(conn, cb, opaque, freecb) < 0)
         goto error;
-    }
-
-    virConnectCloseCallbackDataRegister(conn->closeCallback, conn, cb,
-                                        opaque, freecb);
 
     return 0;
 
@@ -1257,13 +1252,9 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
     virCheckConnectReturn(conn, -1);
     virCheckNonNullArgGoto(cb, error);
 
-    if (virConnectCloseCallbackDataGetCallback(conn->closeCallback) != cb) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("A different callback was requested"));
+    if (conn->driver->connectUnregisterCloseCallback &&
+        conn->driver->connectUnregisterCloseCallback(conn, cb) < 0)
         goto error;
-    }
-
-    virConnectCloseCallbackDataUnregister(conn->closeCallback, cb);
 
     return 0;
 

@@ -1212,6 +1212,16 @@ typedef int
                                const char *password,
                                unsigned int flags);
 
+typedef int
+(*virDrvConnectRegisterCloseCallback)(virConnectPtr conn,
+                                      virConnectCloseFunc cb,
+                                      void *opaque,
+                                      virFreeCallback freecb);
+
+typedef int
+(*virDrvConnectUnregisterCloseCallback)(virConnectPtr conn,
+                                        virConnectCloseFunc cb);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1443,6 +1453,8 @@ struct _virHypervisorDriver {
     virDrvDomainGetFSInfo domainGetFSInfo;
     virDrvDomainInterfaceAddresses domainInterfaceAddresses;
     virDrvDomainSetUserPassword domainSetUserPassword;
+    virDrvConnectRegisterCloseCallback connectRegisterCloseCallback;
+    virDrvConnectUnregisterCloseCallback connectUnregisterCloseCallback;
 };
 
 
