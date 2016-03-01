@@ -588,6 +588,10 @@ int virAdmServerFree(virAdmServerPtr srv)
     VIR_DEBUG("server=%p", srv);
 
     virResetLastError();
+
+    if (!srv)
+        return 0;
+
     virCheckAdmServerReturn(srv, -1);
 
     virObjectUnref(srv);
