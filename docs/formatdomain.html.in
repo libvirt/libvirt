@@ -4507,10 +4507,10 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       If no target is specified, certain hypervisors will
       automatically generate a name for the created tun device. This
-      name can be manually specified, however the name <i>must not
+      name can be manually specified, however the name <i>should not
       start with either 'vnet' or 'vif'</i>, which are prefixes
       reserved by libvirt and certain hypervisors. Manually specified
-      targets using these prefixes will be ignored.
+      targets using these prefixes may be ignored.
     </p>
 
     <p>
