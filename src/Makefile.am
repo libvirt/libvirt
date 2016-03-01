@@ -2810,6 +2810,10 @@ libvirt_iohelper_CFLAGS = \
 if WITH_NETWORK
 libexec_PROGRAMS += libvirt_leaseshelper
 libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
+libvirt_leaseshelper_LDFLAGS = \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NULL)
 libvirt_leaseshelper_LDADD =           \
                libvirt_util.la         \
                ../gnulib/lib/libgnu.la
