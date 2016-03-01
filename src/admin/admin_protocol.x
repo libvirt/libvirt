@@ -104,7 +104,6 @@ enum admin_procedure {
 
     /**
       * @generate: none
-      * @priority: high
       */
     ADMIN_PROC_CONNECT_LIST_SERVERS = 4
 };
