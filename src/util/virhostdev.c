@@ -57,7 +57,7 @@ static virHostdevManagerPtr virHostdevManagerNew(void);
 struct virHostdevIsPCINodeDeviceUsedData {
     virHostdevManagerPtr mgr;
     const char *domainName;
-    const bool usesVfio;
+    const bool usesVFIO;
 };
 
 static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
@@ -74,7 +74,7 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
         const char *other_domname = NULL;
         virPCIDeviceGetUsedBy(other, &other_drvname, &other_domname);
 
-        if (helperData->usesVfio &&
+        if (helperData->usesVFIO &&
             (other_domname && helperData->domainName) &&
             (STREQ(other_domname, helperData->domainName)))
             goto iommu_owner;
@@ -556,10 +556,10 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
-        bool usesVfio = (virPCIDeviceGetStubDriver(dev) == VIR_PCI_STUB_DRIVER_VFIO);
-        struct virHostdevIsPCINodeDeviceUsedData data = { mgr, dom_name, usesVfio };
+        bool usesVFIO = (virPCIDeviceGetStubDriver(dev) == VIR_PCI_STUB_DRIVER_VFIO);
+        struct virHostdevIsPCINodeDeviceUsedData data = { mgr, dom_name, usesVFIO };
 
-        if (!usesVfio && !virPCIDeviceIsAssignable(dev, strict_acs_check)) {
+        if (!usesVFIO && !virPCIDeviceIsAssignable(dev, strict_acs_check)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is not assignable"),
                            virPCIDeviceGetName(dev));
@@ -572,7 +572,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
          * across guests.
          */
         devAddr = virPCIDeviceGetAddress(dev);
-        if (usesVfio) {
+        if (usesVFIO) {
             if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
                                                      virHostdevIsPCINodeDeviceUsed,
                                                      &data) < 0)
