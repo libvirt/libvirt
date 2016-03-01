@@ -329,13 +329,13 @@ int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
 
 
 void
-virPolkitAgentDestroy(virCommandPtr cmd ATTRIBUTE_UNUSED)
+virPolkitAgentDestroy(virPolkitAgentPtr agent ATTRIBUTE_UNUSED)
 {
     return; /* do nothing */
 }
 
 
-virCommandPtr
+virPolkitAgentPtr
 virPolkitAgentCreate(void)
 {
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
