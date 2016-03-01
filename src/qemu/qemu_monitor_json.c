@@ -4189,6 +4189,45 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
     return ret;
 }
 
+
+int
+qemuMonitorJSONBlockdevMirror(qemuMonitorPtr mon,
+                              const char *jobname,
+                              const char *device,
+                              const char *target,
+                              unsigned long long speed,
+                              unsigned int granularity,
+                              unsigned long long buf_size,
+                              unsigned int flags)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    bool shallow = (flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) != 0;
+
+    cmd = qemuMonitorJSONMakeCommand("blockdev-mirror",
+                                     "S:job-id", jobname,
+                                     "s:device", device,
+                                     "s:target", target,
+                                     "Y:speed", speed,
+                                     "z:granularity", granularity,
+                                     "P:buf-size", buf_size,
+                                     "s:sync", shallow ? "top" : "full",
+                                     NULL);
+    if (!cmd)
+        return -1;
+
+    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+        goto cleanup;
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int
 qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
 {

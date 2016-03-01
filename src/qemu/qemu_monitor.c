@@ -3362,6 +3362,28 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
+                          const char *jobname,
+                          const char *device,
+                          const char *target,
+                          unsigned long long bandwidth,
+                          unsigned int granularity,
+                          unsigned long long buf_size,
+                          unsigned int flags)
+{
+    VIR_DEBUG("jobname=%s, device=%s, target=%s, bandwidth=%lld, "
+              "granularity=%#x, buf_size=%lld, flags=0x%x",
+              NULLSTR(jobname), device, target, bandwidth, granularity,
+              buf_size, flags);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONBlockdevMirror(mon, jobname, device, target, bandwidth,
+                                         granularity, buf_size, flags);
+}
+
+
 /* Use the transaction QMP command to run atomic snapshot commands.  */
 int
 qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)

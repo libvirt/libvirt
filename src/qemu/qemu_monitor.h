@@ -860,6 +860,15 @@ int qemuMonitorDriveMirror(qemuMonitorPtr mon,
                            unsigned long long buf_size,
                            unsigned int flags)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
+                              const char *jobname,
+                              const char *device,
+                              const char *target,
+                              unsigned long long bandwidth,
+                              unsigned int granularity,
+                              unsigned long long buf_size,
+                              unsigned int flags)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 int qemuMonitorDrivePivot(qemuMonitorPtr mon,
                           const char *device)
     ATTRIBUTE_NONNULL(2);
