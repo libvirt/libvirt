@@ -38,7 +38,6 @@
 virNetDaemonPtr virNetDaemonNew(void);
 
 int virNetDaemonAddServer(virNetDaemonPtr dmn,
-                          const char *serverName,
                           virNetServerPtr srv);
 
 virNetServerPtr virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,

@@ -171,7 +171,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
         goto error;
 
     if (!(lockd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(lockd->dmn, "virtlockd", srv) < 0)
+        virNetDaemonAddServer(lockd->dmn, srv) < 0)
         goto error;
 
     if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,

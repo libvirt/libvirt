@@ -164,7 +164,7 @@ static char *testGenerateJSON(const char *server_name)
     if (!(dmn = virNetDaemonNew()))
         goto cleanup;
 
-    if (virNetDaemonAddServer(dmn, server_name, srv) < 0)
+    if (virNetDaemonAddServer(dmn, srv) < 0)
         goto cleanup;
 
     if (!(json = virNetDaemonPreExecRestart(dmn)))

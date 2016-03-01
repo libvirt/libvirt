@@ -158,10 +158,10 @@ virNetDaemonNew(void)
 
 int
 virNetDaemonAddServer(virNetDaemonPtr dmn,
-                      const char *serverName,
                       virNetServerPtr srv)
 {
     int ret = -1;
+    const char *serverName = virNetServerGetName(srv);
 
     virObjectLock(dmn);
 

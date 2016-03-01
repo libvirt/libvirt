@@ -161,7 +161,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         goto error;
 
     if (!(logd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(logd->dmn, "virtlogd", logd->srv) < 0)
+        virNetDaemonAddServer(logd->dmn, logd->srv) < 0)
         goto error;
 
     if (!(logd->handler = virLogHandlerNew(privileged,
