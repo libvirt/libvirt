@@ -323,7 +323,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     int nsrvs = 0;
     size_t i;
     bool ret = false;
-    const char *uri = NULL;
+    char *uri = NULL;
     virAdmServerPtr *srvs = NULL;
     vshAdmControlPtr priv = ctl->privData;
 
@@ -347,6 +347,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             virAdmServerFree(srvs[i]);
         VIR_FREE(srvs);
     }
+    VIR_FREE(uri);
 
     return ret;
 }
