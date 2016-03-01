@@ -187,6 +187,11 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
     srv = virObjectRef(virHashLookup(dmn->servers, serverName));
     virObjectUnlock(dmn);
 
+    if (!srv) {
+        virReportError(VIR_ERR_NO_SERVER,
+                       _("No server named '%s'"), serverName);
+    }
+
     return srv;
 }
 
