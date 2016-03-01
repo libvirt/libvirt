@@ -26,9 +26,8 @@
 
 # include "rpc/virnetdaemon.h"
 
-int
-adminDaemonListServers(virNetDaemonPtr dmn,
-                       virAdmServerPtr **servers,
-                       unsigned int flags);
+int adminDaemonListServers(virNetDaemonPtr dmn,
+                           virNetServerPtr **servers,
+                           unsigned int flags);
 
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

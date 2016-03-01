@@ -38,12 +38,12 @@ VIR_LOG_INIT("daemon.admin_server");
 
 int
 adminDaemonListServers(virNetDaemonPtr dmn,
-                       virAdmServerPtr **servers,
+                       virNetServerPtr **servers,
                        unsigned int flags)
 {
     int ret = -1;
     const char **srv_names = NULL;
-    virAdmServerPtr *srvs = NULL;
+    virNetServerPtr *srvs = NULL;
     size_t i;
     ssize_t nsrvs = 0;
 
@@ -57,7 +57,7 @@ adminDaemonListServers(virNetDaemonPtr dmn,
             goto cleanup;
 
         for (i = 0; i < nsrvs; i++) {
-            if (!(srvs[i] = virAdmGetServer(NULL, srv_names[i])))
+            if (!(srvs[i] = virNetDaemonGetServer(dmn, srv_names[i])))
                 goto cleanup;
         }
 

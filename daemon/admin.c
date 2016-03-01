@@ -82,9 +82,9 @@ remoteAdmClientInitHook(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
 static void
 make_nonnull_server(admin_nonnull_server *srv_dst,
-                    virAdmServerPtr srv_src)
+                    virNetServerPtr srv_src)
 {
-    ignore_value(VIR_STRDUP_QUIET(srv_dst->name, srv_src->name));
+    ignore_value(VIR_STRDUP_QUIET(srv_dst->name, virNetServerGetName(srv_src)));
 }
 
 /* Functions */
@@ -141,7 +141,7 @@ adminDispatchConnectListServers(virNetServerPtr server ATTRIBUTE_UNUSED,
                                 admin_connect_list_servers_args *args,
                                 admin_connect_list_servers_ret *ret)
 {
-    virAdmServerPtr *servers = NULL;
+    virNetServerPtr *servers = NULL;
     int nservers = 0;
     int rv = -1;
     size_t i;
