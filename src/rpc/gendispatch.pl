@@ -617,6 +617,9 @@ elsif ($mode eq "server") {
         my $single_ret_list_max_var = "undefined";
         my $single_ret_list_max_define = "undefined";
         my $multi_ret = 0;
+        my $modern_ret_as_list = 0;
+        my $modern_ret_struct_name = "undefined";
+        my $single_ret_list_error_msg_type = "undefined";
 
         if ($rettype ne "void" and
             scalar(@{$call->{ret_members}}) > 1) {
@@ -633,7 +636,16 @@ elsif ($mode eq "server") {
 
                         push(@ret_list, "memcpy(ret->$3, tmp.$3, sizeof(ret->$3));");
                     } elsif ($ret_member =~ m/^(unsigned )?(char|short|int|hyper) (\S+);/) {
-                        push(@ret_list, "ret->$3 = tmp.$3;");
+                        if (!$modern_ret_as_list) {
+                            push(@ret_list, "ret->$3 = tmp.$3;");
+                        }
+                    } elsif ($ret_member =~ m/admin_nonnull_(server) (\S+)<(\S+)>;/) {
+                        $modern_ret_struct_name = $1;
+                        $single_ret_list_error_msg_type = $1;
+                        $single_ret_list_name = $2;
+                        $single_ret_list_max_define = $3;
+
+                        $modern_ret_as_list = 1;
                     } else {
                         die "unhandled type for multi-return-value: $ret_member";
                     }
@@ -817,27 +829,43 @@ elsif ($mode eq "server") {
 
         # select struct type for multi-return-value functions
         if ($multi_ret) {
-            if (!(defined $call->{ret_offset})) {
+            if (defined $call->{ret_offset}) {
+                push_privconn(\@args_list);
+
+                if ($modern_ret_as_list) {
+                    my $struct_name = name_to_TypeName($modern_ret_struct_name);
+
+                    if ($structprefix eq "admin") {
+                        $struct_name = "Net${struct_name}";
+                    }
+
+                    push(@vars_list, "vir${struct_name}Ptr *result = NULL");
+                    push(@vars_list, "int nresults = 0");
+
+                    @args_list = grep {!/\bneed_results\b/} @args_list;
+
+                    splice(@args_list, $call->{ret_offset}, 0,
+                           ("args->need_results ? &result : NULL"));
+                } else {
+                    my $struct_name = $call->{ProcName};
+                    $struct_name =~ s/Get//;
+
+                    splice(@args_list, $call->{ret_offset}, 0, ("&tmp"));
+
+                    if ($call->{ProcName} eq "DomainBlockStats" ||
+                        $call->{ProcName} eq "DomainInterfaceStats") {
+                        # SPECIAL: virDomainBlockStats and virDomainInterfaceStats
+                        #          have a 'Struct' suffix on the actual struct name
+                        #          and take the struct size as additional argument
+                        $struct_name .= "Struct";
+                        splice(@args_list, $call->{ret_offset} + 1, 0, ("sizeof(tmp)"));
+                    }
+
+                    push(@vars_list, "vir$struct_name tmp");
+                }
+            } else {
                 die "multi-return-value without insert@<offset> annotation: $call->{ret}";
             }
-
-            push_privconn(\@args_list);
-
-            my $struct_name = $call->{ProcName};
-            $struct_name =~ s/Get//;
-
-            splice(@args_list, $call->{ret_offset}, 0, ("&tmp"));
-
-            if ($call->{ProcName} eq "DomainBlockStats" ||
-                $call->{ProcName} eq "DomainInterfaceStats") {
-                # SPECIAL: virDomainBlockStats and virDomainInterfaceStats
-                #          have a 'Struct' suffix on the actual struct name
-                #          and take the struct size as additional argument
-                $struct_name .= "Struct";
-                splice(@args_list, $call->{ret_offset} + 1, 0, ("sizeof(tmp)"));
-            }
-
-            push(@vars_list, "vir$struct_name tmp");
         }
 
         if ($call->{streamflag} ne "none") {
@@ -867,6 +895,10 @@ elsif ($mode eq "server") {
         # print function body
         print "{\n";
         print "    int rv = -1;\n";
+
+        if ($modern_ret_as_list) {
+            print "    size_t i;\n";
+        }
 
         foreach my $var (@vars_list) {
             print "    $var;\n";
@@ -974,9 +1006,17 @@ elsif ($mode eq "server") {
             print "        goto cleanup;\n";
             print "\n";
         } else {
-            print "    if (vir$call->{ProcName}(";
-            print join(', ', @args_list);
-            print ") < 0)\n";
+            if ($modern_ret_as_list) {
+                print "    if ((nresults = \n";
+                my $indln = "            $prefix$call->{ProcName}(";
+                print $indln;
+                print join(",\n" . ' ' x (length $indln), @args_list);
+                print ")) < 0)\n";
+            } else {
+                print "    if ($prefix$call->{ProcName}(";
+                print join(', ', @args_list);
+                print ") < 0)\n";
+            }
             print "        goto cleanup;\n";
             print "\n";
         }
@@ -993,6 +1033,29 @@ elsif ($mode eq "server") {
             print ") < 0)\n";
             print "        goto cleanup;\n";
             print "\n";
+        }
+
+        if ($modern_ret_as_list) {
+            print "    if (nresults > $single_ret_list_max_define) {\n";
+            print "        virReportError(VIR_ERR_INTERNAL_ERROR,\n";
+            print "                       _(\"Too many ${single_ret_list_error_msg_type}s '%d' for limit '%d'\"),\n";
+                print "                   nresults, $single_ret_list_max_define);\n";
+            print "        goto cleanup;\n";
+            print "    }\n";
+            print "\n";
+            print "    if (result && nresults) {\n";
+            print "        if (VIR_ALLOC_N(ret->$single_ret_list_name.${single_ret_list_name}_val, nresults) < 0)\n";
+            print "            goto cleanup;\n";
+            print "\n";
+            print "        ret->$single_ret_list_name.${single_ret_list_name}_len = nresults;\n";
+            print "        for (i = 0; i < nresults; i++)\n";
+            print "            make_nonnull_$modern_ret_struct_name(ret->$single_ret_list_name.${single_ret_list_name}_val + i, result[i]);\n";
+            print "    } else {\n";
+            print "        ret->$single_ret_list_name.${single_ret_list_name}_len = 0;\n";
+            print "        ret->$single_ret_list_name.${single_ret_list_name}_val = NULL;\n";
+            print "    }\n";
+            print "\n";
+            print "    ret->ret = nresults;\n";
         }
 
         if (@prepare_ret_list) {
@@ -1028,6 +1091,14 @@ elsif ($mode eq "server") {
 
         if (@free_list) {
             print "\n";
+        }
+
+        if ($modern_ret_as_list) {
+            print "    if (result) {\n";
+            print "        for (i = 0; i < nresults; i++)\n";
+            print "            virObjectUnref(result[i]);\n";
+            print "    }\n";
+            print "    VIR_FREE(result);\n";
         }
 
         print "    return rv;\n";
@@ -1277,6 +1348,9 @@ elsif ($mode eq "client") {
         my $single_ret_list_max_define = "undefined";
         my $single_ret_cleanup = 0;
         my $multi_ret = 0;
+        my $modern_ret_as_list = 0;
+        my $modern_ret_struct_name = "undefined";
+        my $modern_ret_var_type = "undefined";
 
         if ($rettype ne "void" and
             scalar(@{$call->{ret_members}}) > 1) {
@@ -1296,6 +1370,21 @@ elsif ($mode eq "client") {
                         }
 
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof(result->$3));");
+                    } elsif ($ret_member =~ m/admin_nonnull_(server) (\S+)<(\S+)>;/) {
+                        my $proc_name = name_to_TypeName($1);
+
+                        if ($structprefix eq "admin") {
+                            $modern_ret_var_type = "virAdm${proc_name}Ptr";
+                        } else {
+                            $modern_ret_var_type = "vir${proc_name}Ptr";
+                        }
+
+                        $modern_ret_struct_name = $1;
+                        $single_ret_list_name = $2;
+                        $single_ret_list_max_var = $3;
+                        $single_ret_list_error_msg_type = $1;
+
+                        $modern_ret_as_list = 1;
                     } elsif ($ret_member =~ m/<\S+>;/ or $ret_member =~ m/\[\S+\];/) {
                         # just make all other array types fail
                         die "unhandled type for multi-return-value for " .
@@ -1305,7 +1394,7 @@ elsif ($mode eq "client") {
                             my $sign = ""; $sign = "U" if ($1);
 
                             push(@ret_list, "HYPER_TO_${sign}LONG(result->$3, ret.$3);");
-                        } else {
+                        } elsif (!$modern_ret_as_list) {
                             push(@ret_list, "result->$3 = ret.$3;");
                         }
                     } else {
@@ -1434,16 +1523,40 @@ elsif ($mode eq "client") {
             }
         }
 
+        if ($modern_ret_as_list) {
+            # clear arguments and setters we don't want in this code
+            @args_list = grep {!/\bneed_results\b/} @args_list;
+            @setters_list = grep {!/\bneed_results\b/} @setters_list;
+
+            push(@vars_list, "${modern_ret_var_type} *tmp_results = NULL");
+            push(@setters_list, "args.need_results = !!result;");
+
+            $single_ret_var = "int rv = -1";
+            $single_ret_type = "int";
+        }
+
         # select struct type for multi-return-value functions
         if ($multi_ret) {
+            my $struct_name = "undefined";
+
             if (!(defined $call->{ret_offset})) {
                 die "multi-return-value without insert@<offset> annotation: $call->{ret}";
             }
 
-            my $struct_name = $call->{ProcName};
-            $struct_name =~ s/Get//;
+            if ($modern_ret_as_list) {
+                $struct_name = name_to_TypeName($modern_ret_struct_name);
 
-            splice(@args_list, $call->{ret_offset}, 0, ("vir${struct_name}Ptr result"));
+                $struct_name .= "Ptr **";
+                if ($structprefix eq "admin") {
+                    $struct_name = "Adm${struct_name}";
+                }
+            } else {
+                $struct_name = $call->{ProcName};
+
+                $struct_name =~ s/Get//;
+                $struct_name = "${struct_name}Ptr "
+            }
+            splice(@args_list, $call->{ret_offset}, 0, ("vir${struct_name}result"));
         }
 
         if ($call->{streamflag} ne "none") {
@@ -1482,7 +1595,8 @@ elsif ($mode eq "client") {
             print "    $var;\n";
         }
 
-        if ($single_ret_as_list) {
+        if ($single_ret_as_list or
+            $modern_ret_as_list) {
             print "    size_t i;\n";
         }
 
@@ -1595,7 +1709,8 @@ elsif ($mode eq "client") {
         print "    }\n";
         print "\n";
 
-        if ($single_ret_as_list) {
+        if ($single_ret_as_list or
+            $modern_ret_as_list) {
             print "    if (ret.$single_ret_list_name.${single_ret_list_name}_len > $single_ret_list_max_var) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
             print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
@@ -1603,6 +1718,9 @@ elsif ($mode eq "client") {
             print "        goto cleanup;\n";
             print "    }\n";
             print "\n";
+        }
+
+        if ($single_ret_as_list) {
             print "    /* This call is caller-frees (although that isn't clear from\n";
             print "     * the documentation).  However xdr_free will free up both the\n";
             print "     * names and the list of pointers, so we have to VIR_STRDUP the\n";
@@ -1618,7 +1736,22 @@ elsif ($mode eq "client") {
             print "        }\n";
             print "    }\n";
             print "\n";
+        } elsif ($modern_ret_as_list) {
+            print "    if (result) {\n";
+            print "        if (VIR_ALLOC_N(tmp_results, ret.$single_ret_list_name.${single_ret_list_name}_len + 1) < 0)\n";
+            print "            goto cleanup;\n";
+            print "\n";
+            print "        for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; i++) {\n";
+            print "            tmp_results[i] = get_nonnull_$modern_ret_struct_name($priv_src, ret.$single_ret_list_name.${single_ret_list_name}_val[i]);\n";
+            print "            if (!tmp_results[i])\n";
+            print "                goto cleanup;\n";
+            print "        }\n";
+            print "        *result = tmp_results;\n";
+            print "        tmp_results = NULL;\n";
+            print "    }\n";
+            print "\n";
         }
+
 
         if (@ret_list2) {
             print "    ";
@@ -1641,12 +1774,24 @@ elsif ($mode eq "client") {
         }
 
         if ($multi_ret or !@ret_list) {
-            print "    rv = 0;\n";
+            if ($modern_ret_as_list) {
+                print "    rv = ret.ret;\n";
+            } else {
+                print "    rv = 0;\n";
+            }
         }
 
-        if ($single_ret_as_list or $single_ret_cleanup) {
+        if ($single_ret_as_list or $single_ret_cleanup or $modern_ret_as_list) {
             print "\n";
             print "cleanup:\n";
+            if ($modern_ret_as_list) {
+                print "    if (tmp_results) {\n";
+                print "        for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; i++)\n";
+                print "            virObjectUnref(tmp_results[i]);\n";
+                print "        VIR_FREE(tmp_results);\n";
+                print "    }\n";
+                print "\n";
+            }
             print "    xdr_free((xdrproc_t)xdr_$call->{ret}, (char *)&ret);\n";
         }
 
