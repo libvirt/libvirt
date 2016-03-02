@@ -3655,25 +3655,8 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
-    } else {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("Domain is not running"));
-            goto endjob;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify device on transient domain"));
-         goto endjob;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
@@ -3763,25 +3746,8 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
-    } else {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("Domain is not running"));
-            goto endjob;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify device on transient domain"));
-         goto endjob;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
@@ -3868,25 +3834,8 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     if (virDomainUpdateDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_LIVE;
-    } else {
-        if (flags == VIR_DOMAIN_DEVICE_MODIFY_CURRENT)
-            flags |= VIR_DOMAIN_DEVICE_MODIFY_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_DEVICE_MODIFY_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("Domain is not running"));
-            goto cleanup;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("cannot modify device on transient domain"));
-         goto cleanup;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
