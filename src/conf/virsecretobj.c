@@ -19,6 +19,9 @@
  */
 
 #include <config.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 #include "datatypes.h"
 #include "virsecretobj.h"
@@ -27,6 +30,7 @@
 #include "virfile.h"
 #include "virhash.h"
 #include "virlog.h"
+#include "base64.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -641,4 +645,175 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
             VIR_FREE(data.uuids[--data.got]);
     }
     return ret;
+}
+
+
+static int
+virSecretLoadValidateUUID(virSecretDefPtr def,
+                          const char *file)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(def->uuid, uuidstr);
+
+    if (!virFileMatchesNameSuffix(file, uuidstr, ".xml")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("<uuid> does not match secret file name '%s'"),
+                       file);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecretLoadValue(virSecretObjPtr secret)
+{
+    int ret = -1, fd = -1;
+    struct stat st;
+    char *contents = NULL, *value = NULL;
+    size_t value_size;
+
+    if ((fd = open(secret->base64File, O_RDONLY)) == -1) {
+        if (errno == ENOENT) {
+            ret = 0;
+            goto cleanup;
+        }
+        virReportSystemError(errno, _("cannot open '%s'"),
+                             secret->base64File);
+        goto cleanup;
+    }
+
+    if (fstat(fd, &st) < 0) {
+        virReportSystemError(errno, _("cannot stat '%s'"),
+                             secret->base64File);
+        goto cleanup;
+    }
+
+    if ((size_t)st.st_size != st.st_size) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("'%s' file does not fit in memory"),
+                       secret->base64File);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(contents, st.st_size) < 0)
+        goto cleanup;
+
+    if (saferead(fd, contents, st.st_size) != st.st_size) {
+        virReportSystemError(errno, _("cannot read '%s'"),
+                             secret->base64File);
+        goto cleanup;
+    }
+
+    VIR_FORCE_CLOSE(fd);
+
+    if (!base64_decode_alloc(contents, st.st_size, &value, &value_size)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid base64 in '%s'"),
+                       secret->base64File);
+        goto cleanup;
+    }
+    if (value == NULL)
+        goto cleanup;
+
+    secret->value = (unsigned char *)value;
+    value = NULL;
+    secret->value_size = value_size;
+
+    ret = 0;
+
+ cleanup:
+    if (value != NULL) {
+        memset(value, 0, value_size);
+        VIR_FREE(value);
+    }
+    if (contents != NULL) {
+        memset(contents, 0, st.st_size);
+        VIR_FREE(contents);
+    }
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+static virSecretObjPtr
+virSecretLoad(virSecretObjListPtr secrets,
+              const char *file,
+              const char *path,
+              const char *configDir)
+{
+    virSecretDefPtr def = NULL;
+    virSecretObjPtr secret = NULL, ret = NULL;
+
+    if (!(def = virSecretDefParseFile(path)))
+        goto cleanup;
+
+    if (virSecretLoadValidateUUID(def, file) < 0)
+        goto cleanup;
+
+    if (!(secret = virSecretObjListAdd(secrets, def, configDir, NULL)))
+        goto cleanup;
+    def = NULL;
+
+    if (virSecretLoadValue(secret) < 0)
+        goto cleanup;
+
+    ret = secret;
+    secret = NULL;
+
+ cleanup:
+    if (secret)
+        virSecretObjListRemove(secrets, secret);
+    virSecretDefFree(def);
+    return ret;
+}
+
+
+int
+virSecretLoadAllConfigs(virSecretObjListPtr secrets,
+                        const char *configDir)
+{
+    DIR *dir = NULL;
+    struct dirent *de;
+
+    if (!(dir = opendir(configDir))) {
+        if (errno == ENOENT)
+            return 0;
+        virReportSystemError(errno, _("cannot open '%s'"), configDir);
+        return -1;
+    }
+
+    /* Ignore errors reported by readdir or other calls within the
+     * loop (if any).  It's better to keep the secrets we managed to find. */
+    while (virDirRead(dir, &de, NULL) > 0) {
+        char *path;
+        virSecretObjPtr secret;
+
+        if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
+            continue;
+
+        if (!virFileHasSuffix(de->d_name, ".xml"))
+            continue;
+
+        if (!(path = virFileBuildPath(configDir, de->d_name, NULL)))
+            continue;
+
+        if (!(secret = virSecretLoad(secrets, de->d_name, path, configDir))) {
+            virErrorPtr err = virGetLastError();
+
+            VIR_ERROR(_("Error reading secret: %s"),
+                      err != NULL ? err->message: _("unknown error"));
+            virResetError(err);
+            VIR_FREE(path);
+            continue;
+        }
+
+        VIR_FREE(path);
+        virSecretObjEndAPI(&secret);
+    }
+
+    closedir(dir);
+    return 0;
 }

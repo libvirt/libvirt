@@ -93,4 +93,6 @@ int virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
                              virSecretObjListACLFilter filter,
                              virConnectPtr conn);
 
+int virSecretLoadAllConfigs(virSecretObjListPtr secrets,
+                            const char *configDir);
 #endif /* __VIRSECRETOBJ_H__ */

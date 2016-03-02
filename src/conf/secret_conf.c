@@ -28,6 +28,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "secret_conf.h"
+#include "virsecretobj.h"
 #include "virerror.h"
 #include "virxml.h"
 #include "viruuid.h"
