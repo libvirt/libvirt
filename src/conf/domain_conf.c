@@ -10772,17 +10772,15 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
     char *port = virXMLPropString(node, "port");
     char *websocket = virXMLPropString(node, "websocket");
     char *sharePolicy = virXMLPropString(node, "sharePolicy");
-    char *autoport;
+    char *autoport = virXMLPropString(node, "autoport");
     int ret = -1;
 
     if (port) {
         if (virStrToLong_i(port, NULL, 10, &def->data.vnc.port) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse vnc port %s"), port);
-            VIR_FREE(port);
             goto error;
         }
-        VIR_FREE(port);
         /* Legacy compat syntax, used -1 for auto-port */
         if (def->data.vnc.port == -1) {
             if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
@@ -10794,13 +10792,12 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
         def->data.vnc.autoport = true;
     }
 
-    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+    if (autoport) {
         if (STREQ(autoport, "yes")) {
             if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
                 def->data.vnc.port = 0;
             def->data.vnc.autoport = true;
         }
-        VIR_FREE(autoport);
     }
 
     if (websocket) {
@@ -10809,10 +10806,8 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
                            &def->data.vnc.websocket) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse vnc WebSocket port %s"), websocket);
-            VIR_FREE(websocket);
             goto error;
         }
-        VIR_FREE(websocket);
     }
 
     if (sharePolicy) {
@@ -10821,13 +10816,12 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
 
         if (policy < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown vnc display sharing policy '%s'"), sharePolicy);
-            VIR_FREE(sharePolicy);
+                           _("unknown vnc display sharing policy '%s'"),
+                           sharePolicy);
             goto error;
         } else {
             def->data.vnc.sharePolicy = policy;
         }
-        VIR_FREE(sharePolicy);
     }
 
     def->data.vnc.socket = virXMLPropString(node, "socket");
@@ -10839,6 +10833,10 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
 
     ret = 0;
  error:
+    VIR_FREE(port);
+    VIR_FREE(autoport);
+    VIR_FREE(websocket);
+    VIR_FREE(sharePolicy);
     return ret;
 }
 
@@ -10848,6 +10846,7 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
                                 xmlNodePtr node)
 {
     char *fullscreen = virXMLPropString(node, "fullscreen");
+    int ret = -1;
 
     if (fullscreen != NULL) {
         if (STREQ(fullscreen, "yes")) {
@@ -10857,17 +10856,19 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown fullscreen value '%s'"), fullscreen);
-            VIR_FREE(fullscreen);
-            return -1;
+            goto cleanup;
         }
-        VIR_FREE(fullscreen);
     } else {
         def->data.sdl.fullscreen = false;
     }
+
     def->data.sdl.xauth = virXMLPropString(node, "xauth");
     def->data.sdl.display = virXMLPropString(node, "display");
 
-    return 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(fullscreen);
+    return ret;
 }
 
 
@@ -10877,52 +10878,44 @@ virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDefPtr def,
                                 unsigned int flags)
 {
     char *port = virXMLPropString(node, "port");
-    char *autoport;
-    char *replaceUser;
-    char *multiUser;
+    char *autoport = virXMLPropString(node, "autoport");
+    char *replaceUser = virXMLPropString(node, "replaceUser");
+    char *multiUser = virXMLPropString(node, "multiUser");
     int ret = -1;
 
     if (port) {
         if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse rdp port %s"), port);
-            VIR_FREE(port);
             goto error;
         }
         /* Legacy compat syntax, used -1 for auto-port */
         if (def->data.rdp.port == -1)
             def->data.rdp.autoport = true;
 
-        VIR_FREE(port);
     } else {
         def->data.rdp.port = 0;
         def->data.rdp.autoport = true;
     }
 
-    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-        if (STREQ(autoport, "yes"))
-            def->data.rdp.autoport = true;
-
-        VIR_FREE(autoport);
-    }
+    if (STREQ_NULLABLE(autoport, "yes"))
+        def->data.rdp.autoport = true;
 
     if (def->data.rdp.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
         def->data.rdp.port = 0;
 
-    if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
-        if (STREQ(replaceUser, "yes"))
-            def->data.rdp.replaceUser = true;
-        VIR_FREE(replaceUser);
-    }
+    if (STREQ_NULLABLE(replaceUser, "yes"))
+        def->data.rdp.replaceUser = true;
 
-    if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
-        if (STREQ(multiUser, "yes"))
-            def->data.rdp.multiUser = true;
-        VIR_FREE(multiUser);
-    }
+    if (STREQ_NULLABLE(multiUser, "yes"))
+        def->data.rdp.multiUser = true;
 
     ret = 0;
  error:
+    VIR_FREE(port);
+    VIR_FREE(autoport);
+    VIR_FREE(replaceUser);
+    VIR_FREE(multiUser);
     return ret;
 }
 
@@ -10932,6 +10925,7 @@ virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDefPtr def,
                                     xmlNodePtr node)
 {
     char *fullscreen = virXMLPropString(node, "fullscreen");
+    int ret = -1;
 
     if (fullscreen != NULL) {
         if (STREQ(fullscreen, "yes")) {
@@ -10941,16 +10935,18 @@ virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDefPtr def,
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown fullscreen value '%s'"), fullscreen);
-            VIR_FREE(fullscreen);
-            return -1;
+            goto cleanup;
         }
-        VIR_FREE(fullscreen);
     } else {
         def->data.desktop.fullscreen = false;
     }
 
     def->data.desktop.display = virXMLPropString(node, "display");
-    return 0;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(fullscreen);
+    return ret;
 }
 
 
@@ -10961,9 +10957,9 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
 {
     xmlNodePtr cur;
     char *port = virXMLPropString(node, "port");
-    char *tlsPort;
-    char *autoport;
-    char *defaultMode;
+    char *tlsPort = virXMLPropString(node, "tlsPort");
+    char *autoport = virXMLPropString(node, "autoport");
+    char *defaultMode = virXMLPropString(node, "defaultMode");
     int defaultModeVal;
     int ret = -1;
 
@@ -10971,45 +10967,35 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
         if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse spice port %s"), port);
-            VIR_FREE(port);
             goto error;
         }
-        VIR_FREE(port);
     } else {
         def->data.spice.port = 0;
     }
 
-    tlsPort = virXMLPropString(node, "tlsPort");
     if (tlsPort) {
         if (virStrToLong_i(tlsPort, NULL, 10, &def->data.spice.tlsPort) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot parse spice tlsPort %s"), tlsPort);
-            VIR_FREE(tlsPort);
             goto error;
         }
-        VIR_FREE(tlsPort);
     } else {
         def->data.spice.tlsPort = 0;
     }
 
-    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-        if (STREQ(autoport, "yes"))
-            def->data.spice.autoport = true;
-        VIR_FREE(autoport);
-    }
+    if (STREQ_NULLABLE(autoport, "yes"))
+        def->data.spice.autoport = true;
 
     def->data.spice.defaultMode = VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY;
 
-    if ((defaultMode = virXMLPropString(node, "defaultMode")) != NULL) {
+    if (defaultMode) {
         if ((defaultModeVal = virDomainGraphicsSpiceChannelModeTypeFromString(defaultMode)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown default spice channel mode %s"),
                            defaultMode);
-            VIR_FREE(defaultMode);
             goto error;
         }
         def->data.spice.defaultMode = defaultModeVal;
-        VIR_FREE(defaultMode);
     }
 
     if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
@@ -11256,6 +11242,10 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
 
     ret = 0;
  error:
+    VIR_FREE(port);
+    VIR_FREE(tlsPort);
+    VIR_FREE(autoport);
+    VIR_FREE(defaultMode);
     return ret;
 }
 
