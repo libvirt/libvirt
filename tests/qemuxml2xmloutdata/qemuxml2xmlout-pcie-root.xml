@@ -25,7 +25,7 @@
     <controller type='pci' index='2' model='pci-bridge'>
       <model name='pci-bridge'/>
       <target chassisNr='2'/>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

@@ -17,4 +17,4 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
--device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x1
+-device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0

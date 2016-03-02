@@ -22,7 +22,7 @@ QEMU_AUDIO_DRV=none \
 -append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
 -dtb /aarch64.dtb \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1 \
--device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x1 \
+-device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
 -device virtio-scsi-pci,id=scsi0,bus=pcie.0,addr=0x3 \
 -usb \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-scsi0-0-0-0 \

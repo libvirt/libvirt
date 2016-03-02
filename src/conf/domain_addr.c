@@ -190,10 +190,10 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-        /* slots 1 - 31, standard PCI slots,
+        /* slots 0 - 31, standard PCI slots,
          * but *not* hot-pluggable */
         bus->flags = VIR_PCI_CONNECT_TYPE_PCI;
-        bus->minSlot = 1;
+        bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
