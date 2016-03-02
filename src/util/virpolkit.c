@@ -182,6 +182,7 @@ virPolkitAgentCreate(void)
     if (VIR_ALLOC(agent) < 0)
         goto error;
     agent->cmd = cmd;
+    cmd = NULL;
 
     virCommandAddArgFormat(cmd, "%lld", (long long int) getpid());
     virCommandAddArg(cmd, "--notify-fd");
@@ -206,6 +207,7 @@ virPolkitAgentCreate(void)
     VIR_FORCE_CLOSE(pipe_fd[0]);
     VIR_FORCE_CLOSE(pipe_fd[1]);
     virPolkitAgentDestroy(agent);
+    virCommandFree(cmd);
     return NULL;
 }
 
