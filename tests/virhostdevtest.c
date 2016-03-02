@@ -181,8 +181,8 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     hostdevs, nhostdevs, 0) < 0)
         goto cleanup;
-    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + 3);
-    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2 - 3);
+    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + nhostdevs);
+    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2 - nhostdevs);
 
     /* Test conflict */
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
@@ -239,8 +239,8 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
     VIR_DEBUG("Test >=1 unmanaged hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
-    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - 3);
-    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2 + 3);
+    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - nhostdevs);
+    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, count2 + nhostdevs);
 
     ret = 0;
 
@@ -266,7 +266,7 @@ testVirHostdevPreparePCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                      hostdevs, nhostdevs, 0) < 0)
         goto cleanup;
-    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + 3);
+    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + nhostdevs);
 
     /* Test conflict */
     count1 = virPCIDeviceListCount(mgr->activePCIHostdevs);
@@ -318,7 +318,7 @@ testVirHostdevReAttachPCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
     VIR_DEBUG("Test >=1 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
-    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - 3);
+    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 - nhostdevs);
 
     ret = 0;
 
@@ -403,7 +403,7 @@ testVirHostdevUpdateActivePCIHostdevs(const void *opaque ATTRIBUTE_UNUSED)
     if (virHostdevUpdateActivePCIDevices(mgr, hostdevs, nhostdevs,
                                          drv_name, dom_name) < 0)
         goto cleanup;
-    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + 3);
+    CHECK_LIST_COUNT(mgr->activePCIHostdevs, count1 + nhostdevs);
 
     ret = 0;
 
