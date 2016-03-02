@@ -37,9 +37,9 @@
 VIR_LOG_INIT("daemon.admin_server");
 
 int
-adminDaemonListServers(virNetDaemonPtr dmn,
-                       virNetServerPtr **servers,
-                       unsigned int flags)
+adminConnectListServers(virNetDaemonPtr dmn,
+                        virNetServerPtr **servers,
+                        unsigned int flags)
 {
     int ret = -1;
     virNetServerPtr *srvs = NULL;

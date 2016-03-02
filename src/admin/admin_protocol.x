@@ -60,7 +60,7 @@ struct admin_connect_list_servers_args {
     unsigned int flags;
 };
 
-struct admin_connect_list_servers_ret {
+struct admin_connect_list_servers_ret { /* insert@1 */
     admin_nonnull_server servers<ADMIN_SERVER_LIST_MAX>;
     unsigned int ret;
 };
@@ -103,7 +103,7 @@ enum admin_procedure {
     ADMIN_PROC_CONNECT_GET_LIB_VERSION = 3,
 
     /**
-      * @generate: none
+      * @generate: both
       */
     ADMIN_PROC_CONNECT_LIST_SERVERS = 4
 };
