@@ -39,10 +39,10 @@ VIR_LOG_INIT("tests.hostdevtest");
 
 # define CHECK_LIST_COUNT(list, cnt)                                        \
     do {                                                                    \
-        int actualCount;                                                    \
+        size_t actualCount;                                                 \
         if ((actualCount = virPCIDeviceListCount(list)) != cnt) {           \
             virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Unexpected count of items in " #list ": %d, "   \
+                           "Unexpected count of items in " #list ": %zu, "  \
                            "expecting %zu", actualCount, (size_t) cnt);     \
             goto cleanup;                                                   \
         }                                                                   \
@@ -163,8 +163,7 @@ static int
 testVirHostdevPreparePCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int active_count, inactive_count;
+    size_t active_count, inactive_count, i;
 
     for (i = 0; i < nhostdevs; i++)
          hostdevs[i]->managed = false;
@@ -222,8 +221,7 @@ static int
 testVirHostdevReAttachPCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int active_count, inactive_count;
+    size_t active_count, inactive_count, i;
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != false) {
@@ -256,8 +254,7 @@ static int
 testVirHostdevPreparePCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int active_count;
+    size_t active_count, i;
 
     for (i = 0; i < nhostdevs; i++)
         hostdevs[i]->managed = true;
@@ -302,8 +299,7 @@ static int
 testVirHostdevReAttachPCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int active_count;
+    size_t active_count, i;
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != true) {
@@ -334,8 +330,7 @@ static int
 testVirHostdevDetachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int inactive_count;
+    size_t inactive_count, i;
 
     for (i = 0; i < nhostdevs; i++) {
         inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
@@ -371,8 +366,7 @@ static int
 testVirHostdevReAttachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
-    int inactive_count;
+    size_t inactive_count, i;
 
     for (i = 0; i < nhostdevs; i++) {
         inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
@@ -392,7 +386,7 @@ static int
 testVirHostdevUpdateActivePCIHostdevs(const void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    int active_count;
+    size_t active_count;
 
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
 
