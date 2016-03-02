@@ -371,11 +371,12 @@ virAdmConnectIsAlive(virAdmConnectPtr conn)
 
     VIR_DEBUG("conn=%p", conn);
 
+    virResetLastError();
+
     if (!conn)
         return 0;
 
     virCheckAdmConnectReturn(conn, -1);
-    virResetLastError();
 
     priv = conn->privateData;
     virObjectLock(priv);
