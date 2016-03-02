@@ -10686,38 +10686,19 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
 }
 
 
-/* Parse the XML definition for a graphics device */
-static virDomainGraphicsDefPtr
-virDomainGraphicsDefParseXML(xmlNodePtr node,
-                             xmlXPathContextPtr ctxt,
-                             unsigned int flags)
+static int
+virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
+                                 xmlNodePtr node,
+                                 xmlXPathContextPtr ctxt,
+                                 unsigned int flags)
 {
-    virDomainGraphicsDefPtr def;
-    char *type = NULL;
     int nListens;
     xmlNodePtr *listenNodes = NULL;
     char *listenAddr = NULL;
     xmlNodePtr save = ctxt->node;
-
-    if (VIR_ALLOC(def) < 0)
-        return NULL;
+    int ret = -1;
 
     ctxt->node = node;
-
-    type = virXMLPropString(node, "type");
-
-    if (!type) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("missing graphics device type"));
-        goto error;
-    }
-
-    if ((def->type = virDomainGraphicsTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown graphics device type '%s'"), type);
-        goto error;
-    }
-
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
         def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP ||
         def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
@@ -10734,10 +10715,10 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
                 goto error;
 
             for (i = 0; i < nListens; i++) {
-                int ret = virDomainGraphicsListenDefParseXML(&def->listens[i],
-                                                             listenNodes[i],
-                                                             flags);
-                if (ret < 0)
+                int rv = virDomainGraphicsListenDefParseXML(&def->listens[i],
+                                                            listenNodes[i],
+                                                            flags);
+                if (rv < 0)
                     goto error;
                 def->nListens++;
             }
@@ -10790,6 +10771,43 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             }
         }
     }
+
+    ret = 0;
+ error:
+    VIR_FREE(listenNodes);
+    VIR_FREE(listenAddr);
+    ctxt->node = save;
+    return ret;
+}
+
+
+/* Parse the XML definition for a graphics device */
+static virDomainGraphicsDefPtr
+virDomainGraphicsDefParseXML(xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
+                             unsigned int flags)
+{
+    virDomainGraphicsDefPtr def;
+    char *type = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    type = virXMLPropString(node, "type");
+    if (!type) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing graphics device type"));
+        goto error;
+    }
+
+    if ((def->type = virDomainGraphicsTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown graphics device type '%s'"), type);
+        goto error;
+    }
+
+    if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
+        goto error;
 
     if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         char *port = virXMLPropString(node, "port");
@@ -11241,10 +11259,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(type);
-    VIR_FREE(listenNodes);
-    VIR_FREE(listenAddr);
 
-    ctxt->node = save;
     return def;
 
  error:
