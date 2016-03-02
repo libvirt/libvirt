@@ -10764,6 +10764,502 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
 }
 
 
+static int
+virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
+                                xmlNodePtr node,
+                                unsigned int flags)
+{
+    char *port = virXMLPropString(node, "port");
+    char *websocket = virXMLPropString(node, "websocket");
+    char *sharePolicy = virXMLPropString(node, "sharePolicy");
+    char *autoport;
+    int ret = -1;
+
+    if (port) {
+        if (virStrToLong_i(port, NULL, 10, &def->data.vnc.port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse vnc port %s"), port);
+            VIR_FREE(port);
+            goto error;
+        }
+        VIR_FREE(port);
+        /* Legacy compat syntax, used -1 for auto-port */
+        if (def->data.vnc.port == -1) {
+            if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
+                def->data.vnc.port = 0;
+            def->data.vnc.autoport = true;
+        }
+    } else {
+        def->data.vnc.port = 0;
+        def->data.vnc.autoport = true;
+    }
+
+    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+        if (STREQ(autoport, "yes")) {
+            if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
+                def->data.vnc.port = 0;
+            def->data.vnc.autoport = true;
+        }
+        VIR_FREE(autoport);
+    }
+
+    if (websocket) {
+        if (virStrToLong_i(websocket,
+                           NULL, 10,
+                           &def->data.vnc.websocket) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse vnc WebSocket port %s"), websocket);
+            VIR_FREE(websocket);
+            goto error;
+        }
+        VIR_FREE(websocket);
+    }
+
+    if (sharePolicy) {
+        int policy =
+           virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
+
+        if (policy < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown vnc display sharing policy '%s'"), sharePolicy);
+            VIR_FREE(sharePolicy);
+            goto error;
+        } else {
+            def->data.vnc.sharePolicy = policy;
+        }
+        VIR_FREE(sharePolicy);
+    }
+
+    def->data.vnc.socket = virXMLPropString(node, "socket");
+    def->data.vnc.keymap = virXMLPropString(node, "keymap");
+
+    if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
+                                         def->type) < 0)
+        goto error;
+
+    ret = 0;
+ error:
+    return ret;
+}
+
+
+static int
+virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
+                                xmlNodePtr node)
+{
+    char *fullscreen = virXMLPropString(node, "fullscreen");
+
+    if (fullscreen != NULL) {
+        if (STREQ(fullscreen, "yes")) {
+            def->data.sdl.fullscreen = true;
+        } else if (STREQ(fullscreen, "no")) {
+            def->data.sdl.fullscreen = false;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown fullscreen value '%s'"), fullscreen);
+            VIR_FREE(fullscreen);
+            return -1;
+        }
+        VIR_FREE(fullscreen);
+    } else {
+        def->data.sdl.fullscreen = false;
+    }
+    def->data.sdl.xauth = virXMLPropString(node, "xauth");
+    def->data.sdl.display = virXMLPropString(node, "display");
+
+    return 0;
+}
+
+
+static int
+virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDefPtr def,
+                                xmlNodePtr node,
+                                unsigned int flags)
+{
+    char *port = virXMLPropString(node, "port");
+    char *autoport;
+    char *replaceUser;
+    char *multiUser;
+    int ret = -1;
+
+    if (port) {
+        if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse rdp port %s"), port);
+            VIR_FREE(port);
+            goto error;
+        }
+        /* Legacy compat syntax, used -1 for auto-port */
+        if (def->data.rdp.port == -1)
+            def->data.rdp.autoport = true;
+
+        VIR_FREE(port);
+    } else {
+        def->data.rdp.port = 0;
+        def->data.rdp.autoport = true;
+    }
+
+    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+        if (STREQ(autoport, "yes"))
+            def->data.rdp.autoport = true;
+
+        VIR_FREE(autoport);
+    }
+
+    if (def->data.rdp.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        def->data.rdp.port = 0;
+
+    if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
+        if (STREQ(replaceUser, "yes"))
+            def->data.rdp.replaceUser = true;
+        VIR_FREE(replaceUser);
+    }
+
+    if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
+        if (STREQ(multiUser, "yes"))
+            def->data.rdp.multiUser = true;
+        VIR_FREE(multiUser);
+    }
+
+    ret = 0;
+ error:
+    return ret;
+}
+
+
+static int
+virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDefPtr def,
+                                    xmlNodePtr node)
+{
+    char *fullscreen = virXMLPropString(node, "fullscreen");
+
+    if (fullscreen != NULL) {
+        if (STREQ(fullscreen, "yes")) {
+            def->data.desktop.fullscreen = true;
+        } else if (STREQ(fullscreen, "no")) {
+            def->data.desktop.fullscreen = false;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown fullscreen value '%s'"), fullscreen);
+            VIR_FREE(fullscreen);
+            return -1;
+        }
+        VIR_FREE(fullscreen);
+    } else {
+        def->data.desktop.fullscreen = false;
+    }
+
+    def->data.desktop.display = virXMLPropString(node, "display");
+    return 0;
+}
+
+
+static int
+virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
+                                  xmlNodePtr node,
+                                  unsigned int flags)
+{
+    xmlNodePtr cur;
+    char *port = virXMLPropString(node, "port");
+    char *tlsPort;
+    char *autoport;
+    char *defaultMode;
+    int defaultModeVal;
+    int ret = -1;
+
+    if (port) {
+        if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse spice port %s"), port);
+            VIR_FREE(port);
+            goto error;
+        }
+        VIR_FREE(port);
+    } else {
+        def->data.spice.port = 0;
+    }
+
+    tlsPort = virXMLPropString(node, "tlsPort");
+    if (tlsPort) {
+        if (virStrToLong_i(tlsPort, NULL, 10, &def->data.spice.tlsPort) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse spice tlsPort %s"), tlsPort);
+            VIR_FREE(tlsPort);
+            goto error;
+        }
+        VIR_FREE(tlsPort);
+    } else {
+        def->data.spice.tlsPort = 0;
+    }
+
+    if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
+        if (STREQ(autoport, "yes"))
+            def->data.spice.autoport = true;
+        VIR_FREE(autoport);
+    }
+
+    def->data.spice.defaultMode = VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY;
+
+    if ((defaultMode = virXMLPropString(node, "defaultMode")) != NULL) {
+        if ((defaultModeVal = virDomainGraphicsSpiceChannelModeTypeFromString(defaultMode)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown default spice channel mode %s"),
+                           defaultMode);
+            VIR_FREE(defaultMode);
+            goto error;
+        }
+        def->data.spice.defaultMode = defaultModeVal;
+        VIR_FREE(defaultMode);
+    }
+
+    if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
+        /* Legacy compat syntax, used -1 for auto-port */
+        def->data.spice.autoport = true;
+    }
+
+    if (def->data.spice.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+        def->data.spice.port = 0;
+        def->data.spice.tlsPort = 0;
+    }
+
+    def->data.spice.keymap = virXMLPropString(node, "keymap");
+
+    if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth,
+                                         def->type) < 0)
+        goto error;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "channel")) {
+                char *name, *mode;
+                int nameval, modeval;
+                name = virXMLPropString(cur, "name");
+                mode = virXMLPropString(cur, "mode");
+
+                if (!name || !mode) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("spice channel missing name/mode"));
+                    VIR_FREE(name);
+                    VIR_FREE(mode);
+                    goto error;
+                }
+
+                if ((nameval = virDomainGraphicsSpiceChannelNameTypeFromString(name)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown spice channel name %s"),
+                                   name);
+                    VIR_FREE(name);
+                    VIR_FREE(mode);
+                    goto error;
+                }
+                if ((modeval = virDomainGraphicsSpiceChannelModeTypeFromString(mode)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown spice channel mode %s"),
+                                   mode);
+                    VIR_FREE(name);
+                    VIR_FREE(mode);
+                    goto error;
+                }
+                VIR_FREE(name);
+                VIR_FREE(mode);
+
+                def->data.spice.channels[nameval] = modeval;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "image")) {
+                char *compression = virXMLPropString(cur, "compression");
+                int compressionVal;
+
+                if (!compression) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("spice image missing compression"));
+                    goto error;
+                }
+
+                if ((compressionVal =
+                     virDomainGraphicsSpiceImageCompressionTypeFromString(compression)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown spice image compression %s"),
+                                   compression);
+                    VIR_FREE(compression);
+                    goto error;
+                }
+                VIR_FREE(compression);
+
+                def->data.spice.image = compressionVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "jpeg")) {
+                char *compression = virXMLPropString(cur, "compression");
+                int compressionVal;
+
+                if (!compression) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("spice jpeg missing compression"));
+                    goto error;
+                }
+
+                if ((compressionVal =
+                     virDomainGraphicsSpiceJpegCompressionTypeFromString(compression)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown spice jpeg compression %s"),
+                                   compression);
+                    VIR_FREE(compression);
+                    goto error;
+                }
+                VIR_FREE(compression);
+
+                def->data.spice.jpeg = compressionVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "zlib")) {
+                char *compression = virXMLPropString(cur, "compression");
+                int compressionVal;
+
+                if (!compression) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("spice zlib missing compression"));
+                    goto error;
+                }
+
+                if ((compressionVal =
+                     virDomainGraphicsSpiceZlibCompressionTypeFromString(compression)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown spice zlib compression %s"),
+                                   compression);
+                    VIR_FREE(compression);
+                    goto error;
+                }
+                VIR_FREE(compression);
+
+                def->data.spice.zlib = compressionVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {
+                char *compression = virXMLPropString(cur, "compression");
+                int compressionVal;
+
+                if (!compression) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("spice playback missing compression"));
+                    goto error;
+                }
+
+                if ((compressionVal =
+                     virTristateSwitchTypeFromString(compression)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("unknown spice playback compression"));
+                    VIR_FREE(compression);
+                    goto error;
+
+                }
+                VIR_FREE(compression);
+
+                def->data.spice.playback = compressionVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "streaming")) {
+                char *mode = virXMLPropString(cur, "mode");
+                int modeVal;
+
+                if (!mode) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("spice streaming missing mode"));
+                    goto error;
+                }
+                if ((modeVal =
+                     virDomainGraphicsSpiceStreamingModeTypeFromString(mode)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("unknown spice streaming mode"));
+                    VIR_FREE(mode);
+                    goto error;
+
+                }
+                VIR_FREE(mode);
+
+                def->data.spice.streaming = modeVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "clipboard")) {
+                char *copypaste = virXMLPropString(cur, "copypaste");
+                int copypasteVal;
+
+                if (!copypaste) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("spice clipboard missing copypaste"));
+                    goto error;
+                }
+
+                if ((copypasteVal =
+                     virTristateBoolTypeFromString(copypaste)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown copypaste value '%s'"), copypaste);
+                    VIR_FREE(copypaste);
+                    goto error;
+                }
+                VIR_FREE(copypaste);
+
+                def->data.spice.copypaste = copypasteVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "filetransfer")) {
+                char *enable = virXMLPropString(cur, "enable");
+                int enableVal;
+
+                if (!enable) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("spice filetransfer missing enable"));
+                    goto error;
+                }
+
+                if ((enableVal =
+                     virTristateBoolTypeFromString(enable)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown enable value '%s'"), enable);
+                    VIR_FREE(enable);
+                    goto error;
+                }
+                VIR_FREE(enable);
+
+                def->data.spice.filetransfer = enableVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "gl")) {
+                char *enable = virXMLPropString(cur, "enable");
+                int enableVal;
+
+                if (!enable) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("spice gl element missing enable"));
+                    goto error;
+                }
+
+                if ((enableVal =
+                     virTristateBoolTypeFromString(enable)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown enable value '%s'"), enable);
+                    VIR_FREE(enable);
+                    goto error;
+                }
+                VIR_FREE(enable);
+
+                def->data.spice.gl = enableVal;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
+                char *mode = virXMLPropString(cur, "mode");
+                int modeVal;
+
+                if (!mode) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("spice mouse missing mode"));
+                    goto error;
+                }
+
+                if ((modeVal = virDomainGraphicsSpiceMouseModeTypeFromString(mode)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown mouse mode value '%s'"),
+                                   mode);
+                    VIR_FREE(mode);
+                    goto error;
+                }
+                VIR_FREE(mode);
+
+                def->data.spice.mousemode = modeVal;
+            }
+        }
+        cur = cur->next;
+    }
+
+    ret = 0;
+ error:
+    return ret;
+}
+
+
 /* Parse the XML definition for a graphics device */
 static virDomainGraphicsDefPtr
 virDomainGraphicsDefParseXML(xmlNodePtr node,
@@ -10792,452 +11288,29 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         goto error;
 
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        char *port = virXMLPropString(node, "port");
-        char *websocket = virXMLPropString(node, "websocket");
-        char *sharePolicy = virXMLPropString(node, "sharePolicy");
-        char *autoport;
-
-        if (port) {
-            if (virStrToLong_i(port, NULL, 10, &def->data.vnc.port) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse vnc port %s"), port);
-                VIR_FREE(port);
-                goto error;
-            }
-            VIR_FREE(port);
-            /* Legacy compat syntax, used -1 for auto-port */
-            if (def->data.vnc.port == -1) {
-                if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
-                    def->data.vnc.port = 0;
-                def->data.vnc.autoport = true;
-            }
-        } else {
-            def->data.vnc.port = 0;
-            def->data.vnc.autoport = true;
-        }
-
-        if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-            if (STREQ(autoport, "yes")) {
-                if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
-                    def->data.vnc.port = 0;
-                def->data.vnc.autoport = true;
-            }
-            VIR_FREE(autoport);
-        }
-
-        if (websocket) {
-            if (virStrToLong_i(websocket,
-                               NULL, 10,
-                               &def->data.vnc.websocket) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse vnc WebSocket port %s"), websocket);
-                VIR_FREE(websocket);
-                goto error;
-            }
-            VIR_FREE(websocket);
-        }
-
-        if (sharePolicy) {
-            int policy =
-               virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
-
-            if (policy < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown vnc display sharing policy '%s'"), sharePolicy);
-                VIR_FREE(sharePolicy);
-                goto error;
-            } else {
-                def->data.vnc.sharePolicy = policy;
-            }
-            VIR_FREE(sharePolicy);
-        }
-
-        def->data.vnc.socket = virXMLPropString(node, "socket");
-        def->data.vnc.keymap = virXMLPropString(node, "keymap");
-
-        if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
-                                             def->type) < 0)
+    switch ((virDomainGraphicsType)def->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if (virDomainGraphicsDefParseXMLVNC(def, node, flags) < 0)
             goto error;
-    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
-        char *fullscreen = virXMLPropString(node, "fullscreen");
-
-        if (fullscreen != NULL) {
-            if (STREQ(fullscreen, "yes")) {
-                def->data.sdl.fullscreen = true;
-            } else if (STREQ(fullscreen, "no")) {
-                def->data.sdl.fullscreen = false;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown fullscreen value '%s'"), fullscreen);
-                VIR_FREE(fullscreen);
-                goto error;
-            }
-            VIR_FREE(fullscreen);
-        } else {
-            def->data.sdl.fullscreen = false;
-        }
-        def->data.sdl.xauth = virXMLPropString(node, "xauth");
-        def->data.sdl.display = virXMLPropString(node, "display");
-    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
-        char *port = virXMLPropString(node, "port");
-        char *autoport;
-        char *replaceUser;
-        char *multiUser;
-
-        if (port) {
-            if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse rdp port %s"), port);
-                VIR_FREE(port);
-                goto error;
-            }
-            /* Legacy compat syntax, used -1 for auto-port */
-            if (def->data.rdp.port == -1)
-                def->data.rdp.autoport = true;
-
-            VIR_FREE(port);
-        } else {
-            def->data.rdp.port = 0;
-            def->data.rdp.autoport = true;
-        }
-
-        if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-            if (STREQ(autoport, "yes"))
-                def->data.rdp.autoport = true;
-
-            VIR_FREE(autoport);
-        }
-
-        if (def->data.rdp.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-            def->data.rdp.port = 0;
-
-        if ((replaceUser = virXMLPropString(node, "replaceUser")) != NULL) {
-            if (STREQ(replaceUser, "yes"))
-                def->data.rdp.replaceUser = true;
-            VIR_FREE(replaceUser);
-        }
-
-        if ((multiUser = virXMLPropString(node, "multiUser")) != NULL) {
-            if (STREQ(multiUser, "yes"))
-                def->data.rdp.multiUser = true;
-            VIR_FREE(multiUser);
-        }
-
-    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP) {
-        char *fullscreen = virXMLPropString(node, "fullscreen");
-
-        if (fullscreen != NULL) {
-            if (STREQ(fullscreen, "yes")) {
-                def->data.desktop.fullscreen = true;
-            } else if (STREQ(fullscreen, "no")) {
-                def->data.desktop.fullscreen = false;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unknown fullscreen value '%s'"), fullscreen);
-                VIR_FREE(fullscreen);
-                goto error;
-            }
-            VIR_FREE(fullscreen);
-        } else {
-            def->data.desktop.fullscreen = false;
-        }
-
-        def->data.desktop.display = virXMLPropString(node, "display");
-    } else if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        xmlNodePtr cur;
-        char *port = virXMLPropString(node, "port");
-        char *tlsPort;
-        char *autoport;
-        char *defaultMode;
-        int defaultModeVal;
-
-        if (port) {
-            if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse spice port %s"), port);
-                VIR_FREE(port);
-                goto error;
-            }
-            VIR_FREE(port);
-        } else {
-            def->data.spice.port = 0;
-        }
-
-        tlsPort = virXMLPropString(node, "tlsPort");
-        if (tlsPort) {
-            if (virStrToLong_i(tlsPort, NULL, 10, &def->data.spice.tlsPort) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot parse spice tlsPort %s"), tlsPort);
-                VIR_FREE(tlsPort);
-                goto error;
-            }
-            VIR_FREE(tlsPort);
-        } else {
-            def->data.spice.tlsPort = 0;
-        }
-
-        if ((autoport = virXMLPropString(node, "autoport")) != NULL) {
-            if (STREQ(autoport, "yes"))
-                def->data.spice.autoport = true;
-            VIR_FREE(autoport);
-        }
-
-        def->data.spice.defaultMode = VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY;
-
-        if ((defaultMode = virXMLPropString(node, "defaultMode")) != NULL) {
-            if ((defaultModeVal = virDomainGraphicsSpiceChannelModeTypeFromString(defaultMode)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown default spice channel mode %s"),
-                               defaultMode);
-                VIR_FREE(defaultMode);
-                goto error;
-            }
-            def->data.spice.defaultMode = defaultModeVal;
-            VIR_FREE(defaultMode);
-        }
-
-        if (def->data.spice.port == -1 && def->data.spice.tlsPort == -1) {
-            /* Legacy compat syntax, used -1 for auto-port */
-            def->data.spice.autoport = true;
-        }
-
-        if (def->data.spice.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-            def->data.spice.port = 0;
-            def->data.spice.tlsPort = 0;
-        }
-
-        def->data.spice.keymap = virXMLPropString(node, "keymap");
-
-        if (virDomainGraphicsAuthDefParseXML(node, &def->data.spice.auth,
-                                             def->type) < 0)
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        if (virDomainGraphicsDefParseXMLSDL(def, node) < 0)
             goto error;
-
-        cur = node->children;
-        while (cur != NULL) {
-            if (cur->type == XML_ELEMENT_NODE) {
-                if (xmlStrEqual(cur->name, BAD_CAST "channel")) {
-                    char *name, *mode;
-                    int nameval, modeval;
-                    name = virXMLPropString(cur, "name");
-                    mode = virXMLPropString(cur, "mode");
-
-                    if (!name || !mode) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("spice channel missing name/mode"));
-                        VIR_FREE(name);
-                        VIR_FREE(mode);
-                        goto error;
-                    }
-
-                    if ((nameval = virDomainGraphicsSpiceChannelNameTypeFromString(name)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown spice channel name %s"),
-                                       name);
-                        VIR_FREE(name);
-                        VIR_FREE(mode);
-                        goto error;
-                    }
-                    if ((modeval = virDomainGraphicsSpiceChannelModeTypeFromString(mode)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown spice channel mode %s"),
-                                       mode);
-                        VIR_FREE(name);
-                        VIR_FREE(mode);
-                        goto error;
-                    }
-                    VIR_FREE(name);
-                    VIR_FREE(mode);
-
-                    def->data.spice.channels[nameval] = modeval;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "image")) {
-                    char *compression = virXMLPropString(cur, "compression");
-                    int compressionVal;
-
-                    if (!compression) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("spice image missing compression"));
-                        goto error;
-                    }
-
-                    if ((compressionVal =
-                         virDomainGraphicsSpiceImageCompressionTypeFromString(compression)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown spice image compression %s"),
-                                       compression);
-                        VIR_FREE(compression);
-                        goto error;
-                    }
-                    VIR_FREE(compression);
-
-                    def->data.spice.image = compressionVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "jpeg")) {
-                    char *compression = virXMLPropString(cur, "compression");
-                    int compressionVal;
-
-                    if (!compression) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("spice jpeg missing compression"));
-                        goto error;
-                    }
-
-                    if ((compressionVal =
-                         virDomainGraphicsSpiceJpegCompressionTypeFromString(compression)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown spice jpeg compression %s"),
-                                       compression);
-                        VIR_FREE(compression);
-                        goto error;
-                    }
-                    VIR_FREE(compression);
-
-                    def->data.spice.jpeg = compressionVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "zlib")) {
-                    char *compression = virXMLPropString(cur, "compression");
-                    int compressionVal;
-
-                    if (!compression) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("spice zlib missing compression"));
-                        goto error;
-                    }
-
-                    if ((compressionVal =
-                         virDomainGraphicsSpiceZlibCompressionTypeFromString(compression)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown spice zlib compression %s"),
-                                       compression);
-                        VIR_FREE(compression);
-                        goto error;
-                    }
-                    VIR_FREE(compression);
-
-                    def->data.spice.zlib = compressionVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {
-                    char *compression = virXMLPropString(cur, "compression");
-                    int compressionVal;
-
-                    if (!compression) {
-                        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("spice playback missing compression"));
-                        goto error;
-                    }
-
-                    if ((compressionVal =
-                         virTristateSwitchTypeFromString(compression)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("unknown spice playback compression"));
-                        VIR_FREE(compression);
-                        goto error;
-
-                    }
-                    VIR_FREE(compression);
-
-                    def->data.spice.playback = compressionVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "streaming")) {
-                    char *mode = virXMLPropString(cur, "mode");
-                    int modeVal;
-
-                    if (!mode) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("spice streaming missing mode"));
-                        goto error;
-                    }
-                    if ((modeVal =
-                         virDomainGraphicsSpiceStreamingModeTypeFromString(mode)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("unknown spice streaming mode"));
-                        VIR_FREE(mode);
-                        goto error;
-
-                    }
-                    VIR_FREE(mode);
-
-                    def->data.spice.streaming = modeVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "clipboard")) {
-                    char *copypaste = virXMLPropString(cur, "copypaste");
-                    int copypasteVal;
-
-                    if (!copypaste) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("spice clipboard missing copypaste"));
-                        goto error;
-                    }
-
-                    if ((copypasteVal =
-                         virTristateBoolTypeFromString(copypaste)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown copypaste value '%s'"), copypaste);
-                        VIR_FREE(copypaste);
-                        goto error;
-                    }
-                    VIR_FREE(copypaste);
-
-                    def->data.spice.copypaste = copypasteVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "filetransfer")) {
-                    char *enable = virXMLPropString(cur, "enable");
-                    int enableVal;
-
-                    if (!enable) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("spice filetransfer missing enable"));
-                        goto error;
-                    }
-
-                    if ((enableVal =
-                         virTristateBoolTypeFromString(enable)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown enable value '%s'"), enable);
-                        VIR_FREE(enable);
-                        goto error;
-                    }
-                    VIR_FREE(enable);
-
-                    def->data.spice.filetransfer = enableVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "gl")) {
-                    char *enable = virXMLPropString(cur, "enable");
-                    int enableVal;
-
-                    if (!enable) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("spice gl element missing enable"));
-                        goto error;
-                    }
-
-                    if ((enableVal =
-                         virTristateBoolTypeFromString(enable)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown enable value '%s'"), enable);
-                        VIR_FREE(enable);
-                        goto error;
-                    }
-                    VIR_FREE(enable);
-
-                    def->data.spice.gl = enableVal;
-                } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
-                    char *mode = virXMLPropString(cur, "mode");
-                    int modeVal;
-
-                    if (!mode) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("spice mouse missing mode"));
-                        goto error;
-                    }
-
-                    if ((modeVal = virDomainGraphicsSpiceMouseModeTypeFromString(mode)) <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown mouse mode value '%s'"),
-                                       mode);
-                        VIR_FREE(mode);
-                        goto error;
-                    }
-                    VIR_FREE(mode);
-
-                    def->data.spice.mousemode = modeVal;
-                }
-            }
-            cur = cur->next;
-        }
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if (virDomainGraphicsDefParseXMLRDP(def, node, flags) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        if (virDomainGraphicsDefParseXMLDesktop(def, node) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (virDomainGraphicsDefParseXMLSpice(def, node, flags) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        break;
     }
 
  cleanup:
