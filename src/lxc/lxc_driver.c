@@ -4996,13 +4996,10 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -5010,29 +5007,11 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto cleanup;
-        }
-    }
-
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto cleanup;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
@@ -5124,14 +5103,11 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_DEVICE_MODIFY_FORCE, -1);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -5139,26 +5115,8 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     if (virDomainUpdateDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto cleanup;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto cleanup;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
 
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -5238,13 +5196,10 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     virDomainDefPtr vmdef = NULL;
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     int ret = -1;
-    unsigned int affect;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-
-    affect = flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -5252,26 +5207,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     if (virDomainDetachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_LIVE;
-    } else {
-        if (affect == VIR_DOMAIN_AFFECT_CURRENT)
-            flags |= VIR_DOMAIN_AFFECT_CONFIG;
-        /* check consistency between flags and the vm state */
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot do live update a device on "
-                             "inactive domain"));
-            goto cleanup;
-        }
-    }
-
-    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) && !vm->persistent) {
-         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                        _("cannot modify device on transient domain"));
-         goto cleanup;
-    }
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto cleanup;
 
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
