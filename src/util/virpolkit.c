@@ -166,7 +166,7 @@ virPolkitAgentDestroy(virPolkitAgentPtr agent)
 virPolkitAgentPtr
 virPolkitAgentCreate(void)
 {
-    virPolkitAgentPtr agent;
+    virPolkitAgentPtr agent = NULL;
     virCommandPtr cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
     int pipe_fd[2] = {-1, -1};
     struct pollfd pollfd;
