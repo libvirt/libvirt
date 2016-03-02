@@ -212,7 +212,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         /* 31 slots, can only accept pcie-switch-port, no hotplug */
         bus->flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH;
         bus->minSlot = 0;
-        bus->maxSlot = 31;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
