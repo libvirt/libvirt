@@ -17009,7 +17009,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
     unsigned int topIndex = 0;
-    virStorageSourcePtr baseSource;
+    virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
     virStorageSourcePtr top_parent = NULL;
     bool clean_access = false;

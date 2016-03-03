@@ -984,7 +984,7 @@ vboxAttachDrivesNew(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine
 {
     /* AttachDrives for 3.0 and later */
     size_t i;
-    nsresult rc;
+    nsresult rc = 0;
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
     PRUnichar *storageCtlName = NULL;
