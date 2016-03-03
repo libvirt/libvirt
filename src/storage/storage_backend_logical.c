@@ -575,7 +575,7 @@ static bool
 virStorageBackendLogicalMatchPoolSource(virStoragePoolObjPtr pool)
 {
     virStoragePoolSourceList sourceList;
-    virStoragePoolSource *thisSource;
+    virStoragePoolSource *thisSource = NULL;
     size_t i, j;
     int matchcount = 0;
     bool ret = false;
