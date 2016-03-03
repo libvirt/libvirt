@@ -158,7 +158,7 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata
 
-test_helpers = commandhelper ssh test_conf
+test_helpers = commandhelper ssh test_conf nsslinktest
 test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
@@ -1081,6 +1081,15 @@ nssmock_la_SOURCES = \
 nssmock_la_CFLAGS = $(AM_CFLAGS)
 nssmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 nssmock_la_LIBADD = $(MOCKLIBS_LIBS)
+
+## Intentionaly not linking with anything else.
+## See the test source for more detailed explanation.
+nsslinktest_SOURCES = nsslinktest.c
+nsslinktest_CFLAGS = 	\
+	$(AM_CFLAGS)		\
+	-I$(top_srcdir)/tools/nss
+nsslinktest_LDADD = ../tools/nss/libnss_libvirt_impl.la
+nsslinktest_LDFLAGS = $(NULL)
 
 virnetdevtest_SOURCES = \
 	virnetdevtest.c testutils.h testutils.c
