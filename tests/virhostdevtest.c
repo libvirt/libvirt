@@ -160,7 +160,7 @@ virHostdevHostSupportsPassthroughKVM(void)
 # endif
 
 static int
-testVirHostdevPreparePCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevPreparePCIHostdevs_unmanaged(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -219,7 +219,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCIHostdevs_unmanaged(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -253,7 +253,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevPreparePCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevPreparePCIHostdevs_managed(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -304,7 +304,7 @@ testVirHostdevPreparePCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCIHostdevs_managed(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -338,7 +338,7 @@ testVirHostdevReAttachPCIHostdevs_managed(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevDetachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevDetachPCINodeDevice(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -357,8 +357,9 @@ testVirHostdevDetachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
  cleanup:
     return ret;
 }
+
 static int
-testVirHostdevResetPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevResetPCINodeDevice(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -380,7 +381,7 @@ testVirHostdevResetPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevReAttachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevReAttachPCINodeDevice(void)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -402,7 +403,7 @@ testVirHostdevReAttachPCINodeDevice(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVirHostdevUpdateActivePCIHostdevs(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevUpdateActivePCIHostdevs(void)
 {
     int ret = -1;
     size_t active_count, inactive_count;
@@ -427,6 +428,91 @@ testVirHostdevUpdateActivePCIHostdevs(const void *opaque ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
+    return ret;
+}
+
+/**
+ * testVirHostdevRoundtripUnmanaged:
+ * @opaque: unused
+ *
+ * Perform a roundtrip with unmanaged devices.
+ *
+ *   1. Detach devices from the host
+ *   2. Attach devices to the guest as unmanaged
+ *   3. Detach devices from the guest as unmanaged
+ *   4. Reattach devices to the host
+ */
+static int
+testVirHostdevRoundtripUnmanaged(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (testVirHostdevDetachPCINodeDevice() < 0)
+        goto out;
+    if (virHostdevHostSupportsPassthroughKVM()) {
+        if (testVirHostdevPreparePCIHostdevs_unmanaged() < 0)
+            goto out;
+        if (testVirHostdevReAttachPCIHostdevs_unmanaged() < 0)
+            goto out;
+    }
+    if (testVirHostdevReAttachPCINodeDevice() < 0)
+        goto out;
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
+/**
+ * testVirHostdevRoundtripManaged:
+ * @opaque: unused
+ *
+ * Perform a roundtrip with managed devices.
+ *
+ *   1. Attach devices to the guest as managed
+ *   2. Detach devices from the guest as managed
+ */
+static int
+testVirHostdevRoundtripManaged(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (virHostdevHostSupportsPassthroughKVM()) {
+        if (testVirHostdevPreparePCIHostdevs_managed() < 0)
+            goto out;
+        if (testVirHostdevReAttachPCIHostdevs_managed() < 0)
+            goto out;
+    }
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
+/**
+ * testVirHostdevOther:
+ * @opaque: unused
+ *
+ * Perform other operations on devices.
+ *
+ *   1. Reset devices
+ *   2. Update list of active devices
+ */
+static int
+testVirHostdevOther(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (testVirHostdevResetPCINodeDevice() < 0)
+        goto out;
+    if (testVirHostdevUpdateActivePCIHostdevs() < 0)
+        goto out;
+
+    ret = 0;
+
+ out:
     return ret;
 }
 
@@ -460,20 +546,9 @@ mymain(void)
     if (myInit() < 0)
         fprintf(stderr, "Init data structures failed.");
 
-    DO_TEST(testVirHostdevDetachPCINodeDevice);
-    if (virHostdevHostSupportsPassthroughKVM()) {
-        /* following tests would check KVM support */
-        DO_TEST(testVirHostdevPreparePCIHostdevs_unmanaged);
-        DO_TEST(testVirHostdevReAttachPCIHostdevs_unmanaged);
-    }
-    DO_TEST(testVirHostdevResetPCINodeDevice);
-    DO_TEST(testVirHostdevReAttachPCINodeDevice);
-    if (virHostdevHostSupportsPassthroughKVM()) {
-        /* following tests would check KVM support */
-        DO_TEST(testVirHostdevPreparePCIHostdevs_managed);
-        DO_TEST(testVirHostdevReAttachPCIHostdevs_managed);
-    }
-    DO_TEST(testVirHostdevUpdateActivePCIHostdevs);
+    DO_TEST(testVirHostdevRoundtripUnmanaged);
+    DO_TEST(testVirHostdevRoundtripManaged);
+    DO_TEST(testVirHostdevOther);
 
     myCleanup();
 
