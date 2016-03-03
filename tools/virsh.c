@@ -124,6 +124,7 @@ virshCatchDisconnect(virConnectPtr conn,
             break;
         }
         vshError(ctl, _(str), NULLSTR(uri));
+        VIR_FREE(uri);
 
         if (error) {
             virSetError(error);

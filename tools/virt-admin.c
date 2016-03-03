@@ -92,6 +92,7 @@ vshAdmCatchDisconnect(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     vshError(ctl, _(str), NULLSTR(uri));
+    VIR_FREE(uri);
 
     if (error) {
         virSetError(error);
