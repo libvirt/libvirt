@@ -2763,6 +2763,12 @@ qemuDomainGetControlInfo(virDomainPtr dom,
     if (virDomainGetControlInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto cleanup;
+    }
+
     priv = vm->privateData;
 
     memset(info, 0, sizeof(*info));
