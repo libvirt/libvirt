@@ -3382,11 +3382,9 @@ remoteDispatchConnectCloseCallbackRegister(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    // on behalf of close callback
-    virObjectRef(client);
     if (virConnectRegisterCloseCallback(priv->conn,
                                         remoteRelayConnectionClosedEvent,
-                                        client, virObjectFreeCallback) < 0)
+                                        client, NULL) < 0)
         goto cleanup;
 
     priv->closeRegistered = true;
