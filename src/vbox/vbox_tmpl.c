@@ -1037,7 +1037,7 @@ static void
 _vboxAttachDrivesOld(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 {
     size_t i;
-    nsresult rc;
+    nsresult rc = 0;
 
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
