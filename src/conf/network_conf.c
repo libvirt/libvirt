@@ -2925,6 +2925,14 @@ virNetworkObjFormat(virNetworkObjPtr net,
     return NULL;
 }
 
+const char *
+virNetworkDefForwardIf(const virNetworkDef *def, size_t n)
+{
+    return ((def->forward.ifs && (def->forward.nifs > n) &&
+             def->forward.ifs[n].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
+            ? def->forward.ifs[n].device.dev : NULL);
+}
+
 virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
                                           const char *portgroup)
 {

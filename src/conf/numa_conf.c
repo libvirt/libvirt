@@ -72,7 +72,7 @@ struct _virDomainNuma {
 };
 
 
-inline bool
+bool
 virDomainNumatuneNodeSpecified(virDomainNumaPtr numatune,
                                int cellid)
 {

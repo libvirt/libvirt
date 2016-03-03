@@ -1253,7 +1253,7 @@ virCommandRawStatus(virCommandPtr cmd)
  * string like "name=value".  If the named environment variable is
  * already set, then it is replaced in the list.
  */
-static inline void
+static void
 virCommandAddEnv(virCommandPtr cmd, char *env)
 {
     size_t namelen;

@@ -589,6 +589,7 @@ virNetworkConfigFile;
 virNetworkDefCopy;
 virNetworkDefFormat;
 virNetworkDefFormatBuf;
+virNetworkDefForwardIf;
 virNetworkDefFree;
 virNetworkDefGetIpByIndex;
 virNetworkDefGetRouteByIndex;
