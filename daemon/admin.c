@@ -399,6 +399,22 @@ adminConnectGetLoggingOutputs(char **outputs, unsigned int flags)
     return virLogGetNbOutputs();
 }
 
+/* Returns the number of defined filters or -1 in case of an error */
+static int
+adminConnectGetLoggingFilters(char **filters, unsigned int flags)
+{
+    char *tmp = NULL;
+    int ret = 0;
+
+    virCheckFlags(0, -1);
+
+    if ((ret = virLogGetNbFilters()) > 0 && !(tmp = virLogGetFilters()))
+        return -1;
+
+    *filters = tmp;
+    return ret;
+}
+
 static int
 adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
                                       virNetServerClientPtr client ATTRIBUTE_UNUSED,
@@ -417,6 +433,37 @@ adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret->outputs, outputs);
     ret->noutputs = noutputs;
+
+    return 0;
+}
+
+static int
+adminDispatchConnectGetLoggingFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                      virNetMessageErrorPtr rerr,
+                                      admin_connect_get_logging_filters_args *args,
+                                      admin_connect_get_logging_filters_ret *ret)
+{
+    char *filters = NULL;
+    int nfilters = 0;
+
+    if ((nfilters = adminConnectGetLoggingFilters(&filters, args->flags)) < 0) {
+        virNetMessageSaveError(rerr);
+        return -1;
+    }
+
+    if (nfilters == 0) {
+        ret->filters = NULL;
+    } else {
+        char **ret_filters = NULL;
+        if (VIR_ALLOC(ret_filters) < 0)
+            return -1;
+
+        *ret_filters = filters;
+        ret->filters = ret_filters;
+    }
+    ret->nfilters = nfilters;
 
     return 0;
 }

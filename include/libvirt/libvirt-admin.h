@@ -408,6 +408,10 @@ int virAdmConnectGetLoggingOutputs(virAdmConnectPtr conn,
                                    char **outputs,
                                    unsigned int flags);
 
+int virAdmConnectGetLoggingFilters(virAdmConnectPtr conn,
+                                   char **filters,
+                                   unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

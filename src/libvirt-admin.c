@@ -1124,3 +1124,44 @@ virAdmConnectGetLoggingOutputs(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectGetLoggingFilters:
+ * @conn: pointer to an active admin connection
+ * @filters: pointer to a variable to store a string containing all currently
+ *           defined logging filters on daemon (allocated automatically) or
+ *           NULL if just the number of defined outputs is required
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Retrieves a list of currently installed logging filters. Filters returned
+ * are contained within an automatically allocated string and delimited by
+ * spaces. The format of each filter conforms to the format described in
+ * daemon's configuration file (e.g. libvirtd.conf).
+ *
+ * To retrieve individual filters, additional parsing needs to be done by the
+ * caller. Caller is also responsible for freeing @filters correctly.
+ *
+ * Returns the number of filters returned in @filters, or -1 in case of
+ * an error.
+ */
+int
+virAdmConnectGetLoggingFilters(virAdmConnectPtr conn,
+                               char **filters,
+                               unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+
+    virResetLastError();
+    virCheckAdmConnectReturn(conn, -1);
+
+    if ((ret = remoteAdminConnectGetLoggingFilters(conn, filters,
+                                                   flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
