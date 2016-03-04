@@ -749,7 +749,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     virLXCDriverPtr driver = lxc_driver;
     virLXCDomainObjPrivatePtr priv;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
-    ino_t inode;
+    ino_t inode = 0;
 
     virObjectLock(vm);
 
@@ -762,7 +762,6 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
                  (unsigned long long)initpid,
                  err && err->message ? err->message : "<unknown>");
         virResetLastError();
-        inode = 0;
     }
     virDomainAuditInit(vm, initpid, inode);
 
