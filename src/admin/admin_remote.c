@@ -425,3 +425,38 @@ remoteAdminServerSetClientLimits(virAdmServerPtr srv,
     virObjectUnlock(priv);
     return rv;
 }
+
+static int
+remoteAdminConnectGetLoggingOutputs(virAdmConnectPtr conn,
+                                    char **outputs,
+                                    unsigned int flags)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = conn->privateData;
+    admin_connect_get_logging_outputs_args args;
+    admin_connect_get_logging_outputs_ret ret;
+
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    virObjectLock(priv);
+
+    if (call(conn,
+             0,
+             ADMIN_PROC_CONNECT_GET_LOGGING_OUTPUTS,
+             (xdrproc_t) xdr_admin_connect_get_logging_outputs_args,
+             (char *) &args,
+             (xdrproc_t) xdr_admin_connect_get_logging_outputs_ret,
+             (char *) &ret) == -1)
+        goto done;
+
+    if (outputs)
+        VIR_STEAL_PTR(*outputs, ret.outputs);
+
+    rv = ret.noutputs;
+    xdr_free((xdrproc_t) xdr_admin_connect_get_logging_outputs_ret, (char *) &ret);
+
+ done:
+    virObjectUnlock(priv);
+    return rv;
+}

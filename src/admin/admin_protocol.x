@@ -183,6 +183,15 @@ struct admin_server_set_client_limits_args {
     unsigned int flags;
 };
 
+struct admin_connect_get_logging_outputs_args {
+    unsigned int flags;
+};
+
+struct admin_connect_get_logging_outputs_ret {
+    admin_nonnull_string outputs;
+    unsigned int noutputs;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -268,5 +277,10 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_SERVER_SET_CLIENT_LIMITS = 13
+    ADMIN_PROC_SERVER_SET_CLIENT_LIMITS = 13,
+
+    /**
+     * @generate: none
+     */
+    ADMIN_PROC_CONNECT_GET_LOGGING_OUTPUTS = 14
 };

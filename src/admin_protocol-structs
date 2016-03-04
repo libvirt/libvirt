@@ -127,6 +127,13 @@ struct admin_server_set_client_limits_args {
         } params;
         u_int                      flags;
 };
+struct admin_connect_get_logging_outputs_args {
+        u_int                      flags;
+};
+struct admin_connect_get_logging_outputs_ret {
+        admin_nonnull_string       outputs;
+        u_int                      noutputs;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -141,4 +148,5 @@ enum admin_procedure {
         ADMIN_PROC_CLIENT_CLOSE = 11,
         ADMIN_PROC_SERVER_GET_CLIENT_LIMITS = 12,
         ADMIN_PROC_SERVER_SET_CLIENT_LIMITS = 13,
+        ADMIN_PROC_CONNECT_GET_LOGGING_OUTPUTS = 14,
 };

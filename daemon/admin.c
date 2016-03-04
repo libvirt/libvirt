@@ -383,4 +383,41 @@ adminDispatchServerSetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
     virObjectUnref(srv);
     return rv;
 }
+
+/* Returns the number of outputs stored in @outputs */
+static int
+adminConnectGetLoggingOutputs(char **outputs, unsigned int flags)
+{
+    char *tmp = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (!(tmp = virLogGetOutputs()))
+        return -1;
+
+    *outputs = tmp;
+    return virLogGetNbOutputs();
+}
+
+static int
+adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                      virNetMessageErrorPtr rerr,
+                                      admin_connect_get_logging_outputs_args *args,
+                                      admin_connect_get_logging_outputs_ret *ret)
+{
+    char *outputs = NULL;
+    int noutputs = 0;
+
+    if ((noutputs = adminConnectGetLoggingOutputs(&outputs, args->flags) < 0)) {
+        virNetMessageSaveError(rerr);
+        return -1;
+    }
+
+    VIR_STEAL_PTR(ret->outputs, outputs);
+    ret->noutputs = noutputs;
+
+    return 0;
+}
 #include "admin_dispatch.h"

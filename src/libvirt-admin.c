@@ -1084,3 +1084,43 @@ virAdmServerSetClientLimits(virAdmServerPtr srv,
     virDispatchError(NULL);
     return ret;
 }
+
+/**
+ * virAdmConnectGetLoggingOutputs:
+ * @conn: pointer to an active admin connection
+ * @outputs: pointer to a variable to store a string containing all currently
+ *           defined logging outputs on daemon (allocated automatically) or
+ *           NULL if just the number of defined outputs is required
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Retrieves a list of currently installed logging outputs. Outputs returned
+ * are contained within an automatically allocated string and delimited by
+ * spaces. The format of each output conforms to the format described in
+ * daemon's configuration file (e.g. libvirtd.conf).
+ *
+ * To retrieve individual outputs, additional parsing needs to be done by the
+ * caller. Caller is also responsible for freeing @outputs correctly.
+ *
+ * Returns the count of outputs in @outputs, or -1 in case of an error.
+ */
+int
+virAdmConnectGetLoggingOutputs(virAdmConnectPtr conn,
+                               char **outputs,
+                               unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+
+    virResetLastError();
+    virCheckAdmConnectReturn(conn, -1);
+
+    if ((ret = remoteAdminConnectGetLoggingOutputs(conn, outputs,
+                                                   flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
