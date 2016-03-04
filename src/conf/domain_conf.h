@@ -1,7 +1,7 @@
 /*
  * domain_conf.h: domain XML processing
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -759,6 +759,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT,
     VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT,
     VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT,
+    VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS,
 
     VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST
 } virDomainControllerModelPCI;
@@ -770,6 +771,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420,
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_X3130_UPSTREAM,
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM,
+    VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PXB,
 
     VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST
 } virDomainControllerPCIModelName;
@@ -834,6 +836,11 @@ struct _virDomainPCIControllerOpts {
      * pcie-root-port/pcie-switch-downstream-port, -1 = unspecified */
     int chassis;
     int port;
+    int busNr; /* used by pci-expander-bus, -1 == unspecified */
+    /* numaNode is a *subelement* of target (to match existing
+     * item in memory target config) -1 == unspecified
+     */
+    int numaNode;
 };
 
 /* Stores the virtual disk controller configuration */

@@ -3102,12 +3102,13 @@
       PCI controllers have an optional <code>model</code> attribute with
       possible values <code>pci-root</code>, <code>pcie-root</code>,
       <code>pcie-root-port</code>, <code>pci-bridge</code>,
-      <code>dmi-to-pci-bridge</code>, <code>pcie-switch-upstream-port</code>, or
-      <code>pcie-switch-downstream-port</code>.
+      <code>dmi-to-pci-bridge</code>, <code>pcie-switch-upstream-port</code>,
+      <code>pcie-switch-downstream-port</code>, or <code>pci-expander-bus</code>.
       (pci-root and pci-bridge <span class="since">since 1.0.5</span>,
       pcie-root and dmi-to-pci-bridge <span class="since">since
-      1.1.2</span>, pcie-root-port, pcie-switch-upstream-port, and
-      pcie-switch-downstream-port <span class="since">since 1.2.19</span>)
+      1.1.2</span>, pcie-root-port, pcie-switch-upstream-port,
+      pcie-switch-downstream-port <span class="since">since 1.2.19</span>,
+      and pci-expander-bus <span class="since">since 1.3.4</span>)
       The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
       have an optional <code>pcihole64</code> element specifying how big
       (in kilobytes, or in the unit specified by <code>pcihole64</code>'s
@@ -3131,9 +3132,9 @@
     </p>
     <p>
       PCI controllers also have an optional
-      subelement <code>&lt;target&gt;</code> with the attributes
-      listed below. These are configurable items that 1) are visible
-      to the guest OS so must be preserved for guest ABI
+      subelement <code>&lt;target&gt;</code> with the attributes and
+      subelements listed below. These are configurable items that 1)
+      are visible to the guest OS so must be preserved for guest ABI
       compatibility, and 2) are usually left to default values or
       derived automatically by libvirt. In almost all cases, you
       should not manually add a <code>&lt;target&gt;</code> subelement
@@ -3169,6 +3170,35 @@
         is used to set the controller's "port" configuration value,
         which is visible to the virtual machine. If set, port must be
         between 0 and 255.
+      </dd>
+      <dt><code>busNr</code></dt>
+      <dd>
+        pci-expander-bus controllers can have an
+        optional <code>busNr</code> attribute (1-254). This will be
+        the bus number of the new bus; All bus numbers between that
+        specified and 255 will be available only for assignment to
+        PCI/PCIe controllers plugged into the hierarchy starting with
+        this expander bus, and bus numbers less than the specified
+        value will be available to the next lower expander-bus (or the
+        root-bus if there are no lower expander buses). If you do not
+        specify a busNumber, libvirt will find the lowest existing
+        busNumber in all other expander buses (or use 256 if there are
+        no others) and auto-assign the busNr of that found bus - 2,
+        which provides one bus number for the pci-expander-bus and one
+        for the pci-bridge that is automatically attached to it (if
+        you plan on adding more pci-bridges to the hierarchy of the
+        bus, you should manually set busNr to a lower value).
+      </dd>
+      <dt><code>&lt;node&gt;</code></dt>
+      <dd>
+        pci-expander-bus controllers can have an
+        optional <code>&lt;node&gt;</code> subelement within
+        the <code>&lt;target&gt;</code> subelement, which is used to
+        set the NUMA node reported to the guest OS for that bus - the
+        guest OS will then know that all devices on that bus are a
+        part of the specified NUMA node (it is up to the user of the
+        libvirt API to attach host devices to the correct
+        pci-expander-bus when assigning them to the domain).
       </dd>
     </dl>
     <p>

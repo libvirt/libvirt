@@ -644,6 +644,9 @@ mymain(void)
                  QEMU_CAPS_ICH9_AHCI,
                  QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
                  QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_FULL("pci-expander-bus", WHEN_ACTIVE,
+                 QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_PXB);
 
 
     DO_TEST_FULL("hostdev-scsi-lsi", WHEN_ACTIVE,

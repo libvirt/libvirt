@@ -1372,6 +1372,7 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont)
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
         *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
@@ -1507,6 +1508,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                     if (options->port == -1)
                        options->port = addr->slot;
                     break;
+                case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
                 case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:

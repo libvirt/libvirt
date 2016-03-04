@@ -51,7 +51,11 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
         return 0;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-        /* pci-bridge is treated like a standard PCI endpoint device, */
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        /* pci-bridge and pci-expander-bus are treated like a standard
+         * PCI endpoint device, because they can plug into any
+         * standard PCI slot.
+         */
         return VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
@@ -231,6 +235,13 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
+        bus->minSlot = 0;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
+        break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         /* slots 1 - 31, no hotplug, PCIe endpoint device or
          * pcie-root-port only, unless the address was specified in

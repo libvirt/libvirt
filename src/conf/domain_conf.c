@@ -320,7 +320,8 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "dmi-to-pci-bridge",
               "pcie-root-port",
               "pcie-switch-upstream-port",
-              "pcie-switch-downstream-port")
+              "pcie-switch-downstream-port",
+              "pci-expander-bus")
 
 VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
@@ -329,7 +330,8 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "i82801b11-bridge",
               "ioh3420",
               "x3130-upstream",
-              "xio3130-downstream")
+              "xio3130-downstream",
+              "pxb")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
@@ -1654,6 +1656,8 @@ virDomainControllerDefNew(virDomainControllerType type)
         def->opts.pciopts.chassisNr = -1;
         def->opts.pciopts.chassis = -1;
         def->opts.pciopts.port = -1;
+        def->opts.pciopts.busNr = -1;
+        def->opts.pciopts.numaNode = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -7830,6 +7834,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *chassisNr = NULL;
     char *chassis = NULL;
     char *port = NULL;
+    char *busNr = NULL;
+    int numaNode = -1;
     char *ioeventfd = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
@@ -7894,10 +7900,21 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 chassisNr = virXMLPropString(cur, "chassisNr");
                 chassis = virXMLPropString(cur, "chassis");
                 port = virXMLPropString(cur, "port");
+                busNr = virXMLPropString(cur, "busNr");
                 processedTarget = true;
             }
         }
         cur = cur->next;
+    }
+
+    /* node is parsed differently from target attributes because
+     * someone thought it should be a subelement instead...
+     */
+    rc = virXPathInt("string(./target/node)", ctxt, &numaNode);
+    if (rc == -2 || (rc == 0 && numaNode < 0)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("invalid NUMA node in target"));
+        goto error;
     }
 
     if (queues && virStrToLong_ui(queues, NULL, 10, &def->queues) < 0) {
@@ -8069,6 +8086,25 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 goto error;
             }
         }
+        if (busNr) {
+            if (virStrToLong_i(busNr, NULL, 0,
+                               &def->opts.pciopts.busNr) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid busNr '%s' in PCI controller"),
+                               busNr);
+                goto error;
+            }
+            if (def->opts.pciopts.busNr < 0 ||
+                def->opts.pciopts.busNr > 254) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller busNr '%s' out of range "
+                                 "- must be 0-254"),
+                               busNr);
+                goto error;
+            }
+        }
+        if (numaNode >= 0)
+            def->opts.pciopts.numaNode = numaNode;
         break;
 
     default:
@@ -8087,6 +8123,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(chassisNr);
     VIR_FREE(chassis);
     VIR_FREE(port);
+    VIR_FREE(busNr);
     VIR_FREE(ioeventfd);
 
     return def;
@@ -19420,7 +19457,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
             pciModel = true;
         if (def->opts.pciopts.chassisNr != -1 ||
             def->opts.pciopts.chassis != -1 ||
-            def->opts.pciopts.port != -1)
+            def->opts.pciopts.port != -1 ||
+            def->opts.pciopts.busNr != -1 ||
+            def->opts.pciopts.numaNode != -1)
             pciTarget = true;
         break;
 
@@ -19456,7 +19495,19 @@ virDomainControllerDefFormat(virBufferPtr buf,
             if (def->opts.pciopts.port != -1)
                 virBufferAsprintf(buf, " port='0x%x'",
                                   def->opts.pciopts.port);
-            virBufferAddLit(buf, "/>\n");
+            if (def->opts.pciopts.busNr != -1)
+                virBufferAsprintf(buf, " busNr='%d'",
+                                  def->opts.pciopts.busNr);
+            if (def->opts.pciopts.numaNode == -1) {
+                virBufferAddLit(buf, "/>\n");
+            } else {
+                virBufferAddLit(buf, ">\n");
+                virBufferAdjustIndent(buf, 2);
+                virBufferAsprintf(buf, "<node>%d</node>\n",
+                                  def->opts.pciopts.numaNode);
+                virBufferAdjustIndent(buf, -2);
+                virBufferAddLit(buf, "</target>\n");
+            }
         }
 
         if (def->queues || def->cmd_per_lun ||

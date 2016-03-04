@@ -1786,6 +1786,8 @@
                     <value>x3130-upstream</value>
                     <!-- implementations of 'pcie-switch-downstream-port' -->
                     <value>xio3130-downstream</value>
+                    <!-- implementations of 'pci-expander-bus' -->
+                    <value>pxb</value>
                   </choice>
                 </attribute>
                 <empty/>
@@ -1808,7 +1810,16 @@
                     <ref name='uint8'/>
                   </attribute>
                 </optional>
-                <empty/>
+                <optional>
+                  <attribute name='busNr'>
+                    <ref name='uint8'/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <element name='node'>
+                    <ref name='unsignedInt'/>
+                  </element>
+                </optional>
               </element>
             </optional>
             <!-- *-root controllers have an optional element "pcihole64"-->
@@ -1834,6 +1845,7 @@
                     <value>pcie-root-port</value>
                     <value>pcie-switch-upstream-port</value>
                     <value>pcie-switch-downstream-port</value>
+                    <value>pci-expander-bus</value>
                   </choice>
                 </attribute>
               </group>
