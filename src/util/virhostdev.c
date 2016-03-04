@@ -619,6 +619,12 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                           virPCIDeviceGetName(pci));
                 if (virPCIDeviceListAddCopy(mgr->inactivePCIHostdevs, pci) < 0)
                     goto reattachdevs;
+            } else {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("Unmanaged PCI device %s must be manually "
+                               "detached from the host"),
+                               virPCIDeviceGetName(pci));
+                goto reattachdevs;
             }
         }
     }
