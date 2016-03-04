@@ -1373,11 +1373,81 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont)
         *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PXB;
+        break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         break;
     }
+}
+
+
+static int
+qemuDomainAddressFindNewBusNr(virDomainDefPtr def)
+{
+/* Try to find a nice default for busNr for a new pci-expander-bus.
+ * This is a bit tricky, since you need to satisfy the following:
+ *
+ * 1) There need to be enough unused bus numbers between busNr of this
+ *    bus and busNr of the next highest bus for the guest to assign a
+ *    unique bus number to each PCI bus that is a child of this
+ *    bus. Each PCI controller. On top of this, the pxb device (which
+ *    implements the pci-extender-bus) includes a pci-bridge within
+ *    it, and that bridge also uses one bus number (so each pxb device
+ *    requires at least 2 bus numbers).
+ *
+ * 2) There need to be enough bus numbers *below* this for all the
+ *    child controllers of the pci-expander-bus with the next lower
+ *    busNr (or the pci-root bus if there are no lower
+ *    pci-expander-buses).
+ *
+ * 3) If at all possible, we want to avoid needing to change the busNr
+ *    of a bus in the future, as that changes the guest's device ABI,
+ *    which could potentially lead to issues with a guest OS that is
+ *    picky about such things.
+ *
+ *  Due to the impossibility of predicting what might be added to the
+ *  config in the future, we can't make a foolproof choice, but since
+ *  a pci-expander-bus (pxb) has slots for 32 devices, and the only
+ *  practical use for it is to assign real devices on a particular
+ *  NUMA node in the host, it's reasonably safe to assume it should
+ *  never need any additional child buses (probably only a few of the
+ *  32 will ever be used). So for pci-expander-bus we find the lowest
+ *  existing busNr, and set this one to the current lowest - 2 (one
+ *  for the pxb, one for the intergrated pci-bridge), thus leaving the
+ *  maximum possible bus numbers available for other buses plugged
+ *  into pci-root (i.e. pci-bridges and other
+ *  pci-expander-buses). Anyone who needs more than 32 devices
+ *  descended from one pci-expander-bus should set the busNr manually
+ *  in the config.
+ *
+ *  There is room for more error checking here - in particular we
+ *  can/should determine the ultimate parent (root-bus) of each PCI
+ *  controller and determine if there is enough space for all the
+ *  buses within the current range allotted to the bus just prior to
+ *  this one.
+ */
+    size_t i;
+    int lowestBusNr = 256;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+            int thisBusNr = def->controllers[i]->opts.pciopts.busNr;
+
+            if (thisBusNr >= 0 && thisBusNr < lowestBusNr)
+                lowestBusNr = thisBusNr;
+        }
+    }
+
+    /* If we already have a busNR = 1, then we can't auto-assign (0 is
+     * the pci[e]-root, and the others may have been assigned
+     * purposefully).
+     */
+    if (lowestBusNr <= 2)
+        return -1;
+
+    return lowestBusNr - 2;
 }
 
 
@@ -1509,6 +1579,18 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                        options->port = addr->slot;
                     break;
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+                    if (options->busNr == -1)
+                        options->busNr = qemuDomainAddressFindNewBusNr(def);
+                    if (options->busNr == -1) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("No free busNr lower than current "
+                                         "lowest busNr is available to "
+                                         "auto-assign to bus %d. Must be "
+                                         "manually assigned"),
+                                       addr->bus);
+                        goto cleanup;
+                    }
+                    break;
                 case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:

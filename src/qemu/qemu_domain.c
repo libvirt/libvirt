@@ -1887,6 +1887,39 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
     }
 
+
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
+        virDomainControllerDefPtr cont = dev->data.controller;
+
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS) {
+
+            if (!qemuDomainMachineIsI440FX(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pci-expander-bus controllers are only supported "
+                                 "on 440fx-based machinetypes"));
+                goto cleanup;
+            }
+
+            /* if a PCI expander bus has a NUMA node set, make sure
+             * that NUMA node is configured in the guest <cpu><numa>
+             * array. NUMA cell id's in this array are numbered
+             * from 0 .. size-1.
+             */
+            if ((int) virDomainNumaGetNodeCount(def->numa)
+                <= cont->opts.pciopts.numaNode) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("pci-expander-bus with index %d is "
+                                 "configured for a NUMA node (%d) "
+                                 "not present in the domain's "
+                                 "<cpu><numa> array (%zu)"),
+                               cont->idx, cont->opts.pciopts.numaNode,
+                               virDomainNumaGetNodeCount(def->numa));
+                goto cleanup;
+            }
+        }
+    }
+
     ret = 0;
 
  cleanup:
