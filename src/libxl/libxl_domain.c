@@ -26,6 +26,7 @@
 #include <fcntl.h>
 
 #include "libxl_domain.h"
+#include "libxl_capabilities.h"
 
 #include "viralloc.h"
 #include "viratomic.h"

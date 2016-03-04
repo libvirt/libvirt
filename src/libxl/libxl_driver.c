@@ -45,6 +45,7 @@
 #include "libxl_domain.h"
 #include "libxl_driver.h"
 #include "libxl_conf.h"
+#include "libxl_capabilities.h"
 #include "libxl_migration.h"
 #include "xen_xm.h"
 #include "xen_sxpr.h"

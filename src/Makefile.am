@@ -828,10 +828,11 @@ XENAPI_DRIVER_SOURCES =						\
 		xenapi/xenapi_driver_private.h			\
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
-LIBXL_DRIVER_SOURCES =						\
-		libxl/libxl_conf.c libxl/libxl_conf.h		\
-		libxl/libxl_domain.c libxl/libxl_domain.h       \
-		libxl/libxl_driver.c libxl/libxl_driver.h       \
+LIBXL_DRIVER_SOURCES =							\
+		libxl/libxl_conf.c libxl/libxl_conf.h			\
+		libxl/libxl_capabilities.c libxl/libxl_capabilities.h	\
+		libxl/libxl_domain.c libxl/libxl_domain.h       	\
+		libxl/libxl_driver.c libxl/libxl_driver.h       	\
 		libxl/libxl_migration.c libxl/libxl_migration.h
 
 UML_DRIVER_SOURCES =						\

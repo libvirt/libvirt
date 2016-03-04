@@ -75,6 +75,7 @@ src/libvirt-secret.c
 src/libvirt-storage.c
 src/libvirt-stream.c
 src/libvirt.c
+src/libxl/libxl_capabilities.c
 src/libxl/libxl_conf.c
 src/libxl/libxl_domain.c
 src/libxl/libxl_driver.c
