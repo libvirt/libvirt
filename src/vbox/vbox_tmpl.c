@@ -2812,7 +2812,7 @@ _virtualboxCreateMachine(vboxGlobalData *data, virDomainDefPtr def, IMachine **m
 {
     vboxIID iid = VBOX_IID_INITIALIZER;
     PRUnichar *machineNameUtf16 = NULL;
-    nsresult rc;
+    nsresult rc = -1;
 
     VBOX_UTF8_TO_UTF16(def->name, &machineNameUtf16);
     vboxIIDFromUUID(&iid, def->uuid);
@@ -2843,18 +2843,12 @@ _virtualboxCreateMachine(vboxGlobalData *data, virDomainDefPtr def, IMachine **m
                                                 override,
                                                 machine);
 #else /* VBOX_API_VERSION >= 4002000 */
-        const char *flagsUUIDPrefix = "UUID=";
-        const char *flagsForceOverwrite = "forceOverwrite=0";
-        const char *flagsSeparator = ",";
-        char createFlags[strlen(flagsUUIDPrefix) + VIR_UUID_STRING_BUFLEN + strlen(flagsSeparator) + strlen(flagsForceOverwrite) + 1];
+        char *createFlags = NULL;
         PRUnichar *createFlagsUtf16 = NULL;
 
-        snprintf(createFlags, sizeof(createFlags), "%s%s%s%s",
-                 flagsUUIDPrefix,
-                 uuidstr,
-                 flagsSeparator,
-                 flagsForceOverwrite
-                );
+        if (virAsprintf(&createFlags,
+                        "UUID=%s,forceOverwrite=0", uuidstr) < 0)
+            goto cleanup;
         VBOX_UTF8_TO_UTF16(createFlags, &createFlagsUtf16);
         rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
                                                 NULL,
@@ -2864,6 +2858,8 @@ _virtualboxCreateMachine(vboxGlobalData *data, virDomainDefPtr def, IMachine **m
                                                 nsnull,
                                                 createFlagsUtf16,
                                                 machine);
+ cleanup:
+        VIR_FREE(createFlags);
 #endif /* VBOX_API_VERSION >= 4002000 */
     }
     VBOX_UTF16_FREE(machineNameUtf16);
