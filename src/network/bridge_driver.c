@@ -3222,6 +3222,12 @@ networkUndefine(virNetworkPtr net)
     if (virNetworkObjIsActive(network))
         active = true;
 
+    if (!network->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("can't undefine transient network"));
+        goto cleanup;
+    }
+
     /* remove autostart link */
     if (virNetworkDeleteConfig(driver->networkConfigDir,
                                driver->networkAutostartDir,
