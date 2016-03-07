@@ -19994,6 +19994,12 @@ static int qemuDomainRename(virDomainPtr dom,
         goto endjob;
     }
 
+    if (vm->hasManagedSave) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain with a managed saved state can't be renamed"));
+        goto endjob;
+    }
+
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTOFF) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain has to be shutoff before renaming"));
