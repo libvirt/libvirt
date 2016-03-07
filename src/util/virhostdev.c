@@ -752,7 +752,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
  * are locked
  */
 static void
-virHostdevReattachPCIDevice(virPCIDevicePtr dev, virHostdevManagerPtr mgr)
+virHostdevReattachPCIDevice(virHostdevManagerPtr mgr,
+                            virPCIDevicePtr dev)
 {
     /* If the device is not managed and was attached to guest
      * successfully, it must have been inactive.
@@ -892,7 +893,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
      */
     while (virPCIDeviceListCount(pcidevs) > 0) {
         virPCIDevicePtr dev = virPCIDeviceListStealIndex(pcidevs, 0);
-        virHostdevReattachPCIDevice(dev, hostdev_mgr);
+        virHostdevReattachPCIDevice(hostdev_mgr, dev);
     }
 
     virObjectUnref(pcidevs);
