@@ -16830,7 +16830,7 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
 
         if (src->addr.dimm.base != dst->addr.dimm.base) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device dimm base addres '%llx' does "
+                           _("Target device dimm base address '%llx' does "
                              "not match source '%llx'"),
                            dst->addr.dimm.base,
                            src->addr.dimm.base);

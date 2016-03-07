@@ -2360,7 +2360,7 @@ typedef enum {
     VIR_DOMAIN_TAINT_HOST_CPU,         /* Host CPU passthrough in use */
     VIR_DOMAIN_TAINT_HOOK,             /* Domain (possibly) changed via hook script */
     VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,/* CDROM passthrough */
-    VIR_DOMAIN_TAINT_CUSTOM_DTB,       /* Custom device tree blob was specifed */
+    VIR_DOMAIN_TAINT_CUSTOM_DTB,       /* Custom device tree blob was specified */
 
     VIR_DOMAIN_TAINT_LAST
 } virDomainTaintFlags;

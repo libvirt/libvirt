@@ -2404,7 +2404,7 @@ int lxcContainerStart(virDomainDefPtr def,
     } else {
         if (lxcNeedNetworkNamespace(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Config askes for inherit net namespace "
+                           _("Config asks for inherit net namespace "
                              "as well as private network interfaces"));
             VIR_FREE(stack);
             return -1;

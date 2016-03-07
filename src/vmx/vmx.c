@@ -2631,7 +2631,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
             STRCASENEQ(virtualDev, "e1000e")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry '%s' to be 'vlance' or 'vmxnet' or "
-                             "'vmxnet3' or 'e1000e' or 'e1000e' but found '%s'"),
+                             "'vmxnet3' or 'e1000' or 'e1000e' but found '%s'"),
                            virtualDev_name, virtualDev);
             goto cleanup;
         }
