@@ -60,6 +60,27 @@ struct virHostdevIsPCINodeDeviceUsedData {
     const bool usesVFIO;
 };
 
+/* This module makes heavy use of bookkeeping lists contained inside a
+ * virHostdevManager instance to keep track of the devices' status. To make
+ * it easy to spot potential ownership errors when moving devices from one
+ * list to the other, variable names should comply with the following
+ * conventions when it comes to virPCIDevice and virPCIDeviceList instances:
+ *
+ *   pci - a short-lived virPCIDevice whose purpose is usually just to look
+ *         up the actual PCI device in one of the bookkeeping lists; basically
+ *         little more than a fancy virPCIDeviceAddress
+ *
+ *   pcidevs - a list containing a bunch of the above
+ *
+ *   actual - a virPCIDevice instance that has either been retrieved from one
+ *            of the bookkeeping lists, or is intended to be added or copied
+ *            to one at some point
+ *
+ * Passing an 'actual' to a function that requires a 'pci' is fine, but the
+ * opposite is usually not true; as a rule of thumb, functions in the virpci
+ * module usually expect an 'actual'. Even with these conventions in place,
+ * adding comments to highlight ownership-related issues is recommended */
+
 static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
 {
     virPCIDevicePtr actual;
@@ -544,6 +565,11 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
 
         if (virPCIDeviceGetManaged(pci)) {
+
+            /* We can't look up the actual device because it has not been
+             * created yet: virPCIDeviceDetach() will insert a copy of 'pci'
+             * into the list of inactive devices, and that copy will be the
+             * actual device going forward */
             VIR_DEBUG("Detaching managed PCI device %s",
                       virPCIDeviceGetName(pci));
             if (virPCIDeviceDetach(pci,
@@ -564,6 +590,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
 
+        /* We can avoid looking up the actual device here, because performing
+         * a PCI reset on a device doesn't require any information other than
+         * the address, which 'pci' already contains */
         VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
         if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
                               mgr->inactivePCIHostdevs) < 0)
@@ -608,6 +637,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr pci, actual;
 
+        /* We need to look up the actual device and set the information
+         * there because 'pci' only contain address information and will
+         * be released at the end of the function */
         pci = virPCIDeviceListGet(pcidevs, i);
         actual = virPCIDeviceListFind(mgr->activePCIHostdevs, pci);
 
@@ -777,6 +809,10 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
         virPCIDevicePtr actual = NULL;
 
+        /* We need to look up the actual device, which is the one containing
+         * information such as by which domain and driver it is used. As a
+         * side effect, by looking it up we can also tell whether it was
+         * really active in the first place */
         actual = virPCIDeviceListFind(mgr->activePCIHostdevs, pci);
         if (actual) {
             const char *actual_drvname;
@@ -832,6 +868,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
 
+        /* We can avoid looking up the actual device here, because performing
+         * a PCI reset on a device doesn't require any information other than
+         * the address, which 'pci' already contains */
         VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
         if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
                               mgr->inactivePCIHostdevs) < 0) {
