@@ -727,9 +727,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
         virPCIDevicePtr dev = virPCIDeviceListGet(pcidevs, i);
 
         if (virPCIDeviceGetManaged(dev)) {
-            /* NB: This doesn't actually re-bind to original driver, just
-             * unbinds from the stub driver
-             */
             VIR_DEBUG("Reattaching managed PCI device %s",
                       virPCIDeviceGetName(dev));
             ignore_value(virPCIDeviceReattach(dev,
