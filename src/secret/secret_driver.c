@@ -176,19 +176,6 @@ secretSaveValue(const virSecretObj *secret)
     return ret;
 }
 
-static int
-secretDeleteSaved(const virSecretObj *secret)
-{
-    if (unlink(secret->configFile) < 0 && errno != ENOENT)
-        return -1;
-
-    /* When the XML is missing, the rest may waste disk space, but the secret
-       won't be loaded again, so we have succeeded already. */
-    (void)unlink(secret->base64File);
-
-    return 0;
-}
-
 /* Driver functions */
 
 static int
@@ -326,8 +313,10 @@ secretDefineXML(virConnectPtr conn,
             goto restore_backup;
         }
     } else if (backup && !backup->ephemeral) {
-        if (secretDeleteSaved(secret) < 0)
+        if (virSecretObjDeleteConfig(secret) < 0)
             goto restore_backup;
+
+        virSecretObjDeleteData(secret);
     }
     /* Saved successfully - drop old values */
     new_attrs = NULL;
@@ -490,9 +479,10 @@ secretUndefine(virSecretPtr obj)
     if (virSecretUndefineEnsureACL(obj->conn, secret->def) < 0)
         goto cleanup;
 
-    if (!secret->def->ephemeral &&
-        secretDeleteSaved(secret) < 0)
+    if (virSecretObjDeleteConfig(secret) < 0)
         goto cleanup;
+
+    virSecretObjDeleteData(secret);
 
     virSecretObjListRemove(driver->secrets, secret);
 

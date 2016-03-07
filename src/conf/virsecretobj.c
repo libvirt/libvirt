@@ -648,6 +648,29 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
 }
 
 
+int
+virSecretObjDeleteConfig(virSecretObjPtr secret)
+{
+    if (!secret->def->ephemeral &&
+        unlink(secret->configFile) < 0 && errno != ENOENT) {
+        virReportSystemError(errno, _("cannot unlink '%s'"),
+                             secret->configFile);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+void
+virSecretObjDeleteData(virSecretObjPtr secret)
+{
+    /* The configFile will already be removed, so secret won't be
+     * loaded again if this fails */
+    (void)unlink(secret->base64File);
+}
+
+
 static int
 virSecretLoadValidateUUID(virSecretDefPtr def,
                           const char *file)

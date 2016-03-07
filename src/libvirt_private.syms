@@ -896,6 +896,8 @@ virDomainObjListRename;
 
 # conf/virsecretobj.h
 virSecretLoadAllConfigs;
+virSecretObjDeleteConfig;
+virSecretObjDeleteData;
 virSecretObjEndAPI;
 virSecretObjListAdd;
 virSecretObjListExport;
