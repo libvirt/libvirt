@@ -740,6 +740,21 @@ virSecretObjSaveData(virSecretObjPtr secret)
 }
 
 
+virSecretDefPtr
+virSecretObjGetDef(virSecretObjPtr secret)
+{
+    return secret->def;
+}
+
+
+void
+virSecretObjSetDef(virSecretObjPtr secret,
+                   virSecretDefPtr def)
+{
+    secret->def = def;
+}
+
+
 static int
 virSecretLoadValidateUUID(virSecretDefPtr def,
                           const char *file)

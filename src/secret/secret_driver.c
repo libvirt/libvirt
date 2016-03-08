@@ -153,6 +153,7 @@ secretLookupByUUID(virConnectPtr conn,
 {
     virSecretPtr ret = NULL;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     if (!(secret = virSecretObjListFindByUUID(driver->secrets, uuid))) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -162,13 +163,14 @@ secretLookupByUUID(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virSecretLookupByUUIDEnsureACL(conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretLookupByUUIDEnsureACL(conn, def) < 0)
         goto cleanup;
 
     ret = virGetSecret(conn,
-                       secret->def->uuid,
-                       secret->def->usage_type,
-                       virSecretUsageIDForDef(secret->def));
+                       def->uuid,
+                       def->usage_type,
+                       virSecretUsageIDForDef(def));
 
  cleanup:
     virSecretObjEndAPI(&secret);
@@ -183,6 +185,7 @@ secretLookupByUsage(virConnectPtr conn,
 {
     virSecretPtr ret = NULL;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     if (!(secret = virSecretObjListFindByUsage(driver->secrets,
                                                usageType, usageID))) {
@@ -191,13 +194,14 @@ secretLookupByUsage(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virSecretLookupByUsageEnsureACL(conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretLookupByUsageEnsureACL(conn, def) < 0)
         goto cleanup;
 
     ret = virGetSecret(conn,
-                       secret->def->uuid,
-                       secret->def->usage_type,
-                       virSecretUsageIDForDef(secret->def));
+                       def->uuid,
+                       def->usage_type,
+                       virSecretUsageIDForDef(def));
 
  cleanup:
     virSecretObjEndAPI(&secret);
@@ -250,22 +254,22 @@ secretDefineXML(virConnectPtr conn,
         virSecretObjDeleteData(secret);
     }
     /* Saved successfully - drop old values */
-    new_attrs = NULL;
     virSecretDefFree(backup);
 
     ret = virGetSecret(conn,
-                       secret->def->uuid,
-                       secret->def->usage_type,
-                       virSecretUsageIDForDef(secret->def));
+                       new_attrs->uuid,
+                       new_attrs->usage_type,
+                       virSecretUsageIDForDef(new_attrs));
+    new_attrs = NULL;
     goto cleanup;
 
  restore_backup:
     /* If we have a backup, then secret was defined before, so just restore
-     * the backup. The current secret->def (new_attrs) will be handled below.
+     * the backup. The current (new_attrs) will be handled below.
      * Otherwise, this is a new secret, thus remove it.
      */
     if (backup)
-        secret->def = backup;
+        virSecretObjSetDef(secret, backup);
     else
         virSecretObjListRemove(driver->secrets, secret);
 
@@ -282,16 +286,18 @@ secretGetXMLDesc(virSecretPtr obj,
 {
     char *ret = NULL;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     virCheckFlags(0, NULL);
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
 
-    if (virSecretGetXMLDescEnsureACL(obj->conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretGetXMLDescEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
-    ret = virSecretDefFormat(secret->def);
+    ret = virSecretDefFormat(def);
 
  cleanup:
     virSecretObjEndAPI(&secret);
@@ -309,6 +315,7 @@ secretSetValue(virSecretPtr obj,
     unsigned char *old_value, *new_value;
     size_t old_value_size;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     virCheckFlags(0, -1);
 
@@ -318,7 +325,8 @@ secretSetValue(virSecretPtr obj,
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
 
-    if (virSecretSetValueEnsureACL(obj->conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretSetValueEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
     old_value = secret->value;
@@ -327,7 +335,7 @@ secretSetValue(virSecretPtr obj,
     memcpy(new_value, value, value_size);
     secret->value = new_value;
     secret->value_size = value_size;
-    if (!secret->def->ephemeral) {
+    if (!def->ephemeral) {
         if (secretEnsureDirectory() < 0)
             goto cleanup;
 
@@ -366,13 +374,15 @@ secretGetValue(virSecretPtr obj,
 {
     unsigned char *ret = NULL;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     virCheckFlags(0, NULL);
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
 
-    if (virSecretGetValueEnsureACL(obj->conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretGetValueEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
     if (secret->value == NULL) {
@@ -384,7 +394,7 @@ secretGetValue(virSecretPtr obj,
     }
 
     if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
-        secret->def->private) {
+        def->private) {
         virReportError(VIR_ERR_INVALID_SECRET, "%s",
                        _("secret is private"));
         goto cleanup;
@@ -406,11 +416,13 @@ secretUndefine(virSecretPtr obj)
 {
     int ret = -1;
     virSecretObjPtr secret;
+    virSecretDefPtr def;
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
 
-    if (virSecretUndefineEnsureACL(obj->conn, secret->def) < 0)
+    def = virSecretObjGetDef(secret);
+    if (virSecretUndefineEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
     if (virSecretObjDeleteConfig(secret) < 0)

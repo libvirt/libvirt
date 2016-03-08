@@ -101,6 +101,10 @@ int virSecretObjSaveConfig(virSecretObjPtr secret);
 
 int virSecretObjSaveData(virSecretObjPtr secret);
 
+virSecretDefPtr virSecretObjGetDef(virSecretObjPtr secret);
+
+void virSecretObjSetDef(virSecretObjPtr secret, virSecretDefPtr def);
+
 int virSecretLoadAllConfigs(virSecretObjListPtr secrets,
                             const char *configDir);
 #endif /* __VIRSECRETOBJ_H__ */

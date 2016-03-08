@@ -899,6 +899,7 @@ virSecretLoadAllConfigs;
 virSecretObjDeleteConfig;
 virSecretObjDeleteData;
 virSecretObjEndAPI;
+virSecretObjGetDef;
 virSecretObjListAdd;
 virSecretObjListExport;
 virSecretObjListFindByUsage;
@@ -909,6 +910,7 @@ virSecretObjListNumOfSecrets;
 virSecretObjListRemove;
 virSecretObjSaveConfig;
 virSecretObjSaveData;
+virSecretObjSetDef;
 
 
 # cpu/cpu.h
