@@ -183,9 +183,9 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     prop = virXPathString("string(./@ephemeral)", ctxt);
     if (prop != NULL) {
         if (STREQ(prop, "yes")) {
-            def->ephemeral = true;
+            def->isephemeral = true;
         } else if (STREQ(prop, "no")) {
-            def->ephemeral = false;
+            def->isephemeral = false;
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'ephemeral'"));
@@ -197,9 +197,9 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     prop = virXPathString("string(./@private)", ctxt);
     if (prop != NULL) {
         if (STREQ(prop, "yes")) {
-            def->private = true;
+            def->isprivate = true;
         } else if (STREQ(prop, "no")) {
-            def->private = false;
+            def->isprivate = false;
         } else {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid value of 'private'"));
@@ -325,8 +325,8 @@ virSecretDefFormat(const virSecretDef *def)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     virBufferAsprintf(&buf, "<secret ephemeral='%s' private='%s'>\n",
-                      def->ephemeral ? "yes" : "no",
-                      def->private ? "yes" : "no");
+                      def->isephemeral ? "yes" : "no",
+                      def->isprivate ? "yes" : "no");
 
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);

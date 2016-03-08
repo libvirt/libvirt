@@ -620,8 +620,8 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         VIR_ALLOC(def) < 0)
         goto cleanup;
 
-    def->ephemeral = false;
-    def->private = false;
+    def->isephemeral = false;
+    def->isprivate = false;
     if (virStorageGenerateSecretUUID(conn, def->uuid) < 0)
         goto cleanup;
 

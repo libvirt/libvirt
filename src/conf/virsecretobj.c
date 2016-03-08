@@ -369,7 +369,7 @@ virSecretObjListAddLocked(virSecretObjListPtr secrets,
             goto cleanup;
         }
 
-        if (secret->def->private && !def->private) {
+        if (secret->def->isprivate && !def->isprivate) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change private flag on existing secret"));
             goto cleanup;
@@ -517,17 +517,17 @@ virSecretObjMatchFlags(virSecretObjPtr secret,
     /* filter by whether it's ephemeral */
     if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
         !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
-           secret->def->ephemeral) ||
+           secret->def->isephemeral) ||
           (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
-           !secret->def->ephemeral)))
+           !secret->def->isephemeral)))
         return false;
 
     /* filter by whether it's private */
     if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
         !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
-           secret->def->private) ||
+           secret->def->isprivate) ||
           (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
-           !secret->def->private)))
+           !secret->def->isprivate)))
         return false;
 
     return true;
@@ -660,7 +660,7 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
 int
 virSecretObjDeleteConfig(virSecretObjPtr secret)
 {
-    if (!secret->def->ephemeral &&
+    if (!secret->def->isephemeral &&
         unlink(secret->configFile) < 0 && errno != ENOENT) {
         virReportSystemError(errno, _("cannot unlink '%s'"),
                              secret->configFile);
@@ -804,7 +804,7 @@ virSecretObjSetValue(virSecretObjPtr secret,
     secret->value = new_value;
     secret->value_size = value_size;
 
-    if (!secret->def->ephemeral && virSecretObjSaveData(secret) < 0)
+    if (!secret->def->isephemeral && virSecretObjSaveData(secret) < 0)
         goto error;
 
     /* Saved successfully - drop old value */

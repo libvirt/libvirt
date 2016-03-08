@@ -231,23 +231,23 @@ secretDefineXML(virConnectPtr conn,
                                        driver->configDir, &backup)))
         goto cleanup;
 
-    if (!new_attrs->ephemeral) {
+    if (!new_attrs->isephemeral) {
         if (secretEnsureDirectory() < 0)
             goto cleanup;
 
-        if (backup && backup->ephemeral) {
+        if (backup && backup->isephemeral) {
             if (virSecretObjSaveData(secret) < 0)
                 goto restore_backup;
         }
 
         if (virSecretObjSaveConfig(secret) < 0) {
-            if (backup && backup->ephemeral) {
+            if (backup && backup->isephemeral) {
                 /* Undo the virSecretObjSaveData() above; ignore errors */
                 virSecretObjDeleteData(secret);
             }
             goto restore_backup;
         }
-    } else if (backup && !backup->ephemeral) {
+    } else if (backup && !backup->isephemeral) {
         if (virSecretObjDeleteConfig(secret) < 0)
             goto restore_backup;
 
@@ -358,7 +358,7 @@ secretGetValue(virSecretPtr obj,
         goto cleanup;
 
     if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
-        def->private) {
+        def->isprivate) {
         virReportError(VIR_ERR_INVALID_SECRET, "%s",
                        _("secret is private"));
         goto cleanup;
