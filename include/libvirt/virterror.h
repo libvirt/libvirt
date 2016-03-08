@@ -311,6 +311,7 @@ typedef enum {
     VIR_ERR_XML_INVALID_SCHEMA = 92,    /* XML document doesn't validate against schema */
     VIR_ERR_MIGRATE_FINISH_OK = 93,     /* Finish API succeeded but it is expected to return NULL */
     VIR_ERR_AUTH_UNAVAILABLE = 94,	/* authentication unavailable */
+    VIR_ERR_NO_SERVER = 95,             /* Server was not found */
 } virErrorNumber;
 
 /**

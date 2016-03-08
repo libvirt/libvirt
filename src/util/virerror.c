@@ -1380,6 +1380,12 @@ virErrorMsg(virErrorNumber error, const char *info)
         case VIR_ERR_MIGRATE_FINISH_OK:
             errmsg = _("migration successfully aborted");
             break;
+        case VIR_ERR_NO_SERVER:
+            if (info == NULL)
+                errmsg = _("Server not found");
+            else
+                errmsg = _("Server not found: %s");
+            break;
     }
     return errmsg;
 }
