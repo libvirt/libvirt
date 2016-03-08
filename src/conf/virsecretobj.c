@@ -36,6 +36,15 @@
 
 VIR_LOG_INIT("conf.virsecretobj");
 
+struct _virSecretObj {
+    virObjectLockable parent;
+    char *configFile;
+    char *base64File;
+    virSecretDefPtr def;
+    unsigned char *value;       /* May be NULL */
+    size_t value_size;
+};
+
 static virClassPtr virSecretObjClass;
 static virClassPtr virSecretObjListClass;
 static void virSecretObjDispose(void *obj);
@@ -752,6 +761,82 @@ virSecretObjSetDef(virSecretObjPtr secret,
                    virSecretDefPtr def)
 {
     secret->def = def;
+}
+
+
+unsigned char *
+virSecretObjGetValue(virSecretObjPtr secret)
+{
+    unsigned char *ret = NULL;
+
+    if (!secret->value) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(secret->def->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_SECRET,
+                       _("secret '%s' does not have a value"), uuidstr);
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(ret, secret->value_size) < 0)
+        goto cleanup;
+    memcpy(ret, secret->value, secret->value_size);
+
+ cleanup:
+    return ret;
+}
+
+
+int
+virSecretObjSetValue(virSecretObjPtr secret,
+                     const unsigned char *value,
+                     size_t value_size)
+{
+    unsigned char *old_value, *new_value;
+    size_t old_value_size;
+
+    if (VIR_ALLOC_N(new_value, value_size) < 0)
+        return -1;
+
+    old_value = secret->value;
+    old_value_size = secret->value_size;
+
+    memcpy(new_value, value, value_size);
+    secret->value = new_value;
+    secret->value_size = value_size;
+
+    if (!secret->def->ephemeral && virSecretObjSaveData(secret) < 0)
+        goto error;
+
+    /* Saved successfully - drop old value */
+    if (old_value) {
+        memset(old_value, 0, old_value_size);
+        VIR_FREE(old_value);
+    }
+
+    return 0;
+
+ error:
+    /* Error - restore previous state and free new value */
+    secret->value = old_value;
+    secret->value_size = old_value_size;
+    memset(new_value, 0, value_size);
+    VIR_FREE(new_value);
+    return -1;
+}
+
+
+size_t
+virSecretObjGetValueSize(virSecretObjPtr secret)
+{
+    return secret->value_size;
+}
+
+
+void
+virSecretObjSetValueSize(virSecretObjPtr secret,
+                         size_t value_size)
+{
+    secret->value_size = value_size;
 }
 
 

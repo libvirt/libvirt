@@ -312,15 +312,10 @@ secretSetValue(virSecretPtr obj,
                unsigned int flags)
 {
     int ret = -1;
-    unsigned char *old_value, *new_value;
-    size_t old_value_size;
     virSecretObjPtr secret;
     virSecretDefPtr def;
 
     virCheckFlags(0, -1);
-
-    if (VIR_ALLOC_N(new_value, value_size) < 0)
-        return -1;
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
@@ -329,39 +324,16 @@ secretSetValue(virSecretPtr obj,
     if (virSecretSetValueEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
-    old_value = secret->value;
-    old_value_size = secret->value_size;
+    if (secretEnsureDirectory() < 0)
+        goto cleanup;
 
-    memcpy(new_value, value, value_size);
-    secret->value = new_value;
-    secret->value_size = value_size;
-    if (!def->ephemeral) {
-        if (secretEnsureDirectory() < 0)
-            goto cleanup;
-
-        if (virSecretObjSaveData(secret) < 0)
-            goto restore_backup;
-    }
-    /* Saved successfully - drop old value */
-    if (old_value != NULL) {
-        memset(old_value, 0, old_value_size);
-        VIR_FREE(old_value);
-    }
-    new_value = NULL;
+    if (virSecretObjSetValue(secret, value, value_size) < 0)
+        goto cleanup;
 
     ret = 0;
-    goto cleanup;
-
- restore_backup:
-    /* Error - restore previous state and free new value */
-    secret->value = old_value;
-    secret->value_size = old_value_size;
-    memset(new_value, 0, value_size);
 
  cleanup:
     virSecretObjEndAPI(&secret);
-
-    VIR_FREE(new_value);
 
     return ret;
 }
@@ -385,14 +357,6 @@ secretGetValue(virSecretPtr obj,
     if (virSecretGetValueEnsureACL(obj->conn, def) < 0)
         goto cleanup;
 
-    if (secret->value == NULL) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_SECRET,
-                       _("secret '%s' does not have a value"), uuidstr);
-        goto cleanup;
-    }
-
     if ((internalFlags & VIR_SECRET_GET_VALUE_INTERNAL_CALL) == 0 &&
         def->private) {
         virReportError(VIR_ERR_INVALID_SECRET, "%s",
@@ -400,10 +364,10 @@ secretGetValue(virSecretPtr obj,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(ret, secret->value_size) < 0)
+    if (!(ret = virSecretObjGetValue(secret)))
         goto cleanup;
-    memcpy(ret, secret->value, secret->value_size);
-    *value_size = secret->value_size;
+
+    *value_size = virSecretObjGetValueSize(secret);
 
  cleanup:
     virSecretObjEndAPI(&secret);

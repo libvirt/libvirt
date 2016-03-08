@@ -28,15 +28,6 @@
 
 typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
-struct _virSecretObj {
-    virObjectLockable parent;
-    char *configFile;
-    char *base64File;
-    virSecretDefPtr def;
-    unsigned char *value;       /* May be NULL */
-    size_t value_size;
-};
-
 
 virSecretObjPtr virSecretObjNew(void);
 
@@ -104,6 +95,15 @@ int virSecretObjSaveData(virSecretObjPtr secret);
 virSecretDefPtr virSecretObjGetDef(virSecretObjPtr secret);
 
 void virSecretObjSetDef(virSecretObjPtr secret, virSecretDefPtr def);
+
+unsigned char *virSecretObjGetValue(virSecretObjPtr secret);
+
+int virSecretObjSetValue(virSecretObjPtr secret,
+                         const unsigned char *value, size_t value_size);
+
+size_t virSecretObjGetValueSize(virSecretObjPtr secret);
+
+void virSecretObjSetValueSize(virSecretObjPtr secret, size_t value_size);
 
 int virSecretLoadAllConfigs(virSecretObjListPtr secrets,
                             const char *configDir);
