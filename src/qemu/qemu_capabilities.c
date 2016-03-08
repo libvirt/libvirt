@@ -323,6 +323,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "debug-threads",
               "secret",
               "pxb",
+
+              "pxb-pcie", /* 220 */
     );
 
 
@@ -1579,6 +1581,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "mptsas1068", QEMU_CAPS_SCSI_MPTSAS1068 },
     { "secret", QEMU_CAPS_OBJECT_SECRET },
     { "pxb", QEMU_CAPS_DEVICE_PXB },
+    { "pxb-pcie", QEMU_CAPS_DEVICE_PXB_PCIE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {

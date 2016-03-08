@@ -180,4 +180,5 @@
     <flag name='debug-threads'/>
     <flag name='secret'/>
     <flag name='pxb'/>
+    <flag name='pxb-pcie'/>
   </qemuCaps>

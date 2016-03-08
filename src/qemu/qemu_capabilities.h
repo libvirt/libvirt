@@ -354,6 +354,9 @@ typedef enum {
     QEMU_CAPS_OBJECT_SECRET, /* -object secret */
     QEMU_CAPS_DEVICE_PXB, /* -device pxb */
 
+    /* 220 */
+    QEMU_CAPS_DEVICE_PXB_PCIE, /* -device pxb-pcie */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

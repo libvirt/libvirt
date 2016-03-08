@@ -1323,6 +1323,9 @@
       "name": "pxb"
     },
     {
+      "name": "pxb-pcie"
+    },
+    {
       "name": "kvm64-x86_64-cpu"
     },
     {
