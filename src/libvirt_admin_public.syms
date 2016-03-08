@@ -44,4 +44,5 @@ LIBVIRT_ADMIN_3.0.0 {
     global:
         virAdmConnectGetLoggingOutputs;
         virAdmConnectGetLoggingFilters;
+        virAdmConnectSetLoggingOutputs;
 } LIBVIRT_ADMIN_2.0.0;

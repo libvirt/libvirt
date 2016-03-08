@@ -1165,3 +1165,41 @@ virAdmConnectGetLoggingFilters(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectSetLoggingOutputs:
+ * @conn: pointer to an active admin connection
+ * @outputs: pointer to a string containing a list of outputs to be defined
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Redefine the existing (set of) outputs(s) with a new one specified in
+ * @outputs. If multiple outputs are specified, they need to be delimited by
+ * spaces. The format of each output must conform to the format described in
+ * daemon's configuration file (e.g. libvirtd.conf).
+ *
+ * To reset the existing (set of) output(s) to libvirt's defaults, an empty
+ * string ("") or NULL should be passed in @outputs.
+ *
+ * Returns 0 if the new output or the set of outputs has been defined
+ * successfully, or -1 in case of an error.
+ */
+int
+virAdmConnectSetLoggingOutputs(virAdmConnectPtr conn,
+                               const char *outputs,
+                               unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, outputs=%s, flags=%x", conn, outputs, flags);
+
+    virResetLastError();
+    virCheckAdmConnectReturn(conn, -1);
+
+    if ((ret = remoteAdminConnectSetLoggingOutputs(conn, outputs, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}
