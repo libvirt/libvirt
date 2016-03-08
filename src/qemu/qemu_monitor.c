@@ -3582,6 +3582,23 @@ qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorGetGICCapabilities:
+ * @mon: QEMU monitor
+ * @capabilities: where to store the GIC capabilities
+ *
+ * See qemuMonitorJSONGetGICCapabilities().
+ */
+int
+qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
+                              virGICCapability **capabilities)
+{
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONGetGICCapabilities(mon, capabilities);
+}
+
+
 int
 qemuMonitorNBDServerStart(qemuMonitorPtr mon,
                           const char *host,

@@ -34,6 +34,7 @@
 # include "virnetdev.h"
 # include "device_conf.h"
 # include "cpu/cpu.h"
+# include "util/virgic.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -582,6 +583,9 @@ int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability,
                                       bool state);
+
+int qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
+                                  virGICCapability **capabilities);
 
 typedef enum {
   QEMU_MONITOR_MIGRATE_BACKGROUND	= 1 << 0,

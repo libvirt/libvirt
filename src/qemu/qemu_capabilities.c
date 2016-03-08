@@ -358,6 +358,9 @@ struct _virQEMUCaps {
     char **machineTypes;
     char **machineAliases;
     unsigned int *machineMaxCpus;
+
+    size_t ngicCapabilities;
+    virGICCapability *gicCapabilities;
 };
 
 struct virQEMUCapsSearchData {
@@ -2082,6 +2085,8 @@ void virQEMUCapsDispose(void *obj)
 
     VIR_FREE(qemuCaps->package);
     VIR_FREE(qemuCaps->binary);
+
+    VIR_FREE(qemuCaps->gicCapabilities);
 }
 
 void
@@ -2696,6 +2701,34 @@ virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
+/**
+ * virQEMUCapsProbeQMPGICCapabilities:
+ * @qemuCaps: QEMU binary capabilities
+ * @mon: QEMU monitor
+ *
+ * Use @mon to obtain information about the GIC capabilities for the
+ * corresponding QEMU binary, and store them in @qemuCaps.
+ *
+ * Returns: 0 on success, <0 on failure
+ */
+static int
+virQEMUCapsProbeQMPGICCapabilities(virQEMUCapsPtr qemuCaps,
+                                   qemuMonitorPtr mon)
+{
+    virGICCapability *caps = NULL;
+    int ncaps;
+
+    if ((ncaps = qemuMonitorGetGICCapabilities(mon, &caps)) < 0)
+        return -1;
+
+    VIR_FREE(qemuCaps->gicCapabilities);
+
+    qemuCaps->gicCapabilities = caps;
+    qemuCaps->ngicCapabilities = ncaps;
+
+    return 0;
+}
+
 int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
                         qemuMonitorPtr mon)
 {
@@ -3047,6 +3080,9 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
     VIR_FREE(qemuCaps->machineAliases);
     VIR_FREE(qemuCaps->machineMaxCpus);
     qemuCaps->nmachineTypes = 0;
+
+    VIR_FREE(qemuCaps->gicCapabilities);
+    qemuCaps->ngicCapabilities = 0;
 }
 
 
@@ -3409,6 +3445,12 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
+        goto cleanup;
+
+    /* GIC capabilities, eg. available GIC versions */
+    if ((qemuCaps->arch == VIR_ARCH_AARCH64 ||
+         qemuCaps->arch == VIR_ARCH_ARMV7L) &&
+        virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
 
     ret = 0;

@@ -5855,6 +5855,121 @@ qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
     return ret;
 }
 
+
+/**
+ * qemuMonitorJSONGetGICCapabilities:
+ * @mon: QEMU JSON monitor
+ * @capabilities: where to store the GIC capabilities
+ *
+ * Use @mon to obtain information about the GIC capabilities for the
+ * corresponding QEMU binary, and store them in @capabilities.
+ *
+ * If the QEMU binary has no GIC capabilities, or if GIC capabilities could
+ * not be determined due to the lack of 'query-gic-capabilities' QMP command,
+ * a NULL pointer will be returned instead of an empty array.
+ *
+ * Returns: the number of GIC capabilities obtained from the monitor,
+ *          <0 on failure
+ */
+int
+qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
+                                  virGICCapability **capabilities)
+{
+    int ret;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr caps;
+    virGICCapability *list = NULL;
+    size_t i;
+    ssize_t n;
+
+    *capabilities = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-gic-capabilities",
+                                           NULL)))
+        return -1;
+
+    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+
+    if (ret == 0) {
+        /* If the 'query-gic-capabilities' QMP command was not available
+         * we simply successfully return zero capabilities.
+         * This is the case for QEMU <2.6 and all non-ARM architectures */
+        if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
+            goto cleanup;
+        ret = qemuMonitorJSONCheckError(cmd, reply);
+    }
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = -1;
+
+    if (!(caps = virJSONValueObjectGetArray(reply, "return")) ||
+        (n = virJSONValueArraySize(caps)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing GIC capabilities"));
+        goto cleanup;
+    }
+
+    /* If the returned array was empty we have to return successfully */
+    if (n == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(list, n) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr cap = virJSONValueArrayGet(caps, i);
+        int version;
+        bool kernel;
+        bool emulated;
+
+        if (!cap || cap->type != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing entry in GIC capabilities list"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetNumberInt(cap, "version", &version) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing GIC version"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetBoolean(cap, "kernel", &kernel) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing in-kernel GIC information"));
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectGetBoolean(cap, "emulated", &emulated) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing emulated GIC information"));
+            goto cleanup;
+        }
+
+        list[i].version = version;
+        if (kernel)
+            list[i].implementation |= VIR_GIC_IMPLEMENTATION_KERNEL;
+        if (emulated)
+            list[i].implementation |= VIR_GIC_IMPLEMENTATION_EMULATED;
+    }
+
+    ret = n;
+    *capabilities = list;
+
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(list);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+
+    return ret;
+}
+
 static virJSONValuePtr
 qemuMonitorJSONBuildInetSocketAddress(const char *host,
                                       const char *port)
