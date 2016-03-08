@@ -2149,3 +2149,34 @@ virLogParseFilters(const char *src, virLogFilterPtr **filters)
     virStringFreeList(strings);
     return ret;
 }
+
+/**
+ * virLogSetOutputs:
+ * @outputs: string defining a (set of) output(s)
+ *
+ * Replaces the current set of defined outputs with a new set of outputs.
+ *
+ * Returns 0 on success or -1 in case of an error.
+ */
+int
+virLogSetOutputs(const char *src)
+{
+    int ret = -1;
+    int noutputs = 0;
+    virLogOutputPtr *outputs = NULL;
+
+    if (virLogInitialize() < 0)
+        return -1;
+
+    if ((noutputs = virLogParseOutputs(src, &outputs)) < 0)
+        goto cleanup;
+
+    if (virLogDefineOutputs(outputs, noutputs) < 0)
+        goto cleanup;
+
+    outputs = NULL;
+    ret = 0;
+ cleanup:
+    virLogOutputListFree(outputs, noutputs);
+    return ret;
+}

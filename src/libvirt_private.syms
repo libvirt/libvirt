@@ -1899,6 +1899,7 @@ virLogProbablyLogMessage;
 virLogReset;
 virLogSetDefaultPriority;
 virLogSetFromEnv;
+virLogSetOutputs;
 virLogUnlock;
 virLogVMessage;
 
