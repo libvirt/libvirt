@@ -4082,6 +4082,60 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsFillDomainFeatureGICCaps:
+ * @qemuCaps: QEMU capabilities
+ * @domCaps: domain capabilities
+ *
+ * Take the information about GIC capabilities that has been obtained
+ * using the 'query-gic-capabilities' QMP command and stored in @qemuCaps
+ * and convert it to a form suitable for @domCaps.
+ *
+ * @qemuCaps contains complete information about the GIC capabilities for
+ * the corresponding QEMU binary, stored as custom objects; @domCaps, on
+ * the other hand, should only contain information about the GIC versions
+ * available for the specific combination of architecture, machine type
+ * and virtualization type. Moreover, a common format is used to store
+ * information about enumerations in @domCaps, so further processing is
+ * required.
+ *
+ * Returns: 0 on success, <0 on failure
+ */
+static int
+virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
+                                    virDomainCapsPtr domCaps)
+{
+    virDomainCapsFeatureGICPtr gic = &domCaps->gic;
+    size_t i;
+
+    if (domCaps->arch != VIR_ARCH_ARMV7L &&
+        domCaps->arch != VIR_ARCH_AARCH64)
+        return 0;
+
+    if (STRNEQ(domCaps->machine, "virt") &&
+        !STRPREFIX(domCaps->machine, "virt-"))
+        return 0;
+
+    for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
+        virGICCapabilityPtr cap = &qemuCaps->gicCapabilities[i];
+
+        if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
+            !(cap->implementation & VIR_GIC_IMPLEMENTATION_KERNEL))
+            continue;
+
+        if (domCaps->virttype == VIR_DOMAIN_VIRT_QEMU &&
+            !(cap->implementation & VIR_GIC_IMPLEMENTATION_EMULATED))
+            continue;
+
+        gic->supported = true;
+        VIR_DOMAIN_CAPS_ENUM_SET(gic->version,
+                                 cap->version);
+    }
+
+    return 0;
+}
+
+
 int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
@@ -4098,7 +4152,8 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
     if (virQEMUCapsFillDomainOSCaps(qemuCaps, os,
                                     loader, nloader) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk) < 0 ||
-        virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0)
+        virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0 ||
+        virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0)
         return -1;
     return 0;
 }
