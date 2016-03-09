@@ -2553,7 +2553,7 @@ struct remote_domain_list_all_snapshots_args {
     unsigned int flags;
 };
 
-struct remote_domain_list_all_snapshots_ret {
+struct remote_domain_list_all_snapshots_ret { /* insert@1 */
     remote_nonnull_domain_snapshot snapshots<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>;
     int ret;
 };
@@ -2583,7 +2583,7 @@ struct remote_domain_snapshot_list_all_children_args {
     unsigned int flags;
 };
 
-struct remote_domain_snapshot_list_all_children_ret {
+struct remote_domain_snapshot_list_all_children_ret { /* insert@1 */
     remote_nonnull_domain_snapshot snapshots<REMOTE_DOMAIN_SNAPSHOT_LIST_MAX>;
     int ret;
 };
@@ -2822,7 +2822,7 @@ struct remote_connect_list_all_domains_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_domains_ret {
+struct remote_connect_list_all_domains_ret { /* insert@1 */
     remote_nonnull_domain domains<REMOTE_DOMAIN_LIST_MAX>;
     unsigned int ret;
 };
@@ -2832,7 +2832,7 @@ struct remote_connect_list_all_storage_pools_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_storage_pools_ret {
+struct remote_connect_list_all_storage_pools_ret { /* insert@1 */
     remote_nonnull_storage_pool pools<REMOTE_STORAGE_POOL_LIST_MAX>;
     unsigned int ret;
 };
@@ -2843,7 +2843,7 @@ struct remote_storage_pool_list_all_volumes_args {
     unsigned int flags;
 };
 
-struct remote_storage_pool_list_all_volumes_ret {
+struct remote_storage_pool_list_all_volumes_ret { /* insert@1 */
     remote_nonnull_storage_vol vols<REMOTE_STORAGE_VOL_LIST_MAX>;
     unsigned int ret;
 };
@@ -2853,7 +2853,7 @@ struct remote_connect_list_all_networks_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_networks_ret {
+struct remote_connect_list_all_networks_ret { /* insert@1 */
     remote_nonnull_network nets<REMOTE_NETWORK_LIST_MAX>;
     unsigned int ret;
 };
@@ -2863,7 +2863,7 @@ struct remote_connect_list_all_interfaces_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_interfaces_ret {
+struct remote_connect_list_all_interfaces_ret { /* insert@1 */
     remote_nonnull_interface ifaces<REMOTE_INTERFACE_LIST_MAX>;
     unsigned int ret;
 };
@@ -2873,7 +2873,7 @@ struct remote_connect_list_all_node_devices_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_node_devices_ret {
+struct remote_connect_list_all_node_devices_ret { /* insert@1 */
     remote_nonnull_node_device devices<REMOTE_NODE_DEVICE_LIST_MAX>;
     unsigned int ret;
 };
@@ -2883,7 +2883,7 @@ struct remote_connect_list_all_nwfilters_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_nwfilters_ret {
+struct remote_connect_list_all_nwfilters_ret { /* insert@1 */
     remote_nonnull_nwfilter filters<REMOTE_NWFILTER_LIST_MAX>;
     unsigned int ret;
 };
@@ -2893,7 +2893,7 @@ struct remote_connect_list_all_secrets_args {
     unsigned int flags;
 };
 
-struct remote_connect_list_all_secrets_ret {
+struct remote_connect_list_all_secrets_ret { /* insert@1 */
     remote_nonnull_secret secrets<REMOTE_SECRET_LIST_MAX>;
     unsigned int ret;
 };
@@ -5147,7 +5147,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SNAPSHOT_HAS_METADATA = 272,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_domains
      * @aclfilter: domain:getattr
@@ -5155,14 +5155,14 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_DOMAINS = 273,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: domain:read
      */
     REMOTE_PROC_DOMAIN_LIST_ALL_SNAPSHOTS = 274,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: domain:read
      */
@@ -5202,7 +5202,7 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_EMULATOR_PIN_INFO = 280,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_storage_pools
      * @aclfilter: storage_pool:getattr
@@ -5210,7 +5210,7 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_STORAGE_POOLS = 281,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: storage_pool:search_storage_vols
      * @aclfilter: storage_vol:getattr
@@ -5218,7 +5218,7 @@ enum remote_procedure {
     REMOTE_PROC_STORAGE_POOL_LIST_ALL_VOLUMES = 282,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_networks
      * @aclfilter: network:getattr
@@ -5226,7 +5226,7 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_NETWORKS = 283,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_interfaces
      * @aclfilter: interface:getattr
@@ -5234,7 +5234,7 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_INTERFACES = 284,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_node_devices
      * @aclfilter: node_device:getattr
@@ -5242,7 +5242,7 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_NODE_DEVICES = 285,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_nwfilters
      * @aclfilter: nwfilter:getattr
@@ -5250,7 +5250,7 @@ enum remote_procedure {
     REMOTE_PROC_CONNECT_LIST_ALL_NWFILTERS = 286,
 
     /**
-     * @generate: none
+     * @generate: both
      * @priority: high
      * @acl: connect:search_secrets
      * @aclfilter: secret:getattr
