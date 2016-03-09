@@ -971,6 +971,114 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
+/* --------------------------
+ * Command daemon-log-filters
+ * --------------------------
+ */
+static const vshCmdInfo info_daemon_log_filters[] = {
+    {.name = "help",
+     .data = N_("fetch or set the currently defined set of logging filters on "
+                "daemon")
+    },
+    {.name = "desc",
+     .data = N_("Depending on whether run with or without options, the command "
+                "fetches or redefines the existing active set of filters on "
+                "daemon.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_daemon_log_filters[] = {
+    {.name = "filters",
+     .type = VSH_OT_STRING,
+     .help = N_("redefine the existing set of logging filters"),
+     .flags = VSH_OFLAG_EMPTY_OK
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDaemonLogFilters(vshControl *ctl, const vshCmd *cmd)
+{
+    int nfilters;
+    char *filters = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "filters")) {
+        if ((vshCommandOptStringReq(ctl, cmd, "filters",
+                                    (const char **) &filters) < 0 ||
+             virAdmConnectSetLoggingFilters(priv->conn, filters, 0) < 0)) {
+            vshError(ctl, _("Unable to change daemon logging settings"));
+            return false;
+        }
+    } else {
+        if ((nfilters = virAdmConnectGetLoggingFilters(priv->conn,
+                                                       &filters, 0)) < 0) {
+            vshError(ctl, _("Unable to get daemon logging filters information"));
+            return false;
+        }
+
+        vshPrintExtra(ctl, " %-15s", _("Logging filters: "));
+        vshPrint(ctl, "%s\n", filters ? filters : "");
+    }
+
+    return true;
+}
+
+/* --------------------------
+ * Command daemon-log-outputs
+ * --------------------------
+ */
+static const vshCmdInfo info_daemon_log_outputs[] = {
+    {.name = "help",
+     .data = N_("fetch or set the currently defined set of logging outputs on "
+                "daemon")
+    },
+    {.name = "desc",
+     .data = N_("Depending on whether run with or without options, the command "
+                "fetches or redefines the existing active set of outputs on "
+                "daemon.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_daemon_log_outputs[] = {
+    {.name = "outputs",
+     .type = VSH_OT_STRING,
+     .help = N_("redefine the existing set of logging outputs"),
+     .flags = VSH_OFLAG_EMPTY_OK
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDaemonLogOutputs(vshControl *ctl, const vshCmd *cmd)
+{
+    int noutputs;
+    char *outputs = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "outputs")) {
+        if ((vshCommandOptStringReq(ctl, cmd, "outputs",
+                                    (const char **) &outputs) < 0 ||
+             virAdmConnectSetLoggingOutputs(priv->conn, outputs, 0) < 0)) {
+            vshError(ctl, _("Unable to change daemon logging settings"));
+            return false;
+        }
+    } else {
+        if ((noutputs = virAdmConnectGetLoggingOutputs(priv->conn,
+                                                       &outputs, 0)) < 0) {
+            vshError(ctl, _("Unable to get daemon logging outputs information"));
+            return false;
+        }
+
+        vshPrintExtra(ctl, " %-15s", _("Logging outputs: "));
+        vshPrint(ctl, "%s\n", outputs ? outputs : "");
+    }
+
+    return true;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -1339,6 +1447,18 @@ static const vshCmdDef managementCmds[] = {
      .handler = cmdSrvClientsSet,
      .opts = opts_srv_clients_set,
      .info = info_srv_clients_set,
+     .flags = 0
+    },
+    {.name = "daemon-log-filters",
+     .handler = cmdDaemonLogFilters,
+     .opts = opts_daemon_log_filters,
+     .info = info_daemon_log_filters,
+     .flags = 0
+    },
+    {.name = "daemon-log-outputs",
+     .handler = cmdDaemonLogOutputs,
+     .opts = opts_daemon_log_outputs,
+     .info = info_daemon_log_outputs,
      .flags = 0
     },
     {.name = NULL}

@@ -155,6 +155,60 @@ change its internal configuration.
 Lists all manageable servers contained within the daemon the client is
 currently connected to.
 
+=item B<daemon-log-filters> [I<--filters> B<string>]
+
+When run without arguments, this returns the currently defined set of logging
+filters. Providing an argument will cause the command to define a new set of
+logging filters.
+
+=over 4
+
+=item I<--filters>
+
+Define a new set of logging filters where multiple filters are delimited by
+space. Each filter must conform to the form described in detail by
+I</etc/libvirt/libvirtd.conf> (section 'Logging filters').
+
+=back
+
+B<Example>
+
+    To define a filter which suppresses all e.g. 'virObjectUnref' DEBUG
+    messages, use the following:
+
+        $ virt-admin daemon-log-filters "4:util.object"
+
+    (Note the '.' symbol which can be used to more fine-grained filters tailored
+     to specific modules, in contrast, to affect the whole directory containing
+     several modules this would become "4:util"):
+
+=item B<daemon-log-outputs> [I<--outputs> B<string>]
+
+When run without arguments, this returns the currently defined set of logging
+outputs. Providing an argument will cause the command to define a new set of
+logging outputs.
+
+=over 4
+
+=item I<--outputs>
+
+Define a new set of logging outputs where multiple outputs are delimited by
+space. Each output must conform to the form described in detail by
+I</etc/libvirt/libvirtd.conf> (section 'Logging outputs').
+
+=back
+
+B<Example>
+
+    To replace the current setting for logging outputs with one that writes to
+    a file while logging errors only, the following could be used:
+
+        $ virt-admin daemon-log-outputs "4:file:<absolute_path_to_the_file>"
+
+    To define multiple outputs at once they need to be delimited by spaces:
+
+        $ virt-admin daemon-log-outputs "4:stderr 2:syslog:<msg_ident>"
+
 =back
 
 =head1 SERVER COMMANDS
