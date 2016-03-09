@@ -81,6 +81,13 @@ struct _virDomainCapsDeviceHostdev {
     /* add new fields here */
 };
 
+typedef struct _virDomainCapsFeatureGIC virDomainCapsFeatureGIC;
+typedef virDomainCapsFeatureGIC *virDomainCapsFeatureGICPtr;
+struct _virDomainCapsFeatureGIC {
+    bool supported;
+    virDomainCapsEnum version; /* Info about virGICVersion */
+};
+
 struct _virDomainCaps {
     virObjectLockable parent;
 
@@ -96,6 +103,9 @@ struct _virDomainCaps {
     virDomainCapsDeviceDisk disk;
     virDomainCapsDeviceHostdev hostdev;
     /* add new domain devices here */
+
+    virDomainCapsFeatureGIC gic;
+    /* add new domain features here */
 };
 
 virDomainCapsPtr virDomainCapsNew(const char *path,
