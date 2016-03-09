@@ -510,14 +510,14 @@ elsif ($mode eq "server") {
                     push(@args_list, "$2");
                     push(@free_list,
                          "    virObjectUnref($2);");
-                } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot /) {
+                } elsif ($args_member =~ m/^remote_nonnull_domain_snapshot (\S+);$/) {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain(priv->conn, args->snap.dom)))\n" .
+                         "    if (!(dom = get_nonnull_domain(priv->conn, args->${1}.dom)))\n" .
                          "        goto cleanup;\n" .
                          "\n" .
-                         "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->snap)))\n" .
+                         "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->${1})))\n" .
                          "        goto cleanup;\n");
                     push(@args_list, "snapshot");
                     push(@free_list,
