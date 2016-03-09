@@ -1398,6 +1398,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virQEMUCapsPtr qemuCaps = NULL;
     int ret = -1;
 
@@ -1411,6 +1412,15 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing machine type"));
         return ret;
+    }
+
+    if (def->os.loader &&
+        def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH &&
+        def->os.loader->readonly == VIR_TRISTATE_SWITCH_ON &&
+        !def->os.loader->nvram) {
+        if (virAsprintf(&def->os.loader->nvram, "%s/%s_VARS.fd",
+                        cfg->nvramDir, def->name) < 0)
+            goto cleanup;
     }
 
     /* check for emulator and create a default one if needed */

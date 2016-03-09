@@ -3931,119 +3931,84 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
 
 static int
 qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
-                 virCapsPtr caps,
-                 virDomainObjPtr vm,
-                 bool migrated)
+                 virDomainObjPtr vm)
 {
     int ret = -1;
     int srcFD = -1;
     int dstFD = -1;
     virDomainLoaderDefPtr loader = vm->def->os.loader;
-    bool generated = false;
     bool created = false;
+    const char *master_nvram_path;
+    ssize_t r;
 
-    /* Unless domain has RO loader of pflash type, we have
-     * nothing to do here.  If the loader is RW then it's not
-     * using split code and vars feature, so no nvram file needs
-     * to be created. */
-    if (!loader || loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH ||
-        loader->readonly != VIR_TRISTATE_SWITCH_ON)
+    if (!loader || !loader->nvram || virFileExists(loader->nvram))
         return 0;
 
-    /* If the nvram path is configured already, there's nothing
-     * we need to do. Unless we are starting the destination side
-     * of migration in which case nvram is configured in the
-     * domain XML but the file doesn't exist yet. Moreover, after
-     * the migration is completed, qemu will invoke a
-     * synchronization write into the nvram file so we don't have
-     * to take care about transmitting the real data on the other
-     * side. */
-    if (loader->nvram && !migrated)
-        return 0;
-
-    /* Autogenerate nvram path if needed.*/
-    if (!loader->nvram) {
-        if (virAsprintf(&loader->nvram,
-                        "%s/%s_VARS.fd",
-                        cfg->nvramDir, vm->def->name) < 0)
-            goto cleanup;
-
-        generated = true;
-
-        if (vm->persistent &&
-            virDomainSaveConfig(cfg->configDir, caps, vm->def) < 0)
-            goto cleanup;
+    master_nvram_path = loader->templt;
+    if (!loader->templt) {
+        size_t i;
+        for (i = 0; i < cfg->nloader; i++) {
+            if (STREQ(cfg->loader[i], loader->path)) {
+                master_nvram_path = cfg->nvram[i];
+                break;
+            }
+        }
     }
 
-    if (!virFileExists(loader->nvram)) {
-        const char *master_nvram_path = loader->templt;
-        ssize_t r;
+    if (!master_nvram_path) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("unable to find any master var store for "
+                         "loader: %s"), loader->path);
+        goto cleanup;
+    }
 
-        if (!loader->templt) {
-            size_t i;
-            for (i = 0; i < cfg->nloader; i++) {
-                if (STREQ(cfg->loader[i], loader->path)) {
-                    master_nvram_path = cfg->nvram[i];
-                    break;
-                }
-            }
-        }
+    if ((srcFD = virFileOpenAs(master_nvram_path, O_RDONLY,
+                               0, -1, -1, 0)) < 0) {
+        virReportSystemError(-srcFD,
+                             _("Failed to open file '%s'"),
+                             master_nvram_path);
+        goto cleanup;
+    }
+    if ((dstFD = virFileOpenAs(loader->nvram,
+                               O_WRONLY | O_CREAT | O_EXCL,
+                               S_IRUSR | S_IWUSR,
+                               cfg->user, cfg->group, 0)) < 0) {
+        virReportSystemError(-dstFD,
+                             _("Failed to create file '%s'"),
+                             loader->nvram);
+        goto cleanup;
+    }
+    created = true;
 
-        if (!master_nvram_path) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("unable to find any master var store for "
-                             "loader: %s"), loader->path);
-            goto cleanup;
-        }
+    do {
+        char buf[1024];
 
-        if ((srcFD = virFileOpenAs(master_nvram_path, O_RDONLY,
-                                   0, -1, -1, 0)) < 0) {
-            virReportSystemError(-srcFD,
-                                 _("Failed to open file '%s'"),
+        if ((r = saferead(srcFD, buf, sizeof(buf))) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to read from file '%s'"),
                                  master_nvram_path);
             goto cleanup;
         }
-        if ((dstFD = virFileOpenAs(loader->nvram,
-                                   O_WRONLY | O_CREAT | O_EXCL,
-                                   S_IRUSR | S_IWUSR,
-                                   cfg->user, cfg->group, 0)) < 0) {
-            virReportSystemError(-dstFD,
-                                 _("Failed to create file '%s'"),
+
+        if (safewrite(dstFD, buf, r) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to write to file '%s'"),
                                  loader->nvram);
             goto cleanup;
         }
-        created = true;
+    } while (r);
 
-        do {
-            char buf[1024];
-
-            if ((r = saferead(srcFD, buf, sizeof(buf))) < 0) {
-                virReportSystemError(errno,
-                                     _("Unable to read from file '%s'"),
-                                     master_nvram_path);
-                goto cleanup;
-            }
-
-            if (safewrite(dstFD, buf, r) < 0) {
-                virReportSystemError(errno,
-                                     _("Unable to write to file '%s'"),
-                                     loader->nvram);
-                goto cleanup;
-            }
-        } while (r);
-
-        if (VIR_CLOSE(srcFD) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to close file '%s'"),
-                                 master_nvram_path);
-            goto cleanup;
-        }
-        if (VIR_CLOSE(dstFD) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to close file '%s'"),
-                                 loader->nvram);
-            goto cleanup;
-        }
+    if (VIR_CLOSE(srcFD) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to close file '%s'"),
+                             master_nvram_path);
+        goto cleanup;
+    }
+    if (VIR_CLOSE(dstFD) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to close file '%s'"),
+                             loader->nvram);
+        goto cleanup;
     }
 
     ret = 0;
@@ -4053,8 +4018,6 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
     if (ret < 0) {
         if (created)
             unlink(loader->nvram);
-        if (generated)
-            VIR_FREE(loader->nvram);
     }
 
     VIR_FORCE_CLOSE(srcFD);
@@ -4474,19 +4437,15 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (qemuProcessStartValidate(vm->def, priv->qemuCaps, migration, snap) < 0)
         goto cleanup;
 
-    /* Some things, paths, ... are generated here and we want them to persist.
-     * Fill them in prior to setting the domain def as transient. */
-    VIR_DEBUG("Generating paths");
-
-    if (qemuPrepareNVRAM(cfg, caps, vm, migration) < 0)
-        goto stop;
-
     /* Do this upfront, so any part of the startup process can add
      * runtime state to vm->def that won't be persisted. This let's us
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
+        goto stop;
+
+    if (qemuPrepareNVRAM(cfg, vm) < 0)
         goto stop;
 
     vm->def->id = qemuDriverAllocateID(driver);
