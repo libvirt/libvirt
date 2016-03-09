@@ -2308,6 +2308,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 
 
 /* virFileRemoveNeedsSetuid:
+ * @path: file we plan to remove
  * @uid: file uid to check
  * @gid: file gid to check
  *
@@ -2315,7 +2316,7 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
  * owned by the passed uid/gid pair. Needed for NFS with root-squash
  */
 static bool
-virFileRemoveNeedsSetuid(uid_t uid, gid_t gid)
+virFileRemoveNeedsSetuid(const char *path, uid_t uid, gid_t gid)
 {
     /* If running unprivileged, setuid isn't going to work */
     if (geteuid() != 0)
@@ -2327,6 +2328,12 @@ virFileRemoveNeedsSetuid(uid_t uid, gid_t gid)
 
     /* already running as proper uid/gid */
     if (uid == geteuid() && gid == getegid())
+        return false;
+
+    /* Only perform the setuid stuff for NFS, which is the only case
+       that may actually need it. This can error, but just be safe and
+       only check for a clear negative result. */
+    if (virFileIsSharedFSType(path, VIR_FILE_SHFS_NFS) == 0)
         return false;
 
     return true;
@@ -2355,7 +2362,7 @@ virFileUnlink(const char *path,
     gid_t *groups;
     int ngroups;
 
-    if (!virFileRemoveNeedsSetuid(uid, gid))
+    if (!virFileRemoveNeedsSetuid(path, uid, gid))
         return unlink(path);
 
     /* Otherwise, we have to deal with the NFS root-squash craziness
