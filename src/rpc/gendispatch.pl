@@ -600,6 +600,16 @@ elsif ($mode eq "server") {
                     } else {
                         push(@args_list, "args->$arg_name");
                     }
+                } elsif ($args_member =~ m/^admin_nonnull_(server) (\S+);/) {
+                    my $type_name = name_to_TypeName($1);
+
+                    push(@vars_list, "virNet${type_name}Ptr $2 = NULL");
+                    push(@getters_list,
+                         "    if (!($2 = get_nonnull_$1(priv->dmn, args->$2)))\n" .
+                         "        goto cleanup;\n");
+                    push(@args_list, "$2");
+                    push(@free_list,
+                         "    virObjectUnref($2);");
                 } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -819,6 +829,16 @@ elsif ($mode eq "server") {
                 } elsif ($ret_member =~ m/^opaque (\S+)<\S+>;/) {
                     # error out on unannotated arrays
                     die "opaque array without insert@<offset> annotation: $ret_member";
+                } elsif ($ret_member =~ m/^admin_nonnull_(server) (\S+);/) {
+                    my $type_name = name_to_TypeName($1);
+
+                    push(@vars_list, "virNet${type_name}Ptr $2 = NULL");
+                    push(@ret_list, "make_nonnull_$1(&ret->$2, $2);");
+                    push(@free_list,
+                         "    virObjectUnref($2);");
+                    $single_ret_var = $2;
+                    $single_ret_by_ref = 0;
+                    $single_ret_check = " == NULL";
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -1317,6 +1337,17 @@ elsif ($mode eq "client") {
 
                     push(@args_list, "$type_name $arg_name");
                     push(@setters_list, "args.$arg_name = $arg_name;");
+                } elsif ($args_member =~ m/^admin_nonnull_(server) (\S+);/) {
+                    my $name = $1;
+                    my $arg_name = $2;
+                    my $type_name = name_to_TypeName($name);
+
+                    if ($is_first_arg) {
+                        $priv_src = "$arg_name->conn";
+                    }
+
+                    push(@args_list, "virAdm${type_name}Ptr $arg_name");
+                    push(@setters_list, "make_nonnull_$1(&args.$arg_name, $arg_name);");
                 } elsif ($args_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -1514,6 +1545,16 @@ elsif ($mode eq "client") {
                         $single_ret_var = "unsigned long long rv = 0";
                         $single_ret_type = "unsigned long long";
                     }
+                } elsif ($ret_member =~ m/^admin_nonnull_(server) (\S+);/) {
+                    my $name = $1;
+                    my $arg_name = $2;
+                    my $type_name = name_to_TypeName($name);
+
+                    push(@ret_list, "rv = get_nonnull_$name($priv_src, ret.$arg_name);");
+                    push(@ret_list, "xdr_free((xdrproc_t)xdr_$rettype, (char *)&ret);");
+
+                    $single_ret_var = "virAdm${type_name}Ptr rv = NULL";
+                    $single_ret_type = "virAdm${type_name}Ptr";
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
