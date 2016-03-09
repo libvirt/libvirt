@@ -2307,6 +2307,32 @@ virFileOpenAs(const char *path, int openflags, mode_t mode,
 }
 
 
+/* virFileRemoveNeedsSetuid:
+ * @uid: file uid to check
+ * @gid: file gid to check
+ *
+ * Return true if we should use setuid/setgid before deleting a file
+ * owned by the passed uid/gid pair. Needed for NFS with root-squash
+ */
+static bool
+virFileRemoveNeedsSetuid(uid_t uid, gid_t gid)
+{
+    /* If running unprivileged, setuid isn't going to work */
+    if (geteuid() != 0)
+        return false;
+
+    /* uid/gid weren't specified */
+    if ((uid == (uid_t) -1) && (gid == (gid_t) -1))
+        return false;
+
+    /* already running as proper uid/gid */
+    if (uid == geteuid() && gid == getegid())
+        return false;
+
+    return true;
+}
+
+
 /* virFileUnlink:
  * @path: file to unlink
  * @uid: uid that was used to create the file (not required)
@@ -2329,11 +2355,7 @@ virFileUnlink(const char *path,
     gid_t *groups;
     int ngroups;
 
-    /* If not running as root or if a non explicit uid/gid was being used for
-     * the file/volume, then use unlink directly
-     */
-    if ((geteuid() != 0) ||
-        ((uid == (uid_t) -1) && (gid == (gid_t) -1)))
+    if (!virFileRemoveNeedsSetuid(uid, gid))
         return unlink(path);
 
     /* Otherwise, we have to deal with the NFS root-squash craziness
