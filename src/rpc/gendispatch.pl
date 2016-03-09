@@ -649,7 +649,7 @@ elsif ($mode eq "server") {
                         if (!$modern_ret_as_list) {
                             push(@ret_list, "ret->$3 = tmp.$3;");
                         }
-                    } elsif ($ret_member =~ m/admin_nonnull_(server) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|node_device|interface|network|storage_vol|storage_pool|domain_snapshot|domain|server) (\S+)<(\S+)>;/) {
                         $modern_ret_struct_name = $1;
                         $single_ret_list_error_msg_type = $1;
                         $single_ret_list_name = $2;
@@ -1401,7 +1401,7 @@ elsif ($mode eq "client") {
                         }
 
                         push(@ret_list, "memcpy(result->$3, ret.$3, sizeof(result->$3));");
-                    } elsif ($ret_member =~ m/admin_nonnull_(server) (\S+)<(\S+)>;/) {
+                    } elsif ($ret_member =~ m/(?:admin|remote)_nonnull_(secret|nwfilter|node_device|interface|network|storage_vol|storage_pool|domain_snapshot|domain|server) (\S+)<(\S+)>;/) {
                         my $proc_name = name_to_TypeName($1);
 
                         if ($structprefix eq "admin") {
@@ -1730,12 +1730,13 @@ elsif ($mode eq "client") {
             $callflags = "REMOTE_CALL_LXC";
         }
 
+        my $call_priv = $priv_src;
         if ($structprefix ne "admin") {
-            $priv_src = "$priv_src, priv";
+            $call_priv = "$call_priv, priv";
         }
 
         print "\n";
-        print "    if (call($priv_src, $callflags, $call->{constname},\n";
+        print "    if (call($call_priv, $callflags, $call->{constname},\n";
         print "             (xdrproc_t)xdr_$argtype, (char *)$call_args,\n";
         print "             (xdrproc_t)xdr_$rettype, (char *)$call_ret) == -1) {\n";
 
@@ -1778,6 +1779,9 @@ elsif ($mode eq "client") {
             print "    }\n";
             print "\n";
         } elsif ($modern_ret_as_list) {
+            if ($modern_ret_struct_name eq "domain_snapshot") {
+                $priv_src =~ s/->conn//;
+            }
             print "    if (result) {\n";
             print "        if (VIR_ALLOC_N(tmp_results, ret.$single_ret_list_name.${single_ret_list_name}_len + 1) < 0)\n";
             print "            goto cleanup;\n";
