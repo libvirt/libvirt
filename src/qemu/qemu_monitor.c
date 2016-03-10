@@ -2783,22 +2783,6 @@ qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorAttachDrive(qemuMonitorPtr mon,
-                       const char *drivestr,
-                       virDevicePCIAddress *controllerAddr,
-                       virDomainDeviceDriveAddress *driveAddr)
-{
-    VIR_DEBUG("drivestr=%s domain=%d bus=%d slot=%d function=%d",
-              drivestr, controllerAddr->domain, controllerAddr->bus,
-              controllerAddr->slot, controllerAddr->function);
-
-    QEMU_CHECK_MONITOR_JSON(mon);
-
-    return qemuMonitorTextAttachDrive(mon, drivestr, controllerAddr, driveAddr);
-}
-
-
-int
 qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
                               qemuMonitorPCIAddress **addrs)
 {

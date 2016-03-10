@@ -674,12 +674,6 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
                                        virDevicePCIAddress *guestAddr);
 
-int qemuMonitorAttachDrive(qemuMonitorPtr mon,
-                           const char *drivestr,
-                           virDevicePCIAddress *controllerAddr,
-                           virDomainDeviceDriveAddress *driveAddr);
-
-
 typedef struct _qemuMonitorPCIAddress qemuMonitorPCIAddress;
 struct _qemuMonitorPCIAddress {
     unsigned int vendor;
