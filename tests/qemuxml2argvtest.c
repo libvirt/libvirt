@@ -1893,6 +1893,8 @@ mymain(void)
                               VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
                               NONE);
 
+    DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

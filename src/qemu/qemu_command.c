@@ -5333,6 +5333,30 @@ qemuAppendKeyWrapMachineParms(virBuffer *buf, virQEMUCapsPtr qemuCaps,
 }
 
 static int
+qemuBuildNameCommandLine(virCommandPtr cmd,
+                         virQEMUDriverConfigPtr cfg,
+                         const virDomainDef *def,
+                         virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCommandAddArg(cmd, "-name");
+
+    virBufferAsprintf(&buf, "%s", def->name);
+
+    if (cfg->setProcessName &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS))
+        virBufferAsprintf(&buf, ",process=qemu:%s", def->name);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_DEBUG_THREADS))
+        virBufferAddLit(&buf, ",debug-threads=on");
+
+    virCommandAddArgBuffer(cmd, &buf);
+
+    return 0;
+}
+
+static int
 qemuBuildMachineCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
@@ -7192,14 +7216,8 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     virCommandAddEnvPassCommon(cmd);
 
-    virCommandAddArg(cmd, "-name");
-    if (cfg->setProcessName &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS)) {
-        virCommandAddArgFormat(cmd, "%s,process=qemu:%s",
-                               def->name, def->name);
-    } else {
-        virCommandAddArg(cmd, def->name);
-    }
+    if (qemuBuildNameCommandLine(cmd, cfg, def, qemuCaps) < 0)
+        goto error;
 
     if (!standalone)
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
