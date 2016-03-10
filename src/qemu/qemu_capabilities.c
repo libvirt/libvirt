@@ -3908,7 +3908,7 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
 {
     size_t i;
 
-    capsLoader->device.supported = true;
+    capsLoader->supported = true;
 
     if (VIR_ALLOC_N(capsLoader->values.values, nloader) < 0)
         return -1;
@@ -3950,7 +3950,7 @@ virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
 {
     virDomainCapsLoaderPtr capsLoader = &os->loader;
 
-    os->device.supported = true;
+    os->supported = true;
     if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, capsLoader,
                                         loader, nloader) < 0)
         return -1;
@@ -3963,7 +3963,7 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     const char *machine,
                                     virDomainCapsDeviceDiskPtr disk)
 {
-    disk->device.supported = true;
+    disk->supported = true;
     /* QEMU supports all of these */
     VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice,
                              VIR_DOMAIN_DISK_DEVICE_DISK,
@@ -3999,7 +3999,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
     bool supportsPassthroughKVM = qemuHostdevHostSupportsPassthroughLegacy();
     bool supportsPassthroughVFIO = qemuHostdevHostSupportsPassthroughVFIO();
 
-    hostdev->device.supported = true;
+    hostdev->supported = true;
     /* VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES is for containers only */
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->mode,
                              VIR_DOMAIN_HOSTDEV_MODE_SUBSYS);

@@ -187,9 +187,9 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
 #define FORMAT_PROLOGUE(item)                                       \
     do {                                                            \
         virBufferAsprintf(buf, "<" #item " supported='%s'%s\n",     \
-                          item->device.supported ? "yes" : "no",    \
-                          item->device.supported ? ">" : "/>");     \
-        if (!item->device.supported)                                \
+                          item->supported ? "yes" : "no",           \
+                          item->supported ? ">" : "/>");            \
+        if (!item->supported)                                       \
             return;                                                 \
         virBufferAdjustIndent(buf, 2);                              \
     } while (0)
