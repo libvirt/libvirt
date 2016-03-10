@@ -20,12 +20,16 @@ div.body p:first-letter {
 p, ul, ol, dl {
   padding: 0px;
   margin: 0px;
+  line-height: 150%;
+}
+
+p {
   margin-top: 1em;
   margin-bottom: 1em;
 }
 
 ul, ol {
-  margin-left: 3em;
+  margin-left: 2em;
 }
 
 dt {
@@ -45,6 +49,8 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0px;
   padding: 0px;
   margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid #aaa;
 }
 
 h1 {
