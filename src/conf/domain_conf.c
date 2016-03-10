@@ -1405,7 +1405,7 @@ virDomainVcpuInfoPtr
 virDomainDefGetVcpu(virDomainDefPtr def,
                     unsigned int vcpu)
 {
-    if (vcpu > def->maxvcpus) {
+    if (vcpu >= def->maxvcpus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("vCPU '%u' is not present in domain definition"),
                        vcpu);
