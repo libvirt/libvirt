@@ -7,20 +7,6 @@ body {
   background: #ffffff;
 }
 
-p, ul, ol, dl {
-  padding: 0px;
-  margin: 0px;
-}
-
-ol,ul {
-  margin-left: 3em;
-}
-
-ol,ul,dl,p {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
 p:first-line {
   margin-right: 1em;
 }
@@ -30,7 +16,31 @@ div.body p:first-letter {
   font-weight: bold;
 }
 
-h1,h2,h3,h4,h5,h6 {
+
+p, ul, ol, dl {
+  padding: 0px;
+  margin: 0px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+ul, ol {
+  margin-left: 3em;
+}
+
+dt {
+  margin-left: 1em;
+  margin-right: 2em;
+}
+
+dl dd {
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-bottom: 0.5em;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
   margin: 0px;
   padding: 0px;
@@ -54,15 +64,4 @@ h5 {
 }
 h6 {
   font-size: 0.8em;
-}
-
-dl dt {
-  margin-left: 1em;
-  margin-right: 2em;
-}
-
-dl dd {
-  margin-left: 2em;
-  margin-right: 2em;
-  margin-bottom: 0.5em;
 }
