@@ -120,8 +120,6 @@ vshAdmConnect(vshControl *ctl, unsigned int flags)
 
         if (priv->wantReconnect)
             vshPrint(ctl, "%s\n", _("Reconnected to the admin server"));
-        else
-            vshPrint(ctl, "%s\n", _("Connected to the admin server"));
     }
 
     return 0;
@@ -289,6 +287,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
     vshAdmControlPtr priv = ctl->privData;
+    bool connected = priv->conn;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
@@ -297,6 +296,8 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     ctl->connname = vshStrdup(ctl, name);
 
     vshAdmReconnect(ctl);
+    if (!connected)
+        vshPrint(ctl, "%s\n", _("Connected to the admin server"));
 
     return !!priv->conn;
 }
