@@ -4917,19 +4917,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     }
 
     if (persistentDef) {
-        /* remove vcpupin entries for vcpus that were unplugged */
-        if (nvcpus < virDomainDefGetVcpus(persistentDef)) {
-            for (i = virDomainDefGetVcpus(persistentDef) - 1; i >= nvcpus; i--) {
-                virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(persistentDef,
-                                                                i);
-
-                if (vcpu) {
-                    virBitmapFree(vcpu->cpumask);
-                    vcpu->cpumask = NULL;
-                }
-            }
-        }
-
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
             if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
                 goto endjob;
