@@ -70,8 +70,6 @@ devhelpxsl = devhelp/devhelp.xsl devhelp/html.xsl
 
 png = \
   32favicon.png \
-  footer_corner.png \
-  footer_pattern.png \
   libvirt-header-bg.png \
   libvirt-header-logo.png \
   libvirtLogo.png \
@@ -81,7 +79,6 @@ png = \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
   madeWith.png \
-  et.png \
   migration-managed-direct.png \
   migration-managed-p2p.png \
   migration-native.png \

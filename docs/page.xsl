@@ -163,12 +163,6 @@
             <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
           </div>
         </div>
-        <div id="footer">
-          <p id="sponsor">
-	    Sponsored by:<br/>
-            <a href="http://et.redhat.com/"><img src="{$href_base}et.png" alt="Project sponsored by Red Hat Emerging Technology"/></a>
-          </p>
-        </div>
       </body>
     </html>
   </xsl:template>

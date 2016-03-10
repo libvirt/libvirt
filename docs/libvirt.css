@@ -243,36 +243,6 @@ p.image {
     background: #c5dbd8;
 }
 
-#footer {
-    clear: both;
-    position: relative;
-    margin: 0px;
-    padding: 0px;
-    border: 0px;
-    width: 100%;
-    height: 180px;
-    background: #FFFFFF;
-/*    background: #757575; */
-}
-/* This is hidden from IE <= 6 because it can't do transparency */
-/* body > #footer {
-    background: #757575 url(footer_pattern.png) repeat-x;
-} */
-
-#footer p {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    margin: 0px;
-    border: 0px solid red;
-    width: 220px;
-    text-align: center;
-}
-
-#footer p a img {
-    border: 0px;
-}
-
 #projects {
     margin: 0px;
     border: 0px;
@@ -290,10 +260,6 @@ p.image {
     position: absolute;
     top: 0px;
     left: 0px;
-}
-/* This is hidden from IE <= 6 because it can't do transparency */
-head:first-child+body #projects dl {
-    background: url(footer_corner.png) no-repeat ! important;
 }
 
 #projects #p1 {
