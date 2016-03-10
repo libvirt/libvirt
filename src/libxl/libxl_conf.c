@@ -1445,7 +1445,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
         return -1;
 
     for (i = 0; i < nnics; i++) {
-        if (l_nics[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+        if (virDomainNetGetActualType(l_nics[i]) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
             continue;
 
         if (libxlMakeNic(def, l_nics[i], &x_nics[nvnics]))
