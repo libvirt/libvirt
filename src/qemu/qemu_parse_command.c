@@ -1539,6 +1539,11 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             switch ((virDomainHyperv) f) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
                 if (value) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("HyperV feature '%s' should not "
@@ -1564,6 +1569,19 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
                 if (dom->hyperv_spinlocks < 0xFFF)
                     dom->hyperv_spinlocks = 0xFFF;
+                break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                dom->hyperv_features[f] = VIR_TRISTATE_SWITCH_ON;
+                if (!value) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("missing HyperV vendor_id value"));
+                    goto cleanup;
+                }
+
+                if (VIR_STRDUP(dom->hyperv_vendor_id, value) < 0)
+                    goto cleanup;
+
                 break;
 
             case VIR_DOMAIN_HYPERV_LAST:

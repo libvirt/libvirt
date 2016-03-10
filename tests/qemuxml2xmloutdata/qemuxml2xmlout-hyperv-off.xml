@@ -14,6 +14,12 @@
       <relaxed state='off'/>
       <vapic state='off'/>
       <spinlocks state='off'/>
+      <vpindex state='off'/>
+      <runtime state='off'/>
+      <synic state='off'/>
+      <stimer state='off'/>
+      <reset state='off'/>
+      <vendor_id state='off'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

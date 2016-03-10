@@ -1460,6 +1460,11 @@
       &lt;relaxed state='on'/&gt;
       &lt;vapic state='on'/&gt;
       &lt;spinlocks state='on' retries='4096'/&gt;
+      &lt;vpindex state='on'/&gt;
+      &lt;runtime state='on'/&gt;
+      &lt;synic state='on'/&gt;
+      &lt;reset state='on'/&gt;
+      &lt;vendor_id state='on' value='KVM Hv'/&gt;
     &lt;/hyperv&gt;
     &lt;kvm&gt;
       &lt;hidden state='on'/&gt;
@@ -1536,6 +1541,42 @@
           <td>Enable spinlock support</td>
           <td>on, off; retries - at least 4095</td>
           <td><span class="since">1.1.0 (QEMU only)</span></td>
+        </tr>
+        <tr>
+          <td>vpindex</td>
+          <td>Virtual processor index</td>
+          <td> on, off</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>runtime</td>
+          <td>Processor time spent on running guest code and on behalf of guest code</td>
+          <td> on, off</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>synic</td>
+          <td>Enable Synthetic Interrupt Controller (SyNIC)</td>
+          <td> on, off</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>stimer</td>
+          <td>Enable SyNIC timers</td>
+          <td> on, off</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>reset</td>
+          <td>Enable hypervisor reset</td>
+          <td> on, off</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+        </tr>
+        <tr>
+          <td>vendor_id</td>
+          <td>Set hypervisor vendor id</td>
+          <td>on, off; value - string, up to 12 characters</td>
+          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
         </tr>
       </table>
       </dd>

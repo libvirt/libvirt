@@ -4902,6 +4902,43 @@
             </optional>
           </element>
         </optional>
+        <optional>
+          <element name="vpindex">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="runtime">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="synic">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="stimer">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="reset">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="vendor_id">
+            <ref name="featurestate"/>
+            <optional>
+              <attribute name="value">
+                <data type="string">
+                  <param name='pattern'>[^,]{0,12}</param>
+                </data>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

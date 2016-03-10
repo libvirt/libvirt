@@ -1701,10 +1701,18 @@ typedef enum {
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
 
+# define VIR_DOMAIN_HYPERV_VENDOR_ID_MAX 12
+
 typedef enum {
     VIR_DOMAIN_HYPERV_RELAXED = 0,
     VIR_DOMAIN_HYPERV_VAPIC,
     VIR_DOMAIN_HYPERV_SPINLOCKS,
+    VIR_DOMAIN_HYPERV_VPINDEX,
+    VIR_DOMAIN_HYPERV_RUNTIME,
+    VIR_DOMAIN_HYPERV_SYNIC,
+    VIR_DOMAIN_HYPERV_STIMER,
+    VIR_DOMAIN_HYPERV_RESET,
+    VIR_DOMAIN_HYPERV_VENDOR_ID,
 
     VIR_DOMAIN_HYPERV_LAST
 } virDomainHyperv;
@@ -2240,6 +2248,7 @@ struct _virDomainDef {
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     unsigned int hyperv_spinlocks;
     virGICVersion gic_version;
+    char *hyperv_vendor_id;
 
     /* These options are of type virTristateSwitch: ON = keep, OFF = drop */
     int caps_features[VIR_DOMAIN_CAPS_FEATURE_LAST];

@@ -14,6 +14,12 @@
       <relaxed state='on'/>
       <vapic state='on'/>
       <spinlocks state='on' retries='12287'/>
+      <vpindex state='on'/>
+      <runtime state='on'/>
+      <synic state='on'/>
+      <stimer state='on'/>
+      <reset state='on'/>
+      <vendor_id state='on' value='KVM Hv'/>
     </hyperv>
   </features>
   <clock offset='utc'/>

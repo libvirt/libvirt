@@ -145,7 +145,13 @@ VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
 VIR_ENUM_IMPL(virDomainHyperv, VIR_DOMAIN_HYPERV_LAST,
               "relaxed",
               "vapic",
-              "spinlocks")
+              "spinlocks",
+              "vpindex",
+              "runtime",
+              "synic",
+              "stimer",
+              "reset",
+              "vendor_id")
 
 VIR_ENUM_IMPL(virDomainKVM, VIR_DOMAIN_KVM_LAST,
               "hidden")
@@ -2599,6 +2605,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->emulator);
     VIR_FREE(def->description);
     VIR_FREE(def->title);
+    VIR_FREE(def->hyperv_vendor_id);
 
     virBlkioDeviceArrayClear(def->blkio.devices,
                              def->blkio.ndevices);
@@ -15605,6 +15612,11 @@ virDomainDefParseXML(xmlDocPtr xml,
             switch ((virDomainHyperv) feature) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
@@ -15625,6 +15637,33 @@ virDomainDefParseXML(xmlDocPtr xml,
                     goto error;
                 }
                 break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                if (value != VIR_TRISTATE_SWITCH_ON)
+                    break;
+
+                if (!(def->hyperv_vendor_id = virXPathString("string(./@value)",
+                                                             ctxt))) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("missing 'value' attribute for "
+                                     "HyperV feature 'vendor_id'"));
+                    goto error;
+                }
+
+                if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("HyperV vendor_id value must not be more "
+                                     "than %d characters."),
+                                   VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
+                    goto error;
+                }
+
+                /* ensure that the string can be passed to qemu */
+                if (strchr(def->hyperv_vendor_id, ',')) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV vendor_id value is invalid"));
+                    goto error;
+                }
 
             /* coverity[dead_error_begin] */
             case VIR_DOMAIN_HYPERV_LAST:
@@ -17628,6 +17667,11 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
                 if (src->hyperv_features[i] != dst->hyperv_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of HyperV enlightenment "
@@ -17649,6 +17693,17 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                                      "source: '%u', destination: '%u'"),
                                    src->hyperv_spinlocks,
                                    dst->hyperv_spinlocks);
+                    return false;
+                }
+                break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                if (STRNEQ_NULLABLE(src->hyperv_vendor_id, dst->hyperv_vendor_id)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("HyperV vendor_id differs: "
+                                     "source: '%s', destination: '%s'"),
+                                   src->hyperv_vendor_id,
+                                   dst->hyperv_vendor_id);
                     return false;
                 }
                 break;
@@ -22342,6 +22397,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                     switch ((virDomainHyperv) j) {
                     case VIR_DOMAIN_HYPERV_RELAXED:
                     case VIR_DOMAIN_HYPERV_VAPIC:
+                    case VIR_DOMAIN_HYPERV_VPINDEX:
+                    case VIR_DOMAIN_HYPERV_RUNTIME:
+                    case VIR_DOMAIN_HYPERV_SYNIC:
+                    case VIR_DOMAIN_HYPERV_STIMER:
+                    case VIR_DOMAIN_HYPERV_RESET:
                         break;
 
                     case VIR_DOMAIN_HYPERV_SPINLOCKS:
@@ -22349,6 +22409,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                             break;
                         virBufferAsprintf(buf, " retries='%d'",
                                           def->hyperv_spinlocks);
+                        break;
+
+                    case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                        if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                            break;
+                        virBufferEscapeString(buf, " value='%s'",
+                                              def->hyperv_vendor_id);
                         break;
 
                     /* coverity[dead_error_begin] */

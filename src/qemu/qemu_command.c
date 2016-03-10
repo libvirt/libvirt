@@ -6505,6 +6505,11 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
             case VIR_DOMAIN_HYPERV_VAPIC:
+            case VIR_DOMAIN_HYPERV_VPINDEX:
+            case VIR_DOMAIN_HYPERV_RUNTIME:
+            case VIR_DOMAIN_HYPERV_SYNIC:
+            case VIR_DOMAIN_HYPERV_STIMER:
+            case VIR_DOMAIN_HYPERV_RESET:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv_%s",
                                       virDomainHypervTypeToString(i));
@@ -6514,6 +6519,12 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",hv_spinlocks=0x%x",
                                       def->hyperv_spinlocks);
+                break;
+
+            case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAsprintf(&buf, ",hv_vendor_id=%s",
+                                      def->hyperv_vendor_id);
                 break;
 
             /* coverity[dead_error_begin] */
