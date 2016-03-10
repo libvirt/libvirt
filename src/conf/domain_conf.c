@@ -15583,68 +15583,52 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             ctxt->node = nodes[i];
 
+            if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "HyperV Enlightenment feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for HyperV Enlightenment feature '%s'"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->hyperv_features[feature] = value;
+
             switch ((virDomainHyperv) feature) {
-                case VIR_DOMAIN_HYPERV_RELAXED:
-                case VIR_DOMAIN_HYPERV_VAPIC:
-                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("missing 'state' attribute for "
-                                         "HyperV Enlightenment feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
+            case VIR_DOMAIN_HYPERV_RELAXED:
+            case VIR_DOMAIN_HYPERV_VAPIC:
+                break;
 
-                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("invalid value of state argument "
-                                         "for HyperV Enlightenment feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
-
-                    VIR_FREE(tmp);
-                    def->hyperv_features[feature] = value;
+            case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("missing 'state' attribute for "
-                                         "HyperV Enlightenment feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
+                if (virXPathUInt("string(./@retries)", ctxt,
+                             &def->hyperv_spinlocks) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("invalid HyperV spinlock retry count"));
+                    goto error;
+                }
 
-                    if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("invalid value of state argument "
-                                         "for HyperV Enlightenment feature '%s'"),
-                                       nodes[i]->name);
-                        goto error;
-                    }
+                if (def->hyperv_spinlocks < 0xFFF) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("HyperV spinlock retry count must be "
+                                     "at least 4095"));
+                    goto error;
+                }
+                break;
 
-                    VIR_FREE(tmp);
-                    if (value == VIR_TRISTATE_SWITCH_ON) {
-                        if (virXPathUInt("string(./@retries)", ctxt,
-                                     &def->hyperv_spinlocks) < 0) {
-                            virReportError(VIR_ERR_XML_ERROR, "%s",
-                                           _("invalid HyperV spinlock retry count"));
-                            goto error;
-                        }
-
-                        if (def->hyperv_spinlocks < 0xFFF) {
-                            virReportError(VIR_ERR_XML_ERROR, "%s",
-                                           _("HyperV spinlock retry count must be "
-                                             "at least 4095"));
-                            goto error;
-                        }
-                    }
-                    def->hyperv_features[feature] = value;
-                    break;
-
-                /* coverity[dead_error_begin] */
-                case VIR_DOMAIN_HYPERV_LAST:
-                    break;
+            /* coverity[dead_error_begin] */
+            case VIR_DOMAIN_HYPERV_LAST:
+                break;
             }
         }
         VIR_FREE(nodes);
