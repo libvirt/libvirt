@@ -22331,33 +22331,32 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 virBufferAddLit(buf, "<hyperv>\n");
                 virBufferAdjustIndent(buf, 2);
                 for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
+                    if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
+                        continue;
+
+                    virBufferAsprintf(buf, "<%s state='%s'",
+                                      virDomainHypervTypeToString(j),
+                                      virTristateSwitchTypeToString(
+                                          def->hyperv_features[j]));
+
                     switch ((virDomainHyperv) j) {
                     case VIR_DOMAIN_HYPERV_RELAXED:
                     case VIR_DOMAIN_HYPERV_VAPIC:
-                        if (def->hyperv_features[j])
-                            virBufferAsprintf(buf, "<%s state='%s'/>\n",
-                                              virDomainHypervTypeToString(j),
-                                              virTristateSwitchTypeToString(
-                                                  def->hyperv_features[j]));
                         break;
 
                     case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                        if (def->hyperv_features[j] == 0)
+                        if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
                             break;
-
-                        virBufferAsprintf(buf, "<spinlocks state='%s'",
-                                          virTristateSwitchTypeToString(
-                                              def->hyperv_features[j]));
-                        if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON)
-                            virBufferAsprintf(buf, " retries='%d'",
-                                              def->hyperv_spinlocks);
-                        virBufferAddLit(buf, "/>\n");
+                        virBufferAsprintf(buf, " retries='%d'",
+                                          def->hyperv_spinlocks);
                         break;
 
                     /* coverity[dead_error_begin] */
                     case VIR_DOMAIN_HYPERV_LAST:
                         break;
                     }
+
+                    virBufferAddLit(buf, "/>\n");
                 }
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</hyperv>\n");
