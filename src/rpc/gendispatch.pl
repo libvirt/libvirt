@@ -951,7 +951,7 @@ elsif ($mode eq "server") {
 
         if ($single_ret_as_list) {
             print "    if (args->$single_ret_list_max_var > $single_ret_list_max_define) {\n";
-            print "        virReportError(VIR_ERR_INTERNAL_ERROR,\n";
+            print "        virReportError(VIR_ERR_RPC,\n";
             print "                       \"%s\", _(\"max$single_ret_list_name > $single_ret_list_max_define\"));\n";
             print "        goto cleanup;\n";
             print "    }\n";
