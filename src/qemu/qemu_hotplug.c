@@ -561,9 +561,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk)
 {
-    size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainControllerDefPtr cont = NULL;
     char *drivestr = NULL;
     char *devstr = NULL;
     int ret = -1;
@@ -580,27 +578,11 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
     }
 
-    /* Let's make sure our disk has a controller defined and loaded
-     * before trying add the disk. The controller the disk is going
-     * to use must exist before a qemu command line string is generated.
-     */
-    for (i = 0; i <= disk->info.addr.drive.controller; i++) {
-        cont = qemuDomainFindOrCreateSCSIDiskController(driver, vm, i);
-        if (!cont)
-            goto error;
-    }
+    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
+        goto error;
 
-    /* Tell clang that "cont" is non-NULL.
-       This is because disk->info.addr.driver.controller is unsigned,
-       and hence the above loop must iterate at least once.  */
-    sa_assert(cont);
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
-            goto error;
-        if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
-            goto error;
-    }
+    if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
+        goto error;
 
     if (!(drivestr = qemuBuildDriveStr(conn, disk, false, priv->qemuCaps)))
         goto error;
@@ -609,38 +591,17 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        ret = qemuMonitorAddDrive(priv->mon, drivestr);
-        if (ret == 0) {
-            ret = qemuMonitorAddDevice(priv->mon, devstr);
-            if (ret < 0) {
-                VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
-                         drivestr, devstr);
-                /* XXX should call 'drive_del' on error but this does not
-                   exist yet */
-            }
-        }
-    } else {
-        if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("SCSI controller %d was missing its PCI address"),
-                           cont->idx);
-            goto error;
-        }
 
-        virDomainDeviceDriveAddress driveAddr;
-        ret = qemuMonitorAttachDrive(priv->mon,
-                                     drivestr,
-                                     &cont->info.addr.pci,
-                                     &driveAddr);
-        if (ret == 0) {
-            /* XXX we should probably validate that the addr matches
-             * our existing defined addr instead of overwriting */
-            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
-            disk->info.addr.drive.bus = driveAddr.bus;
-            disk->info.addr.drive.unit = driveAddr.unit;
+    ret = qemuMonitorAddDrive(priv->mon, drivestr);
+    if (ret == 0) {
+        ret = qemuMonitorAddDevice(priv->mon, devstr);
+        if (ret < 0) {
+            VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
+                     drivestr, devstr);
+            /* XXX should call 'drive_del' on error but this does not exist yet */
         }
     }
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto error;
