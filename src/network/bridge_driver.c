@@ -405,7 +405,8 @@ networkUpdateState(virNetworkObjPtr obj,
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
-        if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1)) {
+        if (obj->def->bridge) {
+            if (virNetDevExists(obj->def->bridge) != 1)
                 obj->active = 0;
             break;
         }
