@@ -7411,40 +7411,42 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         /* TODO: Support ACLs later */
     }
 
-    switch (virDomainGraphicsListenGetType(graphics, 0)) {
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-        listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-        break;
-
-    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-        listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-        if (!listenNetwork)
+    if (port > 0 || tlsPort > 0) {
+        switch (virDomainGraphicsListenGetType(graphics, 0)) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
             break;
-        ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-        if (ret <= -2) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("network-based listen not possible, "
-                                   "network driver not present"));
-            goto error;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
+            if (!listenNetwork)
+                break;
+            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
+            if (ret <= -2) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("network-based listen not possible, "
+                                       "network driver not present"));
+                goto error;
+            }
+            if (ret < 0)
+                goto error;
+
+            listenAddr = netAddr;
+            /* store the address we found in the <graphics> element so it will
+             * show up in status. */
+            if (virDomainGraphicsListenSetAddress(graphics, 0,
+                                                  listenAddr, -1, false) < 0)
+               goto error;
+            break;
         }
-        if (ret < 0)
-            goto error;
 
-        listenAddr = netAddr;
-        /* store the address we found in the <graphics> element so it will
-         * show up in status. */
-        if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                              listenAddr, -1, false) < 0)
-           goto error;
-        break;
+        if (!listenAddr)
+            listenAddr = cfg->spiceListen;
+        if (listenAddr)
+            virBufferAsprintf(&opt, "addr=%s,", listenAddr);
+
+        VIR_FREE(netAddr);
     }
-
-    if (!listenAddr)
-        listenAddr = cfg->spiceListen;
-    if (listenAddr)
-        virBufferAsprintf(&opt, "addr=%s,", listenAddr);
-
-    VIR_FREE(netAddr);
 
     if (graphics->data.spice.mousemode) {
         switch (graphics->data.spice.mousemode) {
