@@ -2797,6 +2797,13 @@ qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorDriveDel:
+ * @mon: monitor object
+ * @drivestr: identifier of drive to delete.
+ *
+ * Attempts to remove a host drive.
+ * Returns 1 if unsupported, 0 if ok, and -1 on other failure */
 int
 qemuMonitorDriveDel(qemuMonitorPtr mon,
                     const char *drivestr)
@@ -2805,10 +2812,8 @@ qemuMonitorDriveDel(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json)
-        return qemuMonitorJSONDriveDel(mon, drivestr);
-    else
-        return qemuMonitorTextDriveDel(mon, drivestr);
+    /* there won't be a direct replacement for drive_del in QMP */
+    return qemuMonitorTextDriveDel(mon, drivestr);
 }
 
 
@@ -2911,10 +2916,8 @@ qemuMonitorAddDrive(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json)
-        return qemuMonitorJSONAddDrive(mon, drivestr);
-    else
-        return qemuMonitorTextAddDrive(mon, drivestr);
+    /* there won't ever be a direct QMP replacement for this function */
+    return qemuMonitorTextAddDrive(mon, drivestr);
 }
 
 

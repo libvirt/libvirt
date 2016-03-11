@@ -3583,35 +3583,6 @@ int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddDrive(qemuMonitorPtr mon,
-                            const char *drivestr)
-{
-    /* XXX Update to use QMP, if QMP ever adds support for drive_add */
-    VIR_DEBUG("drive_add command not found, trying HMP");
-    return qemuMonitorTextAddDrive(mon, drivestr);
-}
-
-
-int qemuMonitorJSONDriveDel(qemuMonitorPtr mon,
-                            const char *drivestr)
-{
-    int ret;
-
-    /* XXX Update to use QMP, if QMP ever adds support for drive_del */
-    VIR_DEBUG("drive_del command not found, trying HMP");
-    if ((ret = qemuMonitorTextDriveDel(mon, drivestr)) < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err && err->code == VIR_ERR_OPERATION_UNSUPPORTED) {
-            VIR_ERROR("%s",
-                      _("deleting disk is not supported.  "
-                        "This may leak data if disk is reassigned"));
-            ret = 1;
-            virResetLastError();
-        }
-    }
-    return ret;
-}
-
 int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,
                                       const char *passphrase)

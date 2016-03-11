@@ -2454,8 +2454,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
     return ret;
 }
 
-/* Attempts to remove a host drive.
- * Returns 1 if unsupported, 0 if ok, and -1 on other failure */
+
 int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
                             const char *drivestr)
 {
@@ -2463,7 +2462,6 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     char *reply = NULL;
     char *safedev;
     int ret = -1;
-    VIR_DEBUG("TextDriveDel drivestr=%s", drivestr);
 
     if (!(safedev = qemuMonitorEscapeArg(drivestr)))
         goto cleanup;
