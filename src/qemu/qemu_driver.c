@@ -6950,7 +6950,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 {
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
-    virDomainChrSourceDef monConfig;
+    virDomainChrSourceDef monConfig = {0};
     virQEMUCapsPtr qemuCaps = NULL;
     bool monitor_json = false;
     virCommandPtr cmd = NULL;
