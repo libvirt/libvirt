@@ -7389,7 +7389,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (port > 0 || tlsPort <= 0)
-        virBufferAsprintf(&opt, "port=%u", port);
+        virBufferAsprintf(&opt, "port=%u,", port);
 
     if (tlsPort > 0) {
         if (!cfg->spiceTLS) {
@@ -7398,13 +7398,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                              " but TLS is disabled in qemu.conf"));
             goto error;
         }
-        if (port > 0)
-            virBufferAddChar(&opt, ',');
-        virBufferAsprintf(&opt, "tls-port=%u", tlsPort);
+        virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
     }
 
     if (cfg->spiceSASL) {
-        virBufferAddLit(&opt, ",sasl");
+        virBufferAddLit(&opt, "sasl,");
 
         if (cfg->spiceSASLdir)
             virCommandAddEnvPair(cmd, "SASL_CONF_PATH",
@@ -7444,17 +7442,17 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     if (!listenAddr)
         listenAddr = cfg->spiceListen;
     if (listenAddr)
-        virBufferAsprintf(&opt, ",addr=%s", listenAddr);
+        virBufferAsprintf(&opt, "addr=%s,", listenAddr);
 
     VIR_FREE(netAddr);
 
     if (graphics->data.spice.mousemode) {
         switch (graphics->data.spice.mousemode) {
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
-            virBufferAddLit(&opt, ",agent-mouse=off");
+            virBufferAddLit(&opt, "agent-mouse=off,");
             break;
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
-            virBufferAddLit(&opt, ",agent-mouse=on");
+            virBufferAddLit(&opt, "agent-mouse=on,");
             break;
         default:
             break;
@@ -7466,17 +7464,17 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
      * in this bit of the code */
     if (!graphics->data.spice.auth.passwd &&
         !cfg->spicePassword)
-        virBufferAddLit(&opt, ",disable-ticketing");
+        virBufferAddLit(&opt, "disable-ticketing,");
 
     if (tlsPort > 0)
-        virBufferAsprintf(&opt, ",x509-dir=%s", cfg->spiceTLSx509certdir);
+        virBufferAsprintf(&opt, "x509-dir=%s,", cfg->spiceTLSx509certdir);
 
     switch (defaultMode) {
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-        virBufferAddLit(&opt, ",tls-channel=default");
+        virBufferAddLit(&opt, "tls-channel=default,");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-        virBufferAddLit(&opt, ",plaintext-channel=default");
+        virBufferAddLit(&opt, "plaintext-channel=default,");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
         /* nothing */
@@ -7492,7 +7490,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                  "but TLS port is not provided"));
                 goto error;
             }
-            virBufferAsprintf(&opt, ",tls-channel=%s",
+            virBufferAsprintf(&opt, "tls-channel=%s,",
                               virDomainGraphicsSpiceChannelNameTypeToString(i));
             break;
 
@@ -7503,7 +7501,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                  "configuration, but plain port is not provided"));
                 goto error;
             }
-            virBufferAsprintf(&opt, ",plaintext-channel=%s",
+            virBufferAsprintf(&opt, "plaintext-channel=%s,",
                               virDomainGraphicsSpiceChannelNameTypeToString(i));
             break;
 
@@ -7535,29 +7533,30 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (graphics->data.spice.image)
-        virBufferAsprintf(&opt, ",image-compression=%s",
+        virBufferAsprintf(&opt, "image-compression=%s,",
                           virDomainGraphicsSpiceImageCompressionTypeToString(graphics->data.spice.image));
     if (graphics->data.spice.jpeg)
-        virBufferAsprintf(&opt, ",jpeg-wan-compression=%s",
+        virBufferAsprintf(&opt, "jpeg-wan-compression=%s,",
                           virDomainGraphicsSpiceJpegCompressionTypeToString(graphics->data.spice.jpeg));
     if (graphics->data.spice.zlib)
-        virBufferAsprintf(&opt, ",zlib-glz-wan-compression=%s",
+        virBufferAsprintf(&opt, "zlib-glz-wan-compression=%s,",
                           virDomainGraphicsSpiceZlibCompressionTypeToString(graphics->data.spice.zlib));
     if (graphics->data.spice.playback)
-        virBufferAsprintf(&opt, ",playback-compression=%s",
+        virBufferAsprintf(&opt, "playback-compression=%s,",
                           virTristateSwitchTypeToString(graphics->data.spice.playback));
     if (graphics->data.spice.streaming)
-        virBufferAsprintf(&opt, ",streaming-video=%s",
+        virBufferAsprintf(&opt, "streaming-video=%s,",
                           virDomainGraphicsSpiceStreamingModeTypeToString(graphics->data.spice.streaming));
     if (graphics->data.spice.copypaste == VIR_TRISTATE_BOOL_NO)
-        virBufferAddLit(&opt, ",disable-copy-paste");
+        virBufferAddLit(&opt, "disable-copy-paste,");
+
     if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                           _("This QEMU can't disable file transfers through spice"));
             goto error;
         } else {
-            virBufferAddLit(&opt, ",disable-agent-file-xfer");
+            virBufferAddLit(&opt, "disable-agent-file-xfer,");
         }
     }
 
@@ -7570,7 +7569,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
         /* spice.gl is a TristateBool, but qemu expects on/off: use
          * TristateSwitch helper */
-        virBufferAsprintf(&opt, ",gl=%s",
+        virBufferAsprintf(&opt, "gl=%s,",
                           virTristateSwitchTypeToString(graphics->data.spice.gl));
     }
 
@@ -7579,8 +7578,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
          * unconditionally on. If migration destination
          * doesn't support it, it fallbacks to previous
          * migration algorithm silently. */
-        virBufferAddLit(&opt, ",seamless-migration=on");
+        virBufferAddLit(&opt, "seamless-migration=on,");
     }
+
+    virBufferTrim(&opt, ",", -1);
 
     virCommandAddArg(cmd, "-spice");
     virCommandAddArgBuffer(cmd, &opt);
