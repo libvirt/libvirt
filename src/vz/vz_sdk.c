@@ -1051,7 +1051,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     return -1;
 }
 
-static int
+static void
 prlsdkConvertDomainState(VIRTUAL_MACHINE_STATE domainState,
                          PRL_UINT32 envId,
                          virDomainObjPtr dom)
@@ -1121,17 +1121,12 @@ prlsdkConvertDomainState(VIRTUAL_MACHINE_STATE domainState,
         dom->def->id = envId;
         break;
     case VMS_UNKNOWN:
+    default:
         virDomainObjSetState(dom, VIR_DOMAIN_NOSTATE,
                              VIR_DOMAIN_NOSTATE_UNKNOWN);
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown domain state: %X"), domainState);
-        return -1;
+        dom->def->id = -1;
         break;
     }
-
-    return 0;
 }
 
 static int
@@ -1374,9 +1369,6 @@ prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
             goto error;
     }
 
-    if (prlsdkConvertDomainState(domainState, envId, dom) < 0)
-        goto error;
-
     /* assign new virDomainDef without any checks
      * we can't use virDomainObjAssignDef, because it checks
      * for state and domain name */
@@ -1385,6 +1377,8 @@ prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
     pdom->id = envId;
     VIR_FREE(pdom->home);
     pdom->home = home;
+
+    prlsdkConvertDomainState(domainState, envId, dom);
 
     if (!pdom->sdkdom) {
         PrlHandle_AddRef(sdkdom);
@@ -1532,8 +1526,8 @@ prlsdkHandleVmStateEvent(vzConnPtr privconn,
     prlsdkCheckRetGoto(pret, cleanup);
 
     pdom = dom->privateData;
-    if (prlsdkConvertDomainState(domainState, pdom->id, dom) < 0)
-        goto cleanup;
+
+    prlsdkConvertDomainState(domainState, pdom->id, dom);
 
     prlsdkNewStateToEvent(domainState,
                           &lvEventType,
