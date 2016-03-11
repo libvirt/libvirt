@@ -101,6 +101,9 @@ mymain(void)
     DO_TEST("pool-zfs");
     DO_TEST("pool-zfs-sourcedev");
 #endif
+#ifdef WITH_STORAGE_RBD
+    DO_TEST("pool-rbd");
+#endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
