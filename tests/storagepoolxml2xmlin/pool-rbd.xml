@@ -1,5 +1,6 @@
 <pool type='rbd'>
   <name>ceph</name>
+  <uuid>47c1faee-0207-e741-f5ae-d9b019b98fe2</uuid>
   <source>
     <name>rbd</name>
     <host name='localhost' port='6789'/>

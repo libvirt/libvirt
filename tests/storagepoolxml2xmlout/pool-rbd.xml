@@ -5,9 +5,9 @@
   <allocation unit='bytes'>0</allocation>
   <available unit='bytes'>0</available>
   <source>
-    <name>rbd</name>
     <host name='localhost' port='6789'/>
     <host name='localhost' port='6790'/>
+    <name>rbd</name>
     <auth type='ceph' username='admin'>
       <secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/>
     </auth>
