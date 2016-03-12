@@ -4239,93 +4239,6 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
 
 
 char *
-qemuBuildRedirdevDevStr(virDomainDefPtr def,
-                        virDomainRedirdevDefPtr dev,
-                        virQEMUCapsPtr qemuCaps)
-{
-    size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virDomainRedirFilterDefPtr redirfilter = def->redirfilter;
-
-    if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Redirection bus %s is not supported by QEMU"),
-                       virDomainRedirdevBusTypeToString(dev->bus));
-        goto error;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("USB redirection is not supported "
-                         "by this version of QEMU"));
-        goto error;
-    }
-
-    virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
-                      dev->info.alias, dev->info.alias);
-
-    if (redirfilter && redirfilter->nusbdevs) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("USB redirection filter is not "
-                             "supported by this version of QEMU"));
-            goto error;
-        }
-
-        virBufferAddLit(&buf, ",filter=");
-
-        for (i = 0; i < redirfilter->nusbdevs; i++) {
-            virDomainRedirFilterUSBDevDefPtr usbdev = redirfilter->usbdevs[i];
-            if (usbdev->usbClass >= 0)
-                virBufferAsprintf(&buf, "0x%02X:", usbdev->usbClass);
-            else
-                virBufferAddLit(&buf, "-1:");
-
-            if (usbdev->vendor >= 0)
-                virBufferAsprintf(&buf, "0x%04X:", usbdev->vendor);
-            else
-                virBufferAddLit(&buf, "-1:");
-
-            if (usbdev->product >= 0)
-                virBufferAsprintf(&buf, "0x%04X:", usbdev->product);
-            else
-                virBufferAddLit(&buf, "-1:");
-
-            if (usbdev->version >= 0)
-                virBufferAsprintf(&buf, "0x%04X:", usbdev->version);
-            else
-                virBufferAddLit(&buf, "-1:");
-
-            virBufferAsprintf(&buf, "%u", usbdev->allow);
-            if (i < redirfilter->nusbdevs -1)
-                virBufferAddLit(&buf, "|");
-        }
-    }
-
-    if (dev->info.bootIndex) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_BOOTINDEX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("USB redirection booting is not "
-                             "supported by this version of QEMU"));
-            goto error;
-        }
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
-    }
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
-        goto error;
-
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
-    return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
-}
-
-char *
 qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
                           virDomainHostdevDefPtr dev,
                           virQEMUCapsPtr qemuCaps)
@@ -8385,6 +8298,134 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
 }
 
 
+char *
+qemuBuildRedirdevDevStr(const virDomainDef *def,
+                        virDomainRedirdevDefPtr dev,
+                        virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainRedirFilterDefPtr redirfilter = def->redirfilter;
+
+    if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Redirection bus %s is not supported by QEMU"),
+                       virDomainRedirdevBusTypeToString(dev->bus));
+        goto error;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("USB redirection is not supported "
+                         "by this version of QEMU"));
+        goto error;
+    }
+
+    virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
+                      dev->info.alias, dev->info.alias);
+
+    if (redirfilter && redirfilter->nusbdevs) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_FILTER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("USB redirection filter is not "
+                             "supported by this version of QEMU"));
+            goto error;
+        }
+
+        virBufferAddLit(&buf, ",filter=");
+
+        for (i = 0; i < redirfilter->nusbdevs; i++) {
+            virDomainRedirFilterUSBDevDefPtr usbdev = redirfilter->usbdevs[i];
+            if (usbdev->usbClass >= 0)
+                virBufferAsprintf(&buf, "0x%02X:", usbdev->usbClass);
+            else
+                virBufferAddLit(&buf, "-1:");
+
+            if (usbdev->vendor >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->vendor);
+            else
+                virBufferAddLit(&buf, "-1:");
+
+            if (usbdev->product >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->product);
+            else
+                virBufferAddLit(&buf, "-1:");
+
+            if (usbdev->version >= 0)
+                virBufferAsprintf(&buf, "0x%04X:", usbdev->version);
+            else
+                virBufferAddLit(&buf, "-1:");
+
+            virBufferAsprintf(&buf, "%u", usbdev->allow);
+            if (i < redirfilter->nusbdevs -1)
+                virBufferAddLit(&buf, "|");
+        }
+    }
+
+    if (dev->info.bootIndex) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_REDIR_BOOTINDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("USB redirection booting is not "
+                             "supported by this version of QEMU"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
+    }
+
+    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+        goto error;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
+static int
+qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
+                             virCommandPtr cmd,
+                             const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->nredirdevs; i++) {
+        virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
+        char *devstr;
+
+        virCommandAddArg(cmd, "-chardev");
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                                              &redirdev->source.chr,
+                                              redirdev->info.alias,
+                                              qemuCaps))) {
+            return -1;
+        }
+
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("redirected devices are not supported by this QEMU"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-device");
+        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, qemuCaps)))
+            return -1;
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+    }
+
+    return 0;
+}
+
+
 static int
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def,
@@ -8915,35 +8956,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildWatchdogCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    /* Add redirected devices */
-    for (i = 0; i < def->nredirdevs; i++) {
-        virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
-        char *devstr;
-
-        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
-                                              &redirdev->source.chr,
-                                              redirdev->info.alias,
-                                              qemuCaps))) {
-            goto error;
-        }
-
-        virCommandAddArg(cmd, "-chardev");
-        virCommandAddArg(cmd, devstr);
-        VIR_FREE(devstr);
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("redirected devices are not supported by this QEMU"));
-            goto error;
-        }
-
-
-        virCommandAddArg(cmd, "-device");
-        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, qemuCaps)))
-            goto error;
-        virCommandAddArg(cmd, devstr);
-        VIR_FREE(devstr);
-    }
+    if (qemuBuildRedirdevCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     /* Add host passthrough hardware */
     for (i = 0; i < def->nhostdevs; i++) {
