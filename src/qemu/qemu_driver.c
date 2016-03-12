@@ -15546,6 +15546,15 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     } else if (snap) {
         snap->def->current = false;
     }
+    if (ret == 0 && config && vm->persistent &&
+        !(ret = virDomainSaveConfig(cfg->configDir, driver->caps,
+                                    vm->newDef ? vm->newDef : vm->def))) {
+        detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
+        qemuDomainEventQueue(driver,
+            virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_DEFINED,
+                                              detail));
+    }
     if (event) {
         qemuDomainEventQueue(driver, event);
         qemuDomainEventQueue(driver, event2);
