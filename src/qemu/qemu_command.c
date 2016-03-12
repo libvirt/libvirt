@@ -8962,6 +8962,91 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildPanicCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->npanics; i++) {
+        switch ((virDomainPanicModel) def->panics[i]->model) {
+        case VIR_DOMAIN_PANIC_MODEL_HYPERV:
+            /* Panic with model 'hyperv' is not a device, it should
+             * be configured in cpu commandline. The address
+             * cannot be configured by the user */
+            if (!ARCH_IS_X86(def->os.arch)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only i686 and x86_64 guests support "
+                                 "panic device of model 'hyperv'"));
+                return -1;
+            }
+            if (def->panics[i]->info.type !=
+                VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting the panic device address is not "
+                                 "supported for model 'hyperv'"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_PANIC_MODEL_PSERIES:
+            /* For pSeries guests, the firmware provides the same
+             * functionality as the pvpanic device. The address
+             * cannot be configured by the user */
+            if (!ARCH_IS_PPC64(def->os.arch) ||
+                !STRPREFIX(def->os.machine, "pseries")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only pSeries guests support panic device "
+                                 "of model 'pseries'"));
+                return -1;
+            }
+            if (def->panics[i]->info.type !=
+                VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting the panic device address is not "
+                                 "supported for model 'pseries'"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_PANIC_MODEL_ISA:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("the QEMU binary does not support the "
+                                 "panic device"));
+                return -1;
+            }
+
+            switch (def->panics[i]->info.type) {
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+                virCommandAddArg(cmd, "-device");
+                virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
+                                       def->panics[i]->info.addr.isa.iobase);
+                break;
+
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+                virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
+                break;
+
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("panic is supported only "
+                                 "with ISA address type"));
+                return -1;
+            }
+
+        /* default model value was changed before in post parse */
+        case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
+        case VIR_DOMAIN_PANIC_MODEL_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBuildCommandLineValidate:
  *
@@ -9299,77 +9384,8 @@ qemuBuildCommandLine(virConnectPtr conn,
         goto error;
     }
 
-    for (i = 0; i < def->npanics; i++) {
-        switch ((virDomainPanicModel) def->panics[i]->model) {
-        case VIR_DOMAIN_PANIC_MODEL_HYPERV:
-            /* Panic with model 'hyperv' is not a device, it should
-             * be configured in cpu commandline. The address
-             * cannot be configured by the user */
-            if (!ARCH_IS_X86(def->os.arch)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("only i686 and x86_64 guests support "
-                                 "panic device of model 'hyperv'"));
-                goto error;
-            }
-            if (def->panics[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("setting the panic device address is not "
-                                 "supported for model 'hyperv'"));
-                goto error;
-            }
-            break;
-
-        case VIR_DOMAIN_PANIC_MODEL_PSERIES:
-            /* For pSeries guests, the firmware provides the same
-             * functionality as the pvpanic device. The address
-             * cannot be configured by the user */
-            if (!ARCH_IS_PPC64(def->os.arch) ||
-                !STRPREFIX(def->os.machine, "pseries")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("only pSeries guests support panic device "
-                                 "of model 'pseries'"));
-                goto error;
-            }
-            if (def->panics[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("setting the panic device address is not "
-                                 "supported for model 'pseries'"));
-                goto error;
-            }
-            break;
-
-        case VIR_DOMAIN_PANIC_MODEL_ISA:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the QEMU binary does not support the "
-                                 "panic device"));
-                goto error;
-            }
-
-            switch (def->panics[i]->info.type) {
-            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
-                virCommandAddArg(cmd, "-device");
-                virCommandAddArgFormat(cmd, "pvpanic,ioport=%d",
-                                       def->panics[i]->info.addr.isa.iobase);
-                break;
-
-            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
-                virCommandAddArgList(cmd, "-device", "pvpanic", NULL);
-                break;
-
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("panic is supported only "
-                                 "with ISA address type"));
-                goto error;
-            }
-
-        /* default model value was changed before in post parse */
-        case VIR_DOMAIN_PANIC_MODEL_DEFAULT:
-        case VIR_DOMAIN_PANIC_MODEL_LAST:
-            break;
-        }
-    }
+    if (qemuBuildPanicCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->nshmems; i++) {
         if (qemuBuildShmemCommandLine(logManager, cmd,
