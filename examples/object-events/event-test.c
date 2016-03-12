@@ -110,6 +110,8 @@ static const char *eventDetailToString(int event, int detail) {
                 ret = "Updated";
             else if (detail == VIR_DOMAIN_EVENT_DEFINED_RENAMED)
                 ret = "Renamed";
+            else if (detail == VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT)
+                ret = "Snapshot";
             break;
         case VIR_DOMAIN_EVENT_UNDEFINED:
             if (detail == VIR_DOMAIN_EVENT_UNDEFINED_REMOVED)

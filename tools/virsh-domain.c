@@ -11410,7 +11410,8 @@ VIR_ENUM_IMPL(virshDomainEventDefined,
               VIR_DOMAIN_EVENT_DEFINED_LAST,
               N_("Added"),
               N_("Updated"),
-              N_("Renamed"))
+              N_("Renamed"),
+              N_("Snapshot"))
 
 VIR_ENUM_DECL(virshDomainEventUndefined)
 VIR_ENUM_IMPL(virshDomainEventUndefined,
