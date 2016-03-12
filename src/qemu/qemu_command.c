@@ -3329,8 +3329,8 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 }
 
 
-char *
-qemuBuildWatchdogDevStr(virDomainDefPtr def,
+static char *
+qemuBuildWatchdogDevStr(const virDomainDef *def,
                         virDomainWatchdogDefPtr dev,
                         virQEMUCapsPtr qemuCaps)
 {
@@ -3355,6 +3355,55 @@ qemuBuildWatchdogDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildWatchdogCommandLine(virCommandPtr cmd,
+                             const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps)
+{
+    virDomainWatchdogDefPtr watchdog = def->watchdog;
+    char *optstr;
+    const char *action;
+
+    if (!def->watchdog)
+        return 0;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+        virCommandAddArg(cmd, "-device");
+
+        optstr = qemuBuildWatchdogDevStr(def, watchdog, qemuCaps);
+        if (!optstr)
+            return -1;
+    } else {
+        virCommandAddArg(cmd, "-watchdog");
+
+        const char *model = virDomainWatchdogModelTypeToString(watchdog->model);
+        if (!model) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("missing watchdog model"));
+            return -1;
+        }
+
+        if (VIR_STRDUP(optstr, model) < 0)
+            return -1;
+    }
+    virCommandAddArg(cmd, optstr);
+    VIR_FREE(optstr);
+
+    if (watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
+        watchdog->action = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
+
+    action = virDomainWatchdogActionTypeToString(watchdog->action);
+    if (!action) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("invalid watchdog action"));
+        return -1;
+    }
+    virCommandAddArgList(cmd, "-watchdog-action", action, NULL);
+
+    return 0;
 }
 
 
@@ -8863,44 +8912,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildSoundCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    /* Add watchdog hardware */
-    if (def->watchdog) {
-        virDomainWatchdogDefPtr watchdog = def->watchdog;
-        char *optstr;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            virCommandAddArg(cmd, "-device");
-
-            optstr = qemuBuildWatchdogDevStr(def, watchdog, qemuCaps);
-            if (!optstr)
-                goto error;
-        } else {
-            virCommandAddArg(cmd, "-watchdog");
-
-            const char *model = virDomainWatchdogModelTypeToString(watchdog->model);
-            if (!model) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("missing watchdog model"));
-                goto error;
-            }
-
-            if (VIR_STRDUP(optstr, model) < 0)
-                goto error;
-        }
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-
-        int act = watchdog->action;
-        if (act == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
-            act = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
-        const char *action = virDomainWatchdogActionTypeToString(act);
-        if (!action) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("invalid watchdog action"));
-            goto error;
-        }
-        virCommandAddArgList(cmd, "-watchdog-action", action, NULL);
-    }
+    if (qemuBuildWatchdogCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     /* Add redirected devices */
     for (i = 0; i < def->nredirdevs; i++) {
