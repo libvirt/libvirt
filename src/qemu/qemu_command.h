@@ -130,7 +130,7 @@ char *qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                 virQEMUCapsPtr qemuCaps,
                                 int *nusbcontroller);
 
-char *qemuBuildMemballoonDevStr(virDomainDefPtr domainDef,
+char *qemuBuildMemballoonDevStr(const virDomainDef *domainDef,
                                 virDomainMemballoonDefPtr dev,
                                 virQEMUCapsPtr qemuCaps);
 

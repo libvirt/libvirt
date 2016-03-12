@@ -3408,7 +3408,7 @@ qemuBuildWatchdogCommandLine(virCommandPtr cmd,
 
 
 char *
-qemuBuildMemballoonDevStr(virDomainDefPtr def,
+qemuBuildMemballoonDevStr(const virDomainDef *def,
                           virDomainMemballoonDefPtr dev,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -3455,6 +3455,47 @@ qemuBuildMemballoonDevStr(virDomainDefPtr def,
     virBufferFreeAndReset(&buf);
     return NULL;
 }
+
+
+static int
+qemuBuildMemballoonCommandLine(virCommandPtr cmd,
+                               const virDomainDef *def,
+                               virQEMUCapsPtr qemuCaps)
+{
+    /* QEMU changed its default behavior to not include the virtio balloon
+     * device.  Explicitly request it to ensure it will be present.
+     *
+     * NB: Earlier we declared that VirtIO balloon will always be in
+     * slot 0x3 on bus 0x0
+     */
+    if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
+        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
+
+    if (def->memballoon &&
+        def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+        if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Memory balloon device type '%s' is not supported by this version of qemu"),
+                           virDomainMemballoonModelTypeToString(def->memballoon->model));
+            return -1;
+        }
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+            char *optstr;
+            virCommandAddArg(cmd, "-device");
+
+            optstr = qemuBuildMemballoonDevStr(def, def->memballoon, qemuCaps);
+            if (!optstr)
+                return -1;
+            virCommandAddArg(cmd, optstr);
+            VIR_FREE(optstr);
+        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BALLOON)) {
+            virCommandAddArgList(cmd, "-balloon", "virtio", NULL);
+        }
+    }
+    return 0;
+}
+
 
 static char *
 qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
@@ -9141,37 +9182,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (migrateURI)
         virCommandAddArgList(cmd, "-incoming", migrateURI, NULL);
 
-    /* QEMU changed its default behavior to not include the virtio balloon
-     * device.  Explicitly request it to ensure it will be present.
-     *
-     * NB: Earlier we declared that VirtIO balloon will always be in
-     * slot 0x3 on bus 0x0
-     */
-    if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
-        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
-
-    if (def->memballoon &&
-        def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Memory balloon device type '%s' is not supported by this version of qemu"),
-                           virDomainMemballoonModelTypeToString(def->memballoon->model));
-            goto error;
-        }
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            char *optstr;
-            virCommandAddArg(cmd, "-device");
-
-            optstr = qemuBuildMemballoonDevStr(def, def->memballoon, qemuCaps);
-            if (!optstr)
-                goto error;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BALLOON)) {
-            virCommandAddArgList(cmd, "-balloon", "virtio", NULL);
-        }
-    }
+    if (qemuBuildMemballoonCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     for (i = 0; i < def->nrngs; i++) {
         virDomainRNGDefPtr rng = def->rngs[i];
