@@ -4146,7 +4146,7 @@ qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
 }
 
 char *
-qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
+qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,
                           int bootIndex, /* used iff dev->info->bootIndex == 0 */
                           const char *configfd,
@@ -4210,7 +4210,7 @@ qemuBuildPCIHostdevDevStr(virDomainDefPtr def,
 }
 
 
-char *
+static char *
 qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
                              virQEMUCapsPtr qemuCaps)
 {
@@ -4239,7 +4239,7 @@ qemuBuildPCIHostdevPCIDevStr(virDomainHostdevDefPtr dev,
 
 
 char *
-qemuBuildUSBHostdevDevStr(virDomainDefPtr def,
+qemuBuildUSBHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -4333,7 +4333,7 @@ qemuBuildHubCommandLine(virCommandPtr cmd,
 }
 
 
-char *
+static char *
 qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
 {
     char *ret = NULL;
@@ -4458,7 +4458,7 @@ qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
 }
 
 char *
-qemuBuildSCSIHostdevDevStr(virDomainDefPtr def,
+qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                            virDomainHostdevDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
@@ -4718,6 +4718,181 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     return NULL;
 }
 
+
+static int
+qemuBuildHostdevCommandLine(virCommandPtr cmd,
+                            virConnectPtr conn,
+                            const virDomainDef *def,
+                            virQEMUCapsPtr qemuCaps,
+                            qemuBuildCommandLineCallbacksPtr callbacks,
+                            int *bootHostdevNet)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+        char *devstr;
+
+        if (hostdev->info->bootIndex) {
+            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+                (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                 subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+                 subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("booting from assigned devices is only "
+                                 "supported for PCI, USB and SCSI devices"));
+                return -1;
+            } else {
+                if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+                    if (subsys->u.pci.backend ==
+                        VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                        if (!virQEMUCapsGet(qemuCaps,
+                                            QEMU_CAPS_VFIO_PCI_BOOTINDEX)) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("booting from PCI devices assigned with VFIO "
+                                             "is not supported with this version of qemu"));
+                            return -1;
+                        }
+                    } else {
+                        if (!virQEMUCapsGet(qemuCaps,
+                                            QEMU_CAPS_PCI_BOOTINDEX)) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("booting from assigned PCI devices is not "
+                                             "supported with this version of qemu"));
+                            return -1;
+                        }
+                    }
+                }
+                if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
+                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_BOOTINDEX)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("booting from assigned USB devices is not "
+                                     "supported with this version of qemu"));
+                    return -1;
+                }
+                if (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+                    !virQEMUCapsGet(qemuCaps,
+                                    QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("booting from assigned SCSI devices is not"
+                                     " supported with this version of qemu"));
+                    return -1;
+                }
+            }
+        }
+
+        /* USB */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                virCommandAddArg(cmd, "-device");
+                if (!(devstr =
+                      qemuBuildUSBHostdevDevStr(def, hostdev, qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            } else {
+                virCommandAddArg(cmd, "-usbdevice");
+                if (!(devstr = qemuBuildUSBHostdevUSBDevStr(hostdev)))
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            }
+        }
+
+        /* PCI */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            int backend = subsys->u.pci.backend;
+
+            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO PCI device assignment is not "
+                                     "supported by this version of qemu"));
+                    return -1;
+                }
+            }
+
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+                char *configfd_name = NULL;
+                int bootIndex = hostdev->info->bootIndex;
+
+                /* bootNet will be non-0 if boot order was set and no other
+                 * net devices were encountered
+                 */
+                if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
+                    bootIndex == 0) {
+                    bootIndex = *bootHostdevNet;
+                    *bootHostdevNet = 0;
+                }
+                if ((backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
+                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+                    int configfd = qemuOpenPCIConfig(hostdev);
+
+                    if (configfd >= 0) {
+                        if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
+                            VIR_FORCE_CLOSE(configfd);
+                            return -1;
+                        }
+
+                        virCommandPassFD(cmd, configfd,
+                                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+                    }
+                }
+                virCommandAddArg(cmd, "-device");
+                devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex,
+                                                   configfd_name, qemuCaps);
+                VIR_FREE(configfd_name);
+                if (!devstr)
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE)) {
+                virCommandAddArg(cmd, "-pcidevice");
+                if (!(devstr = qemuBuildPCIHostdevPCIDevStr(hostdev, qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("PCI device assignment is not supported by this version of qemu"));
+                return -1;
+            }
+        }
+
+        /* SCSI */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+                char *drvstr;
+
+                virCommandAddArg(cmd, "-drive");
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev,
+                                                          qemuCaps, callbacks)))
+                    return -1;
+                virCommandAddArg(cmd, drvstr);
+                VIR_FREE(drvstr);
+
+                virCommandAddArg(cmd, "-device");
+                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev,
+                                                          qemuCaps)))
+                    return -1;
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SCSI passthrough is not supported by this version of qemu"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
 
 static char *
 qemuBuildChrArgStr(const virDomainChrSourceDef *dev,
@@ -8959,161 +9134,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildRedirdevCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    /* Add host passthrough hardware */
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-        char *devstr;
-
-        if (hostdev->info->bootIndex) {
-            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-                (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
-                 hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("booting from assigned devices is only "
-                                 "supported for PCI, USB and SCSI devices"));
-                goto error;
-            } else {
-                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-                    if (hostdev->source.subsys.u.pci.backend
-                        == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_BOOTINDEX)) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                           _("booting from PCI devices assigned with VFIO "
-                                             "is not supported with this version of qemu"));
-                            goto error;
-                        }
-                    } else {
-                        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_BOOTINDEX)) {
-                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                           _("booting from assigned PCI devices is not "
-                                             "supported with this version of qemu"));
-                            goto error;
-                        }
-                    }
-                }
-                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_BOOTINDEX)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("booting from assigned USB devices is not "
-                                     "supported with this version of qemu"));
-                    goto error;
-                }
-                if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("booting from assigned SCSI devices is not"
-                                     " supported with this version of qemu"));
-                    goto error;
-                }
-            }
-        }
-
-        /* USB */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildUSBHostdevDevStr(def, hostdev, qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            } else {
-                virCommandAddArg(cmd, "-usbdevice");
-                if (!(devstr = qemuBuildUSBHostdevUSBDevStr(hostdev)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
-        }
-
-        /* PCI */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            int backend = hostdev->source.subsys.u.pci.backend;
-
-            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VFIO PCI device assignment is not "
-                                     "supported by this version of qemu"));
-                    goto error;
-                }
-            }
-
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-                char *configfd_name = NULL;
-                int bootIndex = hostdev->info->bootIndex;
-
-                /* bootNet will be non-0 if boot order was set and no other
-                 * net devices were encountered
-                 */
-                if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET &&
-                    bootIndex == 0) {
-                    bootIndex = bootHostdevNet;
-                    bootHostdevNet = 0;
-                }
-                if ((backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) &&
-                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
-                    int configfd = qemuOpenPCIConfig(hostdev);
-
-                    if (configfd >= 0) {
-                        if (virAsprintf(&configfd_name, "%d", configfd) < 0) {
-                            VIR_FORCE_CLOSE(configfd);
-                            goto error;
-                        }
-
-                        virCommandPassFD(cmd, configfd,
-                                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-                    }
-                }
-                virCommandAddArg(cmd, "-device");
-                devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex,
-                                                   configfd_name, qemuCaps);
-                VIR_FREE(configfd_name);
-                if (!devstr)
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE)) {
-                virCommandAddArg(cmd, "-pcidevice");
-                if (!(devstr = qemuBuildPCIHostdevPCIDevStr(hostdev, qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("PCI device assignment is not supported by this version of qemu"));
-                goto error;
-            }
-        }
-
-        /* SCSI */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
-                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
-                char *drvstr;
-
-                virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, qemuCaps, callbacks)))
-                    goto error;
-                virCommandAddArg(cmd, drvstr);
-                VIR_FREE(drvstr);
-
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev, qemuCaps)))
-                    goto error;
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("SCSI passthrough is not supported by this version of qemu"));
-                goto error;
-            }
-        }
-    }
+    if (qemuBuildHostdevCommandLine(cmd, conn, def, qemuCaps, callbacks,
+                                    &bootHostdevNet) < 0)
+        goto error;
 
     if (migrateURI)
         virCommandAddArgList(cmd, "-incoming", migrateURI, NULL);
