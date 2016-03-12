@@ -2622,10 +2622,7 @@
     </element>
   </define>
   <!--
-      A graphic description, currently in Xen only 2 types are supported:
-        - sdl with optional display, xauth and fullscreen
-        - vnc with a required port and optional listen IP address, password
-          and keymap
+      A graphic description (SPICE, VNC, SDL, ...)
     -->
   <define name="graphic">
     <element name="graphics">
