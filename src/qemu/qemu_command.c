@@ -5197,7 +5197,7 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
 static int
 qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
                              virCommandPtr cmd,
-                             virDomainDefPtr def,
+                             const virDomainDef *def,
                              virDomainRNGDefPtr rng,
                              virQEMUCapsPtr qemuCaps,
                              char **chr)
@@ -5304,7 +5304,7 @@ qemuBuildRNGBackendStr(virDomainRNGDefPtr rng,
 
 
 char *
-qemuBuildRNGDevStr(virDomainDefPtr def,
+qemuBuildRNGDevStr(const virDomainDef *def,
                    virDomainRNGDefPtr dev,
                    virQEMUCapsPtr qemuCaps)
 {
@@ -5353,6 +5353,52 @@ qemuBuildRNGDevStr(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
+}
+
+
+static int
+qemuBuildRNGCommandLine(virLogManagerPtr logManager,
+                        virCommandPtr cmd,
+                        const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->nrngs; i++) {
+        virDomainRNGDefPtr rng = def->rngs[i];
+        char *tmp;
+
+        if (!rng->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("RNG device is missing alias"));
+            return -1;
+        }
+
+        /* possibly add character device for backend */
+        if (qemuBuildRNGBackendChrdevStr(logManager, cmd, def,
+                                         rng, qemuCaps, &tmp) < 0)
+            return -1;
+
+        if (tmp) {
+            virCommandAddArgList(cmd, "-chardev", tmp, NULL);
+            VIR_FREE(tmp);
+        }
+
+        /* add the RNG source backend */
+        if (!(tmp = qemuBuildRNGBackendStr(rng, qemuCaps)))
+            return -1;
+
+        virCommandAddArgList(cmd, "-object", tmp, NULL);
+        VIR_FREE(tmp);
+
+        /* add the device */
+        if (!(tmp = qemuBuildRNGDevStr(def, rng, qemuCaps)))
+            return -1;
+        virCommandAddArgList(cmd, "-device", tmp, NULL);
+        VIR_FREE(tmp);
+    }
+
+    return 0;
 }
 
 
@@ -9185,39 +9231,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildMemballoonCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    for (i = 0; i < def->nrngs; i++) {
-        virDomainRNGDefPtr rng = def->rngs[i];
-        char *tmp;
-
-        if (!rng->info.alias) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("RNG device is missing alias"));
-            goto error;
-        }
-
-        /* possibly add character device for backend */
-        if (qemuBuildRNGBackendChrdevStr(logManager, cmd, def,
-                                         rng, qemuCaps, &tmp) < 0)
-            goto error;
-
-        if (tmp) {
-            virCommandAddArgList(cmd, "-chardev", tmp, NULL);
-            VIR_FREE(tmp);
-        }
-
-        /* add the RNG source backend */
-        if (!(tmp = qemuBuildRNGBackendStr(rng, qemuCaps)))
-            goto error;
-
-        virCommandAddArgList(cmd, "-object", tmp, NULL);
-        VIR_FREE(tmp);
-
-        /* add the device */
-        if (!(tmp = qemuBuildRNGDevStr(def, rng, qemuCaps)))
-            goto error;
-        virCommandAddArgList(cmd, "-device", tmp, NULL);
-        VIR_FREE(tmp);
-    }
+    if (qemuBuildRNGCommandLine(logManager, cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (def->nvram) {
         if (ARCH_IS_PPC64(def->os.arch) &&

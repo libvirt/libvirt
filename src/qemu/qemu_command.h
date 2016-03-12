@@ -155,7 +155,7 @@ char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                                 const char *configfd,
                                 virQEMUCapsPtr qemuCaps);
 
-char *qemuBuildRNGDevStr(virDomainDefPtr def,
+char *qemuBuildRNGDevStr(const virDomainDef *def,
                          virDomainRNGDefPtr dev,
                          virQEMUCapsPtr qemuCaps);
 int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
