@@ -138,10 +138,6 @@ char *qemuBuildMemballoonDevStr(virDomainDefPtr domainDef,
                                 virDomainMemballoonDefPtr dev,
                                 virQEMUCapsPtr qemuCaps);
 
-char *qemuBuildSoundDevStr(virDomainDefPtr domainDef,
-                           virDomainSoundDefPtr sound,
-                           virQEMUCapsPtr qemuCaps);
-
 int qemuBuildMemoryBackendStr(unsigned long long size,
                               unsigned long long pagesize,
                               int guestNode,

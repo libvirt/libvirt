@@ -3583,8 +3583,8 @@ qemuBuildInputCommandLine(virCommandPtr cmd,
 }
 
 
-char *
-qemuBuildSoundDevStr(virDomainDefPtr def,
+static char *
+qemuBuildSoundDevStr(const virDomainDef *def,
                      virDomainSoundDefPtr sound,
                      virQEMUCapsPtr qemuCaps)
 {
@@ -3688,6 +3688,105 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
     virBufferFreeAndReset(&buf);
     return NULL;
 }
+
+
+static int
+qemuBuildSoundCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    size_t i, j;
+
+    if (!def->nsounds)
+        return 0;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+        for (i = 0; i < def->nsounds; i++) {
+            virDomainSoundDefPtr sound = def->sounds[i];
+            char *str = NULL;
+
+            /* Sadly pcspk device doesn't use -device syntax. Fortunately
+             * we don't need to set any PCI address on it, so we don't
+             * mind too much */
+            if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
+                virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
+            } else {
+                virCommandAddArg(cmd, "-device");
+                if (!(str = qemuBuildSoundDevStr(def, sound, qemuCaps)))
+                    return -1;
+
+                virCommandAddArg(cmd, str);
+                VIR_FREE(str);
+                if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+                    sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
+                    char *codecstr = NULL;
+
+                    for (j = 0; j < sound->ncodecs; j++) {
+                        virCommandAddArg(cmd, "-device");
+                        if (!(codecstr =
+                              qemuBuildSoundCodecStr(sound, sound->codecs[j],
+                                                     qemuCaps))) {
+                            return -1;
+
+                        }
+                        virCommandAddArg(cmd, codecstr);
+                        VIR_FREE(codecstr);
+                    }
+                    if (j == 0) {
+                        virDomainSoundCodecDef codec = {
+                            VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX,
+                            0
+                        };
+                        virCommandAddArg(cmd, "-device");
+                        if (!(codecstr =
+                              qemuBuildSoundCodecStr(sound, &codec,
+                                                     qemuCaps))) {
+                            return -1;
+
+                        }
+                        virCommandAddArg(cmd, codecstr);
+                        VIR_FREE(codecstr);
+                    }
+                }
+            }
+        }
+    } else {
+        int size = 100;
+        char *modstr;
+        if (VIR_ALLOC_N(modstr, size+1) < 0)
+            return -1;
+
+        for (i = 0; i < def->nsounds && size > 0; i++) {
+            virDomainSoundDefPtr sound = def->sounds[i];
+            const char *model = virDomainSoundModelTypeToString(sound->model);
+            if (!model) {
+                VIR_FREE(modstr);
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("invalid sound model"));
+                return -1;
+            }
+
+            if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
+                sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
+                VIR_FREE(modstr);
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this QEMU binary lacks hda support"));
+                return -1;
+            }
+
+            strncat(modstr, model, size);
+            size -= strlen(model);
+            if (i < (def->nsounds - 1))
+                strncat(modstr, ",", size--);
+        }
+        virCommandAddArgList(cmd, "-soundhw", modstr, NULL);
+        VIR_FREE(modstr);
+    }
+
+    return 0;
+}
+
+
 
 static char *
 qemuBuildDeviceVideoStr(const virDomainDef *def,
@@ -8600,7 +8699,7 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *domainChannelTargetDir)
 {
     virErrorPtr originalError = NULL;
-    size_t i, j;
+    size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
@@ -8761,87 +8860,8 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildVideoCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    /* Add sound hardware */
-    if (def->nsounds) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            for (i = 0; i < def->nsounds; i++) {
-                virDomainSoundDefPtr sound = def->sounds[i];
-                char *str = NULL;
-
-                /* Sadly pcspk device doesn't use -device syntax. Fortunately
-                 * we don't need to set any PCI address on it, so we don't
-                 * mind too much */
-                if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
-                    virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
-                } else {
-                    virCommandAddArg(cmd, "-device");
-                    if (!(str = qemuBuildSoundDevStr(def, sound, qemuCaps)))
-                        goto error;
-
-                    virCommandAddArg(cmd, str);
-                    VIR_FREE(str);
-                    if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-                        sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
-                        char *codecstr = NULL;
-
-                        for (j = 0; j < sound->ncodecs; j++) {
-                            virCommandAddArg(cmd, "-device");
-                            if (!(codecstr = qemuBuildSoundCodecStr(sound, sound->codecs[j], qemuCaps))) {
-                                goto error;
-
-                            }
-                            virCommandAddArg(cmd, codecstr);
-                            VIR_FREE(codecstr);
-                        }
-                        if (j == 0) {
-                            virDomainSoundCodecDef codec = {
-                                VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX,
-                                0
-                            };
-                            virCommandAddArg(cmd, "-device");
-                            if (!(codecstr = qemuBuildSoundCodecStr(sound, &codec, qemuCaps))) {
-                                goto error;
-
-                            }
-                            virCommandAddArg(cmd, codecstr);
-                            VIR_FREE(codecstr);
-                        }
-                    }
-                }
-            }
-        } else {
-            int size = 100;
-            char *modstr;
-            if (VIR_ALLOC_N(modstr, size+1) < 0)
-                goto error;
-
-            for (i = 0; i < def->nsounds && size > 0; i++) {
-                virDomainSoundDefPtr sound = def->sounds[i];
-                const char *model = virDomainSoundModelTypeToString(sound->model);
-                if (!model) {
-                    VIR_FREE(modstr);
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("invalid sound model"));
-                    goto error;
-                }
-
-                if (sound->model == VIR_DOMAIN_SOUND_MODEL_ICH6 ||
-                    sound->model == VIR_DOMAIN_SOUND_MODEL_ICH9) {
-                    VIR_FREE(modstr);
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("this QEMU binary lacks hda support"));
-                    goto error;
-                }
-
-                strncat(modstr, model, size);
-                size -= strlen(model);
-                if (i < (def->nsounds - 1))
-                    strncat(modstr, ",", size--);
-            }
-            virCommandAddArgList(cmd, "-soundhw", modstr, NULL);
-            VIR_FREE(modstr);
-        }
-    }
+    if (qemuBuildSoundCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
     /* Add watchdog hardware */
     if (def->watchdog) {
