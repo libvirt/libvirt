@@ -3522,6 +3522,42 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
     return NULL;
 }
 
+
+static int
+qemuBuildNVRAMCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    if (!def->nvram)
+        return 0;
+
+    if (ARCH_IS_PPC64(def->os.arch) &&
+        STRPREFIX(def->os.machine, "pseries")) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("nvram device is not supported by "
+                             "this QEMU binary"));
+            return -1;
+        }
+
+        char *optstr;
+        virCommandAddArg(cmd, "-global");
+        optstr = qemuBuildNVRAMDevStr(def->nvram);
+        if (!optstr)
+            return -1;
+        if (optstr)
+            virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                      _("nvram device is only supported for PPC64"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static char *
 qemuBuildVirtioInputDevStr(const virDomainDef *def,
                            virDomainInputDefPtr dev,
@@ -9234,30 +9270,9 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildRNGCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (def->nvram) {
-        if (ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries")) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("nvram device is not supported by "
-                                 "this QEMU binary"));
-                goto error;
-            }
+    if (qemuBuildNVRAMCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
 
-            char *optstr;
-            virCommandAddArg(cmd, "-global");
-            optstr = qemuBuildNVRAMDevStr(def->nvram);
-            if (!optstr)
-                goto error;
-            if (optstr)
-                virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                          _("nvram device is only supported for PPC64"));
-            goto error;
-        }
-    }
     if (snapshot)
         virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
