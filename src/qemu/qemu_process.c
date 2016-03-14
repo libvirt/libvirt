@@ -4542,6 +4542,14 @@ qemuProcessInit(virQEMUDriverPtr driver,
                              VIR_HOOK_SUBOP_BEGIN) < 0)
         goto stop;
 
+    if (qemuDomainSetPrivatePaths(&priv->libDir,
+                                  &priv->channelTargetDir,
+                                  cfg->libDir,
+                                  cfg->channelTargetDir,
+                                  vm->def->name,
+                                  vm->def->id) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -5147,14 +5155,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                             QEMU_DOMAIN_LOG_CONTEXT_MODE_START)))
         goto cleanup;
     logfile = qemuDomainLogContextGetWriteFD(logCtxt);
-
-    if (qemuDomainSetPrivatePaths(&priv->libDir,
-                                  &priv->channelTargetDir,
-                                  cfg->libDir,
-                                  cfg->channelTargetDir,
-                                  vm->def->name,
-                                  vm->def->id) < 0)
-        goto cleanup;
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver,
