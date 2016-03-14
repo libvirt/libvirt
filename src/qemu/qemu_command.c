@@ -3809,7 +3809,7 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
                           virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-    int primaryVideoType = def->videos[0]->type;
+    int primaryVideoType;
 
     if (!def->nvideos) {
         /* If we have -device, then we set -nodefaults already */
@@ -3818,6 +3818,8 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
             virCommandAddArgList(cmd, "-vga", "none", NULL);
         return 0;
     }
+
+    primaryVideoType = def->videos[0]->type;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&
          ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
