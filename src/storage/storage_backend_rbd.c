@@ -334,7 +334,7 @@ virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    VIR_DEBUG("Found %zu bytes allocated for RBD image %s",
+    VIR_DEBUG("Found %llu bytes allocated for RBD image %s",
               allocation, vol->name);
 
     vol->target.allocation = allocation;
