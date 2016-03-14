@@ -265,7 +265,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandPtr cmd = NULL;
     size_t i;
     virBitmapPtr nodeset = NULL;
-    bool testFailed = false;
     char *domainLibDir = NULL;
     char *domainChannelTargetDir = NULL;
 
@@ -280,8 +279,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         (VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                          parseFlags)))) {
-        if (!virtTestOOMActive() &&
-            (flags & FLAG_EXPECT_PARSE_ERROR))
+        if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
         goto out;
     }
@@ -349,39 +347,22 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto out;
     }
 
-    if (qemuProcessStartValidate(vmdef, extraFlags, !!migrateURI, false) < 0)
-        testFailed = true;
+    if (qemuProcessStartValidate(vmdef, extraFlags, !!migrateURI, false) < 0) {
+        if (flags & FLAG_EXPECT_FAILURE)
+            goto ok;
+        goto out;
+    }
 
-    if (!testFailed &&
-        !(cmd = qemuBuildCommandLine(conn, &driver, NULL, vmdef, &monitor_chr,
+    if (!(cmd = qemuBuildCommandLine(conn, &driver, NULL, vmdef, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateURI, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
                                      nodeset, NULL, NULL,
-                                     domainLibDir, domainChannelTargetDir)))
-        testFailed = true;
-
-    if (testFailed) {
-        if (!virtTestOOMActive() &&
-            (flags & FLAG_EXPECT_FAILURE)) {
-            ret = 0;
-            VIR_TEST_DEBUG("Got expected error: %s\n",
-                    virGetLastErrorMessage());
-            virResetLastError();
-        }
-        goto out;
-    } else if (flags & FLAG_EXPECT_FAILURE) {
-        VIR_TEST_DEBUG("qemuBuildCommandLine or qemuProcessStartValidate "
-                       "should have failed\n");
-        goto out;
-    }
-
-    if (!virtTestOOMActive() &&
-        (!!virGetLastError() != !!(flags & FLAG_EXPECT_ERROR))) {
-        if ((log = virtTestLogContentAndReset()))
-            VIR_TEST_DEBUG("\n%s", log);
+                                     domainLibDir, domainChannelTargetDir))) {
+        if (flags & FLAG_EXPECT_FAILURE)
+            goto ok;
         goto out;
     }
 
@@ -391,14 +372,27 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virtTestCompareToFile(actualargv, cmdline) < 0)
         goto out;
 
- ok:
-    if (!virtTestOOMActive() &&
-        (flags & FLAG_EXPECT_ERROR)) {
-        /* need to suppress the errors */
-        virResetLastError();
-    }
-
     ret = 0;
+
+ ok:
+    if (ret == 0 &&
+        ((flags & FLAG_EXPECT_ERROR) ||
+         (flags & FLAG_EXPECT_FAILURE))) {
+        ret = -1;
+        VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
+        goto out;
+    }
+    if (!virtTestOOMActive()) {
+        if (flags & FLAG_EXPECT_ERROR) {
+            if ((log = virtTestLogContentAndReset()))
+                VIR_TEST_DEBUG("Got expected error: \n%s", log);
+        } else if (flags & FLAG_EXPECT_FAILURE) {
+            VIR_TEST_DEBUG("Got expected failure: %s\n",
+                           virGetLastErrorMessage());
+        }
+        virResetLastError();
+        ret = 0;
+    }
 
  out:
     VIR_FREE(log);
