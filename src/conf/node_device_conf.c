@@ -1798,37 +1798,26 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
     return false;
 }
 
-#define MATCH(FLAG) (flags & (FLAG))
+#define MATCH(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
+                     virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_ ## FLAG))
 static bool
 virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
                    unsigned int flags)
 {
     /* filter by cap type */
-    if (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP)) {
-        if (!((MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SYSTEM))        ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_PCI_DEV))       ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_USB_DEV))       ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_USB_INTERFACE)) ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_NET))           ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_HOST))     ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_TARGET))   ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI))          ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_STORAGE))       ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_FC_HOST))       ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_VPORTS))        ||
-              (MATCH(VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC) &&
-               virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_SCSI_GENERIC))))
+    if (flags & VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP) {
+        if (!(MATCH(SYSTEM)        ||
+              MATCH(PCI_DEV)       ||
+              MATCH(USB_DEV)       ||
+              MATCH(USB_INTERFACE) ||
+              MATCH(NET)           ||
+              MATCH(SCSI_HOST)     ||
+              MATCH(SCSI_TARGET)   ||
+              MATCH(SCSI)          ||
+              MATCH(STORAGE)       ||
+              MATCH(FC_HOST)       ||
+              MATCH(VPORTS)        ||
+              MATCH(SCSI_GENERIC)))
             return false;
     }
 
