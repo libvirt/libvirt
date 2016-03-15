@@ -1,7 +1,7 @@
 /*
  * domain_addr.h: helper APIs for managing domain device addresses
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -30,32 +30,42 @@
 # define VIR_PCI_ADDRESS_FUNCTION_LAST 7
 
 typedef enum {
-   VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 0,
-   /* This bus supports hot-plug */
-   VIR_PCI_CONNECT_SINGLESLOT   = 1 << 1,
-   /* This "bus" has only a single downstream slot/port */
+   VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 0, /* is hotplug needed/supported */
 
-   VIR_PCI_CONNECT_TYPE_PCI     = 1 << 2,
-   /* PCI devices can connect to this bus */
-   VIR_PCI_CONNECT_TYPE_PCIE    = 1 << 3,
-   /* PCI Express devices can connect to this bus */
-   VIR_PCI_CONNECT_TYPE_PCIE_ROOT = 1 << 4,
-   /* for devices that can only connect to pcie-root (i.e. root-port) */
-   VIR_PCI_CONNECT_TYPE_PCIE_PORT = 1 << 5,
-   /* devices that can only connect to a pcie-root-port
-    * or pcie-downstream-switch-port
+   /* kinds of devices as a bitmap so they can be combined (some PCI
+    * controllers permit connecting multiple types of devices)
     */
-   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH = 1 << 6,
-   /* devices that can only connect to a pcie-switch */
+   VIR_PCI_CONNECT_TYPE_PCI_DEVICE = 1 << 1,
+   VIR_PCI_CONNECT_TYPE_PCIE_DEVICE = 1 << 2,
+   VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 3,
+   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 4,
+   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 5,
 } virDomainPCIConnectFlags;
+
+/* a combination of all bits that describe the type of connections
+ * allowed, e.g. PCI, PCIe, switch
+ */
+# define VIR_PCI_CONNECT_TYPES_MASK \
+   (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE | \
+    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT | \
+    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT | \
+    VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT)
+
+/* combination of all bits that could be used to connect a normal
+ * endpoint device (i.e. excluding the connection possible between an
+ * upstream and downstream switch port, or a PCIe root port and a PCIe
+ * port)
+ */
+# define VIR_PCI_CONNECT_TYPES_ENDPOINT \
+   (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE)
 
 typedef struct {
     virDomainControllerModelPCI model;
-    /* flags an min/max can be computed from model, but
+    /* flags and min/max can be computed from model, but
      * having them ready makes life easier.
      */
     virDomainPCIConnectFlags flags;
-    size_t minSlot, maxSlot; /* usually 0,0 or 1,31 */
+    size_t minSlot, maxSlot; /* usually 0,0 or 0,31, or 1,31 */
     /* Each bit in a slot represents one function on that slot. If the
      * bit is set, that function is in use by a device.
      */
@@ -73,22 +83,6 @@ struct _virDomainPCIAddressSet {
 };
 typedef struct _virDomainPCIAddressSet virDomainPCIAddressSet;
 typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;
-
-/* a combination of all bits that describe the type of connections
- * allowed, e.g. PCI, PCIe, switch
- */
-# define VIR_PCI_CONNECT_TYPES_MASK \
-   (VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE | \
-    VIR_PCI_CONNECT_TYPE_PCIE_ROOT | VIR_PCI_CONNECT_TYPE_PCIE_PORT | \
-    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH)
-
-/* combination of all bits that could be used to connect a normal
- * endpoint device (i.e. excluding the connection possible between an
- * upstream and downstream switch port, or a PCIe root port and a PCIe
- * port)
- */
-# define VIR_PCI_CONNECT_TYPES_ENDPOINT \
-   (VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE)
 
 char *virDomainPCIAddressAsString(virDevicePCIAddressPtr addr)
       ATTRIBUTE_NONNULL(1);

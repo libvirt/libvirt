@@ -427,7 +427,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     bool entireSlot;
     /* flags may be changed from default below */
     virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
-                                      VIR_PCI_CONNECT_TYPE_PCI);
+                                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
 
     if ((info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         || ((device->type == VIR_DOMAIN_DEVICE_HOSTDEV) &&
@@ -451,31 +451,30 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
                 /* pci-bridge needs a PCI slot, but it isn't
                  * hot-pluggable, so it doesn't need a hot-pluggable slot.
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCI;
+                flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
                 /* pci-bridge needs a PCIe slot, but it isn't
                  * hot-pluggable, so it doesn't need a hot-pluggable slot.
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                /* pcie-root-port can only connect to pcie-root, isn't
-                 * hot-pluggable
+                /* pcie-root-port isn't hot-pluggable, and
+                 * is unique in what it can connect to, so
+                 * it has its own flag.
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                /* pcie-switch can only connect to a true
-                 * pcie bus, and can't be hot-plugged.
+                /* pcie-switch-upstream-port is also unique, and
+                 * not hot-pluggable...
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_PORT;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                /* pcie-switch-downstream-port can only connect to a
-                 * pcie-switch-upstream-port, and can't be hot-plugged.
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH;
+                /* ... same for pcie-switch-downstream-port */
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
                 break;
             default:
                 break;
@@ -486,34 +485,36 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
             /* SATA controllers aren't hot-plugged, and can be put in
              * either a PCI or PCIe slot
              */
-            flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
+            flags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE
+                     | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE);
             break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-           /* allow UHCI and EHCI controllers to be manually placed on
-            * the PCIe bus (but don't put them there automatically)
-            */
-           switch (device->data.controller->model) {
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
-              flags = VIR_PCI_CONNECT_TYPE_PCI;
-              break;
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
-              /* should this be PCIE-only? Or do we need to allow PCI
-               * for backward compatibility?
-               */
-              flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
-              break;
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
-           case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
-              /* Allow these for PCI only */
-              break;
-           }
+            /* allow UHCI and EHCI controllers to be manually placed on
+             * the PCIe bus (but don't put them there automatically)
+             */
+            switch (device->data.controller->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
+                flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+                /* should this be PCIE-only? Or do we need to allow PCI
+                 * for backward compatibility?
+                 */
+                flags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE
+                         | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE);
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
+                /* Allow these for PCI only */
+                break;
+            }
         }
         break;
 
@@ -521,7 +522,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         switch (device->data.sound->model) {
         case VIR_DOMAIN_SOUND_MODEL_ICH6:
         case VIR_DOMAIN_SOUND_MODEL_ICH9:
-            flags = VIR_PCI_CONNECT_TYPE_PCI;
+            flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
             break;
         }
         break;
@@ -530,7 +531,8 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         /* video cards aren't hot-plugged, and can be put in either a
          * PCI or PCIe slot
          */
-        flags = VIR_PCI_CONNECT_TYPE_PCI | VIR_PCI_CONNECT_TYPE_PCIE;
+       flags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE
+                | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE);
         break;
     }
 
@@ -562,7 +564,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
              * commandline, but that don't really care if a PCI bus
              * actually exists. */
             if (addrs->nbuses > 0 &&
-                !(addrs->buses[0].flags & VIR_PCI_CONNECT_TYPE_PCI)) {
+                !(addrs->buses[0].flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Bus 0 must be PCI for integrated PIIX3 "
                                  "USB or IDE controllers"));
@@ -653,7 +655,8 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
-    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
+    virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE
+                                      | VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
 
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers; i++) {
@@ -786,7 +789,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     virDevicePCIAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
-    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE;
+    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
 
     for (i = 0; i < def->ncontrollers; i++) {
         switch (def->controllers[i]->type) {
@@ -1049,7 +1052,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                                virDomainPCIAddressSetPtr addrs)
 {
     size_t i, j;
-    virDomainPCIConnectFlags flags;
+    virDomainPCIConnectFlags flags = 0; /* initialize to quiet gcc warning */
     virDevicePCIAddress tmp_addr;
 
     /* PCI controllers */
@@ -1057,41 +1060,48 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
             if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
                 continue;
-            switch (def->controllers[i]->model) {
+
+            /* convert the type of controller into a "CONNECT_TYPE"
+             * flag to use when searching for the proper
+             * controller/bus to connect it to on the upstream side.
+             */
+            switch ((virDomainControllerModelPCI)def->controllers[i]->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
                 /* pci-root and pcie-root are implicit in the machine,
-                 * and needs no address */
+                 * and need no address */
                 continue;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
                 /* pci-bridge doesn't require hot-plug
                  * (although it does provide hot-plug in its slots)
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCI;
+                flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-                /* dmi-to-pci-bridge requires a non-hotplug PCIe
-                 * slot
+                /* dmi-to-pci-bridge is treated like a
+                 * non-hotplug-capable PCIe device (e.g. it can be
+                 * plugged directly into pcie-root)
                  */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                /* pcie-root-port can only plug into pcie-root */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                /* pcie-switch really does need a real PCIe
-                 * port, but it doesn't need to be pcie-root
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_PORT;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT;
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                /* pcie-switch-port can only plug into pcie-switch */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH;
+                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
                 break;
-            default:
-                flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
-                break;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+                /* if this happens, there is an error in the code. A
+                 * PCI controller should always have a proper model
+                 * set
+                 */
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("PCI controller model icorrectly set to 'last'"));
+                goto error;
             }
             if (virDomainPCIAddressReserveNextSlot(addrs,
                                                    &def->controllers[i]->info,
@@ -1100,7 +1110,12 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         }
     }
 
-    flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI;
+    /* all other devices that plug into a PCI slot are treated as a
+     * PCI endpoint devices that require a hotplug-capable slot
+     * (except for some special cases which have specific handling
+     * below)
+     */
+    flags = VIR_PCI_CONNECT_HOTPLUGGABLE | VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
     for (i = 0; i < def->nfss; i++) {
         if (def->fss[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
@@ -1414,7 +1429,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         int rv;
         bool buses_reserved = true;
 
-        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI;
+        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
         for (i = 0; i < def->ncontrollers; i++) {
             if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
