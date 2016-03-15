@@ -671,9 +671,9 @@ virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     if (vol->target.format != VIR_STORAGE_FILE_RAW) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only RAW volumes are supported by this storage pool"));
-        return -VIR_ERR_NO_SUPPORT;
+        return -1;
     }
 
     VIR_FREE(vol->target.path);
