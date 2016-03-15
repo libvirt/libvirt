@@ -921,9 +921,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
-    /* A target path passed to CreateVol has no meaning */
     VIR_FREE(vol->target.path);
-
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
                     vol->name) == -1)
