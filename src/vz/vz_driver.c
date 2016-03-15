@@ -1080,7 +1080,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkAttachVolume(privdom, dev->data.disk);
+        ret = prlsdkAttachVolume(privconn, privdom, dev->data.disk);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk attach failed"));

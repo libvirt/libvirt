@@ -118,6 +118,9 @@ vzCheckUnsupportedDisks(virDomainDefPtr def,
 int
 vzCheckUnsupportedControllers(virDomainDefPtr def,
                               vzCapabilitiesPtr vzCaps);
+int
+vzGetDefaultSCSIModel(vzConnPtr privconn,
+                      PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \

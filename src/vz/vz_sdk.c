@@ -2989,7 +2989,8 @@ static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
     return ret;
 }
 
-static int prlsdkAddDisk(PRL_HANDLE sdkdom,
+static int prlsdkAddDisk(vzConnPtr privconn,
+                         PRL_HANDLE sdkdom,
                          virDomainDiskDefPtr disk,
                          bool bootDisk,
                          bool isCt)
@@ -3003,6 +3004,7 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     virDomainDeviceDriveAddressPtr drive;
     PRL_UINT32 devIndex;
     PRL_DEVICE_TYPE devType;
+    PRL_CLUSTERED_DEVICE_SUBTYPE scsiModel;
     char *dst = NULL;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
@@ -3100,6 +3102,13 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
         goto cleanup;
     }
 
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+        if (vzGetDefaultSCSIModel(privconn, &scsiModel) < 0)
+            goto cleanup;
+        pret = PrlVmDev_SetSubType(sdkdisk, scsiModel);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
+
     pret = PrlVmDev_SetIfaceType(sdkdisk, sdkbus);
     prlsdkCheckRetGoto(pret, cleanup);
 
@@ -3147,7 +3156,9 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
 }
 
 int
-prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
+prlsdkAttachVolume(vzConnPtr privconn,
+                   virDomainObjPtr dom,
+                   virDomainDiskDefPtr disk)
 {
     int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
@@ -3157,7 +3168,11 @@ prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
     if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
-    ret = prlsdkAddDisk(privdom->sdkdom, disk, false, IS_CT(dom->def));
+    ret = prlsdkAddDisk(privconn,
+                        privdom->sdkdom,
+                        disk,
+                        false,
+                        IS_CT(dom->def));
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job))) {
@@ -3388,7 +3403,11 @@ prlsdkDoApplyConfig(virConnectPtr conn,
             needBoot = false;
             bootDisk = true;
         }
-        if (prlsdkAddDisk(sdkdom, def->disks[i], bootDisk, IS_CT(def)) < 0)
+        if (prlsdkAddDisk(conn->privateData,
+                          sdkdom,
+                          def->disks[i],
+                          bootDisk,
+                          IS_CT(def)) < 0)
             goto error;
     }
 

@@ -475,3 +475,23 @@ vzCheckUnsupportedControllers(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
     }
     return 0;
 }
+
+int vzGetDefaultSCSIModel(vzConnPtr privconn,
+                          PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel)
+{
+    switch (privconn->vzCaps.scsiControllerModel) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        *scsiModel = PCD_VIRTIO_SCSI;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+        *scsiModel = PCD_BUSLOGIC;
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown SCSI controller model %s"),
+                       virDomainControllerModelSCSITypeToString(
+                           privconn->vzCaps.scsiControllerModel));
+        return -1;
+    }
+    return 0;
+}

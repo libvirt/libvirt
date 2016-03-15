@@ -63,7 +63,7 @@ prlsdkUnregisterDomain(vzConnPtr privconn, virDomainObjPtr dom, unsigned int fla
 int
 prlsdkDomainManagedSaveRemove(virDomainObjPtr dom);
 int
-prlsdkAttachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
+prlsdkAttachVolume(vzConnPtr privconn, virDomainObjPtr dom, virDomainDiskDefPtr disk);
 int
 prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
 int
