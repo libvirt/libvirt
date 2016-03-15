@@ -73,6 +73,10 @@ static regex_t *virLogRegex;
     VIR_LOG_DATE_REGEX " " VIR_LOG_TIME_REGEX ": " \
     VIR_LOG_PID_REGEX ": " VIR_LOG_LEVEL_REGEX " : "
 
+VIR_ENUM_DECL(virLogDestination);
+VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
+              "stderr", "syslog", "file", "journald");
+
 /*
  * Filters are used to refine the rules on what to keep or drop
  * based on a matching pattern (currently a substring)
@@ -144,23 +148,6 @@ void
 virLogUnlock(void)
 {
     virMutexUnlock(&virLogMutex);
-}
-
-
-static const char *
-virLogOutputString(virLogDestination ldest)
-{
-    switch (ldest) {
-    case VIR_LOG_TO_STDERR:
-        return "stderr";
-    case VIR_LOG_TO_SYSLOG:
-        return "syslog";
-    case VIR_LOG_TO_FILE:
-        return "file";
-    case VIR_LOG_TO_JOURNALD:
-        return "journald";
-    }
-    return "unknown";
 }
 
 
@@ -1340,13 +1327,13 @@ virLogGetOutputs(void)
             case VIR_LOG_TO_FILE:
                 virBufferAsprintf(&outputbuf, "%d:%s:%s",
                                   virLogOutputs[i].priority,
-                                  virLogOutputString(dest),
+                                  virLogDestinationTypeToString(dest),
                                   virLogOutputs[i].name);
                 break;
             default:
                 virBufferAsprintf(&outputbuf, "%d:%s",
                                   virLogOutputs[i].priority,
-                                  virLogOutputString(dest));
+                                  virLogDestinationTypeToString(dest));
         }
     }
     virLogUnlock();

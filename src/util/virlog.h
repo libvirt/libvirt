@@ -51,10 +51,11 @@ typedef enum {
 # define VIR_LOG_DEFAULT VIR_LOG_WARN
 
 typedef enum {
-    VIR_LOG_TO_STDERR = 1,
+    VIR_LOG_TO_STDERR = 0,
     VIR_LOG_TO_SYSLOG,
     VIR_LOG_TO_FILE,
     VIR_LOG_TO_JOURNALD,
+    VIR_LOG_TO_OUTPUT_LAST,
 } virLogDestination;
 
 typedef struct _virLogSource virLogSource;
