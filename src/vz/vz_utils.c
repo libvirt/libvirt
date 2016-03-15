@@ -34,6 +34,7 @@
 #include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
+#define PRLSRVCTL "prlsrvctl"
 
 /**
  * vzDomObjFromDomain:
@@ -177,4 +178,50 @@ vzNewDomain(vzConnPtr privconn, char *name, const unsigned char *uuid)
     virDomainDefFree(def);
     VIR_FREE(pdom);
     return NULL;
+}
+
+int
+vzInitVersion(vzConnPtr privconn)
+{
+    char *output, *sVer, *tmp;
+    const char *searchStr = "prlsrvctl version ";
+    int ret = -1;
+
+    output = vzGetOutput(PRLSRVCTL, "--help", NULL);
+
+    if (!output) {
+        vzParseError();
+        goto cleanup;
+    }
+
+    if (!(sVer = strstr(output, searchStr))) {
+        vzParseError();
+        goto cleanup;
+    }
+
+    sVer = sVer + strlen(searchStr);
+
+    /* parallels server has versions number like 6.0.17977.782218 or 7.0.0,
+     * In libvirt we handle only first two numbers. */
+    if (!(tmp = strchr(sVer, '.'))) {
+        vzParseError();
+        goto cleanup;
+    }
+
+    if (!(tmp = strchr(tmp + 1, '.'))) {
+        vzParseError();
+        goto cleanup;
+    }
+
+    tmp[0] = '\0';
+    if (virParseVersionString(sVer, &(privconn->vzVersion), true) < 0) {
+        vzParseError();
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(output);
+    return ret;
 }

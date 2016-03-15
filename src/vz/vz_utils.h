@@ -62,6 +62,7 @@ struct _vzConn {
     const char *drivername;
     /* Immutable pointer, self-locking APIs */
     virConnectCloseCallbackDataPtr closeCallback;
+    unsigned long vzVersion;
 };
 
 typedef struct _vzConn vzConn;
@@ -97,6 +98,8 @@ virDomainObjPtr
 vzNewDomain(vzConnPtr privconn,
             char *name,
             const unsigned char *uuid);
+int
+vzInitVersion(vzConnPtr privconn);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \

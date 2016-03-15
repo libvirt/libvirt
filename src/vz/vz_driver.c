@@ -62,7 +62,6 @@
 VIR_LOG_INIT("parallels.parallels_driver");
 
 #define PRLCTL                      "prlctl"
-#define PRLSRVCTL                   "prlsrvctl"
 
 static int vzConnectClose(virConnectPtr conn);
 
@@ -234,6 +233,9 @@ vzOpenDefault(virConnectPtr conn)
     if (prlsdkConnect(privconn) < 0)
         goto err_free;
 
+    if (vzInitVersion(privconn) < 0)
+        goto error;
+
     if (!(privconn->caps = vzBuildCapabilities()))
         goto error;
 
@@ -345,49 +347,11 @@ vzConnectClose(virConnectPtr conn)
 }
 
 static int
-vzConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED, unsigned long *hvVer)
+vzConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
-    char *output, *sVer, *tmp;
-    const char *searchStr = "prlsrvctl version ";
-    int ret = -1;
-
-    output = vzGetOutput(PRLSRVCTL, "--help", NULL);
-
-    if (!output) {
-        vzParseError();
-        goto cleanup;
-    }
-
-    if (!(sVer = strstr(output, searchStr))) {
-        vzParseError();
-        goto cleanup;
-    }
-
-    sVer = sVer + strlen(searchStr);
-
-    /* parallels server has versions number like 6.0.17977.782218,
-     * so libvirt can handle only first two numbers. */
-    if (!(tmp = strchr(sVer, '.'))) {
-        vzParseError();
-        goto cleanup;
-    }
-
-    if (!(tmp = strchr(tmp + 1, '.'))) {
-        vzParseError();
-        goto cleanup;
-    }
-
-    tmp[0] = '\0';
-    if (virParseVersionString(sVer, hvVer, true) < 0) {
-        vzParseError();
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(output);
-    return ret;
+    vzConnPtr privconn = conn->privateData;
+    *hvVer = privconn->vzVersion;
+    return 0;
 }
 
 
