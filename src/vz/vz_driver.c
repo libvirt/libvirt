@@ -180,6 +180,9 @@ vzDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if (vzCheckUnsupportedDisks(def, opaque) < 0)
         return -1;
 
+    if (vzCheckUnsupportedControllers(def, opaque) < 0)
+        return -1;
+
     return 0;
 }
 

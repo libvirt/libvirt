@@ -48,6 +48,15 @@ static virDomainDiskBus vz7DiskBuses[] = {VIR_DOMAIN_DISK_BUS_IDE,
                                           VIR_DOMAIN_DISK_BUS_SCSI,
                                           VIR_DOMAIN_DISK_BUS_LAST};
 
+static virDomainControllerType vz6ControllerTypes[] = {VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_LAST};
+
+static virDomainControllerType vz7ControllerTypes[] = {VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_LAST};
+
 /**
  * vzDomObjFromDomain:
  * @domain: Domain pointer that has to be looked up
@@ -199,10 +208,14 @@ vzInitCaps(unsigned long vzVersion, vzCapabilities *vzCaps)
         vzCaps->ctDiskFormat = VIR_STORAGE_FILE_PLOOP;
         vzCaps->vmDiskFormat = VIR_STORAGE_FILE_PLOOP;
         vzCaps->diskBuses = vz6DiskBuses;
+        vzCaps->controllerTypes = vz6ControllerTypes;
+        vzCaps->scsiControllerModel = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC;
     } else {
         vzCaps->ctDiskFormat = VIR_STORAGE_FILE_PLOOP;
         vzCaps->vmDiskFormat = VIR_STORAGE_FILE_QCOW2;
         vzCaps->diskBuses = vz7DiskBuses;
+        vzCaps->controllerTypes = vz7ControllerTypes;
+        vzCaps->scsiControllerModel = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
     }
 }
 
@@ -423,6 +436,41 @@ vzCheckUnsupportedDisks(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
                            _("Unsupported disk bus type %s"),
                            virDomainDiskBusTypeToString(disk->bus));
             return -1;
+        }
+    }
+    return 0;
+}
+
+int
+vzCheckUnsupportedControllers(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
+{
+    size_t i, j;
+    virDomainControllerDefPtr controller;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        controller = def->controllers[i];
+
+        for (j = 0; vzCaps->controllerTypes[j] != VIR_DOMAIN_CONTROLLER_TYPE_LAST; j++) {
+            if (controller->type == vzCaps->controllerTypes[j])
+                break;
+        }
+
+        if (vzCaps->controllerTypes[j] == VIR_DOMAIN_CONTROLLER_TYPE_LAST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported controller type %s"),
+                           virDomainControllerTypeToString(controller->type));
+            return -1;
+        }
+
+        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+            controller->model != -1 &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO &&
+            controller->model != vzCaps->scsiControllerModel) {
+
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported SCSI controller model %s"),
+                               virDomainControllerModelSCSITypeToString(controller->model));
+                return -1;
         }
     }
     return 0;

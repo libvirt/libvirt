@@ -54,6 +54,8 @@ struct _vzCapabilities {
     virStorageFileFormat vmDiskFormat;
     virStorageFileFormat ctDiskFormat;
     virDomainDiskBus *diskBuses;
+    virDomainControllerType *controllerTypes;
+    virDomainControllerModelSCSI scsiControllerModel;
 };
 typedef struct _vzCapabilities vzCapabilities;
 typedef struct _vzCapabilities *vzCapabilitiesPtr;
@@ -113,6 +115,9 @@ vzInitVersion(vzConnPtr privconn);
 int
 vzCheckUnsupportedDisks(virDomainDefPtr def,
                         vzCapabilitiesPtr vzCaps);
+int
+vzCheckUnsupportedControllers(virDomainDefPtr def,
+                              vzCapabilitiesPtr vzCaps);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \
