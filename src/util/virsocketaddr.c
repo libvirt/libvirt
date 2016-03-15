@@ -189,6 +189,21 @@ virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val)
 }
 
 /*
+ * virSocketAddrSetIPv6Addr:
+ * @addr: the location to store the result
+ * @val: the 128bit integer in host byte order representing the IPv6 address
+ *
+ * Set the IPv6 address given an integer in host order. This function does not
+ * touch any previously set port.
+ */
+void virSocketAddrSetIPv6Addr(virSocketAddrPtr addr, uint32_t val[4])
+{
+    addr->data.stor.ss_family = AF_INET6;
+    memcpy(addr->data.inet6.sin6_addr.s6_addr, val, 4 * sizeof(*val));
+    addr->len = sizeof(struct sockaddr_in6);
+}
+
+/*
  * virSocketAddrEqual:
  * @s1: the location of the one IP address
  * @s2: the location of the other IP address

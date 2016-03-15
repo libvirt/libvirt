@@ -2165,6 +2165,7 @@ virSocketAddrParseIPv4;
 virSocketAddrParseIPv6;
 virSocketAddrPrefixToNetmask;
 virSocketAddrSetIPv4Addr;
+virSocketAddrSetIPv6Addr;
 virSocketAddrSetPort;
 
 # util/virstats.h

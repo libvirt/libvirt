@@ -85,6 +85,7 @@ int virSocketAddrParseIPv6(virSocketAddrPtr addr,
                            const char *val);
 
 void virSocketAddrSetIPv4Addr(virSocketAddrPtr s, uint32_t addr);
+void virSocketAddrSetIPv6Addr(virSocketAddrPtr s, uint32_t addr[4]);
 
 char *virSocketAddrFormat(const virSocketAddr *addr);
 char *virSocketAddrFormatFull(const virSocketAddr *addr,
