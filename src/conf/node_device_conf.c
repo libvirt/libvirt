@@ -402,6 +402,12 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             if (data->pci_dev.numa_node >= 0)
                 virBufferAsprintf(&buf, "<numa node='%d'/>\n",
                                   data->pci_dev.numa_node);
+
+            if (data->pci_dev.hdrType) {
+                virBufferAsprintf(&buf, "<capability type='%s'/>\n",
+                                  virPCIHeaderTypeToString(data->pci_dev.hdrType));
+            }
+
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCIE)
                 virPCIEDeviceInfoFormat(&buf, data->pci_dev.pci_express);
             break;
@@ -1272,6 +1278,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr orignode, iommuGroupNode, pciExpress;
     int ret = -1;
     virPCIEDeviceInfoPtr pci_express = NULL;
+    char *tmp = NULL;
 
     orignode = ctxt->node;
     ctxt->node = node;
@@ -1329,6 +1336,18 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                                           _("invalid NUMA node ID supplied for '%s'")) < 0)
         goto out;
 
+    if ((tmp = virXPathString("string(./capability[1]/@type)", ctxt))) {
+        int hdrType = virPCIHeaderTypeFromString(tmp);
+
+        if (hdrType <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown PCI header type '%s'"), tmp);
+            goto out;
+        }
+
+        data->pci_dev.hdrType = hdrType;
+    }
+
     if ((pciExpress = virXPathNode("./pci-express[1]", ctxt))) {
         if (VIR_ALLOC(pci_express) < 0)
             goto out;
@@ -1343,6 +1362,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
 
     ret = 0;
  out:
+    VIR_FREE(tmp);
     virPCIEDeviceInfoFree(pci_express);
     ctxt->node = orignode;
     return ret;

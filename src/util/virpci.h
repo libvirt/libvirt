@@ -62,6 +62,16 @@ typedef enum {
 
 VIR_ENUM_DECL(virPCIELinkSpeed)
 
+typedef enum {
+    VIR_PCI_HEADER_ENDPOINT = 0,
+    VIR_PCI_HEADER_PCI_BRIDGE,
+    VIR_PCI_HEADER_CARDBUS_BRIDGE,
+
+    VIR_PCI_HEADER_LAST
+} virPCIHeaderType;
+
+VIR_ENUM_DECL(virPCIHeader)
+
 typedef struct _virPCIELink virPCIELink;
 typedef virPCIELink *virPCIELinkPtr;
 struct _virPCIELink {
@@ -222,6 +232,8 @@ int virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
                               unsigned int *cap_width,
                               unsigned int *sta_speed,
                               unsigned int *sta_width);
+
+int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType);
 
 void virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev);
 

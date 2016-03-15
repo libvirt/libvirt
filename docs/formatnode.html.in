@@ -97,27 +97,38 @@
               <dd>
                 This optional element can occur multiple times. If it
                 exists, it has a mandatory <code>type</code> attribute
-                which will be set to
-                either <code>physical_function</code>
-                or <code>virtual_functions</code>. If the type
-                is <code>physical_function</code>, there will be a
-                single <code>address</code> subelement which contains
-                the PCI address of the SRIOV Physical Function (PF)
-                that is the parent of this device (and this device is,
-                by implication, an SRIOV Virtual Function (VF)). If
-                the type is <code>virtual_functions</code>, then this
-                device is an SRIOV PF, and the capability element will
-                have a list of <code>address</code> subelements, one
-                for each VF on this PF. If the host system supports
-                reporting it (via the "sriov_maxvfs" file in the
-                device's sysfs directory) the capability element will
-                also have an attribute named <code>maxCount</code>
-                which is the maximum number of SRIOV VFs supported by
-                this device, which could be higher than the number of
-                VFs that are curently active <span class="since">since
-                1.3.0</span>; in this case, even if there are
-                currently no active VFs the virtual_functions
-                capabililty will still be shown.
+                which will be set to:
+                <dl>
+                  <dt><code>physical_function</code></dt>
+                  <dd>
+                    That means there will be a single <code>address</code>
+                    subelement which contains the PCI address of the SRIOV
+                    Physical Function (PF) that is the parent of this device
+                    (and this device is, by implication, an SRIOV Virtual
+                    Function (VF)).
+                  </dd>
+                  <dt><code>virtual_function</code></dt>
+                  <dd>
+                    In this case this device is an SRIOV PF, and the capability
+                    element will have a list of <code>address</code>
+                    subelements, one for each VF on this PF. If the host system
+                    supports reporting it (via the "sriov_maxvfs" file in the
+                    device's sysfs directory) the capability element will also
+                    have an attribute named <code>maxCount</code> which is the
+                    maximum number of SRIOV VFs supported by this device, which
+                    could be higher than the number of VFs that are curently
+                    active <span class="since">since 1.3.0</span>; in this case,
+                    even if there are currently no active VFs the
+                    virtual_functions capabililty will still be shown.
+                  </dd>
+                  <dt><code>pci-bridge</code> or <code>cardbus-bridge</code></dt>
+                  <dd>
+                    This shows merely that the lower 7 bits of PCI header type
+                    have either value of 1 or 2 respectively.  Usually this
+                    means such device cannot be used for PCI passthrough.
+                    <span class="since">Since 1.3.3</span>
+                  </dd>
+                </dl>
               </dd>
               <dt><code>numa</code></dt>
               <dd>

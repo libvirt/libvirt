@@ -1,0 +1,15 @@
+<device>
+  <name>pci_0000_00_02_0</name>
+  <parent>computer</parent>
+  <capability type='pci'>
+    <domain>0</domain>
+    <bus>0</bus>
+    <slot>2</slot>
+    <function>0</function>
+    <product id='0x0416'>4th Gen Core Processor Integrated Graphics Controller</product>
+    <vendor id='0x8086'>Intel Corporation</vendor>
+    <iommuGroup number='1'>
+      <address domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </iommuGroup>
+  </capability>
+</device>

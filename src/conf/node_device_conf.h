@@ -119,6 +119,7 @@ typedef struct _virNodeDevCapData {
             unsigned int iommuGroupNumber;
             int numa_node;
             virPCIEDeviceInfoPtr pci_express;
+            int hdrType; /* enum virPCIHeaderType or -1 */
         } pci_dev;
         struct {
             unsigned int bus;

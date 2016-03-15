@@ -169,6 +169,17 @@
     </optional>
 
     <optional>
+      <element name='capability'>
+        <attribute name='type'>
+          <choice>
+            <value>pci-bridge</value>
+            <value>cardbus-bridge</value>
+          </choice>
+        </attribute>
+      </element>
+    </optional>
+
+    <optional>
       <element name='pci-express'>
         <zeroOrMore>
           <element name='link'>

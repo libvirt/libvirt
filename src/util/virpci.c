@@ -62,6 +62,12 @@ VIR_ENUM_IMPL(virPCIStubDriver, VIR_PCI_STUB_DRIVER_LAST,
               "vfio-pci", /* VFIO */
 );
 
+VIR_ENUM_IMPL(virPCIHeader, VIR_PCI_HEADER_LAST,
+              "endpoint",
+              "pci-bridge",
+              "cardbus-bridge",
+);
+
 struct _virPCIDevice {
     virPCIDeviceAddress address;
 
@@ -2880,6 +2886,33 @@ virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
  cleanup:
     virPCIDeviceConfigClose(dev, fd);
     return ret;
+}
+
+
+int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType)
+{
+    int fd;
+    uint8_t type;
+
+    *hdrType = -1;
+
+    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+        return -1;
+
+    type = virPCIDeviceRead8(dev, fd, PCI_HEADER_TYPE);
+
+    virPCIDeviceConfigClose(dev, fd);
+
+    type &= PCI_HEADER_TYPE_MASK;
+    if (type >= VIR_PCI_HEADER_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown PCI header type '%d'"), type);
+        return -1;
+    }
+
+    *hdrType = type;
+
+    return 0;
 }
 
 

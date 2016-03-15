@@ -506,6 +506,9 @@ static int udevProcessPCI(struct udev_device *device,
 
     /* We need to be root to read PCI device configs */
     if (priv->privileged) {
+        if (virPCIGetHeaderType(pciDev, &data->pci_dev.hdrType) < 0)
+            goto out;
+
         if (virPCIDeviceIsPCIExpress(pciDev) > 0) {
             if (VIR_ALLOC(pci_express) < 0)
                 goto out;
