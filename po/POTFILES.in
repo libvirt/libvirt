@@ -206,6 +206,7 @@ src/util/viriscsi.c
 src/util/virjson.c
 src/util/virkeyfile.c
 src/util/virlockspace.c
+src/util/virlog.c
 src/util/virnetdev.c
 src/util/virnetdevbandwidth.c
 src/util/virnetdevbridge.c
