@@ -67,6 +67,7 @@ typedef enum {
     VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
     VIR_QEMU_PROCESS_START_PAUSED       = 1 << 1,
     VIR_QEMU_PROCESS_START_AUTODESTROY  = 1 << 2,
+    VIR_QEMU_PROCESS_START_PRETEND      = 1 << 3,
 } qemuProcessStartFlags;
 
 int qemuProcessStart(virConnectPtr conn,
@@ -91,6 +92,11 @@ int qemuProcessInit(virQEMUDriverPtr driver,
                     qemuDomainAsyncJob asyncJob,
                     bool migration,
                     bool snap);
+
+int qemuProcessPrepareDomain(virConnectPtr conn,
+                             virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             unsigned int flags);
 
 int qemuProcessLaunch(virConnectPtr conn,
                       virQEMUDriverPtr driver,

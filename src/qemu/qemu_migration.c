@@ -3590,6 +3590,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     dataFD[0] = -1; /* the FD is now owned by incoming */
 
+    if (qemuProcessPrepareDomain(dconn, driver, vm,
+                                 VIR_QEMU_PROCESS_START_AUTODESTROY) < 0)
+        goto stopjob;
+
     rv = qemuProcessLaunch(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                            incoming, NULL,
                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,

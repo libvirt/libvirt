@@ -4785,6 +4785,108 @@ qemuProcessSetupIOThreads(virDomainObjPtr vm)
 
 
 /**
+ * qemuProcessPrepareDomain
+ *
+ * This function groups all code that modifies only live XML of a domain which
+ * is about to start and it's the only place to do those modifications.
+ *
+ * Flag VIR_QEMU_PROCESS_START_PRETEND tells, that we don't want to actually
+ * start the domain but create a valid qemu command.  If some code shouldn't be
+ * executed in this case, make sure to check this flag.
+ *
+ * TODO: move all XML modification from qemuBuildCommandLine into this function
+ */
+int
+qemuProcessPrepareDomain(virConnectPtr conn,
+                         virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         unsigned int flags)
+{
+    int ret = -1;
+    size_t i;
+    char *nodeset = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCapsPtr caps;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
+        /* If you are using a SecurityDriver with dynamic labelling,
+           then generate a security label for isolation */
+        VIR_DEBUG("Generating domain security label (if required)");
+        if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
+            virDomainAuditSecurityLabel(vm, false);
+            goto cleanup;
+        }
+        virDomainAuditSecurityLabel(vm, true);
+
+        /* Get the advisory nodeset from numad if 'placement' of
+         * either <vcpu> or <numatune> is 'auto'.
+         */
+        if (virDomainDefNeedsPlacementAdvice(vm->def)) {
+            nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
+                                                    virDomainDefGetMemoryActual(vm->def));
+            if (!nodeset)
+                goto cleanup;
+
+            VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
+
+            if (virBitmapParse(nodeset, 0, &priv->autoNodeset,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                                       priv->autoNodeset)))
+                goto cleanup;
+        }
+    }
+
+    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
+        goto cleanup;
+
+    /* "volume" type disk's source must be translated before
+     * cgroup and security setting.
+     */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
+            goto cleanup;
+    }
+
+    if (VIR_ALLOC(priv->monConfig) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Preparing monitor state");
+    if (qemuProcessPrepareMonitorChr(priv->monConfig, priv->libDir) < 0)
+        goto cleanup;
+
+    priv->monJSON = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON);
+    priv->monError = false;
+    priv->monStart = 0;
+    priv->gotShutdown = false;
+
+    /*
+     * Normally PCI addresses are assigned in the virDomainCreate
+     * or virDomainDefine methods. We might still need to assign
+     * some here to cope with the question of upgrades. Regardless
+     * we also need to populate the PCI address set cache for later
+     * use in hotplug
+     */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+        VIR_DEBUG("Assigning domain PCI addresses");
+        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(nodeset);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
+/**
  * qemuProcessLaunch:
  *
  * Launch a new QEMU process with stopped virtual CPUs.
@@ -4815,7 +4917,6 @@ qemuProcessLaunch(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     size_t i;
-    char *nodeset = NULL;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
     unsigned int hostdev_flags = 0;
@@ -4880,15 +4981,6 @@ qemuProcessLaunch(virConnectPtr conn,
     if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
 
-    /* If you are using a SecurityDriver with dynamic labelling,
-       then generate a security label for isolation */
-    VIR_DEBUG("Generating domain security label (if required)");
-    if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
-        virDomainAuditSecurityLabel(vm, false);
-        goto cleanup;
-    }
-    virDomainAuditSecurityLabel(vm, true);
-
     if (vm->def->mem.nhugepages) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
             char *hugepagePath = qemuGetHugepagePath(&cfg->hugetlbfs[i]);
@@ -4940,37 +5032,6 @@ qemuProcessLaunch(virConnectPtr conn,
         }
     }
 
-    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
-        goto cleanup;
-
-    /* Get the advisory nodeset from numad if 'placement' of
-     * either <vcpu> or <numatune> is 'auto'.
-     */
-    if (virDomainDefNeedsPlacementAdvice(vm->def)) {
-        nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
-                                                virDomainDefGetMemoryActual(vm->def));
-        if (!nodeset)
-            goto cleanup;
-
-        VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
-
-        if (virBitmapParse(nodeset, 0, &priv->autoNodeset,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
-            goto cleanup;
-
-        if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
-                                                                   priv->autoNodeset)))
-            goto cleanup;
-    }
-
-    /* "volume" type disk's source must be translated before
-     * cgroup and security setting.
-     */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
-            goto cleanup;
-    }
-
     if (qemuDomainCheckDiskPresence(driver, vm,
                                     flags & VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
@@ -4990,18 +5051,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                   vm->def->id) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC(priv->monConfig) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Preparing monitor state");
-    if (qemuProcessPrepareMonitorChr(priv->monConfig, priv->libDir) < 0)
-        goto cleanup;
-
-    priv->monJSON = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON);
-    priv->monError = false;
-    priv->monStart = 0;
-    priv->gotShutdown = false;
-
     VIR_FREE(priv->pidfile);
     if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name))) {
         virReportSystemError(errno,
@@ -5015,19 +5064,6 @@ qemuProcessLaunch(virConnectPtr conn,
                              _("Cannot remove stale PID file %s"),
                              priv->pidfile);
         goto cleanup;
-    }
-
-    /*
-     * Normally PCI addresses are assigned in the virDomainCreate
-     * or virDomainDefine methods. We might still need to assign
-     * some here to cope with the question of upgrades. Regardless
-     * we also need to populate the PCI address set cache for later
-     * use in hotplug
-     */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        VIR_DEBUG("Assigning domain PCI addresses");
-        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
-            goto cleanup;
     }
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
@@ -5322,7 +5358,6 @@ qemuProcessLaunch(virConnectPtr conn,
     virObjectUnref(cfg);
     virObjectUnref(caps);
     VIR_FREE(nicindexes);
-    VIR_FREE(nodeset);
     return ret;
 }
 
@@ -5414,6 +5449,9 @@ qemuProcessStart(virConnectPtr conn,
         if (!incoming)
             goto stop;
     }
+
+    if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
+        goto stop;
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
                                 snapshot, vmop, flags)) < 0) {
