@@ -264,16 +264,12 @@ static int testCompareXMLToArgvFiles(const char *xml,
     char *log = NULL;
     virCommandPtr cmd = NULL;
     size_t i;
-    virBitmapPtr nodeset = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (!(conn = virGetConnect()))
         goto out;
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
-
-    if (virBitmapParse("0-3", '\0', &nodeset, 4) < 0)
-        goto out;
 
     if (!(vm = virDomainObjNew(driver.xmlopt)))
         goto out;
@@ -287,6 +283,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
     priv = vm->privateData;
 
+    if (virBitmapParse("0-3", '\0', &priv->autoNodeset, 4) < 0)
+        goto out;
+
     if (!virDomainDefCheckABIStability(vm->def, vm->def)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto out;
@@ -294,11 +293,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vm->def->id = -1;
 
-    if (qemuDomainSetPrivatePaths(&priv->libDir, &priv->channelTargetDir,
-                                  driver.config->libDir,
-                                  driver.config->channelTargetDir,
-                                  vm->def->name, vm->def->id) < 0)
-        goto out;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
@@ -333,9 +327,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
         virQEMUCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
-    if (qemuAssignDeviceAliases(vm->def, extraFlags) < 0)
-        goto out;
-
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
@@ -346,28 +337,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
         }
     }
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
-            goto out;
-    }
-
-    if (qemuProcessStartValidate(&driver, vm, extraFlags,
-                                 !!migrateURI, false,
-                                 VIR_QEMU_PROCESS_START_COLD |
-                                 VIR_QEMU_PROCESS_START_PRETEND) < 0) {
-        if (flags & FLAG_EXPECT_FAILURE)
-            goto ok;
-        goto out;
-    }
-
-    if (!(cmd = qemuBuildCommandLine(conn, &driver, NULL, vm->def, &monitor_chr,
-                                     (flags & FLAG_JSON), extraFlags,
-                                     migrateURI, NULL,
-                                     VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                     &testCallbacks, false,
-                                     (flags & FLAG_FIPS),
-                                     nodeset, NULL, NULL,
-                                     priv->libDir, priv->channelTargetDir))) {
+    if (!(cmd = qemuProcessCreatePretendCmd(conn, &driver, vm, migrateURI,
+                                            (flags & FLAG_FIPS), false,
+                                            VIR_QEMU_PROCESS_START_COLD))) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
         goto out;
@@ -407,7 +379,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandFree(cmd);
     virObjectUnref(vm);
     virObjectUnref(conn);
-    virBitmapFree(nodeset);
     return ret;
 }
 
