@@ -48,6 +48,15 @@
 
 # define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "Routed"
 # define PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME  "Bridged"
+# define VIRTUOZZO_VER_7 ((unsigned long) 7000000)
+
+struct _vzCapabilities {
+    virStorageFileFormat vmDiskFormat;
+    virStorageFileFormat ctDiskFormat;
+    virDomainDiskBus *diskBuses;
+};
+typedef struct _vzCapabilities vzCapabilities;
+typedef struct _vzCapabilities *vzCapabilitiesPtr;
 
 struct _vzConn {
     virMutex lock;
@@ -63,6 +72,7 @@ struct _vzConn {
     /* Immutable pointer, self-locking APIs */
     virConnectCloseCallbackDataPtr closeCallback;
     unsigned long vzVersion;
+    vzCapabilities vzCaps;
 };
 
 typedef struct _vzConn vzConn;

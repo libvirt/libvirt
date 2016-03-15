@@ -36,6 +36,15 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PRLSRVCTL "prlsrvctl"
 
+static virDomainDiskBus vz6DiskBuses[] = {VIR_DOMAIN_DISK_BUS_IDE,
+                                          VIR_DOMAIN_DISK_BUS_SCSI,
+                                          VIR_DOMAIN_DISK_BUS_SATA,
+                                          VIR_DOMAIN_DISK_BUS_LAST};
+
+static virDomainDiskBus vz7DiskBuses[] = {VIR_DOMAIN_DISK_BUS_IDE,
+                                          VIR_DOMAIN_DISK_BUS_SCSI,
+                                          VIR_DOMAIN_DISK_BUS_LAST};
+
 /**
  * vzDomObjFromDomain:
  * @domain: Domain pointer that has to be looked up
@@ -180,6 +189,20 @@ vzNewDomain(vzConnPtr privconn, char *name, const unsigned char *uuid)
     return NULL;
 }
 
+static void
+vzInitCaps(unsigned long vzVersion, vzCapabilities *vzCaps)
+{
+    if (vzVersion < VIRTUOZZO_VER_7) {
+        vzCaps->ctDiskFormat = VIR_STORAGE_FILE_PLOOP;
+        vzCaps->vmDiskFormat = VIR_STORAGE_FILE_PLOOP;
+        vzCaps->diskBuses = vz6DiskBuses;
+    } else {
+        vzCaps->ctDiskFormat = VIR_STORAGE_FILE_PLOOP;
+        vzCaps->vmDiskFormat = VIR_STORAGE_FILE_QCOW2;
+        vzCaps->diskBuses = vz7DiskBuses;
+    }
+}
+
 int
 vzInitVersion(vzConnPtr privconn)
 {
@@ -219,6 +242,7 @@ vzInitVersion(vzConnPtr privconn)
         goto cleanup;
     }
 
+    vzInitCaps(privconn->vzVersion, &privconn->vzCaps);
     ret = 0;
 
  cleanup:
