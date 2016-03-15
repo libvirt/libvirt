@@ -120,7 +120,7 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
             continue;
         }
 
-        if (strchr(ip_tmp, ':')) {
+        if (server_duid && strchr(ip_tmp, ':')) {
             /* This is an ipv6 lease */
             if ((server_duid_tmp
                  = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
