@@ -458,7 +458,8 @@ prlsdkAddDomainVideoInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 }
 
 static int
-prlsdkGetDiskInfo(PRL_HANDLE prldisk,
+prlsdkGetDiskInfo(vzConnPtr privconn,
+                  PRL_HANDLE prldisk,
                   virDomainDiskDefPtr disk,
                   bool isCdrom,
                   bool isCt)
@@ -476,10 +477,14 @@ prlsdkGetDiskInfo(PRL_HANDLE prldisk,
     prlsdkCheckRetGoto(pret, cleanup);
     if (emulatedType == PDT_USE_IMAGE_FILE) {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
-        if (isCdrom)
+        if (isCdrom) {
             virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
-        else
-            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_PLOOP);
+        } else {
+            if (isCt)
+                virDomainDiskSetFormat(disk, privconn->vzCaps.ctDiskFormat);
+            else
+                virDomainDiskSetFormat(disk, privconn->vzCaps.vmDiskFormat);
+        }
     } else {
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_BLOCK);
         virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
@@ -607,7 +612,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 }
 
 static int
-prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkAddDomainHardDisksInfo(vzConnPtr privconn, PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     PRL_RESULT pret;
     PRL_UINT32 hddCount;
@@ -647,7 +652,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
             if (!(disk = virDomainDiskDefNew(NULL)))
                 goto error;
 
-            if (prlsdkGetDiskInfo(hdd, disk, false, IS_CT(def)) < 0)
+            if (prlsdkGetDiskInfo(privconn, hdd, disk, false, IS_CT(def)) < 0)
                 goto error;
 
             if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
@@ -669,7 +674,7 @@ prlsdkAddDomainHardDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 }
 
 static int
-prlsdkAddDomainOpticalDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkAddDomainOpticalDisksInfo(vzConnPtr privconn, PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     PRL_RESULT pret;
     PRL_UINT32 cdromsCount;
@@ -687,7 +692,7 @@ prlsdkAddDomainOpticalDisksInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
         if (!(disk = virDomainDiskDefNew(NULL)))
             goto error;
 
-        if (prlsdkGetDiskInfo(cdrom, disk, true, IS_CT(def)) < 0)
+        if (prlsdkGetDiskInfo(privconn, cdrom, disk, true, IS_CT(def)) < 0)
             goto error;
 
         PrlHandle_Free(cdrom);
@@ -950,16 +955,16 @@ prlsdkAddSerialInfo(PRL_HANDLE sdkdom,
 
 
 static int
-prlsdkAddDomainHardware(PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkAddDomainHardware(vzConnPtr privconn, PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     if (!IS_CT(def))
         if (prlsdkAddDomainVideoInfo(sdkdom, def) < 0)
             goto error;
 
-    if (prlsdkAddDomainHardDisksInfo(sdkdom, def) < 0)
+    if (prlsdkAddDomainHardDisksInfo(privconn, sdkdom, def) < 0)
         goto error;
 
-    if (prlsdkAddDomainOpticalDisksInfo(sdkdom, def) < 0)
+    if (prlsdkAddDomainOpticalDisksInfo(privconn, sdkdom, def) < 0)
         goto error;
 
     if (prlsdkAddDomainNetInfo(sdkdom, def) < 0)
@@ -1312,7 +1317,7 @@ prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
     if (prlsdkConvertDomainType(sdkdom, def) < 0)
         goto error;
 
-    if (prlsdkAddDomainHardware(sdkdom, def) < 0)
+    if (prlsdkAddDomainHardware(privconn, sdkdom, def) < 0)
         goto error;
 
     if (prlsdkAddVNCInfo(sdkdom, def) < 0)
