@@ -564,6 +564,13 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->config)
         goto error;
 
+    /* Overwrite some default paths so it's consistent for tests. */
+    VIR_FREE(driver->config->libDir);
+    VIR_FREE(driver->config->channelTargetDir);
+    if (VIR_STRDUP(driver->config->libDir, "/tmp/lib") < 0 ||
+        VIR_STRDUP(driver->config->channelTargetDir, "/tmp/channel") < 0)
+        goto error;
+
     driver->caps = testQemuCapsInit();
     if (!driver->caps)
         goto error;

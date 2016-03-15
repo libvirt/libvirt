@@ -265,8 +265,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandPtr cmd = NULL;
     size_t i;
     virBitmapPtr nodeset = NULL;
-    char *domainLibDir = NULL;
-    char *domainChannelTargetDir = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
 
     if (!(conn = virGetConnect()))
         goto out;
@@ -286,6 +285,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto ok;
         goto out;
     }
+    priv = vm->privateData;
 
     if (!virDomainDefCheckABIStability(vm->def, vm->def)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
@@ -294,13 +294,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vm->def->id = -1;
 
-    if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
-                                  "/tmp/lib", "/tmp/channel",
+    if (qemuDomainSetPrivatePaths(&priv->libDir, &priv->channelTargetDir,
+                                  driver.config->libDir,
+                                  driver.config->channelTargetDir,
                                   vm->def->name, vm->def->id) < 0)
         goto out;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
-    if (qemuProcessPrepareMonitorChr(&monitor_chr, domainLibDir) < 0)
+    if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto out;
 
     virQEMUCapsSetList(extraFlags,
@@ -366,7 +367,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      &testCallbacks, false,
                                      (flags & FLAG_FIPS),
                                      nodeset, NULL, NULL,
-                                     domainLibDir, domainChannelTargetDir))) {
+                                     priv->libDir, priv->channelTargetDir))) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
         goto out;
@@ -407,8 +408,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virObjectUnref(vm);
     virObjectUnref(conn);
     virBitmapFree(nodeset);
-    VIR_FREE(domainLibDir);
-    VIR_FREE(domainChannelTargetDir);
     return ret;
 }
 
@@ -544,9 +543,6 @@ mymain(void)
     driver.config->hugetlbfs[1].size = 1048576;
     driver.config->spiceTLS = 1;
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
-        return EXIT_FAILURE;
-    VIR_FREE(driver.config->channelTargetDir);
-    if (VIR_STRDUP_QUIET(driver.config->channelTargetDir, "/tmp") < 0)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags,              \
