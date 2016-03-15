@@ -17631,11 +17631,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         vm->def->disks[idx]->blkdeviotune = info;
 
         ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps);
-        if (ret < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Saving live XML config failed"));
+        if (ret < 0)
             goto endjob;
-        }
 
         if (eventNparams) {
             event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
@@ -17658,11 +17655,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
         conf_disk->blkdeviotune = info;
         ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
-        if (ret < 0) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Write to config file failed"));
+        if (ret < 0)
             goto endjob;
-        }
+
     }
 
  endjob:
