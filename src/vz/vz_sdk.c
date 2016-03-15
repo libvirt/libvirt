@@ -3137,30 +3137,10 @@ static int prlsdkAddDisk(PRL_HANDLE sdkdom,
     pret = PrlVmDev_SetConnected(sdkdisk, 1);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_PLOOP) {
-
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid format of "
-                                                         "disk %s, vz driver supports only "
-                                                         "images in ploop format."), disk->src->path);
-            goto cleanup;
-        }
-
+    if (disk->src->type == VIR_STORAGE_TYPE_FILE)
         emutype = PDT_USE_IMAGE_FILE;
-    } else {
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK &&
-            (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_RAW &&
-             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_NONE &&
-             virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_AUTO)) {
-
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid format "
-                                                         "of disk %s, it should be either not set, or set "
-                                                         "to raw or auto."), disk->src->path);
-            goto cleanup;
-        }
+    else
         emutype = PDT_USE_REAL_DEVICE;
-    }
 
     pret = PrlVmDev_SetEmulatedType(sdkdisk, emutype);
     prlsdkCheckRetGoto(pret, cleanup);

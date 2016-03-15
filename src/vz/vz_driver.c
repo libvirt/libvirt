@@ -175,8 +175,11 @@ static int
 vzDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
                      virCapsPtr caps ATTRIBUTE_UNUSED,
                      unsigned int parseFlags ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED)
+                     void *opaque)
 {
+    if (vzCheckUnsupportedDisks(def, opaque) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -239,6 +242,7 @@ vzOpenDefault(virConnectPtr conn)
     if (!(privconn->caps = vzBuildCapabilities()))
         goto error;
 
+    vzDomainDefParserConfig.priv = &privconn->vzCaps;
     if (!(privconn->xmlopt = virDomainXMLOptionNew(&vzDomainDefParserConfig,
                                                    NULL, NULL)))
         goto error;

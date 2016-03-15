@@ -110,6 +110,9 @@ vzNewDomain(vzConnPtr privconn,
             const unsigned char *uuid);
 int
 vzInitVersion(vzConnPtr privconn);
+int
+vzCheckUnsupportedDisks(virDomainDefPtr def,
+                        vzCapabilitiesPtr vzCaps);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \
