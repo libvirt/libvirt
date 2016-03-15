@@ -8024,6 +8024,7 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
 {
     size_t i;
     int last_good_net = -1;
+    virErrorPtr originalError = NULL;
 
     if (!def->nnets) {
         /* If we have -device, then we set -nodefault already */
@@ -8077,8 +8078,13 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
     return 0;
 
  error:
+    /* free up any resources in the network driver
+     * but don't overwrite the original error */
+    originalError = virSaveLastError();
     for (i = 0; last_good_net != -1 && i <= last_good_net; i++)
         virDomainConfNWFilterTeardown(def->nets[i]);
+    virSetError(originalError);
+    virFreeError(originalError);
     return -1;
 }
 
@@ -9171,7 +9177,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *domainLibDir,
                      const char *domainChannelTargetDir)
 {
-    virErrorPtr originalError = NULL;
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd = NULL;
@@ -9407,11 +9412,6 @@ qemuBuildCommandLine(virConnectPtr conn,
 
  error:
     virObjectUnref(cfg);
-    /* free up any resources in the network driver
-     * but don't overwrite the original error */
-    originalError = virSaveLastError();
-    virSetError(originalError);
-    virFreeError(originalError);
     virCommandFree(cmd);
     return NULL;
 }
