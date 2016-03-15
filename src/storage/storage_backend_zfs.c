@@ -307,6 +307,13 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    if (vol->target.encryption != NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("storage pool does not support encrypted "
+                               "volumes"));
+        return -1;
+    }
+
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     VIR_FREE(vol->target.path);
