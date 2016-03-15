@@ -614,7 +614,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     char *lockpath = NULL;
     int lockfd = -1;
     int fd = -1;
-    int retries = 100;
+    int retries = 500;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
     char *rundir = NULL;
@@ -707,7 +707,7 @@ int virNetSocketNewConnectUNIX(const char *path,
             daemonLaunched = true;
         }
 
-        usleep(5000);
+        usleep(10000);
     }
 
     localAddr.len = sizeof(localAddr.data);
