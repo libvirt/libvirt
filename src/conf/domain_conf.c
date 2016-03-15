@@ -10692,85 +10692,68 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
                                  xmlXPathContextPtr ctxt,
                                  unsigned int flags)
 {
-    int nListens;
     xmlNodePtr *listenNodes = NULL;
-    char *listenAddr = NULL;
     xmlNodePtr save = ctxt->node;
+    virDomainGraphicsListenDefPtr address = NULL;
+    char *listenAddr = NULL;
+    int nListens;
     int ret = -1;
 
     ctxt->node = node;
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-        def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP ||
-        def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
 
-        /* parse the <listen> subelements for graphics types that support it */
-        nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
-        if (nListens < 0)
+    if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        def->type != VIR_DOMAIN_GRAPHICS_TYPE_RDP &&
+        def->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        ret = 0;
+        goto error;
+    }
+
+    /* parse the <listen> subelements for graphics types that support it */
+    nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
+    if (nListens < 0)
+        goto error;
+
+    if (nListens > 0) {
+        size_t i;
+
+        if (VIR_ALLOC_N(def->listens, nListens) < 0)
             goto error;
 
-        if (nListens > 0) {
-            size_t i;
-
-            if (VIR_ALLOC_N(def->listens, nListens) < 0)
+        for (i = 0; i < nListens; i++) {
+            if (virDomainGraphicsListenDefParseXML(&def->listens[i],
+                                                   listenNodes[i],
+                                                   flags) < 0)
                 goto error;
 
-            for (i = 0; i < nListens; i++) {
-                int rv = virDomainGraphicsListenDefParseXML(&def->listens[i],
-                                                            listenNodes[i],
-                                                            flags);
-                if (rv < 0)
-                    goto error;
-                def->nListens++;
-            }
-            VIR_FREE(listenNodes);
+            if (!address &&
+                def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS)
+                address = &def->listens[i];
+
+            def->nListens++;
         }
-
-        /* listen attribute of <graphics> is also supported by these,
-         * but must match the 'address' attribute of the first listen
-         * that is type='address' (if present) */
-        listenAddr = virXMLPropString(node, "listen");
-        if (listenAddr && !listenAddr[0])
-            VIR_FREE(listenAddr);
-
-        if (listenAddr) {
-            if (def->nListens == 0) {
-                /* There were no <listen> elements, so we can just
-                 * directly set listenAddr as listens[0]->address */
-                if (virDomainGraphicsListenSetAddress(def, 0, listenAddr,
-                                                      -1, true) < 0)
-                    goto error;
-            } else {
-                /* There is at least 1 listen element, so we look for
-                 * the first listen of type='address', and make sure
-                 * its address matches the listen attribute from
-                 * graphics. */
-                bool matched = false;
-                const char *found = NULL;
-                size_t i;
-
-                for (i = 0; i < nListens; i++) {
-                    if (virDomainGraphicsListenGetType(def, i)
-                        == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
-                        found = virDomainGraphicsListenGetAddress(def, i);
-                        if (STREQ_NULLABLE(found, listenAddr))
-                            matched = true;
-                        break;
-                    }
-                }
-                if (found && !matched) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("graphics listen attribute %s must match address "
-                                     "attribute of first listen element (found %s)"),
-                                   listenAddr, found);
-                    goto error;
-                } else if (!found) {
-                    /* quietly ignore listen address if none of the listens
-                     * are of type address */
-                    VIR_FREE(listenAddr);
-                }
-            }
-        }
+        VIR_FREE(listenNodes);
     }
+
+    /* listen attribute of <graphics> is also supported by these,
+     * but must match the 'address' attribute of the first listen
+     * that is type='address' (if present) */
+    listenAddr = virXMLPropString(node, "listen");
+    if (STREQ_NULLABLE(listenAddr, ""))
+        VIR_FREE(listenAddr);
+
+    if (address && STRNEQ_NULLABLE(address->address, listenAddr)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("graphics listen attribute %s must match address "
+                         "attribute of first listen element (found %s)"),
+                       listenAddr, address->address);
+        goto error;
+    }
+
+    /* There were no <listen> elements, so we can just
+     * directly set listenAddr as listens[0]->address */
+    if (listenAddr && def->nListens == 0 &&
+        virDomainGraphicsListenSetAddress(def, 0, listenAddr, -1, true) < 0)
+        goto error;
 
     ret = 0;
  error:
