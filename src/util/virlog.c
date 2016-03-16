@@ -1211,6 +1211,52 @@ virLogParseOutputs(const char *src)
 }
 
 
+static int
+virLogParseFilter(const char *filter)
+{
+    int ret = -1;
+    size_t count = 0;
+    virLogPriority prio;
+    char **tokens = NULL;
+    unsigned int flags = 0;
+    char *ref = NULL;
+
+    if (!filter)
+        return -1;
+
+    VIR_DEBUG("filter=%s", filter);
+
+    if (!(tokens = virStringSplitCount(filter, ":", 0, &count)))
+        return -1;
+
+    if (count != 2)
+        goto cleanup;
+
+    if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
+        (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
+        goto cleanup;
+
+    ref = tokens[1];
+    if (ref[0] == '+') {
+        flags |= VIR_LOG_STACK_TRACE;
+        ref++;
+    }
+
+    if (!*ref)
+        goto cleanup;
+
+    if (virLogDefineFilter(ref, prio, flags) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse and define log filter %s"), filter);
+    virStringFreeList(tokens);
+    return ret;
+}
+
 /**
  * virLogParseFilters:
  * @filters: string defining a (set of) filter(s)
@@ -1227,49 +1273,38 @@ virLogParseOutputs(const char *src)
  * Multiple filter can be defined in a single @filters, they just need to be
  * separated by spaces.
  *
- * Returns the number of filter parsed and installed or -1 in case of error
+ * Returns the number of filter parsed or -1 in case of error.
  */
 int
 virLogParseFilters(const char *filters)
 {
-    const char *cur = filters, *str;
-    char *name;
-    virLogPriority prio;
     int ret = -1;
     int count = 0;
+    size_t i;
+    char **strings = NULL;
 
-    if (cur == NULL)
+    if (!filters)
         return -1;
 
-    virSkipSpaces(&cur);
-    while (*cur != 0) {
-        unsigned int flags = 0;
-        prio = virParseNumber(&cur);
-        if ((prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR))
+    VIR_DEBUG("filters=%s", filters);
+
+    if (!(strings = virStringSplit(filters, " ", 0)))
+        goto cleanup;
+
+    for (i = 0; strings[i]; i++) {
+        /* virStringSplit may return empty strings */
+        if (STREQ(strings[i], ""))
+            continue;
+
+        if (virLogParseFilter(strings[i]) < 0)
             goto cleanup;
-        if (*cur != ':')
-            goto cleanup;
-        cur++;
-        if (*cur == '+') {
-            flags |= VIR_LOG_STACK_TRACE;
-            cur++;
-        }
-        str = cur;
-        while ((*cur != 0) && (!IS_SPACE(cur)))
-            cur++;
-        if (str == cur)
-            goto cleanup;
-        if (VIR_STRNDUP(name, str, cur - str) < 0)
-            goto cleanup;
-        if (virLogDefineFilter(name, prio, flags) >= 0)
-            count++;
-        VIR_FREE(name);
-        virSkipSpaces(&cur);
+
+        count++;
     }
+
     ret = count;
  cleanup:
-    if (ret == -1)
-        VIR_WARN("Ignoring invalid log filter setting.");
+    virStringFreeList(strings);
     return ret;
 }
 
