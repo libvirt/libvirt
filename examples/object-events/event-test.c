@@ -668,8 +668,11 @@ int main(int argc, char **argv)
         goto cleanup;
     }
 
-    virConnectRegisterCloseCallback(dconn,
-                                    connectClose, NULL, NULL);
+    if (virConnectRegisterCloseCallback(dconn,
+                                        connectClose, NULL, NULL) < 0) {
+        fprintf(stderr, "Unable to register close callback\n");
+        goto cleanup;
+    }
 
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
