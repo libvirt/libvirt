@@ -321,7 +321,8 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pcie-root-port",
               "pcie-switch-upstream-port",
               "pcie-switch-downstream-port",
-              "pci-expander-bus")
+              "pci-expander-bus",
+              "pcie-expander-bus")
 
 VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST,
@@ -331,7 +332,8 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "ioh3420",
               "x3130-upstream",
               "xio3130-downstream",
-              "pxb")
+              "pxb",
+              "pxb-pcie")
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",

@@ -1375,6 +1375,7 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont)
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
         *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PXB;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
@@ -1579,6 +1580,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                        options->port = addr->slot;
                     break;
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
                     if (options->busNr == -1)
                         options->busNr = qemuDomainAddressFindNewBusNr(def);
                     if (options->busNr == -1) {

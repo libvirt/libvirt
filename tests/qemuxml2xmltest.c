@@ -647,6 +647,13 @@ mymain(void)
     DO_TEST_FULL("pci-expander-bus", WHEN_ACTIVE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE,
                  QEMU_CAPS_DEVICE_PXB);
+    DO_TEST_FULL("pcie-expander-bus", WHEN_ACTIVE,
+                 QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_IOH3420,
+                 QEMU_CAPS_DEVICE_X3130_UPSTREAM,
+                 QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
+                 QEMU_CAPS_DEVICE_PXB_PCIE);
 
 
     DO_TEST_FULL("hostdev-scsi-lsi", WHEN_ACTIVE,

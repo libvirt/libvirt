@@ -3103,15 +3103,18 @@
       possible values <code>pci-root</code>, <code>pcie-root</code>,
       <code>pcie-root-port</code>, <code>pci-bridge</code>,
       <code>dmi-to-pci-bridge</code>, <code>pcie-switch-upstream-port</code>,
-      <code>pcie-switch-downstream-port</code>, or <code>pci-expander-bus</code>.
-      (pci-root and pci-bridge <span class="since">since 1.0.5</span>,
-      pcie-root and dmi-to-pci-bridge <span class="since">since
-      1.1.2</span>, pcie-root-port, pcie-switch-upstream-port,
-      pcie-switch-downstream-port <span class="since">since 1.2.19</span>,
-      and pci-expander-bus <span class="since">since 1.3.4</span>)
-      The root controllers (<code>pci-root</code> and <code>pcie-root</code>)
-      have an optional <code>pcihole64</code> element specifying how big
-      (in kilobytes, or in the unit specified by <code>pcihole64</code>'s
+      <code>pcie-switch-downstream-port</code>, <code>pci-expander-bus</code>,
+      or <code>pcie-expander-bus</code>.  (pci-root and
+      pci-bridge <span class="since">since 1.0.5</span>, pcie-root and
+      dmi-to-pci-bridge <span class="since">since 1.1.2</span>,
+      pcie-root-port, pcie-switch-upstream-port,
+      pcie-switch-downstream-port <span class="since">since
+      1.2.19</span>, and pci-expander-bus and
+      pcie-expander-bus <span class="since">since 1.3.4</span>) The
+      root controllers (<code>pci-root</code>
+      and <code>pcie-root</code>) have an
+      optional <code>pcihole64</code> element specifying how big (in
+      kilobytes, or in the unit specified by <code>pcihole64</code>'s
       <code>unit</code> attribute) the 64-bit PCI hole should be. Some guests (like
       Windows XP or Windows Server 2003) might crash when QEMU and Seabios
       are recent enough to support 64-bit PCI holes, unless this is disabled
@@ -3173,7 +3176,7 @@
       </dd>
       <dt><code>busNr</code></dt>
       <dd>
-        pci-expander-bus controllers can have an
+        pci-expander-bus and pcie-expander-bus controllers can have an
         optional <code>busNr</code> attribute (1-254). This will be
         the bus number of the new bus; All bus numbers between that
         specified and 255 will be available only for assignment to
@@ -3188,6 +3191,23 @@
         for the pci-bridge that is automatically attached to it (if
         you plan on adding more pci-bridges to the hierarchy of the
         bus, you should manually set busNr to a lower value).
+        <p>
+          A similar algorithm is used for automatically determining
+          the busNr attribute for pcie-expander-bus, but since the
+          pcie-expander-bus doesn't have any built-in pci-bridge, the
+          2nd bus-number is just being reserved for the pcie-root-port
+          that must necessarily be connected to the bus in order to
+          actually plug in an endpoint device. If you intend to plug
+          multiple devices into a pcie-expander-bus, you must instead
+          connect a pcie-switch-upstream-port to the
+          pcie-expander-bus, and multiple pcie-switch-downstream-ports
+          to the pcie-switch-downstream-port, and of course for this
+          to work properly, you will need to decrease the
+          pcie-expander-bus' busNr accordingly so that there are
+          enough unused bus numbers above it to accomodate giving out
+          one bus number for the upstream-port and one for each
+          downstream-port).
+        </p>
       </dd>
       <dt><code>&lt;node&gt;</code></dt>
       <dd>

@@ -59,8 +59,11 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
         return VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-        /* dmi-to-pci-bridge is treated like a PCIe device
-         * (e.g. it can be plugged directly into pcie-root)
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        /* dmi-to-pci-bridge and pcie-expander-bus are treated like
+         * PCIe devices (the part of pcie-expander-bus that is plugged
+         * in isn't the expander bus itself, but a companion device
+         * used for setting it up).
          */
         return VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
 
@@ -279,6 +282,16 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        /* single slot, no hotplug, only accepts pcie-root-port or
+         * pcie-switch-upstream-port.
+         */
+        bus->flags = (VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT
+                      | VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT);
+        bus->minSlot = 0;
+        bus->maxSlot = 0;
+        break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PCI controller model %d"), model);

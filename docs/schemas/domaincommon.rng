@@ -1788,6 +1788,8 @@
                     <value>xio3130-downstream</value>
                     <!-- implementations of 'pci-expander-bus' -->
                     <value>pxb</value>
+                    <!-- implementations of 'pcie-expander-bus' -->
+                    <value>pxb-pcie</value>
                   </choice>
                 </attribute>
                 <empty/>
@@ -1846,6 +1848,7 @@
                     <value>pcie-switch-upstream-port</value>
                     <value>pcie-switch-downstream-port</value>
                     <value>pci-expander-bus</value>
+                    <value>pcie-expander-bus</value>
                   </choice>
                 </attribute>
               </group>
