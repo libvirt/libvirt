@@ -32,9 +32,12 @@
 #include "vz_sdk.h"
 #include "virstring.h"
 #include "datatypes.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PRLSRVCTL "prlsrvctl"
+
+VIR_LOG_INIT("parallels.utils");
 
 static virDomainDiskBus vz6DiskBuses[] = {VIR_DOMAIN_DISK_BUS_IDE,
                                           VIR_DOMAIN_DISK_BUS_SCSI,
@@ -250,6 +253,127 @@ vzInitVersion(vzConnPtr privconn)
     return ret;
 }
 
+static int
+vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
+{
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only hard disks and cdroms are supported "
+                         "by vz driver."));
+        return -1;
+    }
+
+    if (disk->blockio.logical_block_size ||
+        disk->blockio.physical_block_size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk block sizes is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->blkdeviotune.total_bytes_sec ||
+        disk->blkdeviotune.read_bytes_sec ||
+        disk->blkdeviotune.write_bytes_sec ||
+        disk->blkdeviotune.total_iops_sec ||
+        disk->blkdeviotune.read_iops_sec ||
+        disk->blkdeviotune.write_iops_sec) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk io limits is not "
+                         "supported by vz driver yet."));
+        return -1;
+    }
+
+    if (disk->serial) {
+        VIR_INFO("%s", _("Setting disk serial number is not "
+                         "supported by vz driver."));
+    }
+
+    if (disk->wwn) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk wwn id is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->vendor) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk vendor is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->product) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk product id is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->error_policy != VIR_DOMAIN_DISK_ERROR_POLICY_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk error policy is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->iomode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting disk io mode is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->copy_on_read) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Disk copy_on_read is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk startup policy is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->transient) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Transient disks are not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->discard) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk discard parameter is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->iothread) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting up disk io thread # is not "
+                         "supported by vz driver."));
+        return -1;
+    }
+
+    if (disk->src->type != VIR_STORAGE_TYPE_FILE &&
+        disk->src->type != VIR_STORAGE_TYPE_BLOCK) {
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only disk and block storage types are "
+                         "supported by vz driver."));
+        return -1;
+
+    }
+
+    return 0;
+}
+
 int
 vzCheckUnsupportedDisks(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
 {
@@ -260,6 +384,10 @@ vzCheckUnsupportedDisks(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
 
     for (i = 0; i < def->ndisks; i++) {
         disk = def->disks[i];
+
+        if (vzCheckDiskUnsupportedParams(disk) < 0)
+            return -1;
+
         diskFormat = virDomainDiskGetFormat(disk);
         supported = true;
         if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
