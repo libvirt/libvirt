@@ -1348,6 +1348,38 @@ qemuDomainSupportsPCI(virDomainDefPtr def,
 }
 
 
+static void
+qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont)
+{
+    int *modelName = &cont->opts.pciopts.modelName;
+
+    /* make sure it's not already set */
+    if (*modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
+        return;
+    switch ((virDomainControllerModelPCI)cont->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCI_BRIDGE;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_I82801B11_BRIDGE;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_X3130_UPSTREAM;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+        break;
+    }
+}
+
+
 static int
 qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                              virQEMUCapsPtr qemuCaps,
@@ -1448,41 +1480,35 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 addr = &cont->info.addr.pci;
                 options = &cont->opts.pciopts;
 
+                /* set default model name (the actual name of the
+                 * device in qemu) for any controller that doesn't yet
+                 * have it set.
+                 */
+                qemuDomainPCIControllerSetDefaultModelName(cont);
+
                 /* set defaults for any other auto-generated config
                  * options for this controller that haven't been
                  * specified in config.
                  */
                 switch ((virDomainControllerModelPCI)cont->model) {
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-                    if (options->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-                        options->modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCI_BRIDGE;
                     if (options->chassisNr == -1)
                         options->chassisNr = cont->idx;
                     break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-                    if (options->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-                        options->modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_I82801B11_BRIDGE;
-                    break;
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                    if (options->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-                        options->modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420;
                     if (options->chassis == -1)
                        options->chassis = cont->idx;
                     if (options->port == -1)
                        options->port = (addr->slot << 3) + addr->function;
                     break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                    if (options->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-                        options->modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_X3130_UPSTREAM;
-                    break;
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                    if (options->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-                        options->modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM;
                     if (options->chassis == -1)
                        options->chassis = cont->idx;
                     if (options->port == -1)
                        options->port = addr->slot;
                     break;
+                case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
                 case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
