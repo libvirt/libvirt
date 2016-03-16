@@ -23,20 +23,20 @@
 
 #include "virlog.h"
 
-struct testLogMatchData {
+struct testLogData {
     const char *str;
-    bool res;
+    bool pass;
 };
 
 static int
 testLogMatch(const void *opaque)
 {
-    const struct testLogMatchData *data = opaque;
+    const struct testLogData *data = opaque;
 
     bool got = virLogProbablyLogMessage(data->str);
-    if (got != data->res) {
-        fprintf(stderr, "Expected '%d' but got '%d' for '%s'\n",
-                data->res, got, data->str);
+    if (got != data->pass) {
+        VIR_TEST_DEBUG("Expected '%d' but got '%d' for '%s'\n",
+                       data->pass, got, data->str);
         return -1;
     }
     return 0;
@@ -48,18 +48,23 @@ mymain(void)
 {
     int ret = 0;
 
-#define TEST_LOG_MATCH(str, res)                                        \
-    do {                                                                \
-        struct testLogMatchData data = {                                \
-            str, res                                                    \
-        };                                                              \
-        if (virtTestRun("testLogMatch " # str, testLogMatch, &data) < 0) \
-            ret = -1;                                                   \
+#define DO_TEST_FULL(name, test, str, pass)                                 \
+    do {                                                                    \
+        struct testLogData data = {                                         \
+            str, pass                                                       \
+        };                                                                  \
+        if (virtTestRun(name, test, &data) < 0)                             \
+            ret = -1;                                                       \
     } while (0)
 
-    TEST_LOG_MATCH("2013-10-11 15:43:43.866+0000: 28302: info : libvirt version: 1.1.3", true);
+#define TEST_LOG_MATCH_FAIL(str)                                            \
+    DO_TEST_FULL("testLogMatch " # str, testLogMatch, str, false)
+#define TEST_LOG_MATCH(str)                                                 \
+    DO_TEST_FULL("testLogMatch " # str, testLogMatch, str, true)
 
-    TEST_LOG_MATCH("libvirt:  error : cannot execute binary /usr/libexec/libvirt_lxc: No such file or directory", false);
+    TEST_LOG_MATCH("2013-10-11 15:43:43.866+0000: 28302: info : libvirt version: 1.1.3");
+
+    TEST_LOG_MATCH_FAIL("libvirt:  error : cannot execute binary /usr/libexec/libvirt_lxc: No such file or directory");
 
     return ret;
 }
