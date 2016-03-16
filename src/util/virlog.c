@@ -1088,7 +1088,7 @@ virLogParseOutput(const char *src)
     char *abspath = NULL;
     size_t count = 0;
     virLogPriority prio;
-    virLogDestination dest;
+    int dest;
     bool isSUID = virIsSUID();
 
     if (!src)
