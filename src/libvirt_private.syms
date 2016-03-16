@@ -107,6 +107,7 @@ virDomainPCIAddressSetFree;
 virDomainPCIAddressSetGrow;
 virDomainPCIAddressSlotInUse;
 virDomainPCIAddressValidate;
+virDomainPCIControllerModelToConnectType;
 virDomainVirtioSerialAddrAssign;
 virDomainVirtioSerialAddrAutoAssign;
 virDomainVirtioSerialAddrIsComplete;

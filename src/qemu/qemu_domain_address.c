@@ -446,39 +446,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         switch (device->data.controller->type) {
         case  VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-            switch (device->data.controller->model) {
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-                /* pci-bridge needs a PCI slot, but it isn't
-                 * hot-pluggable, so it doesn't need a hot-pluggable slot.
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-                /* pci-bridge needs a PCIe slot, but it isn't
-                 * hot-pluggable, so it doesn't need a hot-pluggable slot.
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                /* pcie-root-port isn't hot-pluggable, and
-                 * is unique in what it can connect to, so
-                 * it has its own flag.
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                /* pcie-switch-upstream-port is also unique, and
-                 * not hot-pluggable...
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                /* ... same for pcie-switch-downstream-port */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
-                break;
-            default:
-                break;
-            }
+           flags = virDomainPCIControllerModelToConnectType(device->data.controller->model);
             break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
@@ -1058,51 +1026,18 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
     /* PCI controllers */
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-            if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            virDomainControllerModelPCI model = def->controllers[i]->model;
+
+            if (def->controllers[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+                model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+                model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
                 continue;
 
             /* convert the type of controller into a "CONNECT_TYPE"
              * flag to use when searching for the proper
              * controller/bus to connect it to on the upstream side.
              */
-            switch ((virDomainControllerModelPCI)def->controllers[i]->model) {
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-                /* pci-root and pcie-root are implicit in the machine,
-                 * and need no address */
-                continue;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-                /* pci-bridge doesn't require hot-plug
-                 * (although it does provide hot-plug in its slots)
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-                /* dmi-to-pci-bridge is treated like a
-                 * non-hotplug-capable PCIe device (e.g. it can be
-                 * plugged directly into pcie-root)
-                 */
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT;
-                break;
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                flags = VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
-                break;
-
-            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
-                /* if this happens, there is an error in the code. A
-                 * PCI controller should always have a proper model
-                 * set
-                 */
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("PCI controller model icorrectly set to 'last'"));
-                goto error;
-            }
+            flags = virDomainPCIControllerModelToConnectType(model);
             if (virDomainPCIAddressReserveNextSlot(addrs,
                                                    &def->controllers[i]->info,
                                                    flags) < 0)

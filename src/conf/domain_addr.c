@@ -32,6 +32,54 @@
 
 VIR_LOG_INIT("conf.domain_addr");
 
+virDomainPCIConnectFlags
+virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
+{
+    /* given a VIR_DOMAIN_CONTROLLER_MODEL_PCI*, set connectType to
+     * the equivalent VIR_PCI_CONNECT_TYPE_*. return 0 on success, -1
+     * if the model wasn't recognized.
+     */
+    switch (model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        /* pci-root and pcie-root are implicit in the machine,
+         * and have no upstream connection, "last" will never actually
+         * happen, it's just there so that all possible cases are
+         * covered in the switch (keeps the compiler happy).
+         */
+        return 0;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        /* pci-bridge is treated like a standard PCI endpoint device, */
+        return VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        /* dmi-to-pci-bridge is treated like a PCIe device
+         * (e.g. it can be plugged directly into pcie-root)
+         */
+        return VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        return VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        return VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        return VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT;
+
+        /* if this happens, there is an error in the code. A
+         * PCI controller should always have a proper model
+         * set
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("PCI controller model incorrectly set to 'last'"));
+        return -1;
+    }
+    return 0;
+}
+
 bool
 virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
                                    const char *addrStr,

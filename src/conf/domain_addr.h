@@ -59,6 +59,9 @@ typedef enum {
 # define VIR_PCI_CONNECT_TYPES_ENDPOINT \
    (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE)
 
+virDomainPCIConnectFlags
+virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model);
+
 typedef struct {
     virDomainControllerModelPCI model;
     /* flags and min/max can be computed from model, but
