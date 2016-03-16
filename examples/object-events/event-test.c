@@ -616,6 +616,8 @@ static void stop(int sig)
 
 int main(int argc, char **argv)
 {
+    int ret = EXIT_FAILURE;
+    virConnectPtr dconn = NULL;
     int callback1ret = -1;
     int callback2ret = -1;
     int callback3ret = -1;
@@ -643,28 +645,27 @@ int main(int argc, char **argv)
 
     if (argc > 1 && STREQ(argv[1], "--help")) {
         usage(argv[0]);
-        return -1;
+        goto cleanup;
     }
 
     if (virInitialize() < 0) {
         fprintf(stderr, "Failed to initialize libvirt");
-        return -1;
+        goto cleanup;
     }
 
     if (virEventRegisterDefaultImpl() < 0) {
         virErrorPtr err = virGetLastError();
         fprintf(stderr, "Failed to register event implementation: %s\n",
                 err && err->message ? err->message: "Unknown error");
-        return -1;
+        goto cleanup;
     }
 
-    virConnectPtr dconn = NULL;
     dconn = virConnectOpenAuth(argc > 1 ? argv[1] : NULL,
                                virConnectAuthPtrDefault,
                                VIR_CONNECT_RO);
     if (!dconn) {
         printf("error opening\n");
-        return -1;
+        goto cleanup;
     }
 
     virConnectRegisterCloseCallback(dconn,
@@ -769,69 +770,75 @@ int main(int argc, char **argv)
                                                      VIR_DOMAIN_EVENT_CALLBACK(myDomainEventDeviceAddedCallback),
                                                      strdup("device added"), myFreeFunc);
 
-    if ((callback1ret != -1) &&
-        (callback2ret != -1) &&
-        (callback3ret != -1) &&
-        (callback4ret != -1) &&
-        (callback5ret != -1) &&
-        (callback6ret != -1) &&
-        (callback7ret != -1) &&
-        (callback9ret != -1) &&
-        (callback10ret != -1) &&
-        (callback11ret != -1) &&
-        (callback12ret != -1) &&
-        (callback13ret != -1) &&
-        (callback14ret != -1) &&
-        (callback15ret != -1) &&
-        (callback16ret != -1) &&
-        (callback17ret != -1) &&
-        (callback18ret != -1) &&
-        (callback19ret != -1)) {
-        if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
-            virErrorPtr err = virGetLastError();
-            fprintf(stderr, "Failed to start keepalive protocol: %s\n",
-                    err && err->message ? err->message : "Unknown error");
-            run = 0;
-        }
+    if ((callback1ret == -1) ||
+        (callback2ret == -1) ||
+        (callback3ret == -1) ||
+        (callback4ret == -1) ||
+        (callback5ret == -1) ||
+        (callback6ret == -1) ||
+        (callback7ret == -1) ||
+        (callback9ret == -1) ||
+        (callback10ret == -1) ||
+        (callback11ret == -1) ||
+        (callback12ret == -1) ||
+        (callback13ret == -1) ||
+        (callback14ret == -1) ||
+        (callback15ret == -1) ||
+        (callback16ret == -1) ||
+        (callback17ret == -1) ||
+        (callback18ret == -1) ||
+        (callback19ret == -1))
+        goto cleanup;
 
-        while (run) {
-            if (virEventRunDefaultImpl() < 0) {
-                virErrorPtr err = virGetLastError();
-                fprintf(stderr, "Failed to run event loop: %s\n",
-                        err && err->message ? err->message : "Unknown error");
-            }
-        }
-
-        VIR_DEBUG("Deregistering event handlers");
-        virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
-        virConnectDomainEventDeregisterAny(dconn, callback2ret);
-        virConnectDomainEventDeregisterAny(dconn, callback3ret);
-        virConnectDomainEventDeregisterAny(dconn, callback4ret);
-        virConnectDomainEventDeregisterAny(dconn, callback5ret);
-        virConnectDomainEventDeregisterAny(dconn, callback6ret);
-        virConnectDomainEventDeregisterAny(dconn, callback7ret);
-        virConnectDomainEventDeregisterAny(dconn, callback9ret);
-        virConnectDomainEventDeregisterAny(dconn, callback10ret);
-        virConnectDomainEventDeregisterAny(dconn, callback11ret);
-        virConnectDomainEventDeregisterAny(dconn, callback12ret);
-        virConnectDomainEventDeregisterAny(dconn, callback13ret);
-        virConnectDomainEventDeregisterAny(dconn, callback14ret);
-        virConnectDomainEventDeregisterAny(dconn, callback15ret);
-        virConnectNetworkEventDeregisterAny(dconn, callback16ret);
-        virConnectDomainEventDeregisterAny(dconn, callback17ret);
-        virConnectDomainEventDeregisterAny(dconn, callback18ret);
-        virConnectDomainEventDeregisterAny(dconn, callback19ret);
-
-        if (callback8ret != -1)
-            virConnectDomainEventDeregisterAny(dconn, callback8ret);
+    if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
+        virErrorPtr err = virGetLastError();
+        fprintf(stderr, "Failed to start keepalive protocol: %s\n",
+                err && err->message ? err->message : "Unknown error");
+        run = 0;
     }
 
+    while (run) {
+        if (virEventRunDefaultImpl() < 0) {
+            virErrorPtr err = virGetLastError();
+            fprintf(stderr, "Failed to run event loop: %s\n",
+                    err && err->message ? err->message : "Unknown error");
+        }
+    }
+
+    VIR_DEBUG("Deregistering event handlers");
+    virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
+    virConnectDomainEventDeregisterAny(dconn, callback2ret);
+    virConnectDomainEventDeregisterAny(dconn, callback3ret);
+    virConnectDomainEventDeregisterAny(dconn, callback4ret);
+    virConnectDomainEventDeregisterAny(dconn, callback5ret);
+    virConnectDomainEventDeregisterAny(dconn, callback6ret);
+    virConnectDomainEventDeregisterAny(dconn, callback7ret);
+    virConnectDomainEventDeregisterAny(dconn, callback9ret);
+    virConnectDomainEventDeregisterAny(dconn, callback10ret);
+    virConnectDomainEventDeregisterAny(dconn, callback11ret);
+    virConnectDomainEventDeregisterAny(dconn, callback12ret);
+    virConnectDomainEventDeregisterAny(dconn, callback13ret);
+    virConnectDomainEventDeregisterAny(dconn, callback14ret);
+    virConnectDomainEventDeregisterAny(dconn, callback15ret);
+    virConnectNetworkEventDeregisterAny(dconn, callback16ret);
+    virConnectDomainEventDeregisterAny(dconn, callback17ret);
+    virConnectDomainEventDeregisterAny(dconn, callback18ret);
+    virConnectDomainEventDeregisterAny(dconn, callback19ret);
+
+    if (callback8ret != -1)
+        virConnectDomainEventDeregisterAny(dconn, callback8ret);
+
     virConnectUnregisterCloseCallback(dconn, connectClose);
+    ret = EXIT_SUCCESS;
 
-    VIR_DEBUG("Closing connection");
-    if (dconn && virConnectClose(dconn) < 0)
-        printf("error closing\n");
 
-    printf("done\n");
-    return 0;
+ cleanup:
+    if (dconn) {
+        VIR_DEBUG("Closing connection");
+        if (virConnectClose(dconn) < 0)
+            printf("error closing\n");
+        printf("done\n");
+    }
+
+    return ret;
 }
