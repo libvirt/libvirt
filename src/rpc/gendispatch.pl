@@ -917,7 +917,7 @@ elsif ($mode eq "server") {
         print "    int rv = -1;\n";
 
         if ($modern_ret_as_list) {
-            print "    size_t i;\n";
+            print "    ssize_t i;\n";
         }
 
         foreach my $var (@vars_list) {
