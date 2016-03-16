@@ -949,6 +949,8 @@ mymain(void)
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+    DO_TEST("graphics-spice-no-args",
+            QEMU_CAPS_SPICE);
     driver.config->spiceSASL = 1;
     ignore_value(VIR_STRDUP(driver.config->spiceSASLdir, "/root/.sasl2"));
     DO_TEST("graphics-spice-sasl",

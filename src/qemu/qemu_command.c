@@ -7388,7 +7388,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         goto error;
     }
 
-    if (port > 0 || tlsPort <= 0)
+    if (port > 0)
         virBufferAsprintf(&opt, "port=%u,", port);
 
     if (tlsPort > 0) {
@@ -7586,7 +7586,13 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     virBufferTrim(&opt, ",", -1);
 
     virCommandAddArg(cmd, "-spice");
-    virCommandAddArgBuffer(cmd, &opt);
+    /* If we did not add any SPICE arguments, add a dummy 'port=0' one
+     * as -spice alone is not allowed on QEMU command line
+     */
+    if (virBufferUse(&opt) == 0)
+        virCommandAddArg(cmd, "port=0");
+    else
+        virCommandAddArgBuffer(cmd, &opt);
     if (graphics->data.spice.keymap)
         virCommandAddArgList(cmd, "-k",
                              graphics->data.spice.keymap, NULL);
