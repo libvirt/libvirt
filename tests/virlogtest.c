@@ -47,10 +47,11 @@ static int
 testLogParseOutputs(const void *opaque)
 {
     int ret = -1;
+    int noutputs;
     const struct testLogData *data = opaque;
 
-    ret = virLogParseOutputs(data->str);
-    if (ret < 0) {
+    noutputs = virLogParseOutputs(data->str);
+    if (noutputs < 0) {
         if (!data->pass) {
             VIR_TEST_DEBUG("Got expected error: %s\n",
                            virGetLastErrorMessage());
@@ -58,9 +59,9 @@ testLogParseOutputs(const void *opaque)
             ret = 0;
             goto cleanup;
         }
-    } else if (ret != data->count) {
+    } else if (noutputs != data->count) {
             VIR_TEST_DEBUG("Expected number of parsed outputs is %d, "
-                           "but got %d\n", data->count, ret);
+                           "but got %d\n", data->count, noutputs);
             goto cleanup;
     } else if (!data->pass) {
         VIR_TEST_DEBUG("Test should have failed\n");
