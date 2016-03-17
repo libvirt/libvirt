@@ -9667,6 +9667,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_STRING,
      .help = N_("comma separated list of disks to be migrated")
     },
+    {.name = "disks-port",
+     .type = VSH_OT_INT,
+     .help = N_("port to use by target server for incoming disks migration")
+    },
     {.name = NULL}
 };
 
@@ -9677,6 +9681,7 @@ doMigrate(void *opaque)
     virDomainPtr dom = NULL;
     const char *desturi = NULL;
     const char *opt = NULL;
+    int disksPort = 0;
     unsigned int flags = 0;
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
@@ -9717,6 +9722,13 @@ doMigrate(void *opaque)
     if (opt &&
         virTypedParamsAddString(&params, &nparams, &maxparams,
                                 VIR_MIGRATE_PARAM_LISTEN_ADDRESS, opt) < 0)
+        goto save_error;
+
+    if (vshCommandOptInt(ctl, cmd, "disks-port", &disksPort) < 0)
+        goto out;
+    if (disksPort &&
+        virTypedParamsAddInt(&params, &nparams, &maxparams,
+                             VIR_MIGRATE_PARAM_DISKS_PORT, disksPort) < 0)
         goto save_error;
 
     if (vshCommandOptStringReq(ctl, cmd, "dname", &opt) < 0)

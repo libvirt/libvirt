@@ -773,6 +773,16 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_MIGRATE_DISKS    "migrate_disks"
 
+/**
+ * VIR_MIGRATE_PARAM_DISKS_PORT:
+ *
+ * virDomainMigrate* params field: port that destination server should use
+ * for incoming disks migration. Type is VIR_TYPED_PARAM_INT. If set to 0 or
+ * omitted, libvirt will choose a suitable default. At the moment this is only
+ * supported by the QEMU driver.
+ */
+# define VIR_MIGRATE_PARAM_DISKS_PORT    "disks_port"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,

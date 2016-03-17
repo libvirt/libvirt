@@ -1532,7 +1532,7 @@ to the I<uri> namespace is displayed instead of being modified.
 [I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>]
 [I<dname>] [I<--timeout> B<seconds>] [I<--xml> B<file>]
-[I<--migrate-disks> B<disk-list>]
+[I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1658,6 +1658,9 @@ destination side should bind to for incoming migration. Both IPv4 and IPv6
 addresses are accepted as well as hostnames (the resolving is done on
 destination). Some hypervisors do not support this feature and will return an
 error if this parameter is used.
+
+Optional I<disks-port> sets the port that hypervisor on destination side should
+bind to for incoming disks traffic. Currently it is supported only by qemu.
 
 =item B<migrate-setmaxdowntime> I<domain> I<downtime>
 
