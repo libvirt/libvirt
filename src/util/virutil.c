@@ -45,9 +45,6 @@
 # include <libdevmapper.h>
 #endif
 
-#ifdef HAVE_PATHS_H
-# include <paths.h>
-#endif
 #include <netdb.h>
 #ifdef HAVE_GETPWUID_R
 # include <pwd.h>

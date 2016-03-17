@@ -35,10 +35,6 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-#ifdef HAVE_PATHS_H
-# include <paths.h>
-#endif
-
 #include "internal.h"
 #include "datatypes.h"
 #include "virbitmap.h"

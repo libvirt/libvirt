@@ -39,7 +39,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <paths.h>
 #include <pwd.h>
 #include <sys/wait.h>
 

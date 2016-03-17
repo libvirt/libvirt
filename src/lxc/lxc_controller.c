@@ -31,7 +31,6 @@
 #include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>
-#include <paths.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>

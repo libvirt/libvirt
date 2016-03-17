@@ -35,10 +35,6 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#ifdef HAVE_PATHS_H
-# include <paths.h>
-#endif
-
 #include "internal.h"
 #include "viriptables.h"
 #include "vircommand.h"

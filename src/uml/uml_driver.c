@@ -36,7 +36,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <paths.h>
 #include <pwd.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>

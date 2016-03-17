@@ -54,10 +54,6 @@
 # endif
 #endif
 
-#ifdef HAVE_PATHS_H
-# include <paths.h>
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.testutils");
