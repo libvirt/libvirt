@@ -75,6 +75,37 @@ testLogParseOutputs(const void *opaque)
 }
 
 static int
+testLogParseFilters(const void *opaque)
+{
+    int ret = -1;
+    int nfilters;
+    const struct testLogData *data = opaque;
+
+    nfilters = virLogParseFilters(data->str);
+    if (nfilters < 0) {
+        if (!data->pass) {
+            VIR_TEST_DEBUG("Got expected error: %s\n",
+                           virGetLastErrorMessage());
+            virResetLastError();
+            ret = 0;
+            goto cleanup;
+        }
+    } else if (nfilters != data->count) {
+        VIR_TEST_DEBUG("Expected number of parsed outputs is %d, "
+                       "but got %d\n", data->count, nfilters);
+        goto cleanup;
+    } else if (!data->pass) {
+        VIR_TEST_DEBUG("Test should have failed\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virLogReset();
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -97,6 +128,10 @@ mymain(void)
     DO_TEST_FULL("testLogParseOutputs " # str, testLogParseOutputs, str, count, false)
 #define TEST_PARSE_OUTPUTS(str, count)                                      \
     DO_TEST_FULL("testLogParseOutputs " # str, testLogParseOutputs, str, count, true)
+#define TEST_PARSE_FILTERS_FAIL(str, count)                                 \
+    DO_TEST_FULL("testLogParseFilters " # str, testLogParseFilters, str, count, false)
+#define TEST_PARSE_FILTERS(str, count)                                      \
+    DO_TEST_FULL("testLogParseFilters " # str, testLogParseFilters, str, count, true)
 
 
     TEST_LOG_MATCH("2013-10-11 15:43:43.866+0000: 28302: info : libvirt version: 1.1.3");
@@ -107,6 +142,12 @@ mymain(void)
     TEST_PARSE_OUTPUTS_FAIL("foo:stderr", 1);
     TEST_PARSE_OUTPUTS_FAIL("1:bar", 1);
     TEST_PARSE_OUTPUTS_FAIL("1:stderr:foobar", 1);
+    TEST_PARSE_FILTERS("1:foo", 1);
+    TEST_PARSE_FILTERS("1:foo 2:bar  3:foobar", 3);
+    TEST_PARSE_FILTERS_FAIL("5:foo", 1);
+    TEST_PARSE_FILTERS_FAIL("1:", 1);
+    TEST_PARSE_FILTERS_FAIL(":foo", 1);
+    TEST_PARSE_FILTERS_FAIL("1:+", 1);
 
     return ret;
 }
