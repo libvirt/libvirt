@@ -78,6 +78,9 @@
 %if 0%{?rhel}
     %define with_qemu_tcg 0
     %define qemu_kvm_arches x86_64
+    %if 0%{?rhel} >= 7
+        %define qemu_kvm_arches x86_64 %{power64}
+    %endif
 %endif
 
 %ifarch %{qemu_kvm_arches}
