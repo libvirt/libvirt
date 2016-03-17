@@ -6948,17 +6948,12 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    virDomainChrSourceDef monConfig = {0};
-    virQEMUCapsPtr qemuCaps = NULL;
     virDomainObjPtr vm = NULL;
-    bool monitor_json = false;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     size_t i;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
-    char *domainLibDir = NULL;
-    char *domainChannelTargetDir = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -6982,17 +6977,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (!(vm->def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
-        goto cleanup;
-
-    if (qemuProcessStartValidate(driver, vm, qemuCaps, false, false,
-                                 VIR_QEMU_PROCESS_START_COLD |
-                                 VIR_QEMU_PROCESS_START_PRETEND) < 0)
-        goto cleanup;
-
-    /* Generate per-domain paths because we don't have the domain object */
-    if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
-                                  cfg->libDir, cfg->channelTargetDir,
-                                  vm->def->name, -1) < 0)
         goto cleanup;
 
     /* Since we're just exporting args, we can't do bridge/network/direct
@@ -7083,17 +7067,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         net->mac = mac;
     }
 
-    monitor_json = virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
-
-    if (qemuProcessPrepareMonitorChr(&monConfig, vm->def->name) < 0)
-        goto cleanup;
-
-    if (qemuAssignDeviceAliases(vm->def, qemuCaps) < 0)
-        goto cleanup;
-
-    if (qemuDomainAssignAddresses(vm->def, qemuCaps, NULL) < 0)
-        goto cleanup;
-
     /* do fake auto-alloc of graphics ports, if such config is used */
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -7106,28 +7079,17 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         }
     }
 
-    if (!(cmd = qemuBuildCommandLine(conn, driver, NULL, vm->def,
-                                     &monConfig, monitor_json, qemuCaps,
-                                     NULL, NULL,
-                                     VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                     &buildCommandLineCallbacks,
-                                     true,
-                                     qemuCheckFips(),
-                                     NULL, NULL, NULL,
-                                     domainLibDir,
-                                     domainChannelTargetDir)))
+    if (!(cmd = qemuProcessCreatePretendCmd(conn, driver, vm, NULL, false, true,
+                                            VIR_QEMU_PROCESS_START_COLD)))
         goto cleanup;
 
     ret = virCommandToString(cmd);
 
  cleanup:
-    virObjectUnref(qemuCaps);
     virCommandFree(cmd);
     virObjectUnref(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
-    VIR_FREE(domainLibDir);
-    VIR_FREE(domainChannelTargetDir);
     return ret;
 }
 
