@@ -109,8 +109,8 @@ struct _virLogOutput {
 typedef struct _virLogOutput virLogOutput;
 typedef virLogOutput *virLogOutputPtr;
 
-static virLogOutputPtr virLogOutputs;
-static int virLogNbOutputs;
+static virLogOutputPtr *virLogOutputs;
+static size_t virLogNbOutputs;
 
 /*
  * Default priorities
@@ -323,9 +323,10 @@ virLogResetOutputs(void)
     size_t i;
 
     for (i = 0; i < virLogNbOutputs; i++) {
-        if (virLogOutputs[i].c != NULL)
-            virLogOutputs[i].c(virLogOutputs[i].data);
-        VIR_FREE(virLogOutputs[i].name);
+        if (virLogOutputs[i]->c != NULL)
+            virLogOutputs[i]->c(virLogOutputs[i]->data);
+        VIR_FREE(virLogOutputs[i]->name);
+        VIR_FREE(virLogOutputs[i]);
     }
     VIR_FREE(virLogOutputs);
     virLogNbOutputs = 0;
@@ -356,8 +357,8 @@ virLogDefineOutput(virLogOutputFunc f,
                    const char *name,
                    unsigned int flags)
 {
-    int ret = -1;
     char *ndup = NULL;
+    virLogOutputPtr output = NULL;
 
     virCheckFlags(0, -1);
 
@@ -376,22 +377,26 @@ virLogDefineOutput(virLogOutputFunc f,
             return -1;
     }
 
-    virLogLock();
-    if (VIR_REALLOC_N_QUIET(virLogOutputs, virLogNbOutputs + 1)) {
+    if (VIR_ALLOC_QUIET(output) < 0) {
         VIR_FREE(ndup);
-        goto cleanup;
+        return -1;
     }
-    ret = virLogNbOutputs++;
-    virLogOutputs[ret].logInitMessage = true;
-    virLogOutputs[ret].f = f;
-    virLogOutputs[ret].c = c;
-    virLogOutputs[ret].data = data;
-    virLogOutputs[ret].priority = priority;
-    virLogOutputs[ret].dest = dest;
-    virLogOutputs[ret].name = ndup;
+
+    output->logInitMessage = true;
+    output->f = f;
+    output->c = c;
+    output->data = data;
+    output->priority = priority;
+    output->dest = dest;
+    output->name = ndup;
+
+    virLogLock();
+    if (VIR_APPEND_ELEMENT_QUIET(virLogOutputs, virLogNbOutputs, output))
+        goto cleanup;
+
  cleanup:
     virLogUnlock();
-    return ret;
+    return virLogNbOutputs;
 }
 
 
@@ -589,30 +594,30 @@ virLogVMessage(virLogSourcePtr source,
      * use stderr.
      */
     for (i = 0; i < virLogNbOutputs; i++) {
-        if (priority >= virLogOutputs[i].priority) {
-            if (virLogOutputs[i].logInitMessage) {
+        if (priority >= virLogOutputs[i]->priority) {
+            if (virLogOutputs[i]->logInitMessage) {
                 const char *rawinitmsg;
                 char *hoststr = NULL;
                 char *initmsg = NULL;
                 if (virLogVersionString(&rawinitmsg, &initmsg) >= 0)
-                    virLogOutputs[i].f(&virLogSelf, VIR_LOG_INFO,
+                    virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
                                        timestamp, NULL, 0, rawinitmsg, initmsg,
-                                       virLogOutputs[i].data);
+                                       virLogOutputs[i]->data);
                 VIR_FREE(initmsg);
                 if (virLogHostnameString(&hoststr, &initmsg) >= 0)
-                    virLogOutputs[i].f(&virLogSelf, VIR_LOG_INFO,
+                    virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
                                        __FILE__, __LINE__, __func__,
                                        timestamp, NULL, 0, hoststr, initmsg,
-                                       virLogOutputs[i].data);
+                                       virLogOutputs[i]->data);
                 VIR_FREE(hoststr);
                 VIR_FREE(initmsg);
-                virLogOutputs[i].logInitMessage = false;
+                virLogOutputs[i]->logInitMessage = false;
             }
-            virLogOutputs[i].f(source, priority,
+            virLogOutputs[i]->f(source, priority,
                                filename, linenr, funcname,
                                timestamp, metadata, filterflags,
-                               str, msg, virLogOutputs[i].data);
+                               str, msg, virLogOutputs[i]->data);
         }
     }
     if (virLogNbOutputs == 0) {
@@ -1363,20 +1368,20 @@ virLogGetOutputs(void)
 
     virLogLock();
     for (i = 0; i < virLogNbOutputs; i++) {
-        virLogDestination dest = virLogOutputs[i].dest;
+        virLogDestination dest = virLogOutputs[i]->dest;
         if (i)
             virBufferAddChar(&outputbuf, ' ');
         switch (dest) {
             case VIR_LOG_TO_SYSLOG:
             case VIR_LOG_TO_FILE:
                 virBufferAsprintf(&outputbuf, "%d:%s:%s",
-                                  virLogOutputs[i].priority,
+                                  virLogOutputs[i]->priority,
                                   virLogDestinationTypeToString(dest),
-                                  virLogOutputs[i].name);
+                                  virLogOutputs[i]->name);
                 break;
             default:
                 virBufferAsprintf(&outputbuf, "%d:%s",
-                                  virLogOutputs[i].priority,
+                                  virLogOutputs[i]->priority,
                                   virLogDestinationTypeToString(dest));
         }
     }
