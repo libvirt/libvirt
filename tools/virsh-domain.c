@@ -2761,6 +2761,10 @@ static const vshCmdOptDef opts_block_pull[] = {
      .type = VSH_OT_BOOL,
      .help = N_("keep the backing chain relatively referenced")
     },
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("the bandwidth limit is in bytes/s rather than MiB/s")
+    },
     {.name = NULL}
 };
 
@@ -2772,6 +2776,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     bool blocking = vshCommandOptBool(cmd, "wait");
     bool verbose = vshCommandOptBool(cmd, "verbose");
     bool async = vshCommandOptBool(cmd, "async");
+    bool bytes = vshCommandOptBool(cmd, "bytes");
     int timeout = 0;
     const char *path = NULL;
     const char *base = NULL;
@@ -2788,7 +2793,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "base", &base) < 0)
         return false;
 
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+    if (vshBlockJobOptionBandwidth(ctl, cmd, bytes, &bandwidth) < 0)
         return false;
 
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
@@ -2806,10 +2811,16 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (base || flags) {
+        if (bytes)
+            flags |= VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES;
+
         if (virDomainBlockRebase(dom, path, base, bandwidth, flags) < 0)
             goto cleanup;
     } else {
-        if (virDomainBlockPull(dom, path, bandwidth, 0) < 0)
+        if (bytes)
+            flags |= VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES;
+
+        if (virDomainBlockPull(dom, path, bandwidth, flags) < 0)
             goto cleanup;
     }
 
