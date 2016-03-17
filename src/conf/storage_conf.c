@@ -1055,9 +1055,15 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_DEVICE) &&
         src->ndevice) {
         for (i = 0; i < src->ndevice; i++) {
+            virBufferEscapeString(buf, "<device path='%s'",
+                                  src->devices[i].path);
+            if (src->devices[i].part_separator !=
+                VIR_TRISTATE_SWITCH_ABSENT) {
+                virBufferAsprintf(buf, " part_separator='%s'",
+                                  virTristateBoolTypeToString(src->devices[i].part_separator));
+            }
             if (src->devices[i].nfreeExtent) {
-                virBufferEscapeString(buf, "<device path='%s'>\n",
-                                      src->devices[i].path);
+                virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 2);
                 for (j = 0; j < src->devices[i].nfreeExtent; j++) {
                     virBufferAsprintf(buf, "<freeExtent start='%llu' end='%llu'/>\n",
@@ -1067,13 +1073,6 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</device>\n");
             } else {
-                virBufferEscapeString(buf, "<device path='%s'",
-                                      src->devices[i].path);
-                if (src->devices[i].part_separator !=
-                    VIR_TRISTATE_SWITCH_ABSENT) {
-                    virBufferAsprintf(buf, " part_separator='%s'",
-                                      virTristateBoolTypeToString(src->devices[i].part_separator));
-                }
                 virBufferAddLit(buf, "/>\n");
             }
         }
