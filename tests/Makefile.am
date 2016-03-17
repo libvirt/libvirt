@@ -462,8 +462,6 @@ TESTS = $(test_programs) \
 # intermediate shell variable, but must do all the expansion in make
 
 lv_abs_top_builddir=$(shell cd '$(top_builddir)' && pwd)
-path_add = $(subst :,$(PATH_SEPARATOR),\
-	$(subst !,$(lv_abs_top_builddir)/,!daemon:!tools:!tests))
 
 VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
 TESTS_ENVIRONMENT =				\
@@ -472,7 +470,6 @@ TESTS_ENVIRONMENT =				\
   abs_builddir=$(abs_builddir)			\
   abs_srcdir=$(abs_srcdir)			\
   CONFIG_HEADER="$(lv_abs_top_builddir)/config.h"	\
-  PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   LIBVIRT_DRIVER_DIR="$(lv_abs_top_builddir)/src/.libs" \
   LIBVIRT_AUTOSTART=0				\

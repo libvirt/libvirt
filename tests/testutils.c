@@ -806,6 +806,24 @@ virTestGetRegenerate(void)
     return testRegenerate;
 }
 
+static int
+virTestSetEnvPath(void)
+{
+    int ret = -1;
+    const char *path = getenv("PATH");
+    char *new_path = NULL;
+
+    if (strstr(path, abs_builddir) != path &&
+        (virAsprintf(&new_path, "%s:%s", abs_builddir, path) < 0 ||
+         setenv("PATH", new_path, 1) < 0))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(new_path);
+    return ret;
+}
+
 int virtTestMain(int argc,
                  char **argv,
                  int (*func)(void))
@@ -817,6 +835,9 @@ int virtTestMain(int argc,
 #endif
 
     virFileActivateDirOverride(argv[0]);
+
+    if (virTestSetEnvPath() < 0)
+        return EXIT_AM_HARDFAIL;
 
     if (!virFileExists(abs_srcdir))
         return EXIT_AM_HARDFAIL;
