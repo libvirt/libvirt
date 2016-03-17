@@ -82,16 +82,19 @@ int qemuProcessStart(virConnectPtr conn,
                      unsigned int flags);
 
 
-int qemuProcessStartValidate(virDomainDefPtr def,
+int qemuProcessStartValidate(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
                              virQEMUCapsPtr qemuCaps,
                              bool migration,
-                             bool snap);
+                             bool snap,
+                             unsigned int flags);
 
 int qemuProcessInit(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     qemuDomainAsyncJob asyncJob,
                     bool migration,
-                    bool snap);
+                    bool snap,
+                    unsigned int flags);
 
 int qemuProcessPrepareDomain(virConnectPtr conn,
                              virQEMUDriverPtr driver,

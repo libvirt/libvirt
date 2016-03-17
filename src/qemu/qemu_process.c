@@ -4372,21 +4372,103 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
  * @qemuCaps: emulator capabilities
  * @migration: restoration of existing state
  *
- * This function aggregates checks independent from host state done prior to
- * start of a VM.
+ * This function aggregates checks done prior to start of a VM.
+ *
+ * Flag VIR_QEMU_PROCESS_START_PRETEND tells, that we don't want to actually
+ * start the domain but create a valid qemu command.  If some code shouldn't be
+ * executed in this case, make sure to check this flag.
  */
 int
-qemuProcessStartValidate(virDomainDefPtr def,
+qemuProcessStartValidate(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
                          virQEMUCapsPtr qemuCaps,
                          bool migration,
-                         bool snapshot)
+                         bool snapshot,
+                         unsigned int flags)
 {
-    if (qemuValidateCpuCount(def, qemuCaps) < 0)
+    bool check_shmem = false;
+    size_t i;
+
+    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
+        if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
+            VIR_DEBUG("Checking for KVM availability");
+            if (!virFileExists("/dev/kvm")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Domain requires KVM, but it is not available. "
+                                 "Check that virtualization is enabled in the "
+                                 "host BIOS, and host configuration is setup to "
+                                 "load the kvm modules."));
+                return -1;
+            }
+        }
+
+        if (qemuDomainCheckDiskPresence(driver, vm,
+                                        flags & VIR_QEMU_PROCESS_START_COLD) < 0)
+            return -1;
+
+        VIR_DEBUG("Checking domain and device security labels");
+        if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+            return -1;
+
+    }
+
+    if (qemuValidateCpuCount(vm->def, qemuCaps) < 0)
         return -1;
 
     if (!migration && !snapshot &&
-        virDomainDefCheckDuplicateDiskInfo(def) < 0)
+        virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
         return -1;
+
+    if (vm->def->mem.min_guarantee) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parameter 'min_guarantee' "
+                         "not supported by QEMU."));
+        return -1;
+    }
+
+    VIR_DEBUG("Checking for any possible (non-fatal) issues");
+
+    /*
+     * For vhost-user to work, the domain has to have some type of
+     * shared memory configured.  We're not the proper ones to judge
+     * whether shared hugepages or shm are enough and will be in the
+     * future, so we'll just warn in case neither is configured.
+     * Moreover failing would give the false illusion that libvirt is
+     * really checking that everything works before running the domain
+     * and not only we are unable to do that, but it's also not our
+     * aim to do so.
+     */
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (virDomainNetGetActualType(vm->def->nets[i]) ==
+                                      VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+            check_shmem = true;
+            break;
+        }
+    }
+
+    if (check_shmem) {
+        bool shmem = vm->def->nshmems;
+
+        /*
+         * This check is by no means complete.  We merely check
+         * whether there are *some* hugepages enabled and *some* NUMA
+         * nodes with shared memory access.
+         */
+        if (!shmem && vm->def->mem.nhugepages) {
+            for (i = 0; i < virDomainNumaGetNodeCount(vm->def->numa); i++) {
+                if (virDomainNumaGetNodeMemoryAccessMode(vm->def->numa, i) ==
+                    VIR_NUMA_MEM_ACCESS_SHARED) {
+                    shmem = true;
+                    break;
+                }
+            }
+        }
+
+        if (!shmem) {
+            VIR_WARN("Detected vhost-user interface without any shared memory, "
+                     "the interface might not be operational");
+        }
+    }
 
     return 0;
 }
@@ -4405,7 +4487,8 @@ qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
                 qemuDomainAsyncJob asyncJob,
                 bool migration,
-                bool snap)
+                bool snap,
+                unsigned int flags)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
@@ -4434,7 +4517,8 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                                       vm->def->os.machine)))
         goto cleanup;
 
-    if (qemuProcessStartValidate(vm->def, priv->qemuCaps, migration, snap) < 0)
+    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps,
+                                 migration, snap, flags) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
@@ -5025,12 +5109,10 @@ qemuProcessLaunch(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
-    size_t i;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
-    bool check_shmem = false;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d "
               "incoming.launchURI=%s incoming.deferredURI=%s "
@@ -5060,37 +5142,11 @@ qemuProcessLaunch(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    VIR_DEBUG("Checking domain and device security labels");
-    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Creating domain log file");
     if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
                                             QEMU_DOMAIN_LOG_CONTEXT_MODE_START)))
         goto cleanup;
     logfile = qemuDomainLogContextGetWriteFD(logCtxt);
-
-    if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
-        VIR_DEBUG("Checking for KVM availability");
-        if (!virFileExists("/dev/kvm")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Domain requires KVM, but it is not available. "
-                             "Check that virtualization is enabled in the host BIOS, "
-                             "and host configuration is setup to load the kvm modules."));
-            goto cleanup;
-        }
-    }
-
-    if (qemuDomainCheckDiskPresence(driver, vm,
-                                    flags & VIR_QEMU_PROCESS_START_COLD) < 0)
-        goto cleanup;
-
-    if (vm->def->mem.min_guarantee) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parameter 'min_guarantee' "
-                         "not supported by QEMU."));
-        goto cleanup;
-    }
 
     if (qemuDomainSetPrivatePaths(&priv->libDir,
                                   &priv->channelTargetDir,
@@ -5099,50 +5155,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                   vm->def->name,
                                   vm->def->id) < 0)
         goto cleanup;
-
-    VIR_DEBUG("Checking for any possible (non-fatal) issues");
-
-    /*
-     * For vhost-user to work, the domain has to have some type of
-     * shared memory configured.  We're not the proper ones to judge
-     * whether shared hugepages or shm are enough and will be in the
-     * future, so we'll just warn in case neither is configured.
-     * Moreover failing would give the false illusion that libvirt is
-     * really checking that everything works before running the domain
-     * and not only we are unable to do that, but it's also not our
-     * aim to do so.
-     */
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (virDomainNetGetActualType(vm->def->nets[i]) ==
-                                      VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-            check_shmem = true;
-            break;
-        }
-    }
-
-    if (check_shmem) {
-        bool shmem = vm->def->nshmems;
-
-        /*
-         * This check is by no means complete.  We merely check
-         * whether there are *some* hugepages enabled and *some* NUMA
-         * nodes with shared memory access.
-         */
-        if (!shmem && vm->def->mem.nhugepages) {
-            for (i = 0; i < virDomainNumaGetNodeCount(vm->def->numa); i++) {
-                if (virDomainNumaGetNodeMemoryAccessMode(vm->def->numa, i) ==
-                    VIR_NUMA_MEM_ACCESS_SHARED) {
-                    shmem = true;
-                    break;
-                }
-            }
-        }
-
-        if (!shmem) {
-            VIR_WARN("Detected vhost-user interface without any shared memory, "
-                     "the interface might not be operational");
-        }
-    }
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(conn, driver,
@@ -5466,7 +5478,8 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_PAUSED |
                       VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
 
-    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom, !!snapshot) < 0)
+    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom,
+                        !!snapshot, flags) < 0)
         goto cleanup;
 
     if (migrateFrom) {

@@ -6984,7 +6984,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                             VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
         goto cleanup;
 
-    if (qemuProcessStartValidate(vm->def, qemuCaps, false, false) < 0)
+    if (qemuProcessStartValidate(driver, vm, qemuCaps, false, false,
+                                 VIR_QEMU_PROCESS_START_COLD |
+                                 VIR_QEMU_PROCESS_START_PRETEND) < 0)
         goto cleanup;
 
     /* Generate per-domain paths because we don't have the domain object */

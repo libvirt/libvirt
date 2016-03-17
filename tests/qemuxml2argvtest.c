@@ -350,7 +350,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto out;
     }
 
-    if (qemuProcessStartValidate(vm->def, extraFlags, !!migrateURI, false) < 0) {
+    if (qemuProcessStartValidate(&driver, vm, extraFlags,
+                                 !!migrateURI, false,
+                                 VIR_QEMU_PROCESS_START_COLD |
+                                 VIR_QEMU_PROCESS_START_PRETEND) < 0) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
         goto out;
