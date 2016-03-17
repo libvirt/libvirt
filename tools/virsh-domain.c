@@ -2245,6 +2245,10 @@ static const vshCmdOptDef opts_block_copy[] = {
      .type = VSH_OT_INT,
      .help = N_("maximum amount of in-flight data during the copy")
     },
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("the bandwidth limit is in bytes/s rather than MiB/s")
+    },
     {.name = NULL}
 };
 
@@ -2265,6 +2269,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     bool blockdev = vshCommandOptBool(cmd, "blockdev");
     bool blocking = vshCommandOptBool(cmd, "wait") || finish || pivot;
     bool async = vshCommandOptBool(cmd, "async");
+    bool bytes = vshCommandOptBool(cmd, "bytes");
     int timeout = 0;
     const char *path = NULL;
     int abort_flags = 0;
@@ -2282,11 +2287,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         return false;
     if (vshCommandOptStringReq(ctl, cmd, "format", &format) < 0)
         return false;
-    /* XXX: Parse bandwidth as scaled input, rather than forcing
-     * MiB/s, and either reject negative input or treat it as 0 rather
-     * than trying to guess which value will work well across both
-     * APIs with their different sizes and scales.  */
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+    if (vshBlockJobOptionBandwidth(ctl, cmd, bytes, &bandwidth) < 0)
         return false;
     if (vshCommandOptUInt(ctl, cmd, "granularity", &granularity) < 0)
         return false;
@@ -2351,17 +2352,21 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         if (bandwidth || granularity || buf_size) {
             params = vshCalloc(ctl, 3, sizeof(*params));
             if (bandwidth) {
-                /* bandwidth is ulong MiB/s, but the typed parameter is
-                 * ullong bytes/s; make sure we don't overflow */
-                unsigned long long limit = MIN(ULONG_MAX, ULLONG_MAX >> 20);
-                if (bandwidth > limit) {
-                    vshError(ctl, _("bandwidth must be less than %llu"), limit);
-                    goto cleanup;
+                if (!bytes) {
+                    /* bandwidth is ulong MiB/s, but the typed parameter is
+                     * ullong bytes/s; make sure we don't overflow */
+                    unsigned long long limit = MIN(ULONG_MAX, ULLONG_MAX >> 20);
+                    if (bandwidth > limit) {
+                        vshError(ctl, _("bandwidth must be less than %llu"), limit);
+                        goto cleanup;
+                    }
+
+                    bandwidth <<= 20ULL;
                 }
                 if (virTypedParameterAssign(&params[nparams++],
                                             VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
                                             VIR_TYPED_PARAM_ULLONG,
-                                            bandwidth << 20ULL) < 0)
+                                            bandwidth) < 0)
                     goto cleanup;
             }
             if (granularity &&
@@ -2402,6 +2407,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_DEV;
         if (STREQ_NULLABLE(format, "raw"))
             flags |= VIR_DOMAIN_BLOCK_REBASE_COPY_RAW;
+        if (bytes)
+            flags |= VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES;
 
         if (virDomainBlockRebase(dom, path, dest, bandwidth, flags) < 0)
             goto cleanup;

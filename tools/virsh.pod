@@ -994,7 +994,7 @@ command.
 =item B<blockcopy> I<domain> I<path> { I<dest> [I<format>] [I<--blockdev>]
 | I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
 [I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
-[I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>]
+[I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>] [I<--bytes>]
 
 Copy a disk backing image chain to a destination.  Either I<dest> as
 the destination file name, or I<--xml> with the name of an XML file containing
@@ -1039,8 +1039,10 @@ I<path> specifies fully-qualified path of the disk.
 I<bandwidth> specifies copying bandwidth limit in MiB/s. Specifying a negative
 value is interpreted as an unsigned long long value that might be essentially
 unlimited, but more likely would overflow; it is safer to use 0 for that
-purpose.  Specifying I<granularity> allows fine-tuning of the granularity that
-will be copied when a dirty region is detected; larger values trigger less
+purpose. For further information on the I<bandwidth> argument see the
+corresponding section for the B<blockjob> command.
+Specifying I<granularity> allows fine-tuning of the granularity that will be
+copied when a dirty region is detected; larger values trigger less
 I/O overhead but may end up copying more data overall (the default value is
 usually correct); hypervisors may restrict this to be a power of two or fall
 within a certain range. Specifying I<buf-size> will control how much data can
