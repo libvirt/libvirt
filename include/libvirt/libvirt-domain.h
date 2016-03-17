@@ -727,6 +727,21 @@ typedef enum {
 # define VIR_MIGRATE_PARAM_DEST_XML          "destination_xml"
 
 /**
+ * VIR_MIGRATE_PARAM_PERSIST_XML:
+ *
+ * virDomainMigrate* params field: the new persistent configuration to be used
+ * for the domain on the destination host as VIR_TYPED_PARAM_STRING.
+ * This field cannot be used to rename the domain during migration (use
+ * VIR_MIGRATE_PARAM_DEST_NAME field for that purpose). Domain name in the
+ * destination XML must match the original domain name.
+ *
+ * Omitting this parameter keeps the original domain persistent configuration.
+ * Using this field with hypervisors that do not support changing domain
+ * configuration during migration will result in a failure.
+ */
+# define VIR_MIGRATE_PARAM_PERSIST_XML  "persistent_xml"
+
+/**
  * VIR_MIGRATE_PARAM_BANDWIDTH:
  *
  * virDomainMigrate* params field: the maximum bandwidth (in MiB/s) that will

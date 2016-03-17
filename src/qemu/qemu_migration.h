@@ -64,6 +64,7 @@ typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
     VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,       VIR_TYPED_PARAM_INT,    \
     VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,      VIR_TYPED_PARAM_INT,    \
     VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,     VIR_TYPED_PARAM_ULLONG, \
+    VIR_MIGRATE_PARAM_PERSIST_XML,      VIR_TYPED_PARAM_STRING,   \
     NULL
 
 
@@ -180,6 +181,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          virConnectPtr conn,
                          virDomainObjPtr vm,
                          const char *xmlin,
+                         const char *persist_xml,
                          const char *dconnuri,
                          const char *uri,
                          const char *graphicsuri,

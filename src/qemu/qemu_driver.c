@@ -12181,7 +12181,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      *
      * Consume any cookie we were able to decode though
      */
-    ret = qemuMigrationPerform(driver, dom->conn, vm,
+    ret = qemuMigrationPerform(driver, dom->conn, vm, NULL,
                                NULL, dconnuri, uri, NULL, NULL, 0, NULL, 0,
                                compression, cookie, cookielen,
                                NULL, NULL, /* No output cookies in v2 */
@@ -12587,7 +12587,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin,
+    ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin, NULL,
                                dconnuri, uri, NULL, NULL, 0, NULL, 0,
                                compression,
                                cookiein, cookieinlen,
@@ -12613,6 +12613,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     const char *dom_xml = NULL;
+    const char *persist_xml = NULL;
     const char *dname = NULL;
     const char *uri = NULL;
     const char *graphicsuri = NULL;
@@ -12648,7 +12649,10 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                 &listenAddress) < 0 ||
         virTypedParamsGetInt(params, nparams,
                              VIR_MIGRATE_PARAM_DISKS_PORT,
-                             &nbdPort) < 0)
+                             &nbdPort) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_PERSIST_XML,
+                                &persist_xml) < 0)
         goto cleanup;
 
     nmigrate_disks = virTypedParamsGetStringList(params, nparams,
@@ -12669,7 +12673,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuMigrationPerform(driver, dom->conn, vm, dom_xml,
+    ret = qemuMigrationPerform(driver, dom->conn, vm, dom_xml, persist_xml,
                                dconnuri, uri, graphicsuri, listenAddress,
                                nmigrate_disks, migrate_disks, nbdPort,
                                compression,
