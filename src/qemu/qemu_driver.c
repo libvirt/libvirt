@@ -6948,9 +6948,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    virDomainDefPtr def = NULL;
     virDomainChrSourceDef monConfig = {0};
     virQEMUCapsPtr qemuCaps = NULL;
+    virDomainObjPtr vm = NULL;
     bool monitor_json = false;
     virCommandPtr cmd = NULL;
     char *ret = NULL;
@@ -6976,22 +6976,21 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                  VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
-    if (!def)
+    if (!(vm = virDomainObjNew(driver->xmlopt)))
         goto cleanup;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
+    if (!(vm->def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
         goto cleanup;
 
-    if (qemuProcessStartValidate(def, qemuCaps, false, false) < 0)
+    if (qemuProcessStartValidate(vm->def, qemuCaps, false, false) < 0)
         goto cleanup;
 
     /* Generate per-domain paths because we don't have the domain object */
     if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
                                   cfg->libDir, cfg->channelTargetDir,
-                                  def->name, -1) < 0)
+                                  vm->def->name, -1) < 0)
         goto cleanup;
 
     /* Since we're just exporting args, we can't do bridge/network/direct
@@ -6999,8 +6998,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
      * directly. We convert those configs into generic 'ethernet'
      * config and assume the user has suitable 'ifup-qemu' scripts
      */
-    for (i = 0; i < def->nnets; i++) {
-        virDomainNetDefPtr net = def->nets[i];
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
         int bootIndex = net->info.bootIndex;
         char *model = net->model;
         virMacAddr mac = net->mac;
@@ -7084,18 +7083,18 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     monitor_json = virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
 
-    if (qemuProcessPrepareMonitorChr(&monConfig, def->name) < 0)
+    if (qemuProcessPrepareMonitorChr(&monConfig, vm->def->name) < 0)
         goto cleanup;
 
-    if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
+    if (qemuAssignDeviceAliases(vm->def, qemuCaps) < 0)
         goto cleanup;
 
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
+    if (qemuDomainAssignAddresses(vm->def, qemuCaps, NULL) < 0)
         goto cleanup;
 
     /* do fake auto-alloc of graphics ports, if such config is used */
-    for (i = 0; i < def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = def->graphics[i];
+    for (i = 0; i < vm->def->ngraphics; ++i) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             !graphics->data.vnc.socket && graphics->data.vnc.autoport) {
             graphics->data.vnc.port = 5900;
@@ -7105,7 +7104,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         }
     }
 
-    if (!(cmd = qemuBuildCommandLine(conn, driver, NULL, def,
+    if (!(cmd = qemuBuildCommandLine(conn, driver, NULL, vm->def,
                                      &monConfig, monitor_json, qemuCaps,
                                      NULL, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
@@ -7122,7 +7121,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
  cleanup:
     virObjectUnref(qemuCaps);
     virCommandFree(cmd);
-    virDomainDefFree(def);
+    virObjectUnref(vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     VIR_FREE(domainLibDir);

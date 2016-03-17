@@ -258,7 +258,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     char *actualargv = NULL;
     int ret = -1;
-    virDomainDefPtr vmdef = NULL;
+    virDomainObjPtr vm = NULL;
     virDomainChrSourceDef monitor_chr;
     virConnectPtr conn;
     char *log = NULL;
@@ -276,24 +276,27 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virBitmapParse("0-3", '\0', &nodeset, 4) < 0)
         goto out;
 
-    if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                        (VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                         parseFlags)))) {
+    if (!(vm = virDomainObjNew(driver.xmlopt)))
+        goto out;
+
+    if (!(vm->def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
+                                          (VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                           parseFlags)))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
         goto out;
     }
 
-    if (!virDomainDefCheckABIStability(vmdef, vmdef)) {
+    if (!virDomainDefCheckABIStability(vm->def, vm->def)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto out;
     }
 
-    vmdef->id = -1;
+    vm->def->id = -1;
 
     if (qemuDomainSetPrivatePaths(&domainLibDir, &domainChannelTargetDir,
                                   "/tmp/lib", "/tmp/channel",
-                                  vmdef->name, vmdef->id) < 0)
+                                  vm->def->name, vm->def->id) < 0)
         goto out;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
@@ -305,16 +308,16 @@ static int testCompareXMLToArgvFiles(const char *xml,
                        QEMU_CAPS_DEVICE,
                        QEMU_CAPS_LAST);
 
-    if (STREQ(vmdef->os.machine, "pc") &&
-        STREQ(vmdef->emulator, "/usr/bin/qemu-system-x86_64")) {
-        VIR_FREE(vmdef->os.machine);
-        if (VIR_STRDUP(vmdef->os.machine, "pc-0.11") < 0)
+    if (STREQ(vm->def->os.machine, "pc") &&
+        STREQ(vm->def->emulator, "/usr/bin/qemu-system-x86_64")) {
+        VIR_FREE(vm->def->os.machine);
+        if (VIR_STRDUP(vm->def->os.machine, "pc-0.11") < 0)
             goto out;
     }
 
-    virQEMUCapsFilterByMachineType(extraFlags, vmdef->os.machine);
+    virQEMUCapsFilterByMachineType(extraFlags, vm->def->os.machine);
 
-    if (qemuDomainAssignAddresses(vmdef, extraFlags, NULL)) {
+    if (qemuDomainAssignAddresses(vm->def, extraFlags, NULL)) {
         if (flags & FLAG_EXPECT_ERROR)
             goto ok;
         goto out;
@@ -324,16 +327,16 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(log);
     virResetLastError();
 
-    if (vmdef->os.arch == VIR_ARCH_X86_64 ||
-        vmdef->os.arch == VIR_ARCH_I686) {
+    if (vm->def->os.arch == VIR_ARCH_X86_64 ||
+        vm->def->os.arch == VIR_ARCH_I686) {
         virQEMUCapsSet(extraFlags, QEMU_CAPS_PCI_MULTIBUS);
     }
 
-    if (qemuAssignDeviceAliases(vmdef, extraFlags) < 0)
+    if (qemuAssignDeviceAliases(vm->def, extraFlags) < 0)
         goto out;
 
-    for (i = 0; i < vmdef->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = vmdef->hostdevs[i];
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
@@ -342,18 +345,18 @@ static int testCompareXMLToArgvFiles(const char *xml,
         }
     }
 
-    for (i = 0; i < vmdef->ndisks; i++) {
-        if (virStorageTranslateDiskSourcePool(conn, vmdef->disks[i]) < 0)
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
             goto out;
     }
 
-    if (qemuProcessStartValidate(vmdef, extraFlags, !!migrateURI, false) < 0) {
+    if (qemuProcessStartValidate(vm->def, extraFlags, !!migrateURI, false) < 0) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
         goto out;
     }
 
-    if (!(cmd = qemuBuildCommandLine(conn, &driver, NULL, vmdef, &monitor_chr,
+    if (!(cmd = qemuBuildCommandLine(conn, &driver, NULL, vm->def, &monitor_chr,
                                      (flags & FLAG_JSON), extraFlags,
                                      migrateURI, NULL,
                                      VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
@@ -398,7 +401,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     VIR_FREE(log);
     VIR_FREE(actualargv);
     virCommandFree(cmd);
-    virDomainDefFree(vmdef);
+    virObjectUnref(vm);
     virObjectUnref(conn);
     virBitmapFree(nodeset);
     VIR_FREE(domainLibDir);
