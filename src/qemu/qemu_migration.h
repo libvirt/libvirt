@@ -53,6 +53,7 @@
     VIR_MIGRATE_PARAM_LISTEN_ADDRESS,   VIR_TYPED_PARAM_STRING,   \
     VIR_MIGRATE_PARAM_MIGRATE_DISKS,    VIR_TYPED_PARAM_STRING |  \
                                         VIR_TYPED_PARAM_MULTIPLE, \
+    VIR_MIGRATE_PARAM_DISKS_PORT,       VIR_TYPED_PARAM_INT,      \
     NULL
 
 
@@ -134,6 +135,7 @@ int qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                const char *listenAddress,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
+                               int nbdPort,
                                unsigned long flags);
 
 int qemuMigrationPerform(virQEMUDriverPtr driver,
@@ -146,6 +148,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          const char *listenAddress,
                          size_t nmigrate_disks,
                          const char **migrate_disks,
+                         int nbdPort,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,
