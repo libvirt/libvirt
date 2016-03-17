@@ -237,5 +237,7 @@ virLogFilterPtr virLogFilterNew(const char *match,
                                 unsigned int flags) ATTRIBUTE_NONNULL(1);
 int virLogFindOutput(virLogOutputPtr *outputs, size_t noutputs,
                      virLogDestination dest, const void *opaque);
+int virLogDefineOutputs(virLogOutputPtr *outputs,
+                        size_t noutputs) ATTRIBUTE_NONNULL(1);
 
 #endif

@@ -1681,3 +1681,28 @@ virLogFindOutput(virLogOutputPtr *outputs, size_t noutputs,
 
     return -1;
 }
+
+
+/**
+ * virLogDefineOutputs:
+ * @outputs: new set of outputs to be defined
+ * @noutputs: number of outputs in @outputs
+ *
+ * Resets any existing set of outputs and defines a completely new one.
+ *
+ * Returns number of outputs successfully defined or -1 in case of error;
+ */
+int
+virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
+{
+    if (virLogInitialize() < 0)
+        return -1;
+
+    virLogLock();
+    virLogResetOutputs();
+    virLogOutputs = outputs;
+    virLogNbOutputs = noutputs;
+    virLogUnlock();
+
+    return 0;
+}
