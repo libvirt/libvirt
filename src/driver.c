@@ -62,7 +62,7 @@ virDriverLoadModule(const char *name)
         return NULL;
 
     if (access(modfile, R_OK) < 0) {
-        VIR_WARN("Module %s not accessible", modfile);
+        VIR_INFO("Module %s not accessible", modfile);
         goto cleanup;
     }
 
