@@ -1143,18 +1143,16 @@ vshCommandOptScaledInt(vshControl *ctl, const vshCmd *cmd,
 
     if ((ret = vshCommandOpt(cmd, name, &arg, true)) <= 0)
         return ret;
+
     if (virStrToLong_ullp(arg->data, &end, 10, value) < 0 ||
-        virScaleInteger(value, end, scale, max) < 0)
-    {
+        virScaleInteger(value, end, scale, max) < 0) {
         vshError(ctl,
                  _("Scaled numeric value '%s' for <%s> option is malformed or "
                    "out of range"), arg->data, name);
-        ret = -1;
-    } else {
-        ret = 1;
+        return -1;
     }
 
-    return ret;
+    return 1;
 }
 
 
