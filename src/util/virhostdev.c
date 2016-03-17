@@ -560,7 +560,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         }
     }
 
-    /* Step 2: detach managed devices (i.e. bind to appropriate stub driver) */
+    /* Step 2: detach managed devices and make sure unmanaged devices
+     *         have already been taken care of */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
 
@@ -577,8 +578,48 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                                    mgr->inactivePCIHostdevs) < 0)
                 goto reattachdevs;
         } else {
-            VIR_DEBUG("Not detaching unmanaged PCI device %s",
-                      virPCIDeviceGetName(pci));
+            char *driverPath;
+            char *driverName;
+            int stub;
+
+            /* Unmanaged devices should already have been marked as
+             * inactive: if that's the case, we can simply move on */
+            if (virPCIDeviceListFind(mgr->inactivePCIHostdevs, pci)) {
+                VIR_DEBUG("Not detaching unmanaged PCI device %s",
+                          virPCIDeviceGetName(pci));
+                continue;
+            }
+
+            /* If that's not the case, though, it might be because the
+             * daemon has been restarted, causing us to lose track of the
+             * device. Try and recover by marking the device as inactive
+             * if it happens to be bound to a known stub driver.
+             *
+             * FIXME Get rid of this once a proper way to keep track of
+             *       information about active / inactive device across
+             *       daemon restarts has been implemented */
+
+            if (virPCIDeviceGetDriverPathAndName(pci,
+                                                 &driverPath, &driverName) < 0)
+                goto reattachdevs;
+
+            stub = virPCIStubDriverTypeFromString(driverName);
+
+            VIR_FREE(driverPath);
+            VIR_FREE(driverName);
+
+            if (stub > VIR_PCI_STUB_DRIVER_NONE &&
+                stub < VIR_PCI_STUB_DRIVER_LAST) {
+
+                /* The device is bound to a known stub driver: store this
+                 * information and add a copy to the inactive list */
+                virPCIDeviceSetStubDriver(pci, stub);
+
+                VIR_DEBUG("Adding PCI device %s to inactive list",
+                          virPCIDeviceGetName(pci));
+                if (virPCIDeviceListAddCopy(mgr->inactivePCIHostdevs, pci) < 0)
+                    goto reattachdevs;
+            }
         }
     }
 
