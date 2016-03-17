@@ -2010,6 +2010,10 @@ static const vshCmdOptDef opts_block_commit[] = {
      .type = VSH_OT_BOOL,
      .help = N_("keep the backing chain relatively referenced")
     },
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("the bandwidth limit is in bytes/s rather than MiB/s")
+    },
     {.name = NULL}
 };
 
@@ -2024,6 +2028,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     bool active = vshCommandOptBool(cmd, "active") || pivot || finish;
     bool blocking = vshCommandOptBool(cmd, "wait") || pivot || finish;
     bool async = vshCommandOptBool(cmd, "async");
+    bool bytes = vshCommandOptBool(cmd, "bytes");
     int timeout = 0;
     const char *path = NULL;
     const char *base = NULL;
@@ -2044,8 +2049,11 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "top", &top) < 0)
         return false;
 
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+    if (vshBlockJobOptionBandwidth(ctl, cmd, bytes, &bandwidth) < 0)
         return false;
+
+    if (bytes)
+        flags |= VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES;
 
     if (vshCommandOptBool(cmd, "shallow"))
         flags |= VIR_DOMAIN_BLOCK_COMMIT_SHALLOW;

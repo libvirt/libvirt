@@ -941,7 +941,7 @@ currently in use by a running domain. Other contexts that require a MAC
 address of virtual interface (such as I<detach-interface> or
 I<domif-setlink>) will accept the MAC address printed by this command.
 
-=item B<blockcommit> I<domain> I<path> [I<bandwidth>]
+=item B<blockcommit> I<domain> I<path> [I<bandwidth>] [I<--bytes>]
 [I<base>] [I<--shallow>] [I<top>] [I<--delete>] [I<--keep-relative>]
 [I<--wait> [I<--async>] [I<--verbose>]] [I<--timeout> B<seconds>]
 [I<--active>] [{I<--pivot> | I<--keep-overlay>}]
@@ -987,10 +987,9 @@ to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
 also B<domblklist> for listing these names).
 I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
-qemu, it may be non-zero only for an online domain. Specifying a negative
-value is interpreted as an unsigned long long value or essentially
-unlimited. The hypervisor can choose whether to reject the value or
-convert it to the maximum value allowed.
+qemu, it may be non-zero only for an online domain. For further information
+on the I<bandwidth> argument see the corresponding section for the B<blockjob>
+command.
 
 =item B<blockcopy> I<domain> I<path> { I<dest> [I<format>] [I<--blockdev>]
 | I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
