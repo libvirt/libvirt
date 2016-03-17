@@ -1088,7 +1088,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         }
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkAttachNet(privdom, privconn, dev->data.net);
+        ret = prlsdkAttachNet(privconn, privdom, dev->data.net);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("network attach failed"));
@@ -1165,7 +1165,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         }
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkDetachNet(privdom, privconn, dev->data.net);
+        ret = prlsdkDetachNet(privconn, privdom, dev->data.net);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("network detach failed"));

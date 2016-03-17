@@ -2608,8 +2608,8 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
     return macstr;
 }
 
-static int prlsdkAddNet(PRL_HANDLE sdkdom,
-                        vzConnPtr privconn,
+static int prlsdkAddNet(vzConnPtr privconn,
+                        PRL_HANDLE sdkdom,
                         virDomainNetDefPtr net,
                         bool isCt)
 {
@@ -2865,8 +2865,8 @@ prlsdkCleanupBridgedNet(vzConnPtr privconn, virDomainNetDefPtr net)
     PrlHandle_Free(vnet);
 }
 
-int prlsdkAttachNet(virDomainObjPtr dom,
-                    vzConnPtr privconn,
+int prlsdkAttachNet(vzConnPtr privconn,
+                    virDomainObjPtr dom,
                     virDomainNetDefPtr net)
 {
     int ret = -1;
@@ -2883,7 +2883,7 @@ int prlsdkAttachNet(virDomainObjPtr dom,
     if (PRL_FAILED(waitJob(job)))
         return ret;
 
-    ret = prlsdkAddNet(privdom->sdkdom, privconn, net, IS_CT(dom->def));
+    ret = prlsdkAddNet(privconn, privdom->sdkdom, net, IS_CT(dom->def));
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job)))
@@ -2930,8 +2930,8 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
     return adapter;
 }
 
-int prlsdkDetachNet(virDomainObjPtr dom,
-                    vzConnPtr privconn,
+int prlsdkDetachNet(vzConnPtr privconn,
+                    virDomainObjPtr dom,
                     virDomainNetDefPtr net)
 {
     int ret = -1;
@@ -3372,7 +3372,7 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (prlsdkAddNet(sdkdom, conn->privateData, def->nets[i], IS_CT(def)) < 0)
+        if (prlsdkAddNet(conn->privateData, sdkdom, def->nets[i], IS_CT(def)) < 0)
             goto error;
     }
 
