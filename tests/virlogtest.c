@@ -48,9 +48,10 @@ testLogParseOutputs(const void *opaque)
 {
     int ret = -1;
     int noutputs;
+    virLogOutputPtr *outputs = NULL;
     const struct testLogData *data = opaque;
 
-    noutputs = virLogParseAndDefineOutputs(data->str);
+    noutputs = virLogParseOutputs(data->str, &outputs);
     if (noutputs < 0) {
         if (!data->pass) {
             VIR_TEST_DEBUG("Got expected error: %s\n",
@@ -70,7 +71,7 @@ testLogParseOutputs(const void *opaque)
 
     ret = 0;
  cleanup:
-    virLogReset();
+    virLogOutputListFree(outputs, noutputs);
     return ret;
 }
 

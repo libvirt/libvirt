@@ -478,8 +478,8 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
     if (virLogGetNbFilters() == 0)
         virLogParseAndDefineFilters(config->log_filters);
 
-    if (virLogGetNbOutputs() == 0)
-        virLogParseAndDefineOutputs(config->log_outputs);
+    if (config->log_outputs && virLogGetNbOutputs() == 0)
+        virLogSetOutputs(config->log_outputs);
 
     /*
      * Command line override for --verbose
@@ -499,7 +499,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
         if (access("/run/systemd/journal/socket", W_OK) >= 0) {
             if (virAsprintf(&tmp, "%d:journald", virLogGetDefaultPriority()) < 0)
                 goto error;
-            virLogParseAndDefineOutputs(tmp);
+            virLogSetOutputs(tmp);
             VIR_FREE(tmp);
         }
     }
@@ -543,7 +543,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
             if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
                 goto error;
         }
-        virLogParseAndDefineOutputs(tmp);
+        virLogSetOutputs(tmp);
         VIR_FREE(tmp);
     }
 

@@ -872,6 +872,9 @@ int virTestMain(int argc,
 #ifdef TEST_OOM
     char *oomstr;
 #endif
+    size_t noutputs = 0;
+    virLogOutputPtr output = NULL;
+    virLogOutputPtr *outputs = NULL;
 
     if (getenv("VIR_TEST_FILE_ACCESS"))
         VIRT_TEST_PRELOAD(TEST_MOCK);
@@ -911,9 +914,15 @@ int virTestMain(int argc,
 
     virLogSetFromEnv();
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
-        if (virLogDefineOutput(virtTestLogOutput, virtTestLogClose, &testLog,
-                               VIR_LOG_DEBUG, VIR_LOG_TO_STDERR, NULL, 0) < 0)
+        if (!(output = virLogOutputNew(virtTestLogOutput, virtTestLogClose,
+                                       &testLog, VIR_LOG_DEBUG,
+                                       VIR_LOG_TO_STDERR, NULL)) ||
+            VIR_APPEND_ELEMENT(outputs, noutputs, output) < 0 ||
+            virLogDefineOutputs(outputs, noutputs) < 0) {
+            virLogOutputFree(output);
+            virLogOutputListFree(outputs, noutputs);
             return EXIT_FAILURE;
+        }
     }
 
     if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
@@ -988,6 +997,7 @@ int virTestMain(int argc,
             fprintf(stderr, "%*s", 40 - (int)(testCounter % 40), "");
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
+    virLogReset();
     VIR_FREE(perl);
     return ret;
 }
