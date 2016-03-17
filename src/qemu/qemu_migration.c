@@ -501,7 +501,7 @@ qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
 
 static int
 qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
-                                 virDomainObjPtr dom)
+                                 virDomainDefPtr def)
 {
     if (mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -509,10 +509,10 @@ qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
         return -1;
     }
 
-    if (!dom->newDef)
+    if (!def)
         return 0;
 
-    mig->persistent = dom->newDef;
+    mig->persistent = def;
     mig->flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     return 0;
@@ -1358,10 +1358,6 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_LOCKSTATE &&
         qemuMigrationCookieAddLockstate(mig, driver, dom) < 0)
-        return -1;
-
-    if (flags & QEMU_MIGRATION_COOKIE_PERSISTENT &&
-        qemuMigrationCookieAddPersistent(mig, dom) < 0)
         return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_NETWORK &&
@@ -4770,11 +4766,12 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS;
-    if (flags & VIR_MIGRATE_PERSIST_DEST)
-        cookieFlags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
+
     if (ret == 0 &&
-        qemuMigrationBakeCookie(mig, driver, vm, cookieout,
-                                cookieoutlen, cookieFlags) < 0) {
+        (((flags & VIR_MIGRATE_PERSIST_DEST &&
+           qemuMigrationCookieAddPersistent(mig, vm->newDef) < 0)) ||
+          qemuMigrationBakeCookie(mig, driver, vm, cookieout,
+                                  cookieoutlen, cookieFlags) < 0)) {
         VIR_WARN("Unable to encode migration cookie");
     }
 
