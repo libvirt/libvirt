@@ -2272,8 +2272,7 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
  * Run QMP command to eject a media from ejectable device.
  *
  * Returns:
- *      -2 on error, when the tray is locked
- *      -1 on all other errors
+ *      -1 on error
  *      0 on success
  */
 int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
@@ -2293,15 +2292,6 @@ int qemuMonitorJSONEjectMedia(qemuMonitorPtr mon,
 
     if (ret == 0)
         ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret < 0) {
-        virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
-        if (error) {
-            const char *errorStr = virJSONValueObjectGetString(error, "desc");
-            if (errorStr && c_strcasestr(errorStr, "is locked"))
-                ret = -2;
-        }
-    }
 
     virJSONValueFree(cmd);
     virJSONValueFree(reply);

@@ -202,15 +202,14 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
 
-        if (rc == -2) {
+        if (rc < 0) {
             /* we've already tried, error out */
             if (ejectRetry)
                 goto error;
-            VIR_DEBUG("tray is locked, wait for the guest to unlock "
-                      "the tray and try to eject it again");
+
             ejectRetry = true;
-        } else if (rc < 0) {
-            goto error;
+            VIR_DEBUG("tray may be locked, wait for the guest to unlock "
+                      "the tray and try to eject it again");
         }
 
         if (virTimeMillisNow(&now) < 0)
@@ -220,7 +219,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
             if (virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT) != 0)
                 goto error;
         }
-    } while (ejectRetry && rc != 0);
+    } while (rc < 0);
 
     if (!virStorageSourceIsEmpty(newsrc)) {
         if (qemuGetDriveSourceString(newsrc, conn, &sourcestr) < 0)
