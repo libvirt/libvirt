@@ -1147,8 +1147,8 @@ vshCommandOptScaledInt(vshControl *ctl, const vshCmd *cmd,
         virScaleInteger(value, end, scale, max) < 0)
     {
         vshError(ctl,
-                 _("Numeric value '%s' for <%s> option is malformed or out of range"),
-                 arg->data, name);
+                 _("Scaled numeric value '%s' for <%s> option is malformed or "
+                   "out of range"), arg->data, name);
         ret = -1;
     } else {
         ret = 1;

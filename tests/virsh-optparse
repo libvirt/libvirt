@@ -205,7 +205,7 @@ compare exp-err err || fail=1
 
 # Non-numeric value
 cat <<\EOF > exp-err || framework_failure
-error: Numeric value 'abc' for <size> option is malformed or out of range
+error: Scaled numeric value 'abc' for <size> option is malformed or out of range
 EOF
 virsh -q -c $test_url setmaxmem test abc >out 2>err && fail=1
 test -s out && fail=1
@@ -213,7 +213,7 @@ compare exp-err err || fail=1
 
 # Numeric value with invalid suffix
 cat <<\EOF > exp-err || framework_failure
-error: Numeric value '42WB' for <size> option is malformed or out of range
+error: Scaled numeric value '42WB' for <size> option is malformed or out of range
 EOF
 virsh -q -c $test_url setmaxmem test 42WB >out 2>err && fail=1
 test -s out && fail=1
@@ -232,7 +232,7 @@ test -s err && fail=1
 
 # Negative numeric value
 cat <<\EOF > exp-err || framework_failure
-error: Numeric value '-1' for <size> option is malformed or out of range
+error: Scaled numeric value '-1' for <size> option is malformed or out of range
 EOF
 virsh -q -c $test_url setmaxmem test -1 >out 2>err && fail=1
 test -s out && fail=1
