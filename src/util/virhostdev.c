@@ -1658,6 +1658,7 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
                                 virPCIDevicePtr pci)
 {
     struct virHostdevIsPCINodeDeviceUsedData data = { mgr, NULL, false };
+    virPCIDevicePtr actual;
     int ret = -1;
 
     virObjectLock(mgr->activePCIHostdevs);
@@ -1666,11 +1667,12 @@ virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
     if (virHostdevIsPCINodeDeviceUsed(virPCIDeviceGetAddress(pci), &data))
         goto cleanup;
 
-    virPCIDeviceSetUnbindFromStub(pci, true);
-    virPCIDeviceSetRemoveSlot(pci, true);
-    virPCIDeviceSetReprobe(pci, true);
+    /* We need to look up the actual device because that's what
+     * virPCIDeviceReattach() expects as its argument */
+    if (!(actual = virPCIDeviceListFind(mgr->inactivePCIHostdevs, pci)))
+        goto cleanup;
 
-    if (virPCIDeviceReattach(pci, mgr->activePCIHostdevs,
+    if (virPCIDeviceReattach(actual, mgr->activePCIHostdevs,
                              mgr->inactivePCIHostdevs) < 0)
         goto cleanup;
 
