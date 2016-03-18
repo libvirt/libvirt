@@ -90,13 +90,12 @@ static int testTLSContextInit(const void *opaque)
             goto cleanup;
         }
     } else {
-        virErrorPtr err = virGetLastError();
         if (!data->expectFail) {
             VIR_WARN("Unexpected failure %s against %s",
                      data->cacrt, data->crt);
             goto cleanup;
         }
-        VIR_DEBUG("Got error %s", err ? err->message : "<unknown>");
+        VIR_DEBUG("Got error %s", virGetLastErrorMessage());
     }
 
     ret = 0;
