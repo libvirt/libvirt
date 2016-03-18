@@ -252,17 +252,31 @@ _nss_libvirt_gethostbyname2_r(const char *name, int af, struct hostent *result,
                                          errnop, herrnop, NULL, NULL);
 }
 
+static inline void *
+move_and_align(void *buf, size_t len, size_t *idx)
+{
+    char *buffer = buf;
+    size_t move = ALIGN(len);
+
+    if (!idx)
+        return buffer + move;
+
+    *idx += move;
+
+    return buffer + *idx;
+}
+
 enum nss_status
 _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
                               char *buffer, size_t buflen, int *errnop,
                               int *herrnop, int32_t *ttlp, char **canonp)
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
-    char *r_name, **r_aliases, *r_addr, **r_addr_list;
+    char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
     leaseAddress *addr = NULL;
     size_t naddr, i;
     bool found = false;
-    size_t nameLen, need, idx;
+    size_t nameLen, need, idx = 0;
     int alen;
     int r;
 
@@ -319,23 +333,27 @@ _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
     /* First, append name */
     r_name = buffer;
     memcpy(r_name, name, nameLen + 1);
-    idx = ALIGN(nameLen + 1);
+
+    r_aliases = move_and_align(buffer, nameLen + 1, &idx);
 
     /* Second, create aliases array */
-    r_aliases = (char **) buffer + idx;
     r_aliases[0] = NULL;
-    idx += sizeof(char*);
 
     /* Third, append address */
-    r_addr = buffer + idx;
-    for (i = 0; i < naddr; i++)
-        memcpy(r_addr + i * ALIGN(alen), addr[i].addr, alen);
-    idx += naddr * ALIGN(alen);
+    r_addr = move_and_align(buffer, sizeof(char *), &idx);
+    r_addr_next = r_addr;
+    for (i = 0; i < naddr; i++) {
+        memcpy(r_addr_next, addr[i].addr, alen);
+        r_addr_next = move_and_align(buffer, alen, &idx);
+    }
 
+    r_addr_list = move_and_align(buffer, 0, &idx);
+    r_addr_next = r_addr;
     /* Third, append address pointer array */
-    r_addr_list = (char **) buffer + idx;
-    for (i = 0; i < naddr; i++)
-        r_addr_list[i] = r_addr + i * ALIGN(alen);
+    for (i = 0; i < naddr; i++) {
+        r_addr_list[i] = r_addr_next;
+        r_addr_next = move_and_align(r_addr_next, alen, NULL);
+    }
     r_addr_list[i] = NULL;
     idx += (naddr + 1) * sizeof(char*);
 
@@ -375,7 +393,7 @@ _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
     size_t naddr, i;
     bool found = false;
     int r;
-    size_t nameLen, need, idx;
+    size_t nameLen, need, idx = 0;
     struct gaih_addrtuple *r_tuple, *r_tuple_first = NULL;
     char *r_name;
 
@@ -420,25 +438,22 @@ _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
     /* First, append name */
     r_name = buffer;
     memcpy(r_name, name, nameLen + 1);
-    idx = ALIGN(nameLen + 1);
-
 
     /* Second, append addresses */
-    r_tuple_first = (struct gaih_addrtuple*) (buffer + idx);
+    r_tuple_first = move_and_align(buffer, nameLen + 1, &idx);
     for (i = 0; i < naddr; i++) {
         int family = addr[i].af;
 
-        r_tuple = (struct gaih_addrtuple*) (buffer + idx);
+        r_tuple = move_and_align(buffer, 0, &idx);
         if (i == naddr - 1)
             r_tuple->next = NULL;
         else
-            r_tuple->next = (struct gaih_addrtuple*) ((char*) r_tuple + ALIGN(sizeof(struct gaih_addrtuple)));
+            r_tuple->next = move_and_align(buffer, sizeof(struct gaih_addrtuple), &idx);
         r_tuple->name = r_name;
         r_tuple->family = family;
         r_tuple->scopeid = 0;
         memcpy(r_tuple->addr, addr[i].addr, FAMILY_ADDRESS_SIZE(family));
 
-        idx += ALIGN(sizeof(struct gaih_addrtuple));
     }
 
     /* At this point, idx == need */
