@@ -689,7 +689,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
 
     /* Step 7: Now set the original states for hostdev def */
     for (i = 0; i < nhostdevs; i++) {
-        virPCIDevicePtr pci;
+        virPCIDevicePtr actual;
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
 
@@ -698,24 +698,27 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        pci = virPCIDeviceListFindByIDs(pcidevs,
-                                        pcisrc->addr.domain,
-                                        pcisrc->addr.bus,
-                                        pcisrc->addr.slot,
-                                        pcisrc->addr.function);
+        /* We need to look up the actual device because it's the one
+         * that contains the information we care about (unbind_from_stub,
+         * remove_slot, reprobe) */
+        actual = virPCIDeviceListFindByIDs(mgr->activePCIHostdevs,
+                                           pcisrc->addr.domain,
+                                           pcisrc->addr.bus,
+                                           pcisrc->addr.slot,
+                                           pcisrc->addr.function);
 
         /* Appropriate values for the unbind_from_stub, remove_slot
          * and reprobe properties of the device were set earlier
          * by virPCIDeviceDetach() */
-        if (pci) {
+        if (actual) {
             VIR_DEBUG("Saving network configuration of PCI device %s",
-                      virPCIDeviceGetName(pci));
+                      virPCIDeviceGetName(actual));
             hostdev->origstates.states.pci.unbind_from_stub =
-                virPCIDeviceGetUnbindFromStub(pci);
+                virPCIDeviceGetUnbindFromStub(actual);
             hostdev->origstates.states.pci.remove_slot =
-                virPCIDeviceGetRemoveSlot(pci);
+                virPCIDeviceGetRemoveSlot(actual);
             hostdev->origstates.states.pci.reprobe =
-                virPCIDeviceGetReprobe(pci);
+                virPCIDeviceGetReprobe(actual);
         }
     }
 
@@ -898,17 +901,17 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
 
         if (virHostdevIsPCINetDevice(hostdev)) {
             virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
-            virPCIDevicePtr pci;
+            virPCIDevicePtr actual;
 
-            pci = virPCIDeviceListFindByIDs(pcidevs,
-                                            pcisrc->addr.domain,
-                                            pcisrc->addr.bus,
-                                            pcisrc->addr.slot,
-                                            pcisrc->addr.function);
+            actual = virPCIDeviceListFindByIDs(mgr->inactivePCIHostdevs,
+                                               pcisrc->addr.domain,
+                                               pcisrc->addr.bus,
+                                               pcisrc->addr.slot,
+                                               pcisrc->addr.function);
 
-            if (pci) {
+            if (actual) {
                 VIR_DEBUG("Restoring network configuration of PCI device %s",
-                          virPCIDeviceGetName(pci));
+                          virPCIDeviceGetName(actual));
                 virHostdevNetConfigRestore(hostdev, mgr->stateDir,
                                            oldStateDir);
             }
