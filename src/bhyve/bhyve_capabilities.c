@@ -97,7 +97,7 @@ virBhyveCapsBuild(void)
         goto error;
 
     if (virBhyveCapsInitCPU(caps, virArchFromHost()) < 0)
-            VIR_WARN("Failed to get host CPU");
+        VIR_WARN("Failed to get host CPU: %s", virGetLastErrorMessage());
 
     return caps;
 
