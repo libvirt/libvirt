@@ -1025,10 +1025,10 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
     memset(&ipl, 0, sizeof(ipl));
 
     memcpy(&nwint, &pd->d_yiaddr, sizeof(nwint));
-    virSocketAddrSetIPv4Addr(&ipl.ipAddress, ntohl(nwint));
+    virSocketAddrSetIPv4AddrNetOrder(&ipl.ipAddress, nwint);
 
     memcpy(&nwint, &pd->d_siaddr, sizeof(nwint));
-    virSocketAddrSetIPv4Addr(&ipl.ipServer, ntohl(nwint));
+    virSocketAddrSetIPv4AddrNetOrder(&ipl.ipServer, nwint);
 
     if (leasetime == ~0)
         ipl.timeout = ~0;

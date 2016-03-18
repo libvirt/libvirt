@@ -173,6 +173,22 @@ virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val)
 }
 
 /*
+ * virSocketAddrSetIPv4AddrNetOrder:
+ * @addr: the location to store the result
+ * @val: the 32bit integer in network byte order representing the IPv4 address
+ *
+ * Set the IPv4 address given an integer in network order. This function does not
+ * touch any previously set port.
+ */
+void
+virSocketAddrSetIPv4AddrNetOrder(virSocketAddrPtr addr, uint32_t val)
+{
+    addr->data.stor.ss_family = AF_INET;
+    addr->data.inet4.sin_addr.s_addr = val;
+    addr->len = sizeof(struct sockaddr_in);
+}
+
+/*
  * virSocketAddrSetIPv4Addr:
  * @addr: the location to store the result
  * @val: the 32bit integer in host byte order representing the IPv4 address
@@ -183,9 +199,22 @@ virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val)
 void
 virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val)
 {
-    addr->data.stor.ss_family = AF_INET;
-    addr->data.inet4.sin_addr.s_addr = htonl(val);
-    addr->len = sizeof(struct sockaddr_in);
+    virSocketAddrSetIPv4AddrNetOrder(addr, htonl(val));
+}
+
+/*
+ * virSocketAddrSetIPv6AddrNetOrder:
+ * @addr: the location to store the result
+ * @val: the 128bit integer in network byte order representing the IPv6 address
+ *
+ * Set the IPv6 address given an integer in network order. This function does not
+ * touch any previously set port.
+ */
+void virSocketAddrSetIPv6AddrNetOrder(virSocketAddrPtr addr, uint32_t val[4])
+{
+    addr->data.stor.ss_family = AF_INET6;
+    memcpy(addr->data.inet6.sin6_addr.s6_addr, val, 4 * sizeof(*val));
+    addr->len = sizeof(struct sockaddr_in6);
 }
 
 /*
@@ -198,9 +227,13 @@ virSocketAddrSetIPv4Addr(virSocketAddrPtr addr, uint32_t val)
  */
 void virSocketAddrSetIPv6Addr(virSocketAddrPtr addr, uint32_t val[4])
 {
-    addr->data.stor.ss_family = AF_INET6;
-    memcpy(addr->data.inet6.sin6_addr.s6_addr, val, 4 * sizeof(*val));
-    addr->len = sizeof(struct sockaddr_in6);
+    size_t i = 0;
+    uint32_t host_val[4];
+
+    for (i = 0; i < 4; i++)
+        host_val[i] = htonl(val[i]);
+
+    virSocketAddrSetIPv6AddrNetOrder(addr, host_val);
 }
 
 /*

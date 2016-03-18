@@ -126,15 +126,14 @@ testGetHostByName(const void *opaque)
     while (*addrList) {
         virSocketAddr sa;
         char *ipAddr;
+        void *address = *addrList;
 
         memset(&sa, 0, sizeof(sa));
 
         if (resolved.h_addrtype == AF_INET) {
-            /* For some reason, virSocketAddrSetIPv4Addr does htonl() conversion.
-             * But the data we already have is in network order. */
-            virSocketAddrSetIPv4Addr(&sa, ntohl(*((uint32_t *) *addrList)));
+            virSocketAddrSetIPv4AddrNetOrder(&sa, *((uint32_t *) address));
         } else {
-            virSocketAddrSetIPv6Addr(&sa, (uint32_t *) *addrList);
+            virSocketAddrSetIPv6AddrNetOrder(&sa, address);
         }
 
         if (!(ipAddr = virSocketAddrFormat(&sa))) {
