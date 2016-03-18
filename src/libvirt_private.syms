@@ -907,6 +907,8 @@ virSecretObjListGetUUIDs;
 virSecretObjListNew;
 virSecretObjListNumOfSecrets;
 virSecretObjListRemove;
+virSecretObjSaveConfig;
+virSecretObjSaveData;
 
 
 # cpu/cpu.h

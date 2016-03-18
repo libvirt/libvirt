@@ -92,26 +92,6 @@ secretObjFromSecret(virSecretPtr secret)
 }
 
 
-/* Permament secret storage */
-
-/* Secrets are stored in virSecretDriverStatePtr->configDir.  Each secret
-   has virSecretDef stored as XML in "$basename.xml".  If a value of the
-   secret is defined, it is stored as base64 (with no formatting) in
-   "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
-
-static int
-secretRewriteFile(int fd,
-                  void *opaque)
-{
-    char *data = opaque;
-
-    if (safewrite(fd, data, strlen(data)) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 static int
 secretEnsureDirectory(void)
 {
@@ -121,59 +101,6 @@ secretEnsureDirectory(void)
         return -1;
     }
     return 0;
-}
-
-static int
-secretSaveDef(const virSecretObj *secret)
-{
-    char *xml = NULL;
-    int ret = -1;
-
-    if (secretEnsureDirectory() < 0)
-        goto cleanup;
-
-    if (!(xml = virSecretDefFormat(secret->def)))
-        goto cleanup;
-
-    if (virFileRewrite(secret->configFile, S_IRUSR | S_IWUSR,
-                       secretRewriteFile, xml) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(xml);
-    return ret;
-}
-
-static int
-secretSaveValue(const virSecretObj *secret)
-{
-    char *base64 = NULL;
-    int ret = -1;
-
-    if (secret->value == NULL)
-        return 0;
-
-    if (secretEnsureDirectory() < 0)
-        goto cleanup;
-
-    base64_encode_alloc((const char *)secret->value, secret->value_size,
-                        &base64);
-    if (base64 == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    if (virFileRewrite(secret->base64File, S_IRUSR | S_IWUSR,
-                       secretRewriteFile, base64) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(base64);
-    return ret;
 }
 
 /* Driver functions */
@@ -301,14 +228,18 @@ secretDefineXML(virConnectPtr conn,
         goto cleanup;
 
     if (!new_attrs->ephemeral) {
+        if (secretEnsureDirectory() < 0)
+            goto cleanup;
+
         if (backup && backup->ephemeral) {
-            if (secretSaveValue(secret) < 0)
+            if (virSecretObjSaveData(secret) < 0)
                 goto restore_backup;
         }
-        if (secretSaveDef(secret) < 0) {
+
+        if (virSecretObjSaveConfig(secret) < 0) {
             if (backup && backup->ephemeral) {
-                /* Undo the secretSaveValue() above; ignore errors */
-                (void)unlink(secret->base64File);
+                /* Undo the virSecretObjSaveData() above; ignore errors */
+                virSecretObjDeleteData(secret);
             }
             goto restore_backup;
         }
@@ -397,7 +328,10 @@ secretSetValue(virSecretPtr obj,
     secret->value = new_value;
     secret->value_size = value_size;
     if (!secret->def->ephemeral) {
-        if (secretSaveValue(secret) < 0)
+        if (secretEnsureDirectory() < 0)
+            goto cleanup;
+
+        if (virSecretObjSaveData(secret) < 0)
             goto restore_backup;
     }
     /* Saved successfully - drop old value */

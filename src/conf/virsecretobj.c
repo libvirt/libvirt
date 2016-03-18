@@ -671,6 +671,75 @@ virSecretObjDeleteData(virSecretObjPtr secret)
 }
 
 
+/* Permanent secret storage */
+
+/* Secrets are stored in virSecretDriverStatePtr->configDir.  Each secret
+   has virSecretDef stored as XML in "$basename.xml".  If a value of the
+   secret is defined, it is stored as base64 (with no formatting) in
+   "$basename.base64".  "$basename" is in both cases the base64-encoded UUID. */
+
+static int
+virSecretRewriteFile(int fd,
+                     void *opaque)
+{
+    char *data = opaque;
+
+    if (safewrite(fd, data, strlen(data)) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virSecretObjSaveConfig(virSecretObjPtr secret)
+{
+    char *xml = NULL;
+    int ret = -1;
+
+    if (!(xml = virSecretDefFormat(secret->def)))
+        goto cleanup;
+
+    if (virFileRewrite(secret->configFile, S_IRUSR | S_IWUSR,
+                       virSecretRewriteFile, xml) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(xml);
+    return ret;
+}
+
+
+int
+virSecretObjSaveData(virSecretObjPtr secret)
+{
+    char *base64 = NULL;
+    int ret = -1;
+
+    if (!secret->value)
+        return 0;
+
+    base64_encode_alloc((const char *)secret->value, secret->value_size,
+                        &base64);
+    if (base64 == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (virFileRewrite(secret->base64File, S_IRUSR | S_IWUSR,
+                       virSecretRewriteFile, base64) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(base64);
+    return ret;
+}
+
+
 static int
 virSecretLoadValidateUUID(virSecretDefPtr def,
                           const char *file)
