@@ -590,6 +590,57 @@ test11(const void *opaque)
     return ret;
 }
 
+#define TEST_MAP(sz, expect)                                                   \
+    do {                                                                       \
+        char *actual;                                                          \
+        if (virBitmapSize(map) != sz) {                                        \
+            fprintf(stderr, "\n expected bitmap size: '%d' actual size: "      \
+                    "'%zu'\n", sz, virBitmapSize(map));                        \
+            goto cleanup;                                                      \
+        }                                                                      \
+                                                                               \
+        actual = virBitmapFormat(map);                                         \
+                                                                               \
+        if (STRNEQ_NULLABLE(expect, actual)) {                                 \
+            fprintf(stderr, "\n expected bitmap contents '%s' actual contents "\
+                    "'%s'\n", NULLSTR(expect), NULLSTR(actual));               \
+            VIR_FREE(actual);                                                  \
+            goto cleanup;                                                      \
+        }                                                                      \
+        VIR_FREE(actual);                                                      \
+    } while (0)
+
+/* test self-expanding bitmap APIs */
+static int
+test12(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBitmapPtr map = NULL;
+    int ret = -1;
+
+    if (!(map = virBitmapNewEmpty()))
+        return -1;
+
+    TEST_MAP(0, "");
+
+    if (virBitmapSetBitExpand(map, 100) < 0)
+        goto cleanup;
+
+    TEST_MAP(101, "100");
+
+    if (virBitmapClearBitExpand(map, 150) < 0)
+        goto cleanup;
+
+    TEST_MAP(151, "100");
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(map);
+    return ret;
+}
+#undef TEST_MAP
+
+
 #define TESTBINARYOP(A, B, RES, FUNC)                                         \
     testBinaryOpData.a = A;                                                   \
     testBinaryOpData.b = B;                                                   \
@@ -632,6 +683,9 @@ mymain(void)
     TESTBINARYOP("0-3", "0-3", "0,^0", test11);
     TESTBINARYOP("0-3", "0,^0", "0-3", test11);
     TESTBINARYOP("0,2", "1,3", "0,2", test11);
+
+    if (virtTestRun("test12", test12, NULL) < 0)
+        ret = -1;
 
     return ret;
 }

@@ -43,6 +43,7 @@
 struct _virBitmap {
     size_t max_bit;
     size_t map_len;
+    size_t map_alloc;
     unsigned long *map;
 };
 
@@ -83,6 +84,7 @@ virBitmapNewQuiet(size_t size)
 
     bitmap->max_bit = size;
     bitmap->map_len = sz;
+    bitmap->map_alloc = sz;
     return bitmap;
 }
 
@@ -103,6 +105,25 @@ virBitmapNew(size_t size)
 
     if (!(ret = virBitmapNewQuiet(size)))
         virReportOOMError();
+
+    return ret;
+}
+
+
+/**
+ * virBitmapNewEmpty:
+ *
+ * Allocate an empty bitmap. It can be used with self-expanding APIs.
+ *
+ * Returns a pointer to the allocated bitmap or NULL if memory cannot be
+ * allocated. Reports libvirt errors.
+ */
+virBitmapPtr
+virBitmapNewEmpty(void)
+{
+    virBitmapPtr ret;
+
+    ignore_value(VIR_ALLOC(ret));
 
     return ret;
 }
@@ -155,6 +176,54 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
 }
 
 /**
+ * virBitmapExpand:
+ * @map: Pointer to bitmap
+ * @b: bit position to include in bitmap
+ *
+ * Resizes the bitmap so that bit @b will fit into it. This shall be called only
+ * if @b would not fit into the map.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int virBitmapExpand(virBitmapPtr map, size_t b)
+{
+    size_t new_len = VIR_DIV_UP(b, VIR_BITMAP_BITS_PER_UNIT);
+
+    /* resize the memory if necessary */
+    if (map->map_len < new_len) {
+        if (VIR_RESIZE_N(map->map, map->map_alloc, map->map_len,
+                         new_len - map->map_len) < 0)
+            return -1;
+    }
+
+    map->max_bit = b + 1;
+    map->map_len = new_len;
+
+    return 0;
+}
+
+
+/**
+ * virBitmapSetBitExpand:
+ * @bitmap: Pointer to bitmap
+ * @b: bit position to set
+ *
+ * Set bit position @b in @bitmap. Expands the bitmap as necessary so that @b is
+ * included in the map.
+ *
+ * Returns 0 on if bit is successfully set, -1 on error.
+ */
+int virBitmapSetBitExpand(virBitmapPtr bitmap, size_t b)
+{
+    if (bitmap->max_bit <= b && virBitmapExpand(bitmap, b) < 0)
+        return -1;
+
+    bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= VIR_BITMAP_BIT(b);
+    return 0;
+}
+
+
+/**
  * virBitmapClearBit:
  * @bitmap: Pointer to bitmap
  * @b: bit position to clear
@@ -171,6 +240,30 @@ int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
     return 0;
 }
+
+
+/**
+ * virBitmapClearBitExpand:
+ * @bitmap: Pointer to bitmap
+ * @b: bit position to set
+ *
+ * Clear bit position @b in @bitmap. Expands the bitmap as necessary so that
+ * @b is included in the map.
+ *
+ * Returns 0 on if bit is successfully cleared, -1 on error.
+ */
+int virBitmapClearBitExpand(virBitmapPtr bitmap, size_t b)
+{
+    if (bitmap->max_bit <= b) {
+        if (virBitmapExpand(bitmap, b) < 0)
+            return -1;
+    } else {
+        bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
+    }
+
+    return 0;
+}
+
 
 /* Helper function. caller must ensure b < bitmap->max_bit */
 static bool virBitmapIsSet(virBitmapPtr bitmap, size_t b)
