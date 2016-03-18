@@ -253,7 +253,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(void)
 }
 
 static int
-testVirHostdevPreparePCIHostdevs_managed(void)
+testVirHostdevPreparePCIHostdevs_managed(bool mixed)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -270,7 +270,13 @@ testVirHostdevPreparePCIHostdevs_managed(void)
                                      hostdevs, nhostdevs, 0) < 0)
         goto cleanup;
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, active_count + nhostdevs);
-    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
+    /* If testing a mixed roundtrip, devices are already in the inactive list
+     * before we start and are removed from it as soon as we attach them to
+     * the guest */
+    if (mixed)
+        CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count - nhostdevs);
+    else
+        CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     /* Test conflict */
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
@@ -304,7 +310,7 @@ testVirHostdevPreparePCIHostdevs_managed(void)
 }
 
 static int
-testVirHostdevReAttachPCIHostdevs_managed(void)
+testVirHostdevReAttachPCIHostdevs_managed(bool mixed)
 {
     int ret = -1;
     size_t active_count, inactive_count, i;
@@ -328,7 +334,12 @@ testVirHostdevReAttachPCIHostdevs_managed(void)
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
     CHECK_LIST_COUNT(mgr->activePCIHostdevs, active_count - nhostdevs);
-    CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
+    /* If testing a mixed roundtrip, devices are added back to the inactive
+     * list as soon as we detach from the guest */
+    if (mixed)
+        CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count + nhostdevs);
+    else
+        CHECK_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     ret = 0;
 
@@ -432,6 +443,31 @@ testVirHostdevUpdateActivePCIHostdevs(void)
 }
 
 /**
+ * testVirHostdevRoundtripNoGuest:
+ * @opaque: unused
+ *
+ * Perform a roundtrip without ever assigning devices to the guest.
+ *
+ *   1. Detach devices from the host
+ *   2. Reattach devices to the host
+ */
+static int
+testVirHostdevRoundtripNoGuest(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (testVirHostdevDetachPCINodeDevice() < 0)
+        goto out;
+    if (testVirHostdevReAttachPCINodeDevice() < 0)
+        goto out;
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
+/**
  * testVirHostdevRoundtripUnmanaged:
  * @opaque: unused
  *
@@ -479,11 +515,45 @@ testVirHostdevRoundtripManaged(const void *opaque ATTRIBUTE_UNUSED)
     int ret = -1;
 
     if (virHostdevHostSupportsPassthroughKVM()) {
-        if (testVirHostdevPreparePCIHostdevs_managed() < 0)
+        if (testVirHostdevPreparePCIHostdevs_managed(false) < 0)
             goto out;
-        if (testVirHostdevReAttachPCIHostdevs_managed() < 0)
+        if (testVirHostdevReAttachPCIHostdevs_managed(false) < 0)
             goto out;
     }
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
+/**
+ * testVirHostdevRoundtripMixed:
+ * @opaque: unused
+ *
+ * Perform a roundtrip with managed devices but manually detach the devices
+ * from the host first.
+ *
+ *   1. Detach devices from the host
+ *   2. Attach devices to the guest as managed
+ *   3. Detach devices from the guest as managed
+ *   4. Reattach devices to the host
+ */
+static int
+testVirHostdevRoundtripMixed(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+
+    if (testVirHostdevDetachPCINodeDevice() < 0)
+        goto out;
+    if (virHostdevHostSupportsPassthroughKVM()) {
+        if (testVirHostdevPreparePCIHostdevs_managed(true) < 0)
+            goto out;
+        if (testVirHostdevReAttachPCIHostdevs_managed(true) < 0)
+            goto out;
+    }
+    if (testVirHostdevReAttachPCINodeDevice() < 0)
+        goto out;
 
     ret = 0;
 
@@ -546,8 +616,10 @@ mymain(void)
     if (myInit() < 0)
         fprintf(stderr, "Init data structures failed.");
 
+    DO_TEST(testVirHostdevRoundtripNoGuest);
     DO_TEST(testVirHostdevRoundtripUnmanaged);
     DO_TEST(testVirHostdevRoundtripManaged);
+    DO_TEST(testVirHostdevRoundtripMixed);
     DO_TEST(testVirHostdevOther);
 
     myCleanup();
