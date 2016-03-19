@@ -424,6 +424,7 @@ LIBVIRT_NSS_SOURCES = \
 	nss/libvirt_nss.c	\
 	nss/libvirt_nss.h
 
+if WITH_NSS
 noinst_LTLIBRARIES += nss/libnss_libvirt_impl.la
 nss_libnss_libvirt_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES)
@@ -440,7 +441,6 @@ nss_libnss_libvirt_impl_la_LIBADD = \
 	../gnulib/lib/libgnu.la		\
 	../src/libvirt-nss.la
 
-if WITH_NSS
 nss_libnss_libvirt_la_SOURCES =
 nss_libnss_libvirt_la_LDFLAGS = \
 	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_NSS_SYMBOL_FILE)	\

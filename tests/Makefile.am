@@ -158,7 +158,7 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata
 
-test_helpers = commandhelper ssh test_conf nsslinktest
+test_helpers = commandhelper ssh test_conf
 test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
@@ -191,7 +191,6 @@ test_programs = virshtest sockettest \
 	vircaps2xmltest \
 	virnetdevtest \
 	virtypedparamtest \
-	nsstest \
 	$(NULL)
 
 if WITH_REMOTE
@@ -329,6 +328,11 @@ endif WITH_STORAGE_FS
 if WITH_LINUX
 test_programs += virscsitest
 endif WITH_LINUX
+
+if WITH_NSS
+test_helpers += nsslinktest
+test_programs += nsstest
+endif WITH_NSS
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
 
