@@ -3438,6 +3438,7 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
+    networkReleaseActualDevice(vm->def, detach);
     virDomainNetRemove(vm->def, detachidx);
     ret = 0;
 
@@ -3452,6 +3453,7 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
                             virDomainObjPtr vm,
                             virDomainDeviceDefPtr dev)
 {
+    virDomainHostdevDefPtr hostdev;
     int ret = -1;
 
     switch (dev->type) {
@@ -3465,8 +3467,16 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
-            ret = libxlDomainDetachHostDevice(driver, vm,
-                                              dev->data.hostdev);
+            hostdev = dev->data.hostdev;
+
+            /* If this is a network hostdev, we need to use the higher-level
+             * detach function so that mac address / virtualport are reset
+             */
+            if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET)
+                ret = libxlDomainDetachNetDevice(driver, vm,
+                                                 hostdev->parent.data.net);
+            else
+                ret = libxlDomainDetachHostDevice(driver, vm, hostdev);
             break;
 
         default:
