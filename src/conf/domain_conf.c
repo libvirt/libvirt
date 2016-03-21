@@ -18651,34 +18651,6 @@ virDomainIOThreadIDAdd(virDomainDefPtr def,
 }
 
 
-/*
- * virDomainIOThreadIDMap:
- * @def: domain definition
- *
- * Returns a map of active iothreads for @def.
- */
-virBitmapPtr
-virDomainIOThreadIDMap(virDomainDefPtr def)
-{
-    unsigned int max = 0;
-    size_t i;
-    virBitmapPtr ret = NULL;
-
-    for (i = 0; i < def->niothreadids; i++) {
-        if (def->iothreadids[i]->iothread_id > max)
-            max = def->iothreadids[i]->iothread_id;
-    }
-
-    if (!(ret = virBitmapNew(max)))
-        return NULL;
-
-    for (i = 0; i < def->niothreadids; i++)
-        ignore_value(virBitmapSetBit(ret, def->iothreadids[i]->iothread_id));
-
-    return ret;
-}
-
-
 void
 virDomainIOThreadIDDel(virDomainDefPtr def,
                        unsigned int iothread_id)
