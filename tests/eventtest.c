@@ -311,7 +311,8 @@ mymain(void)
     if (virThreadInitialize() < 0)
         return EXIT_FAILURE;
     char *debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv && (virLogParseDefaultPriority(debugEnv) == -1)) {
+    if (debugEnv && *debugEnv &&
+        (virLogSetDefaultPriority(virLogParseDefaultPriority(debugEnv)) < 0)) {
         fprintf(stderr, "Invalid log level setting.\n");
         return EXIT_FAILURE;
     }
