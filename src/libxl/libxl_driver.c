@@ -3122,16 +3122,18 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     int ret = -1;
     char mac[VIR_MAC_STRING_BUFLEN];
 
+    libxl_device_nic_init(&nic);
+
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
-        goto out;
+        goto cleanup;
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
      * to the one defined in the network definition.
      */
     if (networkAllocateActualDevice(vm->def, net) < 0)
-        goto out;
+        goto cleanup;
 
     actualType = virDomainNetGetActualType(net);
 
@@ -3139,7 +3141,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("network device with mac %s already exists"),
                        virMacAddrFormat(&net->mac, mac));
-        return -1;
+        goto cleanup;
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
@@ -3150,10 +3152,9 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
          */
         ret = libxlDomainAttachHostDevice(driver, vm,
                                           virDomainNetGetActualHostdev(net));
-        goto out;
+        goto cleanup;
     }
 
-    libxl_device_nic_init(&nic);
     if (libxlMakeNic(vm->def, net, &nic) < 0)
         goto cleanup;
 
@@ -3163,13 +3164,15 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
+    vm->def->nets[vm->def->nnets++] = net;
     ret = 0;
 
  cleanup:
     libxl_device_nic_dispose(&nic);
- out:
-    if (!ret)
-        vm->def->nets[vm->def->nnets++] = net;
+    if (ret) {
+        virDomainNetRemoveHostdev(vm->def, net);
+        networkReleaseActualDevice(vm->def, net);
+    }
     virObjectUnref(cfg);
     return ret;
 }
