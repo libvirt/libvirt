@@ -1224,6 +1224,9 @@
       "name": "kvm-accel"
     },
     {
+      "name": "secret"
+    },
+    {
       "name": "i82559c"
     },
     {
