@@ -822,7 +822,7 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
     orignode = ctxt->node;
     ctxt->node = node;
 
-    data->scsi_target.name = virXPathString("string(./name[1])", ctxt);
+    data->scsi_target.name = virXPathString("string(./target[1])", ctxt);
     if (!data->scsi_target.name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no target name supplied for '%s'"),

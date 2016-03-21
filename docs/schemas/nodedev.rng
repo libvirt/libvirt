@@ -40,6 +40,7 @@
         <ref name="capusbinterface"/>
         <ref name="capnet"/>
         <ref name="capscsihost"/>
+        <ref name="capscsitarget"/>
         <ref name="capscsi"/>
         <ref name="capstorage"/>
       </choice>
@@ -380,6 +381,16 @@
         </element>
       </zeroOrMore>
     </optional>
+  </define>
+
+  <define name='capscsitarget'>
+    <attribute name='type'>
+      <value>scsi_target</value>
+    </attribute>
+
+    <element name='target'>
+      <text/>
+    </element>
   </define>
 
   <define name='capscsi'>
