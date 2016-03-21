@@ -49,7 +49,7 @@ testGetHostByName(const void *opaque)
     char buf[BUF_SIZE] = { 0 };
     char **addrList;
     int rv, tmp_errno = 0, tmp_herrno = 0;
-    size_t i = 0;
+    size_t i = 0, j = 0;
 
     if (!data)
         goto cleanup;
@@ -141,17 +141,14 @@ testGetHostByName(const void *opaque)
             goto cleanup;
         }
 
-        if (!data->ipAddr[i]) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Unexpected address %s", ipAddr);
-            VIR_FREE(ipAddr);
-            goto cleanup;
+        for (j = 0; data->ipAddr[j]; j++) {
+            if (STREQ(data->ipAddr[j], ipAddr))
+                break;
         }
 
-        if (STRNEQ(data->ipAddr[i], ipAddr)) {
+        if (!data->ipAddr[j]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Address mismatch. Expected %s got %s",
-                           data->ipAddr[i], ipAddr);
+                           "Unexpected address %s", ipAddr);
             VIR_FREE(ipAddr);
             goto cleanup;
         }
@@ -161,10 +158,12 @@ testGetHostByName(const void *opaque)
         i++;
     }
 
-    if (data->ipAddr[i]) {
+    for (j = 0; data->ipAddr[j]; j++)
+        ;
+
+    if (i != j) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Address mismatch. Expected %s got nothing",
-                       data->ipAddr[i]);
+                       "Expected %zu addresses, got %zu", j, i);
         goto cleanup;
     }
 
