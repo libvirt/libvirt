@@ -1,0 +1,7 @@
+<device>
+  <name>scsi_target0_0_0</name>
+  <parent>scsi_host0</parent>
+  <capability type='scsi_target'>
+    <target>target0:0:0</target>
+  </capability>
+</device>

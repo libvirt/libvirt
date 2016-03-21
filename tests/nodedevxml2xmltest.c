@@ -93,6 +93,7 @@ mymain(void)
     DO_TEST("pci_8086_0c0c_snd_hda_intel");
     DO_TEST("pci_0000_00_02_0_header_type");
     DO_TEST("pci_0000_00_1c_0_header_type");
+    DO_TEST("scsi_target0_0_0");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
