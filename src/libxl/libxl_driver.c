@@ -3145,13 +3145,23 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+        virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+
+        /* For those just allocated from a network pool whose backend is
+         * still VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, we need to set
+         * backend correctly.
+         */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
+
         /* This is really a "smart hostdev", so it should be attached
          * as a hostdev (the hostdev code will reach over into the
          * netdev-specific code as appropriate), then also added to
          * the nets list (see out:) if successful.
          */
-        ret = libxlDomainAttachHostDevice(driver, vm,
-                                          virDomainNetGetActualHostdev(net));
+        ret = libxlDomainAttachHostDevice(driver, vm, hostdev);
         goto cleanup;
     }
 
