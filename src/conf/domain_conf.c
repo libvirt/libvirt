@@ -21964,19 +21964,32 @@ static int
 virDomainFormatIOThreadSchedDef(virDomainDefPtr def,
                                 virBufferPtr buf)
 {
-    virBitmapPtr allthreadmap;
-    int ret;
+    virBitmapPtr threadmap;
+    size_t i;
+    int ret = -1;
 
     if (def->niothreadids == 0)
         return 0;
 
-    if (!(allthreadmap = virDomainIOThreadIDMap(def)))
+    if (!(threadmap = virBitmapNewEmpty()))
         return -1;
 
-    ret = virDomainFormatSchedDef(def, buf, "iothreads",
-                                  virDomainDefGetIOThreadSched, allthreadmap);
+    for (i = 0; i < def->niothreadids; i++) {
+        if (def->iothreadids[i]->sched.policy != VIR_PROC_POLICY_NONE &&
+            virBitmapSetBitExpand(threadmap, def->iothreadids[i]->iothread_id) < 0)
+            goto cleanup;
+    }
 
-    virBitmapFree(allthreadmap);
+    if (virBitmapIsAllClear(threadmap)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = virDomainFormatSchedDef(def, buf, "iothreads",
+                                  virDomainDefGetIOThreadSched, threadmap);
+
+ cleanup:
+    virBitmapFree(threadmap);
     return ret;
 }
 
