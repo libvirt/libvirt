@@ -3412,8 +3412,10 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
     char mac[VIR_MAC_STRING_BUFLEN];
     int ret = -1;
 
+    libxl_device_nic_init(&nic);
+
     if ((detachidx = virDomainNetFindIdx(vm->def, net)) < 0)
-        goto out;
+        goto cleanup;
 
     detach = vm->def->nets[detachidx];
 
@@ -3423,10 +3425,9 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
          */
         ret = libxlDomainDetachHostDevice(driver, vm,
                                           virDomainNetGetActualHostdev(detach));
-        goto out;
+        goto cleanup;
     }
 
-    libxl_device_nic_init(&nic);
     if (libxl_mac_to_device_nic(cfg->ctx, vm->def->id,
                                 virMacAddrFormat(&detach->mac, mac), &nic))
         goto cleanup;
@@ -3437,13 +3438,11 @@ libxlDomainDetachNetDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
+    virDomainNetRemove(vm->def, detachidx);
     ret = 0;
 
  cleanup:
     libxl_device_nic_dispose(&nic);
- out:
-    if (!ret)
-        virDomainNetRemove(vm->def, detachidx);
     virObjectUnref(cfg);
     return ret;
 }
