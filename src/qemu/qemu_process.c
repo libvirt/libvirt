@@ -4480,6 +4480,10 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
  * Prepares the domain up to the point when priv->qemuCaps is initialized. The
  * function calls qemuProcessStop when needed.
  *
+ * Flag VIR_QEMU_PROCESS_START_PRETEND tells, that we don't want to actually
+ * start the domain but create a valid qemu command.  If some code shouldn't be
+ * executed in this case, make sure to check this flag.
+ *
  * Returns 0 on success, -1 on error.
  */
 int
@@ -4529,18 +4533,20 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
         goto stop;
 
-    vm->def->id = qemuDriverAllocateID(driver);
-    qemuDomainSetFakeReboot(driver, vm, false);
-    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
+    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
+        vm->def->id = qemuDriverAllocateID(driver);
+        qemuDomainSetFakeReboot(driver, vm, false);
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
 
-    if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
-        driver->inhibitCallback(true, driver->inhibitOpaque);
+        if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
+            driver->inhibitCallback(true, driver->inhibitOpaque);
 
-    /* Run an early hook to set-up missing devices */
-    if (qemuProcessStartHook(driver, vm,
-                             VIR_HOOK_QEMU_OP_PREPARE,
-                             VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto stop;
+        /* Run an early hook to set-up missing devices */
+        if (qemuProcessStartHook(driver, vm,
+                                 VIR_HOOK_QEMU_OP_PREPARE,
+                                 VIR_HOOK_SUBOP_BEGIN) < 0)
+            goto stop;
+    }
 
     if (qemuDomainSetPrivatePaths(&priv->libDir,
                                   &priv->channelTargetDir,
@@ -5536,6 +5542,56 @@ qemuProcessStart(virConnectPtr conn,
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
     goto cleanup;
+}
+
+
+virCommandPtr
+qemuProcessCreatePretendCmd(virConnectPtr conn,
+                            virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *migrateURI,
+                            bool forceFips,
+                            bool standalone,
+                            unsigned int flags)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCommandPtr cmd = NULL;
+
+    virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
+                      VIR_QEMU_PROCESS_START_PAUSED |
+                      VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
+
+    flags |= VIR_QEMU_PROCESS_START_PRETEND;
+
+    if (qemuProcessInit(driver, vm, QEMU_ASYNC_JOB_NONE, !!migrateURI,
+                        false, flags) < 0)
+        goto cleanup;
+
+    if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Building emulator command line");
+    cmd = qemuBuildCommandLine(conn,
+                               driver,
+                               NULL,
+                               vm->def,
+                               priv->monConfig,
+                               priv->monJSON,
+                               priv->qemuCaps,
+                               migrateURI,
+                               NULL,
+                               VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
+                               &buildCommandLineCallbacks,
+                               standalone,
+                               forceFips ? true : qemuCheckFips(),
+                               priv->autoNodeset,
+                               NULL,
+                               NULL,
+                               priv->libDir,
+                               priv->channelTargetDir);
+
+ cleanup:
+    return cmd;
 }
 
 

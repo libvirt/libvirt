@@ -81,6 +81,13 @@ int qemuProcessStart(virConnectPtr conn,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags);
 
+virCommandPtr qemuProcessCreatePretendCmd(virConnectPtr conn,
+                                          virQEMUDriverPtr driver,
+                                          virDomainObjPtr vm,
+                                          const char *migrateURI,
+                                          bool forceFips,
+                                          bool standalone,
+                                          unsigned int flags);
 
 int qemuProcessStartValidate(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
