@@ -19,17 +19,17 @@
             <element name="parameters">
               <optional>
                 <attribute name="managerid">
-                  <ref name="uint8range"/>
+                  <ref name="uint8"/>
                 </attribute>
               </optional>
               <optional>
                 <attribute name="typeid">
-                  <ref name="uint24range"/>
+                  <ref name="uint24"/>
                 </attribute>
               </optional>
               <optional>
                 <attribute name="typeidversion">
-                  <ref name="uint8range"/>
+                  <ref name="uint8"/>
                 </attribute>
               </optional>
               <optional>
@@ -97,17 +97,17 @@
             <element name="parameters">
               <optional>
                 <attribute name="managerid">
-                  <ref name="uint8range"/>
+                  <ref name="uint8"/>
                 </attribute>
               </optional>
               <optional>
                 <attribute name="typeid">
-                  <ref name="uint24range"/>
+                  <ref name="uint24"/>
                 </attribute>
               </optional>
               <optional>
                 <attribute name="typeidversion">
-                  <ref name="uint8range"/>
+                  <ref name="uint8"/>
                 </attribute>
               </optional>
               <optional>

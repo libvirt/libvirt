@@ -578,12 +578,12 @@
     <interleave>
       <optional>
         <attribute name="type">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
       <optional>
         <attribute name="code">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
     </interleave>
@@ -593,22 +593,22 @@
     <interleave>
       <optional>
         <attribute name="type">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
       <optional>
         <attribute name="typeend">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
       <optional>
         <attribute name="code">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
       <optional>
         <attribute name="codeend">
-          <ref name="uint8range"/>
+          <ref name="uint8"/>
         </attribute>
       </optional>
     </interleave>
@@ -642,12 +642,12 @@
   <define name="stp-attributes">
     <optional>
       <attribute name="type">
-        <ref name="uint8range"/>
+        <ref name="uint8"/>
       </attribute>
     </optional>
     <optional>
       <attribute name="flags">
-        <ref name="uint8range"/>
+        <ref name="uint8"/>
       </attribute>
     </optional>
     <optional>

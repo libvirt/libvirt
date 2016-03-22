@@ -32,7 +32,7 @@
     </data>
   </define>
 
-  <define name="uint8range">
+  <define name="uint8">
     <choice>
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,2}</param>
@@ -43,7 +43,7 @@
       </data>
     </choice>
   </define>
-  <define name="uint24range">
+  <define name="uint24">
     <choice>
       <data type="string">
         <param name="pattern">0x[0-9a-fA-F]{1,6}</param>

@@ -1795,17 +1795,17 @@
               <element name="target">
                 <optional>
                   <attribute name='chassisNr'>
-                    <ref name='uint8range'/>
+                    <ref name='uint8'/>
                   </attribute>
                 </optional>
                 <optional>
                   <attribute name="chassis">
-                    <ref name='uint8range'/>
+                    <ref name='uint8'/>
                   </attribute>
                 </optional>
                 <optional>
                   <attribute name="port">
-                    <ref name='uint8range'/>
+                    <ref name='uint8'/>
                   </attribute>
                 </optional>
                 <empty/>
