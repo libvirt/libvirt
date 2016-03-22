@@ -43,6 +43,17 @@
       </data>
     </choice>
   </define>
+  <define name="uint16">
+    <choice>
+      <data type="string">
+        <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
+      </data>
+      <data type='int'>
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">65535</param>
+      </data>
+    </choice>
+  </define>
   <define name="uint24">
     <choice>
       <data type="string">
