@@ -87,6 +87,14 @@ logPrlErrorHelper(PRL_RESULT err, const char *filename,
         }                                          \
     } while (0)
 
+#define prlsdkCheckRetExit(ret, code)              \
+    do {                                           \
+        if (PRL_FAILED(ret)) {                     \
+            logPrlError(ret);                      \
+            return code;                           \
+        }                                          \
+    } while (0)
+
 static PRL_RESULT
 logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
                        const char *funcname, size_t linenr)
@@ -1988,13 +1996,9 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     if (!IS_CT(def)) {
-        if (def->os.nBootDevs != 1 ||
-            def->os.bootDevs[0] != VIR_DOMAIN_BOOT_DISK ||
-            def->os.init != NULL || def->os.initargv != NULL) {
-
+        if (def->os.init != NULL || def->os.initargv != NULL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("changing OS parameters is not supported "
-                             "by vz driver"));
+                           _("unsupported OS parameters"));
             return -1;
         }
     } else {
@@ -2003,8 +2007,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
             (def->os.initargv != NULL && def->os.initargv[0] != NULL)) {
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("changing OS parameters is not supported "
-                             "by vz driver"));
+                           _("unsupported OS parameters"));
             return -1;
         }
     }
@@ -2991,9 +2994,7 @@ static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
 
 static int prlsdkAddDisk(vzConnPtr privconn,
                          PRL_HANDLE sdkdom,
-                         virDomainDiskDefPtr disk,
-                         bool bootDisk,
-                         bool isCt)
+                         virDomainDiskDefPtr disk)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
@@ -3002,7 +3003,6 @@ static int prlsdkAddDisk(vzConnPtr privconn,
     PRL_MASS_STORAGE_INTERFACE_TYPE sdkbus;
     int idx;
     virDomainDeviceDriveAddressPtr drive;
-    PRL_UINT32 devIndex;
     PRL_DEVICE_TYPE devType;
     PRL_CLUSTERED_DEVICE_SUBTYPE scsiModel;
     char *dst = NULL;
@@ -3133,21 +3133,6 @@ static int prlsdkAddDisk(vzConnPtr privconn,
         goto cleanup;
     }
 
-    if (bootDisk) {
-        pret = PrlVmDev_GetIndex(sdkdisk, &devIndex);
-        prlsdkCheckRetGoto(pret, cleanup);
-
-        if (prlsdkAddDeviceToBootList(sdkdom, devIndex, devType, 0) < 0)
-            goto cleanup;
-
-        /* If we add physical device as a boot disk to container
-         * we have to specify mount point for it */
-        if (isCt) {
-            pret = PrlVmDevHd_SetMountPoint(sdkdisk, "/");
-            prlsdkCheckRetGoto(pret, cleanup);
-        }
-    }
-
     return 0;
  cleanup:
     PrlHandle_Free(sdkdisk);
@@ -3168,11 +3153,7 @@ prlsdkAttachVolume(vzConnPtr privconn,
     if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
-    ret = prlsdkAddDisk(privconn,
-                        privdom->sdkdom,
-                        disk,
-                        false,
-                        IS_CT(dom->def));
+    ret = prlsdkAddDisk(privconn, privdom->sdkdom, disk);
     if (ret == 0) {
         job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job))) {
@@ -3300,6 +3281,79 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     PrlHandle_Free(sdkdisk);
     return ret;
 }
+
+static int
+prlsdkSetBootOrderCt(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    size_t i;
+    PRL_HANDLE hdd = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
+    int ret = -1;
+
+    /* if we have root mounted we don't need to explicitly set boot order */
+    for (i = 0; i < def->nfss; i++) {
+        if (STREQ(def->fss[i]->dst, "/"))
+            return 0;
+    }
+
+    /* else set first hard disk as boot device */
+    pret = prlsdkAddDeviceToBootList(sdkdom, 0, PDE_HARD_DISK, 0);
+    prlsdkCheckRetExit(pret, -1);
+
+    pret = PrlVmCfg_GetHardDisk(sdkdom, 0, &hdd);
+    prlsdkCheckRetExit(pret, -1);
+
+    PrlVmDevHd_SetMountPoint(hdd, "/");
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(hdd);
+    return ret;
+}
+
+static int
+prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    size_t i;
+    int idx[VIR_DOMAIN_BOOT_LAST] = { 0 };
+    int bootIndex = 0;
+    PRL_RESULT pret;
+    PRL_UINT32 num;
+    int sdkType;
+    virDomainBootOrder virType;
+
+    for (i = 0; i < def->os.nBootDevs; ++i) {
+        virType = def->os.bootDevs[i];
+
+        switch (virType) {
+        case VIR_DOMAIN_BOOT_CDROM:
+            sdkType = PDE_OPTICAL_DISK;
+            break;
+        case VIR_DOMAIN_BOOT_DISK:
+            sdkType = PDE_HARD_DISK;
+            break;
+        case VIR_DOMAIN_BOOT_NET:
+            sdkType = PDE_GENERIC_NETWORK_ADAPTER;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported boot device type: '%s'"),
+                           virDomainBootTypeToString(virType));
+            return -1;
+        }
+
+        pret = PrlVmCfg_GetDevsCountByType(sdkdom, sdkType, &num);
+        prlsdkCheckRetExit(pret, -1);
+
+        pret = prlsdkAddDeviceToBootList(sdkdom, idx[virType]++, sdkType, bootIndex++);
+        prlsdkCheckRetExit(pret, -1);
+    }
+
+    return 0;
+}
+
 static int
 prlsdkDoApplyConfig(virConnectPtr conn,
                     PRL_HANDLE sdkdom,
@@ -3309,7 +3363,6 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     PRL_RESULT pret;
     size_t i;
     char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
-    bool needBoot = true;
     char *mask = NULL;
 
     if (prlsdkCheckUnsupportedParams(sdkdom, def) < 0)
@@ -3388,26 +3441,20 @@ prlsdkDoApplyConfig(virConnectPtr conn,
     }
 
     for (i = 0; i < def->nfss; i++) {
-        if (STREQ(def->fss[i]->dst, "/"))
-            needBoot = false;
         if (prlsdkAddFS(sdkdom, def->fss[i]) < 0)
             goto error;
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        bool bootDisk = false;
+        if (prlsdkAddDisk(conn->privateData, sdkdom, def->disks[i]) < 0)
+            goto error;
+    }
 
-        if (needBoot &&
-            def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-
-            needBoot = false;
-            bootDisk = true;
-        }
-        if (prlsdkAddDisk(conn->privateData,
-                          sdkdom,
-                          def->disks[i],
-                          bootDisk,
-                          IS_CT(def)) < 0)
+    if (IS_CT(def)) {
+        if (prlsdkSetBootOrderCt(sdkdom, def) < 0)
+            goto error;
+    } else {
+        if (prlsdkSetBootOrderVm(sdkdom, def) < 0)
             goto error;
     }
 
