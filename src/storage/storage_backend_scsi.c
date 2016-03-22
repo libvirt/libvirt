@@ -614,6 +614,9 @@ virStoragePoolFCRefreshThread(void *opaque)
          */
         VIR_DEBUG("Attempt FC Refresh for pool='%s' name='%s' tries='%d'",
                   pool->def->name, fchost_name, tries);
+
+        pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+
         if (virStoragePoolObjIsActive(pool) &&
             virGetSCSIHostNumber(fchost_name, &host) == 0 &&
             virStorageBackendSCSITriggerRescan(host) == 0) {
