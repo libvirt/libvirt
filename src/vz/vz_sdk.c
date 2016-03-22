@@ -663,7 +663,7 @@ prlsdkAddDomainHardDisksInfo(vzConnPtr privconn, PRL_HANDLE sdkdom, virDomainDef
             if (prlsdkGetDiskInfo(privconn, hdd, disk, false, IS_CT(def)) < 0)
                 goto error;
 
-            if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+            if (virDomainDiskInsert(def, disk) < 0)
                 goto error;
 
             disk = NULL;
@@ -706,7 +706,7 @@ prlsdkAddDomainOpticalDisksInfo(vzConnPtr privconn, PRL_HANDLE sdkdom, virDomain
         PrlHandle_Free(cdrom);
         cdrom = PRL_INVALID_HANDLE;
 
-        if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+        if (virDomainDiskInsert(def, disk) < 0)
             goto error;
     }
 
