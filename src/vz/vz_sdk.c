@@ -1273,6 +1273,241 @@ prlsdkNewDomainByHandle(vzConnPtr privconn, PRL_HANDLE sdkdom)
     return dom;
 }
 
+static PRL_HANDLE
+prlsdkGetDevByDevIndex(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE type, PRL_UINT32 devIndex)
+{
+    PRL_RESULT pret;
+    PRL_UINT32 index, num;
+    PRL_HANDLE dev = PRL_INVALID_HANDLE;
+    size_t i;
+
+    pret = PrlVmCfg_GetDevsCountByType(sdkdom, type, &num);
+    prlsdkCheckRetGoto(pret, error);
+
+    for (i = 0; i < num; ++i) {
+        pret = PrlVmCfg_GetDevByType(sdkdom, type, i, &dev);
+        prlsdkCheckRetGoto(pret, error);
+
+        pret = PrlVmDev_GetIndex(dev, &index);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (index == devIndex)
+            break;
+
+        PrlHandle_Free(dev);
+        dev = PRL_INVALID_HANDLE;
+    }
+
+    return dev;
+
+ error:
+    PrlHandle_Free(dev);
+    return PRL_INVALID_HANDLE;
+}
+
+static virDomainDiskDefPtr
+virFindDiskBootIndex(virDomainDefPtr def, virDomainDiskDevice type, int index)
+{
+    size_t i;
+    int c = 0;
+
+    for (i = 0; i < def->ndisks; ++i) {
+        if (def->disks[i]->device != type)
+            continue;
+        if (c == index)
+            return def->disks[i];
+        ++c;
+    }
+
+    return NULL;
+}
+
+static int
+prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
+                     virDomainDefPtr def, int bootIndex)
+{
+    PRL_RESULT pret;
+    char *sdkName = NULL;
+    const char *bootName;
+    PRL_UINT32 buflen = 0;
+    PRL_HANDLE dev = PRL_INVALID_HANDLE;
+    virDomainDiskDefPtr disk;
+    virDomainDiskDevice device;
+    int ret = -1;
+
+    dev = prlsdkGetDevByDevIndex(sdkdom, sdkType, sdkIndex);
+    if (dev == PRL_INVALID_HANDLE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Can't find boot device of type: %d, device index: %d"),
+                       sdkType, sdkIndex);
+        return -1;
+    }
+
+    switch (sdkType) {
+    case PDE_OPTICAL_DISK:
+    case PDE_HARD_DISK:
+        pret = PrlVmDev_GetFriendlyName(dev, sdkName, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (VIR_ALLOC_N(sdkName, buflen) < 0)
+            goto cleanup;
+
+        pret = PrlVmDev_GetFriendlyName(dev, sdkName, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        switch (sdkType) {
+        case PDE_OPTICAL_DISK:
+            device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+            break;
+        case PDE_HARD_DISK:
+            device = VIR_DOMAIN_DISK_DEVICE_DISK;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported disk type %d"), sdkType);
+            goto cleanup;
+        }
+
+        if (!(disk = virFindDiskBootIndex(def, device, bootIndex))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Can find boot device of type: %s, index: %d"),
+                           virDomainDiskDeviceTypeToString(device), bootIndex);
+            goto cleanup;
+        }
+
+        bootName = disk->src->path;
+
+        break;
+    case PDE_GENERIC_NETWORK_ADAPTER:
+        pret = PrlVmDevNet_GetHostInterfaceName(dev, NULL, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (VIR_ALLOC_N(sdkName, buflen) < 0)
+            goto cleanup;
+
+        pret = PrlVmDevNet_GetHostInterfaceName(dev, sdkName, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (bootIndex >= def->nnets) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Can find network boot device for index: %d"),
+                           bootIndex);
+            goto cleanup;
+        }
+
+        bootName = def->nets[bootIndex]->ifname;
+
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unexpected device type %d"), sdkType);
+        goto cleanup;
+    }
+
+    if (STRNEQ(sdkName, bootName))
+        VIR_WARN("Unrepresentable boot order configuration");
+
+    ret = 0;
+
+ cleanup:
+
+    VIR_FREE(sdkName);
+    PrlHandle_Free(dev);
+    return ret;
+}
+
+static int
+prlsdkConvertBootOrder(PRL_HANDLE sdkdom, virDomainDefPtr def)
+{
+    int ret = -1;
+    PRL_RESULT pret;
+    PRL_UINT32 bootNum;
+    PRL_HANDLE bootDev = PRL_INVALID_HANDLE;
+    PRL_BOOL inUse;
+    PRL_DEVICE_TYPE sdkType;
+    virDomainBootOrder type;
+    PRL_UINT32 prevBootIndex = 0, bootIndex, sdkIndex;
+    int bootUsage[VIR_DOMAIN_BOOT_LAST] = { 0 };
+    size_t i;
+
+    pret = PrlVmCfg_GetBootDevCount(sdkdom, &bootNum);
+    prlsdkCheckRetExit(pret, -1);
+
+    def->os.nBootDevs = 0;
+
+    if (bootNum > VIR_DOMAIN_MAX_BOOT_DEVS) {
+        bootNum = VIR_DOMAIN_MAX_BOOT_DEVS;
+        VIR_WARN("Too many boot devices");
+    }
+
+    for (i = 0; i < bootNum; ++i) {
+        pret = PrlVmCfg_GetBootDev(sdkdom, i, &bootDev);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlBootDev_IsInUse(bootDev, &inUse);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (!inUse) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Boot ordering with disabled items is not supported"));
+            goto cleanup;
+        }
+
+        pret = PrlBootDev_GetSequenceIndex(bootDev, &bootIndex);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        /* bootIndex is started from 1 */
+        if (bootIndex <= prevBootIndex) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Unsupported boot order configuration"));
+            goto cleanup;
+        }
+        prevBootIndex = bootIndex;
+
+        pret = PrlBootDev_GetType(bootDev, &sdkType);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (sdkType == PDE_FLOPPY_DISK) {
+            VIR_WARN("Skipping floppy from boot order.");
+            continue;
+        }
+
+        switch (sdkType) {
+        case PDE_OPTICAL_DISK:
+            type = VIR_DOMAIN_BOOT_CDROM;
+            break;
+        case PDE_HARD_DISK:
+            type = VIR_DOMAIN_BOOT_DISK;
+            break;
+        case PDE_GENERIC_NETWORK_ADAPTER:
+            type = VIR_DOMAIN_BOOT_NET;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unexpected boot device type %i"), sdkType);
+            goto cleanup;
+        }
+
+        pret = PrlBootDev_GetIndex(bootDev, &sdkIndex);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (prlsdkBootOrderCheck(sdkdom, sdkType, sdkIndex, def, bootUsage[type]) < 0)
+            goto cleanup;
+
+        bootUsage[type]++;
+        def->os.bootDevs[def->os.nBootDevs++] = type;
+
+        PrlHandle_Free(bootDev);
+        bootDev = PRL_INVALID_HANDLE;
+    }
+
+    ret = 0;
+
+ cleanup:
+    PrlHandle_Free(bootDev);
+    return ret;
+}
+
 int
 prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
 {
@@ -1326,6 +1561,10 @@ prlsdkLoadDomain(vzConnPtr privconn, virDomainObjPtr dom)
         goto error;
 
     if (prlsdkAddDomainHardware(privconn, sdkdom, def) < 0)
+        goto error;
+
+    /* depends on prlsdkAddDomainHardware */
+    if (prlsdkConvertBootOrder(sdkdom, def) < 0)
         goto error;
 
     if (prlsdkAddVNCInfo(sdkdom, def) < 0)
