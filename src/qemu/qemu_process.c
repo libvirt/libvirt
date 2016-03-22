@@ -4445,9 +4445,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, true) < 0)
         goto stop;
 
-    if (qemuPrepareNVRAM(cfg, vm) < 0)
-        goto stop;
-
     vm->def->id = qemuDriverAllocateID(driver);
     qemuDomainSetFakeReboot(driver, vm, false);
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
@@ -4887,69 +4884,26 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 
 
 /**
- * qemuProcessLaunch:
+ * qemuProcessPrepareHost
  *
- * Launch a new QEMU process with stopped virtual CPUs.
+ * This function groups all code that modifies host system (which also may
+ * update live XML) to prepare environment for a domain which is about to start
+ * and it's the only place to do those modifications.
  *
- * The caller is supposed to call qemuProcessStop with appropriate
- * flags in case of failure.
- *
- * Returns 0 on success,
- *        -1 on error which happened before devices were labeled and thus
- *           there is no need to restore them,
- *        -2 on error requesting security labels to be restored.
+ * TODO: move all host modification from qemuBuildCommandLine into this function
  */
 int
-qemuProcessLaunch(virConnectPtr conn,
-                  virQEMUDriverPtr driver,
-                  virDomainObjPtr vm,
-                  qemuDomainAsyncJob asyncJob,
-                  qemuProcessIncomingDefPtr incoming,
-                  virDomainSnapshotObjPtr snapshot,
-                  virNetDevVPortProfileOp vmop,
-                  unsigned int flags)
+qemuProcessPrepareHost(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       bool incoming)
 {
     int ret = -1;
-    int rv;
-    int logfile = -1;
-    qemuDomainLogContextPtr logCtxt = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCommandPtr cmd = NULL;
-    struct qemuProcessHookData hookData;
-    size_t i;
-    virQEMUDriverConfigPtr cfg;
-    virCapsPtr caps = NULL;
     unsigned int hostdev_flags = 0;
-    size_t nnicindexes = 0;
-    int *nicindexes = NULL;
-    bool check_shmem = false;
+    size_t i;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d "
-              "incoming.launchURI=%s incoming.deferredURI=%s "
-              "incoming.fd=%d incoming.path=%s "
-              "snapshot=%p vmop=%d flags=0x%x",
-              vm, vm->def->name, vm->def->id, asyncJob,
-              NULLSTR(incoming ? incoming->launchURI : NULL),
-              NULLSTR(incoming ? incoming->deferredURI : NULL),
-              incoming ? incoming->fd : -1,
-              NULLSTR(incoming ? incoming->path : NULL),
-              snapshot, vmop, flags);
-
-    /* Okay, these are just internal flags,
-     * but doesn't hurt to check */
-    virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
-                  VIR_QEMU_PROCESS_START_PAUSED |
-                  VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
-
-    cfg = virQEMUDriverGetConfig(driver);
-
-    hookData.conn = conn;
-    hookData.vm = vm;
-    hookData.driver = driver;
-    /* We don't increase cfg's reference counter here. */
-    hookData.cfg = cfg;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (qemuPrepareNVRAM(cfg, vm) < 0)
         goto cleanup;
 
     /* network devices must be "prepared" before hostdevs, because
@@ -4975,10 +4929,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                true,
                                qemuProcessPrepareChardevDevice,
                                NULL) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Checking domain and device security labels");
-    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
 
     if (vm->def->mem.nhugepages) {
@@ -5015,6 +4965,105 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
     }
 
+    VIR_FREE(priv->pidfile);
+    if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name))) {
+        virReportSystemError(errno,
+                             "%s", _("Failed to build pidfile path."));
+        goto cleanup;
+    }
+
+    if (unlink(priv->pidfile) < 0 &&
+        errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Cannot remove stale PID file %s"),
+                             priv->pidfile);
+        goto cleanup;
+    }
+
+    /*
+     * Create all per-domain directories in order to make sure domain
+     * with any possible seclabels can access it.
+     */
+    if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
+        qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+/**
+ * qemuProcessLaunch:
+ *
+ * Launch a new QEMU process with stopped virtual CPUs.
+ *
+ * The caller is supposed to call qemuProcessStop with appropriate
+ * flags in case of failure.
+ *
+ * Returns 0 on success,
+ *        -1 on error which happened before devices were labeled and thus
+ *           there is no need to restore them,
+ *        -2 on error requesting security labels to be restored.
+ */
+int
+qemuProcessLaunch(virConnectPtr conn,
+                  virQEMUDriverPtr driver,
+                  virDomainObjPtr vm,
+                  qemuDomainAsyncJob asyncJob,
+                  qemuProcessIncomingDefPtr incoming,
+                  virDomainSnapshotObjPtr snapshot,
+                  virNetDevVPortProfileOp vmop,
+                  unsigned int flags)
+{
+    int ret = -1;
+    int rv;
+    int logfile = -1;
+    qemuDomainLogContextPtr logCtxt = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCommandPtr cmd = NULL;
+    struct qemuProcessHookData hookData;
+    size_t i;
+    virQEMUDriverConfigPtr cfg;
+    virCapsPtr caps = NULL;
+    size_t nnicindexes = 0;
+    int *nicindexes = NULL;
+    bool check_shmem = false;
+
+    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d "
+              "incoming.launchURI=%s incoming.deferredURI=%s "
+              "incoming.fd=%d incoming.path=%s "
+              "snapshot=%p vmop=%d flags=0x%x",
+              vm, vm->def->name, vm->def->id, asyncJob,
+              NULLSTR(incoming ? incoming->launchURI : NULL),
+              NULLSTR(incoming ? incoming->deferredURI : NULL),
+              incoming ? incoming->fd : -1,
+              NULLSTR(incoming ? incoming->path : NULL),
+              snapshot, vmop, flags);
+
+    /* Okay, these are just internal flags,
+     * but doesn't hurt to check */
+    virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
+                  VIR_QEMU_PROCESS_START_PAUSED |
+                  VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    hookData.conn = conn;
+    hookData.vm = vm;
+    hookData.driver = driver;
+    /* We don't increase cfg's reference counter here. */
+    hookData.cfg = cfg;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    VIR_DEBUG("Checking domain and device security labels");
+    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Creating domain log file");
     if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
                                             QEMU_DOMAIN_LOG_CONTEXT_MODE_START)))
@@ -5050,21 +5099,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                   vm->def->name,
                                   vm->def->id) < 0)
         goto cleanup;
-
-    VIR_FREE(priv->pidfile);
-    if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name))) {
-        virReportSystemError(errno,
-                             "%s", _("Failed to build pidfile path."));
-        goto cleanup;
-    }
-
-    if (unlink(priv->pidfile) < 0 &&
-        errno != ENOENT) {
-        virReportSystemError(errno,
-                             _("Cannot remove stale PID file %s"),
-                             priv->pidfile);
-        goto cleanup;
-    }
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
 
@@ -5127,14 +5161,6 @@ qemuProcessLaunch(virConnectPtr conn,
 
     if (incoming && incoming->fd != -1)
         virCommandPassFD(cmd, incoming->fd, 0);
-
-    /*
-     * Create all per-domain directories in order to make sure domain
-     * with any possible seclabels can access it.
-     */
-    if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
-        qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
-        goto cleanup;
 
     /* now that we know it is about to start call the hook if present */
     if (qemuProcessStartHook(driver, vm,
@@ -5451,6 +5477,9 @@ qemuProcessStart(virConnectPtr conn,
     }
 
     if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
+        goto stop;
+
+    if (qemuProcessPrepareHost(driver, vm, !!incoming) < 0)
         goto stop;
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
