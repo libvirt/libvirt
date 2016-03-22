@@ -75,12 +75,16 @@
     <attribute name="bus">
       <ref name="pciBus"/>
     </attribute>
-    <attribute name="slot">
-      <ref name="pciSlot"/>
-    </attribute>
-    <attribute name="function">
-      <ref name="pciFunc"/>
-    </attribute>
+    <optional>
+      <attribute name="slot">
+        <ref name="pciSlot"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="function">
+        <ref name="pciFunc"/>
+      </attribute>
+    </optional>
     <optional>
       <attribute name="multifunction">
         <ref name="virOnOff"/>
