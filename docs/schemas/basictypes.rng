@@ -282,24 +282,32 @@
   </define>
 
   <define name="pciDomain">
-    <data type="string">
-      <param name="pattern">(0x)?[0-9a-fA-F]{1,4}</param>
-    </data>
+    <ref name="uint16"/>
   </define>
   <define name="pciBus">
-    <data type="string">
-      <param name="pattern">(0x)?[0-9a-fA-F]{1,2}</param>
-    </data>
+    <ref name="uint8"/>
   </define>
   <define name="pciSlot">
-    <data type="string">
-      <param name="pattern">(0x)?[0-1]?[0-9a-fA-F]</param>
-    </data>
+    <choice>
+      <data type="string">
+        <param name="pattern">(0x)?[0-1]?[0-9a-fA-F]</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">31</param>
+      </data>
+    </choice>
   </define>
   <define name="pciFunc">
-    <data type="string">
-      <param name="pattern">(0x)?[0-7]</param>
-    </data>
+    <choice>
+      <data type="string">
+        <param name="pattern">(0x)?[0-7]</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">7</param>
+      </data>
+    </choice>
   </define>
 
   <define name='wwn'>
