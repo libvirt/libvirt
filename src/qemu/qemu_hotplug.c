@@ -895,7 +895,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
           actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_DIRECT)) {
+          actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Multiqueue network is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
@@ -905,7 +906,8 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
     /* and only TAP devices support nwfilter rules */
     if (net->filter &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("filterref is not supported for "
                          "network interfaces of type %s"),
@@ -950,10 +952,19 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
                                       vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
-        vhostfdSize = 1;
-        if (VIR_ALLOC(vhostfd) < 0)
+        tapfdSize = vhostfdSize = net->driver.virtio.queues;
+        if (!tapfdSize)
+            tapfdSize = vhostfdSize = 1;
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
             goto cleanup;
-        *vhostfd = -1;
+        memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
+        if (VIR_ALLOC_N(vhostfd, vhostfdSize) < 0)
+            goto cleanup;
+        memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
+        if (qemuInterfaceEthernetConnect(vm->def, driver, net,
+                                       tapfd, tapfdSize) < 0)
+            goto cleanup;
+        iface_connected = true;
         if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
                                       vhostfd, &vhostfdSize) < 0)
             goto cleanup;
@@ -2203,6 +2214,21 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
     ret = qemuMonitorSetLink(priv->mon, dev->info.alias, linkstate);
     if (ret < 0)
         goto cleanup;
+
+    if (virDomainNetGetActualType(dev) == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        switch (linkstate) {
+            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP:
+            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT:
+                if ((ret = virNetDevSetOnline(dev->ifname, true)) < 0)
+                    goto cleanup;
+                break;
+
+            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN:
+                if ((ret = virNetDevSetOnline(dev->ifname, false)) < 0)
+                    goto cleanup;
+                break;
+            }
+    }
 
     /* modify the device configuration */
     dev->linkstate = linkstate;

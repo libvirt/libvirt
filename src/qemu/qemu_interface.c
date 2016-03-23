@@ -387,6 +387,124 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     return *tapfd < 0 ? -1 : 0;
 }
 
+/**
+ * qemuExecuteEthernetScript:
+ * @ifname: the interface name
+ * @script: the script name
+ *
+ * This function executes script for new tap device created by libvirt.
+ * Returns 0 in case of success or -1 on failure
+ */
+static int
+qemuExecuteEthernetScript(const char *ifname, const char *script)
+{
+        virCommandPtr cmd;
+        int ret;
+
+        cmd = virCommandNew(script);
+        virCommandAddArgFormat(cmd, "%s", ifname);
+        virCommandClearCaps(cmd);
+#ifdef CAP_NET_ADMIN
+        virCommandAllowCap(cmd, CAP_NET_ADMIN);
+#endif
+        virCommandAddEnvPassCommon(cmd);
+
+        ret = virCommandRun(cmd, NULL);
+
+        virCommandFree(cmd);
+        return ret;
+}
+
+/* qemuInterfaceEthernetConnect:
+ * @def: the definition of the VM
+ * @driver: qemu driver data
+ * @net: pointer to the VM's interface description
+ * @tapfd: array of file descriptor return value for the new device
+ * @tapfdsize: number of file descriptors in @tapfd
+ *
+ * Called *only* called if actualType is VIR_DOMAIN_NET_TYPE_ETHERNET
+ * (i.e. if the connection is made with a tap device)
+ */
+int
+qemuInterfaceEthernetConnect(virDomainDefPtr def,
+                           virQEMUDriverPtr driver,
+                           virDomainNetDefPtr net,
+                           int *tapfd,
+                           size_t tapfdSize)
+{
+    virMacAddr tapmac;
+    int ret = -1;
+    unsigned int tap_create_flags = VIR_NETDEV_TAP_CREATE_IFUP;
+    bool template_ifname = false;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *tunpath = "/dev/net/tun";
+
+    if (net->backend.tap) {
+        tunpath = net->backend.tap;
+        if (!virQEMUDriverIsPrivileged(driver)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot use custom tap device in session mode"));
+            goto cleanup;
+        }
+    }
+
+    if (!net->ifname ||
+        STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
+        strchr(net->ifname, '%')) {
+        VIR_FREE(net->ifname);
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
+            goto cleanup;
+        /* avoid exposing vnet%d in getXMLDesc or error outputs */
+        template_ifname = true;
+    }
+
+    if (net->model && STREQ(net->model, "virtio"))
+        tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
+
+    if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
+                           tap_create_flags) < 0) {
+        virDomainAuditNetDevice(def, net, tunpath, false);
+        goto cleanup;
+    }
+
+    virDomainAuditNetDevice(def, net, tunpath, true);
+    virMacAddrSet(&tapmac, &net->mac);
+    tapmac.addr[0] = 0xFE;
+
+    if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
+        goto cleanup;
+
+    if (net->script &&
+        qemuExecuteEthernetScript(net->ifname, net->script) < 0)
+        goto cleanup;
+
+    if (cfg->macFilter &&
+        ebtablesAddForwardAllowIn(driver->ebtables,
+                                  net->ifname,
+                                  &net->mac) < 0)
+        goto cleanup;
+
+    if (net->filter &&
+        virDomainConfNWFilterInstantiate(def->uuid, net) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        size_t i;
+        for (i = 0; i < tapfdSize && tapfd[i] >= 0; i++)
+            VIR_FORCE_CLOSE(tapfd[i]);
+        if (template_ifname)
+            VIR_FREE(net->ifname);
+    }
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+
 /* qemuInterfaceBridgeConnect:
  * @def: the definition of the VM
  * @driver: qemu driver data

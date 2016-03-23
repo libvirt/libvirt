@@ -3220,6 +3220,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
         virBufferAsprintf(&buf, "tap%c", type_sep);
         /* for one tapfd 'fd=' shall be used,
          * for more than one 'fds=' is the right choice */
@@ -3234,20 +3235,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
             }
         }
         type_sep = ',';
-        is_tap = true;
-        break;
-
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        virBufferAddLit(&buf, "tap");
-        if (net->ifname) {
-            virBufferAsprintf(&buf, "%cifname=%s", type_sep, net->ifname);
-            type_sep = ',';
-        }
-        if (net->script) {
-            virBufferAsprintf(&buf, "%cscript=%s", type_sep,
-                              net->script);
-            type_sep = ',';
-        }
         is_tap = true;
         break;
 
@@ -7792,7 +7779,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
           actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_DIRECT)) {
+          actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Multiqueue network is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
@@ -7802,7 +7790,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     /* and only TAP devices support nwfilter rules */
     if (net->filter &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("filterref is not supported for "
                          "network interfaces of type %s"),
@@ -7812,7 +7801,8 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
     if (net->backend.tap &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE)) {
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Custom tap device path is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
@@ -7849,6 +7839,20 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
         if (qemuInterfaceDirectConnect(def, driver, net,
                                        tapfd, tapfdSize, vmop) < 0)
+            goto cleanup;
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        tapfdSize = net->driver.virtio.queues;
+        if (!tapfdSize)
+            tapfdSize = 1;
+
+        if (VIR_ALLOC_N(tapfd, tapfdSize) < 0 ||
+            VIR_ALLOC_N(tapfdName, tapfdSize) < 0)
+            goto cleanup;
+
+        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
+
+        if (qemuInterfaceEthernetConnect(def, driver, net,
+                                       tapfd, tapfdSize) < 0)
             goto cleanup;
     }
 
