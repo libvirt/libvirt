@@ -21,12 +21,15 @@
 #include <config.h>
 
 #include "internal.h"
-#include "virnuma.h"
+#include "vircommand.h"
 #include "virmock.h"
-#include "virutil.h"
+#include "virnetdev.h"
+#include "virnetdevtap.h"
+#include "virnuma.h"
+#include "virscsi.h"
 #include "virstring.h"
 #include "virtpm.h"
-#include "virscsi.h"
+#include "virutil.h"
 #include <time.h>
 #include <unistd.h>
 
@@ -97,4 +100,44 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
     ignore_value(VIR_STRDUP(ret, "sg0"));
     return ret;
+}
+
+int
+virNetDevTapCreate(char **ifname,
+                   const char *tunpath ATTRIBUTE_UNUSED,
+                   int *tapfd,
+                   size_t tapfdSize,
+                   unsigned int flags ATTRIBUTE_UNUSED)
+{
+    size_t i;
+
+    for (i = 0; i < tapfdSize; i++)
+        tapfd[i] = STDERR_FILENO + 1 + i;
+
+    return VIR_STRDUP(*ifname, "vnet0");
+}
+
+int
+virNetDevSetMAC(const char *ifname ATTRIBUTE_UNUSED,
+                const virMacAddr *macaddr ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+int
+virCommandRun(virCommandPtr cmd ATTRIBUTE_UNUSED,
+              int *exitstatus)
+{
+    if (exitstatus)
+        *exitstatus = 0;
+
+    return 0;
+}
+
+void
+virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                 int fd ATTRIBUTE_UNUSED,
+                 unsigned int flags ATTRIBUTE_UNUSED)
+{
+    /* nada */
 }

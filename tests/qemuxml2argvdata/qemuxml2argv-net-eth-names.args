@@ -20,7 +20,7 @@ QEMU_AUDIO_DRV=none \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -device rtl8139,vlan=0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x3 \
--net tap,script=/etc/qemu-ifup,vlan=0,name=hostnet0 \
+-net tap,fd=3,vlan=0,name=hostnet0 \
 -device e1000,vlan=1,id=net1,mac=00:11:22:33:44:56,bus=pci.0,addr=0x4 \
--net tap,script=/etc/qemu-ifup,vlan=1,name=hostnet1 \
+-net tap,fd=3,vlan=1,name=hostnet1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

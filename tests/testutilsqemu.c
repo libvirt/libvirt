@@ -555,6 +555,8 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
+    virSecurityManagerPtr mgr = NULL;
+
     memset(driver, 0, sizeof(*driver));
 
     if (virMutexInit(&driver->lock) < 0)
@@ -588,9 +590,16 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (qemuTestCapsCacheInsert(driver->qemuCapsCache, "empty", NULL) < 0)
         goto error;
 
+    if (!(mgr = virSecurityManagerNew("none", "qemu",
+                                      VIR_SECURITY_MANAGER_PRIVILEGED)))
+        goto error;
+    if (!(driver->securityManager = virSecurityManagerNewStack(mgr)))
+        goto error;
+
     return 0;
 
  error:
+    virObjectUnref(mgr);
     qemuTestDriverFree(driver);
     return -1;
 }

@@ -1139,7 +1139,7 @@ exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = \
-  ^(docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|usb)|nss)mock\.c$$)
+  ^(docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|usb)|nss|qemuxml2argv)mock\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)

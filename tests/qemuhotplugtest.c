@@ -341,7 +341,6 @@ mymain(void)
 {
     int ret = 0;
     struct qemuHotplugTestData data = {0};
-    virSecurityManagerPtr mgr;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -367,12 +366,6 @@ mymain(void)
                                                  driver.config->configBaseDir,
                                                  0);
     if (!driver.lockManager)
-        return EXIT_FAILURE;
-
-    if (!(mgr = virSecurityManagerNew("none", "qemu",
-                                      VIR_SECURITY_MANAGER_PRIVILEGED)))
-        return EXIT_FAILURE;
-    if (!(driver.securityManager = virSecurityManagerNewStack(mgr)))
         return EXIT_FAILURE;
 
     /* wait only 100ms for DEVICE_DELETED event */
