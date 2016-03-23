@@ -519,6 +519,7 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
         char *opts;
         char *port;
         const char *sep = ":";
+        char *listenAddr = NULL;
         if (val[0] == '[')
             sep = "]:";
         tmp = strstr(val, sep);
@@ -536,7 +537,8 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
         }
         if (val[0] == '[')
             val++;
-        if (virDomainGraphicsListenSetAddress(vnc, 0, val, tmp-val, true) < 0)
+        if (VIR_STRNDUP(listenAddr, val, tmp-val) < 0 ||
+            virDomainGraphicsListenAppendAddress(vnc, listenAddr) < 0)
             goto cleanup;
 
         if (*opts == ',') {

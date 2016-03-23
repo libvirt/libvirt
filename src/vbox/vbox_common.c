@@ -3386,8 +3386,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         }
 
         if (STRNEQ_NULLABLE(netAddressUtf8, "") &&
-            virDomainGraphicsListenSetAddress(graphics, 0,
-                                              netAddressUtf8, -1, true) < 0)
+            virDomainGraphicsListenAppendAddress(graphics, netAddressUtf8) < 0)
             goto cleanup;
 
         gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);

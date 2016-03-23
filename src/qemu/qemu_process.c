@@ -4291,15 +4291,14 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
             graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (graphics->nListens == 0) {
-                if (VIR_EXPAND_N(graphics->listens, graphics->nListens, 1) < 0)
+                const char *listenAddr
+                    = graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
+                    cfg->vncListen : cfg->spiceListen;
+
+                if (virDomainGraphicsListenAppendAddress(graphics,
+                                                         listenAddr) < 0)
                     goto cleanup;
-                graphics->listens[0].type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
-                if (VIR_STRDUP(graphics->listens[0].address,
-                               graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
-                               cfg->vncListen : cfg->spiceListen) < 0) {
-                    VIR_SHRINK_N(graphics->listens, graphics->nListens, 1);
-                    goto cleanup;
-                }
+
                 graphics->listens[0].fromConfig = true;
             } else if (graphics->nListens > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

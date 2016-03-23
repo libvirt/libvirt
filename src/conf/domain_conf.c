@@ -10693,7 +10693,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     /* There were no <listen> elements, so we can just
      * directly set listenAddr as listens[0]->address */
     if (listenAddr && def->nListens == 0 &&
-        virDomainGraphicsListenSetAddress(def, 0, listenAddr, -1, true) < 0)
+        virDomainGraphicsListenAppendAddress(def, listenAddr) < 0)
         goto error;
 
     ret = 0;
@@ -23779,31 +23779,26 @@ virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t i)
 }
 
 
-/* Make a copy of up to len characters of address, and store it in
- * listens[i].address. If setType is true, set the listen's type
- * to 'address', otherwise leave type alone. */
 int
-virDomainGraphicsListenSetAddress(virDomainGraphicsDefPtr def,
-                                  size_t i, const char *address,
-                                  int len, bool setType)
+virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
+                                     const char *address)
 {
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, true);
+    virDomainGraphicsListenDef listen;
 
-    if (!listenInfo)
-        return -1;
+    memset(&listen, 0, sizeof(listen));
 
-    if (setType)
-        listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+    listen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
-    if (!address) {
-        VIR_FREE(listenInfo->address);
-        return 0;
-    }
+    if (VIR_STRDUP(listen.address, address) < 0)
+        goto error;
 
-    if (VIR_STRNDUP(listenInfo->address, address, len) < 0)
-        return -1;
+    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, listen) < 0)
+        goto error;
+
     return 0;
+ error:
+    VIR_FREE(listen.address);
+    return -1;
 }
 
 

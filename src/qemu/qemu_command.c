@@ -7270,8 +7270,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             listenAddr = netAddr;
             /* store the address we found in the <graphics> element so it
              * will show up in status. */
-            if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                  listenAddr, -1, false) < 0)
+            if (VIR_STRDUP(graphics->listens[0].address, listenAddr) < 0)
                 goto error;
             break;
         }
@@ -7425,8 +7424,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             listenAddr = netAddr;
             /* store the address we found in the <graphics> element so it will
              * show up in status. */
-            if (virDomainGraphicsListenSetAddress(graphics, 0,
-                                                  listenAddr, -1, false) < 0)
+            if (VIR_STRDUP(graphics->listens[0].address, listenAddr) < 0)
                goto error;
             break;
         }

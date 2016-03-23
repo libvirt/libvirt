@@ -187,10 +187,8 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
             if (xenConfigCopyStringOpt(conf, "spicehost", &listenAddr) < 0)
                 goto cleanup;
             if (listenAddr &&
-                virDomainGraphicsListenSetAddress(graphics, 0, listenAddr,
-                                                  -1, true) < 0) {
+                virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
                 goto cleanup;
-            }
             VIR_FREE(listenAddr);
 
             if (xenConfigGetULong(conf, "spicetls_port", &port, 0) < 0)

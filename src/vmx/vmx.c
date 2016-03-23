@@ -1875,7 +1875,7 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
     }
 
     if (listenAddr) {
-        if (virDomainGraphicsListenSetAddress(*def, 0, listenAddr, -1, true) < 0)
+        if (virDomainGraphicsListenAppendAddress(*def, listenAddr) < 0)
             goto failure;
         VIR_FREE(listenAddr);
     }
