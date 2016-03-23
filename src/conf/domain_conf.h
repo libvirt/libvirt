@@ -2814,8 +2814,6 @@ int virDomainHostdevFind(virDomainDefPtr def, virDomainHostdevDefPtr match,
 
 int virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
             ATTRIBUTE_NONNULL(1);
-int virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t i, int val)
-            ATTRIBUTE_NONNULL(1);
 const char *virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def,
                                               size_t i)
             ATTRIBUTE_NONNULL(1);

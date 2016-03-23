@@ -23748,22 +23748,6 @@ virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
 }
 
 
-/* NB: This function assumes type has not previously been set. It
- * *will not* free any existing address or network based on a change
- * in value of type. */
-int
-virDomainGraphicsListenSetType(virDomainGraphicsDefPtr def, size_t i, int val)
-{
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, true);
-
-    if (!listenInfo)
-        return -1;
-    listenInfo->type = val;
-    return 0;
-}
-
-
 const char *
 virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t i)
 {
