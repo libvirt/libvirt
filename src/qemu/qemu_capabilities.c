@@ -3089,10 +3089,8 @@ virQEMUCapsInitCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
 
     if (virQEMUCapsLoadCache(qemuCaps, capsfile, &qemuctime, &selfctime,
                              &selfvers) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
-                 capsfile, qemuCaps->binary, err ? NULLSTR(err->message) :
-                 _("unknown error"));
+                 capsfile, qemuCaps->binary, virGetLastErrorMessage());
         virResetLastError();
         ret = 0;
         virQEMUCapsReset(qemuCaps);
@@ -3320,9 +3318,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* @mon is supposed to be locked by callee */
 
     if (qemuMonitorSetCapabilities(mon) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_DEBUG("Failed to set monitor capabilities %s",
-                  err ? err->message : "<unknown problem>");
+                  virGetLastErrorMessage());
         ret = 0;
         goto cleanup;
     }
@@ -3330,9 +3327,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (qemuMonitorGetVersion(mon,
                               &major, &minor, &micro,
                               &package) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_DEBUG("Failed to query monitor version %s",
-                  err ? err->message : "<unknown problem>");
+                  virGetLastErrorMessage());
         ret = 0;
         goto cleanup;
     }
@@ -3561,15 +3557,13 @@ virQEMUCapsLogProbeFailure(const char *binary)
         { .key = "LIBVIRT_QEMU_BINARY", .s = binary, .iv = 0 },
         { .key = NULL },
     };
-    virErrorPtr err = virGetLastError();
 
     virLogMessage(&virLogSelf,
                   VIR_LOG_WARN,
                   __FILE__, __LINE__, __func__,
                   meta,
                   _("Failed to probe capabilities for %s: %s"),
-                  binary, err && err->message ? err->message :
-                  _("unknown failure"));
+                  binary, virGetLastErrorMessage());
 }
 
 

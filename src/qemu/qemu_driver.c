@@ -276,7 +276,6 @@ qemuAutostartDomain(virDomainObjPtr vm,
                     void *opaque)
 {
     struct qemuAutostartData *data = opaque;
-    virErrorPtr err;
     int flags = 0;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(data->driver);
     int ret = -1;
@@ -290,19 +289,15 @@ qemuAutostartDomain(virDomainObjPtr vm,
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
         if (qemuProcessBeginJob(data->driver, vm) < 0) {
-            err = virGetLastError();
             VIR_ERROR(_("Failed to start job on VM '%s': %s"),
-                      vm->def->name,
-                      err ? err->message : _("unknown error"));
+                      vm->def->name, virGetLastErrorMessage());
             goto cleanup;
         }
 
         if (qemuDomainObjStart(data->conn, data->driver, vm, flags,
                                QEMU_ASYNC_JOB_START) < 0) {
-            err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name,
-                      err ? err->message : _("unknown error"));
+                      vm->def->name, virGetLastErrorMessage());
         }
 
         qemuProcessEndJob(data->driver, vm);
