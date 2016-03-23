@@ -633,7 +633,6 @@ qemuStateInitialize(bool privileged,
 {
     char *driverConf = NULL;
     virConnectPtr conn = NULL;
-    char ebuf[1024];
     virQEMUDriverConfigPtr cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
@@ -644,7 +643,8 @@ qemuStateInitialize(bool privileged,
         return -1;
 
     if (virMutexInit(&qemu_driver->lock) < 0) {
-        VIR_ERROR(_("cannot initialize mutex"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot initialize mutex"));
         VIR_FREE(qemu_driver);
         return -1;
     }
@@ -677,44 +677,43 @@ qemuStateInitialize(bool privileged,
     VIR_FREE(driverConf);
 
     if (virFileMakePath(cfg->stateDir) < 0) {
-        VIR_ERROR(_("Failed to create state dir '%s': %s"),
-                  cfg->stateDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create state dir %s"),
+                             cfg->stateDir);
         goto error;
     }
     if (virFileMakePath(cfg->libDir) < 0) {
-        VIR_ERROR(_("Failed to create lib dir '%s': %s"),
-                  cfg->libDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create lib dir %s"),
+                             cfg->libDir);
         goto error;
     }
     if (virFileMakePath(cfg->cacheDir) < 0) {
-        VIR_ERROR(_("Failed to create cache dir '%s': %s"),
-                  cfg->cacheDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create cache dir %s"),
+                             cfg->cacheDir);
         goto error;
     }
     if (virFileMakePath(cfg->saveDir) < 0) {
-        VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  cfg->saveDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create save dir %s"),
+                             cfg->saveDir);
         goto error;
     }
     if (virFileMakePath(cfg->snapshotDir) < 0) {
-        VIR_ERROR(_("Failed to create save dir '%s': %s"),
-                  cfg->snapshotDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create save dir %s"),
+                             cfg->snapshotDir);
         goto error;
     }
     if (virFileMakePath(cfg->autoDumpPath) < 0) {
-        VIR_ERROR(_("Failed to create dump dir '%s': %s"),
-                  cfg->autoDumpPath, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create dump dir %s"),
+                             cfg->autoDumpPath);
         goto error;
     }
     if (virFileMakePath(cfg->channelTargetDir) < 0) {
-        VIR_ERROR(_("Failed to create channel target dir '%s': %s"),
-                  cfg->channelTargetDir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create channel target dir %s"),
+                             cfg->channelTargetDir);
         goto error;
     }
     if (virFileMakePath(cfg->nvramDir) < 0) {
-        VIR_ERROR(_("Failed to create nvram dir '%s': %s"),
-                  cfg->nvramDir, virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create nvram dir %s"),
+                             cfg->nvramDir);
         goto error;
     }
 
