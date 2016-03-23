@@ -1891,13 +1891,19 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         virDomainControllerDefPtr cont = dev->data.controller;
 
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS) {
-
-            if (!qemuDomainMachineIsI440FX(def)) {
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
+                !qemuDomainMachineIsI440FX(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("pci-expander-bus controllers are only supported "
                                  "on 440fx-based machinetypes"));
+                goto cleanup;
+            }
+            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS &&
+                !qemuDomainMachineIsQ35(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pcie-expander-bus controllers are only supported "
+                                 "on q35-based machinetypes"));
                 goto cleanup;
             }
 
@@ -1906,13 +1912,16 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
              * array. NUMA cell id's in this array are numbered
              * from 0 .. size-1.
              */
-            if ((int) virDomainNumaGetNodeCount(def->numa)
+            if ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS ||
+                 cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS) &&
+                (int) virDomainNumaGetNodeCount(def->numa)
                 <= cont->opts.pciopts.numaNode) {
                 virReportError(VIR_ERR_XML_ERROR,
-                               _("pci-expander-bus with index %d is "
+                               _("%s with index %d is "
                                  "configured for a NUMA node (%d) "
                                  "not present in the domain's "
                                  "<cpu><numa> array (%zu)"),
+                               virDomainControllerModelPCITypeToString(cont->model),
                                cont->idx, cont->opts.pciopts.numaNode,
                                virDomainNumaGetNodeCount(def->numa));
                 goto cleanup;

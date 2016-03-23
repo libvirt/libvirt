@@ -1572,6 +1572,21 @@ mymain(void)
                         QEMU_CAPS_DEVICE_PCI_BRIDGE,
                         QEMU_CAPS_DEVICE_PXB);
 
+    DO_TEST("pcie-expander-bus",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_X3130_UPSTREAM,
+            QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
+            QEMU_CAPS_DEVICE_PXB_PCIE);
+    DO_TEST_PARSE_ERROR("pcie-expander-bus-bad-machine",
+                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_IOH3420,
+                        QEMU_CAPS_DEVICE_X3130_UPSTREAM,
+                        QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
+                        QEMU_CAPS_DEVICE_PXB_PCIE);
+
     DO_TEST("hostdev-scsi-lsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
