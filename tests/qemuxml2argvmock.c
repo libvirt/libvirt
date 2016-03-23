@@ -26,6 +26,7 @@
 #include "virutil.h"
 #include "virstring.h"
 #include "virtpm.h"
+#include "virscsi.h"
 #include <time.h>
 #include <unistd.h>
 
@@ -83,4 +84,17 @@ unsigned long long
 virMemoryMaxValue(bool capped ATTRIBUTE_UNUSED)
 {
     return LLONG_MAX;
+}
+
+char *
+virSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                       const char *adapter ATTRIBUTE_UNUSED,
+                       unsigned int bus ATTRIBUTE_UNUSED,
+                       unsigned int target ATTRIBUTE_UNUSED,
+                       unsigned long long unit ATTRIBUTE_UNUSED)
+{
+    char *ret;
+
+    ignore_value(VIR_STRDUP(ret, "sg0"));
+    return ret;
 }
