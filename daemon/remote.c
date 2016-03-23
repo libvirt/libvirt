@@ -5726,7 +5726,7 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Number of domain stats records is %d, "
                          "which exceeds max limit: %d"),
-                       nrecords, REMOTE_DOMAIN_LIST_MAX);
+                       nrecords, REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX);
         goto cleanup;
     }
 
