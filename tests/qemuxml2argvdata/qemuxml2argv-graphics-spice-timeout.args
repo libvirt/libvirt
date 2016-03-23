@@ -29,7 +29,7 @@ media=cdrom,id=drive-ide0-1-0 \
 -net tap,fd=3,vlan=0,name=hostnet0 \
 -serial pty \
 -device usb-tablet,id=input0 \
--spice port=5900 \
+-spice port=5900,addr=127.0.0.1 \
 -vga std \
 -device AC97,id=sound0,bus=pci.0,addr=0x3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5

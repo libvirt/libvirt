@@ -489,9 +489,6 @@ mymain(void)
 
     driver.privileged = true;
 
-    VIR_FREE(driver.config->spiceListen);
-    VIR_FREE(driver.config->vncListen);
-
     VIR_FREE(driver.config->vncTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->vncTLSx509certdir, "/etc/pki/libvirt-vnc") < 0)
         return EXIT_FAILURE;
