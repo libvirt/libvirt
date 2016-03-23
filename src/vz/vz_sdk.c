@@ -2478,7 +2478,7 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
     }
 
     if (gr->nListens == 1 &&
-        virDomainGraphicsListenGetType(gr, 0) != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+        gr->listens[0].type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("vz driver supports only address-based VNC listening"));
         return -1;
@@ -2712,9 +2712,9 @@ static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
 static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     virDomainGraphicsDefPtr gr;
+    virDomainGraphicsListenDefPtr listen;
     PRL_RESULT pret;
     int ret  = -1;
-    const char *listenAddr = NULL;
 
     if (prlsdkCheckGraphicsUnsupportedParams(def))
         return -1;
@@ -2735,11 +2735,10 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
-    if (gr->nListens == 1) {
-        listenAddr = virDomainGraphicsListenGetAddress(gr, 0);
-        if (!listenAddr)
+    if ((listen = virDomainGraphicsGetListen(gr, 0))) {
+        if (!listen->address)
             goto cleanup;
-        pret = PrlVmCfg_SetVNCHostName(sdkdom, listenAddr);
+        pret = PrlVmCfg_SetVNCHostName(sdkdom, listen->address);
         prlsdkCheckRetGoto(pret, cleanup);
     }
 

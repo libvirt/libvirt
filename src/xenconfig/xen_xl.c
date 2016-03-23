@@ -837,7 +837,7 @@ xenFormatXLDomainDisks(virConfPtr conf, virDomainDefPtr def)
 static int
 xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
 {
-    const char *listenAddr = NULL;
+    virDomainGraphicsListenDefPtr listen;
     virDomainGraphicsDefPtr graphics;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
@@ -854,9 +854,9 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
             if (xenConfigSetInt(conf, "spice", 1) < 0)
                 return -1;
 
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            if (listenAddr &&
-                xenConfigSetString(conf, "spicehost", listenAddr) < 0)
+            if ((listen = virDomainGraphicsGetListen(graphics, 0)) &&
+                listen->address &&
+                xenConfigSetString(conf, "spicehost", listen->address) < 0)
                 return -1;
 
             if (xenConfigSetInt(conf, "spiceport",

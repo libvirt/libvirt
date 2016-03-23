@@ -1523,7 +1523,7 @@ static int
 xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
                          virBufferPtr buf)
 {
-    const char *listenAddr;
+    virDomainGraphicsListenDefPtr listen;
 
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_SDL &&
         def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
@@ -1551,9 +1551,9 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
             virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
         }
 
-        listenAddr = virDomainGraphicsListenGetAddress(def, 0);
-        if (listenAddr)
-            virBufferAsprintf(buf, "(vnclisten '%s')", listenAddr);
+        if ((listen = virDomainGraphicsGetListen(def, 0)) &&
+            listen->address)
+            virBufferAsprintf(buf, "(vnclisten '%s')", listen->address);
         if (def->data.vnc.auth.passwd)
             virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
         if (def->data.vnc.keymap)
@@ -1579,7 +1579,7 @@ xenFormatSxprGraphicsNew(virDomainGraphicsDefPtr def,
 static int
 xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def, virBufferPtr buf)
 {
-    const char *listenAddr;
+    virDomainGraphicsListenDefPtr listen;
 
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_SDL &&
         def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
@@ -1604,9 +1604,9 @@ xenFormatSxprGraphicsOld(virDomainGraphicsDefPtr def, virBufferPtr buf)
             virBufferAsprintf(buf, "(vncdisplay %d)", def->data.vnc.port-5900);
         }
 
-        listenAddr = virDomainGraphicsListenGetAddress(def, 0);
-        if (listenAddr)
-            virBufferAsprintf(buf, "(vnclisten '%s')", listenAddr);
+        if ((listen = virDomainGraphicsGetListen(def, 0)) &&
+            listen->address)
+            virBufferAsprintf(buf, "(vnclisten '%s')", listen->address);
         if (def->data.vnc.auth.passwd)
             virBufferAsprintf(buf, "(vncpasswd '%s')", def->data.vnc.auth.passwd);
         if (def->data.vnc.keymap)

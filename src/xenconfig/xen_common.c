@@ -1628,7 +1628,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                                        def->graphics[0]->data.sdl.xauth) < 0)
                     return -1;
             } else {
-                const char *listenAddr;
+                virDomainGraphicsListenDefPtr listen;
 
                 if (xenConfigSetInt(conf, "sdl", 0) < 0)
                     return -1;
@@ -1645,9 +1645,9 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                                     def->graphics[0]->data.vnc.port - 5900) < 0)
                     return -1;
 
-                listenAddr = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
-                if (listenAddr &&
-                    xenConfigSetString(conf, "vnclisten", listenAddr) < 0)
+                if ((listen = virDomainGraphicsGetListen(def->graphics[0], 0)) &&
+                    listen->address &&
+                    xenConfigSetString(conf, "vnclisten", listen->address) < 0)
                     return -1;
 
                 if (def->graphics[0]->data.vnc.auth.passwd &&
@@ -1674,8 +1674,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     virBufferAsprintf(&buf, ",xauthority=%s",
                                       def->graphics[0]->data.sdl.xauth);
             } else {
-                const char *listenAddr
-                    = virDomainGraphicsListenGetAddress(def->graphics[0], 0);
+                virDomainGraphicsListenDefPtr listen
+                    = virDomainGraphicsGetListen(def->graphics[0], 0);
 
                 virBufferAddLit(&buf, "type=vnc");
                 virBufferAsprintf(&buf, ",vncunused=%d",
@@ -1683,8 +1683,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                 if (!def->graphics[0]->data.vnc.autoport)
                     virBufferAsprintf(&buf, ",vncdisplay=%d",
                                       def->graphics[0]->data.vnc.port - 5900);
-                if (listenAddr)
-                    virBufferAsprintf(&buf, ",vnclisten=%s", listenAddr);
+                if (listen && listen->address)
+                    virBufferAsprintf(&buf, ",vnclisten=%s", listen->address);
                 if (def->graphics[0]->data.vnc.auth.passwd)
                     virBufferAsprintf(&buf, ",vncpasswd=%s",
                                       def->graphics[0]->data.vnc.auth.passwd);

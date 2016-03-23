@@ -7219,7 +7219,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 const char *domainLibDir)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    const char *listenNetwork;
+    virDomainGraphicsListenDefPtr listen = NULL;
     const char *listenAddr = NULL;
     char *netAddr = NULL;
     bool escapeAddr;
@@ -7248,31 +7248,34 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        switch (virDomainGraphicsListenGetType(graphics, 0)) {
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            break;
+        if ((listen = virDomainGraphicsGetListen(graphics, 0))) {
 
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-            if (!listenNetwork)
+            switch (listen->type) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+                listenAddr = listen->address;
                 break;
-            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-            if (ret <= -2) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("network-based listen not possible, "
-                                       "network driver not present"));
-                goto error;
-            }
-            if (ret < 0)
-                goto error;
 
-            listenAddr = netAddr;
-            /* store the address we found in the <graphics> element so it
-             * will show up in status. */
-            if (VIR_STRDUP(graphics->listens[0].address, listenAddr) < 0)
-                goto error;
-            break;
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                if (!listen->network)
+                    break;
+
+                ret = networkGetNetworkAddress(listen->network, &netAddr);
+                if (ret <= -2) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   "%s", _("network-based listen not possible, "
+                                           "network driver not present"));
+                    goto error;
+                }
+                if (ret < 0)
+                    goto error;
+
+                listenAddr = netAddr;
+                /* store the address we found in the <graphics> element so it
+                 * will show up in status. */
+                if (VIR_STRDUP(listen->address, netAddr) < 0)
+                    goto error;
+                break;
+            }
         }
 
         if (!listenAddr)
@@ -7363,7 +7366,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virDomainGraphicsDefPtr graphics)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    const char *listenNetwork;
+    virDomainGraphicsListenDefPtr listen = NULL;
     const char *listenAddr = NULL;
     char *netAddr = NULL;
     int ret;
@@ -7402,31 +7405,34 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (port > 0 || tlsPort > 0) {
-        switch (virDomainGraphicsListenGetType(graphics, 0)) {
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            listenAddr = virDomainGraphicsListenGetAddress(graphics, 0);
-            break;
+        if ((listen = virDomainGraphicsGetListen(graphics, 0))) {
 
-        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-            listenNetwork = virDomainGraphicsListenGetNetwork(graphics, 0);
-            if (!listenNetwork)
+            switch (listen->type) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+                listenAddr = listen->address;
                 break;
-            ret = networkGetNetworkAddress(listenNetwork, &netAddr);
-            if (ret <= -2) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("network-based listen not possible, "
-                                       "network driver not present"));
-                goto error;
-            }
-            if (ret < 0)
-                goto error;
 
-            listenAddr = netAddr;
-            /* store the address we found in the <graphics> element so it will
-             * show up in status. */
-            if (VIR_STRDUP(graphics->listens[0].address, listenAddr) < 0)
-               goto error;
-            break;
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                if (!listen->network)
+                    break;
+
+                ret = networkGetNetworkAddress(listen->network, &netAddr);
+                if (ret <= -2) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   "%s", _("network-based listen not possible, "
+                                           "network driver not present"));
+                    goto error;
+                }
+                if (ret < 0)
+                    goto error;
+
+                listenAddr = netAddr;
+                /* store the address we found in the <graphics> element so it will
+                 * show up in status. */
+                if (VIR_STRDUP(listen->address, listenAddr) < 0)
+                    goto error;
+                break;
+            }
         }
 
         if (!listenAddr)

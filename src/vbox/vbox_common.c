@@ -1578,6 +1578,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
     char *guiDisplay = NULL;
     char *sdlDisplay = NULL;
     size_t i = 0;
+    virDomainGraphicsListenDefPtr listen;
 
     for (i = 0; i < def->ngraphics; i++) {
         IVRDxServer *VRDxServer = NULL;
@@ -1588,9 +1589,6 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             vrdpPresent = 1;
             gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
             if (VRDxServer) {
-                const char *listenAddr
-                    = virDomainGraphicsListenGetAddress(def->graphics[i], 0);
-
                 gVBoxAPI.UIVRDxServer.SetEnabled(VRDxServer, PR_TRUE);
                 VIR_DEBUG("VRDP Support turned ON.");
 
@@ -1608,14 +1606,15 @@ vboxAttachDisplay(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
                     VIR_DEBUG("VRDP set to allow multiple connection");
                 }
 
-                if (listenAddr) {
+                if ((listen = virDomainGraphicsGetListen(def->graphics[i], 0)) &&
+                    listen->address) {
                     PRUnichar *netAddressUtf16 = NULL;
 
-                    VBOX_UTF8_TO_UTF16(listenAddr, &netAddressUtf16);
+                    VBOX_UTF8_TO_UTF16(listen->address, &netAddressUtf16);
                     gVBoxAPI.UIVRDxServer.SetNetAddress(data, VRDxServer,
                                                         netAddressUtf16);
                     VIR_DEBUG("VRDP listen address is set to: %s",
-                              listenAddr);
+                              listen->address);
 
                     VBOX_UTF16_FREE(netAddressUtf16);
                 }
