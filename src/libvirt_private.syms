@@ -1898,6 +1898,7 @@ virLogPriorityFromSyslog;
 virLogProbablyLogMessage;
 virLogReset;
 virLogSetDefaultPriority;
+virLogSetFilters;
 virLogSetFromEnv;
 virLogSetOutputs;
 virLogUnlock;
