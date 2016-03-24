@@ -2945,7 +2945,8 @@ static char *
 qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
                               virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
-                              virQEMUDriverConfigPtr cfg)
+                              virQEMUDriverConfigPtr cfg,
+                              virBitmapPtr auto_nodeset)
 {
     virJSONValuePtr props = NULL;
     char *alias = NULL;
@@ -2962,7 +2963,7 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
         goto cleanup;
 
     if (qemuBuildMemoryBackendStr(mem->size, mem->pagesize,
-                                  mem->targetNode, mem->sourceNodes, NULL,
+                                  mem->targetNode, mem->sourceNodes, auto_nodeset,
                                   def, qemuCaps, cfg,
                                   &backendType, &props, true) < 0)
         goto cleanup;
@@ -7200,7 +7201,7 @@ qemuBuildNumaCommandLine(virCommandPtr cmd,
         char *dimmStr;
 
         if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
-                                                      qemuCaps, cfg)))
+                                                      qemuCaps, cfg, nodeset)))
             return -1;
 
         if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i]))) {
