@@ -7182,17 +7182,13 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuBuildNumaCommandLine(virCommandPtr cmd,
-                         virQEMUDriverConfigPtr cfg,
-                         virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
-                         virBitmapPtr nodeset)
+qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
+                                 virQEMUDriverConfigPtr cfg,
+                                 virDomainDefPtr def,
+                                 virQEMUCapsPtr qemuCaps,
+                                 virBitmapPtr nodeset)
 {
     size_t i;
-
-    if (virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
-        return -1;
 
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
@@ -9260,7 +9256,11 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildNumaCommandLine(cmd, cfg, def, qemuCaps, nodeset) < 0)
+    if (virDomainNumaGetNodeCount(def->numa) &&
+        qemuBuildNumaArgStr(cfg, def, cmd, qemuCaps, nodeset) < 0)
+        goto error;
+
+    if (qemuBuildMemoryDeviceCommandLine(cmd, cfg, def, qemuCaps, nodeset) < 0)
         goto error;
 
     virUUIDFormat(def->uuid, uuid);
