@@ -54,6 +54,7 @@ adminConnectListServers(virNetDaemonPtr dmn,
         srvs = NULL;
     }
  cleanup:
+    virObjectListFreeCount(srvs, ret);
     return ret;
 }
 
