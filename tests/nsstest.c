@@ -51,9 +51,6 @@ testGetHostByName(const void *opaque)
     int rv, tmp_errno = 0, tmp_herrno = 0;
     size_t i = 0, j = 0;
 
-    if (!data)
-        goto cleanup;
-
     memset(&resolved, 0, sizeof(resolved));
 
     rv = _nss_libvirt_gethostbyname2_r(data->hostname,
