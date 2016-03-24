@@ -813,9 +813,16 @@ virTestSetEnvPath(void)
     const char *path = getenv("PATH");
     char *new_path = NULL;
 
-    if (strstr(path, abs_builddir) != path &&
-        (virAsprintf(&new_path, "%s:%s", abs_builddir, path) < 0 ||
-         setenv("PATH", new_path, 1) < 0))
+    if (path) {
+        if (strstr(path, abs_builddir) != path &&
+            virAsprintf(&new_path, "%s:%s", abs_builddir, path) < 0)
+            goto cleanup;
+    } else {
+        if (VIR_STRDUP(new_path, abs_builddir) < 0)
+            goto cleanup;
+    }
+
+    if (setenv("PATH", new_path, 1) < 0)
         goto cleanup;
 
     ret = 0;
