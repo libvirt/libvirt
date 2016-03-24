@@ -112,7 +112,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
     if (!(tokens = virStringSplitCount(volume_string, "\t", 0, &count)))
         return -1;
 
-    if (count != 2)
+    if (count != 3)
         goto cleanup;
 
     if (!(name_tokens = virStringSplit(tokens[0], "/", 2)))
@@ -150,6 +150,15 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
                        "%s", _("malformed volsize reported"));
         goto cleanup;
     }
+
+    if (virStrToLong_ull(tokens[2], NULL, 10, &volume->target.allocation) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed refreservation reported"));
+        goto cleanup;
+    }
+
+    if (volume->target.allocation < volume->target.capacity)
+        volume->target.sparse = true;
 
     if (is_new_vol &&
         VIR_APPEND_ELEMENT(pool->volumes.objs,
@@ -190,7 +199,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
     cmd = virCommandNewArgList(ZFS,
                                "list", "-Hp",
                                "-t", "volume", "-r",
-                               "-o", "name,volsize",
+                               "-o", "name,volsize,refreservation",
                                pool->def->source.name,
                                NULL);
     virCommandSetOutputBuffer(cmd, &volumes_list);
@@ -323,15 +332,28 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     /**
      * $ zfs create -o volmode=dev -V 10240K test/volname
+     * $ zfs create -o volmode=dev -s -V 10240K test/volname
+     * $ zfs create -o volmode=dev -s -o refreservation=1024K -V 10240K test/volname
      *
      * -o volmode=dev -- we want to get volumes exposed as cdev
      *                   devices. If we don't specify that zfs
      *                   will lookup vfs.zfs.vol.mode sysctl value
+     * -s -- create a sparse volume
+     * -o refreservation -- reserve the specified amount of space
      * -V -- tells to create a volume with the specified size
      */
     cmd = virCommandNewArgList(ZFS, "create", NULL);
     if (volmode_needed)
         virCommandAddArgList(cmd, "-o", "volmode=dev", NULL);
+    if (vol->target.capacity != vol->target.allocation) {
+        virCommandAddArg(cmd, "-s");
+        if (vol->target.allocation > 0) {
+            virCommandAddArg(cmd, "-o");
+            virCommandAddArgFormat(cmd, "refreservation=%lluK",
+                                   VIR_DIV_UP(vol->target.allocation, 1024));
+        }
+        vol->target.sparse = true;
+    }
     virCommandAddArg(cmd, "-V");
     virCommandAddArgFormat(cmd, "%lluK",
                            VIR_DIV_UP(vol->target.capacity, 1024));
