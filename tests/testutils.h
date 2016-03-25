@@ -20,8 +20,8 @@
  * Karel Zak <kzak@redhat.com>
  */
 
-#ifndef __VIT_TEST_UTILS_H__
-# define __VIT_TEST_UTILS_H__
+#ifndef __VIR_TEST_UTILS_H__
+# define __VIR_TEST_UTILS_H__
 
 # include <stdio.h>
 # include "viralloc.h"
@@ -145,4 +145,4 @@ int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                const void *opaque,
                                unsigned int parseFlags);
 
-#endif /* __VIT_TEST_UTILS_H__ */
+#endif /* __VIR_TEST_UTILS_H__ */
