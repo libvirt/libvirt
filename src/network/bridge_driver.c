@@ -2490,10 +2490,15 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
-       if (networkStartNetworkBridge(network) < 0)
-          goto cleanup;
-       break;
-
+        if (network->def->bridge) {
+            if (networkStartNetworkBridge(network) < 0)
+                goto cleanup;
+            break;
+        }
+        /* intentionally fall through to the macvtap/direct case for
+         * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
+         * (since that is macvtap bridge mode).
+         */
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
@@ -2562,9 +2567,14 @@ networkShutdownNetwork(virNetworkDriverStatePtr driver,
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
-        ret = networkShutdownNetworkBridge(network);
-        break;
-
+        if (network->def->bridge) {
+            ret = networkShutdownNetworkBridge(network);
+            break;
+        }
+        /* intentionally fall through to the macvtap/direct case for
+         * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
+         * (since that is macvtap bridge mode).
+         */
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
     case VIR_NETWORK_FORWARD_PASSTHROUGH:
@@ -4691,8 +4701,8 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
         if ((dev_name = netdef->bridge))
             break;
         /*
-         * fall through if netdef->bridge wasn't set, since this is
-         * also a direct-mode interface.
+         * fall through if netdef->bridge wasn't set, since that is
+         * macvtap bridge mode network.
          */
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
