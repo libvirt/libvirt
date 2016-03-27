@@ -301,12 +301,6 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     int ret = -1;
     int volmode_needed = -1;
 
-    if (vol->target.format != VIR_STORAGE_FILE_RAW) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only RAW volumes are supported by this storage pool"));
-        return -1;
-    }
-
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("storage pool does not support encrypted "
