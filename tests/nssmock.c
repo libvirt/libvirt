@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#ifdef __linux__
+#ifdef NSS
 # include <stdio.h>
 # include <stdlib.h>
 # include <dlfcn.h>
@@ -107,7 +107,7 @@ open(const char *path, int flags, ...)
         va_list ap;
         mode_t mode;
         va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
+        mode = va_arg(ap, int);
         va_end(ap);
         ret = realopen(newpath ? newpath : path, flags, mode);
     } else {
@@ -136,5 +136,5 @@ opendir(const char *path)
     return ret;
 }
 #else
-/* Nothing to override on non-__linux__ platforms */
+/* Nothing to override if NSS plugin is not enabled */
 #endif

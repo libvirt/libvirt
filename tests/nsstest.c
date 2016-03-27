@@ -22,7 +22,7 @@
 
 #include "testutils.h"
 
-#ifdef __linux__
+#ifdef NSS
 
 # include <stdbool.h>
 # include <arpa/inet.h>

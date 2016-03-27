@@ -45,8 +45,17 @@ enum nss_status
 _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
                               char *buffer, size_t buflen, int *errnop,
                               int *herrnop, int32_t *ttlp, char **canonp);
+# ifdef HAVE_STRUCT_GAIH_ADDRTUPLE
 enum nss_status
 _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
                               char *buffer, size_t buflen, int *errnop,
                               int *herrnop, int32_t *ttlp);
+# endif /* HAVE_STRUCT_GAIH_ADDRTUPLE */
+
+# if defined(HAVE_BSD_NSS)
+ns_mtab*
+nss_module_register(const char *name, unsigned int *size,
+                    nss_module_unregister_fn *unregister);
+# endif /* HAVE_BSD_NSS */
+
 #endif /* __LIBVIRT_NSS_H__ */

@@ -417,8 +417,22 @@ CLEANFILES += wireshark/src/plugin.c
 
 endif WITH_WIRESHARK_DISSECTOR
 
+if WITH_BSD_NSS
+LIBVIRT_NSS_SYMBOL_FILE = \
+	$(srcdir)/nss/libvirt_nss_bsd.syms
+NSS_SO_VER = 1
+
+install-exec-hook:
+	cd $(DESTDIR)$(libdir) && \
+	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER)
+
+uninstall-local:
+	rm $(DESTDIR)$(libdir)/libnss_libvirt.so.$(NSS_SO_VER)
+else ! WITH_BSD_NSS
 LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss.syms
+NSS_SO_VER = 2
+endif ! WITH_BSD_NSS
 
 LIBVIRT_NSS_SOURCES = \
 	nss/libvirt_nss.c	\
@@ -449,7 +463,7 @@ nss_libnss_libvirt_la_LDFLAGS = \
 	-export-dynamic \
 	-avoid-version \
 	-shared \
-	-shrext .so.2
+	-shrext .so.$(NSS_SO_VER)
 
 nss_libnss_libvirt_la_LIBADD =  \
 	nss/libnss_libvirt_impl.la

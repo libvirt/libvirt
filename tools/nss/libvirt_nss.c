@@ -29,10 +29,15 @@
 
 #include "libvirt_nss.h"
 
+#include <netinet/in.h>
 #include <resolv.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <arpa/inet.h>
+
+#if defined(HAVE_BSD_NSS)
+# include <nsswitch.h>
+#endif
 
 #include "virlease.h"
 #include "viralloc.h"
@@ -65,7 +70,7 @@ do {                                                            \
 
 #define LEASEDIR LOCALSTATEDIR "/lib/libvirt/dnsmasq/"
 
-#define ALIGN(x) (((x) + __SIZEOF_POINTER__ - 1) & ~(__SIZEOF_POINTER__ - 1))
+#define LIBVIRT_ALIGN(x) (((x) + __SIZEOF_POINTER__ - 1) & ~(__SIZEOF_POINTER__ - 1))
 #define FAMILY_ADDRESS_SIZE(family) ((family) == AF_INET6 ? 16 : 4)
 
 typedef struct {
@@ -256,7 +261,7 @@ static inline void *
 move_and_align(void *buf, size_t len, size_t *idx)
 {
     char *buffer = buf;
-    size_t move = ALIGN(len);
+    size_t move = LIBVIRT_ALIGN(len);
 
     if (!idx)
         return buffer + move;
@@ -321,7 +326,7 @@ _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
      * b) alias
      * c) addresses
      * d) NULL stem */
-    need = ALIGN(nameLen + 1) + naddr * ALIGN(alen) + (naddr + 2) * sizeof(char*);
+    need = LIBVIRT_ALIGN(nameLen + 1) + naddr * LIBVIRT_ALIGN(alen) + (naddr + 2) * sizeof(char*);
 
     if (buflen < need) {
         *errnop = ENOMEM;
@@ -383,6 +388,7 @@ _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
     return ret;
 }
 
+#ifdef HAVE_STRUCT_GAIH_ADDRTUPLE
 enum nss_status
 _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
                               char *buffer, size_t buflen, int *errnop,
@@ -426,7 +432,7 @@ _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
     /* We need space for:
      * a) name
      * b) addresses */
-    need = ALIGN(nameLen + 1) + naddr * ALIGN(sizeof(struct gaih_addrtuple));
+    need = LIBVIRT_ALIGN(nameLen + 1) + naddr * LIBVIRT_ALIGN(sizeof(struct gaih_addrtuple));
 
     if (buflen < need) {
         *errnop = ENOMEM;
@@ -474,3 +480,128 @@ _nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
  cleanup:
     return ret;
 }
+#endif /* HAVE_STRUCT_GAIH_ADDRTUPLE */
+
+#if defined(HAVE_BSD_NSS)
+NSS_METHOD_PROTOTYPE(_nss_compat_getaddrinfo);
+NSS_METHOD_PROTOTYPE(_nss_compat_gethostbyname2_r);
+
+ns_mtab methods[] = {
+    { NSDB_HOSTS, "getaddrinfo", _nss_compat_getaddrinfo, NULL },
+    { NSDB_HOSTS, "gethostbyname", _nss_compat_gethostbyname2_r, NULL },
+    { NSDB_HOSTS, "gethostbyname2_r", _nss_compat_gethostbyname2_r, NULL },
+};
+
+static void
+aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
+{
+    int ret;
+    struct hostent resolved;
+    char buf[1024] = { 0 };
+    int err, herr;
+    struct addrinfo hints, *res0, *res;
+    char **addrList;
+
+    if ((ret = _nss_libvirt_gethostbyname2_r(name, af, &resolved,
+                                             buf, sizeof(buf),
+                                             &err, &herr)) != NS_SUCCESS)
+        return;
+
+    addrList = resolved.h_addr_list;
+    while (*addrList) {
+        virSocketAddr sa;
+        char *ipAddr = NULL;
+        void *address = *addrList;
+
+        memset(&sa, 0, sizeof(sa));
+        if (resolved.h_addrtype == AF_INET) {
+            virSocketAddrSetIPv4AddrNetOrder(&sa, *((uint32_t *) address));
+        } else {
+            virSocketAddrSetIPv6AddrNetOrder(&sa, address);
+        }
+
+        ipAddr = virSocketAddrFormat(&sa);
+
+        hints = *pai;
+        hints.ai_flags = AI_NUMERICHOST;
+        hints.ai_family = af;
+
+        if (getaddrinfo(ipAddr, NULL, &hints, &res0)) {
+            addrList++;
+            continue;
+        }
+
+        for (res = res0; res; res = res->ai_next)
+            res->ai_flags = pai->ai_flags;
+
+        (*aip)->ai_next = res0;
+        while ((*aip)->ai_next)
+           *aip = (*aip)->ai_next;
+
+        addrList++;
+    }
+}
+
+int
+_nss_compat_getaddrinfo(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list ap)
+{
+    struct addrinfo sentinel, *cur, *ai;
+    const char *name;
+
+    name  = va_arg(ap, char *);
+    ai = va_arg(ap, struct addrinfo *);
+
+    memset(&sentinel, 0, sizeof(sentinel));
+    cur = &sentinel;
+
+    if ((ai->ai_family == AF_UNSPEC) || (ai->ai_family == AF_INET6))
+        aiforaf(name, AF_INET6, ai, &cur);
+    if ((ai->ai_family == AF_UNSPEC) || (ai->ai_family == AF_INET))
+        aiforaf(name, AF_INET, ai, &cur);
+
+    if (sentinel.ai_next == NULL) {
+        h_errno = HOST_NOT_FOUND;
+        return NS_NOTFOUND;
+    }
+    *((struct addrinfo **)retval) = sentinel.ai_next;
+
+    return NS_SUCCESS;
+}
+
+int
+_nss_compat_gethostbyname2_r(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list ap)
+{
+    int ret;
+
+    const char *name;
+    int af;
+    struct hostent *result;
+    char *buffer;
+    size_t buflen;
+    int *errnop;
+    int *herrnop;
+
+    name = va_arg(ap, const char *);
+    af = va_arg(ap, int);
+    result = va_arg(ap, struct hostent *);
+    buffer = va_arg(ap, char *);
+    buflen = va_arg(ap, size_t);
+    errnop = va_arg(ap, int *);
+    herrnop = va_arg(ap, int *);
+
+    ret = _nss_libvirt_gethostbyname2_r(
+              name, af, result, buffer, buflen, errnop, herrnop);
+    *(struct hostent **)retval = (ret == NS_SUCCESS) ? result : NULL;
+
+    return ret;
+}
+
+ns_mtab*
+nss_module_register(const char *name ATTRIBUTE_UNUSED, unsigned int *size,
+                    nss_module_unregister_fn *unregister)
+{
+    *size = sizeof(methods) / sizeof(methods[0]);
+    *unregister = NULL;
+    return methods;
+}
+#endif /* HAVE_BSD_NSS */

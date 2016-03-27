@@ -23,6 +23,7 @@ AC_DEFUN([LIBVIRT_CHECK_NSS],[
       [enable Name Servie Switch plugin for resolving guest IP addresses])],
       [], [with_nss_plugin=check])
 
+  bsd_nss=no
   fail=0
   if test "x$with_nss_plugin" != "xno" ; then
     AC_CHECK_HEADERS([nss.h], [
@@ -39,11 +40,26 @@ AC_DEFUN([LIBVIRT_CHECK_NSS],[
 
     if test "x$with_nss_plugin" = "xyes" ; then
       AC_DEFINE_UNQUOTED([NSS], 1, [whether nss plugin is enabled])
+
+      AC_CHECK_TYPE([struct gaih_addrtuple],
+        [AC_DEFINE([HAVE_STRUCT_GAIH_ADDRTUPLE], [1],
+          [Defined if struct gaih_addrtuple exists in nss.h])],
+        [], [[#include <nss.h>
+        ]])
+
+      AC_CHECK_TYPES([ns_mtab, nss_module_unregister_fn],
+                     [AC_DEFINE([HAVE_BSD_NSS],
+                                [1],
+                                [whether using BSD style NSS])
+                      bsd_nss=yes
+                     ],
+                     [],
+                     [#include <nsswitch.h>])
     fi
   fi
 
   AM_CONDITIONAL(WITH_NSS, [test "x$with_nss_plugin" = "xyes"])
-
+  AM_CONDITIONAL(WITH_BSD_NSS, [test "x$bsd_nss" = "xyes"])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_NSS],[
