@@ -3039,6 +3039,9 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
             VIR_WARN("Failed to restore host device labelling");
     }
 
+    if (qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+        VIR_WARN("Failed to remove host device cgroup ACL");
+
     switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
@@ -3056,9 +3059,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         break;
     }
-
-    if (qemuTeardownHostdevCgroup(vm, hostdev) < 0)
-        VIR_WARN("Failed to remove host device cgroup ACL");
 
     virDomainHostdevDefFree(hostdev);
 
