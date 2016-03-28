@@ -5253,6 +5253,10 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuSetupCgroup(driver, vm, nnicindexes, nicindexes) < 0)
         goto cleanup;
 
+    priv->perf = virPerfNew();
+    if (!priv->perf)
+        goto cleanup;
+
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
     if (!vm->def->cputune.emulatorpin &&
@@ -5889,6 +5893,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                  vm->def->name);
     }
     virCgroupFree(&priv->cgroup);
+
+    virPerfFree(priv->perf);
 
     qemuProcessRemoveDomainStatus(driver, vm);
 

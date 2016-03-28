@@ -26,6 +26,7 @@
 
 # include "virthread.h"
 # include "vircgroup.h"
+# include "virperf.h"
 # include "domain_addr.h"
 # include "domain_conf.h"
 # include "snapshot_conf.h"
@@ -194,6 +195,8 @@ struct _qemuDomainObjPrivate {
     size_t ncleanupCallbacks_max;
 
     virCgroupPtr cgroup;
+
+    virPerfPtr perf;
 
     virCond unplugFinished; /* signals that unpluggingDevice was unplugged */
     const char *unpluggingDevice; /* alias of the device that is being unplugged */

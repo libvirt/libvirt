@@ -99,6 +99,7 @@
 #include "virhostdev.h"
 #include "domain_capabilities.h"
 #include "vircgroup.h"
+#include "virperf.h"
 #include "virnuma.h"
 #include "dirname.h"
 #include "network/bridge_driver.h"
@@ -10037,6 +10038,86 @@ qemuSetGlobalBWLive(virCgroupPtr cgroup, unsigned long long period,
 }
 
 static int
+qemuDomainSetPerfEvents(virDomainPtr dom,
+                        virTypedParameterPtr params,
+                        int nparams)
+{
+    size_t i;
+    virDomainObjPtr vm = NULL;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+    virPerfEventType type;
+    bool enabled;
+
+    if (virTypedParamsValidate(params, nparams, VIR_PERF_PARAMETERS) < 0)
+        return -1;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    priv = vm->privateData;
+
+    if (virDomainSetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+        enabled = params->value.b;
+        type = virPerfEventTypeFromString(param->field);
+
+        if (!enabled && virPerfEventDisable(priv->perf, type))
+            goto cleanup;
+        if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+qemuDomainGetPerfEvents(virDomainPtr dom,
+                        virTypedParameterPtr *params,
+                        int *nparams)
+{
+    size_t i;
+    virDomainObjPtr vm = NULL;
+    qemuDomainObjPrivatePtr priv;
+    int ret = -1;
+    virTypedParameterPtr par = NULL;
+    int maxpar = 0;
+    int npar = 0;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (virDomainGetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (virTypedParamsAddBoolean(&par, &npar, &maxpar,
+                                     virPerfEventTypeToString(i),
+                                     virPerfEventIsEnabled(priv->perf, i)) < 0) {
+            virTypedParamsFree(par, npar);
+            goto cleanup;
+        }
+    }
+
+    *params = par;
+    *nparams = npar;
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
 qemuSetVcpusBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
                    unsigned long long period, long long quota)
 {
@@ -19401,6 +19482,55 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
 #undef QEMU_ADD_COUNT_PARAM
 
+static int
+qemuDomainGetStatsPerfCmt(virPerfPtr perf,
+                          virDomainStatsRecordPtr record,
+                          int *maxparams)
+{
+    uint64_t cache = 0;
+
+    if (virPerfReadEvent(perf, VIR_PERF_EVENT_CMT, &cache) < 0)
+        return -1;
+
+    if (virTypedParamsAddULLong(&record->params,
+                                &record->nparams,
+                                maxparams,
+                                "perf.cache",
+                                cache) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                       virDomainObjPtr dom,
+                       virDomainStatsRecordPtr record,
+                       int *maxparams,
+                       unsigned int privflags ATTRIBUTE_UNUSED)
+{
+    size_t i;
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+    int ret = -1;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (!virPerfEventIsEnabled(priv->perf, i))
+             continue;
+
+        switch (i) {
+        case VIR_PERF_EVENT_CMT:
+            if (qemuDomainGetStatsPerfCmt(priv->perf, record, maxparams) < 0)
+                goto cleanup;
+            break;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
@@ -19421,6 +19551,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, false },
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
+    { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false },
     { NULL, 0, false }
 };
 
@@ -20177,6 +20308,8 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainMigrateFinish3 = qemuDomainMigrateFinish3, /* 0.9.2 */
     .domainMigrateConfirm3 = qemuDomainMigrateConfirm3, /* 0.9.2 */
     .domainSendKey = qemuDomainSendKey, /* 0.9.4 */
+    .domainGetPerfEvents = qemuDomainGetPerfEvents, /* 1.3.3 */
+    .domainSetPerfEvents = qemuDomainSetPerfEvents, /* 1.3.3 */
     .domainBlockJobAbort = qemuDomainBlockJobAbort, /* 0.9.4 */
     .domainGetBlockJobInfo = qemuDomainGetBlockJobInfo, /* 0.9.4 */
     .domainBlockJobSetSpeed = qemuDomainBlockJobSetSpeed, /* 0.9.4 */
