@@ -131,7 +131,7 @@ virNetDevMacVLanReserveID(int id, unsigned int flags,
     }
 
     if ((id < 0 || nextFree) &&
-        (id = virBitmapNextClearBit(bitmap, 0)) < 0) {
+        (id = virBitmapNextClearBit(bitmap, id)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("no unused %s names available"),
                        (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
