@@ -304,6 +304,22 @@ struct remote_domain_get_numa_parameters_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_set_perf_events_args {
+        remote_nonnull_domain      dom;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
+struct remote_domain_get_perf_events_args {
+        remote_nonnull_domain      dom;
+};
+struct remote_domain_get_perf_events_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 struct remote_domain_block_stats_args {
         remote_nonnull_domain      dom;
         remote_nonnull_string      path;
@@ -3077,4 +3093,6 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_EVENT_CONNECTION_CLOSED = 362,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED = 363,
         REMOTE_PROC_DOMAIN_MIGRATE_START_POST_COPY = 364,
+        REMOTE_PROC_DOMAIN_GET_PERF_EVENTS = 365,
+        REMOTE_PROC_DOMAIN_SET_PERF_EVENTS = 366,
 };

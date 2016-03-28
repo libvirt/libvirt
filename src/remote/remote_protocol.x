@@ -109,6 +109,9 @@ const REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX = 16;
 /* Upper limit on list of numa parameters. */
 const REMOTE_DOMAIN_NUMA_PARAMETERS_MAX = 16;
 
+/* Upper limit on list of perf events. */
+const REMOTE_DOMAIN_PERF_EVENTS_MAX = 64;
+
 /* Upper limit on block copy tunable parameters. */
 const REMOTE_DOMAIN_BLOCK_COPY_PARAMETERS_MAX = 16;
 
@@ -626,6 +629,19 @@ struct remote_domain_get_numa_parameters_args {
 struct remote_domain_get_numa_parameters_ret {
     remote_typed_param params<REMOTE_DOMAIN_NUMA_PARAMETERS_MAX>;
     int nparams;
+};
+
+struct remote_domain_set_perf_events_args {
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_DOMAIN_PERF_EVENTS_MAX>;
+};
+
+struct remote_domain_get_perf_events_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_perf_events_ret {
+    remote_typed_param params<REMOTE_DOMAIN_PERF_EVENTS_MAX>;
 };
 
 struct remote_domain_block_stats_args {
@@ -5751,5 +5767,17 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:migrate
      */
-    REMOTE_PROC_DOMAIN_MIGRATE_START_POST_COPY = 364
+    REMOTE_PROC_DOMAIN_MIGRATE_START_POST_COPY = 364,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_PERF_EVENTS = 365,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_PERF_EVENTS = 366
 };
