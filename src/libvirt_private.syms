@@ -2023,6 +2023,18 @@ virPCIStubDriverTypeFromString;
 virPCIStubDriverTypeToString;
 
 
+# util/virperf.h
+virPerfEventDisable;
+virPerfEventEnable;
+virPerfEventIsEnabled;
+virPerfEventTypeFromString;
+virPerfEventTypeToString;
+virPerfFree;
+virPerfGetEventFd;
+virPerfNew;
+virPerfReadEvent;
+
+
 # util/virpidfile.h
 virPidFileAcquire;
 virPidFileAcquirePath;

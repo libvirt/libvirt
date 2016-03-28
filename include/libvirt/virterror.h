@@ -130,6 +130,8 @@ typedef enum {
     VIR_FROM_LOGGING = 63,      /* Error from log manager */
     VIR_FROM_XENXL = 64,        /* Error from Xen xl config code */
 
+    VIR_FROM_PERF = 65,         /* Error from perf */
+
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_DOMAIN_LAST
 # endif
