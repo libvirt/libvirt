@@ -2990,8 +2990,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
-    int backend;
-    bool is_vfio = false;
 
     VIR_DEBUG("Removing host device %s from domain %p %s",
               hostdev->info->alias, vm, vm->def->name);
@@ -3033,10 +3031,16 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
     virDomainAuditHostdev(vm, hostdev, "detach", true);
 
+    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+        hostdev->source.subsys.u.pci.backend !=
+        VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+        if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, hostdev, NULL) < 0)
+            VIR_WARN("Failed to restore host device labelling");
+    }
+
     switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        backend = hostdev->source.subsys.u.pci.backend;
-        is_vfio = backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
         /* QEMU might no longer need to lock as much memory, eg. we just
          * detached the last VFIO device, so adjust the limit here */
@@ -3055,12 +3059,6 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
     if (qemuTeardownHostdevCgroup(vm, hostdev) < 0)
         VIR_WARN("Failed to remove host device cgroup ACL");
-
-    if (!is_vfio &&
-        virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                              vm->def, hostdev, NULL) < 0) {
-        VIR_WARN("Failed to restore host device labelling");
-    }
 
     virDomainHostdevDefFree(hostdev);
 
