@@ -1036,17 +1036,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                     vm, true) < 0)
         goto cleanup;
 
-    if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
-                               cfg->ctx, &d_config) < 0)
-        goto cleanup;
-
-    if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
-        goto cleanup;
-
-    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
-                                       vm->def, VIR_HOSTDEV_SP_PCI) < 0)
-        goto cleanup;
-
     if (virDomainLockProcessStart(driver->lockManager,
                                   "xen:///system",
                                   vm,
@@ -1060,6 +1049,17 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                   priv->lockState) < 0)
         goto cleanup;
     VIR_FREE(priv->lockState);
+
+    if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
+                               cfg->ctx, &d_config) < 0)
+        goto cleanup_dom;
+
+    if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
+        goto cleanup_dom;
+
+    if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                       vm->def, VIR_HOSTDEV_SP_PCI) < 0)
+        goto cleanup_dom;
 
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
@@ -1091,7 +1091,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("libxenlight failed to restore domain '%s'"),
                            d_config.c_info.name);
-        goto release_dom;
+        goto cleanup_dom;
     }
 
     /*
@@ -1152,8 +1152,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
 
- release_dom:
-    virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState);
+ cleanup_dom:
+    libxlDomainCleanup(driver, vm);
 
  cleanup:
     libxl_domain_config_dispose(&d_config);
