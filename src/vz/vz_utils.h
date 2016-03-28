@@ -60,8 +60,8 @@ struct _vzCapabilities {
 typedef struct _vzCapabilities vzCapabilities;
 typedef struct _vzCapabilities *vzCapabilitiesPtr;
 
-struct _vzConn {
-    virMutex lock;
+struct _vzDriver {
+    virObjectLockable parent;
 
     /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
@@ -70,14 +70,24 @@ struct _vzConn {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
-    /* Immutable pointer, self-locking APIs */
-    virConnectCloseCallbackDataPtr closeCallback;
     unsigned long vzVersion;
     vzCapabilities vzCaps;
 };
 
+typedef struct _vzDriver vzDriver;
+typedef struct _vzDriver *vzDriverPtr;
+
+struct _vzConn {
+    struct _vzConn* next;
+
+    vzDriverPtr driver;
+    /* Immutable pointer, self-locking APIs */
+    virConnectCloseCallbackDataPtr closeCallback;
+};
+
 typedef struct _vzConn vzConn;
 typedef struct _vzConn *vzConnPtr;
+
 
 struct _vzCountersCache {
     PRL_HANDLE stats;
@@ -105,12 +115,19 @@ char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 void vzDriverLock(vzConnPtr driver);
 void vzDriverUnlock(vzConnPtr driver);
+
+vzDriverPtr
+vzGetDriverConnection(void);
+
+void
+vzDestroyDriverConnection(void);
+
 virDomainObjPtr
-vzNewDomain(vzConnPtr privconn,
+vzNewDomain(vzDriverPtr driver,
             char *name,
             const unsigned char *uuid);
 int
-vzInitVersion(vzConnPtr privconn);
+vzInitVersion(vzDriverPtr driver);
 int
 vzCheckUnsupportedDisks(virDomainDefPtr def,
                         vzCapabilitiesPtr vzCaps);
@@ -118,7 +135,7 @@ int
 vzCheckUnsupportedControllers(virDomainDefPtr def,
                               vzCapabilitiesPtr vzCaps);
 int
-vzGetDefaultSCSIModel(vzConnPtr privconn,
+vzGetDefaultSCSIModel(vzDriverPtr driver,
                       PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel);
 
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
