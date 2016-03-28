@@ -109,10 +109,10 @@ vzBuildCapabilities(void)
         VIR_DOMAIN_OSTYPE_EXE
     };
     virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
-    const char *const emulators[] = { "parallels", "vz" };
+    const char *const emulators[] = { "vz", "parallels"};
     virDomainVirtType virt_types[] = {
-        VIR_DOMAIN_VIRT_PARALLELS,
-        VIR_DOMAIN_VIRT_VZ
+        VIR_DOMAIN_VIRT_VZ,
+        VIR_DOMAIN_VIRT_PARALLELS
     };
     size_t i, j, k;
 
