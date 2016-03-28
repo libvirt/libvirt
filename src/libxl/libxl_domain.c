@@ -1144,10 +1144,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
  destroy_dom:
     ret = -1;
-    if (priv->deathW) {
-        libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
-        priv->deathW = NULL;
-    }
     libxlDomainDestroyInternal(driver, vm);
     vm->def->id = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
