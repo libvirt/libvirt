@@ -1528,19 +1528,19 @@
           <td>relaxed</td>
           <td>Relax constraints on timers</td>
           <td> on, off</td>
-          <td><span class="since">1.0.0 (QEMU only)</span></td>
+          <td><span class="since">1.0.0 (QEMU 2.0)</span></td>
         </tr>
         <tr>
           <td>vapic</td>
           <td>Enable virtual APIC</td>
           <td>on, off</td>
-          <td><span class="since">1.1.0 (QEMU only)</span></td>
+          <td><span class="since">1.1.0 (QEMU 2.0)</span></td>
         </tr>
         <tr>
           <td>spinlocks</td>
           <td>Enable spinlock support</td>
           <td>on, off; retries - at least 4095</td>
-          <td><span class="since">1.1.0 (QEMU only)</span></td>
+          <td><span class="since">1.1.0 (QEMU 2.0)</span></td>
         </tr>
         <tr>
           <td>vpindex</td>
