@@ -1835,6 +1835,24 @@ int virDomainListGetStats(virDomainPtr *doms,
 void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
 
 /*
+ * Perf Event API
+ */
+
+/**
+ * VIR_PERF_PARAM_CMT:
+ *
+ * Macro for typed parameter name that represents CMT perf event.
+ */
+# define VIR_PERF_PARAM_CMT "cmt"
+
+int virDomainGetPerfEvents(virDomainPtr dom,
+                           virTypedParameterPtr *params,
+                           int *nparams);
+int virDomainSetPerfEvents(virDomainPtr dom,
+                           virTypedParameterPtr params,
+                           int nparams);
+
+/*
  * BlockJob API
  */
 

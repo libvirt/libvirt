@@ -9691,6 +9691,99 @@ virDomainOpenChannel(virDomainPtr dom,
 
 
 /**
+ * virDomainGetPerfEvents:
+ * @domain: a domain object
+ * @params: where to store perf events setting
+ * @nparams: number of items in @params
+ *
+ * Get all perf events setting. Possible fields returned in @params are
+ * defined by VIR_DOMAIN_PERF_* macros and new fields will likely be
+ * introduced in the future.
+ *
+ * Returns -1 in case of failure, 0 in case of success.
+ */
+int virDomainGetPerfEvents(virDomainPtr domain,
+                           virTypedParameterPtr *params,
+                           int *nparams)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p",
+                     params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(nparams, error);
+
+    conn = domain->conn;
+
+    if (conn->driver->domainGetPerfEvents) {
+        int ret;
+        ret = conn->driver->domainGetPerfEvents(domain, params, nparams);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
+ * virDomainSetPerfEvents:
+ * @domain: a domain object
+ * @params: pointer to perf events parameter object
+ * @nparams: number of perf event parameters (this value can be the same
+ *           less than the number of parameters supported)
+ *
+ * Enable or disable the particular list of perf events you care about.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int virDomainSetPerfEvents(virDomainPtr domain,
+                           virTypedParameterPtr params,
+                           int nparams)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d",
+                     params, nparams);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckNonNullArgGoto(params, error);
+    virCheckPositiveArgGoto(nparams, error);
+
+    if (virTypedParameterValidateSet(conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->domainSetPerfEvents) {
+        int ret;
+        ret = conn->driver->domainSetPerfEvents(domain, params, nparams);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainBlockJobAbort:
  * @dom: pointer to domain object
  * @disk: path to the block device, or device shorthand

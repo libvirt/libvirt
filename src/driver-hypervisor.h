@@ -962,6 +962,16 @@ typedef int
                                 unsigned int flags);
 
 typedef int
+(*virDrvDomainGetPerfEvents)(virDomainPtr dom,
+                             virTypedParameterPtr *params,
+                             int *nparams);
+
+typedef int
+(*virDrvDomainSetPerfEvents)(virDomainPtr dom,
+                             virTypedParameterPtr params,
+                             int nparams);
+
+typedef int
 (*virDrvDomainBlockJobAbort)(virDomainPtr dom,
                              const char *path,
                              unsigned int flags);
@@ -1427,6 +1437,8 @@ struct _virHypervisorDriver {
     virDrvConnectSetKeepAlive connectSetKeepAlive;
     virDrvConnectIsAlive connectIsAlive;
     virDrvNodeSuspendForDuration nodeSuspendForDuration;
+    virDrvDomainGetPerfEvents domainGetPerfEvents;
+    virDrvDomainSetPerfEvents domainSetPerfEvents;
     virDrvDomainSetBlockIoTune domainSetBlockIoTune;
     virDrvDomainGetBlockIoTune domainGetBlockIoTune;
     virDrvDomainGetCPUStats domainGetCPUStats;
