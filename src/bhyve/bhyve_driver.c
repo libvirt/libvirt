@@ -1187,8 +1187,6 @@ bhyveStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
-    virConnectPtr conn = NULL;
-
     if (!privileged) {
         VIR_INFO("Not running privileged, disabling driver");
         return 0;
@@ -1259,12 +1257,9 @@ bhyveStateInitialize(bool privileged,
 
     virBhyveProcessReconnectAll(bhyve_driver);
 
-    virObjectUnref(conn);
-
     return 0;
 
  cleanup:
-    virObjectUnref(conn);
     bhyveStateCleanup();
     return -1;
 }
