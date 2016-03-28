@@ -8506,6 +8506,128 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "perf" command
+ */
+static const vshCmdInfo info_perf[] = {
+    {.name = "help",
+        .data = N_("Get or set perf event")
+    },
+    {.name = "desc",
+        .data = N_("Get or set the current perf events for a guest"
+                   " domain.\n"
+                   "    To get the perf events list use following command: \n\n"
+                   "    virsh # perf <domain>")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_perf[] = {
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("domain name, id or uuid")
+    },
+    {.name = "enable",
+     .type = VSH_OT_STRING,
+     .help = N_("perf events which will be enabled")
+    },
+    {.name = "disable",
+     .type = VSH_OT_STRING,
+     .help = N_("perf events which will be disabled")
+    },
+    {.name = NULL}
+};
+
+static int
+virshParseEventStr(vshControl *ctl,
+                   const char *event,
+                   bool state,
+                   virTypedParameterPtr *params,
+                   int *nparams,
+                   int *maxparams)
+{
+    char **tok = NULL;
+    size_t i, ntok;
+    int ret = -1;
+
+    if (!(tok = virStringSplitCount(event, "|", 0, &ntok)))
+        return -1;
+
+    if (ntok > VIR_PERF_EVENT_LAST) {
+        vshError(ctl, _("event string '%s' has too many fields"), event);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ntok; i++) {
+        if ((*tok[i] != '\0') &&
+            virTypedParamsAddBoolean(params, nparams,
+                                     maxparams, tok[i], state) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virStringFreeList(tok);
+    return ret;
+}
+
+static bool
+cmdPerf(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    int nparams = 0;
+    int maxparams = 0;
+    size_t i;
+    virTypedParameterPtr params = NULL;
+    bool ret = false;
+    const char *enable = NULL, *disable = NULL;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "enable", &enable) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "disable", &disable) < 0)
+        return false;
+
+    if (enable && virshParseEventStr(ctl, enable, true,
+                                     &params, &nparams, &maxparams) < 0)
+        goto cleanup;
+
+    if (disable && virshParseEventStr(ctl, disable, false,
+                                      &params, &nparams, &maxparams) < 0)
+        goto cleanup;
+
+    if (nparams == 0) {
+        if (virDomainGetPerfEvents(dom, &params, &nparams) != 0) {
+            vshError(ctl, "%s", _("Unable to get perf events"));
+            goto cleanup;
+        }
+        for (i = 0; i < nparams; i++) {
+            if (params[i].type == VIR_TYPED_PARAM_BOOLEAN &&
+                params[i].value.b) {
+                vshPrint(ctl, "%-15s: %s\n", params[i].field, _("enabled"));
+            } else {
+                vshPrint(ctl, "%-15s: %s\n", params[i].field, _("disabled"));
+            }
+        }
+    } else {
+        if (virDomainSetPerfEvents(dom, params, nparams) != 0)
+            goto error;
+    }
+
+    ret = true;
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virDomainFree(dom);
+    return ret;
+
+ error:
+    vshError(ctl, "%s", _("Unable to enable/disable perf events"));
+    goto cleanup;
+}
+
+
+/*
  * "numatune" command
  */
 static const vshCmdInfo info_numatune[] = {
@@ -13068,6 +13190,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdMemtune,
      .opts = opts_memtune,
      .info = info_memtune,
+     .flags = 0
+    },
+    {.name = "perf",
+     .handler = cmdPerf,
+     .opts = opts_perf,
+     .info = info_perf,
      .flags = 0
     },
     {.name = "metadata",
