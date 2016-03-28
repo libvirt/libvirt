@@ -3419,6 +3419,34 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     return ret;
 }
 
+static int
+qemuDomainPerfRestart(virDomainObjPtr vm)
+{
+    size_t i;
+    virDomainDefPtr def = vm->def;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    virPerfFree(priv->perf);
+
+    priv->perf = virPerfNew();
+    if (!priv->perf)
+        return -1;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (def->perf->events[i] &&
+            def->perf->events[i] == VIR_TRISTATE_BOOL_YES) {
+            if (virPerfEventEnable(priv->perf, i, vm->pid))
+                goto cleanup;
+        }
+    }
+
+    return 0;
+
+ cleanup:
+    virPerfFree(priv->perf);
+    return -1;
+}
+
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     virQEMUDriverPtr driver;
@@ -3493,6 +3521,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuConnectCgroup(driver, obj) < 0)
+        goto error;
+
+    if (qemuDomainPerfRestart(obj) < 0)
         goto error;
 
     /* XXX: Need to change as long as lock is introduced for
@@ -6088,6 +6119,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
         goto error;
     if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0)
+        goto error;
+
+    if (qemuDomainPerfRestart(vm) < 0)
         goto error;
 
     VIR_DEBUG("Creating domain log file");
