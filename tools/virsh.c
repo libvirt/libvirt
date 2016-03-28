@@ -580,6 +580,9 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_OPENVZ
     vshPrint(ctl, " OpenVZ");
 #endif
+#ifdef WITH_VZ
+    vshPrint(ctl, " Virtuozzo");
+#endif
 #ifdef WITH_VMWARE
     vshPrint(ctl, " VMware");
 #endif
