@@ -56,6 +56,9 @@
           <ref name="pm"/>
         </optional>
         <optional>
+          <ref name="perf"/>
+        </optional>
+        <optional>
           <ref name="idmap"/>
         </optional>
         <optional>
@@ -386,6 +389,30 @@
           </attribute>
           <attribute name="state">
             <ref name='virOnOff'/>
+          </attribute>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <!--
+      Enable or disable perf events for the domain. For each
+      of the events the following rules apply:
+      on: the event will be forcefully enabled
+      off: the event will be forcefully disabled
+      not specified: the event will be disabled by default
+  -->
+  <define name="perf">
+    <element name="perf">
+      <oneOrMore>
+        <element name="event">
+          <attribute name="name">
+            <choice>
+              <value>cmt</value>
+            </choice>
+          </attribute>
+          <attribute name="enabled">
+            <ref name="virYesNo"/>
           </attribute>
         </element>
       </oneOrMore>

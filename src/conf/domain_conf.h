@@ -51,6 +51,7 @@
 # include "virseclabel.h"
 # include "virprocess.h"
 # include "virgic.h"
+# include "virperf.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -2187,6 +2188,13 @@ struct _virDomainPowerManagement {
     int s4;
 };
 
+typedef struct _virDomainPerfDef virDomainPerfDef;
+typedef virDomainPerfDef *virDomainPerfDefPtr;
+struct _virDomainPerfDef {
+    /* These options are of type enum virTristateBool */
+    int events[VIR_PERF_EVENT_LAST];
+};
+
 typedef struct _virDomainKeyWrapDef virDomainKeyWrapDef;
 typedef virDomainKeyWrapDef *virDomainKeyWrapDefPtr;
 struct _virDomainKeyWrapDef {
@@ -2236,6 +2244,8 @@ struct _virDomainDef {
     int onLockFailure; /* enum virDomainLockFailureAction */
 
     virDomainPowerManagement pm;
+
+    virDomainPerfDefPtr perf;
 
     virDomainOSDef os;
     char *emulator;

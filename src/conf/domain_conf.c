@@ -2642,6 +2642,8 @@ void virDomainDefFree(virDomainDefPtr def)
 
     VIR_FREE(def->keywrap);
 
+    VIR_FREE(def->perf);
+
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
 
@@ -12568,6 +12570,91 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virDomainPerfEventDefParseXML(virDomainPerfDefPtr perf,
+                              xmlNodePtr node,
+                              xmlXPathContextPtr ctxt)
+{
+    char *name = NULL;
+    char *enabled = NULL;
+    int enabled_type;
+    int name_type;
+    int ret = -1;
+
+    xmlNodePtr oldnode = ctxt->node;
+
+    ctxt->node = node;
+    if (!(name = virXPathString("string(./@name)", ctxt))) {
+        virReportError(VIR_ERR_CONF_SYNTAX, "%s",
+                       _("missing name for event"));
+        goto cleanup;
+    }
+
+    if ((name_type = virPerfEventTypeFromString(name)) < 0) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s is not a supported event name"), name);
+        goto cleanup;
+    }
+
+    if (!(enabled = virXPathString("string(./@enabled)", ctxt))) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("missing state for cipher named %s"), name);
+        goto cleanup;
+    }
+
+    if ((enabled_type = virTristateBoolTypeFromString(enabled)) < 0) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("%s is not a supported enabled state"), enabled);
+        goto cleanup;
+    }
+
+    if (perf->events[VIR_PERF_EVENT_CMT] != VIR_TRISTATE_BOOL_ABSENT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("A domain definition can have no more than "
+                         "one event node with name %s"),
+                       virTristateBoolTypeToString(name_type));
+
+        goto cleanup;
+    }
+    perf->events[VIR_PERF_EVENT_CMT] = enabled_type;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(enabled);
+    ctxt->node = oldnode;
+    return ret;
+}
+
+static int
+virDomainPerfDefParseXML(virDomainDefPtr def,
+                         xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    int ret = -1;
+    xmlNodePtr *nodes = NULL;
+    int n;
+
+    if ((n = virXPathNodeSet("./perf/event", ctxt, &nodes)) < 0)
+        return n;
+
+    if (VIR_ALLOC(def->perf) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (virDomainPerfEventDefParseXML(def->perf, nodes[i], ctxt) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(def->perf);
+    VIR_FREE(nodes);
+    return ret;
+}
+
+static int
 virDomainMemorySourceDefParseXML(xmlNodePtr node,
                                  xmlXPathContextPtr ctxt,
                                  virDomainMemoryDefPtr def)
@@ -15790,6 +15877,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainPMStateParseXML(ctxt,
                                  "string(./pm/suspend-to-disk/@enabled)",
                                  &def->pm.s4) < 0)
+        goto error;
+
+    if (virDomainPerfDefParseXML(def, ctxt) < 0)
         goto error;
 
     if ((tmp = virXPathString("string(./clock/@offset)", ctxt)) &&
@@ -21692,6 +21782,33 @@ virDomainKeyWrapDefFormat(virBufferPtr buf, virDomainKeyWrapDefPtr keywrap)
     virBufferAddLit(buf, "</keywrap>\n");
 }
 
+static void
+virDomainPerfDefFormat(virBufferPtr buf, virDomainPerfDefPtr perf)
+{
+    size_t i;
+    bool wantPerf = false;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (perf->events[i])
+            wantPerf = true;
+    }
+    if (!wantPerf)
+        return;
+
+    virBufferAddLit(buf, "<perf>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (perf->events[i])
+            virBufferAsprintf(buf, "<event name='%s' enabled='%s'/>\n",
+                              virPerfEventTypeToString(i),
+                              virTristateBoolTypeToString(perf->events[i]));
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</perf>\n");
+}
+
 static bool
 virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
 {
@@ -22564,6 +22681,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</pm>\n");
     }
+
+    if (def->perf)
+        virDomainPerfDefFormat(buf, def->perf);
 
     virBufferAddLit(buf, "<devices>\n");
     virBufferAdjustIndent(buf, 2);

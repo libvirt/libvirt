@@ -10042,9 +10042,14 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
                         virTypedParameterPtr params,
                         int nparams)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
     qemuDomainObjPrivatePtr priv;
+    virDomainDefPtr def;
+    virDomainDefPtr persistentDef;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     int ret = -1;
     virPerfEventType type;
     bool enabled;
@@ -10055,9 +10060,13 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
+    cfg = virQEMUDriverGetConfig(driver);
     priv = vm->privateData;
 
     if (virDomainSetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
     for (i = 0; i < nparams; i++) {
@@ -10069,12 +10078,29 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
             goto cleanup;
         if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
             goto cleanup;
+
+        if (def) {
+            def->perf->events[type] = enabled ?
+                VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+
+            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+                goto cleanup;
+        }
+
+        if (persistentDef) {
+            persistentDef->perf->events[type] = enabled ?
+                VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+
+            if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
+                goto cleanup;
+        }
     }
 
     ret = 0;
 
  cleanup:
     virDomainObjEndAPI(&vm);
+    virObjectUnref(cfg);
     return ret;
 }
 

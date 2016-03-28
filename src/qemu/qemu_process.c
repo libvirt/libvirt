@@ -5127,6 +5127,7 @@ qemuProcessLaunch(virConnectPtr conn,
     virCapsPtr caps = NULL;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
+    size_t i;
 
     VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d "
               "incoming.launchURI=%s incoming.deferredURI=%s "
@@ -5254,8 +5255,12 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     priv->perf = virPerfNew();
-    if (!priv->perf)
-        goto cleanup;
+    if (priv->perf) {
+        for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+            if (vm->def->perf->events[i] == VIR_TRISTATE_BOOL_YES)
+                virPerfEventEnable(priv->perf, i, vm->pid);
+        }
+    }
 
     /* This must be done after cgroup placement to avoid resetting CPU
      * affinity */
