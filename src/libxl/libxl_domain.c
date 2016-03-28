@@ -1102,22 +1102,22 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
 
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
-        goto cleanup_dom;
+        goto destroy_dom;
 
     libxlDomainCreateIfaceNames(vm->def, &d_config);
 
     if ((dom_xml = virDomainDefFormat(vm->def, cfg->caps, 0)) == NULL)
-        goto cleanup_dom;
+        goto destroy_dom;
 
     if (libxl_userdata_store(cfg->ctx, domid, "libvirt-xml",
                              (uint8_t *)dom_xml, strlen(dom_xml) + 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libxenlight failed to store userdata"));
-        goto cleanup_dom;
+        goto destroy_dom;
     }
 
     if (libxlDomainSetVcpuAffinities(driver, vm) < 0)
-        goto cleanup_dom;
+        goto destroy_dom;
 
     if (!start_paused) {
         libxl_domain_unpause(cfg->ctx, domid);
@@ -1127,7 +1127,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
-        goto cleanup_dom;
+        goto destroy_dom;
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
@@ -1142,7 +1142,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     ret = 0;
     goto cleanup;
 
- cleanup_dom:
+ destroy_dom:
     ret = -1;
     if (priv->deathW) {
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
