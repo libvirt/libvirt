@@ -846,7 +846,7 @@ or unique source names printed by this command.
 
 =item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--state>]
 [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>] [I<--block>]
-[[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
+[I<--perf>] [[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
 [I<--list-transient>] [I<--list-running>] [I<--list-paused>]
 [I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
 
@@ -864,7 +864,7 @@ behavior use the I<--raw> flag.
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
-I<--vcpu>, I<--interface>, I<--block>.
+I<--vcpu>, I<--interface>, I<--block>, I<--perf>.
 
 When selecting the I<--state> group the following fields are returned:
 "state.state" - state of the VM, returned as number from virDomainState enum,
@@ -898,6 +898,9 @@ I<--interface> returns:
 "net.<num>.tx.pkts" - number of packets transmitted,
 "net.<num>.tx.errs" - number of transmission errors,
 "net.<num>.tx.drop" - number of transmit packets dropped
+
+I<--perf> returns the statistics of all enabled perf events:
+"perf.cache" - the cache usage in Byte currently used
 
 I<--block> returns information about disks associated with each
 domain.  Using the I<--backing> flag extends this information to
