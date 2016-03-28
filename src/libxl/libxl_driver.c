@@ -3159,7 +3159,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         /* This is really a "smart hostdev", so it should be attached
          * as a hostdev (the hostdev code will reach over into the
          * netdev-specific code as appropriate), then also added to
-         * the nets list (see out:) if successful.
+         * the nets list if successful.
          */
         ret = libxlDomainAttachHostDevice(driver, vm, hostdev);
         goto cleanup;
