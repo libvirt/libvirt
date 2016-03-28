@@ -929,6 +929,11 @@ virGetSecret;
 virGetStoragePool;
 virGetStorageVol;
 virGetStream;
+virConnectCloseCallbackDataGetCallback;
+virNewConnectCloseCallbackData;
+virConnectCloseCallbackDataUnregister;
+virConnectCloseCallbackDataRegister;
+virConnectCloseCallbackDataCall;
 virInterfaceClass;
 virNetworkClass;
 virNodeDeviceClass;
@@ -937,6 +942,7 @@ virSecretClass;
 virStoragePoolClass;
 virStorageVolClass;
 virStreamClass;
+virConnectCloseCallbackDataClass;
 
 
 # fdstream.h
@@ -1304,6 +1310,7 @@ virCommandHandshakeWait;
 virCommandNew;
 virCommandNewArgList;
 virCommandNewArgs;
+virCommandNewVAList;
 virCommandNonblockingFDs;
 virCommandPassFD;
 virCommandPassFDGetFDIndex;

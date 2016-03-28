@@ -92,9 +92,6 @@
 #ifdef WITH_XENAPI
 # include "xenapi/xenapi_driver.h"
 #endif
-#ifdef WITH_VZ
-# include "vz/vz_driver.h"
-#endif
 #ifdef WITH_BHYVE
 # include "bhyve/bhyve_driver.h"
 #endif
@@ -431,10 +428,6 @@ virGlobalInit(void)
 # endif
 # ifdef WITH_XENAPI
     if (xenapiRegister() == -1)
-        goto error;
-# endif
-# ifdef WITH_VZ
-    if (vzRegister() == -1)
         goto error;
 # endif
 #endif

@@ -233,6 +233,10 @@ if WITH_VBOX
     libvirtd_LDADD += ../src/libvirt_driver_vbox.la
 endif WITH_VBOX
 
+if WITH_VZ
+    libvirtd_LDADD += ../src/libvirt_driver_vz.la
+endif WITH_VZ
+
 if WITH_STORAGE
     libvirtd_LDADD += ../src/libvirt_driver_storage.la
 endif WITH_STORAGE

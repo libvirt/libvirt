@@ -102,6 +102,9 @@
 #  include "nwfilter/nwfilter_driver.h"
 # endif
 #endif
+#ifdef WITH_VZ
+# include "vz/vz_driver.h"
+#endif
 
 #include "configmake.h"
 
@@ -390,6 +393,9 @@ static void daemonInitialize(void)
 # ifdef WITH_BHYVE
     virDriverLoadModule("bhyve");
 # endif
+# ifdef WITH_VZ
+    virDriverLoadModule("vz");
+# endif
 #else
 # ifdef WITH_NETWORK
     networkRegister();
@@ -429,6 +435,9 @@ static void daemonInitialize(void)
 # endif
 # ifdef WITH_BHYVE
     bhyveRegister();
+# endif
+# ifdef WITH_VZ
+    vzRegister();
 # endif
 #endif
 }

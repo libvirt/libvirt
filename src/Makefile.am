@@ -630,6 +630,7 @@ DRIVER_SOURCE_FILES = \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES = \
+	$(VZ_DRIVER_SOURCES) \
 	$(BHYVE_DRIVER_SOURCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
@@ -886,7 +887,7 @@ HYPERV_DRIVER_EXTRA_DIST =							\
 		hyperv/hyperv_wmi_generator.py					\
 		$(HYPERV_DRIVER_GENERATED)
 
-VZ_DRIVER_SOURCES =					\
+VZ_DRIVER_SOURCES =				\
 		vz/vz_driver.h			\
 		vz/vz_driver.c			\
 		vz/vz_utils.c			\
@@ -1493,13 +1494,21 @@ libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
 endif WITH_HYPERV
 
 if WITH_VZ
+noinst_LTLIBRARIES += libvirt_driver_vz_impl.la
+libvirt_driver_vz_la_SOURCES =
+libvirt_driver_vz_la_LIBADD = libvirt_driver_vz_impl.la
+if WITH_DRIVER_MODULES
+mod_LTLIBRARIES += libvirt_driver_vz.la
+libvirt_driver_vz_la_LIBADD += ../gnulib/lib/libgnu.la
+libvirt_driver_vz_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
+else ! WITH_DRIVER_MODULES
 noinst_LTLIBRARIES += libvirt_driver_vz.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_vz.la
-libvirt_driver_vz_la_CFLAGS = \
+endif ! WITH_DRIVER_MODULES
+libvirt_driver_vz_impl_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS) \
 		$(PARALLELS_SDK_CFLAGS) $(LIBNL_CFLAGS)
-libvirt_driver_vz_la_LIBADD = $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
-libvirt_driver_vz_la_SOURCES = $(VZ_DRIVER_SOURCES)
+libvirt_driver_vz_impl_la_SOURCES = $(VZ_DRIVER_SOURCES)
+libvirt_driver_vz_impl_la_LIBADD =  $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
 endif WITH_VZ
 
 if WITH_BHYVE
