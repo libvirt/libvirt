@@ -23,6 +23,8 @@
 # define __VIRT_HOST_VALIDATE_COMMON_H__
 
 # include "internal.h"
+# include "virutil.h"
+# include "virbitmap.h"
 
 typedef enum {
     VIR_HOST_VALIDATE_FAIL,
@@ -31,6 +33,15 @@ typedef enum {
 
     VIR_HOST_VALIDATE_LAST,
 } virHostValidateLevel;
+
+typedef enum {
+    VIR_HOST_VALIDATE_CPU_FLAG_VMX = 0,
+    VIR_HOST_VALIDATE_CPU_FLAG_SVM,
+
+    VIR_HOST_VALIDATE_CPU_FLAG_LAST,
+} virHostValidateCPUFlag;
+
+VIR_ENUM_DECL(virHostValidateCPUFlag);
 
 extern void virHostMsgSetQuiet(bool quietFlag);
 
@@ -53,7 +64,7 @@ extern int virHostValidateDeviceAccessible(const char *hvname,
                                            virHostValidateLevel level,
                                            const char *hint);
 
-extern bool virHostValidateHasCPUFlag(const char *name);
+extern virBitmapPtr virHostValidateGetCPUFlags(void);
 
 extern int virHostValidateLinuxKernel(const char *hvname,
                                       int version,

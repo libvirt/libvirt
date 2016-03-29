@@ -31,13 +31,16 @@
 #endif /* HAVE_MNTENT_H */
 #include <sys/stat.h>
 
-#include "virutil.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virt-host-validate-common.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_ENUM_IMPL(virHostValidateCPUFlag, VIR_HOST_VALIDATE_CPU_FLAG_LAST,
+              "vmx",
+              "svm");
 
 static bool quiet;
 
@@ -188,29 +191,64 @@ int virHostValidateNamespace(const char *hvname,
 }
 
 
-bool virHostValidateHasCPUFlag(const char *name)
+virBitmapPtr virHostValidateGetCPUFlags(void)
 {
-    FILE *fp = fopen("/proc/cpuinfo", "r");
-    bool ret = false;
+    FILE *fp;
+    virBitmapPtr flags;
 
-    if (!fp)
-        return false;
+    if (!(fp = fopen("/proc/cpuinfo", "r")))
+        return NULL;
+
+    if (!(flags = virBitmapNewQuiet(VIR_HOST_VALIDATE_CPU_FLAG_LAST)))
+        return NULL;
 
     do {
         char line[1024];
+        char *start;
+        char **tokens;
+        size_t ntokens;
+        size_t i;
 
         if (!fgets(line, sizeof(line), fp))
             break;
 
-        if (strstr(line, name)) {
-            ret = true;
-            break;
+        /* The line we're interested in is marked either as "flags" or
+         * as "Features" depending on the architecture, so check both
+         * prefixes */
+        if (!STRPREFIX(line, "flags") && !STRPREFIX(line, "Features"))
+            continue;
+
+        /* fgets() includes the trailing newline in the output buffer,
+         * so we need to clean that up ourselves. We can safely access
+         * line[strlen(line) - 1] because the checks above would cause
+         * us to skip empty strings */
+        line[strlen(line) - 1] = '\0';
+
+        /* Skip to the separator */
+        if (!(start = strchr(line, ':')))
+            continue;
+
+        /* Split the line using " " as a delimiter. The first token
+         * will always be ":", but that's okay */
+        if (!(tokens = virStringSplitCount(start, " ", 0, &ntokens)))
+            continue;
+
+        /* Go through all flags and check whether one of those we
+         * might want to check for later on is present; if that's
+         * the case, set the relevant bit in the bitmap */
+        for (i = 0; i < ntokens; i++) {
+            int value;
+
+            if ((value = virHostValidateCPUFlagTypeFromString(tokens[i])) >= 0)
+                ignore_value(virBitmapSetBit(flags, value));
         }
+
+        virStringFreeListCount(tokens, ntokens);
     } while (1);
 
     VIR_FORCE_FCLOSE(fp);
 
-    return ret;
+    return flags;
 }
 
 
@@ -359,14 +397,19 @@ int virHostValidateCGroupController(const char *hvname,
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level)
 {
+    virBitmapPtr flags;
     struct stat sb;
     const char *bootarg = NULL;
     bool isAMD = false, isIntel = false;
 
-    if (virHostValidateHasCPUFlag("vmx"))
+    flags = virHostValidateGetCPUFlags();
+
+    if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
         isIntel = true;
-    else if (virHostValidateHasCPUFlag("svm"))
+    else if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM))
         isAMD = true;
+
+    virBitmapFree(flags);
 
     virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
 

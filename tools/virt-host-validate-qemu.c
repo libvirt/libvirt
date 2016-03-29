@@ -24,14 +24,20 @@
 
 #include "virt-host-validate-qemu.h"
 #include "virt-host-validate-common.h"
+#include "virbitmap.h"
 
 int virHostValidateQEMU(void)
 {
+    virBitmapPtr flags;
     int ret = 0;
 
     virHostMsgCheck("QEMU", "%s", ("for hardware virtualization"));
-    if (virHostValidateHasCPUFlag("svm") ||
-        virHostValidateHasCPUFlag("vmx")) {
+
+    flags = virHostValidateGetCPUFlags();
+
+    if (flags &&
+        (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
+         virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))) {
         virHostMsgPass();
         if (virHostValidateDeviceExists("QEMU", "/dev/kvm",
                                         VIR_HOST_VALIDATE_FAIL,
@@ -47,6 +53,8 @@ int virHostValidateQEMU(void)
         virHostMsgFail(VIR_HOST_VALIDATE_WARN,
                        _("Only emulated CPUs are available, performance will be significantly limited"));
     }
+
+    virBitmapFree(flags);
 
     if (virHostValidateDeviceExists("QEMU", "/dev/vhost-net",
                                     VIR_HOST_VALIDATE_WARN,
