@@ -3928,6 +3928,37 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
             }
         }
 
+        for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                char *cpuFeature;
+                if (virAsprintf(&cpuFeature, "__kvm_hv_%s",
+                                virDomainHypervTypeToString(i)) < 0)
+                    goto cleanup;
+                if (!cpuHasFeature(guestcpu, cpuFeature)) {
+                    switch ((virDomainHyperv) i) {
+                    case VIR_DOMAIN_HYPERV_RELAXED:
+                    case VIR_DOMAIN_HYPERV_VAPIC:
+                    case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                        VIR_WARN("host doesn't support hyperv '%s' feature",
+                                 virDomainHypervTypeToString(i));
+                        break;
+                    case VIR_DOMAIN_HYPERV_VPINDEX:
+                    case VIR_DOMAIN_HYPERV_RUNTIME:
+                    case VIR_DOMAIN_HYPERV_SYNIC:
+                    case VIR_DOMAIN_HYPERV_STIMER:
+                    case VIR_DOMAIN_HYPERV_RESET:
+                    case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("host doesn't support hyperv '%s' feature"),
+                                       virDomainHypervTypeToString(i));
+                        goto cleanup;
+                        break;
+                    case VIR_DOMAIN_HYPERV_LAST:
+                        break;
+                    }
+                }
+            }
+        }
 
         if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
             for (i = 0; i < def->cpu->nfeatures; i++) {

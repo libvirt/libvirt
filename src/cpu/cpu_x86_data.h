@@ -48,6 +48,14 @@ struct _virCPUx86CPUID {
 # define VIR_CPU_x86_KVM_PV_EOI       "__kvm_pv_eoi"
 # define VIR_CPU_x86_KVM_PV_UNHALT    "__kvm_pv_unhalt"
 # define VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT "__kvm_clocksource_stable"
+# define VIR_CPU_x86_KVM_HV_RUNTIME   "__kvm_hv_runtime"
+# define VIR_CPU_x86_KVM_HV_SYNIC     "__kvm_hv_synic"
+# define VIR_CPU_x86_KVM_HV_STIMER    "__kvm_hv_stimer"
+# define VIR_CPU_x86_KVM_HV_RELAXED   "__kvm_hv_relaxed"
+# define VIR_CPU_x86_KVM_HV_SPINLOCK  "__kvm_hv_spinlock"
+# define VIR_CPU_x86_KVM_HV_VAPIC     "__kvm_hv_vapic"
+# define VIR_CPU_x86_KVM_HV_VPINDEX   "__kvm_hv_vpindex"
+# define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
 
 
 typedef struct _virCPUx86Data virCPUx86Data;

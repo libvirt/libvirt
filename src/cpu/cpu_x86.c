@@ -75,6 +75,14 @@ static const struct x86_kvm_feature x86_kvm_features[] =
     {VIR_CPU_x86_KVM_PV_UNHALT,    { .function = 0x40000001, .eax = 0x00000080 }},
     {VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT,
                                    { .function = 0x40000001, .eax = 0x01000000 }},
+    {VIR_CPU_x86_KVM_HV_RUNTIME,   { .function = 0x40000003, .eax = 0x00000001 }},
+    {VIR_CPU_x86_KVM_HV_SYNIC,     { .function = 0x40000003, .eax = 0x00000004 }},
+    {VIR_CPU_x86_KVM_HV_STIMER,    { .function = 0x40000003, .eax = 0x00000008 }},
+    {VIR_CPU_x86_KVM_HV_RELAXED,   { .function = 0x40000003, .eax = 0x00000020 }},
+    {VIR_CPU_x86_KVM_HV_SPINLOCK,  { .function = 0x40000003, .eax = 0x00000022 }},
+    {VIR_CPU_x86_KVM_HV_VAPIC,     { .function = 0x40000003, .eax = 0x00000030 }},
+    {VIR_CPU_x86_KVM_HV_VPINDEX,   { .function = 0x40000003, .eax = 0x00000040 }},
+    {VIR_CPU_x86_KVM_HV_RESET,     { .function = 0x40000003, .eax = 0x00000080 }},
 };
 
 struct x86_model {
