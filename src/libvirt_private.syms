@@ -2094,6 +2094,7 @@ virProcessWait;
 # util/virrandom.h
 virRandom;
 virRandomBits;
+virRandomBytes;
 virRandomGenerateWWN;
 virRandomInt;
 

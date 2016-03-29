@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2015 Red Hat, Inc.
+ * Copyright (C) 2012-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,12 +26,16 @@
 #include <math.h>
 #include <strings.h>
 #include <time.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "virrandom.h"
 #include "virthread.h"
 #include "count-one-bits.h"
 #include "virutil.h"
 #include "virerror.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
 
@@ -156,10 +160,48 @@ uint32_t virRandomInt(uint32_t max)
 }
 
 
+/**
+ * virRandomBytes
+ * @buf: Pointer to location to store bytes
+ * @buflen: Number of bytes to store
+ *
+ * Generate a stream of random bytes from /dev/urandom
+ * into @buf of size @buflen
+ */
+int
+virRandomBytes(unsigned char *buf,
+               size_t buflen)
+{
+    int fd;
+
+    if ((fd = open("/dev/urandom", O_RDONLY)) < 0)
+        return errno;
+
+    while (buflen > 0) {
+        ssize_t n;
+
+        if ((n = read(fd, buf, buflen)) <= 0) {
+            if (errno == EINTR)
+                continue;
+            VIR_FORCE_CLOSE(fd);
+            return n < 0 ? errno : ENODATA;
+        }
+
+        buf += n;
+        buflen -= n;
+    }
+
+    VIR_FORCE_CLOSE(fd);
+
+    return 0;
+}
+
+
 #define QUMRANET_OUI "001a4a"
 #define VMWARE_OUI "000569"
 #define MICROSOFT_OUI "0050f2"
 #define XEN_OUI "00163e"
+
 
 int
 virRandomGenerateWWN(char **wwn,

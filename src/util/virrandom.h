@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Red Hat, Inc.
+ * Copyright (C) 2012, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,8 @@
 uint64_t virRandomBits(int nbits);
 double virRandom(void);
 uint32_t virRandomInt(uint32_t max);
+int virRandomBytes(unsigned char *buf, size_t buflen)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virRandomGenerateWWN(char **wwn, const char *virt_type);
 
 #endif /* __VIR_RANDOM_H__ */

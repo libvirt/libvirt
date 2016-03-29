@@ -53,34 +53,6 @@ VIR_LOG_INIT("util.uuid");
 static unsigned char host_uuid[VIR_UUID_BUFLEN];
 
 static int
-virUUIDGenerateRandomBytes(unsigned char *buf,
-                           int buflen)
-{
-    int fd;
-
-    if ((fd = open("/dev/urandom", O_RDONLY)) < 0)
-        return errno;
-
-    while (buflen > 0) {
-        int n;
-
-        if ((n = read(fd, buf, buflen)) <= 0) {
-            if (errno == EINTR)
-                continue;
-            VIR_FORCE_CLOSE(fd);
-            return n < 0 ? errno : ENODATA;
-        }
-
-        buf += n;
-        buflen -= n;
-    }
-
-    VIR_FORCE_CLOSE(fd);
-
-    return 0;
-}
-
-static int
 virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
                                  int buflen)
 {
@@ -108,7 +80,7 @@ virUUIDGenerate(unsigned char *uuid)
     if (uuid == NULL)
         return -1;
 
-    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN))) {
+    if ((err = virRandomBytes(uuid, VIR_UUID_BUFLEN))) {
         char ebuf[1024];
         VIR_WARN("Falling back to pseudorandom UUID,"
                  " failed to generate random bytes: %s",
