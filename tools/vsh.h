@@ -291,6 +291,10 @@ int vshCommandOptScaledInt(vshControl *ctl, const vshCmd *cmd,
                            const char *name, unsigned long long *value,
                            int scale, unsigned long long max)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+int vshBlockJobOptionBandwidth(vshControl *ctl,
+                               const vshCmd *cmd,
+                               bool bytes,
+                               unsigned long *bandwidth);
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 bool vshCommandRun(vshControl *ctl, const vshCmd *cmd);
 bool vshCommandStringParse(vshControl *ctl, char *cmdstr);

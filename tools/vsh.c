@@ -1201,6 +1201,58 @@ vshCommandOptArgv(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
 }
 
 
+/**
+ * vshBlockJobOptionBandwidth:
+ * @ctl: virsh control data
+ * @cmd: virsh command description
+ * @bytes: return bandwidth in bytes/s instead of MiB/s
+ * @bandwidth: return value
+ *
+ * Extracts the value of --bandwidth either as a wrap-able number without scale
+ * or as a scaled integer. The returned value is checked to fit into a unsigned
+ * long data type. This is a legacy compatibility function and it should not
+ * be used for things other the block job APIs.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+vshBlockJobOptionBandwidth(vshControl *ctl,
+                           const vshCmd *cmd,
+                           bool bytes,
+                           unsigned long *bandwidth)
+{
+    vshCmdOpt *arg;
+    char *end;
+    unsigned long long bw;
+    int ret;
+
+    if ((ret = vshCommandOpt(cmd, "bandwidth", &arg, true)) <= 0)
+        return ret;
+
+    /* due to historical reasons we declare to parse negative numbers and wrap
+     * them to the unsigned data type. */
+    if (virStrToLong_ul(arg->data, NULL, 10, bandwidth) < 0) {
+        /* try to parse the number as scaled size in this case we don't accept
+         * wrapping since it would be ridiculous. In case of a 32 bit host,
+         * limit the value to ULONG_MAX */
+        if (virStrToLong_ullp(arg->data, &end, 10, &bw) < 0 ||
+            virScaleInteger(&bw, end, 1, ULONG_MAX) < 0) {
+            vshError(ctl,
+                     _("Scaled numeric value '%s' for <--bandwidth> option is "
+                       "malformed or out of range"), arg->data);
+            return -1;
+        }
+
+        if (!bytes)
+            bw >>= 20;
+
+        *bandwidth = bw;
+    }
+
+    return 0;
+}
+
+
 /*
  * Executes command(s) and returns return code from last command
  */
