@@ -70,7 +70,7 @@ int virHostValidateLXC(void)
 
     if (virHostValidateCGroupController("LXC", "cpu",
                                         VIR_HOST_VALIDATE_FAIL,
-                                        "CGROUP_SCHED") < 0)
+                                        "CGROUP_CPU") < 0)
         ret = -1;
 
     if (virHostValidateCGroupController("LXC", "cpuacct",
