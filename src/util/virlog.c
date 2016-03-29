@@ -90,8 +90,8 @@ typedef struct _virLogFilter virLogFilter;
 typedef virLogFilter *virLogFilterPtr;
 
 static int virLogFiltersSerial = 1;
-static virLogFilterPtr virLogFilters;
-static int virLogNbFilters;
+static virLogFilterPtr *virLogFilters;
+static size_t virLogNbFilters;
 
 /*
  * Outputs are used to emit the messages retained
@@ -245,8 +245,10 @@ virLogResetFilters(void)
 {
     size_t i;
 
-    for (i = 0; i < virLogNbFilters; i++)
-        VIR_FREE(virLogFilters[i].match);
+    for (i = 0; i < virLogNbFilters; i++) {
+        VIR_FREE(virLogFilters[i]->match);
+        VIR_FREE(virLogFilters[i]);
+    }
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
     virLogFiltersSerial++;
@@ -274,6 +276,7 @@ virLogDefineFilter(const char *match,
     size_t i;
     int ret = -1;
     char *mdup = NULL;
+    virLogFilterPtr filter = NULL;
 
     virCheckFlags(VIR_LOG_STACK_TRACE, -1);
 
@@ -286,8 +289,8 @@ virLogDefineFilter(const char *match,
 
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
-        if (STREQ(virLogFilters[i].match, match)) {
-            virLogFilters[i].priority = priority;
+        if (STREQ(virLogFilters[i]->match, match)) {
+            virLogFilters[i]->priority = priority;
             ret = i;
             goto cleanup;
         }
@@ -295,21 +298,25 @@ virLogDefineFilter(const char *match,
 
     if (VIR_STRDUP_QUIET(mdup, match) < 0)
         goto cleanup;
-    if (VIR_REALLOC_N_QUIET(virLogFilters, virLogNbFilters + 1)) {
+
+    if (VIR_ALLOC_QUIET(filter) < 0) {
         VIR_FREE(mdup);
         goto cleanup;
     }
-    ret = virLogNbFilters;
-    virLogFilters[i].match = mdup;
-    virLogFilters[i].priority = priority;
-    virLogFilters[i].flags = flags;
-    virLogNbFilters++;
+
+    filter->match = mdup;
+    filter->priority = priority;
+    filter->flags = flags;
+
+    if (VIR_APPEND_ELEMENT_QUIET(virLogFilters, virLogNbFilters, filter) < 0)
+        goto cleanup;
+
     virLogFiltersSerial++;
  cleanup:
     virLogUnlock();
     if (ret < 0)
         virReportOOMError();
-    return ret;
+    return virLogNbFilters;
 }
 
 /**
@@ -475,9 +482,9 @@ virLogSourceUpdate(virLogSourcePtr source)
         size_t i;
 
         for (i = 0; i < virLogNbFilters; i++) {
-            if (strstr(source->name, virLogFilters[i].match)) {
-                priority = virLogFilters[i].priority;
-                flags = virLogFilters[i].flags;
+            if (strstr(source->name, virLogFilters[i]->match)) {
+                priority = virLogFilters[i]->priority;
+                flags = virLogFilters[i]->flags;
                 break;
             }
         }
@@ -1335,12 +1342,12 @@ virLogGetFilters(void)
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
         const char *sep = ":";
-        if (virLogFilters[i].flags & VIR_LOG_STACK_TRACE)
+        if (virLogFilters[i]->flags & VIR_LOG_STACK_TRACE)
             sep = ":+";
         virBufferAsprintf(&filterbuf, "%d%s%s ",
-                          virLogFilters[i].priority,
+                          virLogFilters[i]->priority,
                           sep,
-                          virLogFilters[i].match);
+                          virLogFilters[i]->match);
     }
     virLogUnlock();
 
