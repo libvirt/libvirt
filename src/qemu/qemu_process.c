@@ -3904,11 +3904,6 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
     bool ret = false;
     size_t i;
 
-    /* no features are passed to QEMU with -cpu host
-     * so it makes no sense to verify them */
-    if (def->cpu && def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-        return true;
-
     switch (arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
@@ -3933,17 +3928,20 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
             }
         }
 
-        for (i = 0; def->cpu && i < def->cpu->nfeatures; i++) {
-            virCPUFeatureDefPtr feature = &def->cpu->features[i];
 
-            if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
-                continue;
+        if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            for (i = 0; i < def->cpu->nfeatures; i++) {
+                virCPUFeatureDefPtr feature = &def->cpu->features[i];
 
-            if (STREQ(feature->name, "invtsc") &&
-                !cpuHasFeature(guestcpu, feature->name)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("host doesn't support invariant TSC"));
-                goto cleanup;
+                if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
+                    continue;
+
+                if (STREQ(feature->name, "invtsc") &&
+                    !cpuHasFeature(guestcpu, feature->name)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("host doesn't support invariant TSC"));
+                    goto cleanup;
+                }
             }
         }
         break;
