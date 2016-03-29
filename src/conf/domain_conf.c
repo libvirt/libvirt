@@ -4816,7 +4816,7 @@ virDomainDeviceUSBMasterParseXML(xmlNodePtr node,
 
 static int
 virDomainDeviceBootParseXML(xmlNodePtr node,
-                            int *bootIndex,
+                            virDomainDeviceInfoPtr info,
                             virHashTablePtr bootHash)
 {
     char *order;
@@ -4848,7 +4848,7 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
             goto cleanup;
     }
 
-    *bootIndex = boot;
+    info->bootIndex = boot;
     ret = 0;
 
  cleanup:
@@ -4981,7 +4981,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     }
 
     if (boot) {
-        if (virDomainDeviceBootParseXML(boot, &info->bootIndex, bootHash))
+        if (virDomainDeviceBootParseXML(boot, info, bootHash))
             goto cleanup;
     }
 
