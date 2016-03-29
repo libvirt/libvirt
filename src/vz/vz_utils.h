@@ -70,7 +70,6 @@ struct _vzConn {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
-    const char *drivername;
     /* Immutable pointer, self-locking APIs */
     virConnectCloseCallbackDataPtr closeCallback;
     unsigned long vzVersion;

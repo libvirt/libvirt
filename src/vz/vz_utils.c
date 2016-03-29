@@ -178,10 +178,7 @@ vzNewDomain(vzConnPtr privconn, char *name, const unsigned char *uuid)
     pdom->cache.stats = PRL_INVALID_HANDLE;
     pdom->cache.count = -1;
 
-    if (STREQ(privconn->drivername, "vz"))
-        def->virtType = VIR_DOMAIN_VIRT_VZ;
-    else
-        def->virtType = VIR_DOMAIN_VIRT_PARALLELS;
+    def->virtType = VIR_DOMAIN_VIRT_VZ;
 
     if (!(dom = virDomainObjListAdd(privconn->domains, def,
                                     privconn->xmlopt,
