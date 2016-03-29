@@ -1624,7 +1624,7 @@ virLogSetFromEnv(void)
         virLogParseDefaultPriority(debugEnv);
     debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_FILTERS");
     if (debugEnv && *debugEnv)
-        virLogParseAndDefineFilters(debugEnv);
+        virLogSetFilters(debugEnv);
     debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv && *debugEnv)
         virLogSetOutputs(debugEnv);

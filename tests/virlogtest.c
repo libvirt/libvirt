@@ -80,9 +80,10 @@ testLogParseFilters(const void *opaque)
 {
     int ret = -1;
     int nfilters;
+    virLogFilterPtr *filters = NULL;
     const struct testLogData *data = opaque;
 
-    nfilters = virLogParseAndDefineFilters(data->str);
+    nfilters = virLogParseFilters(data->str, &filters);
     if (nfilters < 0) {
         if (!data->pass) {
             VIR_TEST_DEBUG("Got expected error: %s\n",
@@ -102,7 +103,7 @@ testLogParseFilters(const void *opaque)
 
     ret = 0;
  cleanup:
-    virLogReset();
+    virLogFilterListFree(filters, nfilters);
     return ret;
 }
 

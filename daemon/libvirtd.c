@@ -691,7 +691,7 @@ daemonSetupLogging(struct daemonConfig *config,
     virLogSetFromEnv();
 
     if (virLogGetNbFilters() == 0)
-        virLogParseAndDefineFilters(config->log_filters);
+        virLogSetFilters(config->log_filters);
 
     if (config->log_outputs && virLogGetNbOutputs() == 0)
         virLogSetOutputs(config->log_outputs);
