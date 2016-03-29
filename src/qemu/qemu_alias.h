@@ -63,4 +63,7 @@ int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                const char *prefix);
 
 char *qemuAliasFromDisk(const virDomainDiskDef *disk);
+
+char *qemuDomainGetMasterKeyAlias(void);
+
 #endif /* __QEMU_ALIAS_H__*/

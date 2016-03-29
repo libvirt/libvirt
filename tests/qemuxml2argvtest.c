@@ -1864,6 +1864,8 @@ mymain(void)
 
     DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
+    DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -151,6 +151,71 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "interleave");
 
 /**
+ * qemuBuildHasMasterKey:
+ * @qemuCaps: QEMU binary capabilities
+ *
+ * Return true if this binary supports the secret -object, false otherwise.
+ */
+static bool
+qemuBuildHasMasterKey(virQEMUCapsPtr qemuCaps)
+{
+    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET);
+}
+
+
+/**
+ * qemuBuildMasterKeyCommandLine:
+ * @cmd: the command to modify
+ * @qemuCaps qemu capabilities object
+ * @domainLibDir: location to find the master key
+
+ * Formats the command line for a master key if available
+ *
+ * Returns 0 on success, -1 w/ error message on failure
+ */
+static int
+qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
+                              virQEMUCapsPtr qemuCaps,
+                              const char *domainLibDir)
+{
+    int ret = -1;
+    char *alias = NULL;
+    char *path = NULL;
+
+    /* If the -object secret does not exist, then just return. This just
+     * means the domain won't be able to use a secret master key and is
+     * not a failure.
+     */
+    if (!qemuBuildHasMasterKey(qemuCaps)) {
+        VIR_INFO("secret object is not supported by this QEMU binary");
+        return 0;
+    }
+
+    if (!(alias = qemuDomainGetMasterKeyAlias()))
+        return -1;
+
+    /* Get the path. NB, the mocked test will not have the created
+     * file so we cannot check for existence, which is no different
+     * than other command line options which do not check for the
+     * existence of socket files before using.
+     */
+    if (!(path = qemuDomainGetMasterKeyFilePath(domainLibDir)))
+        goto cleanup;
+
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgFormat(cmd, "secret,id=%s,format=raw,file=%s",
+                           alias, path);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(alias);
+    VIR_FREE(path);
+    return ret;
+}
+
+
+/**
  * qemuVirCommandGetFDSet:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
@@ -9233,6 +9298,9 @@ qemuBuildCommandLine(virConnectPtr conn,
 
     if (!standalone)
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
+
+    if (qemuBuildMasterKeyCommandLine(cmd, qemuCaps, domainLibDir) < 0)
+        goto error;
 
     if (enableFips)
         virCommandAddArg(cmd, "-enable-fips");

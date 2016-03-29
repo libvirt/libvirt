@@ -510,3 +510,20 @@ qemuAliasFromDisk(const virDomainDiskDef *disk)
 
     return ret;
 }
+
+
+/* qemuDomainGetMasterKeyAlias:
+ *
+ * Generate and return the masterKey alias
+ *
+ * Returns NULL or a string containing the master key alias
+ */
+char *
+qemuDomainGetMasterKeyAlias(void)
+{
+    char *alias;
+
+    ignore_value(VIR_STRDUP(alias, "masterKey0"));
+
+    return alias;
+}
