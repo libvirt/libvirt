@@ -120,6 +120,10 @@
                 <a href="hooks.html">Hooks</a>
                 <span>Hooks for system specific management</span>
               </li>
+              <li>
+                <a href="nss.html">NSS module</a>
+                <span>Enable domain host name translation to IP addresses</span>
+              </li>
             </ul>
           </li>
           <li>

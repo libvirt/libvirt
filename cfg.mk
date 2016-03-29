@@ -1193,6 +1193,8 @@ exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = ^examples/dom.*/.*\.c$$
 
+exclude_file_name_regexp--sc_prohibit_gethostby = ^docs/nss.html.in$$
+
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
