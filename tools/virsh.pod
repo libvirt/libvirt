@@ -1155,10 +1155,15 @@ not supply bytes/s resolution; when omitting the flag, raw output is
 listed in MiB/s and human-readable output automatically selects the
 best resolution supported by the server.
 
-I<bandwidth> can be used to set bandwidth limit for the active job.
-Specifying a negative value is interpreted as an unsigned long long
+I<bandwidth> can be used to set bandwidth limit for the active job in MiB/s.
+If I<--bytes> is specified then the bandwidth value is interpreted in
+bytes/s. Specifying a negative value is interpreted as an unsigned long
 value or essentially unlimited. The hypervisor can choose whether to
-reject the value or convert it to the maximum value allowed.
+reject the value or convert it to the maximum value allowed. Optionally a
+scaled positive number may be used as bandwidth (see B<NOTES> above). Using
+I<--bytes> with a scaled value allows to use finer granularity. A scaled value
+used without I<--bytes> will be rounded down to MiB/s. Note that the
+I<--bytes> may be unsupported by the hypervisor.
 
 =item B<blockresize> I<domain> I<path> I<size>
 

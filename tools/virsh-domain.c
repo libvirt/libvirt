@@ -2492,7 +2492,7 @@ static const vshCmdOptDef opts_block_job[] = {
     },
     {.name = "bytes",
      .type = VSH_OT_BOOL,
-     .help = N_("with --info, get bandwidth in bytes rather than MiB/s")
+     .help = N_("get/set bandwidth in bytes rather than MiB/s")
     },
     {.name = "raw",
      .type = VSH_OT_BOOL,
@@ -2611,14 +2611,19 @@ static bool
 virshBlockJobSetSpeed(vshControl *ctl,
                       const vshCmd *cmd,
                       virDomainPtr dom,
-                      const char *path)
+                      const char *path,
+                      bool bytes)
 {
     unsigned long bandwidth;
+    unsigned int flags = 0;
 
-    if (vshCommandOptULWrap(ctl, cmd, "bandwidth", &bandwidth) < 0)
+    if (bytes)
+        flags |= VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES;
+
+    if (vshBlockJobOptionBandwidth(ctl, cmd, bytes, &bandwidth) < 0)
         return false;
 
-    if (virDomainBlockJobSetSpeed(dom, path, bandwidth, 0) < 0)
+    if (virDomainBlockJobSetSpeed(dom, path, bandwidth, flags) < 0)
         return false;
 
     return true;
@@ -2672,8 +2677,6 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS("bytes", "abort");
     VSH_EXCLUSIVE_OPTIONS_VAR(bytes, pivot);
     VSH_EXCLUSIVE_OPTIONS_VAR(bytes, async);
-    /* XXX also support --bytes with bandwidth mode */
-    VSH_EXCLUSIVE_OPTIONS_VAR(bytes, bandwidth);
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
@@ -2683,7 +2686,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (bandwidth)
-        ret = virshBlockJobSetSpeed(ctl, cmd, dom, path);
+        ret = virshBlockJobSetSpeed(ctl, cmd, dom, path, bytes);
     else if (abortMode || pivot || async)
         ret = virshBlockJobAbort(dom, path, pivot, async);
     else
