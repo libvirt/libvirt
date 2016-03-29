@@ -1460,7 +1460,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     if (!pidinfo ||
         fscanf(pidinfo,
                /* pid -> stime */
-               "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
+               "%*d (%*[^)]) %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
                /* cutime -> endcode */
                "%*d %*d %*d %*d %*d %*d %*u %*u %ld %*u %*u %*u"
                /* startstack -> processor */
