@@ -423,13 +423,12 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
     virDomainDiskDefPtr hdd, cd, userdef, diskdef;
     virBuffer devicemap;
     virCommandPtr cmd;
-    int best_idx;
+    unsigned int best_idx = UINT_MAX;
     size_t i;
 
     if (def->os.bootloaderArgs != NULL)
         return virBhyveProcessBuildCustomLoaderCmd(def);
 
-    best_idx = INT_MAX;
     devicemap = (virBuffer)VIR_BUFFER_INITIALIZER;
 
     /* Search disk list for CD or HDD device. We'll respect <boot order=''> if

@@ -1525,7 +1525,7 @@ qemuCheckIOThreads(const virDomainDef *def,
 char *
 qemuBuildDriveDevStr(const virDomainDef *def,
                      virDomainDiskDefPtr disk,
-                     int bootindex,
+                     unsigned int bootindex,
                      virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
@@ -1770,7 +1770,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
     virBufferAsprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
-        virBufferAsprintf(&opt, ",bootindex=%d", bootindex);
+        virBufferAsprintf(&opt, ",bootindex=%u", bootindex);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
         if (disk->blockio.logical_block_size > 0)
             virBufferAsprintf(&opt, ",logical_block_size=%u",
@@ -1828,7 +1828,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
                               bool emitBootindex)
 {
     size_t i;
-    int bootCD = 0, bootFloppy = 0, bootDisk = 0;
+    unsigned int bootCD = 0;
+    unsigned int bootFloppy = 0;
+    unsigned int bootDisk = 0;
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
     char *fdc_opts_str = NULL;
 
@@ -1852,7 +1854,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->ndisks; i++) {
         char *optstr;
-        int bootindex = 0;
+        unsigned int bootindex = 0;
         virDomainDiskDefPtr disk = def->disks[i];
         bool withDeviceArg = false;
         bool deviceFlagMasked = false;
@@ -1945,7 +1947,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
                 VIR_FREE(optstr);
 
                 if (bootindex) {
-                    if (virAsprintf(&optstr, "bootindex%c=%d",
+                    if (virAsprintf(&optstr, "bootindex%c=%u",
                                     disk->info.addr.drive.unit
                                     ? 'B' : 'A',
                                     bootindex) < 0)
@@ -3046,7 +3048,7 @@ char *
 qemuBuildNicDevStr(virDomainDefPtr def,
                    virDomainNetDefPtr net,
                    int vlan,
-                   int bootindex,
+                   unsigned int bootindex,
                    size_t vhostfdSize,
                    virQEMUCapsPtr qemuCaps)
 {
@@ -3175,7 +3177,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)
         goto error;
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
-        virBufferAsprintf(&buf, ",bootindex=%d", bootindex);
+        virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -4213,7 +4215,7 @@ qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
 char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,
-                          int bootIndex, /* used iff dev->info->bootIndex == 0 */
+                          unsigned int bootIndex, /* used iff dev->info->bootIndex == 0 */
                           const char *configfd,
                           virQEMUCapsPtr qemuCaps)
 {
@@ -4258,7 +4260,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     if (dev->info->bootIndex)
         bootIndex = dev->info->bootIndex;
     if (bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", bootIndex);
+        virBufferAsprintf(&buf, ",bootindex=%u", bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
     if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
@@ -4324,7 +4326,7 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
     }
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
+        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
 
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
@@ -4577,7 +4579,7 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                       dev->info->alias, dev->info->alias);
 
     if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info->bootIndex);
+        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -4790,7 +4792,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps,
                             qemuBuildCommandLineCallbacksPtr callbacks,
-                            int *bootHostdevNet)
+                            unsigned int *bootHostdevNet)
 {
     size_t i;
 
@@ -4883,7 +4885,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
                 char *configfd_name = NULL;
-                int bootIndex = hostdev->info->bootIndex;
+                unsigned int bootIndex = hostdev->info->bootIndex;
 
                 /* bootNet will be non-0 if boot order was set and no other
                  * net devices were encountered
@@ -7665,7 +7667,7 @@ qemuBuildVhostuserCommandLine(virCommandPtr cmd,
                               virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               virQEMUCapsPtr qemuCaps,
-                              int bootindex)
+                              unsigned int bootindex)
 {
     virBuffer chardev_buf = VIR_BUFFER_INITIALIZER;
     virBuffer netdev_buf = VIR_BUFFER_INITIALIZER;
@@ -7750,7 +7752,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
                               virDomainNetDefPtr net,
                               virQEMUCapsPtr qemuCaps,
                               int vlan,
-                              int bootindex,
+                              unsigned int bootindex,
                               virNetDevVPortProfileOp vmop,
                               bool standalone,
                               size_t *nnicindexes,
@@ -8041,7 +8043,7 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
                         bool emitBootindex,
                         size_t *nnicindexes,
                         int **nicindexes,
-                        int *bootHostdevNet)
+                        unsigned int *bootHostdevNet)
 {
     size_t i;
     int last_good_net = -1;
@@ -8052,7 +8054,7 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
             virCommandAddArgList(cmd, "-net", "none", NULL);
     } else {
-        int bootNet = 0;
+        unsigned int bootNet = 0;
 
         if (emitBootindex) {
             /* convert <boot dev='network'/> to bootindex since we didn't emit
@@ -8694,7 +8696,7 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
                              "supported by this version of QEMU"));
             goto error;
         }
-        virBufferAsprintf(&buf, ",bootindex=%d", dev->info.bootIndex);
+        virBufferAsprintf(&buf, ",bootindex=%u", dev->info.bootIndex);
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
@@ -9203,7 +9205,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     bool emitBootindex = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int bootHostdevNet = 0;
+    unsigned int bootHostdevNet = 0;
 
 
     VIR_DEBUG("conn=%p driver=%p def=%p mon=%p json=%d "

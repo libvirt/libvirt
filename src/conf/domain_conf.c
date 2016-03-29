@@ -4412,7 +4412,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex)
-        virBufferAsprintf(buf, "<boot order='%d'/>\n", info->bootIndex);
+        virBufferAsprintf(buf, "<boot order='%u'/>\n", info->bootIndex);
 
     if (info->alias &&
         !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
@@ -4820,16 +4820,16 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
                             virHashTablePtr bootHash)
 {
     char *order;
-    int boot;
     int ret = -1;
 
-    order = virXMLPropString(node, "order");
-    if (!order) {
+    if (!(order = virXMLPropString(node, "order"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing boot order attribute"));
         goto cleanup;
-    } else if (virStrToLong_i(order, NULL, 10, &boot) < 0 ||
-               boot <= 0) {
+    }
+
+    if (virStrToLong_uip(order, NULL, 10, &info->bootIndex) < 0 ||
+        info->bootIndex == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("incorrect boot order '%s', expecting positive integer"),
                        order);
@@ -4848,7 +4848,6 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
             goto cleanup;
     }
 
-    info->bootIndex = boot;
     ret = 0;
 
  cleanup:
@@ -22972,7 +22971,7 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
     if (info->bootIndex == newinfo->bootIndex) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("boot order %d is already used by another device"),
+                       _("boot order %u is already used by another device"),
                        newinfo->bootIndex);
         return -1;
     }

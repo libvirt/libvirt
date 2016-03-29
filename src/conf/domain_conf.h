@@ -368,7 +368,7 @@ struct _virDomainDeviceInfo {
     char *romfile;
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
-    int bootIndex;
+    unsigned int bootIndex;
 };
 
 

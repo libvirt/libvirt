@@ -105,7 +105,7 @@ char *qemuBuildNicStr(virDomainNetDefPtr net,
 char *qemuBuildNicDevStr(virDomainDefPtr def,
                          virDomainNetDefPtr net,
                          int vlan,
-                         int bootindex,
+                         unsigned int bootindex,
                          size_t vhostfdSize,
                          virQEMUCapsPtr qemuCaps);
 
@@ -121,7 +121,7 @@ char *qemuBuildDriveStr(virConnectPtr conn,
 /* Current, best practice */
 char *qemuBuildDriveDevStr(const virDomainDef *def,
                            virDomainDiskDefPtr disk,
-                           int bootindex,
+                           unsigned int bootindex,
                            virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
@@ -151,7 +151,7 @@ char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem);
 /* Current, best practice */
 char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,
-                                int bootIndex,
+                                unsigned int bootIndex,
                                 const char *configfd,
                                 virQEMUCapsPtr qemuCaps);
 
