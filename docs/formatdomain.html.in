@@ -1558,13 +1558,13 @@
           <td>synic</td>
           <td>Enable Synthetic Interrupt Controller (SyNIC)</td>
           <td> on, off</td>
-          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+          <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
         <tr>
           <td>stimer</td>
           <td>Enable SyNIC timers</td>
           <td> on, off</td>
-          <td><span class="since">1.3.3 (QEMU 2.5)</span></td>
+          <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
         <tr>
           <td>reset</td>
