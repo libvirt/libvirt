@@ -147,9 +147,9 @@ virNetServerProgramSendError(unsigned program,
                              virNetMessageErrorPtr rerr,
                              int procedure,
                              int type,
-                             int serial)
+                             unsigned int serial)
 {
-    VIR_DEBUG("prog=%d ver=%d proc=%d type=%d serial=%d msg=%p rerr=%p",
+    VIR_DEBUG("prog=%d ver=%d proc=%d type=%d serial=%u msg=%p rerr=%p",
               program, version, procedure, type, serial, msg, rerr);
 
     virNetMessageSaveError(rerr);
@@ -217,7 +217,7 @@ int virNetServerProgramSendStreamError(virNetServerProgramPtr prog,
                                        virNetMessagePtr msg,
                                        virNetMessageErrorPtr rerr,
                                        int procedure,
-                                       int serial)
+                                       unsigned int serial)
 {
     return virNetServerProgramSendError(prog->program,
                                         prog->version,
@@ -282,7 +282,7 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
 
     memset(&rerr, 0, sizeof(rerr));
 
-    VIR_DEBUG("prog=%d ver=%d type=%d status=%d serial=%d proc=%d",
+    VIR_DEBUG("prog=%d ver=%d type=%d status=%d serial=%u proc=%d",
               msg->header.prog, msg->header.vers, msg->header.type,
               msg->header.status, msg->header.serial, msg->header.proc);
 
@@ -312,7 +312,7 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
          * stream packets after we closed down a stream. Just drop & ignore
          * these.
          */
-        VIR_INFO("Ignoring unexpected stream data serial=%d proc=%d status=%d",
+        VIR_INFO("Ignoring unexpected stream data serial=%u proc=%d status=%d",
                  msg->header.serial, msg->header.proc, msg->header.status);
         /* Send a dummy reply to free up 'msg' & unblock client rx */
         virNetMessageClear(msg);
@@ -510,7 +510,7 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
                                       virNetServerClientPtr client,
                                       virNetMessagePtr msg,
                                       int procedure,
-                                      int serial,
+                                      unsigned int serial,
                                       const char *data,
                                       size_t len)
 {

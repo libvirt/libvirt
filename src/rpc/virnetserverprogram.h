@@ -90,7 +90,7 @@ int virNetServerProgramSendStreamError(virNetServerProgramPtr prog,
                                        virNetMessagePtr msg,
                                        virNetMessageErrorPtr rerr,
                                        int procedure,
-                                       int serial);
+                                       unsigned int serial);
 
 int virNetServerProgramUnknownError(virNetServerClientPtr client,
                                     virNetMessagePtr msg,
@@ -100,7 +100,7 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
                                       virNetServerClientPtr client,
                                       virNetMessagePtr msg,
                                       int procedure,
-                                      int serial,
+                                      unsigned int serial,
                                       const char *data,
                                       size_t len);
 
