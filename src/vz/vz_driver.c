@@ -62,7 +62,6 @@ VIR_LOG_INIT("parallels.parallels_driver");
 
 #define PRLCTL                      "prlctl"
 
-static int vzConnectClose(virConnectPtr conn);
 static virClassPtr vzDriverClass;
 
 static virMutex vz_driver_lock;
@@ -267,7 +266,7 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 }
 
 
-virDomainDefParserConfig vzDomainDefParserConfig = {
+static virDomainDefParserConfig vzDomainDefParserConfig = {
     .macPrefix = {0x42, 0x1C, 0x00},
     .devicesPostParseCallback = vzDomainDeviceDefPostParse,
     .domainPostParseCallback = vzDomainDefPostParse,
