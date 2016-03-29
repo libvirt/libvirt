@@ -1870,6 +1870,7 @@ virLockSpaceReleaseResourcesForOwner;
 
 # util/virlog.h
 virLogDefineFilter;
+virLogDefineFilters;
 virLogDefineOutput;
 virLogDefineOutputs;
 virLogFilterFree;
