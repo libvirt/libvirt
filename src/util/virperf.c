@@ -262,6 +262,7 @@ virPerfReadEvent(virPerfPtr perf,
 #else
 int
 virPerfEventEnable(virPerfPtr perf ATTRIBUTE_UNUSED,
+                   virPerfEventType type ATTRIBUTE_UNUSED,
                    pid_t pid ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
@@ -271,7 +272,7 @@ virPerfEventEnable(virPerfPtr perf ATTRIBUTE_UNUSED,
 
 int
 virPerfEventDisable(virPerfPtr perf ATTRIBUTE_UNUSED,
-                    int event ATTRIBUTE_UNUSED)
+                    virPerfEventType type ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Perf not supported on this platform"));
@@ -279,15 +280,15 @@ virPerfEventDisable(virPerfPtr perf ATTRIBUTE_UNUSED,
 }
 
 bool
-virPerfEventIsEnabled(virPerfPtr perf,
-                           virPerfEventType type)
+virPerfEventIsEnabled(virPerfPtr perf ATTRIBUTE_UNUSED,
+                      virPerfEventType type ATTRIBUTE_UNUSED)
 {
     return false;
 }
 
 int
-virPerfGetEventFd(virPerfPtr perf,
-                      virPerfEventType type)
+virPerfGetEventFd(virPerfPtr perf ATTRIBUTE_UNUSED,
+                  virPerfEventType type ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Perf not supported on this platform"));
@@ -295,9 +296,9 @@ virPerfGetEventFd(virPerfPtr perf,
 }
 
 int
-virPerfReadEvent(virPerfPtr perf,
-                 virPerfEventType type
-                 uint64_t *value)
+virPerfReadEvent(virPerfPtr perf ATTRIBUTE_UNUSED,
+                 virPerfEventType type ATTRIBUTE_UNUSED,
+                 uint64_t *value ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Perf not supported on this platform"));
