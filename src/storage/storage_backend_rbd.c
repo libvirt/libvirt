@@ -311,7 +311,7 @@ virStorageBackendRBDRefreshVolInfoCb(uint64_t offset ATTRIBUTE_UNUSED,
                                      int exists,
                                      void *arg)
 {
-    uint64_t *used_size = (uint64_t *)(arg);
+    size_t *used_size = (size_t *)(arg);
     if (exists)
         (*used_size) += len;
 
@@ -324,7 +324,7 @@ virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol,
                                   rbd_image_info_t *info)
 {
     int r, ret = -1;
-    uint64_t allocation = 0;
+    size_t allocation = 0;
 
     if ((r = rbd_diff_iterate2(image, NULL, 0, info->size, 0, 1,
                                &virStorageBackendRBDRefreshVolInfoCb,
@@ -334,7 +334,7 @@ virStorageBackendRBDSetAllocation(virStorageVolDefPtr vol,
         goto cleanup;
     }
 
-    VIR_DEBUG("Found %llu bytes allocated for RBD image %s",
+    VIR_DEBUG("Found %zu bytes allocated for RBD image %s",
               allocation, vol->name);
 
     vol->target.allocation = allocation;
