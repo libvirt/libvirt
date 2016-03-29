@@ -239,11 +239,8 @@ virLogSetDefaultPriority(virLogPriority priority)
 static void
 virLogResetFilters(void)
 {
-    size_t i;
-
-    for (i = 0; i < virLogNbFilters; i++)
-        virLogFilterFree(virLogFilters[i]);
-    VIR_FREE(virLogFilters);
+    virLogFilterListFree(virLogFilters, virLogNbFilters);
+    virLogFilters = NULL;
     virLogNbFilters = 0;
     virLogFiltersSerial++;
 }
@@ -258,6 +255,28 @@ virLogFilterFree(virLogFilterPtr filter)
     VIR_FREE(filter->match);
     VIR_FREE(filter);
 }
+
+
+/**
+ * virLogFilterFreeList:
+ * @list: list of filters to be freed
+ * @count: number of elements in the list
+ *
+ * Frees a list of filters.
+ */
+void
+virLogFilterListFree(virLogFilterPtr *list, int count)
+{
+    size_t i;
+
+    if (!list || count < 0)
+        return;
+
+    for (i = 0; i < count; i++)
+        virLogFilterFree(list[i]);
+    VIR_FREE(list);
+}
+
 
 /**
  * virLogDefineFilter:
