@@ -45,6 +45,12 @@
 #include "virthreadjob.h"
 #include "viratomic.h"
 #include "virprocess.h"
+#include "virrandom.h"
+#include "base64.h"
+#include <gnutls/gnutls.h>
+#if HAVE_GNUTLS_CRYPTO_H
+# include <gnutls/crypto.h>
+#endif
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
 
@@ -463,6 +469,251 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 
  error:
     virTypedParamsFree(par, npar);
+    return -1;
+}
+
+
+/* qemuDomainGetMasterKeyFilePath:
+ * @libDir: Directory path to domain lib files
+ *
+ * Generate a path to the domain master key file for libDir.
+ * It's up to the caller to handle checking if path exists.
+ *
+ * Returns path to memory containing the name of the file. It is up to the
+ * caller to free; otherwise, NULL on failure.
+ */
+char *
+qemuDomainGetMasterKeyFilePath(const char *libDir)
+{
+    if (!libDir) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid path for master key file"));
+        return NULL;
+    }
+    return virFileBuildPath(libDir, "master-key.aes", NULL);
+}
+
+
+/* qemuDomainWriteMasterKeyFile:
+ * @priv: pointer to domain private object
+ *
+ * Get the desired path to the masterKey file and store it in the path.
+ *
+ * Returns 0 on success, -1 on failure with error message indicating failure
+ */
+static int
+qemuDomainWriteMasterKeyFile(qemuDomainObjPrivatePtr priv)
+{
+    char *path;
+    int fd = -1;
+    int ret = -1;
+
+    if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
+        return -1;
+
+    if ((fd = open(path, O_WRONLY|O_TRUNC|O_CREAT, 0600)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to open domain master key file for write"));
+        goto cleanup;
+    }
+
+    if (safewrite(fd, priv->masterKey, priv->masterKeyLen) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to write master key file for domain"));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(path);
+
+    return ret;
+}
+
+
+/* qemuDomainMasterKeyReadFile:
+ * @priv: pointer to domain private object
+ *
+ * Expected to be called during qemuProcessReconnect once the domain
+ * libDir has been generated through qemuStateInitialize calling
+ * virDomainObjListLoadAllConfigs which will restore the libDir path
+ * to the domain private object.
+ *
+ * This function will get the path to the master key file and if it
+ * exists, it will read the contents of the file saving it in priv->masterKey.
+ *
+ * Once the file exists, the validity checks may cause failures; however,
+ * if the file doesn't exist or the capability doesn't exist, we just
+ * return (mostly) quietly.
+ *
+ * Returns 0 on success or lack of capability
+ *        -1 on failure with error message indicating failure
+ */
+int
+qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv)
+{
+    char *path;
+    int fd = -1;
+    uint8_t *masterKey = NULL;
+    ssize_t masterKeyLen = 0;
+
+    /* If we don't have the capability, then do nothing. */
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+        return 0;
+
+    if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
+        return -1;
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("domain master key file doesn't exist in %s"),
+                       priv->libDir);
+        goto error;
+    }
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to open domain master key file for read"));
+        goto error;
+    }
+
+    if (VIR_ALLOC_N(masterKey, 1024) < 0)
+        goto error;
+
+    if ((masterKeyLen = saferead(fd, masterKey, 1024)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to read domain master key file"));
+        goto error;
+    }
+
+    if (masterKeyLen != QEMU_DOMAIN_MASTER_KEY_LEN) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid master key read, size=%zd"), masterKeyLen);
+        goto error;
+    }
+
+    ignore_value(VIR_REALLOC_N_QUIET(masterKey, masterKeyLen));
+
+    priv->masterKey = masterKey;
+    priv->masterKeyLen = masterKeyLen;
+
+    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(path);
+
+    return 0;
+
+ error:
+    if (masterKeyLen > 0)
+        memset(masterKey, 0, masterKeyLen);
+    VIR_FREE(masterKey);
+
+    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(path);
+
+    return -1;
+}
+
+
+/* qemuDomainGenerateRandomKey
+ * @nbytes: Size in bytes of random key to generate
+ *
+ * Generate a random key of nbytes length and return it.
+ *
+ * Since the gnutls_rnd could be missing, provide an alternate less
+ * secure mechanism to at least have something.
+ *
+ * Returns pointer memory containing key on success, NULL on failure
+ */
+static uint8_t *
+qemuDomainGenerateRandomKey(size_t nbytes)
+{
+    uint8_t *key;
+    int ret;
+
+    if (VIR_ALLOC_N(key, nbytes) < 0)
+        return NULL;
+
+#if HAVE_GNUTLS_CRYPTO_H
+    /* Generate a master key using gnutls if possible */
+    if ((ret = gnutls_rnd(GNUTLS_RND_RANDOM, key, nbytes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to generate master key, ret=%d"), ret);
+        VIR_FREE(key);
+        return NULL;
+    }
+#else
+    /* If we don't have gnutls, we will generate a less cryptographically
+     * strong master key from /dev/urandom.
+     */
+    if ((ret = virRandomBytes(key, nbytes)) < 0) {
+        virReportSystemError(ret, "%s", _("failed to generate master key"));
+        VIR_FREE(key);
+        return NULL;
+    }
+#endif
+
+    return key;
+}
+
+
+/* qemuDomainMasterKeyRemove:
+ * @priv: Pointer to the domain private object
+ *
+ * Remove the traces of the master key, clear the heap, clear the file,
+ * delete the file.
+ */
+void
+qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv)
+{
+    char *path = NULL;
+
+    if (!priv->masterKey)
+        return;
+
+    /* Clear the contents */
+    memset(priv->masterKey, 0, priv->masterKeyLen);
+    VIR_FREE(priv->masterKey);
+    priv->masterKeyLen = 0;
+
+    /* Delete the master key file */
+    path = qemuDomainGetMasterKeyFilePath(priv->libDir);
+    unlink(path);
+
+    VIR_FREE(path);
+}
+
+
+/* qemuDomainMasterKeyCreate:
+ * @priv: Pointer to the domain private object
+ *
+ * As long as the underlying qemu has the secret capability,
+ * generate and store 'raw' in a file a random 32-byte key to
+ * be used as a secret shared with qemu to share sensitive data.
+ *
+ * Returns: 0 on success, -1 w/ error message on failure
+ */
+int
+qemuDomainMasterKeyCreate(qemuDomainObjPrivatePtr priv)
+{
+    /* If we don't have the capability, then do nothing. */
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+        return 0;
+
+    if (!(priv->masterKey =
+          qemuDomainGenerateRandomKey(QEMU_DOMAIN_MASTER_KEY_LEN)))
+        goto error;
+
+    priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
+
+    if (qemuDomainWriteMasterKeyFile(priv) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    qemuDomainMasterKeyRemove(priv);
     return -1;
 }
 

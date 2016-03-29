@@ -3509,6 +3509,10 @@ qemuProcessReconnect(void *opaque)
     if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, obj->def->name)))
         goto error;
 
+    /* Restore the masterKey */
+    if (qemuDomainMasterKeyReadFile(priv) < 0)
+        goto error;
+
     virNWFilterReadLockFilterUpdates();
 
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
@@ -5143,6 +5147,10 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Create domain masterKey");
+    if (qemuDomainMasterKeyCreate(priv) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
@@ -5828,6 +5836,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virDomainChrSourceDefFree(priv->monConfig);
         priv->monConfig = NULL;
     }
+
+    /* Remove the master key */
+    qemuDomainMasterKeyRemove(priv);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);

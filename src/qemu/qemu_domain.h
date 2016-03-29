@@ -148,6 +148,7 @@ struct qemuDomainJobObj {
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm);
 
+# define QEMU_DOMAIN_MASTER_KEY_LEN 32  /* 32 bytes for 256 bit random key */
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
@@ -215,6 +216,11 @@ struct _qemuDomainObjPrivate {
     char *machineName;
     char *libDir;            /* base path for per-domain files */
     char *channelTargetDir;  /* base path for per-domain channel targets */
+
+    /* random masterKey and length for encryption (not to be saved in our */
+    /* private XML) - need to restore at process reconnect */
+    uint8_t *masterKey;
+    size_t masterKeyLen;
 };
 
 # define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
@@ -557,5 +563,13 @@ int qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 void qemuDomainClearPrivatePaths(virDomainObjPtr vm);
 
 virDomainDiskDefPtr qemuDomainDiskByName(virDomainDefPtr def, const char *name);
+
+char *qemuDomainGetMasterKeyFilePath(const char *libDir);
+
+int qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv);
+
+int qemuDomainMasterKeyCreate(qemuDomainObjPrivatePtr priv);
+
+void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 
 #endif /* __QEMU_DOMAIN_H__ */
