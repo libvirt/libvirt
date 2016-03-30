@@ -3174,12 +3174,13 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    vm->def->nets[vm->def->nnets++] = net;
     ret = 0;
 
  cleanup:
     libxl_device_nic_dispose(&nic);
-    if (ret) {
+    if (!ret) {
+        vm->def->nets[vm->def->nnets++] = net;
+    } else {
         virDomainNetRemoveHostdev(vm->def, net);
         networkReleaseActualDevice(vm->def, net);
     }
