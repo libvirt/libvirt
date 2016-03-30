@@ -21,9 +21,9 @@
 #ifndef __VIR_NET_CLIENT_SASL_CONTEXT_H__
 # define __VIR_NET_CLIENT_SASL_CONTEXT_H__
 
+# include "internal.h"
 # include <sasl/sasl.h>
 
-# include "internal.h"
 # include "virobject.h"
 
 typedef struct _virNetSASLContext virNetSASLContext;
