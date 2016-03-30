@@ -1502,6 +1502,10 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     char *charAlias = NULL;
     bool need_release = false;
 
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+        qemuDomainPrepareChannel(chr, priv->channelTargetDir) < 0)
+        goto cleanup;
+
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
