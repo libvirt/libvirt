@@ -10054,9 +10054,12 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     virPerfEventType type;
     bool enabled;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (virTypedParamsValidate(params, nparams, VIR_PERF_PARAMETERS) < 0)
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_PERF_PARAM_CMT, VIR_TYPED_PARAM_BOOLEAN,
+                               NULL) < 0)
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -10071,31 +10074,37 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
-    for (i = 0; i < nparams; i++) {
-        virTypedParameterPtr param = &params[i];
-        enabled = params->value.b;
-        type = virPerfEventTypeFromString(param->field);
+    if (def) {
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+            enabled = params->value.b;
+            type = virPerfEventTypeFromString(param->field);
 
-        if (!enabled && virPerfEventDisable(priv->perf, type))
-            goto cleanup;
-        if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
-            goto cleanup;
+            if (!enabled && virPerfEventDisable(priv->perf, type))
+                goto cleanup;
+            if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
+                goto cleanup;
 
-        if (def) {
             def->perf->events[type] = enabled ?
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
-
-            if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-                goto cleanup;
         }
 
-        if (persistentDef) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+            goto cleanup;
+    }
+
+    if (persistentDef) {
+        for (i = 0; i < nparams; i++) {
+            virTypedParameterPtr param = &params[i];
+            enabled = params->value.b;
+            type = virPerfEventTypeFromString(param->field);
+
             persistentDef->perf->events[type] = enabled ?
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
-
-            if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
-                goto cleanup;
         }
+
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
+            goto cleanup;
     }
 
     ret = 0;
@@ -10112,39 +10121,53 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
                         int *nparams,
                         unsigned int flags)
 {
-    size_t i;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
-    int ret = -1;
+    virDomainDefPtr def;
     virTypedParameterPtr par = NULL;
     int maxpar = 0;
     int npar = 0;
+    size_t i;
+    int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainGetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        bool perf_enabled;
+
+        if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            perf_enabled = def->perf->events[i] == VIR_TRISTATE_BOOL_YES;
+        else
+            perf_enabled = virPerfEventIsEnabled(priv->perf, i);
+
         if (virTypedParamsAddBoolean(&par, &npar, &maxpar,
                                      virPerfEventTypeToString(i),
-                                     virPerfEventIsEnabled(priv->perf, i)) < 0) {
-            virTypedParamsFree(par, npar);
+                                     perf_enabled) < 0)
             goto cleanup;
-        }
     }
 
     *params = par;
     *nparams = npar;
+    par = NULL;
+    npar = 0;
     ret = 0;
 
  cleanup:
     virDomainObjEndAPI(&vm);
+    virTypedParamsFree(par, npar);
     return ret;
 }
 

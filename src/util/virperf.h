@@ -32,10 +32,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virPerfEvent);
 
-# define VIR_PERF_PARAMETERS                                   \
-    VIR_PERF_PARAM_CMT,              VIR_TYPED_PARAM_BOOLEAN,   \
-    NULL
-
 struct virPerf;
 typedef struct virPerf *virPerfPtr;
 

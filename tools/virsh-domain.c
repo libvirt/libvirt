@@ -8560,6 +8560,9 @@ static const vshCmdOptDef opts_perf[] = {
      .type = VSH_OT_STRING,
      .help = N_("perf events which will be disabled")
     },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
     {.name = NULL}
 };
 
@@ -8601,6 +8604,17 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     const char *enable = NULL, *disable = NULL;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;

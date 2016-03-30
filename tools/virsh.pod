@@ -2146,6 +2146,7 @@ Specifying -1 as a value for these limits is interpreted as unlimited.
 
 =item B<perf> I<domain> [I<--enable> B<eventSpec>]
 [I<--disable> B<eventSpec>]
+[[I<--config>] [I<--live>] | [I<--current>]]
 
 Get the current perf events setting or enable/disable specific perf
 events for a guest domain.
@@ -2164,6 +2165,13 @@ performance event. B<eventSpec> is a string list of one or more events
 separated by commas. However, just "cmt" event is supported presently. CMT is a
 PQos (Platform Qos) feature to monitor the usage of cache by applications
 running on the platform.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
 
 =item B<blkiotune> I<domain> [I<--weight> B<weight>]
 [I<--device-weights> B<device-weights>]
