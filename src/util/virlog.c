@@ -1649,3 +1649,35 @@ virLogFilterNew(const char *match,
 
     return ret;
 }
+
+
+/**
+ * virLogFindOutput:
+ * @outputs: a list of outputs where to look for the output of type @dest
+ * @noutputs: number of elements in @outputs
+ * @dest: destination type of an output
+ * @opaque: opaque data to the method (only filename at the moment)
+ *
+ * Looks for an output of destination type @dest in the source list @outputs.
+ * If such an output exists, index of the object in the list is returned.
+ * In case of the destination being of type FILE also a comparison of the
+ * output's filename with @opaque is performed first.
+ *
+ * Returns the index of the object in the list or -1 if no object matching the
+ * specified @dest type and/or @opaque data one was found.
+ */
+int
+virLogFindOutput(virLogOutputPtr *outputs, size_t noutputs,
+                 virLogDestination dest, const void *opaque)
+{
+    size_t i;
+    const char *name = opaque;
+
+    for (i = 0; i < noutputs; i++) {
+        if (dest == outputs[i]->dest &&
+            (STREQ_NULLABLE(outputs[i]->name, name)))
+                return i;
+    }
+
+    return -1;
+}
