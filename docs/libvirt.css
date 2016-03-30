@@ -2,6 +2,7 @@ h1 {
     font-weight: normal;
     color: #3c857c;
 }
+
 h1 strong {
     font-weight: bold;
 }
@@ -94,6 +95,7 @@ h2, h3, h4, h5, h6 {
 #menu ul.l1 li .inactive {
     border-left: 6px solid #dfebea;
 }
+
 #menu ul.l1 li .active {
     border-left: 6px solid #a5c6c2;
 }
@@ -109,7 +111,6 @@ h2, h3, h4, h5, h6 {
     padding-left: 3em;
 }
 
-
 #headerLogo {
     position: absolute;
     top: 0px;
@@ -118,6 +119,7 @@ h2, h3, h4, h5, h6 {
     width: 400px;
     background: url(libvirt-header-logo.png);
 }
+
 #headerSearch {
     position: absolute;
     top: 0px;
@@ -141,7 +143,6 @@ h2, h3, h4, h5, h6 {
     padding: 3px;
     font-size: 1em;
 }
-
 
 #sitemap ul li {
     list-style: none;
@@ -177,7 +178,6 @@ a {
     color: #566866;
 }
 
-
 div.api {
     border: 1px solid #999999;
     background: #eeeeee;
@@ -202,7 +202,6 @@ div.api table td, div.variablelist table td {
     vertical-align: top;
     padding-left: 1em;
 }
-
 
 h1 a, h2 a, h3 a, h4 a, h5 a {
     color: inherit;
@@ -252,7 +251,6 @@ p.image {
     width: 100%;
 }
 
-
 #projects dl {
     margin: 0px;
     border: 0px solid white;
@@ -285,9 +283,11 @@ p.image {
 #projects #p1 dt, #projects #p1 dd {
     width: 33%;
 }
+
 #projects #p2 dt, #projects #p2 dd {
     width: 50%;
 }
+
 #projects #p3 dt, #projects #p3 dd {
     width: 99%;
 }
@@ -317,7 +317,6 @@ p.image {
 #projects span {
     color: #ccc;
 }
-
 
 #sponsor {
     color: #757575;
@@ -370,6 +369,7 @@ table.data tr.head th {
 table.data tbody td {
     background: rgb(240,240,240);
 }
+
 table.data tbody td.y {
     background: rgb(220,255,220);
     text-align: center;
