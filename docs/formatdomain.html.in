@@ -4943,108 +4943,113 @@ qemu-kvm -net nic,model=? /dev/null
 
     <dl>
       <dt><code>graphics</code></dt>
-      <dd>The <code>graphics</code> element has a mandatory <code>type</code>
-        attribute which takes the value "sdl", "vnc", "spice", "rdp" or
-        "desktop":
+      <dd>
+        <p>
+          The <code>graphics</code> element has a mandatory <code>type</code>
+          attribute which takes the value <code>sdl</code>, <code>vnc</code>,
+          <code>spice</code>, <code>rdp</code> or <code>desktop</code>:
+        </p>
         <dl>
           <dt><code>"sdl"</code></dt>
           <dd>
-            This displays a window on the host desktop, it can take 3
-            optional arguments: a <code>display</code> attribute for
-            the display to use, an <code>xauth</code> attribute for
-            the authentication identifier, and an
-            optional <code>fullscreen</code> attribute accepting
-            values 'yes' or 'no'.
+            <p>
+              This displays a window on the host desktop, it can take 3 optional
+              arguments: a <code>display</code> attribute for the display to use,
+              an <code>xauth</code> attribute for the authentication identifier,
+              and an optional <code>fullscreen</code> attribute accepting values
+              <code>yes</code> or <code>no</code>.
+            </p>
           </dd>
           <dt><code>"vnc"</code></dt>
           <dd>
-            Starts a VNC server. The <code>port</code> attribute
-            specifies the TCP port number (with -1 as legacy syntax
-            indicating that it should be
-            auto-allocated). The <code>autoport</code> attribute is
-            the new preferred syntax for indicating autoallocation of
-            the TCP port to use.  The <code>listen</code> attribute is
-            an IP address for the server to listen
-            on. The <code>passwd</code> attribute provides a VNC
-            password in clear text. The <code>keymap</code> attribute
-            specifies the keymap to use. It is possible to set a limit
-            on the validity of the password be giving an
-            timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-            assumed to be in UTC. The <code>connected</code> attribute
-            allows control of connected client during password changes.
-            VNC accepts <code>keep</code> value only.
-            <span class="since">since 0.9.3</span>
-            NB, this may not be supported by all hypervisors.<br/>
-            The optional <code>sharePolicy</code> attribute specifies vnc server
-            display sharing policy. "allow-exclusive" allows clients to ask
-            for exclusive access by dropping other connections. Connecting
-            multiple clients in parallel requires all clients asking for a
-            shared session (vncviewer: -Shared switch). This is the default
-            value. "force-shared" disables exclusive client access, every
-            connection has to specify -Shared switch for vncviewer. "ignore"
-            welcomes every connection unconditionally
-            <span class="since">since 1.0.6</span>. <br/> <br/>
-            Rather than using listen/port, QEMU supports a
-            <code>socket</code> attribute for listening on a unix
-            domain socket path.<span class="since">Since 0.8.8</span>
-
-            For VNC WebSocket functionality, <code>websocket</code>
-            attribute may be used to specify port to listen on (with
-            -1 meaning auto-allocation and <code>autoport</code>
-            having no effect due to security reasons).
-            <span class="since">Since 1.0.6</span>
-          </dd>
-          <dt><code>"spice"</code></dt>
-          <dd>
             <p>
-              Starts a SPICE server. The <code>port</code> attribute
-              specifies the TCP port number (with -1 as legacy syntax
-              indicating that it should be auto-allocated),
-              while <code>tlsPort</code> gives an alternative secure
-              port number. The <code>autoport</code> attribute is the
-              new preferred syntax for indicating autoallocation of
-              needed port numbers.  The <code>listen</code> attribute is
-              an IP address for the server to listen
-              on. The <code>passwd</code> attribute provides a SPICE
-              password in clear text. The <code>keymap</code>
-              attribute specifies the keymap to use. It is possible to
-              set a limit on the validity of the password be giving an
-              timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-              assumed to be in UTC. The <code>connected</code> attribute
-              allows control of connected client during password changes.
-              SPICE accepts <code>keep</code> to keep client connected,
-              <code>disconnect</code> to disconnect client and
-              <code>fail</code> to fail changing password.
-              <span class="since">Since 0.9.3</span>
+              Starts a VNC server. The <code>port</code> attribute specifies
+              the TCP port number (with -1 as legacy syntax indicating that it
+              should be auto-allocated). The <code>autoport</code> attribute is
+              the new preferred syntax for indicating auto-allocation of the TCP
+              port to use. The <code>listen</code> attribute is an IP address
+              for the server to listen on. The <code>passwd</code> attribute
+              provides a VNC password in clear text. The <code>keymap</code>
+              attribute specifies the keymap to use. It is possible to set
+              a limit on the validity of the password by giving an timestamp
+              <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be
+              in UTC. The <code>connected</code> attribute allows control of
+              connected client during password changes. VNC accepts
+              <code>keep</code> value only <span class="since">since 0.9.3</span>.
               NB, this may not be supported by all hypervisors.
-              <span class="since">"spice" since 0.8.6</span>.
-              The <code>defaultMode</code> attribute sets the default channel
-              security policy, valid values are <code>secure</code>,
-              <code>insecure</code> and the default <code>any</code>
-              (which is secure if possible, but falls back to insecure
-              rather than erroring out if no secure path is
-              available). <span class="since">"defaultMode" since
-              0.9.12</span>.
             </p>
             <p>
-              When SPICE has both a normal and TLS secured TCP port
-              configured, it can be desirable to restrict what
-              channels can be run on each port.  This is achieved by
-              adding one or more &lt;channel&gt; elements inside the
-              main &lt;graphics&gt; element and setting the <code>mode</code>
-              attribute to either <code>secure</code> or <code>insecure</code>.
-              Setting the mode attribute overrides the default value as set
-              by the <code>defaultMode</code> attribute. (Note that specifying
+              The optional <code>sharePolicy</code> attribute specifies vnc
+              server display sharing policy. <code>allow-exclusive</code> allows
+              clients to ask for exclusive access by dropping other connections.
+              Connecting multiple clients in parallel requires all clients asking
+              for a shared session (vncviewer: -Shared switch). This is
+              the default value. <code>force-shared</code> disables exclusive
+              client access, every connection has to specify -Shared switch for
+              vncviewer. <code>ignore</code> welcomes every connection
+              unconditionally <span class="since">since 1.0.6</span>.
+            </p>
+            <p>
+              Rather than using listen/port, QEMU supports a <code>socket</code>
+              attribute for listening on a unix domain socket path
+              <span class="since">Since 0.8.8</span>.
+            </p>
+            <p>
+              For VNC WebSocket functionality, <code>websocket</code> attribute
+              may be used to specify port to listen on (with -1 meaning
+              auto-allocation and <code>autoport</code> having no effect due to
+              security reasons) <span class="since">Since 1.0.6</span>.
+            </p>
+          </dd>
+          <dt><code>"spice"</code> <span class="since">Since 0.8.6</span></dt>
+          <dd>
+            <p>
+              Starts a SPICE server. The <code>port</code> attribute specifies
+              the TCP port number (with -1 as legacy syntax indicating that it
+              should be auto-allocated), while <code>tlsPort</code> gives
+              an alternative secure port number. The <code>autoport</code>
+              attribute is the new preferred syntax for indicating
+              auto-allocation of needed port numbers. The <code>listen</code>
+              attribute is an IP address for the server to listen on.
+              The <code>passwd</code> attribute provides a SPICE password in
+              clear text. The <code>keymap</code> attribute specifies the keymap
+              to use. It is possible to set a limit on the validity of
+              the password by giving an timestamp
+              <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be in
+              UTC.
+            </p>
+            <p>
+              The <code>connected</code> attribute allows control of connected
+              client during password changes. SPICE accepts <code>keep</code> to
+              keep client connected, <code>disconnect</code> to disconnect client
+              and <code>fail</code> to fail changing password . NB, this may not
+              be supported by all hypervisors.
+              <span class="since">Since 0.9.3</span>
+            </p>
+            <p>
+              The <code>defaultMode</code> attribute sets the default channel
+              security policy, valid values are <code>secure</code>,
+              <code>insecure</code> and the default <code>any</code> (which is
+              secure if possible, but falls back to insecure rather than erroring
+              out if no secure path is available).
+              <span class="since">Since 0.9.12</span>
+            </p>
+            <p>
+              When SPICE has both a normal and TLS secured TCP port configured,
+              it can be desirable to restrict what channels can be run on each
+              port. This is achieved by adding one or more <code>&lt;channel&gt;
+              </code> elements inside the main <code>&lt;graphics&gt;</code>
+              element and setting the <code>mode</code> attribute to either
+              <code>secure</code> or <code>insecure</code>. Setting the mode
+              attribute overrides the default value as set by
+              the <code>defaultMode</code> attribute. (Note that specifying
               <code>any</code> as mode discards the entry as the channel would
-              inherit the default mode anyways)
-              Valid channel names
-              include <code>main</code>, <code>display</code>,
-              <code>inputs</code>, <code>cursor</code>,
-              <code>playback</code>, <code>record</code>
+              inherit the default mode anyways.) Valid channel names include
+              <code>main</code>, <code>display</code>, <code>inputs</code>,
+              <code>cursor</code>, <code>playback</code>, <code>record</code>
               (all <span class="since"> since 0.8.6</span>);
-              <code>smartcard</code> (<span class="since">since
-              0.8.8</span>); and <code>usbredir</code>
-              (<span class="since">since 0.9.12</span>).
+              <code>smartcard</code> (<span class="since">since 0.8.8</span>);
+              and <code>usbredir</code> (<span class="since">since 0.9.12</span>).
             </p>
             <pre>
   &lt;graphics type='spice' port='-1' tlsPort='-1' autoport='yes'&gt;
@@ -5058,131 +5063,113 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;gl enable='yes'/&gt;
   &lt;/graphics&gt;</pre>
             <p>
-              Spice supports variable compression settings for audio,
-              images and streaming, <span class="since">since
-              0.9.1</span>.  These settings are accessible via
-              the <code>compression</code> attribute in all following
-              elements: <code>image</code> to set image compression
-              (accepts <code>auto_glz</code>, <code>auto_lz</code>,
-              <code>quic</code>, <code>glz</code>, <code>lz</code>,
-              <code>off</code>), <code>jpeg</code> for JPEG
-              compression for images over wan
-              (accepts <code>auto</code>, <code>never</code>,
-              <code>always</code>), <code>zlib</code> for configuring
-              wan image compression (accepts <code>auto</code>,
-              <code>never</code>, <code>always</code>)
-              and <code>playback</code> for enabling audio stream
-              compression (accepts <code>on</code> or <code>off</code>).
+              Spice supports variable compression settings for audio, images and
+              streaming. These settings are accessible via the <code>compression
+              </code> attribute in all following elements: <code>image</code> to
+              set image compression (accepts <code>auto_glz</code>,
+              <code>auto_lz</code>, <code>quic</code>, <code>glz</code>,
+              <code>lz</code>, <code>off</code>), <code>jpeg</code> for JPEG
+              compression for images over wan (accepts <code>auto</code>,
+              <code>never</code>, <code>always</code>), <code>zlib</code> for
+              configuring wan image compression (accepts <code>auto</code>,
+              <code>never</code>, <code>always</code>)  and <code>playback</code>
+              for enabling audio stream compression (accepts <code>on</code> or
+              <code>off</code>). <span class="since">Since 0.9.1</span>
             </p>
             <p>
-              Streaming mode is set by the <code>streaming</code>
-              element, settings its <code>mode</code> attribute to one
-              of <code>filter</code>, <code>all</code>
-              or <code>off</code>, <span class="since">since 0.9.2</span>.
+              Streaming mode is set by the <code>streaming</code> element,
+              settings its <code>mode</code> attribute to one of
+              <code>filter</code>, <code>all</code> or <code>off</code>.
+              <span class="since">Since 0.9.2</span>
             </p>
             <p>
-              Copy &amp; Paste functionality (via Spice agent) is set
-              by the <code>clipboard</code> element. It is enabled by
-              default, and can be disabled by setting
-              the <code>copypaste</code> property
-              to <code>no</code>, <span class="since">since
-              0.9.3</span>.
+              Copy &amp; Paste functionality (via Spice agent) is set by the
+              <code>clipboard</code> element. It is enabled by default, and can
+              be disabled by setting the <code>copypaste</code> property to
+              <code>no</code>. <span class="since">Since 0.9.3</span>
             </p>
             <p>
-              Mouse mode is set by the <code>mouse</code> element,
-              setting its <code>mode</code> attribute to one of
-              <code>server</code> or <code>client</code> ,
-              <span class="since">since 0.9.11</span>. If no mode is
-              specified, the qemu default will be used (client mode).
+              Mouse mode is set by the <code>mouse</code> element, setting its
+              <code>mode</code> attribute to one of <code>server</code> or
+              <code>client</code>. If no mode is specified, the qemu default will
+              be used (client mode). <span class="since">Since 0.9.11</span>
             </p>
             <p>
               File transfer functionality (via Spice agent) is set using the
-              <code>filetransfer</code> element.
-              It is enabled by default, and can be disabled by setting the
-              <code>enable</code> property to <code>no</code> ,
-              since <span class="since">since 1.2.2</span>.
+              <code>filetransfer</code> element. It is enabled by default, and
+              can be disabled by setting the <code>enable</code> property to
+              <code>no</code>. <span class="since">Since 1.2.2</span>
             </p>
             <p>
-              Spice may provide accelerated server-side rendering with
-              OpenGL. You can enable or disable OpenGL support explicitly with
-              the <code>gl</code> element, by setting the
-              <code>enable</code> property. (QEMU
-              only, <span class="since">since 1.3.2</span>).
+              Spice may provide accelerated server-side rendering with OpenGL.
+              You can enable or disable OpenGL support explicitly with
+              the <code>gl</code> element, by setting the <code>enable</code>
+              property. (QEMU only, <span class="since">since 1.3.2</span>).
             </p>
           </dd>
           <dt><code>"rdp"</code></dt>
           <dd>
-            Starts a RDP server. The <code>port</code> attribute
-            specifies the TCP port number (with -1 as legacy syntax
-            indicating that it should be
-            auto-allocated). The <code>autoport</code> attribute is
-            the new preferred syntax for indicating autoallocation of
-            the TCP port to use. The <code>replaceUser</code>
-            attribute is a boolean deciding whether multiple
-            simultaneous connections to the VM are permitted.
-            The <code>multiUser</code> attribute is a boolean deciding
-            whether the existing connection must be dropped and a new
-            connection must be established by the VRDP server, when a
-            new client connects in single connection mode.
+            <p>
+              Starts a RDP server. The <code>port</code> attribute specifies the
+              TCP port number (with -1 as legacy syntax indicating that it should
+              be auto-allocated). The <code>autoport</code> attribute is the new
+              preferred syntax for indicating auto-allocation of the TCP port to
+              use. The <code>replaceUser</code> attribute is a boolean deciding
+              whether multiple simultaneous connections to the VM are permitted.
+              The <code>multiUser</code> attribute is a boolean deciding whether
+              the existing connection must be dropped and a new connection must
+              be established by the VRDP server, when a new client connects in
+              single connection mode.
+            </p>
           </dd>
           <dt><code>"desktop"</code></dt>
           <dd>
-            This value is reserved for VirtualBox domains for the
-            moment. It displays a window on the host desktop,
-            similarly to "sdl", but using the VirtualBox viewer. Just
-            like "sdl", it accepts the optional
-            attributes <code>display</code>
-            and <code>fullscreen</code>.
+            <p>
+              This value is reserved for VirtualBox domains for the moment. It
+              displays a window on the host desktop, similarly to "sdl", but
+              using the VirtualBox viewer. Just like "sdl", it accepts
+              the optional attributes <code>display</code> and
+              <code>fullscreen</code>.
+            </p>
           </dd>
         </dl>
       </dd>
     </dl>
 
     <p>
-      Rather than putting the address information used to set up the
-      listening socket for graphics types <code>vnc</code>
-      and <code>spice</code> in
-      the <code>&lt;graphics&gt;</code> <code>listen</code> attribute,
-      a separate subelement of <code>&lt;graphics&gt;</code>,
-      called <code>&lt;listen&gt;</code> can be specified (see the
-      examples above)<span class="since">since
-      0.9.4</span>. <code>&lt;listen&gt;</code> accepts the following
-      attributes:
+      Graphics device uses a <code>&lt;listen&gt;</code> to set up where
+      the device should listen for clients. It has a mandatory attribute
+      <code>type</code> which specifies the listen type. Only <code>vnc</code>,
+      <code>spice</code> and <code>rdp</code> supports <code>&lt;listen&gt;
+      </code> element. <span class="since">Since 0.9.4</span>.
+      Available types are:
     </p>
     <dl>
-      <dt><code>type</code></dt>
-      <dd>Set to either <code>address</code>
-        or <code>network</code>. This tells whether this listen
-        element is specifying the address to be used directly, or by
-        naming a network (which will then be used to determine an
-        appropriate address for listening).
-      </dd>
-    </dl>
-    <dl>
       <dt><code>address</code></dt>
-      <dd>if <code>type='address'</code>, the <code>address</code>
-        attribute will contain either an IP address or hostname (which
-        will be resolved to an IP address via a DNS query) to listen
-        on. In the "live" XML of a running domain, this attribute will
-        be set to the IP address used for listening, even
-        if <code>type='network'</code>.
+      <dd>
+        <p>
+          Tells a graphics device to use an address specified in the
+          <code>address</code> attribute, which will contain either an IP address
+          or hostname (which will be resolved to an IP address via a DNS query)
+          to listen on.
+        </p>
       </dd>
-    </dl>
-    <dl>
       <dt><code>network</code></dt>
-      <dd>if <code>type='network'</code>, the <code>network</code>
-        attribute will contain the name of a network in libvirt's list
-        of configured networks. The named network configuration will
-        be examined to determine an appropriate listen address. For
-        example, if the network has an IPv4 address in its
-        configuration (e.g. if it has a forward type
-        of <code>route</code>, <code>nat</code>, or no forward type
-        (isolated)), the first IPv4 address listed in the network's
-        configuration will be used. If the network is describing a
-        host bridge, the first IPv4 address associated with that
-        bridge device will be used, and if the network is describing
-        one of the 'direct' (macvtap) modes, the first IPv4 address of
-        the first forward dev will be used.
+      <dd>
+        <p>
+          This is used to specify an existing network in the <code>network</code>
+          attribute from libvirt's list of configured networks. The named network
+          configuration will be examined to determine an appropriate listen
+          address and the address will be stored in live XML in <code>address
+          </code> attribute. For example, if the network has an IPv4 address in
+          its configuration (e.g. if it has a forward type of <code>route</code>,
+          <code>nat</code>, or no forward type (isolated)), the first IPv4
+          address listed in the network's configuration will be used.
+          If the network is describing a host bridge, the first IPv4 address
+          associated with that bridge device will be used, and if the network is
+          describing one of the 'direct' (macvtap) modes, the first IPv4 address
+          of the first forward dev will be used.
+        </p>
       </dd>
     </dl>
 
