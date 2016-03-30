@@ -8551,11 +8551,7 @@ static const vshCmdInfo info_perf[] = {
 };
 
 static const vshCmdOptDef opts_perf[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "enable",
      .type = VSH_OT_STRING,
      .help = N_("perf events which will be enabled")
