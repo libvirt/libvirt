@@ -8564,8 +8564,7 @@ static const vshCmdOptDef opts_perf[] = {
 };
 
 static int
-virshParseEventStr(vshControl *ctl,
-                   const char *event,
+virshParseEventStr(const char *event,
                    bool state,
                    virTypedParameterPtr *params,
                    int *nparams,
@@ -8575,13 +8574,8 @@ virshParseEventStr(vshControl *ctl,
     size_t i, ntok;
     int ret = -1;
 
-    if (!(tok = virStringSplitCount(event, "|", 0, &ntok)))
+    if (!(tok = virStringSplitCount(event, ",", 0, &ntok)))
         return -1;
-
-    if (ntok > VIR_PERF_EVENT_LAST) {
-        vshError(ctl, _("event string '%s' has too many fields"), event);
-        goto cleanup;
-    }
 
     for (i = 0; i < ntok; i++) {
         if ((*tok[i] != '\0') &&
@@ -8615,12 +8609,12 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "disable", &disable) < 0)
         return false;
 
-    if (enable && virshParseEventStr(ctl, enable, true,
-                                     &params, &nparams, &maxparams) < 0)
+    if (enable && virshParseEventStr(enable, true, &params,
+                                     &nparams, &maxparams) < 0)
         goto cleanup;
 
-    if (disable && virshParseEventStr(ctl, disable, false,
-                                      &params, &nparams, &maxparams) < 0)
+    if (disable && virshParseEventStr(disable, false, &params,
+                                      &nparams, &maxparams) < 0)
         goto cleanup;
 
     if (nparams == 0) {
