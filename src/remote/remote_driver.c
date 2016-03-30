@@ -1837,10 +1837,10 @@ remoteDomainGetPerfEvents(virDomainPtr domain,
         goto done;
 
     if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
-                                         ret.params.params_len,
-                                         REMOTE_DOMAIN_PERF_EVENTS_MAX,
-                                         params,
-                                         nparams) < 0)
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_PERF_EVENTS_MAX,
+                                  params,
+                                  nparams) < 0)
         goto cleanup;
 
     rv = 0;
