@@ -117,8 +117,8 @@ static int virLogNbOutputs;
  */
 static virLogPriority virLogDefaultPriority = VIR_LOG_DEFAULT;
 
-static int virLogResetFilters(void);
-static int virLogResetOutputs(void);
+static void virLogResetFilters(void);
+static void virLogResetOutputs(void);
 static void virLogOutputToFd(virLogSourcePtr src,
                              virLogPriority priority,
                              const char *filename,
@@ -239,10 +239,8 @@ virLogSetDefaultPriority(virLogPriority priority)
  * virLogResetFilters:
  *
  * Removes the set of logging filters defined.
- *
- * Returns the number of filters removed
  */
-static int
+static void
 virLogResetFilters(void)
 {
     size_t i;
@@ -252,7 +250,6 @@ virLogResetFilters(void)
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
     virLogFiltersSerial++;
-    return i;
 }
 
 
@@ -319,10 +316,8 @@ virLogDefineFilter(const char *match,
  * virLogResetOutputs:
  *
  * Removes the set of logging output defined.
- *
- * Returns the number of output removed
  */
-static int
+static void
 virLogResetOutputs(void)
 {
     size_t i;
@@ -333,9 +328,7 @@ virLogResetOutputs(void)
         VIR_FREE(virLogOutputs[i].name);
     }
     VIR_FREE(virLogOutputs);
-    i = virLogNbOutputs;
     virLogNbOutputs = 0;
-    return i;
 }
 
 
