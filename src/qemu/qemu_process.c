@@ -4885,6 +4885,12 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuDomainSecretPrepare(conn, vm) < 0)
         goto cleanup;
 
+    for (i = 0; i < vm->def->nchannels; i++) {
+        if (qemuDomainPrepareChannel(vm->def->channels[i],
+                                     priv->channelTargetDir) < 0)
+            goto cleanup;
+    }
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
@@ -5100,8 +5106,7 @@ qemuProcessLaunch(virConnectPtr conn,
                                      qemuCheckFips(),
                                      priv->autoNodeset,
                                      &nnicindexes, &nicindexes,
-                                     priv->libDir,
-                                     priv->channelTargetDir)))
+                                     priv->libDir)))
         goto cleanup;
 
     if (incoming && incoming->fd != -1)
@@ -5520,8 +5525,7 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
                                priv->autoNodeset,
                                NULL,
                                NULL,
-                               priv->libDir,
-                               priv->channelTargetDir);
+                               priv->libDir);
 
  cleanup:
     return cmd;

@@ -5545,3 +5545,23 @@ qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
 
     return 0;
 }
+
+
+int
+qemuDomainPrepareChannel(virDomainChrDefPtr channel,
+                         const char *domainChannelTargetDir)
+{
+    if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+        channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        !channel->source.data.nix.path) {
+        if (virAsprintf(&channel->source.data.nix.path,
+                        "%s/%s", domainChannelTargetDir,
+                        channel->target.name ? channel->target.name
+                        : "unknown.sock") < 0)
+            return -1;
+
+        channel->source.data.nix.listen = true;
+    }
+
+    return 0;
+}

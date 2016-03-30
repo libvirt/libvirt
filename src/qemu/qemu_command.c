@@ -8379,8 +8379,7 @@ static int
 qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                              virCommandPtr cmd,
                              const virDomainDef *def,
-                             virQEMUCapsPtr qemuCaps,
-                             const char *domainChannelTargetDir)
+                             virQEMUCapsPtr qemuCaps)
 {
     size_t i;
 
@@ -8412,22 +8411,6 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            /*
-             * TODO: Refactor so that we generate this (and onther
-             * things) somewhere else then where we are building the
-             * command line.
-             */
-            if (channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-                !channel->source.data.nix.path) {
-                if (virAsprintf(&channel->source.data.nix.path,
-                                "%s/%s", domainChannelTargetDir,
-                                channel->target.name ? channel->target.name
-                                : "unknown.sock") < 0)
-                    return -1;
-
-                channel->source.data.nix.listen = true;
-            }
-
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
                 channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
                 /* spicevmc was originally introduced via a -device
@@ -9091,8 +9074,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                      virBitmapPtr nodeset,
                      size_t *nnicindexes,
                      int **nicindexes,
-                     const char *domainLibDir,
-                     const char *domainChannelTargetDir)
+                     const char *domainLibDir)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -9237,8 +9219,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildParallelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildChannelsCommandLine(logManager, cmd, def, qemuCaps,
-                                     domainChannelTargetDir) < 0)
+    if (qemuBuildChannelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildConsoleCommandLine(logManager, cmd, def, qemuCaps) < 0)

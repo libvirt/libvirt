@@ -686,4 +686,8 @@ int qemuDomainSecretPrepare(virConnectPtr conn, virDomainObjPtr vm)
 int qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
     ATTRIBUTE_NONNULL(1);
 
+int qemuDomainPrepareChannel(virDomainChrDefPtr chr,
+                             const char *domainChannelTargetDir)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 #endif /* __QEMU_DOMAIN_H__ */

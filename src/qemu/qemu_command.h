@@ -58,9 +58,8 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virBitmapPtr nodeset,
                                    size_t *nnicindexes,
                                    int **nicindexes,
-                                   const char *domainLibDir,
-                                   const char *domainChannelTargetDir)
-    ATTRIBUTE_NONNULL(15) ATTRIBUTE_NONNULL(16);
+                                   const char *domainLibDir)
+    ATTRIBUTE_NONNULL(15);
 
 /* Generate '-device' string for chardev device */
 int
