@@ -12301,6 +12301,22 @@ virshEventJobCompletedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
+
+static void
+virshEventDeviceRemovalFailedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                   virDomainPtr dom,
+                                   const char *alias,
+                                   void *opaque)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, _("event 'device-removal-failed' for domain %s: %s\n"),
+                      virDomainGetName(dom),
+                      alias);
+    virshEventPrint(opaque, &buf);
+}
+
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
@@ -12344,6 +12360,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMigrationIterationPrint), },
     { "job-completed",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventJobCompletedPrint), },
+    { "device-removal-failed",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventDeviceRemovalFailedPrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

@@ -58,6 +58,7 @@ static virClassPtr virDomainEventAgentLifecycleClass;
 static virClassPtr virDomainEventDeviceAddedClass;
 static virClassPtr virDomainEventMigrationIterationClass;
 static virClassPtr virDomainEventJobCompletedClass;
+static virClassPtr virDomainEventDeviceRemovalFailedClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -77,6 +78,7 @@ static void virDomainEventAgentLifecycleDispose(void *obj);
 static void virDomainEventDeviceAddedDispose(void *obj);
 static void virDomainEventMigrationIterationDispose(void *obj);
 static void virDomainEventJobCompletedDispose(void *obj);
+static void virDomainEventDeviceRemovalFailedDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -256,6 +258,16 @@ struct _virDomainEventJobCompleted {
 typedef struct _virDomainEventJobCompleted virDomainEventJobCompleted;
 typedef virDomainEventJobCompleted *virDomainEventJobCompletedPtr;
 
+struct _virDomainEventDeviceRemovalFailed {
+    virDomainEvent parent;
+
+    char *devAlias;
+};
+typedef struct _virDomainEventDeviceRemovalFailed virDomainEventDeviceRemovalFailed;
+typedef virDomainEventDeviceRemovalFailed *virDomainEventDeviceRemovalFailedPtr;
+
+
+
 static int
 virDomainEventsOnceInit(void)
 {
@@ -366,6 +378,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventJobCompleted",
                       sizeof(virDomainEventJobCompleted),
                       virDomainEventJobCompletedDispose)))
+        return -1;
+    if (!(virDomainEventDeviceRemovalFailedClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventDeviceRemovalFailed",
+                      sizeof(virDomainEventDeviceRemovalFailed),
+                      virDomainEventDeviceRemovalFailedDispose)))
         return -1;
     return 0;
 }
@@ -493,6 +511,17 @@ virDomainEventDeviceAddedDispose(void *obj)
 
     VIR_FREE(event->devAlias);
 }
+
+
+static void
+virDomainEventDeviceRemovalFailedDispose(void *obj)
+{
+    virDomainEventDeviceRemovalFailedPtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->devAlias);
+}
+
 
 static void
 virDomainEventPMDispose(void *obj)
@@ -1340,6 +1369,50 @@ virDomainEventDeviceAddedNewFromDom(virDomainPtr dom,
                                           devAlias);
 }
 
+
+static virObjectEventPtr
+virDomainEventDeviceRemovalFailedNew(int id,
+                                     const char *name,
+                                     unsigned char *uuid,
+                                     const char *devAlias)
+{
+    virDomainEventDeviceRemovalFailedPtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventDeviceAddedClass,
+                                 VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED,
+                                 id, name, uuid)))
+        return NULL;
+
+    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
+        goto error;
+
+    return (virObjectEventPtr)ev;
+
+ error:
+    virObjectUnref(ev);
+    return NULL;
+}
+
+virObjectEventPtr
+virDomainEventDeviceRemovalFailedNewFromObj(virDomainObjPtr obj,
+                                            const char *devAlias)
+{
+    return virDomainEventDeviceRemovalFailedNew(obj->def->id, obj->def->name,
+                                                obj->def->uuid, devAlias);
+}
+
+virObjectEventPtr
+virDomainEventDeviceRemovalFailedNewFromDom(virDomainPtr dom,
+                                            const char *devAlias)
+{
+    return virDomainEventDeviceRemovalFailedNew(dom->id, dom->name, dom->uuid,
+                                                devAlias);
+}
+
+
 static virObjectEventPtr
 virDomainEventAgentLifecycleNew(int id,
                                 const char *name,
@@ -1765,6 +1838,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                              ev->params,
                                                              ev->nparams,
                                                              cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED:
+        {
+            virDomainEventDeviceRemovalFailedPtr deviceRemovalFailedEvent;
+
+            deviceRemovalFailedEvent = (virDomainEventDeviceRemovalFailedPtr)event;
+            ((virConnectDomainEventDeviceRemovalFailedCallback)cb)(conn, dom,
+                                                                   deviceRemovalFailedEvent->devAlias,
+                                                                   cbopaque);
             goto cleanup;
         }
 

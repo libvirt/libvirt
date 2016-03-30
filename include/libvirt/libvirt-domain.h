@@ -3342,6 +3342,26 @@ typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
                                                          const char *devAlias,
                                                          void *opaque);
 
+
+/**
+ * virConnectDomainEventDeviceRemovalFailedCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @devAlias: device alias
+ * @opaque: application specified data
+ *
+ * This callback occurs when it's certain that removal of a device failed.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED with
+ * virConnectDomainEventRegisterAny().
+ */
+typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr conn,
+                                                                 virDomainPtr dom,
+                                                                 const char *devAlias,
+                                                                 void *opaque);
+
+
 /**
  * virConnectDomainEventMigrationIterationCallback:
  * @conn: connection object
@@ -3687,6 +3707,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback */
     VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback */
     VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback */
+    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

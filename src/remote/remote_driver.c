@@ -322,6 +322,10 @@ static void
 remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog,
                                           virNetClientPtr client,
                                           void *evdata, void *opaque);
+static void
+remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog,
+                                                  virNetClientPtr client,
+                                                  void *evdata, void *opaque);
 
 static void
 remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog,
@@ -528,6 +532,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackJobCompleted,
       sizeof(remote_domain_event_callback_job_completed_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVAL_FAILED,
+      remoteDomainBuildEventCallbackDeviceRemovalFailed,
+      sizeof(remote_domain_event_callback_device_removal_failed_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_device_removal_failed_msg },
 };
 
 static void
@@ -4823,6 +4831,28 @@ remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog ATTRIBUTE_
         return;
 
     event = virDomainEventDeviceAddedNewFromDom(dom, msg->devAlias);
+
+    virObjectUnref(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+
+static void
+remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+                                                  void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_device_added_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventDeviceRemovalFailedNewFromDom(dom, msg->devAlias);
 
     virObjectUnref(dom);
 
