@@ -1203,3 +1203,41 @@ virAdmConnectSetLoggingOutputs(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmConnectSetLoggingFilters:
+ * @conn: pointer to an active admin connection
+ * @filters: pointer to a string containing a list of filters to be defined
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Redefine the existing (set of) filter(s) with a new one specified in
+ * @filters. If multiple filters are specified, they need to be delimited by
+ * spaces. The format of each filter must conform to the format described in
+ * daemon's configuration file (e.g. libvirtd.conf).
+ *
+ * To clear the currently defined (set of) filter(s), pass either an empty
+ * string ("") or NULL in @filters.
+ *
+ * Returns 0 if the new filter or the set of filters has been defined
+ * successfully, or -1 in case of an error.
+ */
+int
+virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
+                               const char *filters,
+                               unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+
+    virResetLastError();
+    virCheckAdmConnectReturn(conn, -1);
+
+    if ((ret = remoteAdminConnectSetLoggingFilters(conn, filters, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

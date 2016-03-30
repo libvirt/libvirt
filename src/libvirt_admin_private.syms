@@ -19,6 +19,7 @@ xdr_admin_connect_list_servers_ret;
 xdr_admin_connect_lookup_server_args;
 xdr_admin_connect_lookup_server_ret;
 xdr_admin_connect_open_args;
+xdr_admin_connect_set_logging_filters_args;
 xdr_admin_connect_set_logging_outputs_args;
 xdr_admin_server_get_client_limits_args;
 xdr_admin_server_get_client_limits_ret;

@@ -416,6 +416,10 @@ int virAdmConnectSetLoggingOutputs(virAdmConnectPtr conn,
                                    const char *outputs,
                                    unsigned int flags);
 
+int virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
+                                   const char *filters,
+                                   unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

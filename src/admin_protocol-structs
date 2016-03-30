@@ -145,6 +145,10 @@ struct admin_connect_set_logging_outputs_args {
         admin_string               outputs;
         u_int                      flags;
 };
+struct admin_connect_set_logging_filters_args {
+        admin_string               filters;
+        u_int                      flags;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -162,4 +166,5 @@ enum admin_procedure {
         ADMIN_PROC_CONNECT_GET_LOGGING_OUTPUTS = 14,
         ADMIN_PROC_CONNECT_GET_LOGGING_FILTERS = 15,
         ADMIN_PROC_CONNECT_SET_LOGGING_OUTPUTS = 16,
+        ADMIN_PROC_CONNECT_SET_LOGGING_FILTERS = 17,
 };
