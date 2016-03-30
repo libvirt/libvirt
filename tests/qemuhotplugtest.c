@@ -94,6 +94,9 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 
     (*vm)->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;
 
+    if (qemuDomainSetPrivatePaths(&driver, *vm) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     return ret;
@@ -179,7 +182,6 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
     char *actual;
     int ret;
 
-    vm->def->id = -1;
     actual = virDomainDefFormat(vm->def, driver.caps,
                                 VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
@@ -426,62 +428,62 @@ mymain(void)
     /* Strange huh? Currently, only graphics can be updated :-P */
     DO_TEST_UPDATE("disk-cdrom", "disk-cdrom-nochange", true, false, NULL);
 
-    DO_TEST_ATTACH("console-compat-2", "console-virtio", false, true,
+    DO_TEST_ATTACH("console-compat-2-live", "console-virtio", false, true,
                    "chardev-add", "{\"return\": {\"pty\": \"/dev/pts/26\"}}",
                    "device_add", QMP_OK);
 
-    DO_TEST_DETACH("console-compat-2", "console-virtio", false, false,
+    DO_TEST_DETACH("console-compat-2-live", "console-virtio", false, false,
                    "device_del", QMP_OK,
                    "chardev-remove", QMP_OK);
 
-    DO_TEST_ATTACH("hotplug-base", "disk-virtio", false, true,
+    DO_TEST_ATTACH("hotplug-base-live", "disk-virtio", false, true,
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-virtio", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-virtio", false, false,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-virtio", false, true,
+    DO_TEST_ATTACH_EVENT("hotplug-base-live", "disk-virtio", false, true,
                          "human-monitor-command", HMP("OK\\r\\n"),
                          "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-virtio", true, true,
+    DO_TEST_DETACH("hotplug-base-live", "disk-virtio", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
-    DO_TEST_DETACH("hotplug-base", "disk-virtio", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH("hotplug-base", "disk-usb", false, true,
+    DO_TEST_ATTACH("hotplug-base-live", "disk-usb", false, true,
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-usb", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-usb", false, false,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-usb", false, true,
+    DO_TEST_ATTACH_EVENT("hotplug-base-live", "disk-usb", false, true,
                          "human-monitor-command", HMP("OK\\r\\n"),
                          "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-usb", true, true,
+    DO_TEST_DETACH("hotplug-base-live", "disk-usb", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
-    DO_TEST_DETACH("hotplug-base", "disk-usb", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH("hotplug-base", "disk-scsi", false, true,
+    DO_TEST_ATTACH("hotplug-base-live", "disk-scsi", false, true,
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-scsi", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-scsi", false, false,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
 
-    DO_TEST_ATTACH_EVENT("hotplug-base", "disk-scsi", false, true,
+    DO_TEST_ATTACH_EVENT("hotplug-base-live", "disk-scsi", false, true,
                          "human-monitor-command", HMP("OK\\r\\n"),
                          "device_add", QMP_OK);
-    DO_TEST_DETACH("hotplug-base", "disk-scsi", true, true,
+    DO_TEST_DETACH("hotplug-base-live", "disk-scsi", true, true,
                    "device_del", QMP_OK,
                    "human-monitor-command", HMP(""));
-    DO_TEST_DETACH("hotplug-base", "disk-scsi", false, false,
+    DO_TEST_DETACH("hotplug-base-live", "disk-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
 
