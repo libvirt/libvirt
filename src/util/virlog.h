@@ -191,6 +191,7 @@ int virLogDefineOutput(virLogOutputFunc f,
                        const char *name,
                        unsigned int flags);
 void virLogOutputFree(virLogOutputPtr output);
+void virLogOutputListFree(virLogOutputPtr *list, int count);
 
 /*
  * Internal logging API

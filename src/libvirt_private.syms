@@ -1823,6 +1823,7 @@ virLogGetOutputs;
 virLogLock;
 virLogMessage;
 virLogOutputFree;
+virLogOutputListFree;
 virLogParseDefaultPriority;
 virLogParseFilters;
 virLogParseOutputs;

@@ -325,12 +325,8 @@ virLogDefineFilter(const char *match,
 static void
 virLogResetOutputs(void)
 {
-    size_t i;
-
-    for (i = 0; i < virLogNbOutputs; i++)
-        virLogOutputFree(virLogOutputs[i]);
-
-    VIR_FREE(virLogOutputs);
+    virLogOutputListFree(virLogOutputs, virLogNbOutputs);
+    virLogOutputs = NULL;
     virLogNbOutputs = 0;
 }
 
@@ -347,6 +343,28 @@ virLogOutputFree(virLogOutputPtr output)
     VIR_FREE(output);
 
 }
+
+
+/**
+ * virLogOutputsFreeList:
+ * @list: list of outputs to be freed
+ * @count: number of elements in the list
+ *
+ * Frees a list of outputs.
+ */
+void
+virLogOutputListFree(virLogOutputPtr *list, int count)
+{
+    size_t i;
+
+    if (!list || count < 0)
+        return;
+
+    for (i = 0; i < count; i++)
+        virLogOutputFree(list[i]);
+    VIR_FREE(list);
+}
+
 
 /**
  * virLogDefineOutput:
