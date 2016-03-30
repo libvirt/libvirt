@@ -2694,7 +2694,7 @@ remoteDispatchDomainGetPerfEvents(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
         goto cleanup;
 
-    if (virDomainGetPerfEvents(dom, &params, &nparams) < 0)
+    if (virDomainGetPerfEvents(dom, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
     if (nparams > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX) {

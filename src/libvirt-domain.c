@@ -9695,6 +9695,7 @@ virDomainOpenChannel(virDomainPtr dom,
  * @domain: a domain object
  * @params: where to store perf events setting
  * @nparams: number of items in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Get all perf events setting. Possible fields returned in @params are
  * defined by VIR_DOMAIN_PERF_* macros and new fields will likely be
@@ -9704,12 +9705,13 @@ virDomainOpenChannel(virDomainPtr dom,
  */
 int virDomainGetPerfEvents(virDomainPtr domain,
                            virTypedParameterPtr *params,
-                           int *nparams)
+                           int *nparams,
+                           unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p",
-                     params, nparams);
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p flags=%x",
+                     params, nparams, flags);
 
     virResetLastError();
 
@@ -9721,7 +9723,8 @@ int virDomainGetPerfEvents(virDomainPtr domain,
 
     if (conn->driver->domainGetPerfEvents) {
         int ret;
-        ret = conn->driver->domainGetPerfEvents(domain, params, nparams);
+        ret = conn->driver->domainGetPerfEvents(domain, params,
+                                                nparams, flags);
         if (ret < 0)
             goto error;
         return ret;
@@ -9740,6 +9743,7 @@ int virDomainGetPerfEvents(virDomainPtr domain,
  * @params: pointer to perf events parameter object
  * @nparams: number of perf event parameters (this value can be the same
  *           less than the number of parameters supported)
+ * @flags: extra flags; not used yet, so callers should always pass 0
  *
  * Enable or disable the particular list of perf events you care about.
  *
@@ -9747,12 +9751,13 @@ int virDomainGetPerfEvents(virDomainPtr domain,
  */
 int virDomainSetPerfEvents(virDomainPtr domain,
                            virTypedParameterPtr params,
-                           int nparams)
+                           int nparams,
+                           unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d",
-                     params, nparams);
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d flags=%x",
+                     params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
     virResetLastError();
@@ -9769,7 +9774,8 @@ int virDomainSetPerfEvents(virDomainPtr domain,
 
     if (conn->driver->domainSetPerfEvents) {
         int ret;
-        ret = conn->driver->domainSetPerfEvents(domain, params, nparams);
+        ret = conn->driver->domainSetPerfEvents(domain, params,
+                                                nparams, flags);
         if (ret < 0)
             goto error;
         return ret;

@@ -634,10 +634,12 @@ struct remote_domain_get_numa_parameters_ret {
 struct remote_domain_set_perf_events_args {
     remote_nonnull_domain dom;
     remote_typed_param params<REMOTE_DOMAIN_PERF_EVENTS_MAX>;
+    unsigned int flags;
 };
 
 struct remote_domain_get_perf_events_args {
     remote_nonnull_domain dom;
+    unsigned int flags;
 };
 
 struct remote_domain_get_perf_events_ret {

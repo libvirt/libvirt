@@ -10040,7 +10040,8 @@ qemuSetGlobalBWLive(virCgroupPtr cgroup, unsigned long long period,
 static int
 qemuDomainSetPerfEvents(virDomainPtr dom,
                         virTypedParameterPtr params,
-                        int nparams)
+                        int nparams,
+                        unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
@@ -10049,10 +10050,11 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     int ret = -1;
     virPerfEventType type;
     bool enabled;
+
+    virCheckFlags(0, -1);
 
     if (virTypedParamsValidate(params, nparams, VIR_PERF_PARAMETERS) < 0)
         return -1;
@@ -10107,7 +10109,8 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
 static int
 qemuDomainGetPerfEvents(virDomainPtr dom,
                         virTypedParameterPtr *params,
-                        int *nparams)
+                        int *nparams,
+                        unsigned int flags)
 {
     size_t i;
     virDomainObjPtr vm = NULL;
@@ -10116,6 +10119,8 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     virTypedParameterPtr par = NULL;
     int maxpar = 0;
     int npar = 0;
+
+    virCheckFlags(0, -1);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;

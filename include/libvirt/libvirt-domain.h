@@ -1848,10 +1848,12 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
 
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
-                           int *nparams);
+                           int *nparams,
+                           unsigned int flags);
 int virDomainSetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr params,
-                           int nparams);
+                           int nparams,
+                           unsigned int flags);
 
 /*
  * BlockJob API

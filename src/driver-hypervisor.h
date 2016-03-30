@@ -964,12 +964,14 @@ typedef int
 typedef int
 (*virDrvDomainGetPerfEvents)(virDomainPtr dom,
                              virTypedParameterPtr *params,
-                             int *nparams);
+                             int *nparams,
+                             unsigned int flags);
 
 typedef int
 (*virDrvDomainSetPerfEvents)(virDomainPtr dom,
                              virTypedParameterPtr params,
-                             int nparams);
+                             int nparams,
+                             unsigned int flags);
 
 typedef int
 (*virDrvDomainBlockJobAbort)(virDomainPtr dom,

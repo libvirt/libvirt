@@ -8610,6 +8610,7 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL;
     bool ret = false;
     const char *enable = NULL, *disable = NULL;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -8627,7 +8628,7 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (nparams == 0) {
-        if (virDomainGetPerfEvents(dom, &params, &nparams) != 0) {
+        if (virDomainGetPerfEvents(dom, &params, &nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to get perf events"));
             goto cleanup;
         }
@@ -8640,7 +8641,7 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
             }
         }
     } else {
-        if (virDomainSetPerfEvents(dom, params, nparams) != 0)
+        if (virDomainSetPerfEvents(dom, params, nparams, flags) != 0)
             goto error;
     }
 
