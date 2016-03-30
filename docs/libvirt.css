@@ -53,11 +53,6 @@ h2, h3, h4, h5, h6 {
     margin: 0px;
     border: 0px;
     font-weight: bold;
-    font-size: 1.2em;
-}
-
-#menu li ul li {
-    font-size: 1em;
 }
 
 #menu ul li a, #menu ul li span {
