@@ -247,7 +247,7 @@ virPerfReadEvent(virPerfPtr perf,
     if (event == NULL || !event->enabled)
         return -1;
 
-    if (read(event->fd, value, sizeof(uint64_t)) < 0) {
+    if (saferead(event->fd, value, sizeof(uint64_t)) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to read cache data"));
         return -1;
