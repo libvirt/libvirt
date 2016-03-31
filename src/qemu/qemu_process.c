@@ -3953,6 +3953,8 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                                        virDomainHypervTypeToString(i));
                         goto cleanup;
                         break;
+
+                    /* coverity[dead_error_begin] */
                     case VIR_DOMAIN_HYPERV_LAST:
                         break;
                     }
