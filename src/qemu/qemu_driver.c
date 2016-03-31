@@ -10071,8 +10071,11 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     if (virDomainSetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
 
     if (def) {
         for (i = 0; i < nparams; i++) {
@@ -10081,16 +10084,16 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
             type = virPerfEventTypeFromString(param->field);
 
             if (!enabled && virPerfEventDisable(priv->perf, type))
-                goto cleanup;
+                goto endjob;
             if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
-                goto cleanup;
+                goto endjob;
 
             def->perf->events[type] = enabled ?
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
         }
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     if (persistentDef) {
@@ -10104,10 +10107,13 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
         }
 
         if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -10121,6 +10127,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
                         int *nparams,
                         unsigned int flags)
 {
+    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainDefPtr def;
@@ -10140,8 +10147,11 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     if (virDomainGetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(def = virDomainObjGetOneDef(vm, flags)))
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto endjob;
 
     priv = vm->privateData;
 
@@ -10156,7 +10166,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
         if (virTypedParamsAddBoolean(&par, &npar, &maxpar,
                                      virPerfEventTypeToString(i),
                                      perf_enabled) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     *params = par;
@@ -10164,6 +10174,9 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     par = NULL;
     npar = 0;
     ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
