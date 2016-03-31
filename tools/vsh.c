@@ -40,7 +40,6 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <inttypes.h>
-#include <strings.h>
 #include <signal.h>
 
 #if WITH_READLINE
@@ -329,8 +328,8 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
 
 /* Validate that the options associated with cmd can be parsed.  */
 static int
-vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
-                  uint32_t *opts_required)
+vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+                  uint64_t *opts_required)
 {
     size_t i;
     bool optional = false;
@@ -344,7 +343,7 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint32_t *opts_need_arg,
     for (i = 0; cmd->opts[i].name; i++) {
         const vshCmdOptDef *opt = &cmd->opts[i];
 
-        if (i > 31)
+        if (i > 63)
             return -1; /* too many options */
         if (opt->type == VSH_OT_BOOL) {
             optional = true;
@@ -407,7 +406,7 @@ static vshCmdOptDef helpopt = {
 };
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint32_t *opts_seen, int *opt_index, char **optstr)
+                   uint64_t *opts_seen, int *opt_index, char **optstr)
 {
     size_t i;
     const vshCmdOptDef *ret = NULL;
@@ -464,8 +463,8 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
 }
 
 static const vshCmdOptDef *
-vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
-                 uint32_t *opts_seen)
+vshCmddefGetData(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+                 uint64_t *opts_seen)
 {
     size_t i;
     const vshCmdOptDef *opt;
@@ -474,7 +473,7 @@ vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
         return NULL;
 
     /* Grab least-significant set bit */
-    i = ffs(*opts_need_arg) - 1;
+    i = ffsl(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
     if (opt->type != VSH_OT_ARGV)
         *opts_need_arg &= ~(1 << i);
@@ -486,8 +485,8 @@ vshCmddefGetData(const vshCmdDef *cmd, uint32_t *opts_need_arg,
  * Checks for required options
  */
 static int
-vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint32_t opts_required,
-                    uint32_t opts_seen)
+vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
+                    uint64_t opts_seen)
 {
     const vshCmdDef *def = cmd->def;
     size_t i;
@@ -598,8 +597,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         const char *desc = vshCmddefGetInfo(def, "desc");
         const char *help = _(vshCmddefGetInfo(def, "help"));
         char buf[256];
-        uint32_t opts_need_arg;
-        uint32_t opts_required;
+        uint64_t opts_need_arg;
+        uint64_t opts_required;
         bool shortopt = false; /* true if 'arg' works instead of '--opt arg' */
 
         if (vshCmddefOptParse(def, &opts_need_arg, &opts_required)) {
@@ -1350,9 +1349,9 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
         const vshCmdDef *cmd = NULL;
         vshCommandToken tk;
         bool data_only = false;
-        uint32_t opts_need_arg = 0;
-        uint32_t opts_required = 0;
-        uint32_t opts_seen = 0;
+        uint64_t opts_need_arg = 0;
+        uint64_t opts_required = 0;
+        uint64_t opts_seen = 0;
 
         first = NULL;
 
