@@ -1134,7 +1134,7 @@ endif WITH_VMX
 if WITH_XENCONFIG
 noinst_LTLIBRARIES += libvirt_xenconfig.la
 libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
-libvirt_la_LIBADD += $(LIBXL_LIBS)
+libvirt_xenconfig_la_LIBADD = $(LIBXL_LIBS)
 libvirt_xenconfig_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
