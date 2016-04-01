@@ -43,7 +43,7 @@ int qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
                               virQEMUCapsPtr qemuCaps);
 
 int qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
-                                 virDomainHostdevDefPtr hostdev,
+                                 char **alias,
                                  int idx);
 
 int qemuAssignDeviceNetAlias(virDomainDefPtr def,

@@ -1,7 +1,7 @@
 /*
  * qemu_hotplug.c: QEMU device hotplug management
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1260,7 +1260,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         teardownlabel = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
+        if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
             goto error;
         if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
             goto error;
@@ -1871,7 +1871,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
     teardownlabel = true;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
+        if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
             goto cleanup;
         if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
             goto cleanup;
@@ -1965,7 +1965,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
         goto cleanup;
     teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, hostdev, -1) < 0)
+    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
     if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, priv->qemuCaps,
@@ -3822,7 +3822,7 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
         !detach->info->alias) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, detach, -1) < 0)
+        if (qemuAssignDeviceHostdevAlias(vm->def, &detach->info->alias, -1) < 0)
             return -1;
     }
 

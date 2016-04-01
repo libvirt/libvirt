@@ -288,7 +288,7 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
 
 int
 qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
-                             virDomainHostdevDefPtr hostdev,
+                             char **alias,
                              int idx)
 {
     if (idx == -1) {
@@ -306,7 +306,7 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
         }
     }
 
-    if (virAsprintf(&hostdev->info->alias, "hostdev%d", idx) < 0)
+    if (virAsprintf(alias, "hostdev%d", idx) < 0)
         return -1;
 
     return 0;
@@ -414,7 +414,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nhostdevs; i++) {
-        if (qemuAssignDeviceHostdevAlias(def, def->hostdevs[i], i) < 0)
+        if (qemuAssignDeviceHostdevAlias(def, &def->hostdevs[i]->info->alias, i) < 0)
             return -1;
     }
     for (i = 0; i < def->nredirdevs; i++) {
