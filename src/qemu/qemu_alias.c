@@ -27,6 +27,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -293,14 +294,22 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
 {
     if (idx == -1) {
         size_t i;
+
         idx = 0;
         for (i = 0; i < def->nhostdevs; i++) {
             int thisidx;
-            if ((thisidx = qemuDomainDeviceAliasIndex(def->hostdevs[i]->info, "hostdev")) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to determine device index for hostdev device"));
-                return -1;
-            }
+
+            if ((thisidx = qemuDomainDeviceAliasIndex(def->hostdevs[i]->info, "hostdev")) < 0)
+                continue; /* error just means the alias wasn't "hostdevN", but something else */
+            if (thisidx >= idx)
+                idx = thisidx + 1;
+        }
+        /* network interfaces can also have a hostdevN alias */
+        for (i = 0; i < def->nnets; i++) {
+            int thisidx;
+
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "hostdev")) < 0)
+                continue;
             if (thisidx >= idx)
                 idx = thisidx + 1;
         }
@@ -318,22 +327,23 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def,
                          virDomainNetDefPtr net,
                          int idx)
 {
+
+    /* <interface type='hostdev'> uses "hostdevN" as the alias
+     * We must use "-1" as the index because the caller doesn't know
+     * that we're now looking for a unique hostdevN rather than netN
+     */
+    if (networkGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
+        return qemuAssignDeviceHostdevAlias(def, &net->info.alias, -1);
+
     if (idx == -1) {
         size_t i;
+
         idx = 0;
         for (i = 0; i < def->nnets; i++) {
             int thisidx;
 
-            if (virDomainNetGetActualType(def->nets[i])
-                == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-                /* type='hostdev' interfaces have a hostdev%d alias */
-               continue;
-            }
-            if ((thisidx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to determine device index for network device"));
-                return -1;
-            }
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->nets[i]->info, "net")) < 0)
+                continue; /* failure could be due to "hostdevN" */
             if (thisidx >= idx)
                 idx = thisidx + 1;
         }
@@ -392,14 +402,8 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nnets; i++) {
-        /* type='hostdev' interfaces are also on the hostdevs list,
-         * and will have their alias assigned with other hostdevs.
-         */
-        if (virDomainNetGetActualType(def->nets[i])
-            != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-            qemuAssignDeviceNetAlias(def, def->nets[i], i) < 0) {
+        if (qemuAssignDeviceNetAlias(def, def->nets[i], -1) < 0)
             return -1;
-        }
     }
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
@@ -414,7 +418,13 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nhostdevs; i++) {
-        if (qemuAssignDeviceHostdevAlias(def, &def->hostdevs[i]->info->alias, i) < 0)
+        /* we can't start assigning at 0, since netdevs may have used
+         * up some hostdevN entries already. Also if the HostdevDef is
+         * linked to a NetDef, they will share an info and the alias
+         * will already be set, so don't try to set it again.
+         */
+        if (!def->hostdevs[i]->info->alias &&
+            qemuAssignDeviceHostdevAlias(def, &def->hostdevs[i]->info->alias, -1) < 0)
             return -1;
     }
     for (i = 0; i < def->nredirdevs; i++) {
