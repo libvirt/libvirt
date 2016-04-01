@@ -7,11 +7,6 @@ body {
   background: #ffffff;
 }
 
-div.body p:first-letter {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
 p, ul, ol, dl {
   padding: 0px;
   margin: 0px;
