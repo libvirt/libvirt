@@ -7,10 +7,6 @@ body {
   background: #ffffff;
 }
 
-p:first-line {
-  margin-right: 1em;
-}
-
 div.body p:first-letter {
   font-size: 1.2em;
   font-weight: bold;
