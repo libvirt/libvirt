@@ -2061,7 +2061,7 @@ qemuMigrationCancelDriveMirror(virQEMUDriverPtr driver,
  * @vm: domain
  * @mig: migration cookie
  * @host: where are we migrating to
- * @speed: how much should the copying be limited
+ * @speed: bandwidth limit in MiB/s
  * @migrate_flags: migrate monitor command flags
  *
  * Run drive-mirror to feed NBD server running on dst and wait
@@ -2093,11 +2093,20 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
     char *diskAlias = NULL;
     char *nbd_dest = NULL;
     char *hoststr = NULL;
+    unsigned long long mirror_speed = speed;
     unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     int rv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("Starting drive mirrors for domain %s", vm->def->name);
+
+    if (mirror_speed > LLONG_MAX >> 20) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth must be less than %llu"),
+                       LLONG_MAX >> 20);
+        goto cleanup;
+    }
+    mirror_speed <<= 20;
 
     /* steal NBD port and thus prevent its propagation back to destination */
     port = mig->nbd->port;
@@ -2136,7 +2145,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         qemuBlockJobSyncBegin(disk);
         /* Force "raw" format for NBD export */
         mon_ret = qemuMonitorDriveMirror(priv->mon, diskAlias, nbd_dest,
-                                         "raw", speed, 0, 0, mirror_flags);
+                                         "raw", mirror_speed, 0, 0, mirror_flags);
         VIR_FREE(diskAlias);
         VIR_FREE(nbd_dest);
 
