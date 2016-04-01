@@ -1,7 +1,7 @@
 /*
  * bridge_driver.h: core driver methods for managing networks
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -47,6 +47,9 @@ int networkReleaseActualDevice(virDomainDefPtr dom,
 int networkGetNetworkAddress(const char *netname, char **netaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int networkGetActualType(virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int networkDnsmasqConfContents(virNetworkObjPtr network,
                         const char *pidfile,
                         char **configstr,
@@ -64,6 +67,7 @@ int networkBandwidthUpdate(virDomainNetDefPtr iface,
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
 #  define networkAllocateActualDevice(dom, iface) 0
+#  define networkGetActualType(iface) (iface->type)
 #  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
                     dctx, caps) 0
