@@ -1389,6 +1389,74 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 
+/**
+ *
+ * Meaning of fields reported by the event according to the ACPI standard:
+ * @source:
+ *  0x00 - 0xff: Notification values, as passed at the request time
+ *  0x100: Operating System Shutdown Processing
+ *  0x103: Ejection processing
+ *  0x200: Insertion processing
+ *  other values are reserved
+ *
+ * @status:
+ *   general values
+ *     0x00: success
+ *     0x01: non-specific failure
+ *     0x02: unrecognized notify code
+ *     0x03 - 0x7f: reserved
+ *     other values are specific to the notification type
+ *
+ *   for the 0x100 source the following additional codes are standardized
+ *     0x80: OS Shutdown request denied
+ *     0x81: OS Shutdown in progress
+ *     0x82: OS Shutdown completed
+ *     0x83: OS Graceful shutdown not supported
+ *     other values are reserved
+ *
+ * Other fields and semantics are specific to the qemu handling of the event.
+ *  - @alias may be NULL for successful unplug operations
+ *  - @slotType describes the device type a bit more closely, currently the
+ *    only known value is 'DIMM'
+ *  - @slot describes the specific device
+ *
+ *  Note that qemu does not emit the event for all the documented sources or
+ *  devices.
+ */
+static int
+qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                             virDomainObjPtr vm,
+                             const char *alias,
+                             const char *slotType,
+                             const char *slot,
+                             unsigned int source,
+                             unsigned int status,
+                             void *opaque)
+{
+    virQEMUDriverPtr driver = opaque;
+    virObjectEventPtr event = NULL;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("ACPI OST info for device %s domain %p %s. "
+              "slotType='%s' slot='%s' source=%u status=%u",
+              NULLSTR(alias), vm, vm->def->name, slotType, slot, source, status);
+
+    /* handle memory unplug failure */
+    if (STREQ(slotType, "DIMM") && alias && status == 1) {
+        qemuDomainSignalDeviceRemoval(vm, alias,
+                                      QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED);
+
+        event = virDomainEventDeviceRemovalFailedNewFromObj(vm, alias);
+    }
+
+    virObjectUnlock(vm);
+    qemuDomainEventQueue(driver, event);
+
+    return 0;
+}
+
+
 static int
 qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                     virDomainObjPtr vm,
@@ -1584,6 +1652,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainSpiceMigrated = qemuProcessHandleSpiceMigrated,
     .domainMigrationStatus = qemuProcessHandleMigrationStatus,
     .domainMigrationPass = qemuProcessHandleMigrationPass,
+    .domainAcpiOstInfo = qemuProcessHandleAcpiOstInfo,
 };
 
 static void
