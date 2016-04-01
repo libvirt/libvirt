@@ -7360,7 +7360,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     if (show_count < 0 || show_count > max_id) {
         if (show_count > max_id)
             vshPrint(ctl, _("Only %d CPUs available to show\n"), max_id);
-        show_count = max_id;
+        show_count = max_id - cpu;
     }
 
     /* get percpu information */
