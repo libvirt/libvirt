@@ -1549,6 +1549,25 @@ qemuMonitorEmitMigrationPass(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorEmitAcpiOstInfo(qemuMonitorPtr mon,
+                           const char *alias,
+                           const char *slotType,
+                           const char *slot,
+                           unsigned int source,
+                           unsigned int status)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, alias='%s', slotType='%s', slot='%s', source='%u' status=%u",
+              mon, NULLSTR(alias), slotType, slot, source, status);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainAcpiOstInfo, mon->vm,
+                          alias, slotType, slot, source, status);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);

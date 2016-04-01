@@ -88,6 +88,7 @@ static void qemuMonitorJSONHandleSerialChange(qemuMonitorPtr mon, virJSONValuePt
 static void qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleMigrationStatus(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleMigrationPass(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -95,6 +96,7 @@ typedef struct {
 } qemuEventHandler;
 
 static qemuEventHandler eventHandlers[] = {
+    { "ACPI_DEVICE_OST", qemuMonitorJSONHandleAcpiOstInfo, },
     { "BALLOON_CHANGE", qemuMonitorJSONHandleBalloonChange, },
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
     { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
@@ -1023,6 +1025,43 @@ qemuMonitorJSONHandleMigrationPass(qemuMonitorPtr mon,
     }
 
     qemuMonitorEmitMigrationPass(mon, pass);
+}
+
+
+static void
+qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    virJSONValuePtr info;
+    const char *alias;
+    const char *slotType;
+    const char *slot;
+    unsigned int source;
+    unsigned int status;
+
+    if (!(info = virJSONValueObjectGetObject(data, "info")))
+        goto error;
+
+    /* optional */
+    alias = virJSONValueObjectGetString(info, "device");
+
+    if (!(slotType = virJSONValueObjectGetString(info, "slot-type")))
+        goto error;
+
+    if (!(slot = virJSONValueObjectGetString(info, "slot")))
+        goto error;
+
+    if (virJSONValueObjectGetNumberUint(info, "source", &source) < 0)
+        goto error;
+
+    if (virJSONValueObjectGetNumberUint(info, "status", &status) < 0)
+        goto error;
+
+    qemuMonitorEmitAcpiOstInfo(mon, alias, slotType, slot, source, status);
+    return;
+
+ error:
+    VIR_WARN("malformed ACPI_DEVICE_OST event");
+    return;
 }
 
 
