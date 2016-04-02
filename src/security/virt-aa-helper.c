@@ -762,8 +762,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
     }
 
     ctl->def = virDomainDefParseString(xmlStr,
-                                       ctl->caps, ctl->xmlopt,
-                                       VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                       ctl->caps, ctl->xmlopt, 0);
+
     if (ctl->def == NULL) {
         vah_error(ctl, 0, _("could not parse XML"));
         goto exit;
@@ -1366,6 +1366,10 @@ main(int argc, char **argv)
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/domain-%s/monitor.sock\" rw,\n",
                                   LOCALSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/domain-%d-%.*s/*\" rw,\n",
+                                  LOCALSTATEDIR, ctl->def->id, 20, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/channel/target/domain-%d-%.*s/*\" rw,\n",
+                                  LOCALSTATEDIR, ctl->def->id, 20, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
