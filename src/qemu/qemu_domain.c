@@ -562,6 +562,16 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 }
 
 
+void
+qemuDomainClearPrivatePaths(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    VIR_FREE(priv->libDir);
+    VIR_FREE(priv->channelTargetDir);
+}
+
+
 static void *
 qemuDomainObjPrivateAlloc(void)
 {

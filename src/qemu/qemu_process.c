@@ -5832,6 +5832,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
 
+    qemuDomainClearPrivatePaths(vm);
+
     ignore_value(virDomainChrDefForeach(vm->def,
                                         false,
                                         qemuProcessCleanupChardevDevice,

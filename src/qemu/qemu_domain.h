@@ -554,6 +554,7 @@ int qemuDomainNetVLAN(virDomainNetDefPtr def);
 int qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
+void qemuDomainClearPrivatePaths(virDomainObjPtr vm);
 
 virDomainDiskDefPtr qemuDomainDiskByName(virDomainDefPtr def, const char *name);
 
