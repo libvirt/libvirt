@@ -2517,7 +2517,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     int ret = -1;
     size_t i;
     char *device_link = NULL;
-    virPCIDeviceAddress *config_addr = NULL;
+    virPCIDeviceAddressPtr config_addr = NULL;
     char *totalvfs_file = NULL, *totalvfs_str = NULL;
 
     *virtual_functions = NULL;

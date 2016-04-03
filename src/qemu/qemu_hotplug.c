@@ -2309,7 +2309,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         virDomainDeviceInfoCopy(&newdev->info, &olddev->info) < 0) {
         goto cleanup;
     }
-    if (!virDevicePCIAddressEqual(&olddev->info.addr.pci,
+    if (!virPCIDeviceAddressEqual(&olddev->info.addr.pci,
                                   &newdev->info.addr.pci)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device guest PCI address"));

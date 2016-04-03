@@ -3113,7 +3113,7 @@ int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
 
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        return virDevicePCIAddressIsValid(&info->addr.pci, false);
+        return virPCIDeviceAddressIsValid(&info->addr.pci, false);
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         return 1;
@@ -5043,7 +5043,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        if (virDevicePCIAddressParseXML(address, &info->addr.pci) < 0)
+        if (virPCIDeviceAddressParseXML(address, &info->addr.pci) < 0)
             goto cleanup;
         break;
 
@@ -5113,7 +5113,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
 
 static int
 virDomainParseLegacyDeviceAddress(char *devaddr,
-                                  virDevicePCIAddressPtr pci)
+                                  virPCIDeviceAddressPtr pci)
 {
     char *tmp;
 
@@ -5317,10 +5317,10 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (xmlStrEqual(cur->name, BAD_CAST "address")) {
-                virDevicePCIAddressPtr addr =
+                virPCIDeviceAddressPtr addr =
                     &def->source.subsys.u.pci.addr;
 
-                if (virDevicePCIAddressParseXML(cur, addr) < 0)
+                if (virPCIDeviceAddressParseXML(cur, addr) < 0)
                     goto out;
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
                        xmlStrEqual(cur->name, BAD_CAST "state")) {
@@ -13263,7 +13263,7 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
 
 int
 virDomainDiskIndexByAddress(virDomainDefPtr def,
-                            virDevicePCIAddressPtr pci_address,
+                            virPCIDeviceAddressPtr pci_address,
                             unsigned int bus, unsigned int target,
                             unsigned int unit)
 {
@@ -13278,7 +13278,7 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
     for (i = 0; i < def->ndisks; i++) {
         vdisk = def->disks[i];
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            virDevicePCIAddressEqual(&vdisk->info.addr.pci, pci_address))
+            virPCIDeviceAddressEqual(&vdisk->info.addr.pci, pci_address))
             return i;
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virDomainDeviceDriveAddressPtr drive = &vdisk->info.addr.drive;
@@ -13295,7 +13295,7 @@ virDomainDiskIndexByAddress(virDomainDefPtr def,
 
 virDomainDiskDefPtr
 virDomainDiskByAddress(virDomainDefPtr def,
-                       virDevicePCIAddressPtr pci_address,
+                       virPCIDeviceAddressPtr pci_address,
                        unsigned int bus,
                        unsigned int target,
                        unsigned int unit)
@@ -13465,7 +13465,7 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
             return -1;
         }
         if (PCIAddrSpecified) {
-            if (virDevicePCIAddressEqual(&def->nets[i]->info.addr.pci,
+            if (virPCIDeviceAddressEqual(&def->nets[i]->info.addr.pci,
                                          &net->info.addr.pci)) {
                 /* exit early if the pci address was specified and
                  * it matches, as this guarantees no duplicates.
@@ -13509,7 +13509,7 @@ virDomainHasNet(virDomainDefPtr def, virDomainNetDefPtr net)
             continue;
 
         if (PCIAddrSpecified) {
-            if (virDevicePCIAddressEqual(&def->nets[i]->info.addr.pci,
+            if (virPCIDeviceAddressEqual(&def->nets[i]->info.addr.pci,
                                          &net->info.addr.pci))
                 return true;
         } else {
@@ -13686,7 +13686,7 @@ virDomainControllerFindByType(virDomainDefPtr def,
 
 int
 virDomainControllerFindByPCIAddress(virDomainDefPtr def,
-                                    virDevicePCIAddressPtr addr)
+                                    virPCIDeviceAddressPtr addr)
 {
     size_t i;
 
@@ -13694,7 +13694,7 @@ virDomainControllerFindByPCIAddress(virDomainDefPtr def,
         virDomainDeviceInfoPtr info = &def->controllers[i]->info;
 
         if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            virDevicePCIAddressEqual(&info->addr.pci, addr))
+            virPCIDeviceAddressEqual(&info->addr.pci, addr))
             return i;
     }
 
@@ -19747,7 +19747,7 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         }
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        if (virDevicePCIAddressFormat(buf, pcisrc->addr,
+        if (virPCIDeviceAddressFormat(buf, pcisrc->addr,
                                       includeTypeInAddr) != 0)
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("PCI address Formatting failed"));

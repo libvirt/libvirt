@@ -88,7 +88,7 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
 }
 
 bool
-virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
+virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                                    const char *addrStr,
                                    virDomainPCIConnectFlags busFlags,
                                    virDomainPCIConnectFlags devFlags,
@@ -163,7 +163,7 @@ virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
  */
 bool
 virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
-                            virDevicePCIAddressPtr addr,
+                            virPCIDeviceAddressPtr addr,
                             const char *addrStr,
                             virDomainPCIConnectFlags flags,
                             bool fromConfig)
@@ -315,7 +315,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
  */
 int
 virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
-                           virDevicePCIAddressPtr addr,
+                           virPCIDeviceAddressPtr addr,
                            virDomainPCIConnectFlags flags)
 {
     int add;
@@ -351,7 +351,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
 
 
 char *
-virDomainPCIAddressAsString(virDevicePCIAddressPtr addr)
+virDomainPCIAddressAsString(virPCIDeviceAddressPtr addr)
 {
     char *str;
 
@@ -369,7 +369,7 @@ virDomainPCIAddressAsString(virDevicePCIAddressPtr addr)
  */
 bool
 virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
-                             virDevicePCIAddressPtr addr)
+                             virPCIDeviceAddressPtr addr)
 {
     return !!addrs->buses[addr->bus].slots[addr->slot];
 }
@@ -386,7 +386,7 @@ virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
  */
 int
 virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr addr,
+                               virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags,
                                bool reserveEntireSlot,
                                bool fromConfig)
@@ -448,7 +448,7 @@ virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
 
 int
 virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr addr,
+                               virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
 {
     return virDomainPCIAddressReserveAddr(addrs, addr, flags, true, false);
@@ -499,7 +499,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
 
 int
 virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr addr)
+                               virPCIDeviceAddressPtr addr)
 {
     addrs->buses[addr->bus].slots[addr->slot] &= ~(1 << addr->function);
     return 0;
@@ -507,7 +507,7 @@ virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
 
 int
 virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr addr)
+                               virPCIDeviceAddressPtr addr)
 {
     /* permit any kind of connection type in validation, since we
      * already had it, and are giving it back.
@@ -563,13 +563,13 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
 
 int
 virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr next_addr,
+                               virPCIDeviceAddressPtr next_addr,
                                virDomainPCIConnectFlags flags)
 {
     /* default to starting the search for a free slot from
      * the first slot of domain 0 bus 0...
      */
-    virDevicePCIAddress a = { 0, 0, 0, 0, false };
+    virPCIDeviceAddress a = { 0, 0, 0, 0, false };
     char *addrStr = NULL;
 
     if (addrs->nbuses == 0) {
@@ -666,7 +666,7 @@ virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev,
                                    virDomainPCIConnectFlags flags)
 {
-    virDevicePCIAddress addr;
+    virPCIDeviceAddress addr;
     if (virDomainPCIAddressGetNextSlot(addrs, &addr, flags) < 0)
         return -1;
 

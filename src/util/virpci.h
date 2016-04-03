@@ -40,6 +40,7 @@ struct _virPCIDeviceAddress {
     unsigned int bus;
     unsigned int slot;
     unsigned int function;
+    int multi; /* virTristateSwitch */
 };
 
 typedef enum {
@@ -168,7 +169,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                             virPCIDeviceFileActor actor,
                             void *opaque);
 
-typedef int (*virPCIDeviceAddressActor)(virPCIDeviceAddress *addr,
+typedef int (*virPCIDeviceAddressActor)(virPCIDeviceAddressPtr addr,
                                         void *opaque);
 int virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
                                          virPCIDeviceAddressActor actor,

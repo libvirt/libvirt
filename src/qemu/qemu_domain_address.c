@@ -423,7 +423,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virDomainPCIAddressSetPtr addrs = opaque;
     int ret = -1;
-    virDevicePCIAddressPtr addr = &info->addr.pci;
+    virPCIDeviceAddressPtr addr = &info->addr.pci;
     bool entireSlot;
     /* flags may be changed from default below */
     virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
@@ -620,7 +620,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
 {
     int ret = -1;
     size_t i;
-    virDevicePCIAddress tmp_addr;
+    virPCIDeviceAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
     virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE
@@ -754,7 +754,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
 {
     int ret = -1;
     size_t i;
-    virDevicePCIAddress tmp_addr;
+    virPCIDeviceAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     char *addrStr = NULL;
     virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
@@ -1021,7 +1021,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 {
     size_t i, j;
     virDomainPCIConnectFlags flags = 0; /* initialize to quiet gcc warning */
-    virDevicePCIAddress tmp_addr;
+    virPCIDeviceAddress tmp_addr;
 
     /* PCI controllers */
     for (i = 0; i < def->ncontrollers; i++) {
@@ -1120,7 +1120,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
         /* USB2 needs special handling to put all companions in the same slot */
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
-            virDevicePCIAddress addr = { 0, 0, 0, 0, false };
+            virPCIDeviceAddress addr = { 0, 0, 0, 0, false };
             bool foundAddr = false;
 
             memset(&tmp_addr, 0, sizeof(tmp_addr));
@@ -1545,7 +1545,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             for (i = 0; i < def->ncontrollers; i++) {
                 virDomainControllerDefPtr cont = def->controllers[i];
                 int idx = cont->idx;
-                virDevicePCIAddressPtr addr;
+                virPCIDeviceAddressPtr addr;
                 virDomainPCIControllerOptsPtr options;
 
                 if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI)

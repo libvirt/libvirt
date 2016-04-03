@@ -348,7 +348,7 @@ struct _virDomainDeviceInfo {
     char *alias;
     int type; /* virDomainDeviceAddressType */
     union {
-        virDevicePCIAddress pci;
+        virPCIDeviceAddress pci;
         virDomainDeviceDriveAddress drive;
         virDomainDeviceVirtioSerialAddress vioserial;
         virDomainDeviceCcidAddress ccid;
@@ -456,7 +456,7 @@ struct _virDomainHostdevSubsysUSB {
 typedef struct _virDomainHostdevSubsysPCI virDomainHostdevSubsysPCI;
 typedef virDomainHostdevSubsysPCI *virDomainHostdevSubsysPCIPtr;
 struct _virDomainHostdevSubsysPCI {
-    virDevicePCIAddress addr; /* host address */
+    virPCIDeviceAddress addr; /* host address */
     int backend; /* enum virDomainHostdevSubsysPCIBackendType */
 };
 
@@ -2780,11 +2780,11 @@ int virDomainDefCompatibleDevice(virDomainDefPtr def,
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
 int virDomainDiskIndexByAddress(virDomainDefPtr def,
-                                virDevicePCIAddressPtr pci_controller,
+                                virPCIDeviceAddressPtr pci_controller,
                                 unsigned int bus, unsigned int target,
                                 unsigned int unit);
 virDomainDiskDefPtr virDomainDiskByAddress(virDomainDefPtr def,
-                                           virDevicePCIAddressPtr pci_controller,
+                                           virPCIDeviceAddressPtr pci_controller,
                                            unsigned int bus,
                                            unsigned int target,
                                            unsigned int unit);
@@ -2855,7 +2855,7 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
 int virDomainControllerFind(const virDomainDef *def, int type, int idx);
 int virDomainControllerFindByType(virDomainDefPtr def, int type);
 int virDomainControllerFindByPCIAddress(virDomainDefPtr def,
-                                        virDevicePCIAddressPtr addr);
+                                        virPCIDeviceAddressPtr addr);
 virDomainControllerDefPtr virDomainControllerRemove(virDomainDefPtr def, size_t i);
 const char *virDomainControllerAliasFind(const virDomainDef *def,
                                          int type, int idx)

@@ -170,20 +170,20 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
                                     const char *tlsSubject);
 
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
-                                    virDevicePCIAddress *hostAddr,
-                                    virDevicePCIAddress *guestAddr);
+                                    virPCIDeviceAddress *hostAddr,
+                                    virPCIDeviceAddress *guestAddr);
 
 int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon,
                               const char *path,
                               const char *bus,
-                              virDevicePCIAddress *guestAddr);
+                              virPCIDeviceAddress *guestAddr);
 
 int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon,
                                  const char *nicstr,
-                                 virDevicePCIAddress *guestAddr);
+                                 virPCIDeviceAddress *guestAddr);
 
 int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
-                                   virDevicePCIAddress *guestAddr);
+                                   virPCIDeviceAddress *guestAddr);
 
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
@@ -209,7 +209,7 @@ int qemuMonitorJSONGetChardevInfo(qemuMonitorPtr mon,
 
 int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
-                                           virDevicePCIAddress *guestAddr);
+                                           virPCIDeviceAddress *guestAddr);
 
 int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
                                       qemuMonitorPCIAddress **addrs);

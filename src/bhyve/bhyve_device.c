@@ -40,7 +40,7 @@ bhyveCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     int ret = -1;
     virDomainPCIAddressSetPtr addrs = opaque;
-    virDevicePCIAddressPtr addr = &info->addr.pci;
+    virPCIDeviceAddressPtr addr = &info->addr.pci;
 
     if (addr->domain == 0 && addr->bus == 0) {
         if (addr->slot == 0) {
@@ -88,7 +88,7 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
                           virDomainPCIAddressSetPtr addrs)
 {
     size_t i;
-    virDevicePCIAddress lpc_addr;
+    virPCIDeviceAddress lpc_addr;
 
     /* explicitly reserve slot 1 for LPC-ISA bridge */
     memset(&lpc_addr, 0, sizeof(lpc_addr));

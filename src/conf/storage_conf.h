@@ -186,7 +186,7 @@ struct _virStoragePoolSourceAdapter {
     union {
         struct {
             char *name;
-            virDevicePCIAddress parentaddr; /* host address */
+            virPCIDeviceAddress parentaddr; /* host address */
             int unique_id;
             bool has_parent;
         } scsi_host;

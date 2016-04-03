@@ -169,7 +169,7 @@ typedef virNetworkForwardIfDef *virNetworkForwardIfDefPtr;
 struct _virNetworkForwardIfDef {
     int type;
     union {
-        virDevicePCIAddress pci; /*PCI Address of device */
+        virPCIDeviceAddress pci; /*PCI Address of device */
         /* when USB devices are supported a new variable to be added here */
         char *dev;      /* name of device */
     }device;

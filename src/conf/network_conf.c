@@ -1974,13 +1974,13 @@ virNetworkForwardDefParseXML(const char *networkName,
             switch (def->ifs[i].type) {
             case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
             {
-                virDevicePCIAddressPtr addr = &def->ifs[i].device.pci;
+                virPCIDeviceAddressPtr addr = &def->ifs[i].device.pci;
 
-                if (virDevicePCIAddressParseXML(forwardAddrNodes[i], addr) < 0)
+                if (virPCIDeviceAddressParseXML(forwardAddrNodes[i], addr) < 0)
                     goto cleanup;
 
                 for (j = 0; j < i; j++) {
-                    if (virDevicePCIAddressEqual(addr, &def->ifs[j].device.pci)) {
+                    if (virPCIDeviceAddressEqual(addr, &def->ifs[j].device.pci)) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("PCI device '%04x:%02x:%02x.%x' can "
                                          "only be listed once in network %s"),
@@ -2797,7 +2797,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                     virBufferAddLit(buf, "/>\n");
                 } else {
                     if (def->forward.ifs[i].type ==  VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI) {
-                        if (virDevicePCIAddressFormat(buf,
+                        if (virPCIDeviceAddressFormat(buf,
                                                       def->forward.ifs[i].device.pci,
                                                       true) < 0)
                             goto error;

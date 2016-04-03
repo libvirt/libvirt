@@ -603,7 +603,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             if (virXPathNode("./adapter/parentaddr", ctxt)) {
                 xmlNodePtr addrnode = virXPathNode("./adapter/parentaddr/address",
                                                    ctxt);
-                virDevicePCIAddressPtr addr =
+                virPCIDeviceAddressPtr addr =
                     &source->adapter.data.scsi_host.parentaddr;
 
                 if (!addrnode) {
@@ -612,7 +612,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                     goto cleanup;
                 }
                 source->adapter.data.scsi_host.has_parent = true;
-                if (virDevicePCIAddressParseXML(addrnode, addr) < 0)
+                if (virPCIDeviceAddressParseXML(addrnode, addr) < 0)
                     goto cleanup;
                 if ((virXPathInt("string(./adapter/parentaddr/@unique_id)",
                                  ctxt,
@@ -1103,14 +1103,14 @@ virStoragePoolSourceFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " name='%s'/>\n",
                                   src->adapter.data.scsi_host.name);
             } else {
-                virDevicePCIAddress addr;
+                virPCIDeviceAddress addr;
                 virBufferAddLit(buf, ">\n");
                 virBufferAdjustIndent(buf, 2);
                 virBufferAsprintf(buf, "<parentaddr unique_id='%d'>\n",
                                   src->adapter.data.scsi_host.unique_id);
                 virBufferAdjustIndent(buf, 2);
                 addr = src->adapter.data.scsi_host.parentaddr;
-                ignore_value(virDevicePCIAddressFormat(buf, addr, false));
+                ignore_value(virPCIDeviceAddressFormat(buf, addr, false));
                 virBufferAdjustIndent(buf, -2);
                 virBufferAddLit(buf, "</parentaddr>\n");
                 virBufferAdjustIndent(buf, -2);
@@ -2315,7 +2315,7 @@ getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
     char *name = NULL;
 
     if (adapter.data.scsi_host.has_parent) {
-        virDevicePCIAddress addr = adapter.data.scsi_host.parentaddr;
+        virPCIDeviceAddress addr = adapter.data.scsi_host.parentaddr;
         unsigned int unique_id = adapter.data.scsi_host.unique_id;
 
         if (!(name = virGetSCSIHostNameByParentaddr(addr.domain,
@@ -2419,9 +2419,9 @@ static bool
 matchSCSIAdapterParent(virStoragePoolObjPtr pool,
                        virStoragePoolDefPtr def)
 {
-    virDevicePCIAddressPtr pooladdr =
+    virPCIDeviceAddressPtr pooladdr =
         &pool->def->source.adapter.data.scsi_host.parentaddr;
-    virDevicePCIAddressPtr defaddr =
+    virPCIDeviceAddressPtr defaddr =
         &def->source.adapter.data.scsi_host.parentaddr;
     int pool_unique_id =
         pool->def->source.adapter.data.scsi_host.unique_id;

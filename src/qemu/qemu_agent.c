@@ -1770,7 +1770,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     virDomainFSInfoPtr *info_ret = NULL;
-    virDevicePCIAddress pci_address;
+    virPCIDeviceAddress pci_address;
 
     cmd = qemuAgentMakeCommand("guest-get-fsinfo", NULL);
     if (!cmd)

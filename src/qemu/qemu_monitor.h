@@ -675,13 +675,13 @@ int qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
 
 int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
-                                       virDevicePCIAddress *guestAddr);
+                                       virPCIDeviceAddress *guestAddr);
 
 typedef struct _qemuMonitorPCIAddress qemuMonitorPCIAddress;
 struct _qemuMonitorPCIAddress {
     unsigned int vendor;
     unsigned int product;
-    virDevicePCIAddress addr;
+    virPCIDeviceAddress addr;
 };
 
 int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,

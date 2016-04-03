@@ -2167,7 +2167,7 @@ xenDaemonAttachDeviceFlags(virConnectPtr conn,
             if (xenFormatSxprOnePCI(dev->data.hostdev, &buf, 0) < 0)
                 goto cleanup;
 
-            virDevicePCIAddress PCIAddr;
+            virPCIDeviceAddress PCIAddr;
 
             PCIAddr = dev->data.hostdev->source.subsys.u.pci.addr;
             if (virAsprintf(&target, "PCI device: %.4x:%.2x:%.2x",

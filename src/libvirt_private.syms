@@ -76,14 +76,14 @@ virCPUModeTypeToString;
 
 
 # conf/device_conf.h
-virDevicePCIAddressEqual;
-virDevicePCIAddressFormat;
-virDevicePCIAddressIsValid;
-virDevicePCIAddressParseXML;
 virInterfaceLinkFormat;
 virInterfaceLinkParseXML;
 virInterfaceStateTypeFromString;
 virInterfaceStateTypeToString;
+virPCIDeviceAddressEqual;
+virPCIDeviceAddressFormat;
+virPCIDeviceAddressIsValid;
+virPCIDeviceAddressParseXML;
 
 
 # conf/domain_addr.h

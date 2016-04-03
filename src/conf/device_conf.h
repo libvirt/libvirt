@@ -31,6 +31,7 @@
 # include "virutil.h"
 # include "virthread.h"
 # include "virbuffer.h"
+# include "virpci.h"
 
 typedef enum {
     VIR_INTERFACE_STATE_UNKNOWN = 1,
@@ -44,16 +45,6 @@ typedef enum {
 } virInterfaceState;
 
 VIR_ENUM_DECL(virInterfaceState)
-
-typedef struct _virDevicePCIAddress virDevicePCIAddress;
-typedef virDevicePCIAddress *virDevicePCIAddressPtr;
-struct _virDevicePCIAddress {
-    unsigned int domain;
-    unsigned int bus;
-    unsigned int slot;
-    unsigned int function;
-    int          multi;  /* virTristateSwitch */
-};
 
 typedef struct _virInterfaceLink virInterfaceLink;
 typedef virInterfaceLink *virInterfaceLinkPtr;
@@ -81,18 +72,18 @@ typedef enum {
 
 VIR_ENUM_DECL(virNetDevFeature)
 
-int virDevicePCIAddressIsValid(virDevicePCIAddressPtr addr,
+int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report);
 
-int virDevicePCIAddressParseXML(xmlNodePtr node,
-                                virDevicePCIAddressPtr addr);
+int virPCIDeviceAddressParseXML(xmlNodePtr node,
+                                virPCIDeviceAddressPtr addr);
 
-int virDevicePCIAddressFormat(virBufferPtr buf,
-                              virDevicePCIAddress addr,
+int virPCIDeviceAddressFormat(virBufferPtr buf,
+                              virPCIDeviceAddress addr,
                               bool includeTypeInAddr);
 
-bool virDevicePCIAddressEqual(virDevicePCIAddress *addr1,
-                              virDevicePCIAddress *addr2);
+bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
+                              virPCIDeviceAddress *addr2);
 
 int virInterfaceLinkParseXML(xmlNodePtr node,
                              virInterfaceLinkPtr lnk);

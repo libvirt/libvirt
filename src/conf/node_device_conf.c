@@ -1164,8 +1164,8 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < nAddrNodes; i++) {
-        virDevicePCIAddress addr = { 0, 0, 0, 0, 0 };
-        if (virDevicePCIAddressParseXML(addrNodes[i], &addr) < 0)
+        virPCIDeviceAddress addr = { 0, 0, 0, 0, 0 };
+        if (virPCIDeviceAddressParseXML(addrNodes[i], &addr) < 0)
             goto cleanup;
         if (VIR_ALLOC(pciAddr) < 0)
             goto cleanup;

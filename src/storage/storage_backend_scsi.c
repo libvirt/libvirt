@@ -640,7 +640,7 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
 
     if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
         if (adapter.data.scsi_host.has_parent) {
-            virDevicePCIAddress addr = adapter.data.scsi_host.parentaddr;
+            virPCIDeviceAddress addr = adapter.data.scsi_host.parentaddr;
             unsigned int unique_id = adapter.data.scsi_host.unique_id;
 
             if (!(name = virGetSCSIHostNameByParentaddr(addr.domain,

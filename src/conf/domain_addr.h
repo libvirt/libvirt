@@ -79,7 +79,7 @@ typedef virDomainPCIAddressBus *virDomainPCIAddressBusPtr;
 struct _virDomainPCIAddressSet {
     virDomainPCIAddressBus *buses;
     size_t nbuses;
-    virDevicePCIAddress lastaddr;
+    virPCIDeviceAddress lastaddr;
     virDomainPCIConnectFlags lastFlags;
     bool dryRun;          /* on a dry run, new buses are auto-added
                              and addresses aren't saved in device infos */
@@ -87,14 +87,14 @@ struct _virDomainPCIAddressSet {
 typedef struct _virDomainPCIAddressSet virDomainPCIAddressSet;
 typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;
 
-char *virDomainPCIAddressAsString(virDevicePCIAddressPtr addr)
+char *virDomainPCIAddressAsString(virPCIDeviceAddressPtr addr)
       ATTRIBUTE_NONNULL(1);
 
 virDomainPCIAddressSetPtr virDomainPCIAddressSetAlloc(unsigned int nbuses);
 
 void virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs);
 
-bool virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
+bool virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                                         const char *addrStr,
                                         virDomainPCIConnectFlags busFlags,
                                         virDomainPCIConnectFlags devFlags,
@@ -103,7 +103,7 @@ bool virDomainPCIAddressFlagsCompatible(virDevicePCIAddressPtr addr,
      ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
-                                 virDevicePCIAddressPtr addr,
+                                 virPCIDeviceAddressPtr addr,
                                  const char *addrStr,
                                  virDomainPCIConnectFlags flags,
                                  bool fromConfig)
@@ -115,23 +115,23 @@ int virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
     ATTRIBUTE_NONNULL(1);
 
 bool virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
-                                  virDevicePCIAddressPtr addr)
+                                  virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
-                               virDevicePCIAddressPtr addr,
+                               virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
-                                   virDevicePCIAddressPtr addr,
+                                   virPCIDeviceAddressPtr addr,
                                    virDomainPCIConnectFlags flags,
                                    bool reserveEntireSlot,
                                    bool fromConfig)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
-                                   virDevicePCIAddressPtr addr,
+                                   virPCIDeviceAddressPtr addr,
                                    virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
@@ -140,15 +140,15 @@ int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
-                                   virDevicePCIAddressPtr addr)
+                                   virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
-                                   virDevicePCIAddressPtr addr)
+                                   virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
-                                   virDevicePCIAddressPtr next_addr,
+                                   virPCIDeviceAddressPtr next_addr,
                                    virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
