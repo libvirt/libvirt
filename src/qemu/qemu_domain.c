@@ -536,23 +536,29 @@ qemuDomainSetPrivatePathsOld(virQEMUDriverPtr driver,
  * can change it later on whenever we feel like so.
  */
 int
-qemuDomainSetPrivatePaths(char **domainLibDir, char **domainChannelTargetDir,
-                          const char *confLibDir, const char *confChannelDir,
-                          const char *domainName, int domainId)
+qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     const int dommaxlen = 20;
+    int ret = -1;
 
-    if (!*domainLibDir &&
-        virAsprintf(domainLibDir, "%s/domain-%d-%.*s",
-                    confLibDir, domainId, dommaxlen, domainName) < 0)
-        return -1;
+    if (!priv->libDir &&
+        virAsprintf(&priv->libDir, "%s/domain-%d-%.*s",
+                    cfg->libDir, vm->def->id, dommaxlen, vm->def->name) < 0)
+        goto cleanup;
 
-    if (!*domainChannelTargetDir &&
-        virAsprintf(domainChannelTargetDir, "%s/domain-%d-%.*s",
-                    confChannelDir, domainId, dommaxlen, domainName) < 0)
-        return -1;
+    if (!priv->channelTargetDir &&
+        virAsprintf(&priv->channelTargetDir, "%s/domain-%d-%.*s",
+                    cfg->channelTargetDir, vm->def->id,
+                    dommaxlen, vm->def->name) < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
 }
 
 

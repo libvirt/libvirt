@@ -4610,12 +4610,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
             goto stop;
     }
 
-    if (qemuDomainSetPrivatePaths(&priv->libDir,
-                                  &priv->channelTargetDir,
-                                  cfg->libDir,
-                                  cfg->channelTargetDir,
-                                  vm->def->name,
-                                  vm->def->id) < 0)
+    if (qemuDomainSetPrivatePaths(driver, vm) < 0)
         goto cleanup;
 
     ret = 0;

@@ -551,12 +551,9 @@ bool qemuDomainSupportsNetdev(virDomainDefPtr def,
 
 int qemuDomainNetVLAN(virDomainNetDefPtr def);
 
-int qemuDomainSetPrivatePaths(char **domainLibDir,
-                              char **domainChannelTargetDir,
-                              const char *confLibDir,
-                              const char *confChannelDir,
-                              const char *domainName,
-                              int domainId);
+int qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm);
+
 
 virDomainDiskDefPtr qemuDomainDiskByName(virDomainDefPtr def, const char *name);
 
