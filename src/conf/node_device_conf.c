@@ -1336,18 +1336,6 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
                                           _("invalid NUMA node ID supplied for '%s'")) < 0)
         goto out;
 
-    if ((tmp = virXPathString("string(./capability[1]/@type)", ctxt))) {
-        int hdrType = virPCIHeaderTypeFromString(tmp);
-
-        if (hdrType <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown PCI header type '%s'"), tmp);
-            goto out;
-        }
-
-        data->pci_dev.hdrType = hdrType;
-    }
-
     if ((pciExpress = virXPathNode("./pci-express[1]", ctxt))) {
         if (VIR_ALLOC(pci_express) < 0)
             goto out;
