@@ -8,10 +8,10 @@
     <function>0</function>
     <product id='0x8c10'>8 Series/C220 Series Chipset Family PCI Express Root Port #1</product>
     <vendor id='0x8086'>Intel Corporation</vendor>
+    <capability type='pci-bridge'/>
     <iommuGroup number='8'>
       <address domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
     </iommuGroup>
-    <capability type='pci-bridge'/>
     <pci-express>
       <link validity='cap' port='1' speed='5' width='1'/>
       <link validity='sta' speed='2.5' width='1'/>

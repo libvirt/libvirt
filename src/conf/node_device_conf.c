@@ -383,6 +383,10 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                     virBufferAddLit(&buf, "</capability>\n");
                 }
             }
+            if (data->pci_dev.hdrType) {
+                virBufferAsprintf(&buf, "<capability type='%s'/>\n",
+                                  virPCIHeaderTypeToString(data->pci_dev.hdrType));
+            }
             if (data->pci_dev.nIommuGroupDevices) {
                 virBufferAsprintf(&buf, "<iommuGroup number='%d'>\n",
                                   data->pci_dev.iommuGroupNumber);
@@ -402,11 +406,6 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             if (data->pci_dev.numa_node >= 0)
                 virBufferAsprintf(&buf, "<numa node='%d'/>\n",
                                   data->pci_dev.numa_node);
-
-            if (data->pci_dev.hdrType) {
-                virBufferAsprintf(&buf, "<capability type='%s'/>\n",
-                                  virPCIHeaderTypeToString(data->pci_dev.hdrType));
-            }
 
             if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCIE)
                 virPCIEDeviceInfoFormat(&buf, data->pci_dev.pci_express);

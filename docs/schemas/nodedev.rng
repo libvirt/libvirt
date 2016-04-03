@@ -149,6 +149,17 @@
     </optional>
 
     <optional>
+      <element name='capability'>
+        <attribute name='type'>
+          <choice>
+            <value>pci-bridge</value>
+            <value>cardbus-bridge</value>
+          </choice>
+        </attribute>
+      </element>
+    </optional>
+
+    <optional>
       <element name='iommuGroup'>
         <attribute name='number'>
           <ref name='unsignedInt'/>
@@ -166,17 +177,6 @@
             <data type='int'/>
           </attribute>
         </optional>
-      </element>
-    </optional>
-
-    <optional>
-      <element name='capability'>
-        <attribute name='type'>
-          <choice>
-            <value>pci-bridge</value>
-            <value>cardbus-bridge</value>
-          </choice>
-        </attribute>
       </element>
     </optional>
 
