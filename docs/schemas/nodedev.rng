@@ -143,8 +143,13 @@
           <value>virt_functions</value>
         </attribute>
         <optional>
-          <ref name='address'/>
+          <attribute name='maxCount'>
+            <ref name='unsignedInt'/>
+          </attribute>
         </optional>
+        <zeroOrMore>
+          <ref name='address'/>
+        </zeroOrMore>
       </element>
     </optional>
 
