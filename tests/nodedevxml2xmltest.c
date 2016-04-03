@@ -91,7 +91,14 @@ mymain(void)
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0");
     DO_TEST("pci_8086_4238_pcie_wireless");
     DO_TEST("pci_8086_0c0c_snd_hda_intel");
+    DO_TEST("pci_0000_00_02_0_header_type");
+    DO_TEST("pci_0000_00_1c_0_header_type");
     DO_TEST("scsi_target0_0_0");
+    DO_TEST("pci_0000_02_10_7_sriov");
+    DO_TEST("pci_0000_02_10_7_sriov_vfs");
+    DO_TEST("pci_0000_02_10_7_sriov_zero_vfs_max_count");
+    DO_TEST("pci_0000_02_10_7_sriov_pf_vfs_all");
+    DO_TEST("pci_0000_02_10_7_sriov_pf_vfs_all_header_type");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
