@@ -1044,3 +1044,37 @@ virNetServerGetClient(virNetServerPtr srv,
                        _("No client with matching ID '%llu'"), id);
     return ret;
 }
+
+int
+virNetServerSetClientProcessingControls(virNetServerPtr srv,
+                                        long long int maxClients,
+                                        long long int maxClientsUnauth)
+{
+    int ret = -1;
+    size_t max, max_unauth;
+
+    virObjectLock(srv);
+
+    max = maxClients >= 0 ? maxClients : srv->nclients_max;
+    max_unauth = maxClientsUnauth >= 0 ?
+        maxClientsUnauth : srv->nclients_unauth_max;
+
+    if (max < max_unauth) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("The overall maximum number of clients must be "
+                         "greater than the maximum number of clients waiting "
+                         "for authentication"));
+        goto cleanup;
+    }
+
+    if (maxClients >= 0)
+        srv->nclients_max = maxClients;
+
+    if (maxClientsUnauth >= 0)
+        srv->nclients_unauth_max = maxClientsUnauth;
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(srv);
+    return ret;
+}

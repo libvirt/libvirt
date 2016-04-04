@@ -352,3 +352,38 @@ adminServerGetClientLimits(virNetServerPtr srv,
     virTypedParamsFree(tmpparams, *nparams);
     return ret;
 }
+
+int
+adminServerSetClientLimits(virNetServerPtr srv,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    long long int maxClients = -1;
+    long long int maxClientsUnauth = -1;
+    virTypedParameterPtr param = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_SERVER_CLIENTS_MAX,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_SERVER_CLIENTS_UNAUTH_MAX,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if ((param = virTypedParamsGet(params, nparams,
+                                   VIR_SERVER_CLIENTS_MAX)))
+        maxClients = param->value.ui;
+
+    if ((param = virTypedParamsGet(params, nparams,
+                                   VIR_SERVER_CLIENTS_UNAUTH_MAX)))
+        maxClientsUnauth = param->value.ui;
+
+    if (virNetServerSetClientProcessingControls(srv, maxClients,
+                                                maxClientsUnauth) < 0)
+        return -1;
+
+    return 0;
+}

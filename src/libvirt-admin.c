@@ -1041,3 +1041,47 @@ virAdmServerGetClientLimits(virAdmServerPtr srv,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmServerSetClientLimits:
+ * @srv: a valid server object reference
+ * @params: pointer to client limits object
+ * @nparams: number of parameters in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Change client limits configuration on server @srv.
+ *
+ * Caller is responsible for allocating @params prior to calling this function.
+ * See 'Manage per-server client limits' in libvirt-admin.h for
+ * supported parameters in @params.
+ *
+ * Returns 0 if the limits have been changed successfully or -1 in case of an
+ * error.
+ */
+int
+virAdmServerSetClientLimits(virAdmServerPtr srv,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("srv=%p, params=%p, nparams=%d, flags=%x", srv, params, nparams,
+              flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckAdmServerGoto(srv, error);
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNegativeArgGoto(nparams, error);
+
+    if ((ret = remoteAdminServerSetClientLimits(srv, params, nparams,
+                                                flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return ret;
+}

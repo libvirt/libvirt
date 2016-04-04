@@ -119,6 +119,14 @@ struct admin_server_get_client_limits_ret {
                 admin_typed_param * params_val;
         } params;
 };
+struct admin_server_set_client_limits_args {
+        admin_nonnull_server       srv;
+        struct {
+                u_int              params_len;
+                admin_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -132,4 +140,5 @@ enum admin_procedure {
         ADMIN_PROC_CLIENT_GET_INFO = 10,
         ADMIN_PROC_CLIENT_CLOSE = 11,
         ADMIN_PROC_SERVER_GET_CLIENT_LIMITS = 12,
+        ADMIN_PROC_SERVER_SET_CLIENT_LIMITS = 13,
 };

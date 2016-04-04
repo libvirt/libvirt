@@ -398,6 +398,11 @@ int virAdmServerGetClientLimits(virAdmServerPtr srv,
                                 int *nparams,
                                 unsigned int flags);
 
+int virAdmServerSetClientLimits(virAdmServerPtr srv,
+                                virTypedParameterPtr params,
+                                int nparams,
+                                unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

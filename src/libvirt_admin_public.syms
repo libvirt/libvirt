@@ -36,4 +36,5 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmClientGetInfo;
         virAdmClientClose;
         virAdmServerGetClientLimits;
+        virAdmServerSetClientLimits;
 };

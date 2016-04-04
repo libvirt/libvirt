@@ -345,4 +345,42 @@ adminDispatchServerGetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
     virObjectUnref(srv);
     return rv;
 }
+
+static int
+adminDispatchServerSetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                   virNetServerClientPtr client,
+                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                   virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                   admin_server_set_client_limits_args *args)
+{
+    int rv = -1;
+    virNetServerPtr srv = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    struct daemonAdmClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!(srv = virNetDaemonGetServer(priv->dmn, args->srv.name))) {
+        virReportError(VIR_ERR_NO_SERVER,
+                       _("no server with matching name '%s' found"),
+                       args->srv.name);
+        goto cleanup;
+    }
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+        args->params.params_len,
+        ADMIN_SERVER_CLIENT_LIMITS_MAX, &params, &nparams) < 0)
+        goto cleanup;
+
+    if (adminServerSetClientLimits(srv, params, nparams, args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(srv);
+    return rv;
+}
 #include "admin_dispatch.h"

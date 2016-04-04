@@ -177,6 +177,12 @@ struct admin_server_get_client_limits_ret {
     admin_typed_param params<ADMIN_SERVER_CLIENT_LIMITS_MAX>;
 };
 
+struct admin_server_set_client_limits_args {
+    admin_nonnull_server srv;
+    admin_typed_param params<ADMIN_SERVER_CLIENT_LIMITS_MAX>;
+    unsigned int flags;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -257,5 +263,10 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_SERVER_GET_CLIENT_LIMITS = 12
+    ADMIN_PROC_SERVER_GET_CLIENT_LIMITS = 12,
+
+    /**
+     * @generate: none
+     */
+    ADMIN_PROC_SERVER_SET_CLIENT_LIMITS = 13
 };
