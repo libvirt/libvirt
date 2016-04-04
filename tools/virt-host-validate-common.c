@@ -343,16 +343,24 @@ static int virHostValidateCGroupMount(const char *hvname,
         goto error;
 
     while (getmntent_r(fp, &ent, mntbuf, sizeof(mntbuf)) && !matched) {
-        char *tmp = strstr(ent.mnt_opts, cg_name);
-        if (!tmp)
+        char **opts;
+        size_t nopts;
+        size_t i;
+
+        /* Ignore non-cgroup mounts */
+        if (STRNEQ(ent.mnt_type, "cgroup"))
             continue;
 
-        tmp += strlen(cg_name);
-        if (*tmp != ',' &&
-            *tmp != '\0')
+        if (!(opts = virStringSplitCount(ent.mnt_opts, ",", 0, &nopts)))
             continue;
 
-        matched = true;
+        /* Look for a mount option matching the cgroup name */
+        for (i = 0; i < nopts; i++) {
+            if (STREQ(opts[i], cg_name))
+                matched = true;
+        }
+
+        virStringFreeListCount(opts, nopts);
     }
     endmntent(fp);
     if (!matched)
