@@ -8723,7 +8723,6 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
         virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
         char *devstr;
 
-        virCommandAddArg(cmd, "-chardev");
         if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                               &redirdev->source.chr,
                                               redirdev->info.alias,
@@ -8731,6 +8730,7 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
             return -1;
         }
 
+        virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
 
