@@ -1038,6 +1038,10 @@ nodeGetThreadsPerSubcore;
 nodeSetMemoryParameters;
 
 
+# secret/secret_util.h
+virSecretGetSecretString;
+
+
 # security/security_driver.h
 virSecurityDriverLookup;
 

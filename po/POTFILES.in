@@ -155,6 +155,7 @@ src/rpc/virnetserverservice.c
 src/rpc/virnetsshsession.c
 src/rpc/virnettlscontext.c
 src/secret/secret_driver.c
+src/secret/secret_util.c
 src/security/security_apparmor.c
 src/security/security_dac.c
 src/security/security_driver.c

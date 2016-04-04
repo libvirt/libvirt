@@ -936,6 +936,9 @@ INTERFACE_DRIVER_SOURCES +=					\
 endif WITH_UDEV
 endif WITH_INTERFACE
 
+SECRET_UTIL_SOURCES =						\
+		secret/secret_util.h secret/secret_util.c
+
 SECRET_DRIVER_SOURCES =						\
 		secret/secret_driver.h secret/secret_driver.c
 
@@ -1123,6 +1126,12 @@ libvirt_cpu_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
 
+noinst_LTLIBRARIES += libvirt_secret.la
+libvirt_la_BUILT_LIBADD += libvirt_secret.la
+libvirt_secret_la_CFLAGS = $(AM_CFLAGS)
+libvirt_secret_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_secret_la_SOURCES = $(SECRET_UTIL_SOURCES)
+
 if WITH_VMX
 noinst_LTLIBRARIES += libvirt_vmx.la
 libvirt_la_BUILT_LIBADD += libvirt_vmx.la
@@ -1303,10 +1312,13 @@ libvirt_driver_libxl_impl_la_CFLAGS = 		\
 		$(LIBXL_CFLAGS)			\
 		-I$(srcdir)/access	\
 		-I$(srcdir)/conf	\
+		-I$(srcdir)/secret      \
 		-I$(srcdir)/xenconfig	\
 		$(AM_CFLAGS)
 libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) libvirt_xenconfig.la
+libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) \
+				      libvirt_xenconfig.la \
+				      libvirt_secret.la
 libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
 
 conf_DATA += libxl/libxl.conf
@@ -1337,12 +1349,14 @@ libvirt_driver_qemu_impl_la_CFLAGS = \
 		$(LIBNL_CFLAGS) \
 		-I$(srcdir)/access \
 		-I$(srcdir)/conf \
+		-I$(srcdir)/secret \
 		$(AM_CFLAGS)
 libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_qemu_impl_la_LIBADD = $(CAPNG_LIBS) \
                                 $(GNUTLS_LIBS) \
 				$(LIBNL_LIBS) \
 				$(LIBXML_LIBS) \
+				libvirt_secret.la \
 				$(NULL)
 libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
 
@@ -1873,6 +1887,7 @@ EXTRA_DIST +=							\
 		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
 		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
 		$(SECRET_DRIVER_SOURCES)			\
+		$(SECRET_UTIL_SOURCES)				\
 		$(VBOX_DRIVER_EXTRA_DIST)			\
 		$(VMWARE_DRIVER_SOURCES)			\
 		$(XENCONFIG_SOURCES)				\

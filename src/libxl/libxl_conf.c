@@ -46,7 +46,7 @@
 #include "libxl_conf.h"
 #include "libxl_utils.h"
 #include "virstoragefile.h"
-#include "base64.h"
+#include "secret_util.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -935,76 +935,6 @@ libxlDomainGetEmulatorType(const virDomainDef *def)
     return ret;
 }
 
-static char *
-libxlGetSecretString(virConnectPtr conn,
-                     const char *scheme,
-                     bool encoded,
-                     virStorageAuthDefPtr authdef,
-                     virSecretUsageType secretUsageType)
-{
-    size_t secret_size;
-    virSecretPtr sec = NULL;
-    char *secret = NULL;
-    char uuidStr[VIR_UUID_STRING_BUFLEN];
-
-    /* look up secret */
-    switch (authdef->secretType) {
-    case VIR_STORAGE_SECRET_TYPE_UUID:
-        sec = virSecretLookupByUUID(conn, authdef->secret.uuid);
-        virUUIDFormat(authdef->secret.uuid, uuidStr);
-        break;
-    case VIR_STORAGE_SECRET_TYPE_USAGE:
-        sec = virSecretLookupByUsage(conn, secretUsageType,
-                                     authdef->secret.usage);
-        break;
-    }
-
-    if (!sec) {
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("%s no secret matches uuid '%s'"),
-                           scheme, uuidStr);
-        } else {
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("%s no secret matches usage value '%s'"),
-                           scheme, authdef->secret.usage);
-        }
-        goto cleanup;
-    }
-
-    secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
-                                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-    if (!secret) {
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get value of the secret for "
-                             "username '%s' using uuid '%s'"),
-                           authdef->username, uuidStr);
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get value of the secret for "
-                             "username '%s' using usage value '%s'"),
-                           authdef->username, authdef->secret.usage);
-        }
-        goto cleanup;
-    }
-
-    if (encoded) {
-        char *base64 = NULL;
-
-        base64_encode_alloc(secret, secret_size, &base64);
-        VIR_FREE(secret);
-        if (!base64) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        secret = base64;
-    }
-
- cleanup:
-    virObjectUnref(sec);
-    return secret;
-}
 
 static char *
 libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
@@ -1100,11 +1030,11 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
         if (!(conn = virConnectOpen("xen:///system")))
             goto cleanup;
 
-        if (!(secret = libxlGetSecretString(conn,
-                                            protocol,
-                                            true,
-                                            src->auth,
-                                            VIR_SECRET_USAGE_TYPE_CEPH)))
+        if (!(secret = virSecretGetSecretString(conn,
+                                                protocol,
+                                                true,
+                                                src->auth,
+                                                VIR_SECRET_USAGE_TYPE_CEPH)))
             goto cleanup;
     }
 
