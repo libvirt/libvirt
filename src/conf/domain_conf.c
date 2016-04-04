@@ -6066,7 +6066,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
     unsigned int prefixValue = 0;
     char *familyStr = NULL;
     int family = AF_UNSPEC;
-    char *address = NULL;
+    char *address = NULL, *peer = NULL;
 
     if (!(address = virXMLPropString(node, "address"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -6104,6 +6104,13 @@ virDomainNetIPParseXML(xmlNodePtr node)
     }
     ip->prefix = prefixValue;
 
+    if ((peer = virXMLPropString(node, "peer")) != NULL &&
+        virSocketAddrParse(&ip->peer, peer, family) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid peer '%s' in <ip>"), peer);
+        goto cleanup;
+    }
+
     ret = ip;
     ip = NULL;
 
@@ -6111,6 +6118,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
     VIR_FREE(prefixStr);
     VIR_FREE(familyStr);
     VIR_FREE(address);
+    VIR_FREE(peer);
     VIR_FREE(ip);
     return ret;
 }
@@ -20215,6 +20223,12 @@ virDomainNetIPInfoFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " family='%s'", familyStr);
         if (def->ips[i]->prefix)
             virBufferAsprintf(buf, " prefix='%u'", def->ips[i]->prefix);
+        if (VIR_SOCKET_ADDR_VALID(&def->ips[i]->peer)) {
+            if (!(ipStr = virSocketAddrFormat(&def->ips[i]->peer)))
+                return -1;
+            virBufferAsprintf(buf, " peer='%s'", ipStr);
+            VIR_FREE(ipStr);
+        }
         virBufferAddLit(buf, "/>\n");
     }
 
