@@ -8436,12 +8436,12 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                                   &parallel->source,
                                                   parallel->info.alias,
                                                   qemuCaps)))
                 return -1;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
