@@ -8575,12 +8575,12 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                 return -1;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                                   &console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
                 return -1;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8595,12 +8595,12 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                 return -1;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                                   &console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
                 return -1;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
