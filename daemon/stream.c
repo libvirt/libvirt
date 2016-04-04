@@ -44,8 +44,8 @@ struct daemonClientStream {
     int procedure;
     unsigned int serial;
 
-    unsigned int recvEOF : 1;
-    unsigned int closed : 1;
+    bool recvEOF;
+    bool closed;
 
     int filterID;
 
@@ -198,7 +198,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         virNetMessagePtr msg;
         events &= ~(VIR_STREAM_EVENT_HANGUP);
         stream->tx = 0;
-        stream->recvEOF = 1;
+        stream->recvEOF = true;
         if (!(msg = virNetMessageNew(false))) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
@@ -227,7 +227,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         virNetMessageError rerr;
 
         memset(&rerr, 0, sizeof(rerr));
-        stream->closed = 1;
+        stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
         if (events & VIR_STREAM_EVENT_HANGUP)
@@ -538,7 +538,7 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
         memset(&rerr, 0, sizeof(rerr));
 
         VIR_INFO("Stream send failed");
-        stream->closed = 1;
+        stream->closed = true;
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
                                                  msg,
@@ -568,7 +568,7 @@ daemonStreamHandleFinish(virNetServerClientPtr client,
     VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%u",
               client, stream, msg->header.proc, msg->header.serial);
 
-    stream->closed = 1;
+    stream->closed = true;
     virStreamEventRemoveCallback(stream->st);
     ret = virStreamFinish(stream->st);
 
@@ -608,7 +608,7 @@ daemonStreamHandleAbort(virNetServerClientPtr client,
 
     memset(&rerr, 0, sizeof(rerr));
 
-    stream->closed = 1;
+    stream->closed = true;
     virStreamEventRemoveCallback(stream->st);
     virStreamAbort(stream->st);
 
@@ -755,7 +755,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
         virNetMessagePtr msg;
         stream->tx = 0;
         if (ret == 0)
-            stream->recvEOF = 1;
+            stream->recvEOF = true;
         if (!(msg = virNetMessageNew(false)))
             ret = -1;
 
