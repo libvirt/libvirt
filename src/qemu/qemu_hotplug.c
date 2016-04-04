@@ -3334,20 +3334,24 @@ qemuDomainMarkDeviceForRemoval(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
-        priv->unpluggingDevice = info->alias;
-    else
-        priv->unpluggingDevice = NULL;
+    memset(&priv->unplug, 0, sizeof(priv->unplug));
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
+        return;
+
+    priv->unplug.alias = info->alias;
 }
 
 static void
 qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    priv->unpluggingDevice = NULL;
+    priv->unplug.alias = NULL;
 }
 
 /* Returns:
+ *  -1 Unplug of the device failed
+ *
  *   0 DEVICE_DELETED event is supported and removal of the device did not
  *     finish in qemuDomainRemoveDeviceWaitTime
  *
@@ -3370,15 +3374,21 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
         return 1;
     until += qemuDomainRemoveDeviceWaitTime;
 
-    while (priv->unpluggingDevice) {
+    while (priv->unplug.alias) {
         if ((rc = virDomainObjWaitUntil(vm, until)) == 1)
             return 0;
 
         if (rc < 0) {
             VIR_WARN("Failed to wait on unplug condition for domain '%s' "
-                     "device '%s'", vm->def->name, priv->unpluggingDevice);
+                     "device '%s'", vm->def->name, priv->unplug.alias);
             return 1;
         }
+    }
+
+    if (priv->unplug.status == QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("unplug of device was rejected by the guest"));
+        return -1;
     }
 
     return 1;
@@ -3392,12 +3402,14 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
  */
 bool
 qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
-                              const char *devAlias)
+                              const char *devAlias,
+                              qemuDomainUnpluggingDeviceStatus status)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (STREQ_NULLABLE(priv->unpluggingDevice, devAlias)) {
+    if (STREQ_NULLABLE(priv->unplug.alias, devAlias)) {
         qemuDomainResetDeviceRemoval(vm);
+        priv->unplug.status = status;
         virDomainObjBroadcast(vm);
         return true;
     }

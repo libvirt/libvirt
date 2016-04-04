@@ -149,6 +149,22 @@ typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm);
 
 # define QEMU_DOMAIN_MASTER_KEY_LEN 32  /* 32 bytes for 256 bit random key */
+
+
+/* helper data types for async device unplug */
+typedef enum {
+    QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_NONE = 0,
+    QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_OK,
+    QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED,
+} qemuDomainUnpluggingDeviceStatus;
+
+typedef struct _qemuDomainUnpluggingDevice qemuDomainUnpluggingDevice;
+typedef qemuDomainUnpluggingDevice *qemuDomainUnpluggingDevicePtr;
+struct _qemuDomainUnpluggingDevice {
+    const char *alias;
+    qemuDomainUnpluggingDeviceStatus status;
+};
+
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
@@ -199,7 +215,8 @@ struct _qemuDomainObjPrivate {
 
     virPerfPtr perf;
 
-    const char *unpluggingDevice; /* alias of the device that is being unplugged */
+    qemuDomainUnpluggingDevice unplug;
+
     char **qemuDevices; /* NULL-terminated list of devices aliases known to QEMU */
 
     bool hookRun;  /* true if there was a hook run over this domain */
