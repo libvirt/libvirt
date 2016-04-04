@@ -50,7 +50,7 @@ struct daemonClientStream {
     int filterID;
 
     virNetMessagePtr rx;
-    int tx;
+    bool tx;
 
     daemonClientStreamPtr next;
 };
@@ -99,7 +99,7 @@ daemonStreamMessageFinished(virNetMessagePtr msg,
     VIR_DEBUG("stream=%p proc=%d serial=%u",
               stream, msg->header.proc, msg->header.serial);
 
-    stream->tx = 1;
+    stream->tx = true;
     daemonStreamUpdateEvents(stream);
 
     daemonFreeClientStream(NULL, stream);
@@ -197,7 +197,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         (events & VIR_STREAM_EVENT_HANGUP)) {
         virNetMessagePtr msg;
         events &= ~(VIR_STREAM_EVENT_HANGUP);
-        stream->tx = 0;
+        stream->tx = false;
         stream->recvEOF = true;
         if (!(msg = virNetMessageNew(false))) {
             daemonRemoveClientStream(client, stream);
@@ -422,7 +422,7 @@ int daemonAddClientStream(virNetServerClientPtr client,
     }
 
     if (transmit)
-        stream->tx = 1;
+        stream->tx = true;
 
     virMutexLock(&priv->lock);
     stream->next = priv->streams;
@@ -753,7 +753,7 @@ daemonStreamHandleRead(virNetServerClientPtr client,
                                                      stream->serial);
     } else {
         virNetMessagePtr msg;
-        stream->tx = 0;
+        stream->tx = false;
         if (ret == 0)
             stream->recvEOF = true;
         if (!(msg = virNetMessageNew(false)))
