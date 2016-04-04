@@ -3348,8 +3348,8 @@ qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
 }
 
 /* Returns:
- *  -1 on error
- *   0 when DEVICE_DELETED event is unsupported
+ *   0 when DEVICE_DELETED event is unsupported, or we failed to reliably wait
+ *   for the event
  *   1 when DEVICE_DELETED arrived before the timeout and the caller is
  *     responsible for finishing the removal
  *   2 device removal did not finish in qemuDomainRemoveDeviceWaitTime
@@ -3364,7 +3364,7 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
         return 0;
 
     if (virTimeMillisNow(&until) < 0)
-        return -1;
+        return 0;
     until += qemuDomainRemoveDeviceWaitTime;
 
     while (priv->unpluggingDevice) {
@@ -3373,9 +3373,9 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
             if (errno == ETIMEDOUT) {
                 return 2;
             } else {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to wait on unplug condition"));
-                return -1;
+                VIR_WARN("Failed to wait on unplug condition for domain '%s' "
+                         "device '%s'", vm->def->name, priv->unpluggingDevice);
+                return 0;
             }
         }
     }
