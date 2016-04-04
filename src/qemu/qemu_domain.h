@@ -199,7 +199,6 @@ struct _qemuDomainObjPrivate {
 
     virPerfPtr perf;
 
-    virCond unplugFinished; /* signals that unpluggingDevice was unplugged */
     const char *unpluggingDevice; /* alias of the device that is being unplugged */
     char **qemuDevices; /* NULL-terminated list of devices aliases known to QEMU */
 

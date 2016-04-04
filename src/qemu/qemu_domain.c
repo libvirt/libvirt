@@ -839,9 +839,6 @@ qemuDomainObjPrivateAlloc(void)
         goto error;
     }
 
-    if (virCondInit(&priv->unplugFinished) < 0)
-        goto error;
-
     if (!(priv->devs = virChrdevAlloc()))
         goto error;
 
@@ -871,7 +868,6 @@ qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
-    virCondDestroy(&priv->unplugFinished);
     virStringFreeList(priv->qemuDevices);
     virChrdevFree(priv->devs);
 

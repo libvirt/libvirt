@@ -3361,6 +3361,7 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned long long until;
+    int rc;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
         return 1;
@@ -3370,15 +3371,13 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
     until += qemuDomainRemoveDeviceWaitTime;
 
     while (priv->unpluggingDevice) {
-        if (virCondWaitUntil(&priv->unplugFinished,
-                             &vm->parent.lock, until) < 0) {
-            if (errno == ETIMEDOUT) {
-                return 0;
-            } else {
-                VIR_WARN("Failed to wait on unplug condition for domain '%s' "
-                         "device '%s'", vm->def->name, priv->unpluggingDevice);
-                return 1;
-            }
+        if ((rc = virDomainObjWaitUntil(vm, until)) == 1)
+            return 0;
+
+        if (rc < 0) {
+            VIR_WARN("Failed to wait on unplug condition for domain '%s' "
+                     "device '%s'", vm->def->name, priv->unpluggingDevice);
+            return 1;
         }
     }
 
@@ -3399,7 +3398,7 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
 
     if (STREQ_NULLABLE(priv->unpluggingDevice, devAlias)) {
         qemuDomainResetDeviceRemoval(vm);
-        virCondSignal(&priv->unplugFinished);
+        virDomainObjBroadcast(vm);
         return true;
     }
     return false;
