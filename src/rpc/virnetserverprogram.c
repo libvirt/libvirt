@@ -525,9 +525,9 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
     msg->header.serial = serial;
     /*
      * NB
-     *   data != NULL + len > 0    => REMOTE_CONTINUE   (Sending back data)
-     *   data != NULL + len == 0   => REMOTE_CONTINUE   (Sending read EOF)
-     *   data == NULL              => REMOTE_OK         (Sending finish handshake confirmation)
+     *   data != NULL + len > 0    => VIR_NET_CONTINUE   (Sending back data)
+     *   data != NULL + len == 0   => VIR_NET_CONTINUE   (Sending read EOF)
+     *   data == NULL              => VIR_NET_OK         (Sending finish handshake confirmation)
      */
     msg->header.status = data ? VIR_NET_CONTINUE : VIR_NET_OK;
 
