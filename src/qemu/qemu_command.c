@@ -8483,12 +8483,12 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                 return -1;
             }
 
-            virCommandAddArg(cmd, "-chardev");
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                                   &channel->source,
                                                   channel->info.alias,
                                                   qemuCaps)))
                 return -1;
+            virCommandAddArg(cmd, "-chardev");
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
 
@@ -8528,12 +8528,12 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                  * the newer -chardev interface.  */
                 ;
             } else {
-                virCommandAddArg(cmd, "-chardev");
                 if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                                       &channel->source,
                                                       channel->info.alias,
                                                       qemuCaps)))
                     return -1;
+                virCommandAddArg(cmd, "-chardev");
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);
             }
