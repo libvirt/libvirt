@@ -287,7 +287,8 @@ daemonStreamFilter(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
     virMutexLock(&stream->priv->lock);
 
-    if (msg->header.type != VIR_NET_STREAM)
+    if (msg->header.type != VIR_NET_STREAM &&
+        msg->header.type != VIR_NET_STREAM_HOLE)
         goto cleanup;
 
     if (!virNetServerProgramMatches(stream->prog, msg))

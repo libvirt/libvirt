@@ -143,6 +143,14 @@ const VIR_NET_MESSAGE_NUM_FDS_MAX = 32;
  *     * status == VIR_NET_ERROR
  *          remote_error    Error information
  *
+ *  - type == VIR_NET_STREAM_HOLE
+ *     * status == VIR_NET_CONTINUE
+ *          byte[]  hole data
+ *     * status == VIR_NET_ERROR
+ *          remote_error error information
+ *     * status == VIR_NET_OK
+ *          <empty>
+ *
  */
 enum virNetMessageType {
     /* client -> server. args from a method call */
@@ -156,7 +164,9 @@ enum virNetMessageType {
     /* client -> server. args from a method call, with passed FDs */
     VIR_NET_CALL_WITH_FDS = 4,
     /* server -> client. reply/error from a method call, with passed FDs */
-    VIR_NET_REPLY_WITH_FDS = 5
+    VIR_NET_REPLY_WITH_FDS = 5,
+    /* either direction, stream hole data packet */
+    VIR_NET_STREAM_HOLE = 6
 };
 
 enum virNetMessageStatus {

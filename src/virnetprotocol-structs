@@ -6,6 +6,7 @@ enum virNetMessageType {
         VIR_NET_STREAM = 3,
         VIR_NET_CALL_WITH_FDS = 4,
         VIR_NET_REPLY_WITH_FDS = 5,
+        VIR_NET_STREAM_HOLE = 6,
 };
 enum virNetMessageStatus {
         VIR_NET_OK = 0,
