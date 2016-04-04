@@ -301,4 +301,48 @@ adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     virObjectUnref(srv);
     return rv;
 }
+
+static int
+adminDispatchServerGetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                   virNetServerClientPtr client,
+                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                   virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                   admin_server_get_client_limits_args *args,
+                                   admin_server_get_client_limits_ret *ret)
+{
+    int rv = -1;
+    virNetServerPtr srv = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    struct daemonAdmClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!(srv = virNetDaemonGetServer(priv->dmn, args->srv.name)))
+        goto cleanup;
+
+    if (adminServerGetClientLimits(srv, &params, &nparams, args->flags) < 0)
+        goto cleanup;
+
+    if (nparams > ADMIN_SERVER_CLIENT_LIMITS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of client processing parameters %d exceeds "
+                         "max allowed limit: %d"), nparams,
+                       ADMIN_SERVER_CLIENT_LIMITS_MAX);
+        goto cleanup;
+    }
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &ret->params.params_val,
+                                &ret->params.params_len, 0) < 0)
+        goto cleanup;
+
+    rv = 0;
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(srv);
+    return rv;
+}
 #include "admin_dispatch.h"

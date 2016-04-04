@@ -393,6 +393,11 @@ int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
 
 # define VIR_SERVER_CLIENTS_UNAUTH_CURRENT "nclients_unauth"
 
+int virAdmServerGetClientLimits(virAdmServerPtr srv,
+                                virTypedParameterPtr *params,
+                                int *nparams,
+                                unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

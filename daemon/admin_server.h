@@ -62,4 +62,9 @@ int adminClientGetInfo(virNetServerClientPtr client,
 int adminClientClose(virNetServerClientPtr client,
                      unsigned int flags);
 
+int adminServerGetClientLimits(virNetServerPtr srv,
+                               virTypedParameterPtr *params,
+                               int *nparams,
+                               unsigned int flags);
+
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

@@ -355,3 +355,42 @@ remoteAdminClientGetInfo(virAdmClientPtr client,
     virObjectUnlock(priv);
     return rv;
 }
+
+static int
+remoteAdminServerGetClientLimits(virAdmServerPtr srv,
+                                 virTypedParameterPtr *params,
+                                 int *nparams,
+                                 unsigned int flags)
+{
+    int rv = -1;
+    admin_server_get_client_limits_args args;
+    admin_server_get_client_limits_ret ret;
+    remoteAdminPrivPtr priv = srv->conn->privateData;
+    args.flags = flags;
+    make_nonnull_server(&args.srv, srv);
+
+    memset(&ret, 0, sizeof(ret));
+    virObjectLock(priv);
+
+    if (call(srv->conn, 0, ADMIN_PROC_SERVER_GET_CLIENT_LIMITS,
+             (xdrproc_t) xdr_admin_server_get_client_limits_args,
+             (char *) &args,
+             (xdrproc_t) xdr_admin_server_get_client_limits_ret,
+             (char *) &ret) == -1)
+        goto cleanup;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  ADMIN_SERVER_CLIENT_LIMITS_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+    xdr_free((xdrproc_t) xdr_admin_server_get_client_limits_ret,
+             (char *) &ret);
+
+ cleanup:
+    virObjectUnlock(priv);
+    return rv;
+}

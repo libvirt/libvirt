@@ -1000,3 +1000,44 @@ int virAdmClientClose(virAdmClientPtr client,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmServerGetClientLimits:
+ * @srv: a valid server object reference
+ * @params: pointer to client limits object
+ *          (return value, allocated automatically)
+ * @nparams: pointer to number of parameters returned in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Retrieve client limits from server @srv. These include:
+ *  - current number of clients connected to @srv,
+ *  - maximum number of clients connected to @srv,
+ *  - current number of clients connected to @srv waiting for authentication,
+ *  - maximum number of clients connected to @srv that can be wainting for
+ *  authentication.
+ *
+ * Returns 0 on success, allocating @params to size returned in @nparams, or
+ * -1 in case of an error. Caller is responsible for deallocating @params.
+ */
+int
+virAdmServerGetClientLimits(virAdmServerPtr srv,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("srv=%p, flags=%x", srv, flags);
+    virResetLastError();
+
+    virCheckAdmServerGoto(srv, error);
+
+    if ((ret = remoteAdminServerGetClientLimits(srv, params,
+                                                nparams, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

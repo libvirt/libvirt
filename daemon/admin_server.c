@@ -311,3 +311,44 @@ int adminClientClose(virNetServerClientPtr client,
     virNetServerClientClose(client);
     return 0;
 }
+
+int
+adminServerGetClientLimits(virNetServerPtr srv,
+                           virTypedParameterPtr *params,
+                           int *nparams,
+                           unsigned int flags)
+{
+    int ret = -1;
+    int maxparams = 0;
+    virTypedParameterPtr tmpparams = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (virTypedParamsAddUInt(&tmpparams, nparams, &maxparams,
+                              VIR_SERVER_CLIENTS_MAX,
+                              virNetServerGetMaxClients(srv)) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddUInt(&tmpparams, nparams, &maxparams,
+                              VIR_SERVER_CLIENTS_CURRENT,
+                              virNetServerGetCurrentClients(srv)) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddUInt(&tmpparams, nparams, &maxparams,
+                              VIR_SERVER_CLIENTS_UNAUTH_MAX,
+                              virNetServerGetMaxUnauthClients(srv)) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddUInt(&tmpparams, nparams, &maxparams,
+                              VIR_SERVER_CLIENTS_UNAUTH_CURRENT,
+                              virNetServerGetCurrentUnauthClients(srv)) < 0)
+        goto cleanup;
+
+    *params = tmpparams;
+    tmpparams = NULL;
+    ret = 0;
+
+ cleanup:
+    virTypedParamsFree(tmpparams, *nparams);
+    return ret;
+}
