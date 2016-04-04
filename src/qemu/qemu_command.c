@@ -8198,7 +8198,6 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
             return -1;
         }
 
-        virCommandAddArg(cmd, "-chardev");
         if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
                                               &smartcard->data.passthru,
                                               smartcard->info.alias,
@@ -8206,6 +8205,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
             virBufferFreeAndReset(&opt);
             return -1;
         }
+        virCommandAddArg(cmd, "-chardev");
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
 
