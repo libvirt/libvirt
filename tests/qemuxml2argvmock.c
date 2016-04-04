@@ -125,6 +125,13 @@ virNetDevSetMAC(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
+virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
+                   bool online ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+int
 virCommandRun(virCommandPtr cmd ATTRIBUTE_UNUSED,
               int *exitstatus)
 {
