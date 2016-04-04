@@ -520,7 +520,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
             VIR_DEBUG("Adding IP address '%s/%u' to '%s'",
                       ipStr, ip->prefix, newname);
-            if (virNetDevSetIPAddress(newname, &ip->address, prefix) < 0) {
+            if (virNetDevSetIPAddress(newname, &ip->address, NULL, prefix) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Failed to set IP address '%s' on %s"),
                                ipStr, newname);

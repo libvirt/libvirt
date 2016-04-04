@@ -90,6 +90,7 @@ int virNetDevGetOnline(const char *ifname,
 
 int virNetDevSetIPAddress(const char *ifname,
                           virSocketAddr *addr,
+                          virSocketAddr *peer,
                           unsigned int prefix)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevAddRoute(const char *ifname,

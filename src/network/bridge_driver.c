@@ -1971,7 +1971,7 @@ networkAddAddrToBridge(virNetworkObjPtr network,
     }
 
     if (virNetDevSetIPAddress(network->def->bridge,
-                              &ipdef->address, prefix) < 0)
+                              &ipdef->address, NULL, prefix) < 0)
         return -1;
 
     return 0;

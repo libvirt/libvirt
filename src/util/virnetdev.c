@@ -1039,21 +1039,28 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
                                      const char *ifname,
                                      virSocketAddr *addr,
                                      unsigned int prefix,
-                                     virSocketAddr *broadcast)
+                                     virSocketAddr *broadcast,
+                                     virSocketAddr *peer)
 {
     struct nl_msg *nlmsg = NULL;
     struct ifaddrmsg ifa;
     unsigned int ifindex;
     void *addrData = NULL;
+    void *peerData = NULL;
     void *broadcastData = NULL;
     size_t addrDataLen;
 
     if (virNetDevGetIPAddressBinary(addr, &addrData, &addrDataLen) < 0)
         return NULL;
 
-    if (broadcast && virNetDevGetIPAddressBinary(broadcast, &broadcastData,
-                                                 &addrDataLen) < 0)
-        return NULL;
+    if (peer && VIR_SOCKET_ADDR_VALID(peer)) {
+        if (virNetDevGetIPAddressBinary(peer, &peerData, &addrDataLen) < 0)
+            return NULL;
+    } else if (broadcast) {
+        if (virNetDevGetIPAddressBinary(broadcast, &broadcastData,
+                                        &addrDataLen) < 0)
+            return NULL;
+    }
 
     /* Get the interface index */
     if ((ifindex = if_nametoindex(ifname)) == 0)
@@ -1078,12 +1085,15 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
     if (nla_put(nlmsg, IFA_LOCAL, addrDataLen, addrData) < 0)
         goto buffer_too_small;
 
-    if (nla_put(nlmsg, IFA_ADDRESS, addrDataLen, addrData) < 0)
-        goto buffer_too_small;
+    if (peerData) {
+        if (nla_put(nlmsg, IFA_ADDRESS, addrDataLen, peerData) < 0)
+            goto buffer_too_small;
+    }
 
-    if (broadcastData &&
-        nla_put(nlmsg, IFA_BROADCAST, addrDataLen, broadcastData) < 0)
-        goto buffer_too_small;
+    if (broadcastData) {
+        if (nla_put(nlmsg, IFA_BROADCAST, addrDataLen, broadcastData) < 0)
+            goto buffer_too_small;
+    }
 
     return nlmsg;
 
@@ -1098,6 +1108,7 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
  * virNetDevSetIPAddress:
  * @ifname: the interface name
  * @addr: the IP address (IPv4 or IPv6)
+ * @peer: The IP address of peer (IPv4 or IPv6)
  * @prefix: number of 1 bits in the netmask
  *
  * Add an IP address to an interface. This function *does not* remove
@@ -1108,6 +1119,7 @@ virNetDevCreateNetlinkAddressMessage(int messageType,
  */
 int virNetDevSetIPAddress(const char *ifname,
                           virSocketAddr *addr,
+                          virSocketAddr *peer,
                           unsigned int prefix)
 {
     virSocketAddr *broadcast = NULL;
@@ -1116,9 +1128,8 @@ int virNetDevSetIPAddress(const char *ifname,
     struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
 
-
     /* The caller needs to provide a correct address */
-    if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET) {
+    if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET && !VIR_SOCKET_ADDR_VALID(peer)) {
         /* compute a broadcast address if this is IPv4 */
         if (VIR_ALLOC(broadcast) < 0)
             return -1;
@@ -1129,7 +1140,7 @@ int virNetDevSetIPAddress(const char *ifname,
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_NEWADDR, ifname,
                                                        addr, prefix,
-                                                       broadcast)))
+                                                       broadcast, peer)))
         goto cleanup;
 
     if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
@@ -1288,7 +1299,7 @@ int virNetDevClearIPAddress(const char *ifname,
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_DELADDR, ifname,
                                                        addr, prefix,
-                                                       NULL)))
+                                                       NULL, NULL)))
         goto cleanup;
 
     if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
@@ -1423,21 +1434,27 @@ virNetDevWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
 
 int virNetDevSetIPAddress(const char *ifname,
                           virSocketAddr *addr,
+                          virSocketAddr *peer,
                           unsigned int prefix)
 {
     virCommandPtr cmd = NULL;
-    char *addrstr = NULL, *bcaststr = NULL;
+    char *addrstr = NULL, *bcaststr = NULL, *peerstr = NULL;
     virSocketAddr broadcast;
     int ret = -1;
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
+
+    if (VIR_SOCKET_ADDR_VALID(peer) && !(peerstr = virSocketAddrFormat(&peer)))
+        goto cleanup;
+
     /* format up a broadcast address if this is IPv4 */
-    if ((VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) &&
+    if (!peerstr && ((VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) &&
         ((virSocketAddrBroadcastByPrefix(addr, prefix, &broadcast) < 0) ||
-         !(bcaststr = virSocketAddrFormat(&broadcast)))) {
+         !(bcaststr = virSocketAddrFormat(&broadcast))))) {
         goto cleanup;
     }
+
 # ifdef IFCONFIG_PATH
     cmd = virCommandNew(IFCONFIG_PATH);
     virCommandAddArg(cmd, ifname);
@@ -1446,6 +1463,8 @@ int virNetDevSetIPAddress(const char *ifname,
     else
         virCommandAddArg(cmd, "inet");
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    if (peerstr)
+        virCommandAddArgList(cmd, "pointopoint", peerstr, NULL);
     if (bcaststr)
         virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
     virCommandAddArg(cmd, "alias");
@@ -1453,6 +1472,8 @@ int virNetDevSetIPAddress(const char *ifname,
     cmd = virCommandNew(IP_PATH);
     virCommandAddArgList(cmd, "addr", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
+    if (peerstr)
+        virCommandAddArgList(cmd, "peer", peerstr, NULL);
     if (bcaststr)
         virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
@@ -1465,6 +1486,7 @@ int virNetDevSetIPAddress(const char *ifname,
  cleanup:
     VIR_FREE(addrstr);
     VIR_FREE(bcaststr);
+    VIR_FREE(peerstr);
     virCommandFree(cmd);
     return ret;
 }
