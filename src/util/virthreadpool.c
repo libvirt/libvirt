@@ -286,17 +286,35 @@ void virThreadPoolFree(virThreadPoolPtr pool)
 
 size_t virThreadPoolGetMinWorkers(virThreadPoolPtr pool)
 {
-    return pool->minWorkers;
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->minWorkers;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
 }
 
 size_t virThreadPoolGetMaxWorkers(virThreadPoolPtr pool)
 {
-    return pool->maxWorkers;
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->maxWorkers;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
 }
 
 size_t virThreadPoolGetPriorityWorkers(virThreadPoolPtr pool)
 {
-    return pool->nPrioWorkers;
+    size_t ret;
+
+    virMutexLock(&pool->mutex);
+    ret = pool->nPrioWorkers;
+    virMutexUnlock(&pool->mutex);
+
+    return ret;
 }
 
 /*
