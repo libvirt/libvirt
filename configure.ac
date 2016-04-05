@@ -2757,7 +2757,7 @@ AC_DEFINE_UNQUOTED([base64_encode_alloc],[libvirt_gl_base64_encode_alloc],[Hack 
 AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([\
-        Makefile src/Makefile include/Makefile docs/Makefile \
+        Makefile src/Makefile include/libvirt/Makefile docs/Makefile \
         gnulib/lib/Makefile \
         gnulib/tests/Makefile \
         libvirt.pc \
