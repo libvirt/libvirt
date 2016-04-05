@@ -48,7 +48,7 @@ int networkGetNetworkAddress(const char *netname, char **netaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int networkGetActualType(virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1);
 
 int networkDnsmasqConfContents(virNetworkObjPtr network,
                         const char *pidfile,
