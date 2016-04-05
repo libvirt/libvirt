@@ -5327,12 +5327,12 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
 
     <p>
-      Regardless of the<code>type</code>, character devices can
+      Regardless of the <code>type</code>, character devices can
       have an optional log file associated with them. This is
       expressed via a <code>log</code> sub-element, with a
-      <code>file</code> attribute. There can also be a <code>append</code>
-      attribute which takes teh same values described above.
-      <span class="since">1.3.3</span>.
+      <code>file</code> attribute. There can also be an <code>append</code>
+      attribute which takes the same values described above.
+      <span class="since">Since 1.3.3</span>.
     </p>
 
     <pre>
