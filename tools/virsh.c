@@ -968,9 +968,6 @@ main(int argc, char **argv)
 
     virFileActivateDirOverride(argv[0]);
 
-    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
-        ctl->connname = vshStrdup(ctl, defaultConn);
-
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);
 
@@ -979,6 +976,9 @@ main(int argc, char **argv)
         virshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
+
+    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
+        ctl->connname = vshStrdup(ctl, defaultConn);
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);
