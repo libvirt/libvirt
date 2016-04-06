@@ -11473,7 +11473,6 @@ qemuDomainMemoryStats(virDomainPtr dom,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     int ret = -1;
     long rss;
@@ -11497,9 +11496,8 @@ qemuDomainMemoryStats(virDomainPtr dom,
 
     if (vm->def->memballoon &&
         vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
-        priv = vm->privateData;
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetMemoryStats(priv->mon, stats, nr_stats);
+        ret = qemuMonitorGetMemoryStats(qemuDomainGetMonitor(vm), stats, nr_stats);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
 
