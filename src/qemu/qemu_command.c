@@ -3526,12 +3526,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                                virQEMUCapsPtr qemuCaps)
 {
     char *optstr;
-    /* QEMU changed its default behavior to not include the virtio balloon
-     * device.  Explicitly request it to ensure it will be present.
-     *
-     * NB: Earlier we declared that VirtIO balloon will always be in
-     * slot 0x3 on bus 0x0
-     */
+
     if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
         def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
