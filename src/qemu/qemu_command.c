@@ -3470,14 +3470,29 @@ qemuBuildWatchdogCommandLine(virCommandPtr cmd,
 }
 
 
-char *
-qemuBuildMemballoonDevStr(const virDomainDef *def,
-                          virDomainMemballoonDefPtr dev,
-                          virQEMUCapsPtr qemuCaps)
+static int
+qemuBuildMemballoonCommandLine(virCommandPtr cmd,
+                               const virDomainDef *def,
+                               virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    switch (dev->info.type) {
+    if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
+        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
+
+    if (!def->memballoon ||
+        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
+        return 0;
+
+    if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Memory balloon device type '%s' is not supported by this version of qemu"),
+                       virDomainMemballoonModelTypeToString(def->memballoon->model));
+        return -1;
+    }
+
+    switch (def->memballoon->info.type) {
         case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
             virBufferAddLit(&buf, "virtio-balloon-pci");
             break;
@@ -3490,15 +3505,15 @@ qemuBuildMemballoonDevStr(const virDomainDef *def,
         default:
             virReportError(VIR_ERR_XML_ERROR,
                            _("memballoon unsupported with address type '%s'"),
-                           virDomainDeviceAddressTypeToString(dev->info.type));
+                           virDomainDeviceAddressTypeToString(def->memballoon->info.type));
             goto error;
     }
 
-    virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
+    virBufferAsprintf(&buf, ",id=%s", def->memballoon->info.alias);
+    if (qemuBuildDeviceAddressStr(&buf, def, &def->memballoon->info, qemuCaps) < 0)
         goto error;
 
-    if (dev->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
+    if (def->memballoon->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("deflate-on-oom is not supported by this QEMU binary"));
@@ -3506,49 +3521,16 @@ qemuBuildMemballoonDevStr(const virDomainDef *def,
         }
 
         virBufferAsprintf(&buf, ",deflate-on-oom=%s",
-                          virTristateSwitchTypeToString(dev->autodeflate));
+                          virTristateSwitchTypeToString(def->memballoon->autodeflate));
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
-    return virBufferContentAndReset(&buf);
+    virCommandAddArg(cmd, "-device");
+    virCommandAddArgBuffer(cmd, &buf);
+    return 0;
 
  error:
     virBufferFreeAndReset(&buf);
-    return NULL;
-}
-
-
-static int
-qemuBuildMemballoonCommandLine(virCommandPtr cmd,
-                               const virDomainDef *def,
-                               virQEMUCapsPtr qemuCaps)
-{
-    char *optstr;
-
-    if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
-        def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
-
-    if (def->memballoon &&
-        def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Memory balloon device type '%s' is not supported by this version of qemu"),
-                           virDomainMemballoonModelTypeToString(def->memballoon->model));
-            return -1;
-        }
-
-        virCommandAddArg(cmd, "-device");
-
-        optstr = qemuBuildMemballoonDevStr(def, def->memballoon, qemuCaps);
-        if (!optstr)
-            return -1;
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-    }
-    return 0;
+    return -1;
 }
 
 
