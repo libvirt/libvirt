@@ -81,7 +81,7 @@ typedef enum {
     QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
 
     /* 25 */
-    QEMU_CAPS_BALLOON, /* -balloon available */
+    X_QEMU_CAPS_BALLOON, /* -balloon available */
     QEMU_CAPS_DEVICE, /* Is the new -device arg available */
     QEMU_CAPS_SDL, /* Is the new -sdl arg available */
     QEMU_CAPS_SMP_TOPOLOGY, /* -smp has sockets/cores/threads */

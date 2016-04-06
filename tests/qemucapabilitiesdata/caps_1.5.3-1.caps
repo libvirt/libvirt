@@ -4,7 +4,6 @@
     <flag name='chardev'/>
     <flag name='enable-kvm'/>
     <flag name='monitor-json'/>
-    <flag name='balloon'/>
     <flag name='device'/>
     <flag name='sdl'/>
     <flag name='smp-topology'/>

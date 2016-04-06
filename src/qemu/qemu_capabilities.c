@@ -1167,8 +1167,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (strstr(help, "-chardev spiceport"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
     }
-    if (strstr(help, "-balloon"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BALLOON);
     if (strstr(help, "-device")) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
         /*
@@ -3234,7 +3232,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_BALLOON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
