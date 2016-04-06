@@ -3525,6 +3525,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                                const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
 {
+    char *optstr;
     /* QEMU changed its default behavior to not include the virtio balloon
      * device.  Explicitly request it to ensure it will be present.
      *
@@ -3543,18 +3544,14 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                            virDomainMemballoonModelTypeToString(def->memballoon->model));
             return -1;
         }
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            char *optstr;
-            virCommandAddArg(cmd, "-device");
 
-            optstr = qemuBuildMemballoonDevStr(def, def->memballoon, qemuCaps);
-            if (!optstr)
-                return -1;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BALLOON)) {
-            virCommandAddArgList(cmd, "-balloon", "virtio", NULL);
-        }
+        virCommandAddArg(cmd, "-device");
+
+        optstr = qemuBuildMemballoonDevStr(def, def->memballoon, qemuCaps);
+        if (!optstr)
+            return -1;
+        virCommandAddArg(cmd, optstr);
+        VIR_FREE(optstr);
     }
     return 0;
 }
