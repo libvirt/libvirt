@@ -757,8 +757,6 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     }
 
     buflen = ARRAY_CARDINALITY(macstr);
-    if (VIR_ALLOC_N(macstr, buflen))
-        goto cleanup;
     pret = PrlVmDevNet_GetMacAddressCanonical(netAdapter, macstr, &buflen);
     prlsdkCheckRetGoto(pret, cleanup);
 
