@@ -1751,7 +1751,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (qemuDomainDefValidateMemoryHotplug(vm->def, priv->qemuCaps, mem) < 0)
         goto cleanup;
 
-    if (virAsprintf(&mem->info.alias, "dimm%zu", vm->def->nmems) < 0)
+    if (qemuAssignDeviceMemoryAlias(vm->def, mem) < 0)
         goto cleanup;
 
     if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
