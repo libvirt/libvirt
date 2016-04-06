@@ -497,8 +497,7 @@ int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  bool force_probe,
                                  bool report_broken);
 
-bool qemuDomainDiskSourceDiffers(virConnectPtr conn,
-                                 virDomainDiskDefPtr disk,
+bool qemuDomainDiskSourceDiffers(virDomainDiskDefPtr disk,
                                  virDomainDiskDefPtr origDisk);
 
 bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
@@ -615,5 +614,17 @@ int qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
 void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
+
+void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1);
+
+int qemuDomainSecretDiskPrepare(virConnectPtr conn, virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+void qemuDomainSecretDestroy(virDomainObjPtr vm)
+    ATTRIBUTE_NONNULL(1);
+
+int qemuDomainSecretPrepare(virConnectPtr conn, virDomainObjPtr vm)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #endif /* __QEMU_DOMAIN_H__ */

@@ -7712,14 +7712,16 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
         orig_disk->startupPolicy = dev->data.disk->startupPolicy;
         orig_disk->snapshot = dev->data.disk->snapshot;
 
-        if (qemuDomainDiskSourceDiffers(conn, disk, orig_disk)) {
+        if (qemuDomainDiskSourceDiffers(disk, orig_disk)) {
             /* Add the new disk src into shared disk hash table */
             if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
                 goto cleanup;
 
-            if (qemuDomainChangeEjectableMedia(driver, conn, vm,
-                                               orig_disk, dev->data.disk->src, force) < 0) {
-                ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk, vm->def->name));
+            if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
+                                               dev->data.disk->src,
+                                               force) < 0) {
+                ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk,
+                                                  vm->def->name));
                 goto rollback;
             }
 

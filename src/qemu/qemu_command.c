@@ -832,7 +832,7 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
 
 int
 qemuGetDriveSourceString(virStorageSourcePtr src,
-                         virConnectPtr conn,
+                         qemuDomainSecretInfoPtr secinfo,
                          char **source)
 {
     int actualType = virStorageSourceGetActualType(src);
@@ -846,31 +846,6 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     if (virStorageSourceIsEmpty(src))
         return 1;
 
-    if (conn) {
-        if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-            src->auth &&
-            (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
-             src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
-            bool encode = false;
-            int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
-            const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
-            username = src->auth->username;
-
-            if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-                /* qemu requires the secret to be encoded for RBD */
-                encode = true;
-                secretType = VIR_SECRET_USAGE_TYPE_CEPH;
-            }
-
-            if (!(secret = virSecretGetSecretString(conn,
-                                                    protocol,
-                                                    encode,
-                                                    src->auth,
-                                                    secretType)))
-                goto cleanup;
-        }
-    }
-
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
@@ -881,6 +856,11 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
+        if (secinfo) {
+            username = secinfo->s.plain.username;
+            secret = secinfo->s.plain.secret;
+        }
+
         if (!(*source = qemuBuildNetworkDriveURI(src, username, secret)))
             goto cleanup;
         break;
@@ -894,7 +874,6 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    VIR_FREE(secret);
     return ret;
 }
 
@@ -1033,8 +1012,7 @@ qemuCheckFips(void)
 
 
 char *
-qemuBuildDriveStr(virConnectPtr conn,
-                  virDomainDiskDefPtr disk,
+qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   bool bootable,
                   virQEMUCapsPtr qemuCaps)
 {
@@ -1046,6 +1024,7 @@ qemuBuildDriveStr(virConnectPtr conn,
     int busid = -1, unitid = -1;
     char *source = NULL;
     int actualType = virStorageSourceGetActualType(disk->src);
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1127,7 +1106,7 @@ qemuBuildDriveStr(virConnectPtr conn,
         break;
     }
 
-    if (qemuGetDriveSourceString(disk->src, conn, &source) < 0)
+    if (qemuGetDriveSourceString(disk->src, diskPriv->secinfo, &source) < 0)
         goto error;
 
     if (source &&
@@ -1816,7 +1795,6 @@ qemuBuildDriveDevStr(const virDomainDef *def,
 
 static int
 qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
-                              virConnectPtr conn,
                               const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps,
                               bool emitBootindex)
@@ -1910,7 +1888,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
                 deviceFlagMasked = true;
             }
         }
-        optstr = qemuBuildDriveStr(conn, disk,
+        optstr = qemuBuildDriveStr(disk,
                                    emitBootindex ? false : !!bootindex,
                                    qemuCaps);
         if (deviceFlagMasked)
@@ -9367,8 +9345,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildDiskDriveCommandLine(cmd, conn, def, qemuCaps,
-                                      emitBootindex) < 0)
+    if (qemuBuildDiskDriveCommandLine(cmd, def, qemuCaps, emitBootindex) < 0)
         goto error;
 
     if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)

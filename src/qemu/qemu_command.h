@@ -101,8 +101,7 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
                                virQEMUCapsPtr qemuCaps);
 
 /* Both legacy & current support */
-char *qemuBuildDriveStr(virConnectPtr conn,
-                        virDomainDiskDefPtr disk,
+char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
                         bool bootable,
                         virQEMUCapsPtr qemuCaps);
 
@@ -179,7 +178,7 @@ char *qemuBuildRedirdevDevStr(const virDomainDef *def,
 int qemuNetworkPrepareDevices(virDomainDefPtr def);
 
 int qemuGetDriveSourceString(virStorageSourcePtr src,
-                             virConnectPtr conn,
+                             qemuDomainSecretInfoPtr secinfo,
                              char **source);
 
 int qemuCheckDiskConfig(virDomainDiskDefPtr disk);

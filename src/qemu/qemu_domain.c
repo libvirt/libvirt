@@ -46,6 +46,7 @@
 #include "viratomic.h"
 #include "virprocess.h"
 #include "virrandom.h"
+#include "secret_util.h"
 #include "base64.h"
 #ifdef WITH_GNUTLS
 # include <gnutls/gnutls.h>
@@ -788,6 +789,146 @@ qemuDomainDiskPrivateDispose(void *obj)
     qemuDomainDiskPrivatePtr priv = obj;
 
     qemuDomainSecretInfoFree(&priv->secinfo);
+}
+
+
+/* qemuDomainSecretPlainSetup:
+ * @conn: Pointer to connection
+ * @secinfo: Pointer to secret info
+ * @protocol: Protocol for secret
+ * @authdef: Pointer to auth data
+ *
+ * Taking a secinfo, fill in the plaintext information
+ *
+ * Returns 0 on success, -1 on failure with error message
+ */
+static int
+qemuDomainSecretPlainSetup(virConnectPtr conn,
+                           qemuDomainSecretInfoPtr secinfo,
+                           virStorageNetProtocol protocol,
+                           virStorageAuthDefPtr authdef)
+{
+    bool encode = false;
+    int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
+    const char *protocolstr = virStorageNetProtocolTypeToString(protocol);
+
+    secinfo->type = VIR_DOMAIN_SECRET_INFO_PLAIN;
+    if (VIR_STRDUP(secinfo->s.plain.username, authdef->username) < 0)
+        return -1;
+
+    if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        /* qemu requires the secret to be encoded for RBD */
+        encode = true;
+        secretType = VIR_SECRET_USAGE_TYPE_CEPH;
+    }
+
+    if (!(secinfo->s.plain.secret =
+          virSecretGetSecretString(conn, protocolstr, encode,
+                                   authdef, secretType)))
+        return -1;
+
+    return 0;
+}
+
+
+/* qemuDomainSecretDiskDestroy:
+ * @disk: Pointer to a disk definition
+ *
+ * Clear and destroy memory associated with the secret
+ */
+void
+qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    if (!diskPriv->secinfo)
+        return;
+
+    qemuDomainSecretInfoFree(&diskPriv->secinfo);
+}
+
+
+/* qemuDomainSecretDiskPrepare:
+ * @conn: Pointer to connection
+ * @disk: Pointer to a disk definition
+ *
+ * For the right disk, generate the qemuDomainSecretInfo structure.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+qemuDomainSecretDiskPrepare(virConnectPtr conn,
+                            virDomainDiskDefPtr disk)
+{
+    virStorageSourcePtr src = disk->src;
+    qemuDomainSecretInfoPtr secinfo = NULL;
+
+    if (conn && !virStorageSourceIsEmpty(src) &&
+        virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
+        src->auth &&
+        (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
+         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
+
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (VIR_ALLOC(secinfo) < 0)
+            return -1;
+
+        if (qemuDomainSecretPlainSetup(conn, secinfo, src->protocol,
+                                       src->auth) < 0)
+            goto error;
+
+        diskPriv->secinfo = secinfo;
+    }
+
+    return 0;
+
+ error:
+    qemuDomainSecretInfoFree(&secinfo);
+    return -1;
+}
+
+
+/* qemuDomainSecretDestroy:
+ * @vm: Domain object
+ *
+ * Once completed with the generation of the command line it is
+ * expect to remove the secrets
+ */
+void
+qemuDomainSecretDestroy(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++)
+        qemuDomainSecretDiskDestroy(vm->def->disks[i]);
+}
+
+
+/* qemuDomainSecretPrepare:
+ * @conn: Pointer to connection
+ * @vm: Domain object
+ *
+ * For any objects that may require an auth/secret setup, create a
+ * qemuDomainSecretInfo and save it in the approriate place within
+ * the private structures. This will be used by command line build
+ * code in order to pass the secret along to qemu in order to provide
+ * the necessary authentication data.
+ *
+ * Returns 0 on success, -1 on failure with error message set
+ */
+int
+qemuDomainSecretPrepare(virConnectPtr conn,
+                        virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (qemuDomainSecretDiskPrepare(conn, vm->def->disks[i]) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
 
@@ -3799,8 +3940,7 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
 
 
 bool
-qemuDomainDiskSourceDiffers(virConnectPtr conn,
-                            virDomainDiskDefPtr disk,
+qemuDomainDiskSourceDiffers(virDomainDiskDefPtr disk,
                             virDomainDiskDefPtr origDisk)
 {
     char *diskSrc = NULL, *origDiskSrc = NULL;
@@ -3816,8 +3956,10 @@ qemuDomainDiskSourceDiffers(virConnectPtr conn,
     if (diskEmpty ^ origDiskEmpty)
         return true;
 
-    if (qemuGetDriveSourceString(disk->src, conn, &diskSrc) < 0 ||
-        qemuGetDriveSourceString(origDisk->src, conn, &origDiskSrc) < 0)
+    /* This won't be a network storage, so no need to get the diskPriv
+     * in order to fetch the secret, thus NULL for param2 */
+    if (qemuGetDriveSourceString(disk->src, NULL, &diskSrc) < 0 ||
+        qemuGetDriveSourceString(origDisk->src, NULL, &origDiskSrc) < 0)
         goto cleanup;
 
     /* So far in qemu disk sources are considered different
