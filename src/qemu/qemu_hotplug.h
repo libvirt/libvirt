@@ -43,8 +43,7 @@ int qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                    virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainDeviceDefPtr dev);
-int qemuDomainAttachNetDevice(virConnectPtr conn,
-                              virQEMUDriverPtr driver,
+int qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net);
 int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,

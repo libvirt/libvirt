@@ -48,8 +48,7 @@ char *qemuBuildObjectCommandlineFromJSON(const char *type,
                                          const char *alias,
                                          virJSONValuePtr props);
 
-virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
-                                   virQEMUDriverPtr driver,
+virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virLogManagerPtr logManager,
                                    virDomainDefPtr def,
                                    virDomainChrSourceDefPtr monitor_chr,
@@ -65,7 +64,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    int **nicindexes,
                                    const char *domainLibDir,
                                    const char *domainChannelTargetDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(16) ATTRIBUTE_NONNULL(17);
+    ATTRIBUTE_NONNULL(15) ATTRIBUTE_NONNULL(16);
 
 /* Generate '-device' string for chardev device */
 int
@@ -163,8 +162,7 @@ char *qemuBuildUSBHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,
                                 virQEMUCapsPtr qemuCaps);
 
-char *qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
-                                 virDomainHostdevDefPtr dev,
+char *qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);
 
 char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,

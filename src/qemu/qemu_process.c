@@ -5314,7 +5314,7 @@ qemuProcessLaunch(virConnectPtr conn,
     logfile = qemuDomainLogContextGetWriteFD(logCtxt);
 
     VIR_DEBUG("Building emulator command line");
-    if (!(cmd = qemuBuildCommandLine(conn, driver,
+    if (!(cmd = qemuBuildCommandLine(driver,
                                      qemuDomainLogContextGetManager(logCtxt),
                                      vm->def, priv->monConfig,
                                      priv->monJSON, priv->qemuCaps,
@@ -5743,8 +5743,7 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Building emulator command line");
-    cmd = qemuBuildCommandLine(conn,
-                               driver,
+    cmd = qemuBuildCommandLine(driver,
                                NULL,
                                vm->def,
                                priv->monConfig,

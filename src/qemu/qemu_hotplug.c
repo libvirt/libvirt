@@ -796,11 +796,10 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 }
 
 
-/* XXX conn required for network -> bridge resolution */
-int qemuDomainAttachNetDevice(virConnectPtr conn,
-                              virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virDomainNetDefPtr net)
+int
+qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainNetDefPtr net)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **tapfdName = NULL;
@@ -839,8 +838,11 @@ int qemuDomainAttachNetDevice(virConnectPtr conn,
          * as a hostdev (the hostdev code will reach over into the
          * netdev-specific code as appropriate), then also added to
          * the nets list (see cleanup:) if successful.
+         *
+         * qemuDomainAttachHostDevice uses a connection to resolve
+         * a SCSI hostdev secret, which is not this case, so pass NULL.
          */
-        ret = qemuDomainAttachHostDevice(conn, driver, vm,
+        ret = qemuDomainAttachHostDevice(NULL, driver, vm,
                                          virDomainNetGetActualHostdev(net));
         goto cleanup;
     }
@@ -1859,6 +1861,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
+
 static int
 qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
                                virQEMUDriverPtr driver,
@@ -1914,7 +1917,10 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, priv->qemuCaps)))
+    if (qemuDomainSecretHostdevPrepare(conn, hostdev) < 0)
+        goto cleanup;
+
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))
         goto cleanup;
 
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
@@ -1950,6 +1956,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
 
     ret = 0;
  cleanup:
+    qemuDomainSecretHostdevDestroy(hostdev);
     if (ret < 0) {
         qemuHostdevReAttachSCSIDevices(driver, vm->def->name, &hostdev, 1);
         if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
@@ -1964,10 +1971,12 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     return ret;
 }
 
-int qemuDomainAttachHostDevice(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               virDomainHostdevDefPtr hostdev)
+
+int
+qemuDomainAttachHostDevice(virConnectPtr conn,
+                           virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virDomainHostdevDefPtr hostdev)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

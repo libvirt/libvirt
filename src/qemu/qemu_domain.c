@@ -932,6 +932,71 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
 }
 
 
+/* qemuDomainSecretHostdevDestroy:
+ * @disk: Pointer to a hostdev definition
+ *
+ * Clear and destroy memory associated with the secret
+ */
+void
+qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
+{
+    qemuDomainHostdevPrivatePtr hostdevPriv =
+        QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
+
+    if (!hostdevPriv->secinfo)
+        return;
+
+    qemuDomainSecretInfoFree(&hostdevPriv->secinfo);
+}
+
+
+/* qemuDomainSecretHostdevPrepare:
+ * @conn: Pointer to connection
+ * @hostdev: Pointer to a hostdev definition
+ *
+ * For the right host device, generate the qemuDomainSecretInfo structure.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+qemuDomainSecretHostdevPrepare(virConnectPtr conn,
+                               virDomainHostdevDefPtr hostdev)
+{
+    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+    qemuDomainSecretInfoPtr secinfo = NULL;
+
+    if (conn && hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+
+        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+        virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
+            iscsisrc->auth) {
+
+            qemuDomainHostdevPrivatePtr hostdevPriv =
+                QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
+
+            if (VIR_ALLOC(secinfo) < 0)
+                return -1;
+
+            if (qemuDomainSecretPlainSetup(conn, secinfo,
+                                           VIR_STORAGE_NET_PROTOCOL_ISCSI,
+                                           iscsisrc->auth) < 0)
+                goto error;
+
+            hostdevPriv->secinfo = secinfo;
+        }
+    }
+
+    return 0;
+
+ error:
+    qemuDomainSecretInfoFree(&secinfo);
+    return -1;
+}
+
+
 /* qemuDomainSecretDestroy:
  * @vm: Domain object
  *
@@ -945,6 +1010,9 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
 
     for (i = 0; i < vm->def->ndisks; i++)
         qemuDomainSecretDiskDestroy(vm->def->disks[i]);
+
+    for (i = 0; i < vm->def->nhostdevs; i++)
+        qemuDomainSecretHostdevDestroy(vm->def->hostdevs[i]);
 }
 
 
@@ -968,6 +1036,11 @@ qemuDomainSecretPrepare(virConnectPtr conn,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuDomainSecretDiskPrepare(conn, vm->def->disks[i]) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        if (qemuDomainSecretHostdevPrepare(conn, vm->def->hostdevs[i]) < 0)
             return -1;
     }
 

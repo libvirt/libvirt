@@ -634,6 +634,13 @@ void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 int qemuDomainSecretDiskPrepare(virConnectPtr conn, virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+void qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr disk)
+    ATTRIBUTE_NONNULL(1);
+
+int qemuDomainSecretHostdevPrepare(virConnectPtr conn,
+                                   virDomainHostdevDefPtr hostdev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 void qemuDomainSecretDestroy(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);
 

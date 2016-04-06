@@ -7501,8 +7501,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 
     case VIR_DOMAIN_DEVICE_NET:
         qemuDomainObjCheckNetTaint(driver, vm, dev->data.net, NULL);
-        ret = qemuDomainAttachNetDevice(dom->conn, driver, vm,
-                                        dev->data.net);
+        ret = qemuDomainAttachNetDevice(driver, vm, dev->data.net);
         if (!ret) {
             alias = dev->data.net->info.alias;
             dev->data.net = NULL;
