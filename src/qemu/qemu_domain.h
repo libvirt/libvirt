@@ -287,6 +287,19 @@ struct _qemuDomainDiskPrivate {
     qemuDomainSecretInfoPtr secinfo;
 };
 
+# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)	\
+    ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
+
+typedef struct _qemuDomainHostdevPrivate qemuDomainHostdevPrivate;
+typedef qemuDomainHostdevPrivate *qemuDomainHostdevPrivatePtr;
+struct _qemuDomainHostdevPrivate {
+    virObject parent;
+
+    /* for hostdev storage devices using auth/secret
+     * NB: *not* to be written to qemu domain object XML */
+    qemuDomainSecretInfoPtr secinfo;
+};
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,

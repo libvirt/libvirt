@@ -3,7 +3,7 @@
  * between XM and XL
  *
  * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
- * Copyright (C) 2006-2007, 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2016 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
  * Copyright (C) 2006 Daniel P. Berrange
  *
@@ -458,7 +458,7 @@ xenParsePCI(virConfPtr conf, virDomainDefPtr def)
                 goto skippci;
             if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
                 goto skippci;
-            if (!(hostdev = virDomainHostdevDefAlloc()))
+            if (!(hostdev = virDomainHostdevDefAlloc(NULL)))
                return -1;
 
             hostdev->managed = false;

@@ -1,7 +1,7 @@
 /*
  * lxc_native.c: LXC native configuration import
  *
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014-2016 Red Hat, Inc.
  * Copyright (c) 2013-2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
  * This library is free software; you can redistribute it and/or
@@ -394,7 +394,7 @@ lxcCreateNetDef(const char *type,
 static virDomainHostdevDefPtr
 lxcCreateHostdevDef(int mode, int type, const char *data)
 {
-    virDomainHostdevDefPtr hostdev = virDomainHostdevDefAlloc();
+    virDomainHostdevDefPtr hostdev = virDomainHostdevDefAlloc(NULL);
 
     if (!hostdev)
         return NULL;

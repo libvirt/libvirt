@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+ * Copyright (C) 2014-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -86,7 +87,7 @@ myInit(void)
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevSubsys subsys;
-        hostdevs[i] = virDomainHostdevDefAlloc();
+        hostdevs[i] = virDomainHostdevDefAlloc(NULL);
         if (!hostdevs[i])
             goto cleanup;
         hostdevs[i]->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;

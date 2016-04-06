@@ -792,6 +792,49 @@ qemuDomainDiskPrivateDispose(void *obj)
 }
 
 
+static virClassPtr qemuDomainHostdevPrivateClass;
+static void qemuDomainHostdevPrivateDispose(void *obj);
+
+static int
+qemuDomainHostdevPrivateOnceInit(void)
+{
+    qemuDomainHostdevPrivateClass =
+        virClassNew(virClassForObject(),
+                    "qemuDomainHostdevPrivate",
+                    sizeof(qemuDomainHostdevPrivate),
+                    qemuDomainHostdevPrivateDispose);
+    if (!qemuDomainHostdevPrivateClass)
+        return -1;
+    else
+        return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainHostdevPrivate)
+
+static virObjectPtr
+qemuDomainHostdevPrivateNew(void)
+{
+    qemuDomainHostdevPrivatePtr priv;
+
+    if (qemuDomainHostdevPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainHostdevPrivateClass)))
+        return NULL;
+
+    return (virObjectPtr) priv;
+}
+
+
+static void
+qemuDomainHostdevPrivateDispose(void *obj)
+{
+    qemuDomainHostdevPrivatePtr priv = obj;
+
+    qemuDomainSecretInfoFree(&priv->secinfo);
+}
+
+
 /* qemuDomainSecretPlainSetup:
  * @conn: Pointer to connection
  * @secinfo: Pointer to secret info
@@ -1417,6 +1460,7 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .alloc = qemuDomainObjPrivateAlloc,
     .free = qemuDomainObjPrivateFree,
     .diskNew = qemuDomainDiskPrivateNew,
+    .hostdevNew = qemuDomainHostdevPrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
 };

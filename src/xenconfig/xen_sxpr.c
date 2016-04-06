@@ -1,7 +1,7 @@
 /*
  * xen_sxpr.c: Xen SEXPR parsing functions
  *
- * Copyright (C) 2010-2014 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright (C) 2011 Univention GmbH
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  *
@@ -1110,7 +1110,7 @@ xenParseSxprPCI(virDomainDefPtr def,
             goto error;
         }
 
-        if (!(dev = virDomainHostdevDefAlloc()))
+        if (!(dev = virDomainHostdevDefAlloc(NULL)))
            goto error;
 
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;

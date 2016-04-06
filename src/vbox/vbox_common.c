@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014, Taowei Luo (uaedante@gmail.com)
- * Copyright (C) 2010-2015 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright (C) 2008-2009 Sun Microsystems, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -3033,7 +3033,7 @@ vboxHostDeviceGetXMLDesc(vboxGlobalData *data, virDomainDefPtr def, IMachine *ma
         goto release_filters;
 
     for (i = 0; i < def->nhostdevs; i++) {
-        def->hostdevs[i] = virDomainHostdevDefAlloc();
+        def->hostdevs[i] = virDomainHostdevDefAlloc(NULL);
         if (!def->hostdevs[i])
             goto release_hostdevs;
     }
