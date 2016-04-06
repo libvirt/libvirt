@@ -225,6 +225,7 @@ virDomainDefGetVcpuPinInfoHelper;
 virDomainDefGetVcpus;
 virDomainDefGetVcpusMax;
 virDomainDefHasDeviceAddress;
+virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
 virDomainDefHasVcpusOffline;
 virDomainDefMaybeAddController;

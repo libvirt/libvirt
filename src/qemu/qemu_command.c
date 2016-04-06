@@ -3481,8 +3481,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
         def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
 
-    if (!def->memballoon ||
-        def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
+    if (!virDomainDefHasMemballoon(def))
         return 0;
 
     if (def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {

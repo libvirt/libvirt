@@ -4534,8 +4534,7 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
 
     /* if no balloning is available, the current size equals to the current
      * full memory size */
-    if (!vm->def->memballoon ||
-        vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+    if (!virDomainDefHasMemballoon(vm->def)) {
         vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
         return 0;
     }

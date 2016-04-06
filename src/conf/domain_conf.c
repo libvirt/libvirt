@@ -24316,3 +24316,17 @@ virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
 
     return 0;
 }
+
+
+/**
+ * virDomainDefHasMemballoon:
+ * @def: domain definition
+ *
+ * Returns true if domain has a memory ballooning device configured.
+ */
+bool
+virDomainDefHasMemballoon(const virDomainDef *def)
+{
+    return def->memballoon &&
+           def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
+}

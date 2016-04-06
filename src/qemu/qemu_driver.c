@@ -19099,8 +19099,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     unsigned long long cur_balloon = 0;
     int err = 0;
 
-    if (dom->def->memballoon &&
-        dom->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
+    if (!virDomainDefHasMemballoon(dom->def)) {
         cur_balloon = virDomainDefGetMemoryActual(dom->def);
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
         cur_balloon = dom->def->mem.cur_balloon;

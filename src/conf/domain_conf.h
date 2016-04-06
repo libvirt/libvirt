@@ -3160,4 +3160,6 @@ int virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
                                      virBitmapPtr autoCpuset)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
+bool virDomainDefHasMemballoon(const virDomainDef *def) ATTRIBUTE_NONNULL(1);
+
 #endif /* __DOMAIN_CONF_H */
