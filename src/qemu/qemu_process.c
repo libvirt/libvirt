@@ -1993,7 +1993,7 @@ qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
 }
 
 
-static int
+int
 qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                int asyncJob)

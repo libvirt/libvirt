@@ -33,6 +33,7 @@
 #include "qemu_command.h"
 #include "qemu_hostdev.h"
 #include "qemu_interface.h"
+#include "qemu_process.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -1742,7 +1743,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     const char *backendType;
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
-    bool fix_balloon = false;
     int id;
     int ret = -1;
 
@@ -1756,9 +1756,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 
     if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
-
-    if (vm->def->mem.cur_balloon == virDomainDefGetMemoryActual(vm->def))
-        fix_balloon = true;
 
     if (!(devstr = qemuBuildMemoryDeviceStr(mem)))
         goto cleanup;
@@ -1800,9 +1797,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
     qemuDomainEventQueue(driver, event);
 
-    /* fix the balloon size if it was set to maximum */
-    if (fix_balloon)
-        vm->def->mem.cur_balloon += mem->size;
+    /* fix the balloon size */
+    ignore_value(qemuProcessRefreshBalloonState(driver, vm, QEMU_ASYNC_JOB_NONE));
 
     /* mem is consumed by vm->def */
     mem = NULL;
@@ -2938,12 +2934,13 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
     if (rc < 0)
         return -1;
 
-    vm->def->mem.cur_balloon -= mem->size;
-
     if ((idx = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
         virDomainMemoryRemove(vm->def, idx);
 
     virDomainMemoryDefFree(mem);
+
+    /* fix the balloon size */
+    ignore_value(qemuProcessRefreshBalloonState(driver, vm, QEMU_ASYNC_JOB_NONE));
 
     /* decrease the mlock limit after memory unplug if necessary */
     ignore_value(qemuDomainAdjustMaxMemLock(vm));
