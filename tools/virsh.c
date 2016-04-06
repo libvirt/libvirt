@@ -908,7 +908,6 @@ main(int argc, char **argv)
 {
     vshControl _ctl, *ctl = &_ctl;
     virshControl virshCtl;
-    const char *defaultConn;
     bool ret = true;
 
     memset(ctl, 0, sizeof(vshControl));
@@ -977,8 +976,7 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    if ((defaultConn = virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI")))
-        ctl->connname = vshStrdup(ctl, defaultConn);
+    ctl->connname = vshStrdup(ctl, virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"));
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);
