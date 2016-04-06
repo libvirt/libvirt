@@ -54,8 +54,8 @@ int qemuAssignDeviceRedirdevAlias(virDomainDefPtr def,
                                   virDomainRedirdevDefPtr redirdev,
                                   int idx);
 
-int qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng,
-                             size_t idx);
+int qemuAssignDeviceRNGAlias(virDomainDefPtr def,
+                             virDomainRNGDefPtr rng);
 
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 

@@ -382,10 +382,19 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def,
 
 
 int
-qemuAssignDeviceRNGAlias(virDomainRNGDefPtr rng,
-                         size_t idx)
+qemuAssignDeviceRNGAlias(virDomainDefPtr def,
+                         virDomainRNGDefPtr rng)
 {
-    if (virAsprintf(&rng->info.alias, "rng%zu", idx) < 0)
+    size_t i;
+    int maxidx = 0;
+    int idx;
+
+    for (i = 0; i < def->nrngs; i++) {
+        if ((idx = qemuDomainDeviceAliasIndex(&def->rngs[i]->info, "rng")) >= maxidx)
+            maxidx = idx + 1;
+    }
+
+    if (virAsprintf(&rng->info.alias, "rng%d", maxidx) < 0)
         return -1;
 
     return 0;
@@ -480,7 +489,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nrngs; i++) {
-        if (qemuAssignDeviceRNGAlias(def->rngs[i], i) < 0)
+        if (virAsprintf(&def->rngs[i]->info.alias, "rng%zu", i) < 0)
             return -1;
     }
     if (def->tpm) {

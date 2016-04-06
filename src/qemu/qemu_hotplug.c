@@ -1625,7 +1625,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     const char *type;
     int ret = -1;
 
-    if (qemuAssignDeviceRNGAlias(rng, vm->def->nrngs) < 0)
+    if (qemuAssignDeviceRNGAlias(vm->def, rng) < 0)
         return -1;
 
     /* preallocate space for the device definition */
