@@ -2012,10 +2012,7 @@ qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
         return -1;
 
     rc = qemuMonitorGetBalloonInfo(qemuDomainGetMonitor(vm), &balloon);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        rc = -1;
-
-    if (rc < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         return -1;
 
     vm->def->mem.cur_balloon = balloon;
