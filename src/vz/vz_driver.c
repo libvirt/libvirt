@@ -1511,7 +1511,7 @@ static int vzDomainSetMemory(virDomainPtr domain, unsigned long memory)
     return vzDomainSetMemoryFlagsImpl(domain, memory, 0, false);
 }
 
-static virHypervisorDriver vzDriver = {
+static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
     .connectClose = vzConnectClose,          /* 0.10.0 */
@@ -1580,11 +1580,11 @@ static virHypervisorDriver vzDriver = {
 };
 
 static virConnectDriver vzConnectDriver = {
-    .hypervisorDriver = &vzDriver,
+    .hypervisorDriver = &vzHypervisorDriver,
 };
 
 /* Parallels domain type backward compatibility*/
-static virHypervisorDriver parallelsDriver;
+static virHypervisorDriver parallelsHypervisorDriver;
 static virConnectDriver parallelsConnectDriver;
 
 /**
@@ -1606,10 +1606,10 @@ vzRegister(void)
     VIR_FREE(prlctl_path);
 
     /* Backward compatibility with Parallels domain type */
-    parallelsDriver = vzDriver;
-    parallelsDriver.name = "Parallels";
+    parallelsHypervisorDriver = vzHypervisorDriver;
+    parallelsHypervisorDriver.name = "Parallels";
     parallelsConnectDriver = vzConnectDriver;
-    parallelsConnectDriver.hypervisorDriver = &parallelsDriver;
+    parallelsConnectDriver.hypervisorDriver = &parallelsHypervisorDriver;
     if (virRegisterConnectDriver(&parallelsConnectDriver, false) < 0)
         return -1;
 
