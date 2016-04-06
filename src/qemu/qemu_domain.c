@@ -729,7 +729,28 @@ qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuDomainSecretPlainFree(qemuDomainSecretPlain secret)
+{
+    VIR_FREE(secret.username);
+    memset(secret.secret, 0, strlen(secret.secret));
+    VIR_FREE(secret.secret);
+}
+
+
+static void
+qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
+{
+    if (!*secinfo)
+        return;
+
+    qemuDomainSecretPlainFree((*secinfo)->s.plain);
+    VIR_FREE(*secinfo);
+}
+
+
 static virClassPtr qemuDomainDiskPrivateClass;
+static void qemuDomainDiskPrivateDispose(void *obj);
 
 static int
 qemuDomainDiskPrivateOnceInit(void)
@@ -737,7 +758,7 @@ qemuDomainDiskPrivateOnceInit(void)
     qemuDomainDiskPrivateClass = virClassNew(virClassForObject(),
                                              "qemuDomainDiskPrivate",
                                              sizeof(qemuDomainDiskPrivate),
-                                             NULL);
+                                             qemuDomainDiskPrivateDispose);
     if (!qemuDomainDiskPrivateClass)
         return -1;
     else
@@ -758,6 +779,15 @@ qemuDomainDiskPrivateNew(void)
         return NULL;
 
     return (virObjectPtr) priv;
+}
+
+
+static void
+qemuDomainDiskPrivateDispose(void *obj)
+{
+    qemuDomainDiskPrivatePtr priv = obj;
+
+    qemuDomainSecretInfoFree(&priv->secinfo);
 }
 
 

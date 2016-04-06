@@ -239,6 +239,29 @@ struct _qemuDomainObjPrivate {
     size_t masterKeyLen;
 };
 
+/* Type of domain secret */
+typedef enum {
+    VIR_DOMAIN_SECRET_INFO_PLAIN = 0,
+
+    VIR_DOMAIN_SECRET_INFO_LAST
+} qemuDomainSecretInfoType;
+
+typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
+typedef struct _qemuDomainSecretPlain *qemuDomainSecretPlainPtr;
+struct _qemuDomainSecretPlain {
+    char *username;
+    char *secret;
+};
+
+typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
+typedef qemuDomainSecretInfo *qemuDomainSecretInfoPtr;
+struct _qemuDomainSecretInfo {
+    int type;  /* qemuDomainSecretInfoType */
+    union {
+        qemuDomainSecretPlain plain;
+    } s;
+};
+
 # define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
     ((qemuDomainDiskPrivatePtr) (disk)->privateData)
 
@@ -258,6 +281,10 @@ struct _qemuDomainDiskPrivate {
     bool blockJobSync; /* the block job needs synchronized termination */
 
     bool migrating; /* the disk is being migrated */
+
+    /* for storage devices using auth/secret
+     * NB: *not* to be written to qemu domain object XML */
+    qemuDomainSecretInfoPtr secinfo;
 };
 
 typedef enum {
