@@ -121,10 +121,10 @@ getSocketPath(virURIPtr uri)
     }
 
     if (!sock_path) {
-        if (STRNEQ(uri->scheme, "libvirtd")) {
+        if (STRNEQ_NULLABLE(uri->scheme, "libvirtd")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported URI scheme '%s'"),
-                           uri->scheme);
+                           NULLSTR(uri->scheme));
             goto error;
         }
         if (STREQ_NULLABLE(uri->path, "/system")) {
