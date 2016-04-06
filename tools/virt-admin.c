@@ -670,7 +670,6 @@ main(int argc, char **argv)
 {
     vshControl _ctl, *ctl = &_ctl;
     vshAdmControl virtAdminCtl;
-    const char *defaultConn;
     bool ret = true;
 
     memset(ctl, 0, sizeof(vshControl));
@@ -718,9 +717,6 @@ main(int argc, char **argv)
     }
 
     virFileActivateDirOverride(argv[0]);
-
-    if ((defaultConn = virGetEnvBlockSUID("LIBVIRT_DEFAULT_ADMIN_URI")))
-        ctl->connname = vshStrdup(ctl, defaultConn);
 
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);
