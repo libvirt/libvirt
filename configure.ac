@@ -321,7 +321,7 @@ if test "x$lv_cv_pthread_sigmask_works" != xyes; then
   AC_DEFINE([FUNC_PTHREAD_SIGMASK_BROKEN], [1],
     [Define to 1 if pthread_sigmask is not a real function])
 fi
-LIBS=$old_libs
+LIBS=$old_LIBS
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
@@ -1198,15 +1198,15 @@ AC_SUBST([LIBXML_CFLAGS])
 AC_SUBST([LIBXML_LIBS])
 
 dnl xmlURI structure has query_raw?
-old_cflags="$CFLAGS"
-old_libs="$LIBS"
+old_CFLAGS="$CFLAGS"
+old_LIBS="$LIBS"
 CFLAGS="$CFLAGS $LIBXML_CFLAGS"
 LIBS="$LIBS $LIBXML_LIBS"
 AC_CHECK_MEMBER([struct _xmlURI.query_raw],
 		[AC_DEFINE([HAVE_XMLURI_QUERY_RAW], [], [Have query_raw field in libxml2 xmlURI structure])],,
 		[#include <libxml/uri.h>])
-CFLAGS="$old_cflags"
-LIBS="$old_libs"
+CFLAGS="$old_CFLAGS"
+LIBS="$old_LIBS"
 
 dnl GnuTLS library
 AC_ARG_WITH([gnutls],
@@ -1222,8 +1222,8 @@ if test "x$with_gnutls" != "xno"; then
     GNUTLS_LIBS="-L$with_gnutls/lib"
   fi
   fail=0
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
+  old_CFLAGS="$CFLAGS"
+  old_LIBS="$LIBS"
   CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
   LIBS="$LIBS $GNUTLS_LIBS"
 
@@ -1289,8 +1289,8 @@ if test "x$with_gnutls" != "xno"; then
     with_gnutls=yes
   fi
 
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
+  CFLAGS="$old_CFLAGS"
+  LIBS="$old_LIBS"
 fi
 
 if test "x$with_gnutls" = "xyes" ; then
@@ -1431,8 +1431,8 @@ if test "$with_selinux" != "yes" ; then
         AC_MSG_ERROR([You must install the libselinux development package and enable SELinux with the --with-selinux=yes in order to compile libvirt --with-secdriver-selinux=yes])
   fi
 elif test "$with_secdriver_selinux" != "no"; then
-  old_cflags="$CFLAGS"
-  old_libs="$LIBS"
+  old_CFLAGS="$CFLAGS"
+  old_LIBS="$LIBS"
   CFLAGS="$CFLAGS $SELINUX_CFLAGS"
   LIBS="$CFLAGS $SELINUX_LIBS"
 
@@ -1440,8 +1440,8 @@ elif test "$with_secdriver_selinux" != "no"; then
   AC_CHECK_FUNC([selinux_virtual_domain_context_path], [], [fail=1])
   AC_CHECK_FUNC([selinux_virtual_image_context_path], [], [fail=1])
   AC_CHECK_FUNCS([selinux_lxc_contexts_path])
-  CFLAGS="$old_cflags"
-  LIBS="$old_libs"
+  CFLAGS="$old_CFLAGS"
+  LIBS="$old_LIBS"
 
   if test "$fail" = "1" ; then
     if test "$with_secdriver_selinux" = "check" ; then
