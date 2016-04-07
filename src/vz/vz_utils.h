@@ -70,6 +70,7 @@ struct _vzDriver {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     virObjectEventStatePtr domainEventState;
+    virSysinfoDefPtr hostsysinfo;
     unsigned long vzVersion;
     vzCapabilities vzCaps;
 };

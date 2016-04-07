@@ -179,6 +179,7 @@ static void vzDriverDispose(void * obj)
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
     virObjectEventStateFree(driver->domainEventState);
+    virSysinfoDefFree(driver->hostsysinfo);
 }
 
 static int vzDriverOnceInit(void)
@@ -312,6 +313,7 @@ vzDriverObjNew(void)
         return NULL;
     }
 
+    driver->hostsysinfo = virSysinfoRead();
     ignore_value(prlsdkLoadDomains(driver));
     return driver;
 }
@@ -421,6 +423,28 @@ static char *vzConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
     return virGetHostname();
 }
 
+static char *
+vzConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
+{
+    vzConnPtr privconn = conn->privateData;
+    vzDriverPtr driver = privconn->driver;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, NULL);
+
+    if (!driver->hostsysinfo) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Host SMBIOS information is not available"));
+        return NULL;
+    }
+
+    if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
+        return NULL;
+    if (virBufferCheckError(&buf) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
 
 static int
 vzConnectListDomains(virConnectPtr conn, int *ids, int maxids)
@@ -1576,6 +1600,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .connectClose = vzConnectClose,          /* 0.10.0 */
     .connectGetVersion = vzConnectGetVersion,   /* 0.10.0 */
     .connectGetHostname = vzConnectGetHostname,      /* 0.10.0 */
+    .connectGetSysinfo = vzConnectGetSysinfo, /* 1.3.4 */
     .connectGetMaxVcpus = vzConnectGetMaxVcpus, /* 1.2.21 */
     .nodeGetInfo = vzNodeGetInfo,      /* 0.10.0 */
     .nodeGetCPUStats = vzNodeGetCPUStats,      /* 1.2.21 */
