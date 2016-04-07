@@ -610,8 +610,7 @@ qemuNetworkDriveGetPort(int protocol,
 
 static char *
 qemuBuildNetworkDriveURI(virStorageSourcePtr src,
-                         const char *username,
-                         const char *secret)
+                         qemuDomainSecretInfoPtr secinfo)
 {
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -722,12 +721,14 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                 virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
                 goto cleanup;
 
-            if (username) {
-                if (secret) {
-                    if (virAsprintf(&uri->user, "%s:%s", username, secret) < 0)
+            if (secinfo) {
+                if (secinfo->s.plain.secret) {
+                    if (virAsprintf(&uri->user, "%s:%s",
+                                    secinfo->s.plain.username,
+                                    secinfo->s.plain.secret) < 0)
                         goto cleanup;
                 } else {
-                    if (VIR_STRDUP(uri->user, username) < 0)
+                    if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
                         goto cleanup;
                 }
             }
@@ -776,11 +777,12 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
             if (src->snapshot)
                 virBufferEscape(&buf, '\\', ":", "@%s", src->snapshot);
 
-            if (username) {
-                virBufferEscape(&buf, '\\', ":", ":id=%s", username);
+            if (secinfo) {
+                virBufferEscape(&buf, '\\', ":", ":id=%s",
+                                secinfo->s.plain.username);
                 virBufferEscape(&buf, '\\', ":",
                                 ":key=%s:auth_supported=cephx\\;none",
-                                secret);
+                                secinfo->s.plain.secret);
             } else {
                 virBufferAddLit(&buf, ":auth_supported=none");
             }
@@ -835,8 +837,6 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
                          char **source)
 {
     int actualType = virStorageSourceGetActualType(src);
-    char *secret = NULL;
-    char *username = NULL;
     int ret = -1;
 
     *source = NULL;
@@ -855,12 +855,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        if (secinfo) {
-            username = secinfo->s.plain.username;
-            secret = secinfo->s.plain.secret;
-        }
-
-        if (!(*source = qemuBuildNetworkDriveURI(src, username, secret)))
+        if (!(*source = qemuBuildNetworkDriveURI(src, secinfo)))
             goto cleanup;
         break;
 
@@ -4464,8 +4459,6 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     char *source = NULL;
-    char *secret = NULL;
-    char *username = NULL;
     virStorageSource src;
     qemuDomainHostdevPrivatePtr hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(dev);
 
@@ -4474,20 +4467,13 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
 
-    if (hostdevPriv->secinfo) {
-        qemuDomainSecretInfoPtr secinfo = hostdevPriv->secinfo;
-
-        username = secinfo->s.plain.username;
-        secret = secinfo->s.plain.secret;
-    }
-
     src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
     src.path = iscsisrc->path;
     src.hosts = iscsisrc->hosts;
     src.nhosts = iscsisrc->nhosts;
 
     /* Rather than pull what we think we want - use the network disk code */
-    source = qemuBuildNetworkDriveURI(&src, username, secret);
+    source = qemuBuildNetworkDriveURI(&src, hostdevPriv->secinfo);
 
     return source;
 }
