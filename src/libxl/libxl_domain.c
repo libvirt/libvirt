@@ -36,6 +36,7 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "xen_common.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -764,6 +765,10 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
             if (net->ifname &&
                 STRPREFIX(net->ifname, LIBXL_GENERATED_PREFIX_XEN))
                 VIR_FREE(net->ifname);
+
+            /* cleanup actual device */
+            virDomainNetRemoveHostdev(vm->def, net);
+            networkReleaseActualDevice(vm->def, net);
         }
     }
 
@@ -898,6 +903,46 @@ libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
     virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                    _("Failed to balloon domain0 memory"));
     return -1;
+}
+
+static int
+libxlNetworkPrepareDevices(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+        int actualType;
+
+        /* If appropriate, grab a physical device from the configured
+         * network's pool of devices, or resolve bridge device name
+         * to the one defined in the network definition.
+         */
+        if (networkAllocateActualDevice(def, net) < 0)
+            return -1;
+
+        actualType = virDomainNetGetActualType(net);
+        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* Each type='hostdev' network device must also have a
+             * corresponding entry in the hostdevs array. For netdevs
+             * that are hardcoded as type='hostdev', this is already
+             * done by the parser, but for those allocated from a
+             * network / determined at runtime, we need to do it
+             * separately.
+             */
+            virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
+            virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
+
+            if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+                pcisrc->backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN;
+
+            if (virDomainHostdevInsert(def, hostdev) < 0)
+                return -1;
+        }
+    }
+    return 0;
 }
 
 static void
@@ -1049,6 +1094,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                   priv->lockState) < 0)
         goto cleanup;
     VIR_FREE(priv->lockState);
+
+    if (libxlNetworkPrepareDevices(vm->def) < 0)
+        goto cleanup_dom;
 
     if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
                                cfg->ctx, &d_config) < 0)

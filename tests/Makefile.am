@@ -534,6 +534,9 @@ endif ! WITH_XEN
 
 if WITH_LIBXL
 libxl_LDADDS = ../src/libvirt_driver_libxl_impl.la
+if WITH_NETWORK
+libxl_LDADDS += ../src/libvirt_driver_network_impl.la
+endif WITH_NETWORK
 libxl_LDADDS += $(LDADDS)
 
 xlconfigtest_SOURCES = \
