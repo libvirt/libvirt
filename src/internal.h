@@ -539,4 +539,8 @@ enum {
     EXIT_ENOENT = 127, /* Could not find program to exec */
 };
 
+# ifndef ENODATA
+#  define ENODATA EIO
+# endif
+
 #endif                          /* __VIR_INTERNAL_H__ */
