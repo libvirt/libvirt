@@ -635,8 +635,8 @@ qemuDomainGenerateRandomKey(size_t nbytes)
     if (VIR_ALLOC_N(key, nbytes) < 0)
         return NULL;
 
-#if HAVE_GNUTLS_CRYPTO_H
-    /* Generate a master key using gnutls if possible */
+#if HAVE_GNUTLS_RND
+    /* Generate a master key using gnutls_rnd() if possible */
     if ((ret = gnutls_rnd(GNUTLS_RND_RANDOM, key, nbytes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to generate master key, ret=%d"), ret);
@@ -644,7 +644,7 @@ qemuDomainGenerateRandomKey(size_t nbytes)
         return NULL;
     }
 #else
-    /* If we don't have gnutls, we will generate a less cryptographically
+    /* If we don't have gnutls_rnd(), we will generate a less cryptographically
      * strong master key from /dev/urandom.
      */
     if ((ret = virRandomBytes(key, nbytes)) < 0) {

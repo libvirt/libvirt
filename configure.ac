@@ -1289,6 +1289,13 @@ if test "x$with_gnutls" != "xno"; then
     with_gnutls=yes
   fi
 
+  dnl GNUTLS_CFLAGS and GNUTLS_LIBS have probably been updated above,
+  dnl and we need the final values for function probing to work
+  CFLAGS="$old_CFLAGS $GNUTLS_CFLAGS"
+  LIBS="$old_LIBS $GNUTLS_LIBS"
+
+  AC_CHECK_FUNCS([gnutls_rnd])
+
   CFLAGS="$old_CFLAGS"
   LIBS="$old_LIBS"
 fi
