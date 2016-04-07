@@ -114,8 +114,6 @@ virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
 char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
-void vzDriverLock(vzConnPtr driver);
-void vzDriverUnlock(vzConnPtr driver);
 
 vzDriverPtr
 vzGetDriverConnection(void);

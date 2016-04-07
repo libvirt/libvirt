@@ -65,18 +65,6 @@ VIR_LOG_INIT("parallels.parallels_driver");
 static int vzConnectClose(virConnectPtr conn);
 static virClassPtr vzDriverClass;
 
-void
-vzDriverLock(vzConnPtr privconn)
-{
-    virObjectLock(privconn->driver);
-}
-
-void
-vzDriverUnlock(vzConnPtr privconn)
-{
-    virObjectUnlock(privconn->driver);
-}
-
 static virMutex vz_driver_lock;
 static vzDriverPtr vz_driver;
 static vzConnPtr vz_conn_list;
@@ -237,9 +225,7 @@ vzConnectGetCapabilities(virConnectPtr conn)
     vzConnPtr privconn = conn->privateData;
     char *xml;
 
-    vzDriverLock(privconn);
     xml = virCapabilitiesFormatXML(privconn->driver->caps);
-    vzDriverUnlock(privconn);
     return xml;
 }
 
@@ -452,10 +438,8 @@ vzConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     vzConnPtr privconn = conn->privateData;
     int n;
 
-    vzDriverLock(privconn);
     n = virDomainObjListGetActiveIDs(privconn->driver->domains, ids, maxids,
                                      NULL, NULL);
-    vzDriverUnlock(privconn);
 
     return n;
 }
@@ -466,10 +450,8 @@ vzConnectNumOfDomains(virConnectPtr conn)
     vzConnPtr privconn = conn->privateData;
     int count;
 
-    vzDriverLock(privconn);
     count = virDomainObjListNumOfDomains(privconn->driver->domains, true,
                                          NULL, NULL);
-    vzDriverUnlock(privconn);
 
     return count;
 }
@@ -480,11 +462,9 @@ vzConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
     vzConnPtr privconn = conn->privateData;
     int n;
 
-    vzDriverLock(privconn);
     memset(names, 0, sizeof(*names) * maxnames);
     n = virDomainObjListGetInactiveNames(privconn->driver->domains, names,
                                          maxnames, NULL, NULL);
-    vzDriverUnlock(privconn);
 
     return n;
 }
@@ -495,11 +475,8 @@ vzConnectNumOfDefinedDomains(virConnectPtr conn)
     vzConnPtr privconn = conn->privateData;
     int count;
 
-    vzDriverLock(privconn);
     count = virDomainObjListNumOfDomains(privconn->driver->domains, false,
                                          NULL, NULL);
-    vzDriverUnlock(privconn);
-
     return count;
 }
 
@@ -512,10 +489,8 @@ vzConnectListAllDomains(virConnectPtr conn,
     int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
-    vzDriverLock(privconn);
     ret = virDomainObjListExport(privconn->driver->domains, conn, domains,
                                  NULL, flags);
-    vzDriverUnlock(privconn);
 
     return ret;
 }
@@ -527,9 +502,7 @@ vzDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    vzDriverLock(privconn);
     dom = virDomainObjListFindByID(privconn->driver->domains, id);
-    vzDriverUnlock(privconn);
 
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
@@ -553,10 +526,7 @@ vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    vzDriverLock(privconn);
-
     dom = virDomainObjListFindByUUID(privconn->driver->domains, uuid);
-    vzDriverUnlock(privconn);
 
     if (dom == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -583,9 +553,7 @@ vzDomainLookupByName(virConnectPtr conn, const char *name)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    vzDriverLock(privconn);
     dom = virDomainObjListFindByName(privconn->driver->domains, name);
-    vzDriverUnlock(privconn);
 
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -1520,7 +1488,6 @@ vzConnectRegisterCloseCallback(virConnectPtr conn,
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
 
-    vzDriverLock(privconn);
     if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A close callback is already registered"));
@@ -1532,7 +1499,6 @@ vzConnectRegisterCloseCallback(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    vzDriverUnlock(privconn);
 
     return ret;
 }
@@ -1543,7 +1509,6 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
 
-    vzDriverLock(privconn);
 
     if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != cb) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1555,7 +1520,6 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     ret = 0;
 
  cleanup:
-    vzDriverUnlock(privconn);
 
     return ret;
 }
