@@ -10641,13 +10641,6 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
 
     ctxt->node = node;
 
-    if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        def->type != VIR_DOMAIN_GRAPHICS_TYPE_RDP &&
-        def->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        ret = 0;
-        goto error;
-    }
-
     /* parse the <listen> subelements for graphics types that support it */
     nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
     if (nListens < 0)
@@ -10708,6 +10701,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
 static int
 virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
                                 xmlNodePtr node,
+                                xmlXPathContextPtr ctxt,
                                 unsigned int flags)
 {
     char *port = virXMLPropString(node, "port");
@@ -10715,6 +10709,9 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
     char *sharePolicy = virXMLPropString(node, "sharePolicy");
     char *autoport = virXMLPropString(node, "autoport");
     int ret = -1;
+
+    if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
+        goto error;
 
     if (port) {
         if (virStrToLong_i(port, NULL, 10, &def->data.vnc.port) < 0) {
@@ -10816,6 +10813,7 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
 static int
 virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDefPtr def,
                                 xmlNodePtr node,
+                                xmlXPathContextPtr ctxt,
                                 unsigned int flags)
 {
     char *port = virXMLPropString(node, "port");
@@ -10823,6 +10821,9 @@ virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDefPtr def,
     char *replaceUser = virXMLPropString(node, "replaceUser");
     char *multiUser = virXMLPropString(node, "multiUser");
     int ret = -1;
+
+    if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
+        goto error;
 
     if (port) {
         if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
@@ -10894,6 +10895,7 @@ virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDefPtr def,
 static int
 virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                                   xmlNodePtr node,
+                                  xmlXPathContextPtr ctxt,
                                   unsigned int flags)
 {
     xmlNodePtr cur;
@@ -10903,6 +10905,9 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
     char *defaultMode = virXMLPropString(node, "defaultMode");
     int defaultModeVal;
     int ret = -1;
+
+    if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
+        goto error;
 
     if (port) {
         if (virStrToLong_i(port, NULL, 10, &def->data.spice.port) < 0) {
@@ -11216,12 +11221,9 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
-        goto error;
-
     switch ((virDomainGraphicsType)def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (virDomainGraphicsDefParseXMLVNC(def, node, flags) < 0)
+        if (virDomainGraphicsDefParseXMLVNC(def, node, ctxt, flags) < 0)
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -11229,7 +11231,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        if (virDomainGraphicsDefParseXMLRDP(def, node, flags) < 0)
+        if (virDomainGraphicsDefParseXMLRDP(def, node, ctxt, flags) < 0)
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
@@ -11237,7 +11239,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (virDomainGraphicsDefParseXMLSpice(def, node, flags) < 0)
+        if (virDomainGraphicsDefParseXMLSpice(def, node, ctxt, flags) < 0)
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
