@@ -46,10 +46,6 @@
 
 VIR_LOG_INIT("util.uuid");
 
-#ifndef ENODATA
-# define ENODATA EIO
-#endif
-
 static unsigned char host_uuid[VIR_UUID_BUFLEN];
 
 static int
