@@ -3444,6 +3444,7 @@ qemuDomainPerfRestart(virDomainObjPtr vm)
 
  cleanup:
     virPerfFree(priv->perf);
+    priv->perf = NULL;
     return -1;
 }
 
@@ -5959,6 +5960,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virCgroupFree(&priv->cgroup);
 
     virPerfFree(priv->perf);
+    priv->perf = NULL;
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
