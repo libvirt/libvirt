@@ -1289,8 +1289,8 @@ if test "x$with_gnutls" != "xno"; then
     with_gnutls=yes
   fi
 
+  CFLAGS="$old_cflags"
   LIBS="$old_libs"
-  CFLAGS="$old_CFLAGS"
 fi
 
 if test "x$with_gnutls" = "xyes" ; then
