@@ -346,11 +346,20 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
                                                          const char *xmldesc,
                                                          virStorageVolPtr clonevol,
                                                          unsigned int flags);
+
+typedef enum {
+    VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM = 1 << 0, /* Use sparse stream */
+} virStorageVolDownloadFlags;
+
 int                     virStorageVolDownload           (virStorageVolPtr vol,
                                                          virStreamPtr stream,
                                                          unsigned long long offset,
                                                          unsigned long long length,
                                                          unsigned int flags);
+typedef enum {
+    VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM = 1 << 0,  /* Use sparse stream */
+} virStorageVolUploadFlags;
+
 int                     virStorageVolUpload             (virStorageVolPtr vol,
                                                          virStreamPtr stream,
                                                          unsigned long long offset,

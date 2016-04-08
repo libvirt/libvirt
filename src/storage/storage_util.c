@@ -2401,8 +2401,9 @@ virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *target_path = vol->target.path;
     int ret = -1;
     int has_snap = 0;
+    bool sparse = flags & VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM, -1);
     /* if volume has target format VIR_STORAGE_FILE_PLOOP
      * we need to restore DiskDescriptor.xml, according to
      * new contents of volume. This operation will be perfomed
@@ -2427,7 +2428,7 @@ virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Not using O_CREAT because the file is required to already exist at
      * this point */
     ret = virFDStreamOpenBlockDevice(stream, target_path,
-                                     offset, len, false, O_WRONLY);
+                                     offset, len, sparse, O_WRONLY);
 
  cleanup:
     VIR_FREE(path);
@@ -2447,8 +2448,9 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     char *target_path = vol->target.path;
     int ret = -1;
     int has_snap = 0;
+    bool sparse = flags & VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM, -1);
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         has_snap = storageBackendPloopHasSnapshots(vol->target.path);
         if (has_snap < 0) {
@@ -2465,7 +2467,7 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     ret = virFDStreamOpenBlockDevice(stream, target_path,
-                                     offset, len, false, O_RDONLY);
+                                     offset, len, sparse, O_RDONLY);
 
  cleanup:
     VIR_FREE(path);

@@ -2117,7 +2117,7 @@ storageVolDownload(virStorageVolPtr obj,
     virStorageVolDefPtr vol = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM, -1);
 
     if (!(vol = virStorageVolDefFromVol(obj, &pool, &backend)))
         return -1;
@@ -2285,7 +2285,7 @@ storageVolUpload(virStorageVolPtr obj,
     virStorageVolStreamInfoPtr cbdata = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM, -1);
 
     if (!(vol = virStorageVolDefFromVol(obj, &pool, &backend)))
         return -1;
