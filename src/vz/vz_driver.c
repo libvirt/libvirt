@@ -1037,6 +1037,28 @@ vzDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
     return ret;
 }
 
+static int vzCheckConfigUpdateFlags(virDomainObjPtr dom, unsigned int *flags)
+{
+    if (virDomainObjUpdateModificationImpact(dom, flags) < 0)
+        return -1;
+
+    if (!(*flags & VIR_DOMAIN_AFFECT_CONFIG)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain config update needs VIR_DOMAIN_AFFECT_CONFIG "
+                         "flag to be set"));
+        return -1;
+    }
+
+    if (virDomainObjIsActive(dom) && !(*flags & VIR_DOMAIN_AFFECT_LIVE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Updates on a running domain need "
+                         "VIR_DOMAIN_AFFECT_LIVE flag"));
+        return -1;
+    }
+
+    return 0;
+}
+
 static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                      unsigned int flags)
 {
@@ -1044,7 +1066,6 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     vzConnPtr privconn = dom->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr privdom = NULL;
-    bool domactive = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -1052,25 +1073,8 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
     if (!(privdom = vzDomObjFromDomain(dom)))
         return -1;
 
-    if (!(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("device attach needs VIR_DOMAIN_AFFECT_CONFIG "
-                         "flag to be set"));
+    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
         goto cleanup;
-    }
-
-    domactive = virDomainObjIsActive(privdom);
-    if (!domactive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot do live update a device on "
-                         "inactive domain"));
-        goto cleanup;
-    }
-    if (domactive && !(flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Updates on a running domain need "
-                         "VIR_DOMAIN_AFFECT_LIVE flag"));
-    }
 
     dev = virDomainDeviceDefParse(xml, privdom->def, privconn->caps,
                                   privconn->xmlopt, VIR_DOMAIN_XML_INACTIVE);
@@ -1120,7 +1124,6 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     vzConnPtr privconn = dom->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr privdom = NULL;
-    bool domactive = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -1129,25 +1132,8 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (privdom == NULL)
         return -1;
 
-    if (!(flags & VIR_DOMAIN_AFFECT_CONFIG)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("device detach needs VIR_DOMAIN_AFFECT_CONFIG "
-                         "flag to be set"));
+    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
         goto cleanup;
-    }
-
-    domactive = virDomainObjIsActive(privdom);
-    if (!domactive && (flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot do live update a device on "
-                         "inactive domain"));
-        goto cleanup;
-    }
-    if (domactive && !(flags & VIR_DOMAIN_AFFECT_LIVE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Updates on a running domain need "
-                         "VIR_DOMAIN_AFFECT_LIVE flag"));
-    }
 
     dev = virDomainDeviceDefParse(xml, privdom->def, privconn->caps,
                                   privconn->xmlopt, VIR_DOMAIN_XML_INACTIVE);
