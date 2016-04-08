@@ -414,8 +414,7 @@ vzCheckUnsupportedDisks(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
         } else {
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 supported = diskFormat == VIR_STORAGE_FILE_RAW ||
-                            diskFormat == VIR_STORAGE_FILE_NONE ||
-                            diskFormat == VIR_STORAGE_FILE_AUTO;
+                            diskFormat == VIR_STORAGE_FILE_NONE;
             }
         }
 
