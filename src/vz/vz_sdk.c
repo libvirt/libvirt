@@ -2666,7 +2666,7 @@ static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
     if (fs->readonly) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting readonly for filesystems is "
-                         "supported by vz driver."));
+                         "not supported by vz driver."));
         return -1;
     }
 
