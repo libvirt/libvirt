@@ -32,8 +32,8 @@ testCompareXMLToXMLHelper(const void *data)
 
     ret = testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
-                                     false,
-                                     NULL, NULL, 0);
+                                     false, NULL, NULL, 0,
+                                     TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 
  cleanup:
     VIR_FREE(xml_in);

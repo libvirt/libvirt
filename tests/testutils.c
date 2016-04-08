@@ -1079,10 +1079,12 @@ int
 testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                            const char *infile, const char *outfile, bool live,
                            testCompareDomXML2XMLPreFormatCallback cb,
-                           const void *opaque, unsigned int parseFlags)
+                           const void *opaque, unsigned int parseFlags,
+                           testCompareDomXML2XMLResult expectResult)
 {
     char *actual = NULL;
     int ret = -1;
+    testCompareDomXML2XMLResult result;
     virDomainDefPtr def = NULL;
     unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
@@ -1092,25 +1094,47 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
-    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, parse_flags)))
-        goto fail;
+    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, parse_flags))) {
+        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE;
+        goto out;
+    }
 
     if (!virDomainDefCheckABIStability(def, def)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", infile);
-        goto fail;
+        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY;
+        goto out;
     }
 
-    if (cb && cb(def, opaque) < 0)
-        goto fail;
+    if (cb && cb(def, opaque) < 0) {
+        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_CB;
+        goto out;
+    }
 
-    if (!(actual = virDomainDefFormat(def, caps, format_flags)))
-        goto fail;
+    if (!(actual = virDomainDefFormat(def, caps, format_flags))) {
+        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_FORMAT;
+        goto out;
+    }
 
-    if (virtTestCompareToFile(actual, outfile) < 0)
-        goto fail;
+    if (virtTestCompareToFile(actual, outfile) < 0) {
+        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_COMPARE;
+        goto out;
+    }
 
-    ret = 0;
- fail:
+    result = TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS;
+
+ out:
+    if (result == expectResult) {
+        ret = 0;
+        if (expectResult != TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS) {
+            VIR_TEST_DEBUG("Got expected failure code=%d msg=%s",
+                           result, virGetLastErrorMessage());
+        }
+    } else {
+        ret = -1;
+        VIR_TEST_DEBUG("Expected result code=%d but received code=%d",
+                       expectResult, result);
+    }
+
     VIR_FREE(actual);
     virDomainDefFree(def);
     return ret;

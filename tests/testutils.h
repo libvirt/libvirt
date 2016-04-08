@@ -134,6 +134,15 @@ int virtTestMain(int argc,
 virCapsPtr virTestGenericCapsInit(void);
 virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void);
 
+typedef enum {
+    TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS,
+    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE,
+    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY,
+    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_CB,
+    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_FORMAT,
+    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_COMPARE,
+} testCompareDomXML2XMLResult;
+
 typedef int (*testCompareDomXML2XMLPreFormatCallback)(virDomainDefPtr def,
                                                       const void *opaque);
 int testCompareDomXML2XMLFiles(virCapsPtr caps,
@@ -143,6 +152,7 @@ int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                bool live,
                                testCompareDomXML2XMLPreFormatCallback cb,
                                const void *opaque,
-                               unsigned int parseFlags);
+                               unsigned int parseFlags,
+                               testCompareDomXML2XMLResult expectResult);
 
 #endif /* __VIR_TEST_UTILS_H__ */
