@@ -1445,7 +1445,7 @@ int virNetDevSetIPAddress(const char *ifname,
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
 
-    if (VIR_SOCKET_ADDR_VALID(peer) && !(peerstr = virSocketAddrFormat(&peer)))
+    if (VIR_SOCKET_ADDR_VALID(peer) && !(peerstr = virSocketAddrFormat(peer)))
         goto cleanup;
 
     /* format up a broadcast address if this is IPv4 */
