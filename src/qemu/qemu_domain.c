@@ -1479,7 +1479,8 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
         if (STREQ(def->os.machine, "versatilepb"))
             return "smc91c111";
 
-        if (STREQ(def->os.machine, "virt"))
+        if (STREQ(def->os.machine, "virt") ||
+            STRPREFIX(def->os.machine, "virt-"))
             return "virtio";
 
         /* Incomplete. vexpress (and a few others) use this, but not all
