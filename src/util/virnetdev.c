@@ -1129,7 +1129,7 @@ int virNetDevSetIPAddress(const char *ifname,
     unsigned int recvbuflen;
 
     /* The caller needs to provide a correct address */
-    if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET && !VIR_SOCKET_ADDR_VALID(peer)) {
+    if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET && peer && !VIR_SOCKET_ADDR_VALID(peer)) {
         /* compute a broadcast address if this is IPv4 */
         if (VIR_ALLOC(broadcast) < 0)
             return -1;
@@ -1445,7 +1445,7 @@ int virNetDevSetIPAddress(const char *ifname,
     if (!(addrstr = virSocketAddrFormat(addr)))
         goto cleanup;
 
-    if (VIR_SOCKET_ADDR_VALID(peer) && !(peerstr = virSocketAddrFormat(peer)))
+    if (peer && VIR_SOCKET_ADDR_VALID(peer) && !(peerstr = virSocketAddrFormat(peer)))
         goto cleanup;
 
     /* format up a broadcast address if this is IPv4 */
