@@ -1281,11 +1281,6 @@ if test "x$with_gnutls" != "xno"; then
         [set to 1 if it is known or assumed that GNUTLS uses gcrypt])
     fi
 
-    dnl gnutls 3.x moved some declarations to a new header
-    AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
-      #include <gnutls/gnutls.h>
-    ]])
-
     with_gnutls=yes
   fi
 
@@ -1293,6 +1288,11 @@ if test "x$with_gnutls" != "xno"; then
   dnl and we need the final values for function probing to work
   CFLAGS="$old_CFLAGS $GNUTLS_CFLAGS"
   LIBS="$old_LIBS $GNUTLS_LIBS"
+
+  dnl gnutls 3.x moved some declarations to a new header
+  AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
+    #include <gnutls/gnutls.h>
+  ]])
 
   AC_CHECK_FUNCS([gnutls_rnd])
 
