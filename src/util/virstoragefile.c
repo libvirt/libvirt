@@ -43,6 +43,7 @@
 #include "viruri.h"
 #include "dirname.h"
 #include "virbuffer.h"
+#include "virjson.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -2514,10 +2515,154 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONPath(virStorageSourcePtr src,
+                                     virJSONValuePtr json,
+                                     int type)
+{
+    const char *path;
+
+    if (!(path = virJSONValueObjectGetString(json, "filename"))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'filename' field in JSON backing volume "
+                         "definition"));
+        return -1;
+    }
+
+    if (VIR_STRDUP(src->path, path) < 0)
+        return -1;
+
+    src->type = type;
+    return 0;
+}
+
+
+struct virStorageSourceJSONDriverParser {
+    const char *drvname;
+    int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
+    int opaque;
+};
+
+static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
+    {"file", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_FILE},
+};
+
+
+static int
+virStorageSourceParseBackingJSONDeflattenWorker(const char *key,
+                                                const virJSONValue *value,
+                                                void *opaque)
+{
+    virJSONValuePtr retobj = opaque;
+    virJSONValuePtr newval = NULL;
+    const char *newkey;
+
+    if (!(newkey = STRSKIP(key, "file."))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("JSON backing file syntax is neither nested nor "
+                         "flattened"));
+        return -1;
+    }
+
+    if (!(newval = virJSONValueCopy(value)))
+        return -1;
+
+    if (virJSONValueObjectAppend(retobj, newkey, newval) < 0) {
+        virJSONValueFree(newval);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virStorageSourceParseBackingJSONDeflatten:
+ *
+ * The json: pseudo-protocol syntax in qemu allows multiple approaches to
+ * describe nesting of the values. This is due to the lax handling of the string
+ * in qemu and the fact that internally qemu is flattening the values using '.'.
+ *
+ * This allows to specify nested json strings either using nested json objects
+ * or prefixing object members with the parent object name followed by the dot.
+ *
+ * This function will attempt to reverse the process and provide a nested json
+ * hierarchy so that the parsers can be kept simple and we still can use the
+ * weird syntax some users might use.
+ *
+ * Currently this function will flatten out just the 'file.' prefix into a new
+ * tree. Any other syntax will be rejected.
+ */
+static virJSONValuePtr
+virStorageSourceParseBackingJSONDeflatten(virJSONValuePtr json)
+{
+    virJSONValuePtr ret;
+
+    if (!(ret = virJSONValueNewObject()))
+        return NULL;
+
+    if (virJSONValueObjectForeachKeyValue(json,
+                                          virStorageSourceParseBackingJSONDeflattenWorker,
+                                          ret) < 0) {
+        virJSONValueFree(ret);
+        return NULL;
+    }
+
+    return ret;
+}
+
+
+static int
+virStorageSourceParseBackingJSON(virStorageSourcePtr src,
+                                 const char *json)
+{
+    virJSONValuePtr root = NULL;
+    virJSONValuePtr fixedroot = NULL;
+    virJSONValuePtr file;
+    const char *drvname;
+    size_t i;
+    int ret = -1;
+
+    if (!(root = virJSONValueFromString(json)))
+        return -1;
+
+    if (!(file = virJSONValueObjectGetObject(root, "file"))) {
+        if (!(fixedroot = virStorageSourceParseBackingJSONDeflatten(root)))
+            goto cleanup;
+
+        file = fixedroot;
+    }
+
+    if (!(drvname = virJSONValueObjectGetString(file, "driver"))) {
+        virReportError(VIR_ERR_INVALID_ARG, _("JSON backing volume defintion "
+                                              "'%s' lacks driver name"), json);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(jsonParsers); i++) {
+        if (STREQ(drvname, jsonParsers[i].drvname)) {
+            ret = jsonParsers[i].func(src, file, jsonParsers[i].opaque);
+            goto cleanup;
+        }
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("missing parser implementation for JSON backing volume "
+                     "driver '%s'"), drvname);
+
+ cleanup:
+    virJSONValueFree(root);
+    virJSONValueFree(fixedroot);
+    return ret;
+}
+
+
 virStorageSourcePtr
 virStorageSourceNewFromBackingAbsolute(const char *path)
 {
+    const char *json;
     virStorageSourcePtr ret;
+    int rc;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
@@ -2531,13 +2676,15 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
         ret->type = VIR_STORAGE_TYPE_NETWORK;
 
         /* handle URI formatted backing stores */
-        if (strstr(path, "://")) {
-            if (virStorageSourceParseBackingURI(ret, path) < 0)
-                goto error;
-        } else {
-            if (virStorageSourceParseBackingColon(ret, path) < 0)
-                goto error;
-        }
+        if ((json = STRSKIP(path, "json:")))
+            rc = virStorageSourceParseBackingJSON(ret, json);
+        else if (strstr(path, "://"))
+            rc = virStorageSourceParseBackingURI(ret, path);
+        else
+            rc = virStorageSourceParseBackingColon(ret, path);
+
+        if (rc < 0)
+            goto error;
     }
 
     return ret;

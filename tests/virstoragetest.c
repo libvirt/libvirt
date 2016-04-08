@@ -1355,6 +1355,21 @@ mymain(void)
                        "<source protocol='nbd' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:", NULL);
+    TEST_BACKING_PARSE("json:asdgsdfg", NULL);
+    TEST_BACKING_PARSE("json:{}", NULL);
+    TEST_BACKING_PARSE("json: { \"file.driver\":\"blah\"}", NULL);
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"file\"}", NULL);
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"file\", "
+                             "\"file.filename\":\"/path/to/file\"}",
+                       "<source file='/path/to/file'/>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"file\", "
+                             "\"filename\":\"/path/to/file\"}", NULL);
+    TEST_BACKING_PARSE("json:{\"file\" : { \"driver\":\"file\","
+                                          "\"filename\":\"/path/to/file\""
+                                        "}"
+                            "}",
+                       "<source file='/path/to/file'/>\n");
 
  cleanup:
     /* Final cleanup */
