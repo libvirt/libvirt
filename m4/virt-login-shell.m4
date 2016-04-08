@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
 
   if test "x$with_login_shell" != "xno"; then
     if test "x$with_win" = "xyes"; then
-      if "x$with_login_shell" = "yes"; then
+      if test "x$with_login_shell" = "xyes"; then
         AC_MSG_ERROR([virt-login-shell is not supported on Windows])
       else
         with_login_shell=no;
