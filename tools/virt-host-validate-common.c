@@ -303,17 +303,48 @@ static int virHostValidateCGroupSupport(const char *hvname,
         goto error;
 
     while ((ret = getline(&line, &len, fp)) >= 0 && !matched) {
-        char *tmp = strstr(line, cg_name);
-        if (!tmp)
+        char **cgroups;
+        char *start;
+        char *end;
+        size_t ncgroups;
+        size_t i;
+
+        /* Each line in this file looks like
+         *
+         *   4:cpu,cpuacct:/machine.slice/machine-qemu\x2dtest.scope/emulator
+         *
+         * Since multiple cgroups can be part of the same line and some cgroup
+         * names can appear as part of other cgroup names (eg. 'cpu' is a
+         * prefix for both 'cpuacct' and 'cpuset'), it's not enough to simply
+         * check whether the cgroup name is present somewhere inside the file.
+         *
+         * Moreover, there's nothing stopping the cgroup name from appearing
+         * in an unrelated mount point name as well */
+
+        /* Look for the first colon.
+         * The part we're interested in starts right after it */
+        if (!(start = strchr(line, ':')))
+            continue;
+        start++;
+
+        /* Look for the second colon.
+         * The part we're interested in ends exactly there */
+        if (!(end = strchr(start, ':')))
+            continue;
+        *end = '\0';
+
+        if (!(cgroups = virStringSplitCount(start, ",", 0, &ncgroups)))
             continue;
 
-        tmp += strlen(cg_name);
-        if (*tmp != ',' &&
-            *tmp != ':')
-            continue;
+        /* Look for the matching cgroup */
+        for (i = 0; i < ncgroups; i++) {
+            if (STREQ(cgroups[i], cg_name))
+                matched = true;
+        }
 
-        matched = true;
+        virStringFreeListCount(cgroups, ncgroups);
     }
+
     VIR_FREE(line);
     VIR_FORCE_FCLOSE(fp);
     if (!matched)
