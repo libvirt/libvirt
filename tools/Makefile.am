@@ -64,10 +64,9 @@ confdir = $(sysconfdir)/libvirt
 conf_DATA =
 
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
-bin_PROGRAMS = virsh virt-host-validate virt-admin
+bin_PROGRAMS = virsh virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 dist_man1_MANS = \
-		virt-host-validate.1 \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
 		virsh.1 \
@@ -88,6 +87,13 @@ EXTRA_DIST += \
 		virt-login-shell.conf \
 		virt-login-shell.1
 endif ! WITH_LOGIN_SHELL
+
+if WITH_HOST_VALIDATE
+bin_PROGRAMS += virt-host-validate
+dist_man1_MANS += virt-host-validate.1
+else ! WITH_HOST_VALIDATE
+EXTRA_DIST += virt-host-validate.1
+endif ! WITH_HOST_VALIDATE
 
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \

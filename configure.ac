@@ -1098,6 +1098,12 @@ dnl
 
 LIBVIRT_CHECK_LOGIN_SHELL
 
+dnl
+dnl Check for virt-host-validate
+dnl
+
+LIBVIRT_CHECK_HOST_VALIDATE
+
 AM_CONDITIONAL([WITH_SETUID_RPC_CLIENT], [test "$with_lxc$with_login_shell" != "nono"])
 
 dnl
@@ -2925,17 +2931,18 @@ AC_MSG_NOTICE([        Alloc OOM: $enable_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([            Debug: $enable_debug])
-AC_MSG_NOTICE([      Use -Werror: $set_werror])
-AC_MSG_NOTICE([    Warning Flags: $WARN_CFLAGS])
-AC_MSG_NOTICE([           DTrace: $with_dtrace])
-AC_MSG_NOTICE([            numad: $with_numad])
-AC_MSG_NOTICE([      XML Catalog: $XML_CATALOG_FILE])
-AC_MSG_NOTICE([      Init script: $with_init_script])
-AC_MSG_NOTICE([Char device locks: $with_chrdev_lock_files])
-AC_MSG_NOTICE([   Default Editor: $DEFAULT_EDITOR])
-AC_MSG_NOTICE([     Loader/NVRAM: $with_loader_nvram])
-AC_MSG_NOTICE([ virt-login-shell: $with_login_shell])
+AC_MSG_NOTICE([             Debug: $enable_debug])
+AC_MSG_NOTICE([       Use -Werror: $set_werror])
+AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
+AC_MSG_NOTICE([            DTrace: $with_dtrace])
+AC_MSG_NOTICE([             numad: $with_numad])
+AC_MSG_NOTICE([       XML Catalog: $XML_CATALOG_FILE])
+AC_MSG_NOTICE([       Init script: $with_init_script])
+AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
+AC_MSG_NOTICE([    Default Editor: $DEFAULT_EDITOR])
+AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
+AC_MSG_NOTICE([  virt-login-shell: $with_login_shell])
+AC_MSG_NOTICE([virt-host-validate: $with_host_validate])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Developer Tools])
 AC_MSG_NOTICE([])
