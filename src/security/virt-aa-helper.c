@@ -1062,7 +1062,7 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->ngraphics; i++) {
         if (ctl->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             ctl->def->graphics[i]->data.vnc.socket &&
-            vah_add_file(&buf, ctl->def->graphics[i]->data.vnc.socket, "rw"))
+            vah_add_file(&buf, ctl->def->graphics[i]->data.vnc.socket, "w"))
             goto cleanup;
     }
 
