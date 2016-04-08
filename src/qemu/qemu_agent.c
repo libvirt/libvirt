@@ -1230,19 +1230,14 @@ qemuAgentMakeStringsArray(const char **strings, unsigned int len)
 void qemuAgentNotifyEvent(qemuAgentPtr mon,
                           qemuAgentEvent event)
 {
-    VIR_DEBUG("mon=%p event=%d", mon, event);
+    VIR_DEBUG("mon=%p event=%d await_event=%d", mon, event, mon->await_event);
     if (mon->await_event == event) {
-        VIR_DEBUG("Waking up a tragedian");
         mon->await_event = QEMU_AGENT_EVENT_NONE;
         /* somebody waiting for this event, wake him up. */
         if (mon->msg && !mon->msg->finished) {
             mon->msg->finished = 1;
             virCondSignal(&mon->notify);
         }
-    } else {
-        /* shouldn't happen but one never knows */
-        VIR_WARN("Received unexpected event %d (expected %d)",
-                 event, mon->await_event);
     }
 }
 
