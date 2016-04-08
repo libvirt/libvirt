@@ -64,4 +64,15 @@ char *virTimeStringThen(unsigned long long when);
 int virTimeLocalOffsetFromUTC(long *offset)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+typedef struct {
+    unsigned long long start_t;
+    unsigned long long next;
+    unsigned long long limit_t;
+} virTimeBackOffVar;
+
+int virTimeBackOffStart(virTimeBackOffVar *var,
+                        unsigned long long first, unsigned long long timeout);
+
+bool virTimeBackOffWait(virTimeBackOffVar *var);
+
 #endif

@@ -2373,6 +2373,8 @@ virThreadPoolSendJob;
 
 
 # util/virtime.h
+virTimeBackOffStart;
+virTimeBackOffWait;
 virTimeFieldsNow;
 virTimeFieldsNowRaw;
 virTimeFieldsThen;
