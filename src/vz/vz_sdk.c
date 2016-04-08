@@ -3777,8 +3777,7 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
 
     }
 
-    ret = prlsdkDoApplyConfig(driver, sdkdom, def, NULL);
-    if (ret)
+    if (prlsdkDoApplyConfig(driver, sdkdom, def, NULL) < 0)
         goto cleanup;
 
     flags = PACF_NON_INTERACTIVE_MODE;
@@ -3786,7 +3785,9 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
         flags |= PRNVM_PRESERVE_DISK;
     job = PrlVm_RegEx(sdkdom, "", flags);
     if (PRL_FAILED(waitJob(job)))
-        ret = -1;
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     PrlHandle_Free(sdkdom);
