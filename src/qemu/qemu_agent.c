@@ -173,9 +173,8 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
 {
     struct sockaddr_un addr;
     int monfd;
-    int timeout = 3; /* In seconds */
-    int ret;
-    size_t i = 0;
+    virTimeBackOffVar timeout;
+    int ret = -1;
 
     *inProgress = false;
 
@@ -207,7 +206,9 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
         goto error;
     }
 
-    do {
+    if (virTimeBackOffStart(&timeout, 1, 3*1000 /* ms */) < 0)
+        goto error;
+    while (virTimeBackOffWait(&timeout)) {
         ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
 
         if (ret == 0)
@@ -232,7 +233,7 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
                              _("failed to connect to monitor socket"));
         goto error;
 
-    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
+    }
 
     if (ret != 0) {
         virReportSystemError(errno, "%s",

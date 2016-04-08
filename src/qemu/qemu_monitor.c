@@ -42,6 +42,7 @@
 #include "virobject.h"
 #include "virprobe.h"
 #include "virstring.h"
+#include "virtime.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"
@@ -327,9 +328,8 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
 {
     struct sockaddr_un addr;
     int monfd;
-    int timeout = 30; /* In seconds */
-    int ret;
-    size_t i = 0;
+    virTimeBackOffVar timeout;
+    int ret = -1;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno,
@@ -345,7 +345,9 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
         goto error;
     }
 
-    do {
+    if (virTimeBackOffStart(&timeout, 1, 30*1000 /* ms */) < 0)
+        goto error;
+    while (virTimeBackOffWait(&timeout)) {
         ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
 
         if (ret == 0)
@@ -362,7 +364,7 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
                              _("failed to connect to monitor socket"));
         goto error;
 
-    } while ((++i <= timeout*5) && (usleep(.2 * 1000000) <= 0));
+    }
 
     if (ret != 0) {
         virReportSystemError(errno, "%s",
