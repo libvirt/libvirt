@@ -4302,3 +4302,27 @@ prlsdkGetMemoryStats(virDomainObjPtr dom,
 
     return ret;
 }
+
+/* memsize is in MiB */
+int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+    PRL_RESULT pret;
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        goto error;
+
+    pret = PrlVmCfg_SetRamSize(privdom->sdkdom, memsize);
+    prlsdkCheckRetGoto(pret, error);
+
+    job = PrlVm_CommitEx(privdom->sdkdom, 0);
+    if (PRL_FAILED(waitJob(job)))
+        goto error;
+
+    return 0;
+
+ error:
+    return -1;
+}

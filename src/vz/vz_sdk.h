@@ -80,3 +80,5 @@ int
 prlsdkGetMemoryStats(virDomainObjPtr dom, virDomainMemoryStatPtr stats, unsigned int nr_stats);
 void
 prlsdkDomObjFreePrivate(void *p);
+/* memsize is in MiB */
+int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize);

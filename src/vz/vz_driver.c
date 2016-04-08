@@ -1479,6 +1479,40 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     return ret;
 }
 
+static int vzDomainSetMemoryFlagsImpl(virDomainPtr domain, unsigned long memory,
+                                      unsigned int flags, bool useflags)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (useflags && vzCheckConfigUpdateFlags(dom, &flags) < 0)
+        goto cleanup;
+
+    ret = prlsdkSetMemsize(dom, memory >> 10);
+
+ cleanup:
+
+    virObjectUnlock(dom);
+    return ret;
+}
+
+static int vzDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
+                                  unsigned int flags)
+{
+    return vzDomainSetMemoryFlagsImpl(domain, memory, flags, true);
+}
+
+static int vzDomainSetMemory(virDomainPtr domain, unsigned long memory)
+{
+    return vzDomainSetMemoryFlagsImpl(domain, memory, 0, false);
+}
+
 static virHypervisorDriver vzDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -1543,6 +1577,8 @@ static virHypervisorDriver vzDriver = {
     .domainMemoryStats = vzDomainMemoryStats, /* 1.2.17 */
     .connectRegisterCloseCallback = vzConnectRegisterCloseCallback, /* 1.3.2 */
     .connectUnregisterCloseCallback = vzConnectUnregisterCloseCallback, /* 1.3.2 */
+    .domainSetMemoryFlags = vzDomainSetMemoryFlags, /* 1.3.4 */
+    .domainSetMemory = vzDomainSetMemory, /* 1.3.4 */
 };
 
 static virConnectDriver vzConnectDriver = {
