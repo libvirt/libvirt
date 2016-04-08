@@ -66,34 +66,28 @@ conf_DATA =
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-host-validate virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
-
-if WITH_SANLOCK
-sbin_SCRIPTS = virt-sanlock-cleanup
-DISTCLEANFILES += virt-sanlock-cleanup
-endif WITH_SANLOCK
-
-if WITH_LOGIN_SHELL
-conf_DATA += virt-login-shell.conf
-bin_PROGRAMS += virt-login-shell
-else ! WITH_LOGIN_SHELL
-EXTRA_DIST += virt-login-shell.conf
-endif ! WITH_LOGIN_SHELL
-
-
 dist_man1_MANS = \
 		virt-host-validate.1 \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
 		virsh.1 \
 		virt-admin.1
+
+if WITH_SANLOCK
+sbin_SCRIPTS = virt-sanlock-cleanup
+dist_man8_MANS = virt-sanlock-cleanup.8
+DISTCLEANFILES += virt-sanlock-cleanup
+endif WITH_SANLOCK
+
 if WITH_LOGIN_SHELL
+conf_DATA += virt-login-shell.conf
+bin_PROGRAMS += virt-login-shell
 dist_man1_MANS += virt-login-shell.1
 else ! WITH_LOGIN_SHELL
-EXTRA_DIST += virt-login-shell.1
+EXTRA_DIST += \
+		virt-login-shell.conf \
+		virt-login-shell.1
 endif ! WITH_LOGIN_SHELL
-if WITH_SANLOCK
-dist_man8_MANS = virt-sanlock-cleanup.8
-endif WITH_SANLOCK
 
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
