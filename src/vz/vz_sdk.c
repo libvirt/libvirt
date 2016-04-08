@@ -3435,6 +3435,9 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
     int ret = -1;
 
+    if (fs->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
+        return 0;
+
     if (prlsdkCheckFSUnsupportedParams(fs) < 0)
         return -1;
 
@@ -3733,6 +3736,7 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE result = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
+    PRL_UINT32 flags;
     int ret = -1;
     int useTemplate = 0;
     size_t i;
@@ -3777,8 +3781,10 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
     if (ret)
         goto cleanup;
 
-    job = PrlVm_RegEx(sdkdom, "",
-                      PACF_NON_INTERACTIVE_MODE | PRNVM_PRESERVE_DISK);
+    flags = PACF_NON_INTERACTIVE_MODE;
+    if (!useTemplate)
+        flags |= PRNVM_PRESERVE_DISK;
+    job = PrlVm_RegEx(sdkdom, "", flags);
     if (PRL_FAILED(waitJob(job)))
         ret = -1;
 
