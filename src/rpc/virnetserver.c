@@ -941,6 +941,55 @@ virNetServerSetThreadPoolParameters(virNetServerPtr srv,
     ret = virThreadPoolSetParameters(srv->workers, minWorkers,
                                      maxWorkers, prioWorkers);
     virObjectUnlock(srv);
+
+    return ret;
+}
+
+size_t
+virNetServerGetMaxClients(virNetServerPtr srv)
+{
+    size_t ret;
+
+    virObjectLock(srv);
+    ret = srv->nclients_max;
+    virObjectUnlock(srv);
+
+    return ret;
+}
+
+size_t
+virNetServerGetCurrentClients(virNetServerPtr srv)
+{
+    size_t ret;
+
+    virObjectLock(srv);
+    ret = srv->nclients;
+    virObjectUnlock(srv);
+
+    return ret;
+}
+
+size_t
+virNetServerGetMaxUnauthClients(virNetServerPtr srv)
+{
+    size_t ret;
+
+    virObjectLock(srv);
+    ret = srv->nclients_unauth_max;
+    virObjectUnlock(srv);
+
+    return ret;
+}
+
+size_t
+virNetServerGetCurrentUnauthClients(virNetServerPtr srv)
+{
+    size_t ret;
+
+    virObjectLock(srv);
+    ret = srv->nclients_unauth;
+    virObjectUnlock(srv);
+
     return ret;
 }
 

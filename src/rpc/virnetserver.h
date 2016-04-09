@@ -111,4 +111,9 @@ virNetServerClientPtr virNetServerGetClient(virNetServerPtr srv,
 int virNetServerGetClients(virNetServerPtr srv,
                            virNetServerClientPtr **clients);
 
+size_t virNetServerGetMaxClients(virNetServerPtr srv);
+size_t virNetServerGetCurrentClients(virNetServerPtr srv);
+size_t virNetServerGetMaxUnauthClients(virNetServerPtr srv);
+size_t virNetServerGetCurrentUnauthClients(virNetServerPtr srv);
+
 #endif /* __VIR_NET_SERVER_H__ */
