@@ -227,6 +227,44 @@ information about transport type used on client's connection (supported
 transports include B<unix>, B<tcp>, and B<tls>), as well as providing
 information about client's connection time (system local time is used).
 
+=item B<srv-clients-info> I<server>
+
+Get information about the current setting of limits regarding connections of new
+clients. This information comprises of the limits to the maximum number of
+clients connected to I<server>, maximum number of clients waiting for
+authentication, in order to be connected to the server, as well as the current
+runtime values, more specifically, the current number of clients connected to
+I<server> and the current number of clients waiting for authentication.
+
+B<Example>
+    # virt-admin srv-clients-info libvirtd
+    nclients_max        : 120
+    nclients            : 3
+    nclients_unauth_max : 20
+    nclients_unauth     : 0
+
+=item B<srv-clients-set> I<server> [I<--max-clients> B<count>]
+[I<--max-unauth-clients> B<count>]
+
+Set new client-related limits on I<server>.
+
+=over 4
+
+=item I<--max-clients>
+
+Change the upper limit of the maximum overall number of clients connected to
+I<server> to value B<count>. The value for this limit has to be always greater
+than the value of I<--max-unauth-clients>.
+
+=item I<--max-unauth-clients>
+
+Change the upper limit of the maximum number of clients waiting for
+authentication, in order to be connected to I<server>, to value B<count>.
+The value for this limit has to be always lower than the value of
+I<--max-clients>.
+
+=back
+
 =back
 
 =head1 CLIENT COMMANDS

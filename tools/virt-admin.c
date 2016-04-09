@@ -809,6 +809,168 @@ cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/* ------------------------
+ * Command srv-clients-info
+ * ------------------------
+ */
+
+static const vshCmdInfo info_srv_clients_info[] = {
+    {.name = "help",
+     .data = N_("get server's client-related configuration limits")
+    },
+    {.name = "desc",
+     .data = N_("Retrieve server's client-related configuration limits ")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_srv_clients_info[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("Server to retrieve the client limits from."),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    size_t i;
+    const char *srvname = NULL;
+    virAdmServerPtr srv = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    if (virAdmServerGetClientLimits(srv, &params, &nparams, 0) < 0) {
+        vshError(ctl, "%s", _("Unable to retrieve client limits "
+                              "from server's configuration"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++)
+        vshPrint(ctl, "%-20s: %d\n", params[i].field, params[i].value.ui);
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virAdmServerFree(srv);
+    return ret;
+}
+
+/* -----------------------
+ * Command srv-clients-set
+ * -----------------------
+ */
+
+static const vshCmdInfo info_srv_clients_set[] = {
+    {.name = "help",
+     .data = N_("set server's client-related configuration limits")
+    },
+    {.name = "desc",
+     .data = N_("Tune server's client-related configuration limits. "
+                "See OPTIONS for currently supported attributes.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_srv_clients_set[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("Server to alter the client-related configuration limits on."),
+    },
+    {.name = "max-clients",
+     .type = VSH_OT_INT,
+     .help = N_("Change the upper limit to overall number of clients "
+                "connected to the server."),
+    },
+    {.name = "max-unauth-clients",
+     .type = VSH_OT_INT,
+     .help = N_("Change the upper limit to number of clients waiting for "
+                "authentication to be connected to the server"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    int rv = 0;
+    unsigned int val, max, unauth_max;
+    int maxparams = 0;
+    int nparams = 0;
+    const char *srvname = NULL;
+    virAdmServerPtr srv = NULL;
+    virTypedParameterPtr params = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+#define PARSE_CMD_TYPED_PARAM(NAME, FIELD)                                   \
+    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) {                \
+        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME);    \
+        goto cleanup;                                                        \
+    } else if (rv > 0) {                                                     \
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,             \
+                                  FIELD, val) < 0)                           \
+        goto save_error;                                                     \
+    }
+
+    PARSE_CMD_TYPED_PARAM("max-clients", VIR_SERVER_CLIENTS_MAX);
+    PARSE_CMD_TYPED_PARAM("max-unauth-clients", VIR_SERVER_CLIENTS_UNAUTH_MAX);
+
+#undef PARSE_CMD_TYPED_PARAM
+
+    if (!nparams) {
+        vshError(ctl, "%s", _("At least one of options --max-clients, "
+                              "--max-unauth-clients is mandatory"));
+        goto cleanup;
+    }
+
+    if (virTypedParamsGetUInt(params, nparams,
+                              VIR_SERVER_CLIENTS_MAX, &max) &&
+        virTypedParamsGetUInt(params, nparams,
+                              VIR_SERVER_CLIENTS_UNAUTH_MAX, &unauth_max) &&
+        unauth_max > max) {
+        vshError(ctl, "%s", _("--max-unauth-clients must be less than "
+                              "--max-clients"));
+        goto cleanup;
+    }
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    if (virAdmServerSetClientLimits(srv, params, nparams, 0) < 0)
+        goto error;
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virAdmServerFree(srv);
+    return ret;
+
+ save_error:
+    vshSaveLibvirtError();
+
+ error:
+    vshError(ctl, "%s", _("Unable to change server's client-related "
+                          "configuration limits"));
+    goto cleanup;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -1126,6 +1288,12 @@ static const vshCmdDef monitoringCmds[] = {
      .info = info_client_info,
      .flags = 0
     },
+    {.name = "srv-clients-info",
+     .handler = cmdSrvClientsInfo,
+     .opts = opts_srv_clients_info,
+     .info = info_srv_clients_info,
+     .flags = 0
+    },
     {.name = NULL}
 };
 
@@ -1140,6 +1308,12 @@ static const vshCmdDef managementCmds[] = {
      .handler = cmdClientDisconnect,
      .opts = opts_client_disconnect,
      .info = info_client_disconnect,
+     .flags = 0
+    },
+    {.name = "srv-clients-set",
+     .handler = cmdSrvClientsSet,
+     .opts = opts_srv_clients_set,
+     .info = info_srv_clients_set,
      .flags = 0
     },
     {.name = NULL}
