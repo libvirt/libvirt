@@ -611,6 +611,16 @@ learnIPAddressThread(void *arg)
         sa.data.inet4.sin_addr.s_addr = vmaddr;
         char *inetaddr;
 
+        /* It is necessary to unlock interface here to avoid updateMutex and
+         * interface ordering deadlocks. Otherwise we are going to
+         * instantiate the filter, which will try to lock updateMutex, and
+         * some other thread instantiating a filter in parallel is holding
+         * updateMutex and is trying to lock interface, both will deadlock.
+         * Also it is safe to unlock interface here because we stopped
+         * capturing and applied necessary rules on the interface, while
+         * instantiating a new filter doesn't require a locked interface.*/
+        virNWFilterUnlockIface(req->ifname);
+
         if ((inetaddr = virSocketAddrFormat(&sa)) != NULL) {
             if (virNWFilterIPAddrMapAddIPAddr(req->ifname, inetaddr) < 0) {
                 VIR_ERROR(_("Failed to add IP address %s to IP address "
@@ -636,11 +646,11 @@ learnIPAddressThread(void *arg)
                                  req->ifname, req->ifindex);
 
         techdriver->applyDropAllRules(req->ifname);
+        virNWFilterUnlockIface(req->ifname);
     }
 
     VIR_DEBUG("pcap thread terminating for interface %s", req->ifname);
 
-    virNWFilterUnlockIface(req->ifname);
 
  err_no_lock:
     virNWFilterDeregisterLearnReq(req->ifindex);
