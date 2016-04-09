@@ -47,9 +47,11 @@
 #include "virprocess.h"
 #include "virrandom.h"
 #include "base64.h"
-#include <gnutls/gnutls.h>
-#if HAVE_GNUTLS_CRYPTO_H
-# include <gnutls/crypto.h>
+#ifdef WITH_GNUTLS
+# include <gnutls/gnutls.h>
+# if HAVE_GNUTLS_CRYPTO_H
+#  include <gnutls/crypto.h>
+# endif
 #endif
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
