@@ -20,7 +20,7 @@ dnl
 AC_DEFUN([LIBVIRT_CHECK_NSS],[
   AC_ARG_WITH([nss-plugin],
     [AS_HELP_STRING([--with-nss-plugin],
-      [enable Name Servie Switch plugin for resolving guest IP addresses])],
+      [enable Name Service Switch plugin for resolving guest IP addresses])],
       [], [with_nss_plugin=check])
 
   bsd_nss=no
