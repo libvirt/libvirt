@@ -473,8 +473,9 @@ lib_LTLIBRARIES = \
 
 endif WITH_NSS
 
-EXTRA_DIST += $(LIBVIRT_NSS_SYMBOL_FILE) \
-	$(LIBVIRT_NSS_SOURCES)
+EXTRA_DIST += $(LIBVIRT_NSS_SOURCES) \
+	$(srcdir)/nss/libvirt_nss.syms \
+	$(srcdir)/nss/libvirt_nss_bsd.syms
 
 clean-local:
 	-rm -rf wireshark/src/libvirt
