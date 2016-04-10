@@ -345,6 +345,67 @@ virStreamRecvFlags(virStreamPtr stream,
 
 
 /**
+ * virStreamSendHole:
+ * @stream: pointer to the stream object
+ * @length: number of bytes to skip
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Rather than transmitting empty file space, this API directs
+ * the @stream target to create @length bytes of empty space.
+ * This API would be used when uploading or downloading sparsely
+ * populated files to avoid the needless copy of empty file
+ * space.
+ *
+ * An example using this with a hypothetical file upload API
+ * looks like:
+ *
+ *   virStream st;
+ *
+ *   while (1) {
+ *     char buf[4096];
+ *     size_t len;
+ *     if (..in hole...) {
+ *       ..get hole size...
+ *       virStreamSendHole(st, len, 0);
+ *     } else {
+ *       ...read len bytes...
+ *       virStreamSend(st, buf, len);
+ *     }
+ *   }
+ *
+ * Returns 0 on success,
+ *        -1 error
+ */
+int
+virStreamSendHole(virStreamPtr stream,
+                  long long length,
+                  unsigned int flags)
+{
+    VIR_DEBUG("stream=%p, length=%lld flags=%x",
+              stream, length, flags);
+
+    virResetLastError();
+
+    virCheckStreamReturn(stream, -1);
+
+    if (stream->driver &&
+        stream->driver->streamSendHole) {
+        int ret;
+        ret = (stream->driver->streamSendHole)(stream, length, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(stream->conn);
+    return -1;
+}
+
+
+/**
  * virStreamSendAll:
  * @stream: pointer to the stream object
  * @handler: source callback for reading data from application
