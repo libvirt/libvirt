@@ -5683,6 +5683,37 @@ remoteStreamRecv(virStreamPtr st,
     return remoteStreamRecvFlags(st, data, nbytes, 0);
 }
 
+
+static int
+remoteStreamSendHole(virStreamPtr st,
+                     long long length,
+                     unsigned int flags)
+{
+    VIR_DEBUG("st=%p length=%lld flags=%x",
+              st, length, flags);
+    struct private_data *priv = st->conn->privateData;
+    virNetClientStreamPtr privst = st->privateData;
+    int rv;
+
+    if (virNetClientStreamRaiseError(privst))
+        return -1;
+
+    remoteDriverLock(priv);
+    priv->localUses++;
+    remoteDriverUnlock(priv);
+
+    rv = virNetClientStreamSendHole(privst,
+                                    priv->client,
+                                    length,
+                                    flags);
+
+    remoteDriverLock(priv);
+    priv->localUses--;
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 struct remoteStreamCallbackData {
     virStreamPtr st;
     virStreamEventCallback cb;
@@ -5857,6 +5888,7 @@ static virStreamDriver remoteStreamDrv = {
     .streamRecv = remoteStreamRecv,
     .streamRecvFlags = remoteStreamRecvFlags,
     .streamSend = remoteStreamSend,
+    .streamSendHole = remoteStreamSendHole,
     .streamFinish = remoteStreamFinish,
     .streamAbort = remoteStreamAbort,
     .streamEventAddCallback = remoteStreamEventAddCallback,
