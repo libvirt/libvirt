@@ -117,6 +117,20 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         [lv_cv_gcc_wlogical_op_broken=yes])
       CFLAGS="$save_CFLAGS"])
 
+    AC_CACHE_CHECK([whether gcc gives bogus warnings for -Wlogical-op],
+      [lv_cv_gcc_wlogical_op_equal_expr_broken], [
+        save_CFLAGS="$CFLAGS"
+        CFLAGS="-O2 -Wlogical-op -Werror"
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+          #define TEST1 1
+          #define TEST2 TEST1
+        ]], [[
+          int test = 0;
+          return test == TEST1 || test == TEST2;]])],
+        [lv_cv_gcc_wlogical_op_equal_expr_broken=no],
+        [lv_cv_gcc_wlogical_op_equal_expr_broken=yes])
+        CFLAGS="$save_CFLAGS"])
+
     # We might fundamentally need some of these disabled forever, but
     # ideally we'd turn many of them on
     dontwarn="$dontwarn -Wfloat-equal"
@@ -238,5 +252,11 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
        test "$lv_cv_gcc_wlogical_op_broken" = yes; then
       AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP], 1,
        [Define to 1 if gcc -Wlogical-op reports false positives on strchr])
+    fi
+
+    if test "$gl_cv_warn_c__Wlogical_op" = yes &&
+       test "$lv_cv_gcc_wlogical_op_equal_expr_broken" = yes; then
+      AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP_EQUAL_EXPR], 1,
+        [Define to 1 if gcc -Wlogical-op reports false positive 'or' equal expr])
     fi
 ])
