@@ -23815,30 +23815,6 @@ virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t i)
 }
 
 
-/* Make a copy of up to len characters of address, and store it in
- * listens[i].network */
-int
-virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
-                                  size_t i, const char *network, int len)
-{
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, true);
-
-    if (!listenInfo)
-        return -1;
-
-    listenInfo->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK;
-
-    if (!network) {
-        VIR_FREE(listenInfo->network);
-        return 0;
-    }
-
-    if (VIR_STRNDUP(listenInfo->network, network, len) < 0)
-        return -1;
-    return 0;
-}
-
 /**
  * virDomainNetFind:
  * @def: domain's def

@@ -2825,9 +2825,6 @@ int virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
 const char *virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def,
                                               size_t i)
             ATTRIBUTE_NONNULL(1);
-int virDomainGraphicsListenSetNetwork(virDomainGraphicsDefPtr def,
-                                      size_t i, const char *network, int len)
-            ATTRIBUTE_NONNULL(1);
 
 int virDomainNetGetActualType(virDomainNetDefPtr iface);
 const char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
