@@ -300,6 +300,7 @@ virDomainGetFilesystemForTarget;
 virDomainGraphicsAuthConnectedTypeFromString;
 virDomainGraphicsAuthConnectedTypeToString;
 virDomainGraphicsDefFree;
+virDomainGraphicsGetListen;
 virDomainGraphicsListenAppendAddress;
 virDomainGraphicsListenGetAddress;
 virDomainGraphicsListenGetNetwork;

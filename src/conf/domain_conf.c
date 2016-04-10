@@ -23700,26 +23700,13 @@ virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
  * type, or NULL if this is an unsuitable type, or the index is out of
  * bounds. If force0 is TRUE, i == 0, and there is no listen array,
  * allocate one with a single item. */
-static virDomainGraphicsListenDefPtr
-virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t i, bool force0)
+virDomainGraphicsListenDefPtr
+virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t i)
 {
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-        def->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP ||
-        def->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+    if (!def->listens || (def->nListens <= i))
+        return NULL;
 
-        if (!def->listens && (i == 0) && force0) {
-            if (VIR_ALLOC(def->listens) >= 0)
-                def->nListens = 1;
-        }
-
-        if (!def->listens || (def->nListens <= i))
-            return NULL;
-
-        return &def->listens[i];
-    }
-
-    /* it's a type that has no listens array */
-    return NULL;
+    return &def->listens[i];
 }
 
 
@@ -23740,7 +23727,7 @@ int
 virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, false);
+        = virDomainGraphicsGetListen(def, i);
 
     if (!listenInfo)
         return VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE;
@@ -23752,7 +23739,7 @@ const char *
 virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, false);
+        = virDomainGraphicsGetListen(def, i);
 
     /* even a network can have a listen address */
     if (!listenInfo ||
@@ -23790,7 +23777,7 @@ const char *
 virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t i)
 {
     virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i, false);
+        = virDomainGraphicsGetListen(def, i);
 
     if (!listenInfo ||
         (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
