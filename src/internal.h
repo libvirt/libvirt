@@ -245,11 +245,23 @@
     _Pragma ("GCC diagnostic push")
 #  endif
 
+/* Workaround bogus GCC 6.0 for logical 'or' equal expression warnings.
+ * (GCC bz 69602) */
+#  if BROKEN_GCC_WLOGICALOP_EQUAL_EXPR
+#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR            \
+     _Pragma ("GCC diagnostic push")                        \
+     _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
+#  else
+#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR            \
+     _Pragma ("GCC diagnostic push")
+#  endif
+
 #  define VIR_WARNINGS_RESET \
     _Pragma ("GCC diagnostic pop")
 # else
 #  define VIR_WARNINGS_NO_CAST_ALIGN
 #  define VIR_WARNINGS_NO_PRINTF
+#  define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
 #  define VIR_WARNINGS_RESET
 # endif
 
