@@ -545,9 +545,11 @@ virNetSSHAuthenticateAgent(virNetSSHSessionPtr sess,
                                            agent_identity)))
             return 0; /* key accepted */
 
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (ret != LIBSSH2_ERROR_AUTHENTICATION_FAILED &&
             ret != LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED &&
             ret != LIBSSH2_ERROR_PUBLICKEY_UNVERIFIED) {
+        VIR_WARNINGS_RESET
             libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
             virReportError(VIR_ERR_AUTH_FAILED,
                            _("failed to authenticate using SSH agent: %s"),
@@ -605,9 +607,11 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
                                                    priv->password)) == 0)
         return 0; /* success */
 
+    VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
     if (priv->password ||
         ret == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED ||
         ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED) {
+    VIR_WARNINGS_RESET
         libssh2_session_last_error(sess->session, &errmsg, NULL, 0);
         virReportError(VIR_ERR_AUTH_FAILED,
                        _("authentication with private key '%s' "
@@ -673,11 +677,13 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
                          "has failed: %s"),
                        priv->filename, errmsg);
 
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (ret == LIBSSH2_ERROR_PUBLICKEY_UNRECOGNIZED ||
             ret == LIBSSH2_ERROR_AUTHENTICATION_FAILED)
             return 1;
         else
             return -1;
+        VIR_WARNINGS_RESET
     }
 
     return 0;

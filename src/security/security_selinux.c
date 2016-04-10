@@ -911,8 +911,10 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon,
          * hopefully sets one of the necessary SELinux virt_use_{nfs,usb,pci}
          * boolean tunables to allow it ...
          */
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (setfilecon_errno != EOPNOTSUPP && setfilecon_errno != ENOTSUP &&
             setfilecon_errno != EROFS) {
+        VIR_WARNINGS_RESET
             virReportSystemError(setfilecon_errno,
                                  _("unable to set security context '%s' on '%s'"),
                                  tcon, path);
