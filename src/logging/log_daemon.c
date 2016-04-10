@@ -1212,6 +1212,8 @@ int main(int argc, char **argv) {
     VIR_FREE(sock_file);
     VIR_FREE(state_file);
     VIR_FREE(run_dir);
+    VIR_FREE(remote_config_file);
+    virLogDaemonConfigFree(config);
     return ret;
 
  no_memory:
