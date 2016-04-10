@@ -387,7 +387,9 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
  retry:
     ret = write(fdst->fd, bytes, nbytes);
     if (ret < 0) {
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        VIR_WARNINGS_RESET
             ret = -2;
         } else if (errno == EINTR) {
             goto retry;
@@ -437,7 +439,9 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
  retry:
     ret = read(fdst->fd, bytes, nbytes);
     if (ret < 0) {
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        VIR_WARNINGS_RESET
             ret = -2;
         } else if (errno == EINTR) {
             goto retry;
