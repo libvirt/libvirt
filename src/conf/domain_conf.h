@@ -2814,16 +2814,8 @@ int virDomainHostdevFind(virDomainDefPtr def, virDomainHostdevDefPtr match,
 
 virDomainGraphicsListenDefPtr
 virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t i);
-int virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
-            ATTRIBUTE_NONNULL(1);
-const char *virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def,
-                                              size_t i)
-            ATTRIBUTE_NONNULL(1);
 int virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
                                          const char *address)
-            ATTRIBUTE_NONNULL(1);
-const char *virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def,
-                                              size_t i)
             ATTRIBUTE_NONNULL(1);
 
 int virDomainNetGetActualType(virDomainNetDefPtr iface);

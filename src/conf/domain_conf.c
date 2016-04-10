@@ -21301,7 +21301,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                      VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
             continue;
 
-        if ((listenAddr = virDomainGraphicsListenGetAddress(def, i)))
+        if ((listenAddr = def->listens[i].address))
             break;
     }
 
@@ -21414,8 +21414,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     }
 
     for (i = 0; i < def->nListens; i++) {
-        if (virDomainGraphicsListenGetType(def, i)
-            == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE)
+        if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE)
             continue;
         if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
             def->listens[i].fromConfig)
@@ -23710,46 +23709,6 @@ virDomainGraphicsGetListen(virDomainGraphicsDefPtr def, size_t i)
 }
 
 
-/* Access functions for the fields in a virDomainGraphicsDef's
- * "listens" array.
- *
- * NB: For simple backward compatibility with existing code, any of
- * the "Set" functions will auto-create listens[0] to store the new
- * setting, when necessary. Auto-creation beyond the first item is not
- * supported.
- *
- * Return values: All "Get" functions return the requested item, or
- * 0/NULL. (in the case of returned const char *, the caller should
- * make a copy if they want to keep it around). All "Set" functions
- * return 0 on success, -1 on failure. */
-
-int
-virDomainGraphicsListenGetType(virDomainGraphicsDefPtr def, size_t i)
-{
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i);
-
-    if (!listenInfo)
-        return VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE;
-    return listenInfo->type;
-}
-
-
-const char *
-virDomainGraphicsListenGetAddress(virDomainGraphicsDefPtr def, size_t i)
-{
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i);
-
-    /* even a network can have a listen address */
-    if (!listenInfo ||
-        !(listenInfo->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
-          listenInfo->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
-        return NULL;
-    return listenInfo->address;
-}
-
-
 int
 virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
                                      const char *address)
@@ -23770,19 +23729,6 @@ virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
  error:
     VIR_FREE(listen.address);
     return -1;
-}
-
-
-const char *
-virDomainGraphicsListenGetNetwork(virDomainGraphicsDefPtr def, size_t i)
-{
-    virDomainGraphicsListenDefPtr listenInfo
-        = virDomainGraphicsGetListen(def, i);
-
-    if (!listenInfo ||
-        (listenInfo->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK))
-        return NULL;
-    return listenInfo->network;
 }
 
 
