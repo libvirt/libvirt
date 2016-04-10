@@ -253,6 +253,16 @@
 #  define VIR_WARNINGS_RESET
 # endif
 
+/* Workaround bogus GCC < 4.6 that produces false -Wlogical-op warnings for
+ * strchr(). Those old GCCs don't support push/pop. */
+# if BROKEN_GCC_WLOGICALOP_STRCHR
+#  define VIR_WARNINGS_NO_WLOGICALOP_STRCHR                \
+    _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
+# else
+#  define VIR_WARNINGS_NO_WLOGICALOP_STRCHR
+# endif
+
+
 /*
  * Use this when passing possibly-NULL strings to printf-a-likes.
  */
