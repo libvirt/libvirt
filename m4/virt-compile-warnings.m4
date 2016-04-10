@@ -236,7 +236,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     if test "$gl_cv_warn_c__Wlogical_op" = yes &&
        test "$lv_cv_gcc_wlogical_op_broken" = yes; then
-      AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP], 1,
+      AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP_STRCHR], 1,
        [Define to 1 if gcc -Wlogical-op reports false positives on strchr])
     fi
 ])

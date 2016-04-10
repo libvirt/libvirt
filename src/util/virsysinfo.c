@@ -428,17 +428,8 @@ virSysinfoRead(void)
 
 
 #elif defined(__s390__) || defined(__s390x__)
-/*
-  we need to ignore warnings about strchr caused by -Wlogical-op
-  for some GCC versions.
-  Doing it via a local pragma keeps the damage smaller than
-  disabling it on the package level.
-  Unfortunately, the affected GCCs don't allow diagnostic push/pop
-  which would have further reduced the impact.
- */
-# if BROKEN_GCC_WLOGICALOP
-#  pragma GCC diagnostic ignored "-Wlogical-op"
-# endif
+
+VIR_WARNINGS_NO_WLOGICALOP_STRCHR
 
 static char *
 virSysinfoParseDelimited(const char *base, const char *name, char **value,
