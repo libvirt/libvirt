@@ -13,7 +13,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

@@ -22,7 +22,7 @@
       <target type='serial' port='0'/>
     </console>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

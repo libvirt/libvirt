@@ -34,7 +34,7 @@
     <input type='mouse' bus='usb'/>
     <graphics type='sdl'/>
     <video>
-      <model type='cirrus' vram='16384' heads='1'/>
+      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
     </video>
     <memballoon model='none'/>
     <panic model='pseries'/>

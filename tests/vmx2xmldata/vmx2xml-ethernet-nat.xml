@@ -15,7 +15,7 @@
       <mac address='00:50:56:11:22:33'/>
     </interface>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

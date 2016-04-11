@@ -36,7 +36,7 @@
     <controller type='scsi' index='2' model='lsisas1068'/>
     <controller type='scsi' index='3' model='vmpvscsi'/>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

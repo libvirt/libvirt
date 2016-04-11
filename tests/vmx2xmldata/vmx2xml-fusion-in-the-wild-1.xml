@@ -33,7 +33,7 @@
       <source bridge=''/>
     </interface>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>
