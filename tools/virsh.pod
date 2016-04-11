@@ -4182,7 +4182,7 @@ When I<--timestamp> is used, a human-readable timestamp will be printed
 before the event, and the timing information provided by QEMU will be
 omitted.
 
-=item B<lxc-enter-namespace> I<domain> -- /path/to/binary [arg1, [arg2, ...]]
+=item B<lxc-enter-namespace> I<domain> [I<--noseclabel>] -- /path/to/binary [arg1, [arg2, ...]]
 
 Enter the namespace of I<domain> and execute the command C</path/to/binary>
 passing the requested args. The binary path is relative to the container
@@ -4190,6 +4190,10 @@ root filesystem, not the host root filesystem. The binary will inherit the
 environment variables / console visible to virsh. This command only works
 when connected to the LXC hypervisor driver.  This command succeeds only
 if C</path/to/binary> has 0 exit status.
+
+By default the new process will run with the security label of the new
+parent container. Use the I<--noseclabel> option to instead have the
+process keep the same security label as C<virsh>.
 
 =back
 
