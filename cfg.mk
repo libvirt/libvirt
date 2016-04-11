@@ -578,7 +578,7 @@ sc_prohibit_int_ijk:
 
 sc_prohibit_loop_iijjkk:
 	@prohibit='\<(int|unsigned) ([^=]+ )*(ii|jj|kk)\>(\s|,|;)'	\
-	halt='use i, j, k for loop iterators, not ii, jj, kk' 		\
+	halt='use i, j, k for loop iterators, not ii, jj, kk'		\
 	  $(_sc_search_regexp)
 
 # RHEL 5 gcc can't grok "for (int i..."
