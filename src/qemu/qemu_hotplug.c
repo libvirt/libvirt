@@ -334,6 +334,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     char *devstr = NULL;
     char *drivestr = NULL;
     char *drivealias = NULL;
@@ -384,34 +385,24 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
 
+    /* Attach the device - 2 step process */
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorAddDrive(priv->mon, drivestr);
-    if (ret == 0) {
-        ret = qemuMonitorAddDevice(priv->mon, devstr);
-        if (ret < 0) {
-            virErrorPtr orig_err = virSaveLastError();
-            if (qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
-                VIR_WARN("Unable to remove drive %s (%s) after failed "
-                         "qemuMonitorAddDevice", drivealias, drivestr);
-            }
-            if (orig_err) {
-                virSetError(orig_err);
-                virFreeError(orig_err);
-            }
-        }
-    }
+
+    if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
+        goto failadddrive;
+
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto failadddevice;
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         releaseaddr = false;
-        ret = -1;
-        goto error;
+        goto failexitmonitor;
     }
 
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret >= 0);
-
-    if (ret < 0)
-        goto error;
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
 
     virDomainDiskInsertPreAlloced(vm->def, disk);
+    ret = 0;
 
  cleanup:
     qemuDomainSecretDiskDestroy(disk);
@@ -420,6 +411,24 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     VIR_FREE(drivealias);
     virObjectUnref(cfg);
     return ret;
+
+ failadddevice:
+    orig_err = virSaveLastError();
+    if (qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
+        VIR_WARN("Unable to remove drive %s (%s) after failed "
+                 "qemuMonitorAddDevice", drivealias, drivestr);
+    }
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+
+ failadddrive:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        releaseaddr = false;
+
+ failexitmonitor:
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
     if (releaseaddr)
