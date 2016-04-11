@@ -1,3 +1,8 @@
+# NB we don't use socket activation. When libvirtd starts it will
+# spawn any virtual machines registered for autostart. We want this
+# to occur on every boot, regardless of whether any client connects
+# to a socket. Thus socket activation doesn't have any benefit
+
 [Unit]
 Description=Virtualization daemon
 Before=libvirt-guests.service
