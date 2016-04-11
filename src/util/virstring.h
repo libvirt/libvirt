@@ -275,4 +275,6 @@ void virStringStripIPv6Brackets(char *str);
 bool virStringHasControlChars(const char *str);
 void virStringStripControlChars(char *str);
 
+bool virStringIsPrintable(const char *str);
+
 #endif /* __VIR_STRING_H__ */

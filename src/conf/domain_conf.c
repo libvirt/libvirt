@@ -7160,7 +7160,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
 
-                if (!virStrIsPrint(vendor)) {
+                if (!virStringIsPrintable(vendor)) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("disk vendor is not printable string"));
                     goto error;
@@ -7175,7 +7175,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
 
-                if (!virStrIsPrint(product)) {
+                if (!virStringIsPrintable(product)) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("disk product is not printable string"));
                     goto error;

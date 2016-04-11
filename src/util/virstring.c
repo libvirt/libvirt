@@ -1048,3 +1048,21 @@ virStringToUpper(char **dst, const char *src)
     *dst = cap;
     return 1;
 }
+
+
+/**
+ * virStringIsPrintable:
+ *
+ * Returns true @str contains only printable characters.
+ */
+bool
+virStringIsPrintable(const char *str)
+{
+    size_t i;
+
+    for (i = 0; str[i]; i++)
+        if (!c_isprint(str[i]))
+            return false;
+
+    return true;
+}

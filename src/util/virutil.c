@@ -1600,18 +1600,6 @@ virValidateWWN(const char *wwn)
     return true;
 }
 
-bool
-virStrIsPrint(const char *str)
-{
-    size_t i;
-
-    for (i = 0; str[i]; i++)
-        if (!c_isprint(str[i]))
-            return false;
-
-    return true;
-}
-
 #if defined(major) && defined(minor)
 int
 virGetDeviceID(const char *path, int *maj, int *min)
