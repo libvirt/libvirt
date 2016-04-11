@@ -115,6 +115,8 @@ int virStorageBackendCreatePloop(virConnectPtr conn,
                                  virStorageVolDefPtr inputvol,
                                  unsigned int flags);
 
+int virStoragePloopResize(virStorageVolDefPtr vol,
+                          unsigned long long capacity);
 
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,

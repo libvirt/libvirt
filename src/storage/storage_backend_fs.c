@@ -1379,6 +1379,8 @@ virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (vol->target.format == VIR_STORAGE_FILE_RAW) {
         return virStorageFileResize(vol->target.path, capacity,
                                     vol->target.allocation, pre_allocate);
+    } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        return virStoragePloopResize(vol, capacity);
     } else {
         if (pre_allocate) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

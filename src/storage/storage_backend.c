@@ -850,6 +850,31 @@ virStorageBackendCreatePloop(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+int
+virStoragePloopResize(virStorageVolDefPtr vol,
+                      unsigned long long capacity)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    char *resize_tool = NULL;
+
+    resize_tool = virFindFileInPath("ploop");
+    if (!resize_tool) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to find ploop, please install ploop tools"));
+        return -1;
+    }
+    cmd = virCommandNewArgList(resize_tool, "resize", "-s", NULL);
+    virCommandAddArgFormat(cmd, "%lluM", VIR_DIV_UP(capacity, (1024 * 1024)));
+
+    virCommandAddArgFormat(cmd, "%s/DiskDescriptor.xml", vol->target.path);
+
+    ret = virCommandRun(cmd, NULL);
+    virCommandFree(cmd);
+    VIR_FREE(resize_tool);
+    return ret;
+}
+
 enum {
     QEMU_IMG_BACKING_FORMAT_NONE = 0,
     QEMU_IMG_BACKING_FORMAT_FLAG,
