@@ -1264,6 +1264,9 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
         break;
     case VIR_STORAGE_VOL_PLOOP:
+        if (virFileDeleteTree(vol->target.path) < 0)
+            return -1;
+        break;
     case VIR_STORAGE_VOL_BLOCK:
     case VIR_STORAGE_VOL_NETWORK:
     case VIR_STORAGE_VOL_NETDIR:
