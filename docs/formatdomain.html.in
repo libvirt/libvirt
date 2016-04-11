@@ -5265,9 +5265,17 @@ qemu-kvm -net nic,model=? /dev/null
 
       <dt><code>acceleration</code></dt>
       <dd>
-        If acceleration should be enabled (if supported) using the
-        <code>accel3d</code> and <code>accel2d</code> attributes in the
-        <code>acceleration</code> element.
+        Configure if video acceleration should be enabled.
+        <dl>
+        <dt><code>accel2d</code></dt>
+        <dd>Enable 2D acceleration (for vbox driver only,
+        <span class="since">since 0.7.1</span>)</dd>
+
+        <dt><code>accel3d</code></dt>
+        <dd>Enable 3D acceleration (for vbox driver
+        <span class="since">since 0.7.1</span>, qemu driver
+        <span class="since">since 1.3.0</span>)</dd>
+        </dl>
       </dd>
 
       <dt><code>address</code></dt>
