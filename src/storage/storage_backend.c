@@ -1703,6 +1703,56 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
     return fd;
 }
 
+/* virStorageIsPloop function checks whether given directory is ploop volume's
+ * directory.
+ */
+bool
+virStorageBackendIsPloopDir(char *path)
+{
+    bool ret = false;
+    char *root = NULL;
+    char *desc = NULL;
+    if (virAsprintf(&root, "%s/root.hds", path) < 0)
+        return ret;
+    if (!virFileExists(root))
+        goto cleanup;
+    if (virAsprintf(&desc, "%s/DiskDescriptor.xml", path) < 0)
+        goto cleanup;
+    if (!virFileExists(desc))
+        goto cleanup;
+
+    ret = true;
+ cleanup:
+    VIR_FREE(root);
+    VIR_FREE(desc);
+    return ret;
+}
+
+/* In case of ploop volumes, path to volume is the path to the ploop
+ * directory. To get information about allocation, header information
+ * and etc. we need to perform virStorageBackendVolOpen and
+ * virStorageBackendUpdateVolTargetFd once again.
+ */
+int
+virStorageBackendRedoPloopUpdate(virStorageSourcePtr target, struct stat *sb,
+                                 int *fd, unsigned int flags)
+{
+    char *path = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&path, "%s/root.hds", target->path) < 0)
+        return -1;
+    VIR_FORCE_CLOSE(*fd);
+    if ((*fd = virStorageBackendVolOpen(path, sb, flags)) < 0)
+        goto cleanup;
+    ret = virStorageBackendUpdateVolTargetInfoFD(target, *fd, sb);
+
+ cleanup:
+
+    VIR_FREE(path);
+    return ret;
+}
+
 /*
  * virStorageBackendUpdateVolTargetInfo
  * @target: target definition ptr of volume to update
@@ -1738,8 +1788,15 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
     if (target->type == VIR_STORAGE_VOL_FILE &&
         target->format != VIR_STORAGE_FILE_NONE) {
         if (S_ISDIR(sb.st_mode)) {
-            ret = 0;
-            goto cleanup;
+            if (virStorageBackendIsPloopDir(target->path)) {
+                if ((ret = virStorageBackendRedoPloopUpdate(target, &sb, &fd,
+                                                            openflags)) < 0)
+                    goto cleanup;
+                target->format = VIR_STORAGE_FILE_PLOOP;
+            } else {
+                ret = 0;
+                goto cleanup;
+            }
         }
 
         if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {

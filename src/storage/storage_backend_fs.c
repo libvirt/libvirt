@@ -84,9 +84,15 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         goto cleanup;
 
     if (S_ISDIR(sb.st_mode)) {
-        target->format = VIR_STORAGE_FILE_DIR;
-        ret = 0;
-        goto cleanup;
+        if (virStorageBackendIsPloopDir(target->path)) {
+            if (virStorageBackendRedoPloopUpdate(target, &sb, &fd,
+                                                 VIR_STORAGE_VOL_FS_PROBE_FLAGS) < 0)
+                goto cleanup;
+        } else {
+            target->format = VIR_STORAGE_FILE_DIR;
+            ret = 0;
+            goto cleanup;
+        }
     }
 
     if (!(meta = virStorageFileGetMetadataFromFD(target->path,
@@ -948,6 +954,9 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         /* directory based volume */
         if (vol->target.format == VIR_STORAGE_FILE_DIR)
             vol->type = VIR_STORAGE_VOL_DIR;
+
+        if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
+            vol->type = VIR_STORAGE_VOL_PLOOP;
 
         if (vol->target.backingStore) {
             ignore_value(virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,

@@ -118,6 +118,11 @@ int virStorageBackendCreatePloop(virConnectPtr conn,
 int virStoragePloopResize(virStorageVolDefPtr vol,
                           unsigned long long capacity);
 
+int virStorageBackendRedoPloopUpdate(virStorageSourcePtr target,
+                                     struct stat *sb, int *fd,
+                                     unsigned int flags);
+bool virStorageBackendIsPloopDir(char *path);
+
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);
