@@ -53,6 +53,7 @@ virNetClientStreamNew;
 virNetClientStreamQueuePacket;
 virNetClientStreamRaiseError;
 virNetClientStreamRecvPacket;
+virNetClientStreamSendHole;
 virNetClientStreamSendPacket;
 virNetClientStreamSetError;
 
