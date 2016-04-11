@@ -2163,6 +2163,12 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_DEBUG("Wiping volume with path '%s' and algorithm %u",
               vol->target.path, algorithm);
 
+    if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("wiping for ploop volumes is not supported"));
+        goto cleanup;
+    }
+
     fd = open(vol->target.path, O_RDWR);
     if (fd == -1) {
         virReportSystemError(errno,
