@@ -16447,28 +16447,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     VIR_FREE(nodes);
 
-    /* For backwards compatibility, if no <video> tag is set but there
-     * is a <graphics> tag, then we add a single video tag */
-    if (def->ngraphics && !def->nvideos) {
-        virDomainVideoDefPtr video;
-        if (VIR_ALLOC(video) < 0)
-            goto error;
-        video->type = virDomainVideoDefaultType(def);
-        if (video->type < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot determine default video type"));
-            VIR_FREE(video);
-            goto error;
-        }
-        video->vram = virDomainVideoDefaultRAM(def, video->type);
-        video->heads = 1;
-        if (VIR_ALLOC_N(def->videos, 1) < 0) {
-            virDomainVideoDefFree(video);
-            goto error;
-        }
-        def->videos[def->nvideos++] = video;
-    }
-
     /* analysis of the host devices */
     if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0)
         goto error;
@@ -18665,6 +18643,37 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
     return 0;
 }
 
+static int
+virDomainDefAddImplicitVideo(virDomainDefPtr def)
+{
+    int ret = -1;
+    virDomainVideoDefPtr video = NULL;
+
+    /* For backwards compatibility, if no <video> tag is set but there
+     * is a <graphics> tag, then we add a single video tag */
+    if (def->ngraphics && !def->nvideos) {
+        if (VIR_ALLOC(video) < 0)
+            goto cleanup;
+        video->type = virDomainVideoDefaultType(def);
+        if (video->type < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot determine default video type"));
+            goto cleanup;
+        }
+        video->vram = virDomainVideoDefaultRAM(def, video->type);
+        video->heads = 1;
+        if (VIR_ALLOC_N(def->videos, 1) < 0)
+            goto cleanup;
+        def->videos[def->nvideos++] = video;
+        video = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainVideoDefFree(video);
+    return ret;
+}
+
 int
 virDomainDefAddImplicitDevices(virDomainDefPtr def)
 {
@@ -18672,6 +18681,9 @@ virDomainDefAddImplicitDevices(virDomainDefPtr def)
         return -1;
 
     if (virDomainDefAddImplicitControllers(def) < 0)
+        return -1;
+
+    if (virDomainDefAddImplicitVideo(def) < 0)
         return -1;
 
     return 0;
