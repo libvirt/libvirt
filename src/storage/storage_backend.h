@@ -108,6 +108,14 @@ int virStorageBackendCreateRaw(virConnectPtr conn,
                                virStorageVolDefPtr vol,
                                virStorageVolDefPtr inputvol,
                                unsigned int flags);
+
+int virStorageBackendCreatePloop(virConnectPtr conn,
+                                 virStoragePoolObjPtr pool,
+                                 virStorageVolDefPtr vol,
+                                 virStorageVolDefPtr inputvol,
+                                 unsigned int flags);
+
+
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);

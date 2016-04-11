@@ -1179,6 +1179,8 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         create_func = virStorageBackendCreateRaw;
     } else if (vol->target.format == VIR_STORAGE_FILE_DIR) {
         create_func = createFileDir;
+    } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        create_func = virStorageBackendCreatePloop;
     } else if ((tool_type = virStorageBackendFindFSImageTool(NULL)) != -1) {
         create_func = virStorageBackendFSImageToolTypeToFunc(tool_type);
 
