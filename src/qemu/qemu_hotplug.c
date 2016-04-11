@@ -1882,6 +1882,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     virDomainControllerDefPtr cont = NULL;
     char *devstr = NULL;
     char *drvstr = NULL;
@@ -1941,32 +1942,24 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
 
+    /* Attach the device - 2 step process */
     qemuDomainObjEnterMonitor(driver, vm);
-    if ((ret = qemuMonitorAddDrive(priv->mon, drvstr)) == 0) {
-        if ((ret = qemuMonitorAddDevice(priv->mon, devstr)) < 0) {
-            virErrorPtr orig_err = virSaveLastError();
-            if (qemuMonitorDriveDel(priv->mon, drvstr) < 0)
-                VIR_WARN("Unable to remove drive %s (%s) after failed "
-                         "qemuMonitorAddDevice",
-                         drvstr, devstr);
-            if (orig_err) {
-                virSetError(orig_err);
-                virFreeError(orig_err);
-            }
-        }
-    }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
 
-    virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
-    if (ret < 0)
-        goto cleanup;
+    if (qemuMonitorAddDrive(priv->mon, drvstr) < 0)
+        goto failadddrive;
+
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto failadddevice;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto failexitmonitor;
+
+    virDomainAuditHostdev(vm, hostdev, "attach", true);
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
 
     ret = 0;
+
  cleanup:
     qemuDomainSecretHostdevDestroy(hostdev);
     if (ret < 0) {
@@ -1981,6 +1974,25 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     VIR_FREE(drvstr);
     VIR_FREE(devstr);
     return ret;
+
+ failadddevice:
+    orig_err = virSaveLastError();
+    if (qemuMonitorDriveDel(priv->mon, drvstr) < 0)
+        VIR_WARN("Unable to remove drive %s (%s) after failed "
+                 "qemuMonitorAddDevice",
+                 drvstr, devstr);
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+
+ failadddrive:
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+
+ failexitmonitor:
+    virDomainAuditHostdev(vm, hostdev, "attach", false);
+
+    goto cleanup;
 }
 
 
