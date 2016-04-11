@@ -178,6 +178,7 @@ virNetServerProgramNew;
 virNetServerProgramSendReplyError;
 virNetServerProgramSendStreamData;
 virNetServerProgramSendStreamError;
+virNetServerProgramSendStreamHole;
 virNetServerProgramUnknownError;
 
 

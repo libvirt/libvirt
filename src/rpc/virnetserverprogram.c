@@ -548,6 +548,41 @@ int virNetServerProgramSendStreamData(virNetServerProgramPtr prog,
 }
 
 
+int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
+                                      virNetServerClientPtr client,
+                                      virNetMessagePtr msg,
+                                      int procedure,
+                                      unsigned int serial,
+                                      long long length,
+                                      unsigned int flags)
+{
+    virNetStreamHole data;
+
+    VIR_DEBUG("client=%p msg=%p length=%lld", client, msg, length);
+
+    memset(&data, 0, sizeof(data));
+    data.length = length;
+    data.flags = flags;
+
+    msg->header.prog = prog->program;
+    msg->header.vers = prog->version;
+    msg->header.proc = procedure;
+    msg->header.type = VIR_NET_STREAM_HOLE;
+    msg->header.serial = serial;
+    msg->header.status = VIR_NET_CONTINUE;
+
+    if (virNetMessageEncodeHeader(msg) < 0)
+        return -1;
+
+    if (virNetMessageEncodePayload(msg,
+                                   (xdrproc_t) xdr_virNetStreamHole,
+                                   &data) < 0)
+        return -1;
+
+    return virNetServerClientSendMessage(client, msg);
+}
+
+
 void virNetServerProgramDispose(void *obj ATTRIBUTE_UNUSED)
 {
 }
