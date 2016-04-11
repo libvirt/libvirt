@@ -16421,10 +16421,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     for (i = 0; i < n; i++) {
         j = def->nvideos;
-        virDomainVideoDefPtr video = virDomainVideoDefParseXML(nodes[j],
-                                                               def,
-                                                               flags);
-        if (!video)
+        virDomainVideoDefPtr video;
+
+        if (!(video = virDomainVideoDefParseXML(nodes[i], def, flags)))
             goto error;
 
         if (video->primary) {
