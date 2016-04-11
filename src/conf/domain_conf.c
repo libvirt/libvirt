@@ -18650,22 +18650,23 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
 
     /* For backwards compatibility, if no <video> tag is set but there
      * is a <graphics> tag, then we add a single video tag */
-    if (def->ngraphics && !def->nvideos) {
-        if (VIR_ALLOC(video) < 0)
-            goto cleanup;
-        video->type = virDomainVideoDefaultType(def);
-        if (video->type < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot determine default video type"));
-            goto cleanup;
-        }
-        video->vram = virDomainVideoDefaultRAM(def, video->type);
-        video->heads = 1;
-        if (VIR_ALLOC_N(def->videos, 1) < 0)
-            goto cleanup;
-        def->videos[def->nvideos++] = video;
-        video = NULL;
+    if (def->ngraphics == 0 || def->nvideos > 0)
+        return 0;
+
+    if (VIR_ALLOC(video) < 0)
+        goto cleanup;
+    video->type = virDomainVideoDefaultType(def);
+    if (video->type < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot determine default video type"));
+        goto cleanup;
     }
+    video->vram = virDomainVideoDefaultRAM(def, video->type);
+    video->heads = 1;
+    if (VIR_ALLOC_N(def->videos, 1) < 0)
+        goto cleanup;
+    def->videos[def->nvideos++] = video;
+    video = NULL;
 
     ret = 0;
  cleanup:
