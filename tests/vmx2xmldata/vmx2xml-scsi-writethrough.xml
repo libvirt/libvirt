@@ -19,7 +19,7 @@
     </disk>
     <controller type='scsi' index='0' model='buslogic'/>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

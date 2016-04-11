@@ -13,7 +13,7 @@
   <devices>
     <graphics type='vnc' port='5903' autoport='no' keymap='de' passwd='password'/>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

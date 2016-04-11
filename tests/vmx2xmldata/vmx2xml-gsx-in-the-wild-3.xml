@@ -29,7 +29,7 @@
       <target dev='/dev/vmnet2'/>
     </interface>
     <video>
-      <model type='vmvga' vram='4096'/>
+      <model type='vmvga' vram='4096' primary='yes'/>
     </video>
   </devices>
 </domain>

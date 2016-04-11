@@ -30,7 +30,7 @@
       <model type='vmxnet3'/>
     </interface>
     <video>
-      <model type='vmvga' vram='8192'/>
+      <model type='vmvga' vram='8192' primary='yes'/>
     </video>
   </devices>
 </domain>

@@ -3926,6 +3926,11 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefAddImplicitDevices(def) < 0)
         return -1;
 
+    /* Mark the first video as primary. If the user specified primary="yes",
+     * the parser already inserted the device at def->videos[0] */
+    if (def->nvideos != 0)
+        def->videos[0]->primary = true;
+
     /* clean up possibly duplicated metadata entries */
     virDomainDefMetadataSanitize(def);
 
@@ -16441,9 +16446,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
         }
     }
-    /* if not specified by user mark the first video as primary */
-    if (n && !primaryVideo)
-        def->videos[0]->primary = true;
 
     VIR_FREE(nodes);
 
