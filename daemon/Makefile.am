@@ -59,7 +59,6 @@ EXTRA_DIST =						\
 	libvirt.rules					\
 	libvirtd.sasl					\
 	libvirtd.service.in				\
-	libvirtd.socket.in				\
 	libvirtd.sysconf				\
 	libvirtd.sysctl					\
 	libvirtd.aug                                    \
@@ -450,18 +449,15 @@ endif ! LIBVIRT_INIT_SCRIPT_UPSTART
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
-BUILT_SOURCES += libvirtd.service libvirtd.socket
+BUILT_SOURCES += libvirtd.service
 
-install-init-systemd: install-sysconfig libvirtd.service libvirtd.socket
+install-init-systemd: install-sysconfig libvirtd.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) libvirtd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
-	$(INSTALL_DATA) libvirtd.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.socket
 
 uninstall-init-systemd: uninstall-sysconfig
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.socket
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-init-systemd:
@@ -482,12 +478,6 @@ libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
 	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
-	    mv $@-t $@
-
-libvirtd.socket: libvirtd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]runstatedir[@]|$(runstatedir)|g'		\
 	    < $< > $@-t &&					\
 	    mv $@-t $@
 
