@@ -308,7 +308,7 @@ sc_flags_usage:
 	  | grep -c '\(long\|unsigned\) flags')" != 4 &&		\
 	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2;	\
 	    exit 1; } || :
-	@prohibit=' flags ''ATTRIBUTE_UNUSED'				\
+	@prohibit=' flags ATTRIBUTE_UNUSED'				\
 	halt='flags should be checked with virCheckFlags'		\
 	  $(_sc_search_regexp)
 	@prohibit='^[^@]*([^d] (int|long long)|[^dg] long) flags[;,)]'	\
@@ -351,8 +351,8 @@ sc_prohibit_mkstemp:
 # access with X_OK accepts directories, but we can't exec() those.
 # access with F_OK or R_OK is okay, though.
 sc_prohibit_access_xok:
-	@prohibit='access''(at)? *\(.*X_OK'				\
-	halt='use virFileIsExecutable instead of access''(,X_OK)'	\
+	@prohibit='access(at)? *\(.*X_OK'				\
+	halt='use virFileIsExecutable instead of access(,X_OK)'		\
 	  $(_sc_search_regexp)
 
 # Similar to the gnulib maint.mk rule for sc_prohibit_strcmp
@@ -361,7 +361,7 @@ snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
 	@prohibit='! *strncmp *\(|\<$(snp_) *[!=]=|[!=]= *$(snp_)'	\
 	exclude=':# *define STR(N?EQLEN|PREFIX)\('			\
-	halt='use STREQLEN or STRPREFIX instead of str''ncmp'		\
+	halt='use STREQLEN or STRPREFIX instead of strncmp'		\
 	  $(_sc_search_regexp)
 
 # strtol and friends are too easy to misuse
@@ -379,7 +379,7 @@ sc_prohibit_strtol:
 # But for plain %s, virAsprintf is overkill compared to strdup.
 sc_prohibit_asprintf:
 	@prohibit='\<v?a[s]printf\>'					\
-	halt='use virAsprintf, not as'printf				\
+	halt='use virAsprintf, not asprintf'				\
 	  $(_sc_search_regexp)
 	@prohibit='virAsprintf.*, *"%s",'				\
 	halt='use VIR_STRDUP instead of virAsprintf with "%s"'		\
@@ -406,7 +406,7 @@ sc_prohibit_risky_id_promotion:
 # since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
 	@prohibit='\<[s]printf\>'					\
-	halt='use snprintf, not s'printf				\
+	halt='use snprintf, not sprintf'				\
 	  $(_sc_search_regexp)
 
 sc_prohibit_readlink:
@@ -431,13 +431,13 @@ sc_prohibit_gettext_noop:
 	  $(_sc_search_regexp)
 
 sc_prohibit_VIR_ERR_NO_MEMORY:
-	@prohibit='\<V''IR_ERR_NO_MEMORY\>'				\
-	halt='use virReportOOMError, not V'IR_ERR_NO_MEMORY		\
+	@prohibit='\<VIR_ERR_NO_MEMORY\>'				\
+	halt='use virReportOOMError, not VIR_ERR_NO_MEMORY'		\
 	  $(_sc_search_regexp)
 
 sc_prohibit_PATH_MAX:
-	@prohibit='\<P''ATH_MAX\>'				\
-	halt='dynamically allocate paths, do not use P'ATH_MAX	\
+	@prohibit='\<PATH_MAX\>'				\
+	halt='dynamically allocate paths, do not use PATH_MAX'	\
 	  $(_sc_search_regexp)
 
 # Use a subshell for each function, to give the optimal warning message.
@@ -455,7 +455,7 @@ sc_prohibit_nonreentrant:
 
 sc_prohibit_select:
 	@prohibit='\<select *\('					\
-	halt='use poll(), not se''lect()'				\
+	halt='use poll(), not select()'					\
 	  $(_sc_search_regexp)
 
 # Prohibit the inclusion of <ctype.h>.
@@ -743,7 +743,7 @@ sc_copyright_format:
 	@prohibit='Copyright [^(].*Red 'Hat				\
 	halt='consistently use (C) in Red Hat copyright'		\
 	  $(_sc_search_regexp)
-	@prohibit='\<Red''Hat\>'					\
+	@prohibit='\<RedHat\>'						\
 	halt='spell Red Hat as two words'				\
 	  $(_sc_search_regexp)
 
@@ -1146,11 +1146,14 @@ exclude_file_name_regexp--sc_bindtextdomain = .*
 
 exclude_file_name_regexp--sc_gettext_init = ^(tests|examples)/
 
+exclude_file_name_regexp--sc_copyright_format = \
+	^cfg\.mk$$
+
 exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = \
-  ^(docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|usb)|nss|qemuxml2argv)mock\.c$$)
+  ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|usb)|nss|qemuxml2argv)mock\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)
@@ -1158,12 +1161,16 @@ exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
-  ^(include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
+  ^(cfg\.mk|include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
-exclude_file_name_regexp--sc_prohibit_access_xok = ^src/util/virutil\.c$$
+exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
+	^cfg\.mk$$
+
+exclude_file_name_regexp--sc_prohibit_access_xok = \
+	^(cfg\.mk|src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(bootstrap.conf$$|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
+  ^(cfg\.mk|bootstrap.conf$$|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c$$)
@@ -1189,6 +1196,9 @@ exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
   ^((po|tests)/|docs/.*(py|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl$$)
 
+exclude_file_name_regexp--sc_prohibit_select = \
+	^cfg\.mk$$
+
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|vircgroupmock)\.c|tools/wireshark/src/packet-libvirt\.c)$$
 
@@ -1198,7 +1208,7 @@ exclude_file_name_regexp--sc_prohibit_readlink = \
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
-  (^docs/hacking\.html\.in|\.stp|\.pl)$$
+  ^(cfg\.mk|docs/hacking\.html\.in|.*\.stp|.*\.pl)$$
 
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
