@@ -482,3 +482,26 @@ qemuDomainGetMasterKeyAlias(void)
 
     return alias;
 }
+
+
+/* qemuDomainGetSecretAESAlias:
+ *
+ * Generate and return an alias for the encrypted secret
+ *
+ * Returns NULL or a string containing the alias
+ */
+char *
+qemuDomainGetSecretAESAlias(const char *srcalias)
+{
+    char *alias;
+
+    if (!srcalias) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("encrypted secret alias requires valid source alias"));
+        return NULL;
+    }
+
+    ignore_value(virAsprintf(&alias, "%s-secret0", srcalias));
+
+    return alias;
+}

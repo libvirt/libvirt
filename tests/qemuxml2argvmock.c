@@ -21,11 +21,14 @@
 #include <config.h>
 
 #include "internal.h"
+#include "viralloc.h"
 #include "vircommand.h"
+#include "vircrypto.h"
 #include "virmock.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnuma.h"
+#include "virrandom.h"
 #include "virscsi.h"
 #include "virstring.h"
 #include "virtpm.h"
@@ -144,4 +147,17 @@ virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
                  unsigned int flags ATTRIBUTE_UNUSED)
 {
     /* nada */
+}
+
+uint8_t *
+virCryptoGenerateRandom(size_t nbytes)
+{
+    uint8_t *buf;
+
+    if (VIR_ALLOC_N(buf, nbytes) < 0)
+        return NULL;
+
+    ignore_value(virRandomBytes(buf, nbytes));
+
+    return buf;
 }

@@ -616,6 +616,106 @@ qemuNetworkDriveGetPort(int protocol,
 }
 
 
+/**
+ * qemuBuildSecretInfoProps:
+ * @secinfo: pointer to the secret info object
+ * @type: returns a pointer to a character string for object name
+ * @props: json properties to return
+ *
+ * Build the JSON properties for the secret info type.
+ *
+ * Returns 0 on success with the filled in JSON property; otherwise,
+ * returns -1 on failure error message set.
+ */
+static int
+qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
+                         const char **type,
+                         virJSONValuePtr *propsret)
+{
+    int ret = -1;
+    char *keyid = NULL;
+
+    *type = "secret";
+
+    if (!(keyid = qemuDomainGetMasterKeyAlias()))
+        return -1;
+
+    if (virJSONValueObjectCreate(propsret,
+                                 "s:data", secinfo->s.aes.ciphertext,
+                                 "s:keyid", keyid,
+                                 "s:iv", secinfo->s.aes.iv,
+                                 "s:format", "base64", NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(keyid);
+
+    return ret;
+}
+
+
+/**
+ * qemuBuildObjectSecretCommandLine:
+ * @cmd: the command to modify
+ * @secinfo: pointer to the secret info object
+ *
+ * If the secinfo is available and associated with an AES secret,
+ * then format the command line for the secret object. This object
+ * will be referenced by the device that needs/uses it, so it needs
+ * to be in place first.
+ *
+ * Returns 0 on success, -1 w/ error message on failure
+ */
+static int
+qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
+                                 qemuDomainSecretInfoPtr secinfo)
+{
+    int ret = -1;
+    virJSONValuePtr props = NULL;
+    const char *type;
+    char *tmp = NULL;
+
+    if (qemuBuildSecretInfoProps(secinfo, &type, &props) < 0)
+        return -1;
+
+    if (!(tmp = qemuBuildObjectCommandlineFromJSON(type, secinfo->s.aes.alias,
+                                                   props)))
+        goto cleanup;
+
+    virCommandAddArgList(cmd, "-object", tmp, NULL);
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(props);
+    VIR_FREE(tmp);
+
+    return ret;
+}
+
+
+/* qemuBuildDiskSecinfoCommandLine:
+ * @cmd: Pointer to the command string
+ * @secinfo: Pointer to a possible secinfo
+ *
+ * Add the secret object for the disks that will be using it to perform
+ * their authentication.
+ *
+ * Returns 0 on success, -1 w/ error on some sort of failure.
+ */
+static int
+qemuBuildDiskSecinfoCommandLine(virCommandPtr cmd,
+                                qemuDomainSecretInfoPtr secinfo)
+{
+    /* Not necessary for non AES secrets */
+    if (!secinfo || secinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+        return 0;
+
+    return qemuBuildObjectSecretCommandLine(cmd, secinfo);
+}
+
+
 /* qemuBuildGeneralSecinfoURI:
  * @uri: Pointer to the URI structure to add to
  * @secinfo: Pointer to the secret info data (if present)
@@ -697,6 +797,10 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
+        virBufferEscape(buf, '\\', ":", ":id=%s:auth_supported=cephx\\;none",
+                        secinfo->s.aes.username);
+        break;
+
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
         return -1;
     }
@@ -1106,6 +1210,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     char *source = NULL;
     int actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
     if (idx < 0) {
@@ -1188,7 +1293,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         break;
     }
 
-    if (qemuGetDriveSourceString(disk->src, diskPriv->secinfo, &source) < 0)
+    if (qemuGetDriveSourceString(disk->src, secinfo, &source) < 0)
         goto error;
 
     if (source &&
@@ -1239,6 +1344,11 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
         qemuBufferEscapeComma(&opt, source);
         virBufferAddLit(&opt, ",");
+
+        if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
+            virBufferAsprintf(&opt, "password-secret=%s,",
+                              secinfo->s.aes.alias);
+        }
 
         if (disk->src->format > 0 &&
             disk->src->type != VIR_STORAGE_TYPE_DIR)
@@ -1917,6 +2027,8 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         char *optstr;
         unsigned int bootindex = 0;
         virDomainDiskDefPtr disk = def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
 
         /* PowerPC pseries based VMs do not support floppy device */
         if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
@@ -1942,6 +2054,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
             bootDisk = 0;
             break;
         }
+
+        if (qemuBuildDiskSecinfoCommandLine(cmd, secinfo) < 0)
+            return -1;
 
         virCommandAddArg(cmd, "-drive");
 

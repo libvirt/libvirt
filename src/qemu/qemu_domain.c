@@ -835,23 +835,136 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
 }
 
 
-/* qemuDomainSecretSetup:
+/* qemuDomainSecretAESSetup:
  * @conn: Pointer to connection
+ * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
+ * @srcalias: Alias of the disk/hostdev used to generate the secret alias
  * @protocol: Protocol for secret
  * @authdef: Pointer to auth data
  *
- * A shim to call plain setup.
+ * Taking a secinfo, fill in the AES specific information using the
+ *
+ * Returns 0 on success, -1 on failure with error message
+ */
+static int
+qemuDomainSecretAESSetup(virConnectPtr conn,
+                         qemuDomainObjPrivatePtr priv,
+                         qemuDomainSecretInfoPtr secinfo,
+                         const char *srcalias,
+                         virStorageNetProtocol protocol,
+                         virStorageAuthDefPtr authdef)
+{
+    int ret = -1;
+    uint8_t *raw_iv = NULL;
+    size_t ivlen = QEMU_DOMAIN_AES_IV_LEN;
+    uint8_t *secret = NULL;
+    size_t secretlen = 0;
+    uint8_t *ciphertext = NULL;
+    size_t ciphertextlen = 0;
+    int secretType = VIR_SECRET_USAGE_TYPE_NONE;
+
+    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
+    if (VIR_STRDUP(secinfo->s.aes.username, authdef->username) < 0)
+        return -1;
+
+    switch ((virStorageNetProtocol)protocol) {
+    case VIR_STORAGE_NET_PROTOCOL_RBD:
+        secretType = VIR_SECRET_USAGE_TYPE_CEPH;
+        break;
+
+    case VIR_STORAGE_NET_PROTOCOL_NONE:
+    case VIR_STORAGE_NET_PROTOCOL_NBD:
+    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+    case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+    case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+    case VIR_STORAGE_NET_PROTOCOL_HTTP:
+    case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+    case VIR_STORAGE_NET_PROTOCOL_FTP:
+    case VIR_STORAGE_NET_PROTOCOL_FTPS:
+    case VIR_STORAGE_NET_PROTOCOL_TFTP:
+    case VIR_STORAGE_NET_PROTOCOL_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("protocol '%s' cannot be used for encrypted secrets"),
+                       virStorageNetProtocolTypeToString(protocol));
+        return -1;
+    }
+
+    if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias)))
+        return -1;
+
+    /* Create a random initialization vector */
+    if (!(raw_iv = virCryptoGenerateRandom(ivlen)))
+        return -1;
+
+    /* Encode the IV and save that since qemu will need it */
+    if (!(secinfo->s.aes.iv = virStringEncodeBase64(raw_iv, ivlen)))
+        goto cleanup;
+
+    /* Grab the unencoded secret */
+    if (virSecretGetSecretString(conn, authdef, secretType,
+                                 &secret, &secretlen) < 0)
+        goto cleanup;
+
+    if (virCryptoEncryptData(VIR_CRYPTO_CIPHER_AES256CBC,
+                             priv->masterKey, QEMU_DOMAIN_MASTER_KEY_LEN,
+                             raw_iv, ivlen, secret, secretlen,
+                             &ciphertext, &ciphertextlen) < 0)
+        goto cleanup;
+
+    /* Clear out the secret */
+    memset(secret, 0, secretlen);
+
+    /* Now encode the ciphertext and store to be passed to qemu */
+    if (!(secinfo->s.aes.ciphertext = virStringEncodeBase64(ciphertext,
+                                                            ciphertextlen)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_DISPOSE_N(raw_iv, ivlen);
+    VIR_DISPOSE_N(secret, secretlen);
+    VIR_DISPOSE_N(ciphertext, ciphertextlen);
+
+    return ret;
+}
+
+
+/* qemuDomainSecretSetup:
+ * @conn: Pointer to connection
+ * @priv: pointer to domain private object
+ * @secinfo: Pointer to secret info
+ * @srcalias: Alias of the disk/hostdev used to generate the secret alias
+ * @protocol: Protocol for secret
+ * @authdef: Pointer to auth data
+ *
+ * If we have the encryption API present and can support a secret object, then
+ * build the AES secret; otherwise, build the Plain secret. This is the magic
+ * decision point for utilizing the AES secrets for an RBD disk. For now iSCSI
+ * disks and hostdevs will not be able to utilize this mechanism.
  *
  * Returns 0 on success, -1 on failure
  */
 static int
 qemuDomainSecretSetup(virConnectPtr conn,
+                      qemuDomainObjPrivatePtr priv,
                       qemuDomainSecretInfoPtr secinfo,
+                      const char *srcalias,
                       virStorageNetProtocol protocol,
                       virStorageAuthDefPtr authdef)
 {
-    return qemuDomainSecretPlainSetup(conn, secinfo, protocol, authdef);
+    if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
+        protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
+        if (qemuDomainSecretAESSetup(conn, priv, secinfo,
+                                     srcalias, protocol, authdef) < 0)
+            return -1;
+    } else {
+        if (qemuDomainSecretPlainSetup(conn, secinfo, protocol, authdef) < 0)
+            return -1;
+    }
+    return 0;
 }
 
 
@@ -883,7 +996,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
  */
 int
 qemuDomainSecretDiskPrepare(virConnectPtr conn,
-                            qemuDomainObjPrivatePtr priv ATTRIBUTE_UNUSED,
+                            qemuDomainObjPrivatePtr priv,
                             virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr src = disk->src;
@@ -900,8 +1013,8 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
         if (VIR_ALLOC(secinfo) < 0)
             return -1;
 
-        if (qemuDomainSecretSetup(conn, secinfo, src->protocol,
-                                  src->auth) < 0)
+        if (qemuDomainSecretSetup(conn, priv, secinfo, disk->info.alias,
+                                  src->protocol, src->auth) < 0)
             goto error;
 
         diskPriv->secinfo = secinfo;
@@ -944,7 +1057,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
  */
 int
 qemuDomainSecretHostdevPrepare(virConnectPtr conn,
-                               qemuDomainObjPrivatePtr priv ATTRIBUTE_UNUSED,
+                               qemuDomainObjPrivatePtr priv,
                                virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
@@ -965,7 +1078,7 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
             if (VIR_ALLOC(secinfo) < 0)
                 return -1;
 
-            if (qemuDomainSecretSetup(conn, secinfo,
+            if (qemuDomainSecretSetup(conn, priv, secinfo, hostdev->info->alias,
                                       VIR_STORAGE_NET_PROTOCOL_ISCSI,
                                       iscsisrc->auth) < 0)
                 goto error;
