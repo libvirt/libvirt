@@ -6742,14 +6742,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
 
-    def->geometry.cylinders = 0;
-    def->geometry.heads = 0;
-    def->geometry.sectors = 0;
-    def->geometry.trans = VIR_DOMAIN_DISK_TRANS_DEFAULT;
-
-    def->blockio.logical_block_size = 0;
-    def->blockio.physical_block_size = 0;
-
     ctxt->node = node;
 
     type = virXMLPropString(node, "type");
