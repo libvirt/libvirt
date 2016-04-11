@@ -2072,6 +2072,47 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     return stablepath;
 }
 
+/*
+ *  Check whether the ploop image has snapshots.
+ *  return: -1 - failed to check
+ *           0 - no snapshots
+ *           1 - at least one snapshot
+ */
+static int
+virStorageBackendPloopHasSnapshots(char *path)
+{
+    virCommandPtr cmd = NULL;
+    char *output = NULL;
+    char *snap_tool = NULL;
+    int ret = -1;
+
+    snap_tool = virFindFileInPath("ploop");
+    if (!snap_tool) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("unable to find ploop, please install "
+                               "ploop tools"));
+        return ret;
+    }
+
+    cmd = virCommandNewArgList(snap_tool, "snapshot-list", NULL);
+    virCommandAddArgFormat(cmd, "%s/DiskDescriptor.xml", path);
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if ((ret = virCommandRun(cmd, NULL)) < 0)
+        goto cleanup;
+
+    if (!strstr(output, "root.hds.")) {
+        ret = 1;
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(output);
+    virCommandFree(cmd);
+    return ret;
+}
+
 int
 virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
@@ -2081,12 +2122,41 @@ virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 unsigned long long len,
                                 unsigned int flags)
 {
+    char *path = NULL;
+    char *target_path = vol->target.path;
+    int ret = -1;
+    int has_snap = 0;
+
     virCheckFlags(0, -1);
+    /* if volume has target format VIR_STORAGE_FILE_PLOOP
+     * we need to restore DiskDescriptor.xml, according to
+     * new contents of volume. This operation will be perfomed
+     * when volUpload is fully finished. */
+    if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        /* Fail if the volume contains snapshots or we failed to check it.*/
+        has_snap = virStorageBackendPloopHasSnapshots(vol->target.path);
+        if (has_snap < 0) {
+            goto cleanup;
+        } else if (!has_snap) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("can't upload volume, all existing snapshots"
+                             " will be lost"));
+            goto cleanup;
+        }
+
+        if (virAsprintf(&path, "%s/root.hds", vol->target.path) < 0)
+            return -1;
+        target_path = path;
+    }
 
     /* Not using O_CREAT because the file is required to already exist at
      * this point */
-    return virFDStreamOpenBlockDevice(stream, vol->target.path,
-                                      offset, len, O_WRONLY);
+    ret = virFDStreamOpenBlockDevice(stream, target_path,
+                                     offset, len, O_WRONLY);
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
 }
 
 int
@@ -2098,10 +2168,33 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   unsigned long long len,
                                   unsigned int flags)
 {
-    virCheckFlags(0, -1);
+    char *path = NULL;
+    char *target_path = vol->target.path;
+    int ret = -1;
+    int has_snap = 0;
 
-    return virFDStreamOpenBlockDevice(stream, vol->target.path,
-                                      offset, len, O_RDONLY);
+    virCheckFlags(0, -1);
+    if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        has_snap = virStorageBackendPloopHasSnapshots(vol->target.path);
+        if (has_snap < 0) {
+            goto cleanup;
+        } else if (!has_snap) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("can't download volume, all existing snapshots"
+                             " will be lost"));
+            goto cleanup;
+        }
+        if (virAsprintf(&path, "%s/root.hds", vol->target.path) < 0)
+            goto cleanup;
+        target_path = path;
+    }
+
+    ret = virFDStreamOpenBlockDevice(stream, target_path,
+                                     offset, len, O_RDONLY);
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
 }
 
 

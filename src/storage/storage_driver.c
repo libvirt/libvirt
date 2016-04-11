@@ -63,6 +63,7 @@ typedef struct _virStorageVolStreamInfo virStorageVolStreamInfo;
 typedef virStorageVolStreamInfo *virStorageVolStreamInfoPtr;
 struct _virStorageVolStreamInfo {
     char *pool_name;
+    char *vol_path;
 };
 
 static void storageDriverLock(void)
@@ -2204,6 +2205,48 @@ virStorageVolPoolRefreshDataFree(void *opaque)
     VIR_FREE(cbdata);
 }
 
+static int
+virStorageBackendPloopRestoreDesc(char *path)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    char *refresh_tool = NULL;
+    char *desc = NULL;
+
+    if (virAsprintf(&desc, "%s/DiskDescriptor.xml", path) < 0)
+        return ret;
+
+    if (virFileRemove(desc, 0, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("refresh ploop failed:"
+                         " unuble to delete DiskDescriptor.xml"));
+        goto cleanup;
+    }
+
+    refresh_tool = virFindFileInPath("ploop");
+    if (!refresh_tool) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to find ploop, please install ploop tools"));
+        goto cleanup;
+    }
+
+    cmd = virCommandNewArgList(refresh_tool, "restore-descriptor",
+                               path, NULL);
+    virCommandAddArgFormat(cmd, "%s/root.hds", path);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(refresh_tool);
+    virCommandFree(cmd);
+    VIR_FREE(desc);
+    return ret;
+}
+
+
+
 /**
  * Thread to handle the pool refresh
  *
@@ -2219,6 +2262,10 @@ virStorageVolPoolRefreshThread(void *opaque)
     virStorageBackendPtr backend;
 
     storageDriverLock();
+    if (cbdata->vol_path) {
+        if (virStorageBackendPloopRestoreDesc(cbdata->vol_path) < 0)
+            goto cleanup;
+    }
     if (!(pool = virStoragePoolObjFindByName(&driver->pools,
                                              cbdata->pool_name)))
         goto cleanup;
@@ -2312,6 +2359,9 @@ storageVolUpload(virStorageVolPtr obj,
     if (backend->refreshPool) {
         if (VIR_ALLOC(cbdata) < 0 ||
             VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
+            goto cleanup;
+        if (vol->target.type == VIR_STORAGE_VOL_PLOOP &&
+            VIR_STRDUP(cbdata->vol_path, vol->target.path) < 0)
             goto cleanup;
     }
 
