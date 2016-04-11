@@ -430,6 +430,7 @@ mymain(void)
     DO_TEST("graphics-vnc-websocket");
     DO_TEST("graphics-vnc-sasl");
     DO_TEST("graphics-vnc-tls");
+    DO_TEST("graphics-vnc-no-listen-attr");
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
     DO_TEST("graphics-spice");

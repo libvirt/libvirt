@@ -10741,7 +10741,8 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     if (STREQ_NULLABLE(listenAddr, ""))
         VIR_FREE(listenAddr);
 
-    if (address && STRNEQ_NULLABLE(address->address, listenAddr)) {
+    if (address && listenAddr &&
+        STRNEQ_NULLABLE(address->address, listenAddr)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("graphics listen attribute %s must match address "
                          "attribute of first listen element (found %s)"),
