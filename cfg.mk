@@ -454,20 +454,20 @@ sc_prohibit_nonreentrant:
 	exit $$fail
 
 sc_prohibit_select:
-	@prohibit="\\<select *\\("					\
-	halt="use poll(), not se""lect()"				\
+	@prohibit='\<select *\('					\
+	halt='use poll(), not se''lect()'				\
 	  $(_sc_search_regexp)
 
 # Prohibit the inclusion of <ctype.h>.
 sc_prohibit_ctype_h:
 	@prohibit='^# *include  *<ctype\.h>'				\
-	halt="don't use ctype.h; instead, use c-ctype.h"		\
+	halt='use c-ctype.h instead of ctype.h'				\
 	  $(_sc_search_regexp)
 
 # Insist on correct types for [pug]id.
 sc_correct_id_types:
 	@prohibit='\<(int|long) *[pug]id\>'				\
-	halt="use pid_t for pid, uid_t for uid, gid_t for gid"		\
+	halt='use pid_t for pid, uid_t for uid, gid_t for gid'		\
 	  $(_sc_search_regexp)
 
 # "const fooPtr a" is the same as "foo * const a", even though it is
@@ -503,12 +503,12 @@ ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 
 sc_avoid_ctype_macros:
 	@prohibit='\b($(ctype_re)) *\('					\
-	halt="don't use ctype macros (use c-ctype.h)"			\
+	halt='use c-ctype.h instead of ctype macros'			\
 	  $(_sc_search_regexp)
 
 sc_avoid_strcase:
 	@prohibit='\bstrn?case(cmp|str) *\('				\
-	halt="don't use raw strcase functions (use c-strcase instead)"	\
+	halt='use c-strcase.h instead of raw strcase functions'		\
 	  $(_sc_search_regexp)
 
 sc_prohibit_virBufferAdd_with_string_literal:
@@ -810,7 +810,7 @@ sc_require_enum_last_marker:
 sc_prohibit_semicolon_at_eol_in_python:
 	@prohibit='^[^#].*\;$$'			                        \
 	in_vc_files='\.py$$'						\
-	halt="Don't use semicolon at eol in python files"		\
+	halt='python does not require to end lines with a semicolon'	\
 	  $(_sc_search_regexp)
 
 # mymain() in test files should use return, not exit, for nicer output
@@ -917,7 +917,7 @@ sc_prohibit_virConnectOpen_in_virsh:
 sc_require_space_before_label:
 	@prohibit='^(   ?)?[_a-zA-Z0-9]+:$$'                           \
 	in_vc_files='\.[ch]$$'                                         \
-	halt="Top-level labels should be indented by one space"        \
+	halt='Top-level labels should be indented by one space'        \
 	  $(_sc_search_regexp)
 
 # Allow for up to three spaces before the label: this is to avoid running
@@ -926,14 +926,14 @@ sc_require_space_before_label:
 sc_prohibit_space_in_label:
 	@prohibit='^ {0,3}[_a-zA-Z0-9]+ +:$$'                          \
 	in_vc_files='\.[ch]$$'                                         \
-	halt="There should be no space between label name and colon"   \
+	halt='There should be no space between label name and colon'   \
 	  $(_sc_search_regexp)
 
 # Doesn't catch all cases of mismatched braces across if-else, but it helps
 sc_require_if_else_matching_braces:
 	@prohibit='(  else( if .*\))? {|} else( if .*\))?$$)'		\
 	in_vc_files='\.[chx]$$'						\
-	halt="if one side of if-else uses {}, both sides must use it"	\
+	halt='if one side of if-else uses {}, both sides must use it'	\
 	  $(_sc_search_regexp)
 
 sc_curly_braces_style:
@@ -993,7 +993,7 @@ sc_prohibit_static_zero_init:
 sc_prohibit_devname:
 	@prohibit='\bdevname\b'	\
 	exclude='sc_prohibit_devname' \
-	halt='avoid using 'devname' as FreeBSD exports the symbol' \
+	halt='avoid using devname as FreeBSD exports the symbol' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_system_error_with_vir_err:
@@ -1007,7 +1007,7 @@ sc_prohibit_system_error_with_vir_err:
 sc_prohibit_virXXXFree:
 	@prohibit='\bvir(Domain|Network|NodeDevice|StorageVol|StoragePool|Stream|Secret|NWFilter|Interface|DomainSnapshot)Free\b'	\
 	exclude='sc_prohibit_virXXXFree' \
-	halt='avoid using 'virXXXFree', use 'virObjectUnref' instead' \
+	halt='avoid using virXXXFree, use virObjectUnref instead' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_sysconf_pagesize:
@@ -1018,7 +1018,7 @@ sc_prohibit_sysconf_pagesize:
 sc_prohibit_pthread_create:
 	@prohibit='\bpthread_create\b' \
 	exclude='sc_prohibit_pthread_create' \
-	halt="avoid using 'pthread_create', use 'virThreadCreate' instead" \
+	halt='avoid using pthread_create, use virThreadCreate instead' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_not_streq:
