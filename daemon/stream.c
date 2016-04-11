@@ -52,6 +52,8 @@ struct daemonClientStream {
     virNetMessagePtr rx;
     bool tx;
 
+    bool allowSkip;
+
     daemonClientStreamPtr next;
 };
 
@@ -321,7 +323,8 @@ daemonClientStream *
 daemonCreateClientStream(virNetServerClientPtr client,
                          virStreamPtr st,
                          virNetServerProgramPtr prog,
-                         virNetMessageHeaderPtr header)
+                         virNetMessageHeaderPtr header,
+                         bool allowSkip)
 {
     daemonClientStream *stream;
     daemonClientPrivatePtr priv = virNetServerClientGetPrivateData(client);
@@ -339,6 +342,7 @@ daemonCreateClientStream(virNetServerClientPtr client,
     stream->serial = header->serial;
     stream->filterID = -1;
     stream->st = st;
+    stream->allowSkip = allowSkip;
 
     return stream;
 }

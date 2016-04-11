@@ -35,7 +35,8 @@ typedef void (*virNetClientStreamEventCallback)(virNetClientStreamPtr stream,
 virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
                                             virNetClientProgramPtr prog,
                                             int proc,
-                                            unsigned serial);
+                                            unsigned serial,
+                                            bool allowSkip);
 
 bool virNetClientStreamRaiseError(virNetClientStreamPtr st);
 

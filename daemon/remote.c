@@ -5323,7 +5323,7 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE
 
     if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)) ||
         !(stream = daemonCreateClientStream(client, st, remoteProgram,
-                                            &msg->header)))
+                                            &msg->header, false)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnel3Params(priv->conn, st, params, nparams,

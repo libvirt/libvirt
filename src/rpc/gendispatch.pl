@@ -1024,7 +1024,7 @@ elsif ($mode eq "server") {
             print "    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)))\n";
             print "        goto cleanup;\n";
             print "\n";
-            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header)))\n";
+            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header, false)))\n";
             print "        goto cleanup;\n";
             print "\n";
         }
@@ -1738,7 +1738,7 @@ elsif ($mode eq "client") {
 
         if ($call->{streamflag} ne "none") {
             print "\n";
-            print "    if (!(netst = virNetClientStreamNew(st, priv->remoteProgram, $call->{constname}, priv->counter)))\n";
+            print "    if (!(netst = virNetClientStreamNew(st, priv->remoteProgram, $call->{constname}, priv->counter, false)))\n";
             print "        goto done;\n";
             print "\n";
             print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";

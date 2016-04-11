@@ -30,7 +30,8 @@ daemonClientStream *
 daemonCreateClientStream(virNetServerClientPtr client,
                          virStreamPtr st,
                          virNetServerProgramPtr prog,
-                         virNetMessageHeaderPtr hdr);
+                         virNetMessageHeaderPtr hdr,
+                         bool allowSkip);
 
 int daemonFreeClientStream(virNetServerClientPtr client,
                            daemonClientStream *stream);

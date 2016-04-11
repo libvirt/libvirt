@@ -54,6 +54,8 @@ struct _virNetClientStream {
     virNetMessagePtr rx;
     bool incomingEOF;
 
+    bool allowSkip;
+
     virNetClientStreamEventCallback cb;
     void *cbOpaque;
     virFreeCallback cbFree;
@@ -138,7 +140,8 @@ virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
 virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
                                             virNetClientProgramPtr prog,
                                             int proc,
-                                            unsigned serial)
+                                            unsigned serial,
+                                            bool allowSkip)
 {
     virNetClientStreamPtr st;
 
@@ -152,6 +155,7 @@ virNetClientStreamPtr virNetClientStreamNew(virStreamPtr stream,
     st->prog = virObjectRef(prog);
     st->proc = proc;
     st->serial = serial;
+    st->allowSkip = allowSkip;
 
     return st;
 }
