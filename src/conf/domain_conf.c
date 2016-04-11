@@ -15088,7 +15088,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_none = false;
     bool usb_other = false;
     bool usb_master = false;
-    bool primaryVideo = false;
     char *netprefix = NULL;
 
     if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE) {
@@ -16427,7 +16426,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             goto error;
 
         if (video->primary) {
-            if (primaryVideo) {
+            if (def->nvideos != 0 && def->videos[0]->primary) {
                 virDomainVideoDefFree(video);
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only one primary video device is supported"));
@@ -16435,7 +16434,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             }
 
             insertAt = 0;
-            primaryVideo = true;
         }
         if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
                                        insertAt,
