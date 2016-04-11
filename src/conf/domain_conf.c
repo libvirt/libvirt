@@ -6760,423 +6760,422 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     rawio = virXMLPropString(node, "rawio");
     sgio = virXMLPropString(node, "sgio");
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!source && xmlStrEqual(cur->name, BAD_CAST "source")) {
-                sourceNode = cur;
+    for (cur = node->children; cur != NULL; cur = cur->next) {
+        if (cur->type != XML_ELEMENT_NODE)
+            continue;
 
-                if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
-                    goto error;
+        if (!source && xmlStrEqual(cur->name, BAD_CAST "source")) {
+            sourceNode = cur;
 
-                source = true;
+            if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
+                goto error;
 
-                if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
-                    if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
-                        expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
-                    else if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
-                        expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
-                }
+            source = true;
 
-                startupPolicy = virXMLPropString(cur, "startupPolicy");
-
-            } else if (!target &&
-                       xmlStrEqual(cur->name, BAD_CAST "target")) {
-                target = virXMLPropString(cur, "dev");
-                bus = virXMLPropString(cur, "bus");
-                tray = virXMLPropString(cur, "tray");
-                removable = virXMLPropString(cur, "removable");
-
-                /* HACK: Work around for compat with Xen
-                 * driver in previous libvirt releases */
-                if (target &&
-                    STRPREFIX(target, "ioemu:"))
-                    memmove(target, target+6, strlen(target)-5);
-            } else if (!domain_name &&
-                       xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
-                domain_name = virXMLPropString(cur, "name");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
-                if (virXPathUInt("string(./geometry/@cyls)",
-                                 ctxt, &def->geometry.cylinders) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("invalid geometry settings (cyls)"));
-                    goto error;
-                }
-                if (virXPathUInt("string(./geometry/@heads)",
-                                 ctxt, &def->geometry.heads) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("invalid geometry settings (heads)"));
-                    goto error;
-                }
-                if (virXPathUInt("string(./geometry/@secs)",
-                                 ctxt, &def->geometry.sectors) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("invalid geometry settings (secs)"));
-                    goto error;
-                }
-                trans = virXMLPropString(cur, "trans");
-                if (trans) {
-                    def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
-                    if (def->geometry.trans <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("invalid translation value '%s'"),
-                                       trans);
-                        goto error;
-                    }
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "blockio")) {
-                logical_block_size =
-                    virXMLPropString(cur, "logical_block_size");
-                if (logical_block_size &&
-                    virStrToLong_ui(logical_block_size, NULL, 0,
-                                    &def->blockio.logical_block_size) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("invalid logical block size '%s'"),
-                                   logical_block_size);
-                    goto error;
-                }
-                physical_block_size =
-                    virXMLPropString(cur, "physical_block_size");
-                if (physical_block_size &&
-                    virStrToLong_ui(physical_block_size, NULL, 0,
-                                    &def->blockio.physical_block_size) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("invalid physical block size '%s'"),
-                                   physical_block_size);
-                    goto error;
-                }
-            } else if (!driverName &&
-                       xmlStrEqual(cur->name, BAD_CAST "driver")) {
-                driverName = virXMLPropString(cur, "name");
-                driverType = virXMLPropString(cur, "type");
-                if (STREQ_NULLABLE(driverType, "aio")) {
-                    /* In-place conversion to "raw", for Xen back-compat */
-                    driverType[0] = 'r';
-                    driverType[1] = 'a';
-                    driverType[2] = 'w';
-                }
-                cachetag = virXMLPropString(cur, "cache");
-                error_policy = virXMLPropString(cur, "error_policy");
-                rerror_policy = virXMLPropString(cur, "rerror_policy");
-                iotag = virXMLPropString(cur, "io");
-                ioeventfd = virXMLPropString(cur, "ioeventfd");
-                event_idx = virXMLPropString(cur, "event_idx");
-                copy_on_read = virXMLPropString(cur, "copy_on_read");
-                discard = virXMLPropString(cur, "discard");
-                driverIOThread = virXMLPropString(cur, "iothread");
-            } else if (!def->mirror &&
-                       xmlStrEqual(cur->name, BAD_CAST "mirror") &&
-                       !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-                char *ready;
-                char *blockJob;
-
-                if (VIR_ALLOC(def->mirror) < 0)
-                    goto error;
-
-                blockJob = virXMLPropString(cur, "job");
-                if (blockJob) {
-                    def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
-                    if (def->mirrorJob <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown mirror job type '%s'"),
-                                       blockJob);
-                        VIR_FREE(blockJob);
-                        goto error;
-                    }
-                    VIR_FREE(blockJob);
-                } else {
-                    def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-                }
-
-                mirrorType = virXMLPropString(cur, "type");
-                if (mirrorType) {
-                    def->mirror->type = virStorageTypeFromString(mirrorType);
-                    if (def->mirror->type <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown mirror backing store "
-                                         "type '%s'"), mirrorType);
-                        goto error;
-                    }
-                    mirrorFormat = virXPathString("string(./mirror/format/@type)",
-                                                  ctxt);
-                } else {
-                    /* For back-compat reasons, we handle a file name
-                     * encoded as attributes, even though we prefer
-                     * modern output in the style of backingStore */
-                    def->mirror->type = VIR_STORAGE_TYPE_FILE;
-                    def->mirror->path = virXMLPropString(cur, "file");
-                    if (!def->mirror->path) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("mirror requires file name"));
-                        goto error;
-                    }
-                    if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("mirror without type only supported "
-                                         "by copy job"));
-                        goto error;
-                    }
-                    mirrorFormat = virXMLPropString(cur, "format");
-                }
-                if (mirrorFormat) {
-                    def->mirror->format =
-                        virStorageFileFormatTypeFromString(mirrorFormat);
-                    if (def->mirror->format <= 0) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("unknown mirror format value '%s'"),
-                                       mirrorFormat);
-                        goto error;
-                    }
-                }
-                if (mirrorType) {
-                    xmlNodePtr mirrorNode;
-
-                    if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("mirror requires source element"));
-                        goto error;
-                    }
-                    if (virDomainDiskSourceParse(mirrorNode, ctxt,
-                                                 def->mirror) < 0)
-                        goto error;
-                }
-                ready = virXMLPropString(cur, "ready");
-                if (ready) {
-                    if ((def->mirrorState =
-                         virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
-                        virReportError(VIR_ERR_XML_ERROR,
-                                       _("unknown mirror ready state %s"),
-                                       ready);
-                        VIR_FREE(ready);
-                        goto error;
-                    }
-                    VIR_FREE(ready);
-                }
-            } else if (!authdef &&
-                       xmlStrEqual(cur->name, BAD_CAST "auth")) {
-                if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
-                    goto error;
-                /* Disk volume types won't have the secrettype filled in until
-                 * after virStorageTranslateDiskSourcePool is run
-                 */
-                if (def->src->type != VIR_STORAGE_TYPE_VOLUME &&
-                    (auth_secret_usage =
-                     virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("invalid secret type %s"),
-                                   authdef->secrettype);
-                    goto error;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
-                ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.total_bytes_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total throughput limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.total_bytes_sec = 0;
-                }
-
-                ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.read_bytes_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("read throughput limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.read_bytes_sec = 0;
-                }
-
-                ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.write_bytes_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("write throughput limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.write_bytes_sec = 0;
-                }
-
-                ret = virXPathULongLong("string(./iotune/total_iops_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.total_iops_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total I/O operations limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.total_iops_sec = 0;
-                }
-
-                ret = virXPathULongLong("string(./iotune/read_iops_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.read_iops_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("read I/O operations limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.read_iops_sec = 0;
-                }
-
-                ret = virXPathULongLong("string(./iotune/write_iops_sec)",
-                                        ctxt,
-                                        &def->blkdeviotune.write_iops_sec);
-                if (ret == -2) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("write I/O operations limit must be an integer"));
-                    goto error;
-                } else if (ret < 0) {
-                    def->blkdeviotune.write_iops_sec = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.total_bytes_sec_max) < 0) {
-                    def->blkdeviotune.total_bytes_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.read_bytes_sec_max) < 0) {
-                    def->blkdeviotune.read_bytes_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.write_bytes_sec_max) < 0) {
-                    def->blkdeviotune.write_bytes_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.total_iops_sec_max) < 0) {
-                    def->blkdeviotune.total_iops_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.read_iops_sec_max) < 0) {
-                    def->blkdeviotune.read_iops_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
-                                      ctxt,
-                                      &def->blkdeviotune.write_iops_sec_max) < 0) {
-                    def->blkdeviotune.write_iops_sec_max = 0;
-                }
-
-                if (virXPathULongLong("string(./iotune/size_iops_sec)",
-                                      ctxt,
-                                      &def->blkdeviotune.size_iops_sec) < 0) {
-                    def->blkdeviotune.size_iops_sec = 0;
-                }
-
-
-                if ((def->blkdeviotune.total_bytes_sec &&
-                     def->blkdeviotune.read_bytes_sec) ||
-                    (def->blkdeviotune.total_bytes_sec &&
-                     def->blkdeviotune.write_bytes_sec)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total and read/write bytes_sec "
-                                     "cannot be set at the same time"));
-                    goto error;
-                }
-
-                if ((def->blkdeviotune.total_iops_sec &&
-                     def->blkdeviotune.read_iops_sec) ||
-                    (def->blkdeviotune.total_iops_sec &&
-                     def->blkdeviotune.write_iops_sec)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total and read/write iops_sec "
-                                     "cannot be set at the same time"));
-                    goto error;
-                }
-
-                if ((def->blkdeviotune.total_bytes_sec_max &&
-                     def->blkdeviotune.read_bytes_sec_max) ||
-                    (def->blkdeviotune.total_bytes_sec_max &&
-                     def->blkdeviotune.write_bytes_sec_max)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total and read/write bytes_sec_max "
-                                     "cannot be set at the same time"));
-                    goto error;
-                }
-
-                if ((def->blkdeviotune.total_iops_sec_max &&
-                     def->blkdeviotune.read_iops_sec_max) ||
-                    (def->blkdeviotune.total_iops_sec_max &&
-                     def->blkdeviotune.write_iops_sec_max)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("total and read/write iops_sec_max "
-                                     "cannot be set at the same time"));
-                    goto error;
-                }
-
-            } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
-                def->src->readonly = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
-                def->src->shared = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
-                def->transient = true;
-            } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-                       xmlStrEqual(cur->name, BAD_CAST "state")) {
-                /* Legacy back-compat. Don't add any more attributes here */
-                devaddr = virXMLPropString(cur, "devaddr");
-            } else if (encryption == NULL &&
-                       xmlStrEqual(cur->name, BAD_CAST "encryption")) {
-                encryption = virStorageEncryptionParseNode(node->doc,
-                                                           cur);
-                if (encryption == NULL)
-                    goto error;
-            } else if (!serial &&
-                       xmlStrEqual(cur->name, BAD_CAST "serial")) {
-                serial = (char *)xmlNodeGetContent(cur);
-            } else if (!wwn &&
-                       xmlStrEqual(cur->name, BAD_CAST "wwn")) {
-                wwn = (char *)xmlNodeGetContent(cur);
-
-                if (!virValidateWWN(wwn))
-                    goto error;
-            } else if (!vendor &&
-                       xmlStrEqual(cur->name, BAD_CAST "vendor")) {
-                vendor = (char *)xmlNodeGetContent(cur);
-
-                if (strlen(vendor) > VENDOR_LEN) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("disk vendor is more than 8 characters"));
-                    goto error;
-                }
-
-                if (!virStringIsPrintable(vendor)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("disk vendor is not printable string"));
-                    goto error;
-                }
-            } else if (!product &&
-                       xmlStrEqual(cur->name, BAD_CAST "product")) {
-                product = (char *)xmlNodeGetContent(cur);
-
-                if (strlen(product) > PRODUCT_LEN) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("disk product is more than 16 characters"));
-                    goto error;
-                }
-
-                if (!virStringIsPrintable(product)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("disk product is not printable string"));
-                    goto error;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
-                /* boot is parsed as part of virDomainDeviceInfoParseXML */
+            if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
+                if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
+                    expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
+                else if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
+                    expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
             }
+
+            startupPolicy = virXMLPropString(cur, "startupPolicy");
+
+        } else if (!target &&
+                   xmlStrEqual(cur->name, BAD_CAST "target")) {
+            target = virXMLPropString(cur, "dev");
+            bus = virXMLPropString(cur, "bus");
+            tray = virXMLPropString(cur, "tray");
+            removable = virXMLPropString(cur, "removable");
+
+            /* HACK: Work around for compat with Xen
+             * driver in previous libvirt releases */
+            if (target &&
+                STRPREFIX(target, "ioemu:"))
+                memmove(target, target+6, strlen(target)-5);
+        } else if (!domain_name &&
+                   xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
+            domain_name = virXMLPropString(cur, "name");
+        } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
+            if (virXPathUInt("string(./geometry/@cyls)",
+                             ctxt, &def->geometry.cylinders) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("invalid geometry settings (cyls)"));
+                goto error;
+            }
+            if (virXPathUInt("string(./geometry/@heads)",
+                             ctxt, &def->geometry.heads) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("invalid geometry settings (heads)"));
+                goto error;
+            }
+            if (virXPathUInt("string(./geometry/@secs)",
+                             ctxt, &def->geometry.sectors) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("invalid geometry settings (secs)"));
+                goto error;
+            }
+            trans = virXMLPropString(cur, "trans");
+            if (trans) {
+                def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
+                if (def->geometry.trans <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("invalid translation value '%s'"),
+                                   trans);
+                    goto error;
+                }
+            }
+        } else if (xmlStrEqual(cur->name, BAD_CAST "blockio")) {
+            logical_block_size =
+                virXMLPropString(cur, "logical_block_size");
+            if (logical_block_size &&
+                virStrToLong_ui(logical_block_size, NULL, 0,
+                                &def->blockio.logical_block_size) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("invalid logical block size '%s'"),
+                               logical_block_size);
+                goto error;
+            }
+            physical_block_size =
+                virXMLPropString(cur, "physical_block_size");
+            if (physical_block_size &&
+                virStrToLong_ui(physical_block_size, NULL, 0,
+                                &def->blockio.physical_block_size) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("invalid physical block size '%s'"),
+                               physical_block_size);
+                goto error;
+            }
+        } else if (!driverName &&
+                   xmlStrEqual(cur->name, BAD_CAST "driver")) {
+            driverName = virXMLPropString(cur, "name");
+            driverType = virXMLPropString(cur, "type");
+            if (STREQ_NULLABLE(driverType, "aio")) {
+                /* In-place conversion to "raw", for Xen back-compat */
+                driverType[0] = 'r';
+                driverType[1] = 'a';
+                driverType[2] = 'w';
+            }
+            cachetag = virXMLPropString(cur, "cache");
+            error_policy = virXMLPropString(cur, "error_policy");
+            rerror_policy = virXMLPropString(cur, "rerror_policy");
+            iotag = virXMLPropString(cur, "io");
+            ioeventfd = virXMLPropString(cur, "ioeventfd");
+            event_idx = virXMLPropString(cur, "event_idx");
+            copy_on_read = virXMLPropString(cur, "copy_on_read");
+            discard = virXMLPropString(cur, "discard");
+            driverIOThread = virXMLPropString(cur, "iothread");
+        } else if (!def->mirror &&
+                   xmlStrEqual(cur->name, BAD_CAST "mirror") &&
+                   !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+            char *ready;
+            char *blockJob;
+
+            if (VIR_ALLOC(def->mirror) < 0)
+                goto error;
+
+            blockJob = virXMLPropString(cur, "job");
+            if (blockJob) {
+                def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
+                if (def->mirrorJob <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown mirror job type '%s'"),
+                                   blockJob);
+                    VIR_FREE(blockJob);
+                    goto error;
+                }
+                VIR_FREE(blockJob);
+            } else {
+                def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+            }
+
+            mirrorType = virXMLPropString(cur, "type");
+            if (mirrorType) {
+                def->mirror->type = virStorageTypeFromString(mirrorType);
+                if (def->mirror->type <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown mirror backing store "
+                                     "type '%s'"), mirrorType);
+                    goto error;
+                }
+                mirrorFormat = virXPathString("string(./mirror/format/@type)",
+                                              ctxt);
+            } else {
+                /* For back-compat reasons, we handle a file name
+                 * encoded as attributes, even though we prefer
+                 * modern output in the style of backingStore */
+                def->mirror->type = VIR_STORAGE_TYPE_FILE;
+                def->mirror->path = virXMLPropString(cur, "file");
+                if (!def->mirror->path) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("mirror requires file name"));
+                    goto error;
+                }
+                if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("mirror without type only supported "
+                                     "by copy job"));
+                    goto error;
+                }
+                mirrorFormat = virXMLPropString(cur, "format");
+            }
+            if (mirrorFormat) {
+                def->mirror->format =
+                    virStorageFileFormatTypeFromString(mirrorFormat);
+                if (def->mirror->format <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown mirror format value '%s'"),
+                                   mirrorFormat);
+                    goto error;
+                }
+            }
+            if (mirrorType) {
+                xmlNodePtr mirrorNode;
+
+                if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("mirror requires source element"));
+                    goto error;
+                }
+                if (virDomainDiskSourceParse(mirrorNode, ctxt,
+                                             def->mirror) < 0)
+                    goto error;
+            }
+            ready = virXMLPropString(cur, "ready");
+            if (ready) {
+                if ((def->mirrorState =
+                     virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("unknown mirror ready state %s"),
+                                   ready);
+                    VIR_FREE(ready);
+                    goto error;
+                }
+                VIR_FREE(ready);
+            }
+        } else if (!authdef &&
+                   xmlStrEqual(cur->name, BAD_CAST "auth")) {
+            if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
+                goto error;
+            /* Disk volume types won't have the secrettype filled in until
+             * after virStorageTranslateDiskSourcePool is run
+             */
+            if (def->src->type != VIR_STORAGE_TYPE_VOLUME &&
+                (auth_secret_usage =
+                 virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid secret type %s"),
+                               authdef->secrettype);
+                goto error;
+            }
+        } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
+            ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.total_bytes_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total throughput limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.total_bytes_sec = 0;
+            }
+
+            ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.read_bytes_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("read throughput limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.read_bytes_sec = 0;
+            }
+
+            ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.write_bytes_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("write throughput limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.write_bytes_sec = 0;
+            }
+
+            ret = virXPathULongLong("string(./iotune/total_iops_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.total_iops_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total I/O operations limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.total_iops_sec = 0;
+            }
+
+            ret = virXPathULongLong("string(./iotune/read_iops_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.read_iops_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("read I/O operations limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.read_iops_sec = 0;
+            }
+
+            ret = virXPathULongLong("string(./iotune/write_iops_sec)",
+                                    ctxt,
+                                    &def->blkdeviotune.write_iops_sec);
+            if (ret == -2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("write I/O operations limit must be an integer"));
+                goto error;
+            } else if (ret < 0) {
+                def->blkdeviotune.write_iops_sec = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.total_bytes_sec_max) < 0) {
+                def->blkdeviotune.total_bytes_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.read_bytes_sec_max) < 0) {
+                def->blkdeviotune.read_bytes_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.write_bytes_sec_max) < 0) {
+                def->blkdeviotune.write_bytes_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.total_iops_sec_max) < 0) {
+                def->blkdeviotune.total_iops_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.read_iops_sec_max) < 0) {
+                def->blkdeviotune.read_iops_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
+                                  ctxt,
+                                  &def->blkdeviotune.write_iops_sec_max) < 0) {
+                def->blkdeviotune.write_iops_sec_max = 0;
+            }
+
+            if (virXPathULongLong("string(./iotune/size_iops_sec)",
+                                  ctxt,
+                                  &def->blkdeviotune.size_iops_sec) < 0) {
+                def->blkdeviotune.size_iops_sec = 0;
+            }
+
+
+            if ((def->blkdeviotune.total_bytes_sec &&
+                 def->blkdeviotune.read_bytes_sec) ||
+                (def->blkdeviotune.total_bytes_sec &&
+                 def->blkdeviotune.write_bytes_sec)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total and read/write bytes_sec "
+                                 "cannot be set at the same time"));
+                goto error;
+            }
+
+            if ((def->blkdeviotune.total_iops_sec &&
+                 def->blkdeviotune.read_iops_sec) ||
+                (def->blkdeviotune.total_iops_sec &&
+                 def->blkdeviotune.write_iops_sec)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total and read/write iops_sec "
+                                 "cannot be set at the same time"));
+                goto error;
+            }
+
+            if ((def->blkdeviotune.total_bytes_sec_max &&
+                 def->blkdeviotune.read_bytes_sec_max) ||
+                (def->blkdeviotune.total_bytes_sec_max &&
+                 def->blkdeviotune.write_bytes_sec_max)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total and read/write bytes_sec_max "
+                                 "cannot be set at the same time"));
+                goto error;
+            }
+
+            if ((def->blkdeviotune.total_iops_sec_max &&
+                 def->blkdeviotune.read_iops_sec_max) ||
+                (def->blkdeviotune.total_iops_sec_max &&
+                 def->blkdeviotune.write_iops_sec_max)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("total and read/write iops_sec_max "
+                                 "cannot be set at the same time"));
+                goto error;
+            }
+
+        } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
+            def->src->readonly = true;
+        } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
+            def->src->shared = true;
+        } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
+            def->transient = true;
+        } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+                   xmlStrEqual(cur->name, BAD_CAST "state")) {
+            /* Legacy back-compat. Don't add any more attributes here */
+            devaddr = virXMLPropString(cur, "devaddr");
+        } else if (encryption == NULL &&
+                   xmlStrEqual(cur->name, BAD_CAST "encryption")) {
+            encryption = virStorageEncryptionParseNode(node->doc,
+                                                       cur);
+            if (encryption == NULL)
+                goto error;
+        } else if (!serial &&
+                   xmlStrEqual(cur->name, BAD_CAST "serial")) {
+            serial = (char *)xmlNodeGetContent(cur);
+        } else if (!wwn &&
+                   xmlStrEqual(cur->name, BAD_CAST "wwn")) {
+            wwn = (char *)xmlNodeGetContent(cur);
+
+            if (!virValidateWWN(wwn))
+                goto error;
+        } else if (!vendor &&
+                   xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+            vendor = (char *)xmlNodeGetContent(cur);
+
+            if (strlen(vendor) > VENDOR_LEN) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("disk vendor is more than 8 characters"));
+                goto error;
+            }
+
+            if (!virStringIsPrintable(vendor)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("disk vendor is not printable string"));
+                goto error;
+            }
+        } else if (!product &&
+                   xmlStrEqual(cur->name, BAD_CAST "product")) {
+            product = (char *)xmlNodeGetContent(cur);
+
+            if (strlen(product) > PRODUCT_LEN) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("disk product is more than 16 characters"));
+                goto error;
+            }
+
+            if (!virStringIsPrintable(product)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("disk product is not printable string"));
+                goto error;
+            }
+        } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
+            /* boot is parsed as part of virDomainDeviceInfoParseXML */
         }
-        cur = cur->next;
     }
 
     /* Disk volume types will have authentication information handled in
