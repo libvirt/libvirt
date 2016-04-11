@@ -236,3 +236,8 @@ struct virNetMessageError {
     int int2;
     virNetMessageNetwork net; /* unused */
 };
+
+struct virNetStreamHole {
+    hyper length;
+    unsigned int flags;
+};

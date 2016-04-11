@@ -42,3 +42,7 @@ struct virNetMessageError {
         int                        int2;
         virNetMessageNetwork       net;
 };
+struct virNetStreamHole {
+        int64_t                    length;
+        u_int                      flags;
+};
