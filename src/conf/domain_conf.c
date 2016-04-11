@@ -18663,10 +18663,8 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
     }
     video->vram = virDomainVideoDefaultRAM(def, video->type);
     video->heads = 1;
-    if (VIR_ALLOC_N(def->videos, 1) < 0)
+    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
-    def->videos[def->nvideos++] = video;
-    video = NULL;
 
     ret = 0;
  cleanup:
