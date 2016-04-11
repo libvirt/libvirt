@@ -2479,7 +2479,7 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
  */
 const char *virGetEnvBlockSUID(const char *name)
 {
-    return secure_getenv(name); /* exempt from syntax-check-rules */
+    return secure_getenv(name); /* exempt from syntax-check */
 }
 
 
@@ -2493,7 +2493,7 @@ const char *virGetEnvBlockSUID(const char *name)
  */
 const char *virGetEnvAllowSUID(const char *name)
 {
-    return getenv(name); /* exempt from syntax-check-rules */
+    return getenv(name); /* exempt from syntax-check */
 }
 
 
