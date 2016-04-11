@@ -16420,8 +16420,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->videos, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        j = def->nvideos;
         virDomainVideoDefPtr video;
+        ssize_t insertAt = -1;
 
         if (!(video = virDomainVideoDefParseXML(nodes[i], def, flags)))
             goto error;
@@ -16434,11 +16434,11 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
 
-            j = 0;
+            insertAt = 0;
             primaryVideo = true;
         }
         if (VIR_INSERT_ELEMENT_INPLACE(def->videos,
-                                       j,
+                                       insertAt,
                                        def->nvideos,
                                        video) < 0) {
             virDomainVideoDefFree(video);
