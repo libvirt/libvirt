@@ -52,7 +52,8 @@ VIR_LOG_INIT("conf.storage_conf");
 
 VIR_ENUM_IMPL(virStorageVol,
               VIR_STORAGE_VOL_LAST,
-              "file", "block", "dir", "network", "netdir")
+              "file", "block", "dir", "network",
+              "netdir", "ploop")
 
 VIR_ENUM_IMPL(virStoragePool,
               VIR_STORAGE_POOL_LAST,

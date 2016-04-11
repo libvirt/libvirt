@@ -1085,6 +1085,8 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (vol->target.format == VIR_STORAGE_FILE_DIR)
         vol->type = VIR_STORAGE_VOL_DIR;
+    else if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
+        vol->type = VIR_STORAGE_VOL_PLOOP;
     else
         vol->type = VIR_STORAGE_VOL_FILE;
 
@@ -1259,6 +1261,7 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
             }
         }
         break;
+    case VIR_STORAGE_VOL_PLOOP:
     case VIR_STORAGE_VOL_BLOCK:
     case VIR_STORAGE_VOL_NETWORK:
     case VIR_STORAGE_VOL_NETDIR:

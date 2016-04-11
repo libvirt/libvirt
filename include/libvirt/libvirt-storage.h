@@ -122,6 +122,7 @@ typedef enum {
     VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) */
     VIR_STORAGE_VOL_NETDIR = 4,   /* Network accessible directory that can
                                    * contain other network volumes */
+    VIR_STORAGE_VOL_PLOOP = 5,    /* Ploop based volumes */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_VOL_LAST

@@ -965,7 +965,8 @@ VIR_ENUM_IMPL(virshStorageVol,
               N_("block"),
               N_("dir"),
               N_("network"),
-              N_("netdir"))
+              N_("netdir"),
+              N_("ploop"))
 
 static const char *
 virshVolumeTypeToString(int type)

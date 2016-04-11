@@ -494,7 +494,7 @@
       A storage volume will generally be either a file or a device
       node; <span class="since">since 1.2.0</span>, an optional
       output-only attribute <code>type</code> lists the actual type
-      (file, block, dir, network, or netdir), which is also available
+      (file, block, dir, network, netdir or ploop), which is also available
       from <code>virStorageVolGetInfo()</code>.  The storage volume
       XML format is available <span class="since">since 0.4.1</span>
     </p>
