@@ -121,6 +121,8 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
                 goto error;
             }
         }
+    } else if (p->type == VIR_CONF_STRING) {
+        len = 1; /* /path/to/shell */
     } else {
         virReportSystemError(EINVAL, "%s",
                              _("shell must be a list of strings"));
@@ -141,6 +143,9 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
             if (VIR_STRDUP(shargv[i++], pp->str) < 0)
                 goto error;
         }
+    } else if (p->type == VIR_CONF_STRING) {
+        if (VIR_STRDUP(shargv[i++], p->str) < 0)
+            goto error;
     }
 
     shargv[i] = NULL;
