@@ -51,6 +51,13 @@ EXTRA_DIST = \
 	virt-sanlock-cleanup.pod			\
 	virt-xml-validate.pod				\
 	virsh.pod					\
+	virt-admin.1.in					\
+	virt-host-validate.1.in				\
+	virt-login-shell.1.in				\
+	virt-pki-validate.1.in				\
+	virt-sanlock-cleanup.8.in			\
+	virt-xml-validate.1.in				\
+	virsh.1.in					\
 	libvirt-guests.sysconf				\
 	virsh-edit.c					\
 	virsh-domain.c					\
@@ -266,13 +273,27 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	  --output-format coff --output $@
 endif WITH_WIN_ICON
 
-%.1: %.pod $(top_srcdir)/configure.ac
+%.1.in: %.pod
 	$(AM_V_GEN)$(POD2MAN) $< $@ \
 		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
-%.8: %.pod $(top_srcdir)/configure.ac
+%.8.in: %.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@ \
 		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+
+%.1: %.1.in $(top_srcdir)/configure.ac
+	$(AM_V_GEN)sed \
+		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+		< $< > $@-t && \
+	mv $@-t $@
+
+%.8: %.8.in $(top_srcdir)/configure.ac
+	$(AM_V_GEN)sed \
+		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+		< $< > $@-t && \
+	mv $@-t $@
 
 install-data-local: install-init install-systemd
 
