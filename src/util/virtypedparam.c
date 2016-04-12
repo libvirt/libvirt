@@ -66,7 +66,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
     va_list ap;
     int ret = -1;
     size_t i, j;
-    const char *name;
+    const char *name, *last_name = NULL;
     int type;
     size_t nkeys = 0, nkeysalloc = 0;
     virTypedParameterPtr sorted = NULL, keys = NULL;
@@ -106,7 +106,8 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         if (STRNEQ(sorted[i].field, keys[j].field)) {
             j++;
         } else {
-            if (i > j && !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
+            if (STREQ_NULLABLE(last_name, sorted[i].field) &&
+                !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("parameter '%s' occurs multiple times"),
                                sorted[i].field);
@@ -125,6 +126,7 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                                virTypedParameterTypeToString(keys[j].type));
                 goto cleanup;
             }
+            last_name = sorted[i].field;
             i++;
         }
     }
