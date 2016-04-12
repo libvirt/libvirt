@@ -41,7 +41,6 @@ EXTRA_DIST = \
 	virt-xml-validate.in				\
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
-	virt-sanlock-cleanup.8				\
 	virt-admin.pod					\
 	virt-host-validate.pod				\
 	virt-login-shell.pod				\
@@ -76,7 +75,7 @@ conf_DATA =
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
-dist_man1_MANS = \
+man1_MANS = \
 		virt-pki-validate.1 \
 		virt-xml-validate.1 \
 		virsh.1 \
@@ -84,26 +83,23 @@ dist_man1_MANS = \
 
 if WITH_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
-dist_man8_MANS = virt-sanlock-cleanup.8
+man8_MANS = virt-sanlock-cleanup.8
 DISTCLEANFILES += virt-sanlock-cleanup
 endif WITH_SANLOCK
 
 if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 bin_PROGRAMS += virt-login-shell
-dist_man1_MANS += virt-login-shell.1
+man1_MANS += virt-login-shell.1
 else ! WITH_LOGIN_SHELL
 EXTRA_DIST += \
-		virt-login-shell.conf \
-		virt-login-shell.1
+		virt-login-shell.conf
 endif ! WITH_LOGIN_SHELL
 
 if WITH_HOST_VALIDATE
 bin_PROGRAMS += virt-host-validate
-dist_man1_MANS += virt-host-validate.1
-else ! WITH_HOST_VALIDATE
-EXTRA_DIST += virt-host-validate.1
-endif ! WITH_HOST_VALIDATE
+man1_MANS += virt-host-validate.1
+endif WITH_HOST_VALIDATE
 
 virt-xml-validate: virt-xml-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]schemadir@|$(pkgdatadir)/schemas|g' \
@@ -491,6 +487,6 @@ clean-local:
 
 CLEANFILES += $(bin_SCRIPTS)
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
-MAINTAINERCLEANFILES = $(dist_man1_MANS)
+CLEANFILES += $(man1_MANS) $(man8_MANS)
 
 DISTCLEANFILES += $(BUILT_SOURCES)
