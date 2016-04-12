@@ -6699,48 +6699,14 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     PARSE_IOTUNE(read_iops_sec);
     PARSE_IOTUNE(write_iops_sec);
 
-    if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.total_bytes_sec_max) < 0) {
-        def->blkdeviotune.total_bytes_sec_max = 0;
-    }
+    PARSE_IOTUNE(total_bytes_sec_max);
+    PARSE_IOTUNE(read_bytes_sec_max);
+    PARSE_IOTUNE(write_bytes_sec_max);
+    PARSE_IOTUNE(total_iops_sec_max);
+    PARSE_IOTUNE(read_iops_sec_max);
+    PARSE_IOTUNE(write_iops_sec_max);
 
-    if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.read_bytes_sec_max) < 0) {
-        def->blkdeviotune.read_bytes_sec_max = 0;
-    }
-
-    if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.write_bytes_sec_max) < 0) {
-        def->blkdeviotune.write_bytes_sec_max = 0;
-    }
-
-    if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.total_iops_sec_max) < 0) {
-        def->blkdeviotune.total_iops_sec_max = 0;
-    }
-
-    if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.read_iops_sec_max) < 0) {
-        def->blkdeviotune.read_iops_sec_max = 0;
-    }
-
-    if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
-                          ctxt,
-                          &def->blkdeviotune.write_iops_sec_max) < 0) {
-        def->blkdeviotune.write_iops_sec_max = 0;
-    }
-
-    if (virXPathULongLong("string(./iotune/size_iops_sec)",
-                          ctxt,
-                          &def->blkdeviotune.size_iops_sec) < 0) {
-        def->blkdeviotune.size_iops_sec = 0;
-    }
-
+    PARSE_IOTUNE(size_iops_sec);
 
     if ((def->blkdeviotune.total_bytes_sec &&
          def->blkdeviotune.read_bytes_sec) ||
