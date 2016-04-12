@@ -100,20 +100,19 @@ static int virLoginShellAllowedUser(virConfPtr conf,
     return ret;
 }
 
-static char **virLoginShellGetShellArgv(virConfPtr conf)
+static int virLoginShellGetShellArgv(virConfPtr conf,
+                                     char ***retshargv,
+                                     size_t *retshargvlen)
 {
     size_t i;
+    size_t len;
     char **shargv = NULL;
-    virConfValuePtr p;
+    virConfValuePtr p, pp;
 
     p = virConfGetValue(conf, "shell");
-    if (!p)
-        return virStringSplit("/bin/sh -l", " ", 3);
-
-    if (p->type == VIR_CONF_LIST) {
-        size_t len;
-        virConfValuePtr pp;
-
+    if (!p) {
+        len = 2; /* /bin/sh -l */
+    } else if (p->type == VIR_CONF_LIST) {
         /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
@@ -122,18 +121,41 @@ static char **virLoginShellGetShellArgv(virConfPtr conf)
                 goto error;
             }
         }
+    } else {
+        virReportSystemError(EINVAL, "%s",
+                             _("shell must be a list of strings"));
+        goto error;
+    }
 
-        if (VIR_ALLOC_N(shargv, len + 1) < 0)
+    len++; /* NULL terminator */
+
+    if (VIR_ALLOC_N(shargv, len) < 0)
+        goto error;
+
+    i = 0;
+    if (!p) {
+        if (VIR_STRDUP(shargv[i++], "/bin/sh") < 0)
             goto error;
-        for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
-            if (VIR_STRDUP(shargv[i], pp->str) < 0)
+        if (VIR_STRDUP(shargv[i++], "-l") < 0)
+            goto error;
+    } else if (p->type == VIR_CONF_LIST) {
+        for (pp = p->list; pp; pp = pp->next) {
+            if (VIR_STRDUP(shargv[i++], pp->str) < 0)
                 goto error;
         }
     }
-    return shargv;
+
+    shargv[i] = NULL;
+
+    *retshargvlen = i;
+    *retshargv = shargv;
+
+    return 0;
  error:
+    *retshargv = NULL;
+    *retshargvlen = 0;
     virStringFreeList(shargv);
-    return NULL;
+    return -1;
 }
 
 static char *progname;
@@ -151,6 +173,7 @@ usage(void)
               "Options:\n"
               "  -h | --help            Display program help\n"
               "  -V | --version         Display program version\n"
+              "  -c CMD                 Run CMD via shell\n"
               "\n"
               "libvirt login shell\n"),
             progname);
@@ -177,6 +200,7 @@ main(int argc, char **argv)
     gid_t gid = getgid();
     char *name = NULL;
     char **shargv = NULL;
+    size_t shargvlen = 0;
     virSecurityModelPtr secmodel = NULL;
     virSecurityLabelPtr seclabel = NULL;
     virDomainPtr dom = NULL;
@@ -190,6 +214,7 @@ main(int argc, char **argv)
     int *fdlist = NULL;
     int openmax;
     size_t i;
+    const char *cmdstr = NULL;
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
@@ -210,7 +235,7 @@ main(int argc, char **argv)
     if (virGettextInitialize() < 0)
         return ret;
 
-    while ((arg = getopt_long(argc, argv, "hV", opt, &longindex)) != -1) {
+    while ((arg = getopt_long(argc, argv, "hVc:", opt, &longindex)) != -1) {
         switch (arg) {
         case 'h':
             usage();
@@ -219,6 +244,10 @@ main(int argc, char **argv)
         case 'V':
             show_version();
             exit(EXIT_SUCCESS);
+
+        case 'c':
+            cmdstr = optarg;
+            break;
 
         case '?':
         default:
@@ -255,7 +284,7 @@ main(int argc, char **argv)
     if (virLoginShellAllowedUser(conf, name, groups) < 0)
         goto cleanup;
 
-    if (!(shargv = virLoginShellGetShellArgv(conf)))
+    if (virLoginShellGetShellArgv(conf, &shargv, &shargvlen) < 0)
         goto cleanup;
 
     conn = virConnectOpen("lxc:///");
@@ -306,6 +335,16 @@ main(int argc, char **argv)
     if (chdir(homedir) < 0) {
         virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
         goto cleanup;
+    }
+
+    if (cmdstr) {
+        if (VIR_REALLOC_N(shargv, shargvlen + 3) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(shargv[shargvlen++], "-c") < 0)
+            goto cleanup;
+        if (VIR_STRDUP(shargv[shargvlen++], cmdstr) < 0)
+            goto cleanup;
+        shargv[shargvlen] = NULL;
     }
 
     /* A fork is required to create new process in correct pid namespace.  */

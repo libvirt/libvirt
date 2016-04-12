@@ -23,6 +23,11 @@ The basic structure of most virt-login-shell usage is:
 
 =over
 
+=item B<-c CMD>
+
+Instruct the shell to run CMD instead of presenting an
+interactive shell prompt.
+
 =item B<-h, --help>
 
 Display command line help usage then exit.
