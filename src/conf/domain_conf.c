@@ -6843,6 +6843,51 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
 }
 
 
+static int
+virDomainDiskDefGeometryParse(virDomainDiskDefPtr def,
+                              xmlNodePtr cur,
+                              xmlXPathContextPtr ctxt)
+{
+    char *trans;
+
+    if (virXPathUInt("string(./geometry/@cyls)",
+                     ctxt, &def->geometry.cylinders) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid geometry settings (cyls)"));
+        return -1;
+    }
+
+    if (virXPathUInt("string(./geometry/@heads)",
+                     ctxt, &def->geometry.heads) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid geometry settings (heads)"));
+        return -1;
+    }
+
+    if (virXPathUInt("string(./geometry/@secs)",
+                     ctxt, &def->geometry.sectors) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid geometry settings (secs)"));
+        return -1;
+    }
+
+    trans = virXMLPropString(cur, "trans");
+    if (trans) {
+        def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
+        if (def->geometry.trans <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid translation value '%s'"),
+                           trans);
+            VIR_FREE(trans);
+            return -1;
+        }
+        VIR_FREE(trans);
+    }
+
+    return 0;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -6871,7 +6916,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *driverType = NULL;
     bool source = false;
     char *target = NULL;
-    char *trans = NULL;
     char *bus = NULL;
     char *cachetag = NULL;
     char *error_policy = NULL;
@@ -6956,34 +7000,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                    xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
             domain_name = virXMLPropString(cur, "name");
         } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
-            if (virXPathUInt("string(./geometry/@cyls)",
-                             ctxt, &def->geometry.cylinders) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("invalid geometry settings (cyls)"));
+            if (virDomainDiskDefGeometryParse(def, cur, ctxt) < 0)
                 goto error;
-            }
-            if (virXPathUInt("string(./geometry/@heads)",
-                             ctxt, &def->geometry.heads) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("invalid geometry settings (heads)"));
-                goto error;
-            }
-            if (virXPathUInt("string(./geometry/@secs)",
-                             ctxt, &def->geometry.sectors) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("invalid geometry settings (secs)"));
-                goto error;
-            }
-            trans = virXMLPropString(cur, "trans");
-            if (trans) {
-                def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
-                if (def->geometry.trans <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("invalid translation value '%s'"),
-                                   trans);
-                    goto error;
-                }
-            }
         } else if (xmlStrEqual(cur->name, BAD_CAST "blockio")) {
             logical_block_size =
                 virXMLPropString(cur, "logical_block_size");
@@ -7491,7 +7509,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(target);
     VIR_FREE(tray);
     VIR_FREE(removable);
-    VIR_FREE(trans);
     VIR_FREE(device);
     virStorageAuthDefFree(authdef);
     VIR_FREE(driverType);
