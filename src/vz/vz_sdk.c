@@ -1254,8 +1254,17 @@ prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom)
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *name = NULL;
 
+    virObjectLock(driver);
     if (prlsdkGetDomainIds(sdkdom, &name, uuid) < 0)
         goto cleanup;
+
+    /* we should make sure that there is no such a VM exists */
+    dom = virDomainObjListFindByUUID(driver->domains, uuid);
+    if (dom) {
+        virObjectUnlock(dom);
+        dom = NULL;
+        goto cleanup;
+    }
 
     if (!(dom = vzNewDomain(driver, name, uuid)))
         goto cleanup;
@@ -1267,6 +1276,7 @@ prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom)
     }
 
  cleanup:
+    virObjectUnlock(driver);
     VIR_FREE(name);
     return dom;
 }
