@@ -6753,6 +6753,109 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
 #undef PARSE_IOTUNE
 
 
+static int
+virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
+                            xmlNodePtr cur,
+                            xmlXPathContextPtr ctxt)
+{
+    char *mirrorFormat = NULL;
+    char *mirrorType = NULL;
+    char *ready;
+    char *blockJob;
+    int ret = -1;
+
+    if (VIR_ALLOC(def->mirror) < 0)
+        goto cleanup;
+
+    blockJob = virXMLPropString(cur, "job");
+    if (blockJob) {
+        def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
+        if (def->mirrorJob <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown mirror job type '%s'"),
+                           blockJob);
+            VIR_FREE(blockJob);
+            goto cleanup;
+        }
+        VIR_FREE(blockJob);
+    } else {
+        def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+    }
+
+    mirrorType = virXMLPropString(cur, "type");
+    if (mirrorType) {
+        def->mirror->type = virStorageTypeFromString(mirrorType);
+        if (def->mirror->type <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown mirror backing store "
+                             "type '%s'"), mirrorType);
+            goto cleanup;
+        }
+        mirrorFormat = virXPathString("string(./mirror/format/@type)",
+                                      ctxt);
+    } else {
+        /* For back-compat reasons, we handle a file name
+         * encoded as attributes, even though we prefer
+         * modern output in the style of backingStore */
+        def->mirror->type = VIR_STORAGE_TYPE_FILE;
+        def->mirror->path = virXMLPropString(cur, "file");
+        if (!def->mirror->path) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror requires file name"));
+            goto cleanup;
+        }
+        if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror without type only supported "
+                             "by copy job"));
+            goto cleanup;
+        }
+        mirrorFormat = virXMLPropString(cur, "format");
+    }
+    if (mirrorFormat) {
+        def->mirror->format =
+            virStorageFileFormatTypeFromString(mirrorFormat);
+        if (def->mirror->format <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown mirror format value '%s'"),
+                           mirrorFormat);
+            goto cleanup;
+        }
+    }
+    if (mirrorType) {
+        xmlNodePtr mirrorNode;
+
+        if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror requires source element"));
+            goto cleanup;
+        }
+        if (virDomainDiskSourceParse(mirrorNode, ctxt,
+                                     def->mirror) < 0)
+            goto cleanup;
+    }
+    ready = virXMLPropString(cur, "ready");
+    if (ready) {
+        if ((def->mirrorState =
+             virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown mirror ready state %s"),
+                           ready);
+            VIR_FREE(ready);
+            goto cleanup;
+        }
+        VIR_FREE(ready);
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(mirrorType);
+    VIR_FREE(mirrorFormat);
+    return ret;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -6804,8 +6907,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vendor = NULL;
     char *product = NULL;
     char *discard = NULL;
-    char *mirrorFormat = NULL;
-    char *mirrorType = NULL;
     char *domain_name = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
@@ -6939,91 +7040,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         } else if (!def->mirror &&
                    xmlStrEqual(cur->name, BAD_CAST "mirror") &&
                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-            char *ready;
-            char *blockJob;
-
-            if (VIR_ALLOC(def->mirror) < 0)
+            if (virDomainDiskDefMirrorParse(def, cur, ctxt) < 0)
                 goto error;
-
-            blockJob = virXMLPropString(cur, "job");
-            if (blockJob) {
-                def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
-                if (def->mirrorJob <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown mirror job type '%s'"),
-                                   blockJob);
-                    VIR_FREE(blockJob);
-                    goto error;
-                }
-                VIR_FREE(blockJob);
-            } else {
-                def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-            }
-
-            mirrorType = virXMLPropString(cur, "type");
-            if (mirrorType) {
-                def->mirror->type = virStorageTypeFromString(mirrorType);
-                if (def->mirror->type <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown mirror backing store "
-                                     "type '%s'"), mirrorType);
-                    goto error;
-                }
-                mirrorFormat = virXPathString("string(./mirror/format/@type)",
-                                              ctxt);
-            } else {
-                /* For back-compat reasons, we handle a file name
-                 * encoded as attributes, even though we prefer
-                 * modern output in the style of backingStore */
-                def->mirror->type = VIR_STORAGE_TYPE_FILE;
-                def->mirror->path = virXMLPropString(cur, "file");
-                if (!def->mirror->path) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("mirror requires file name"));
-                    goto error;
-                }
-                if (def->mirrorJob != VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("mirror without type only supported "
-                                     "by copy job"));
-                    goto error;
-                }
-                mirrorFormat = virXMLPropString(cur, "format");
-            }
-            if (mirrorFormat) {
-                def->mirror->format =
-                    virStorageFileFormatTypeFromString(mirrorFormat);
-                if (def->mirror->format <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown mirror format value '%s'"),
-                                   mirrorFormat);
-                    goto error;
-                }
-            }
-            if (mirrorType) {
-                xmlNodePtr mirrorNode;
-
-                if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("mirror requires source element"));
-                    goto error;
-                }
-                if (virDomainDiskSourceParse(mirrorNode, ctxt,
-                                             def->mirror) < 0)
-                    goto error;
-            }
-            ready = virXMLPropString(cur, "ready");
-            if (ready) {
-                if ((def->mirrorState =
-                     virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("unknown mirror ready state %s"),
-                                   ready);
-                    VIR_FREE(ready);
-                    goto error;
-                }
-                VIR_FREE(ready);
-            }
         } else if (!authdef &&
                    xmlStrEqual(cur->name, BAD_CAST "auth")) {
             if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
@@ -7509,8 +7527,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(wwn);
     VIR_FREE(vendor);
     VIR_FREE(product);
-    VIR_FREE(mirrorType);
-    VIR_FREE(mirrorFormat);
     VIR_FREE(domain_name);
 
     ctxt->node = save_ctxt;
