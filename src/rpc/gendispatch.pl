@@ -281,6 +281,13 @@ while (<PROTOCOL>) {
             $calls{$name}->{streamflag} = "none";
         }
 
+        if (exists $opts{sparseflag}) {
+            die "\@sparseflag requires stream" unless $calls{$name}->{streamflag} ne "none";
+            $calls{$name}->{sparseflag} = $opts{sparseflag};
+        } else {
+            $calls{$name}->{sparseflag} = "none";
+        }
+
         $calls{$name}->{acl} = $opts{acl};
         $calls{$name}->{aclfilter} = $opts{aclfilter};
 
@@ -982,6 +989,11 @@ elsif ($mode eq "server") {
         if ($call->{streamflag} ne "none") {
             print "    virStreamPtr st = NULL;\n";
             print "    daemonClientStreamPtr stream = NULL;\n";
+            if ($call->{sparseflag} ne "none") {
+                print "    const bool sparse = args->flags & $call->{sparseflag};\n"
+            } else {
+                print "    const bool sparse = false;\n";
+            }
         }
 
         print "\n";
@@ -1024,7 +1036,7 @@ elsif ($mode eq "server") {
             print "    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)))\n";
             print "        goto cleanup;\n";
             print "\n";
-            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header, false)))\n";
+            print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header, sparse)))\n";
             print "        goto cleanup;\n";
             print "\n";
         }
@@ -1727,6 +1739,11 @@ elsif ($mode eq "client") {
 
         if ($call->{streamflag} ne "none") {
             print "    virNetClientStreamPtr netst = NULL;\n";
+            if ($call->{sparseflag} ne "none") {
+                print "    const bool sparse = flags & $call->{sparseflag};\n"
+            } else {
+                print "    const bool sparse = false;\n";
+            }
         }
 
         print "\n";
@@ -1738,7 +1755,7 @@ elsif ($mode eq "client") {
 
         if ($call->{streamflag} ne "none") {
             print "\n";
-            print "    if (!(netst = virNetClientStreamNew(st, priv->remoteProgram, $call->{constname}, priv->counter, false)))\n";
+            print "    if (!(netst = virNetClientStreamNew(st, priv->remoteProgram, $call->{constname}, priv->counter, sparse)))\n";
             print "        goto done;\n";
             print "\n";
             print "    if (virNetClientAddStream(priv->client, netst) < 0) {\n";
