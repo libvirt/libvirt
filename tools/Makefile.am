@@ -45,7 +45,11 @@ EXTRA_DIST = \
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
 	virt-admin.pod					\
+	virt-host-validate.pod				\
 	virt-login-shell.pod				\
+	virt-pki-validate.pod				\
+	virt-sanlock-cleanup.pod			\
+	virt-xml-validate.pod				\
 	virsh.pod					\
 	libvirt-guests.sysconf				\
 	virsh-edit.c					\
@@ -101,36 +105,15 @@ virt-xml-validate: virt-xml-validate.in Makefile
 		       -e 's|[@]VERSION@|$(VERSION)|g' \
 	  < $< > $@ || (rm $@ && exit 1) && chmod +x $@
 
-virt-xml-validate.1: virt-xml-validate.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRT-XML-VALIDATE $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
-
 virt-pki-validate: virt-pki-validate.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]sysconfdir@|$(sysconfdir)|g' \
 		       -e 's|[@]VERSION@|$(VERSION)|g' \
 	  < $< > $@ || (rm $@ && exit 1) && chmod +x $@
 
-virt-pki-validate.1: virt-pki-validate.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRT-PKI-VALIDATE $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
-
-virt-host-validate.1: virt-host-validate.c $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRT-HOST-VALIDATE $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
-
 virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 	$(AM_V_GEN)sed -e 's|[@]sysconfdir@|$(sysconfdir)|' \
 	    -e 's|[@]localstatedir@|$(localstatedir)|' < $< > $@ \
 	    || (rm $@ && exit 1) && chmod +x $@
-
-virt-sanlock-cleanup.8: virt-sanlock-cleanup.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRT-SANLOCK-CLEANUP --section=8 \
-	    $< $(srcdir)/$@ \
-	    && if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
 
 noinst_LTLIBRARIES = libvirt_shell.la
 libvirt_shell_la_CFLAGS = \
@@ -285,6 +268,11 @@ endif WITH_WIN_ICON
 
 %.1: %.pod $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
+		&& if grep 'POD ERROR' $(srcdir)/$@ ; then \
+		rm $(srcdir)/$@; exit 1; fi
+
+%.8: %.pod $(top_srcdir)/configure.ac
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $(srcdir)/$@ \
 		&& if grep 'POD ERROR' $(srcdir)/$@ ; then \
 		rm $(srcdir)/$@; exit 1; fi
 
