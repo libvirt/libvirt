@@ -6758,41 +6758,44 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
                             xmlNodePtr cur,
                             xmlXPathContextPtr ctxt)
 {
+    xmlNodePtr mirrorNode;
     char *mirrorFormat = NULL;
     char *mirrorType = NULL;
-    char *ready;
-    char *blockJob;
+    char *ready = NULL;
+    char *blockJob = NULL;
     int ret = -1;
 
     if (VIR_ALLOC(def->mirror) < 0)
         goto cleanup;
 
-    blockJob = virXMLPropString(cur, "job");
-    if (blockJob) {
-        def->mirrorJob = virDomainBlockJobTypeFromString(blockJob);
-        if (def->mirrorJob <= 0) {
+    if ((blockJob = virXMLPropString(cur, "job"))) {
+        if ((def->mirrorJob = virDomainBlockJobTypeFromString(blockJob)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mirror job type '%s'"),
-                           blockJob);
-            VIR_FREE(blockJob);
+                           _("unknown mirror job type '%s'"), blockJob);
             goto cleanup;
         }
-        VIR_FREE(blockJob);
     } else {
         def->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     }
 
-    mirrorType = virXMLPropString(cur, "type");
-    if (mirrorType) {
-        def->mirror->type = virStorageTypeFromString(mirrorType);
-        if (def->mirror->type <= 0) {
+    if ((mirrorType = virXMLPropString(cur, "type"))) {
+        if ((def->mirror->type = virStorageTypeFromString(mirrorType)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mirror backing store "
-                             "type '%s'"), mirrorType);
+                           _("unknown mirror backing store type '%s'"),
+                           mirrorType);
             goto cleanup;
         }
-        mirrorFormat = virXPathString("string(./mirror/format/@type)",
-                                      ctxt);
+
+        mirrorFormat = virXPathString("string(./mirror/format/@type)", ctxt);
+
+        if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("mirror requires source element"));
+            goto cleanup;
+        }
+
+        if (virDomainDiskSourceParse(mirrorNode, ctxt, def->mirror) < 0)
+            goto cleanup;
     } else {
         /* For back-compat reasons, we handle a file name
          * encoded as attributes, even though we prefer
@@ -6812,44 +6815,28 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
         }
         mirrorFormat = virXMLPropString(cur, "format");
     }
+
     if (mirrorFormat) {
-        def->mirror->format =
-            virStorageFileFormatTypeFromString(mirrorFormat);
+        def->mirror->format = virStorageFileFormatTypeFromString(mirrorFormat);
         if (def->mirror->format <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown mirror format value '%s'"),
-                           mirrorFormat);
+                           _("unknown mirror format value '%s'"), mirrorFormat);
             goto cleanup;
         }
     }
-    if (mirrorType) {
-        xmlNodePtr mirrorNode;
 
-        if (!(mirrorNode = virXPathNode("./mirror/source", ctxt))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("mirror requires source element"));
-            goto cleanup;
-        }
-        if (virDomainDiskSourceParse(mirrorNode, ctxt,
-                                     def->mirror) < 0)
-            goto cleanup;
-    }
-    ready = virXMLPropString(cur, "ready");
-    if (ready) {
-        if ((def->mirrorState =
-             virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown mirror ready state %s"),
-                           ready);
-            VIR_FREE(ready);
-            goto cleanup;
-        }
-        VIR_FREE(ready);
+    if ((ready = virXMLPropString(cur, "ready")) &&
+        (def->mirrorState = virDomainDiskMirrorStateTypeFromString(ready)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown mirror ready state %s"), ready);
+        goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
+    VIR_FREE(ready);
+    VIR_FREE(blockJob);
     VIR_FREE(mirrorType);
     VIR_FREE(mirrorFormat);
     return ret;
