@@ -6681,6 +6681,168 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
 }
 
 
+static int
+virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
+                            xmlXPathContextPtr ctxt)
+{
+    int ret;
+
+    ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
+                            ctxt,
+                            &def->blkdeviotune.total_bytes_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total throughput limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.total_bytes_sec = 0;
+    }
+
+    ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
+                            ctxt,
+                            &def->blkdeviotune.read_bytes_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("read throughput limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.read_bytes_sec = 0;
+    }
+
+    ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
+                            ctxt,
+                            &def->blkdeviotune.write_bytes_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("write throughput limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.write_bytes_sec = 0;
+    }
+
+    ret = virXPathULongLong("string(./iotune/total_iops_sec)",
+                            ctxt,
+                            &def->blkdeviotune.total_iops_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total I/O operations limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.total_iops_sec = 0;
+    }
+
+    ret = virXPathULongLong("string(./iotune/read_iops_sec)",
+                            ctxt,
+                            &def->blkdeviotune.read_iops_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("read I/O operations limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.read_iops_sec = 0;
+    }
+
+    ret = virXPathULongLong("string(./iotune/write_iops_sec)",
+                            ctxt,
+                            &def->blkdeviotune.write_iops_sec);
+    if (ret == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("write I/O operations limit must be an integer"));
+        goto error;
+    } else if (ret < 0) {
+        def->blkdeviotune.write_iops_sec = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.total_bytes_sec_max) < 0) {
+        def->blkdeviotune.total_bytes_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.read_bytes_sec_max) < 0) {
+        def->blkdeviotune.read_bytes_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.write_bytes_sec_max) < 0) {
+        def->blkdeviotune.write_bytes_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.total_iops_sec_max) < 0) {
+        def->blkdeviotune.total_iops_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.read_iops_sec_max) < 0) {
+        def->blkdeviotune.read_iops_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
+                          ctxt,
+                          &def->blkdeviotune.write_iops_sec_max) < 0) {
+        def->blkdeviotune.write_iops_sec_max = 0;
+    }
+
+    if (virXPathULongLong("string(./iotune/size_iops_sec)",
+                          ctxt,
+                          &def->blkdeviotune.size_iops_sec) < 0) {
+        def->blkdeviotune.size_iops_sec = 0;
+    }
+
+
+    if ((def->blkdeviotune.total_bytes_sec &&
+         def->blkdeviotune.read_bytes_sec) ||
+        (def->blkdeviotune.total_bytes_sec &&
+         def->blkdeviotune.write_bytes_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec "
+                         "cannot be set at the same time"));
+        goto error;
+    }
+
+    if ((def->blkdeviotune.total_iops_sec &&
+         def->blkdeviotune.read_iops_sec) ||
+        (def->blkdeviotune.total_iops_sec &&
+         def->blkdeviotune.write_iops_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec "
+                         "cannot be set at the same time"));
+        goto error;
+    }
+
+    if ((def->blkdeviotune.total_bytes_sec_max &&
+         def->blkdeviotune.read_bytes_sec_max) ||
+        (def->blkdeviotune.total_bytes_sec_max &&
+         def->blkdeviotune.write_bytes_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec_max "
+                         "cannot be set at the same time"));
+        goto error;
+    }
+
+    if ((def->blkdeviotune.total_iops_sec_max &&
+         def->blkdeviotune.read_iops_sec_max) ||
+        (def->blkdeviotune.total_iops_sec_max &&
+         def->blkdeviotune.write_iops_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec_max "
+                         "cannot be set at the same time"));
+        goto error;
+    }
+
+    return 0;
+
+ error:
+    return ret;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -6737,7 +6899,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *domain_name = NULL;
     int expected_secret_usage = -1;
     int auth_secret_usage = -1;
-    int ret = 0;
 
     if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
@@ -6969,155 +7130,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
         } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
-            ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.total_bytes_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total throughput limit must be an integer"));
+            if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
                 goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.total_bytes_sec = 0;
-            }
-
-            ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.read_bytes_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("read throughput limit must be an integer"));
-                goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.read_bytes_sec = 0;
-            }
-
-            ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.write_bytes_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("write throughput limit must be an integer"));
-                goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.write_bytes_sec = 0;
-            }
-
-            ret = virXPathULongLong("string(./iotune/total_iops_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.total_iops_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total I/O operations limit must be an integer"));
-                goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.total_iops_sec = 0;
-            }
-
-            ret = virXPathULongLong("string(./iotune/read_iops_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.read_iops_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("read I/O operations limit must be an integer"));
-                goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.read_iops_sec = 0;
-            }
-
-            ret = virXPathULongLong("string(./iotune/write_iops_sec)",
-                                    ctxt,
-                                    &def->blkdeviotune.write_iops_sec);
-            if (ret == -2) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("write I/O operations limit must be an integer"));
-                goto error;
-            } else if (ret < 0) {
-                def->blkdeviotune.write_iops_sec = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.total_bytes_sec_max) < 0) {
-                def->blkdeviotune.total_bytes_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/read_bytes_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.read_bytes_sec_max) < 0) {
-                def->blkdeviotune.read_bytes_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/write_bytes_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.write_bytes_sec_max) < 0) {
-                def->blkdeviotune.write_bytes_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/total_iops_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.total_iops_sec_max) < 0) {
-                def->blkdeviotune.total_iops_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/read_iops_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.read_iops_sec_max) < 0) {
-                def->blkdeviotune.read_iops_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/write_iops_sec_max)",
-                                  ctxt,
-                                  &def->blkdeviotune.write_iops_sec_max) < 0) {
-                def->blkdeviotune.write_iops_sec_max = 0;
-            }
-
-            if (virXPathULongLong("string(./iotune/size_iops_sec)",
-                                  ctxt,
-                                  &def->blkdeviotune.size_iops_sec) < 0) {
-                def->blkdeviotune.size_iops_sec = 0;
-            }
-
-
-            if ((def->blkdeviotune.total_bytes_sec &&
-                 def->blkdeviotune.read_bytes_sec) ||
-                (def->blkdeviotune.total_bytes_sec &&
-                 def->blkdeviotune.write_bytes_sec)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total and read/write bytes_sec "
-                                 "cannot be set at the same time"));
-                goto error;
-            }
-
-            if ((def->blkdeviotune.total_iops_sec &&
-                 def->blkdeviotune.read_iops_sec) ||
-                (def->blkdeviotune.total_iops_sec &&
-                 def->blkdeviotune.write_iops_sec)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total and read/write iops_sec "
-                                 "cannot be set at the same time"));
-                goto error;
-            }
-
-            if ((def->blkdeviotune.total_bytes_sec_max &&
-                 def->blkdeviotune.read_bytes_sec_max) ||
-                (def->blkdeviotune.total_bytes_sec_max &&
-                 def->blkdeviotune.write_bytes_sec_max)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total and read/write bytes_sec_max "
-                                 "cannot be set at the same time"));
-                goto error;
-            }
-
-            if ((def->blkdeviotune.total_iops_sec_max &&
-                 def->blkdeviotune.read_iops_sec_max) ||
-                (def->blkdeviotune.total_iops_sec_max &&
-                 def->blkdeviotune.write_iops_sec_max)) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("total and read/write iops_sec_max "
-                                 "cannot be set at the same time"));
-                goto error;
-            }
-
         } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
             def->src->readonly = true;
         } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
