@@ -34,7 +34,6 @@
 #include <getopt.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#include <locale.h>
 #include <time.h>
 #include <limits.h>
 #include <sys/stat.h>
@@ -53,12 +52,12 @@
 #include <libvirt/libvirt-qemu.h>
 #include <libvirt/libvirt-lxc.h>
 #include "virfile.h"
-#include "configmake.h"
 #include "virthread.h"
 #include "vircommand.h"
 #include "conf/domain_conf.h"
 #include "virtypedparam.h"
 #include "virstring.h"
+#include "virgettext.h"
 
 #include "virsh-console.h"
 #include "virsh-domain.h"
@@ -936,18 +935,8 @@ main(int argc, char **argv)
         progname++;
     ctl->progname = progname;
 
-    if (!setlocale(LC_ALL, "")) {
-        perror("setlocale");
-        /* failure to setup locale is not fatal */
-    }
-    if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
-        perror("bindtextdomain");
+    if (virGettextInitialize() < 0)
         return EXIT_FAILURE;
-    }
-    if (!textdomain(PACKAGE)) {
-        perror("textdomain");
-        return EXIT_FAILURE;
-    }
 
     if (isatty(STDIN_FILENO)) {
         ctl->istty = true;

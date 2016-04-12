@@ -114,6 +114,7 @@ UTIL_SOURCES =							\
 		util/virfile.c util/virfile.h			\
 		util/virfirewall.c util/virfirewall.h		\
 		util/virfirewallpriv.h				\
+		util/virgettext.c util/virgettext.h		\
 		util/virgic.c util/virgic.h			\
 		util/virhash.c util/virhash.h			\
 		util/virhashcode.c util/virhashcode.h		\
@@ -2329,6 +2330,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virevent.c			\
 		util/vireventpoll.c		\
 		util/virfile.c			\
+		util/virgettext.c		\
 		util/virhash.c			\
 		util/virhashcode.c		\
 		util/virjson.c			\

@@ -25,10 +25,9 @@
 #include <stdlib.h>
 #include <gettext.h>
 #include <getopt.h>
-#include <locale.h>
 
 #include "internal.h"
-#include "configmake.h"
+#include "virgettext.h"
 
 #include "virt-host-validate-common.h"
 #if WITH_QEMU
@@ -80,18 +79,8 @@ main(int argc, char **argv)
     bool quiet = false;
     bool usedHvname = false;
 
-    if (!setlocale(LC_ALL, "")) {
-        perror("setlocale");
-        /* failure to setup locale is not fatal */
-    }
-    if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
-        perror("bindtextdomain");
+    if (virGettextInitialize() < 0)
         return EXIT_FAILURE;
-    }
-    if (!textdomain(PACKAGE)) {
-        perror("textdomain");
-        return EXIT_FAILURE;
-    }
 
     while ((c = getopt_long(argc, argv, "hvq", argOptions, NULL)) != -1) {
         switch (c) {

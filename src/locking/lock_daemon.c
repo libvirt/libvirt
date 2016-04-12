@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <getopt.h>
 #include <stdlib.h>
-#include <locale.h>
 
 
 #include "lock_daemon.h"
@@ -47,6 +46,7 @@
 #include "virhash.h"
 #include "viruuid.h"
 #include "virstring.h"
+#include "virgettext.h"
 
 #include "locking/lock_daemon_dispatch.h"
 #include "locking/lock_protocol.h"
@@ -1179,9 +1179,7 @@ int main(int argc, char **argv) {
 
     privileged = geteuid() == 0;
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL ||
+    if (virGettextInitialize() < 0 ||
         virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);

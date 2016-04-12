@@ -1,13 +1,12 @@
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
 
-#include "configmake.h"
 #include "internal.h"
 #include "virconf.h"
 #include "viralloc.h"
 #include "domain_conf.h"
+#include "virgettext.h"
 
 
 static int
@@ -70,12 +69,8 @@ main(int argc, char **argv)
         .cb = authCallback,
     };
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+    if (virGettextInitialize() < 0)
         exit(EXIT_FAILURE);
-    }
 
     if (getArgs(argc, argv, &uri, &uuid, &action) < 0)
         goto cleanup;

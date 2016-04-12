@@ -39,13 +39,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <locale.h>
 
 #include "virutil.h"
 #include "virfile.h"
 #include "c-ctype.h"
-#include "configmake.h"
 #include "virstring.h"
+#include "virgettext.h"
 
 /* we don't need to include the full internal.h just for this */
 #define STREQ(a, b) (strcmp(a, b) == 0)
@@ -72,12 +71,8 @@ int main(int argc, char **argv)
     const char *partsep;
     bool devmap_nopartsep = false;
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+    if (virGettextInitialize() < 0)
         exit(EXIT_FAILURE);
-    }
 
     if (argc == 3 && STREQ(argv[2], "-g")) {
         cmd = DISK_GEOMETRY;

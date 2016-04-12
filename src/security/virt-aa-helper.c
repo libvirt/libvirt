@@ -35,7 +35,6 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <sys/utsname.h>
-#include <locale.h>
 
 #include "internal.h"
 #include "virbuffer.h"
@@ -54,6 +53,7 @@
 #include "configmake.h"
 #include "virrandom.h"
 #include "virstring.h"
+#include "virgettext.h"
 
 #include "storage/storage_driver.h"
 
@@ -1298,14 +1298,8 @@ main(int argc, char **argv)
     char *profile = NULL;
     char *include_file = NULL;
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    if (virThreadInitialize() < 0 ||
+    if (virGettextInitialize() < 0 ||
+        virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);

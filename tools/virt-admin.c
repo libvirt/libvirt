@@ -25,20 +25,19 @@
 
 #include <errno.h>
 #include <getopt.h>
-#include <locale.h>
 
 #if WITH_READLINE
 # include <readline/readline.h>
 # include <readline/history.h>
 #endif
 
-#include "configmake.h"
 #include "internal.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virstring.h"
 #include "virthread.h"
+#include "virgettext.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -689,18 +688,8 @@ main(int argc, char **argv)
         progname++;
     ctl->progname = progname;
 
-    if (!setlocale(LC_ALL, "")) {
-        perror("setlocale");
-        /* failure to setup locale is not fatal */
-    }
-    if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
-        perror("bindtextdomain");
+    if (virGettextInitialize() < 0)
         return EXIT_FAILURE;
-    }
-    if (!textdomain(PACKAGE)) {
-        perror("textdomain");
-        return EXIT_FAILURE;
-    }
 
     if (isatty(STDIN_FILENO)) {
         ctl->istty = true;
