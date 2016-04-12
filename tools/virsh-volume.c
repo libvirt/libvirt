@@ -763,6 +763,10 @@ static const vshCmdOptDef opts_vol_download[] = {
      .type = VSH_OT_INT,
      .help = N_("amount of data to download")
     },
+    {.name = "sparse",
+     .type = VSH_OT_BOOL,
+     .help = N_("preserve sparseness of volume")
+    },
     {.name = NULL}
 };
 
@@ -778,6 +782,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     unsigned long long offset = 0, length = 0;
     bool created = false;
     virshControlPtr priv = ctl->privData;
+    unsigned int flags = 0;
 
     if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
@@ -790,6 +795,9 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
         goto cleanup;
+
+    if (vshCommandOptBool(cmd, "sparse"))
+        flags |= VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM;
 
     if ((fd = open(file, O_WRONLY|O_CREAT|O_EXCL, 0666)) < 0) {
         if (errno != EEXIST ||
@@ -806,12 +814,12 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virStorageVolDownload(vol, st, offset, length, 0) < 0) {
+    if (virStorageVolDownload(vol, st, offset, length, flags) < 0) {
         vshError(ctl, _("cannot download from volume %s"), name);
         goto cleanup;
     }
 
-    if (virStreamRecvAll(st, virshStreamSink, &fd) < 0) {
+    if (virStreamSparseRecvAll(st, virshStreamSink, virshStreamSkip, &fd) < 0) {
         vshError(ctl, _("cannot receive data from volume %s"), name);
         goto cleanup;
     }

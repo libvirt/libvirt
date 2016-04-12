@@ -3943,12 +3943,13 @@ regarding possible target volume and pool changes as a result of the
 pool refresh when the upload is attempted.
 
 =item B<vol-download> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
-[I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>
+[I<--length> I<bytes>] [I<--sparse>] I<vol-name-or-key-or-path> I<local-file>
 
 Download the contents of a storage volume to I<local-file>.
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
 is in.
 I<vol-name-or-key-or-path> is the name or key or path of the volume to download.
+If I<--sparse> is specified, this command will preserve volume sparseness.
 I<--offset> is the position in the storage volume at which to start reading
 the data. The value must be 0 or larger. I<--length> is an upper bound of
 the amount of data to be downloaded. A negative value is interpreted as

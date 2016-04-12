@@ -153,6 +153,24 @@ virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
 }
 
 
+int
+virshStreamSkip(virStreamPtr st ATTRIBUTE_UNUSED,
+                long long offset,
+                void *opaque)
+{
+    int *fd = opaque;
+    off_t cur;
+
+    if ((cur = lseek(*fd, offset, SEEK_CUR)) == (off_t) -1)
+        return -1;
+
+    if (ftruncate(*fd, cur) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 void
 virshDomainFree(virDomainPtr dom)
 {
