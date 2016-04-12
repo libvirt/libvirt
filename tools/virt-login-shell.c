@@ -220,6 +220,7 @@ main(int argc, char **argv)
     size_t i;
     const char *cmdstr = NULL;
     char *tmp;
+    char *term = NULL;
     virErrorPtr saved_err = NULL;
 
     struct option opt[] = {
@@ -231,8 +232,6 @@ main(int argc, char **argv)
         fprintf(stderr, _("Failed to initialize libvirt error handling"));
         return EXIT_CANCELED;
     }
-
-    setenv("PATH", "/bin:/usr/bin", 1);
 
     virSetErrorFunc(NULL, NULL);
     virSetErrorLogPriorityFunc(NULL);
@@ -369,6 +368,12 @@ main(int argc, char **argv)
         goto cleanup;
     shargv[0][0] = '-';
 
+    /* We're duping the string because the clearenv()
+     * call will shortly release the pointer we get
+     * back from virGetEnvAllowSUID() right here */
+    if (VIR_STRDUP(term, virGetEnvAllowSUID("TERM")) < 0)
+        goto cleanup;
+
     /* A fork is required to create new process in correct pid namespace.  */
     if ((cpid = virFork()) < 0)
         goto cleanup;
@@ -380,6 +385,16 @@ main(int argc, char **argv)
             tmpfd = i;
             VIR_MASS_CLOSE(tmpfd);
         }
+
+        clearenv();
+        setenv("PATH", "/bin:/usr/bin", 1);
+        setenv("SHELL", shcmd, 1);
+        setenv("USER", name, 1);
+        setenv("LOGNAME", name, 1);
+        setenv("HOME", homedir, 1);
+        if (term)
+            setenv("TERM", term, 1);
+
         if (execv(shcmd, (char *const*) shargv) < 0) {
             virReportSystemError(errno, _("Unable to exec shell %s"),
                                  shcmd);
@@ -404,6 +419,7 @@ main(int argc, char **argv)
         virConnectClose(conn);
     virStringFreeList(shargv);
     VIR_FREE(shcmd);
+    VIR_FREE(term);
     VIR_FREE(name);
     VIR_FREE(homedir);
     VIR_FREE(seclabel);
