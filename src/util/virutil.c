@@ -757,7 +757,7 @@ virGetUserDirectory(void)
 /* Look up fields from the user database for the given user.  On
  * error, set errno, report the error, and return -1.  */
 static int
-virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir)
+virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell)
 {
     char *strbuf;
     struct passwd pwbuf;
@@ -771,6 +771,8 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir)
         *name = NULL;
     if (dir)
         *dir = NULL;
+    if (shell)
+        *shell = NULL;
 
     /* sysconf is a hint; if it fails, fall back to a reasonable size */
     if (val < 0)
@@ -806,14 +808,21 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir)
         goto cleanup;
     if (group)
         *group = pw->pw_gid;
-    if (dir && VIR_STRDUP(*dir, pw->pw_dir) < 0) {
-        if (name)
-            VIR_FREE(*name);
+    if (dir && VIR_STRDUP(*dir, pw->pw_dir) < 0)
         goto cleanup;
-    }
+    if (shell && VIR_STRDUP(*shell, pw->pw_shell) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
+    if (ret < 0) {
+        if (name)
+            VIR_FREE(*name);
+        if (dir)
+            VIR_FREE(*dir);
+        if (shell)
+            VIR_FREE(*shell);
+    }
     VIR_FREE(strbuf);
     return ret;
 }
@@ -873,7 +882,15 @@ char *
 virGetUserDirectoryByUID(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(uid, NULL, NULL, &ret);
+    virGetUserEnt(uid, NULL, NULL, &ret, NULL);
+    return ret;
+}
+
+
+char *virGetUserShell(uid_t uid)
+{
+    char *ret;
+    virGetUserEnt(uid, NULL, NULL, NULL, &ret);
     return ret;
 }
 
@@ -923,7 +940,7 @@ char *virGetUserRuntimeDirectory(void)
 char *virGetUserName(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(uid, &ret, NULL, NULL);
+    virGetUserEnt(uid, &ret, NULL, NULL, NULL);
     return ret;
 }
 
@@ -1109,7 +1126,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     if (uid == (uid_t)-1)
         return 0;
 
-    if (virGetUserEnt(uid, &user, &primary, NULL) < 0)
+    if (virGetUserEnt(uid, &user, &primary, NULL, NULL) < 0)
         return -1;
 
     ret = mgetgroups(user, primary, list);
@@ -1284,6 +1301,15 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 }
 
 char *
+virGetUserShell(uid_t uid ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserShell is not available"));
+
+    return NULL;
+}
+
+char *
 virGetUserConfigDirectory(void)
 {
     char *ret;
@@ -1325,6 +1351,15 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserDirectory is not available"));
+
+    return NULL;
+}
+
+char *
+virGetUserShell(uid_t uid ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   "%s", _("virGetUserShell is not available"));
 
     return NULL;
 }

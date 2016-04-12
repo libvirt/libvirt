@@ -139,6 +139,7 @@ char *virGetUserDirectoryByUID(uid_t uid);
 char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);
+char *virGetUserShell(uid_t uid);
 char *virGetUserName(uid_t uid);
 char *virGetGroupName(gid_t gid);
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)

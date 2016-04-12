@@ -2516,6 +2516,7 @@ virGetUserDirectoryByUID;
 virGetUserID;
 virGetUserName;
 virGetUserRuntimeDirectory;
+virGetUserShell;
 virHexToBin;
 virIndexToDiskName;
 virIsCapableFCHost;
