@@ -339,15 +339,17 @@ mymain(void)
     EXEC_RESTART_TEST("admin-server-names", 2);
     EXEC_RESTART_TEST("no-keepalive-required", 2);
     EXEC_RESTART_TEST("client-ids", 1);
+    EXEC_RESTART_TEST("client-timestamp", 1);
     EXEC_RESTART_TEST_FAIL("anon-clients", 2);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetdaemonmock.so")
 #else
 static int
 mymain(void)
 {
     return EXIT_AM_SKIP;
 }
-#endif
 VIRT_TEST_MAIN(mymain);
+#endif

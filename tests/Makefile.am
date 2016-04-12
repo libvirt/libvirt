@@ -408,6 +408,7 @@ EXTRA_DIST += $(test_scripts)
 
 test_libraries = libshunload.la \
 		virportallocatormock.la \
+		virnetdaemonmock.la \
 		virnetserverclientmock.la \
 		vircgroupmock.la \
 		virpcimock.la \
@@ -926,6 +927,12 @@ virnetdaemontest_SOURCES = \
 	testutils.h testutils.c
 virnetdaemontest_CFLAGS = $(XDR_CFLAGS) $(AM_CFLAGS)
 virnetdaemontest_LDADD = $(LDADDS)
+
+virnetdaemonmock_la_SOURCES = \
+	virnetdaemonmock.c
+virnetdaemonmock_la_CFLAGS = $(AM_CFLAGS)
+virnetdaemonmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virnetdaemonmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 virnetserverclienttest_SOURCES = \
 	virnetserverclienttest.c \

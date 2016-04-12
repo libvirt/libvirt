@@ -85,6 +85,13 @@ struct _virNetServerClient
 
     virIdentityPtr identity;
 
+    /* Connection timestamp, i.e. when a client connected to the daemon (UTC).
+     * For old clients restored by post-exec-restart, which did not have this
+     * attribute, value of 0 (epoch time) is used to indicate we have no
+     * information about their connection time.
+     */
+    time_t conn_time;
+
     /* Count of messages in the 'tx' queue,
      * and the server worker pool queue
      * ie RPC calls in progress. Does not count
@@ -355,7 +362,8 @@ virNetServerClientNewInternal(unsigned long long id,
                               virNetTLSContextPtr tls,
 #endif
                               bool readonly,
-                              size_t nrequests_max)
+                              size_t nrequests_max,
+                              time_t timestamp)
 {
     virNetServerClientPtr client;
 
@@ -373,6 +381,7 @@ virNetServerClientNewInternal(unsigned long long id,
     client->tlsCtxt = virObjectRef(tls);
 #endif
     client->nrequests_max = nrequests_max;
+    client->conn_time = timestamp;
 
     client->sockTimer = virEventAddTimeout(-1, virNetServerClientSockTimerFunc,
                                            client, NULL);
@@ -413,6 +422,7 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             void *privOpaque)
 {
     virNetServerClientPtr client;
+    time_t now;
 
     VIR_DEBUG("sock=%p auth=%d tls=%p", sock, auth,
 #ifdef WITH_GNUTLS
@@ -422,11 +432,17 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
 #endif
         );
 
+    if ((now = time(NULL)) == (time_t) - 1) {
+        virReportSystemError(errno, "%s", _("failed to get current time"));
+        return NULL;
+    }
+
     if (!(client = virNetServerClientNewInternal(id, sock, auth,
 #ifdef WITH_GNUTLS
                                                  tls,
 #endif
-                                                 readonly, nrequests_max)))
+                                                 readonly, nrequests_max,
+                                                 now)))
         return NULL;
 
     if (privNew) {
@@ -456,6 +472,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
     bool readonly;
     unsigned int nrequests_max;
     unsigned long long id;
+    time_t timestamp;
 
     if (virJSONValueObjectGetNumberInt(object, "auth", &auth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -492,6 +509,18 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
         }
     }
 
+    if (!virJSONValueObjectHasKey(object, "conn_time")) {
+        timestamp = 0;
+    } else {
+        if (virJSONValueObjectGetNumberLong(object, "conn_time",
+                                            (long long *) &timestamp) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed conn_time field in JSON "
+                             "state document"));
+            return NULL;
+        }
+    }
+
     if (!(sock = virNetSocketNewPostExecRestart(child))) {
         virObjectUnref(sock);
         return NULL;
@@ -504,7 +533,8 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
                                                  NULL,
 #endif
                                                  readonly,
-                                                 nrequests_max))) {
+                                                 nrequests_max,
+                                                 timestamp))) {
         virObjectUnref(sock);
         return NULL;
     }
@@ -550,6 +580,11 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
     if (virJSONValueObjectAppendBoolean(object, "readonly", client->readonly) < 0)
         goto error;
     if (virJSONValueObjectAppendNumberUint(object, "nrequests_max", client->nrequests_max) < 0)
+        goto error;
+
+    if (client->conn_time &&
+        virJSONValueObjectAppendNumberLong(object, "conn_time",
+                                           client->conn_time) < 0)
         goto error;
 
     if (!(child = virNetSocketPreExecRestart(client->sock)))
@@ -608,6 +643,11 @@ bool virNetServerClientGetReadonly(virNetServerClientPtr client)
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client)
 {
     return client->id;
+}
+
+long long virNetServerClientGetTimestamp(virNetServerClientPtr client)
+{
+    return client->conn_time;
 }
 
 #ifdef WITH_GNUTLS

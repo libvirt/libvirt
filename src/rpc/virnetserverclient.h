@@ -82,6 +82,7 @@ int virNetServerClientGetAuth(virNetServerClientPtr client);
 void virNetServerClientSetAuth(virNetServerClientPtr client, int auth);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client);
+long long virNetServerClientGetTimestamp(virNetServerClientPtr client);
 
 # ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
