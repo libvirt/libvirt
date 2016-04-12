@@ -220,6 +220,7 @@ main(int argc, char **argv)
     size_t i;
     const char *cmdstr = NULL;
     char *tmp;
+    virErrorPtr saved_err = NULL;
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
@@ -390,6 +391,8 @@ main(int argc, char **argv)
     /* At this point, the parent is now waiting for the child to exit,
      * but as that may take a long time, we release resources now.  */
  cleanup:
+    saved_err = virSaveLastError();
+
     if (nfdlist > 0)
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
@@ -410,7 +413,9 @@ main(int argc, char **argv)
     if (virProcessWait(cpid, &status, true) == 0)
         virProcessExitWithStatus(status);
 
-    if (virGetLastError())
+    if (saved_err) {
+        virSetError(saved_err);
         virDispatchError(NULL);
+    }
     return ret;
 }
