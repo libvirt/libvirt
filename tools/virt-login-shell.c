@@ -100,6 +100,25 @@ static int virLoginShellAllowedUser(virConfPtr conf,
     return ret;
 }
 
+static int virLoginShellGetAutoShell(virConfPtr conf,
+                                     bool *autoshell)
+{
+    virConfValuePtr p;
+
+    p = virConfGetValue(conf, "auto_shell");
+    if (!p) {
+        *autoshell = false;
+    } else if (p->type == VIR_CONF_LONG ||
+               p->type == VIR_CONF_ULONG) {
+        *autoshell = (p->l != 0);
+    } else {
+        virReportSystemError(EINVAL, "%s",
+                             _("auto_shell must be a boolean value"));
+        return -1;
+    }
+    return 0;
+}
+
 static int virLoginShellGetShellArgv(virConfPtr conf,
                                      char ***retshargv,
                                      size_t *retshargvlen)
@@ -222,6 +241,7 @@ main(int argc, char **argv)
     char *tmp;
     char *term = NULL;
     virErrorPtr saved_err = NULL;
+    bool autoshell = false;
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
@@ -292,6 +312,9 @@ main(int argc, char **argv)
     if (virLoginShellGetShellArgv(conf, &shargv, &shargvlen) < 0)
         goto cleanup;
 
+    if (virLoginShellGetAutoShell(conf, &autoshell) < 0)
+        goto cleanup;
+
     conn = virConnectOpen("lxc:///");
     if (!conn)
         goto cleanup;
@@ -340,6 +363,20 @@ main(int argc, char **argv)
     if (chdir(homedir) < 0) {
         virReportSystemError(errno, _("Unable to chdir(%s)"), homedir);
         goto cleanup;
+    }
+
+    if (autoshell) {
+        tmp = virGetUserShell(uid);
+        if (tmp) {
+            virStringFreeList(shargv);
+            shargvlen = 1;
+            if (VIR_ALLOC_N(shargv[0], shargvlen + 1) < 0) {
+                VIR_FREE(tmp);
+                goto cleanup;
+            }
+            shargv[0] = tmp;
+            shargv[1] = NULL;
+        }
     }
 
     if (cmdstr) {

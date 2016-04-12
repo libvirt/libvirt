@@ -46,6 +46,13 @@ You can modify this behaviour by defining the shell variable in
 
 eg.  shell = [ "/bin/bash" ]
 
+If the 'auto_shell' config option is set then it will attempt to automatically
+detect the shell from /etc/password inside the container. This should only be
+done if the container has a separate /etc directory from the host, otherwise
+it will end up recursively invoking virt-login-shell.
+
+eg. auto_shell = 1
+
 By default no users are allowed to use virt-login-shell, if you want to allow
 certain users to use virt-login-shell, you need to modify the allowed_users
 variable in /etc/libvirt/virt-login-shell.conf.
