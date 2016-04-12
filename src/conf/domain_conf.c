@@ -6693,7 +6693,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total throughput limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.total_bytes_sec = 0;
     }
@@ -6704,7 +6704,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("read throughput limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.read_bytes_sec = 0;
     }
@@ -6715,7 +6715,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("write throughput limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.write_bytes_sec = 0;
     }
@@ -6726,7 +6726,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total I/O operations limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.total_iops_sec = 0;
     }
@@ -6737,7 +6737,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("read I/O operations limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.read_iops_sec = 0;
     }
@@ -6748,7 +6748,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("write I/O operations limit must be an integer"));
-        goto error;
+        return -1;
     } else if (ret < 0) {
         def->blkdeviotune.write_iops_sec = 0;
     }
@@ -6803,7 +6803,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total and read/write bytes_sec "
                          "cannot be set at the same time"));
-        goto error;
+        return -1;
     }
 
     if ((def->blkdeviotune.total_iops_sec &&
@@ -6813,7 +6813,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total and read/write iops_sec "
                          "cannot be set at the same time"));
-        goto error;
+        return -1;
     }
 
     if ((def->blkdeviotune.total_bytes_sec_max &&
@@ -6823,7 +6823,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total and read/write bytes_sec_max "
                          "cannot be set at the same time"));
-        goto error;
+        return -1;
     }
 
     if ((def->blkdeviotune.total_iops_sec_max &&
@@ -6833,13 +6833,10 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("total and read/write iops_sec_max "
                          "cannot be set at the same time"));
-        goto error;
+        return -1;
     }
 
     return 0;
-
- error:
-    return ret;
 }
 
 
