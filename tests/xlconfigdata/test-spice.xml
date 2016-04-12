@@ -47,5 +47,8 @@
       <mouse mode='server'/>
       <clipboard copypaste='no'/>
     </graphics>
+    <video>
+      <model type='cirrus' heads='1' primary='yes'/>
+    </video>
   </devices>
 </domain>

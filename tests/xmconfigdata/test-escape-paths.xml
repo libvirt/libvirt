@@ -53,6 +53,9 @@
     </graphics>
     <sound model='sb16'/>
     <sound model='es1370'/>
+    <video>
+      <model type='cirrus' heads='1' primary='yes'/>
+    </video>
     <memballoon model='xen'/>
   </devices>
 </domain>

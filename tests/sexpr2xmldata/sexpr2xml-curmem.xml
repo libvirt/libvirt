@@ -34,6 +34,9 @@
     <input type='mouse' bus='xen'/>
     <input type='keyboard' bus='xen'/>
     <graphics type='vnc' port='-1' autoport='yes'/>
+    <video>
+      <model type='xen' heads='1' primary='yes'/>
+    </video>
     <memballoon model='xen'/>
   </devices>
 </domain>
