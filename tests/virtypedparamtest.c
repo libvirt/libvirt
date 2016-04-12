@@ -56,6 +56,7 @@ testTypedParamsValidate(const void *opaque)
             "foobar", VIR_TYPED_PARAM_STRING | test->foobar_flags,
             "foo", VIR_TYPED_PARAM_INT,
             "bar", VIR_TYPED_PARAM_UINT,
+            "zzz", VIR_TYPED_PARAM_UINT,
             NULL);
 
     if (test->expected_errcode) {
@@ -255,6 +256,19 @@ testTypedParamsValidator(void)
                 { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
                 { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
                 { .field = "foo",    .type = VIR_TYPED_PARAM_INT }
+            )
+            .expected_errcode = 0, .expected_errmessage = NULL,
+        },
+        {
+            .name = "BUG, non-duplicate marked as duplicate",
+            .foobar_flags = VIR_TYPED_PARAM_MULTIPLE,
+            PARAMS(
+                { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
+                { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
+                { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
+                { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
+                { .field = "foobar", .type = VIR_TYPED_PARAM_STRING },
+                { .field = "zzz",    .type = VIR_TYPED_PARAM_UINT },
             )
             .expected_errcode = 0, .expected_errmessage = NULL,
         },
