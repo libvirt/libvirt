@@ -36,7 +36,6 @@
 #include <signal.h>
 #include <getopt.h>
 #include <sys/mount.h>
-#include <locale.h>
 #include <grp.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -66,6 +65,7 @@
 #include "virdbus.h"
 #include "rpc/virnetdaemon.h"
 #include "virstring.h"
+#include "virgettext.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -2505,9 +2505,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
         ns_fd[i] = -1;
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL ||
+    if (virGettextInitialize() < 0 ||
         virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);

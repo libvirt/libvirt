@@ -1513,6 +1513,10 @@ virFirewallStartRollback;
 virFirewallStartTransaction;
 
 
+# util/virgettext.h
+virGettextInitialize;
+
+
 # util/virgic.h
 virGICVersionTypeFromString;
 virGICVersionTypeToString;

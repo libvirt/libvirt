@@ -35,7 +35,6 @@
 #include <sys/time.h>
 #include "c-ctype.h"
 #include <fcntl.h>
-#include <locale.h>
 #include <time.h>
 #include <limits.h>
 #include <sys/stat.h>
@@ -55,7 +54,6 @@
 #include <libvirt/libvirt-qemu.h>
 #include <libvirt/libvirt-lxc.h>
 #include "virfile.h"
-#include "configmake.h"
 #include "virthread.h"
 #include "vircommand.h"
 #include "conf/domain_conf.h"

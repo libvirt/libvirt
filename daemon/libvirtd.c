@@ -30,7 +30,6 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <grp.h>
-#include <locale.h>
 
 #include "libvirt_internal.h"
 #include "virerror.h"
@@ -58,6 +57,7 @@
 #include "locking/lock_manager.h"
 #include "viraccessmanager.h"
 #include "virutil.h"
+#include "virgettext.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"
@@ -1172,9 +1172,7 @@ int main(int argc, char **argv) {
         {0, 0, 0, 0}
     };
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL ||
+    if (virGettextInitialize() < 0 ||
         virInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);

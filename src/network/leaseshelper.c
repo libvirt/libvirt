@@ -25,7 +25,6 @@
 
 #include <config.h>
 
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,6 +37,7 @@
 #include "virjson.h"
 #include "virlease.h"
 #include "configmake.h"
+#include "virgettext.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 
@@ -115,14 +115,8 @@ main(int argc, char **argv)
 
     program_name = argv[0];
 
-    if (setlocale(LC_ALL, "") == NULL ||
-        bindtextdomain(PACKAGE, LOCALEDIR) == NULL ||
-        textdomain(PACKAGE) == NULL) {
-        fprintf(stderr, _("%s: initialization failed\n"), program_name);
-        exit(EXIT_FAILURE);
-    }
-
-    if (virThreadInitialize() < 0 ||
+    if (virGettextInitialize() < 0 ||
+        virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), program_name);
         exit(EXIT_FAILURE);

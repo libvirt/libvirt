@@ -24,7 +24,6 @@
 #include <errno.h>
 #include <fnmatch.h>
 #include <getopt.h>
-#include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -41,6 +40,7 @@
 #include "virstring.h"
 #include "viralloc.h"
 #include "vircommand.h"
+#include "virgettext.h"
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 static const char *conf_file = SYSCONFDIR "/libvirt/virt-login-shell.conf";
@@ -207,18 +207,8 @@ main(int argc, char **argv)
     virSetErrorLogPriorityFunc(NULL);
 
     progname = argv[0];
-    if (!setlocale(LC_ALL, "")) {
-        perror("setlocale");
-        /* failure to setup locale is not fatal */
-    }
-    if (!bindtextdomain(PACKAGE, LOCALEDIR)) {
-        perror("bindtextdomain");
+    if (virGettextInitialize() < 0)
         return ret;
-    }
-    if (!textdomain(PACKAGE)) {
-        perror("textdomain");
-        return ret;
-    }
 
     while ((arg = getopt_long(argc, argv, "hV", opt, &longindex)) != -1) {
         switch (arg) {

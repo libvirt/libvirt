@@ -1037,6 +1037,15 @@ sc_prohibit_verbose_strcat:
 	halt='Use strcat(a, b) instead of strncat(a, b, strlen(b))' \
 	  $(_sc_search_regexp)
 
+# Ensure that each .c file containing a "main" function also
+# calls virGettextInitialize
+sc_gettext_init:
+	@require='virGettextInitialize *\('					\
+	in_vc_files='\.c$$'						\
+	containing='\<main *('						\
+	halt='the above files do not call virGettextInitialize'		\
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1133,7 +1142,9 @@ _test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|daemon/libvirtd|tools/virsh-console|tests/($(_test1)))\.c$$
 
-exclude_file_name_regexp--sc_bindtextdomain = ^(tests|examples)/
+exclude_file_name_regexp--sc_bindtextdomain = .*
+
+exclude_file_name_regexp--sc_gettext_init = ^(tests|examples)/
 
 exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
