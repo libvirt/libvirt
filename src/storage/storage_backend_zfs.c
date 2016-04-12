@@ -51,7 +51,7 @@ static int
 virStorageBackendZFSVolModeNeeded(void)
 {
     virCommandPtr cmd = NULL;
-    int ret = -1, exit = -1;
+    int ret = -1, exit_code = -1;
     char *error = NULL;
 
     /* 'zfs get' without arguments prints out
@@ -63,8 +63,8 @@ virStorageBackendZFSVolModeNeeded(void)
     virCommandAddEnvString(cmd, "LC_ALL=C");
     virCommandSetErrorBuffer(cmd, &error);
 
-    ret = virCommandRun(cmd, &exit);
-    if ((ret < 0) || (exit != 2)) {
+    ret = virCommandRun(cmd, &exit_code);
+    if ((ret < 0) || (exit_code != 2)) {
         VIR_WARN("Command 'zfs get' either failed "
                  "to run or exited with unexpected status");
         goto cleanup;

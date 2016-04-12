@@ -5943,7 +5943,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     int rc;
     qemuDomainJobInfoPtr jobInfo = NULL;
     bool inPostCopy = false;
-    bool kill = true;
+    bool doKill = true;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, retcode=%d",
@@ -6091,7 +6091,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
 
         if (inPostCopy) {
-            kill = false;
+            doKill = false;
             event = virDomainEventLifecycleNewFromObj(vm,
                                         VIR_DOMAIN_EVENT_RESUMED,
                                         VIR_DOMAIN_EVENT_RESUMED_POSTCOPY);
@@ -6151,7 +6151,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (!dom &&
         !(flags & VIR_MIGRATE_OFFLINE) &&
         virDomainObjIsActive(vm)) {
-        if (kill) {
+        if (doKill) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                             QEMU_ASYNC_JOB_MIGRATION_IN,
                             VIR_QEMU_PROCESS_STOP_MIGRATED);
