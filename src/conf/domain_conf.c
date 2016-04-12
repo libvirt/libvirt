@@ -6680,78 +6680,24 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+#define PARSE_IOTUNE(val)                                                      \
+    if (virXPathULongLong("string(./iotune/" #val ")",                         \
+                          ctxt, &def->blkdeviotune.val) == -2) {               \
+        virReportError(VIR_ERR_XML_ERROR,                                      \
+                       _("disk iotune field '%s' must be an integer"), #val);  \
+        return -1;                                                             \
+    }
 
 static int
 virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
                             xmlXPathContextPtr ctxt)
 {
-    int ret;
-
-    ret = virXPathULongLong("string(./iotune/total_bytes_sec)",
-                            ctxt,
-                            &def->blkdeviotune.total_bytes_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total throughput limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.total_bytes_sec = 0;
-    }
-
-    ret = virXPathULongLong("string(./iotune/read_bytes_sec)",
-                            ctxt,
-                            &def->blkdeviotune.read_bytes_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("read throughput limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.read_bytes_sec = 0;
-    }
-
-    ret = virXPathULongLong("string(./iotune/write_bytes_sec)",
-                            ctxt,
-                            &def->blkdeviotune.write_bytes_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("write throughput limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.write_bytes_sec = 0;
-    }
-
-    ret = virXPathULongLong("string(./iotune/total_iops_sec)",
-                            ctxt,
-                            &def->blkdeviotune.total_iops_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("total I/O operations limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.total_iops_sec = 0;
-    }
-
-    ret = virXPathULongLong("string(./iotune/read_iops_sec)",
-                            ctxt,
-                            &def->blkdeviotune.read_iops_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("read I/O operations limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.read_iops_sec = 0;
-    }
-
-    ret = virXPathULongLong("string(./iotune/write_iops_sec)",
-                            ctxt,
-                            &def->blkdeviotune.write_iops_sec);
-    if (ret == -2) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("write I/O operations limit must be an integer"));
-        return -1;
-    } else if (ret < 0) {
-        def->blkdeviotune.write_iops_sec = 0;
-    }
+    PARSE_IOTUNE(total_bytes_sec);
+    PARSE_IOTUNE(read_bytes_sec);
+    PARSE_IOTUNE(write_bytes_sec);
+    PARSE_IOTUNE(total_iops_sec);
+    PARSE_IOTUNE(read_iops_sec);
+    PARSE_IOTUNE(write_iops_sec);
 
     if (virXPathULongLong("string(./iotune/total_bytes_sec_max)",
                           ctxt,
@@ -6838,6 +6784,7 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
 
     return 0;
 }
+#undef PARSE_IOTUNE
 
 
 #define VENDOR_LEN  8
