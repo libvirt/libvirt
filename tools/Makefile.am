@@ -44,6 +44,7 @@ EXTRA_DIST = \
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
 	virt-sanlock-cleanup.8				\
+	virt-admin.pod					\
 	virt-login-shell.pod				\
 	virsh.pod					\
 	libvirt-guests.sysconf				\
