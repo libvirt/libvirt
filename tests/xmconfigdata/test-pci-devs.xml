@@ -48,6 +48,9 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes'/>
+    <video>
+      <model type='cirrus' heads='1' primary='yes'/>
+    </video>
     <hostdev mode='subsystem' type='pci' managed='no'>
       <source>
         <address domain='0x0001' bus='0x0c' slot='0x1b' function='0x2'/>

@@ -44,6 +44,9 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='vnc' port='-1' autoport='yes' keymap='ja'/>
+    <video>
+      <model type='cirrus' heads='1' primary='yes'/>
+    </video>
     <memballoon model='xen'/>
   </devices>
 </domain>
