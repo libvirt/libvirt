@@ -44,7 +44,7 @@ By default, virt-login-shell will execute the /bin/sh program for the user.
 You can modify this behaviour by defining the shell variable in
 /etc/libvirt/virt-login-shell.conf.
 
-eg.  shell = [ "/bin/ksh", "--login"]
+eg.  shell = [ "/bin/bash" ]
 
 By default no users are allowed to use virt-login-shell, if you want to allow
 certain users to use virt-login-shell, you need to modify the allowed_users

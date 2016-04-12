@@ -111,7 +111,7 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
 
     p = virConfGetValue(conf, "shell");
     if (!p) {
-        len = 2; /* /bin/sh -l */
+        len = 1; /* /bin/sh */
     } else if (p->type == VIR_CONF_LIST) {
         /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
@@ -135,8 +135,6 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
     i = 0;
     if (!p) {
         if (VIR_STRDUP(shargv[i++], "/bin/sh") < 0)
-            goto error;
-        if (VIR_STRDUP(shargv[i++], "-l") < 0)
             goto error;
     } else if (p->type == VIR_CONF_LIST) {
         for (pp = p->list; pp; pp = pp->next) {
@@ -201,6 +199,7 @@ main(int argc, char **argv)
     char *name = NULL;
     char **shargv = NULL;
     size_t shargvlen = 0;
+    char *shcmd = NULL;
     virSecurityModelPtr secmodel = NULL;
     virSecurityLabelPtr seclabel = NULL;
     virDomainPtr dom = NULL;
@@ -215,6 +214,7 @@ main(int argc, char **argv)
     int openmax;
     size_t i;
     const char *cmdstr = NULL;
+    char *tmp;
 
     struct option opt[] = {
         {"help", no_argument, NULL, 'h'},
@@ -347,6 +347,22 @@ main(int argc, char **argv)
         shargv[shargvlen] = NULL;
     }
 
+    /* We need to modify the first elementin shargv
+     * so that it has the relative filename and has
+     * a leading '-' to indicate it is a login shell
+     */
+    shcmd = shargv[0];
+    if (shcmd[0] != '/') {
+        virReportSystemError(errno,
+                             _("Shell '%s' should have absolute path"),
+                             shcmd);
+        goto cleanup;
+    }
+    tmp = strrchr(shcmd, '/');
+    if (VIR_STRDUP(shargv[0], tmp) < 0)
+        goto cleanup;
+    shargv[0][0] = '-';
+
     /* A fork is required to create new process in correct pid namespace.  */
     if ((cpid = virFork()) < 0)
         goto cleanup;
@@ -358,9 +374,9 @@ main(int argc, char **argv)
             tmpfd = i;
             VIR_MASS_CLOSE(tmpfd);
         }
-        if (execv(shargv[0], (char *const*) shargv) < 0) {
+        if (execv(shcmd, (char *const*) shargv) < 0) {
             virReportSystemError(errno, _("Unable to exec shell %s"),
-                                 shargv[0]);
+                                 shcmd);
             virDispatchError(NULL);
             return errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
         }
@@ -379,6 +395,7 @@ main(int argc, char **argv)
     if (conn)
         virConnectClose(conn);
     virStringFreeList(shargv);
+    VIR_FREE(shcmd);
     VIR_FREE(name);
     VIR_FREE(homedir);
     VIR_FREE(seclabel);
