@@ -329,9 +329,10 @@ vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
         return -1;
     }
 
-    if (disk->iomode) {
+    if (disk->iomode != VIR_DOMAIN_DISK_IO_DEFAULT &&
+        disk->iomode != VIR_DOMAIN_DISK_IO_NATIVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Setting disk io mode is not "
+                       _("Only native iomode is "
                          "supported by vz driver."));
         return -1;
     }
