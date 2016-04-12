@@ -69,7 +69,7 @@ EXTRA_DIST =						\
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug.in                             \
 	THREADS.txt					\
-	libvirtd.pod.in					\
+	libvirtd.pod					\
 	libvirtd.8.in					\
 	$(DAEMON_SOURCES)				\
 	$(LIBVIRTD_CONF_SOURCES)			\
@@ -160,13 +160,6 @@ augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
 
 CLEANFILES += test_libvirtd.aug
-
-libvirtd.8: libvirtd.8.in
-	$(AM_V_GEN)sed \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	mv $@-t $@
 
 libvirtd_SOURCES = $(DAEMON_SOURCES)
 
@@ -504,12 +497,18 @@ install-data-local: install-data-sasl
 uninstall-local:: uninstall-data-sasl
 endif ! WITH_LIBVIRTD
 
-POD2MAN = pod2man -c "Virtualization Support" \
-			-r "$(PACKAGE)-$(VERSION)" -s 8
+POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 
-libvirtd.8.in: libvirtd.pod.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@ \
-	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+%.8.in: %.pod
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@ \
+		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+
+%.8: %.8.in $(top_srcdir)/configure.ac
+	$(AM_V_GEN)sed \
+		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+		< $< > $@-t && \
+	mv $@-t $@
 
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional

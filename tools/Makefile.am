@@ -28,8 +28,6 @@ AM_LDFLAGS = \
 	$(NO_INDIRECT_LDFLAGS)					\
 	$(NULL)
 
-POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
-
 ICON_FILES = \
 	libvirt_win_icon_16x16.ico \
 	libvirt_win_icon_32x32.ico \
@@ -272,6 +270,8 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 	  --input-format rc --input $< \
 	  --output-format coff --output $@
 endif WITH_WIN_ICON
+
+POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 
 %.1.in: %.pod
 	$(AM_V_GEN)$(POD2MAN) $< $@ \

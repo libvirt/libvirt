@@ -2562,29 +2562,21 @@ virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
 	    chmod a+x $@-t &&					\
 	    mv $@-t $@
 
-POD2MAN = pod2man -c "Virtualization Support" \
-			-r "$(PACKAGE)-$(VERSION)" -s 8
+POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 
-virtlockd.8.in: locking/virtlockd.pod.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRTLOCKD $< $@ \
-	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+virtlockd.8.in: locking/virtlockd.pod
+	$(AM_V_GEN)$(POD2MAN) --section 8 $< $@ \
+		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
-virtlockd.8: virtlockd.8.in
+virtlogd.8.in: logging/virtlogd.pod
+	$(AM_V_GEN)$(POD2MAN) --section 8 $< $@ \
+		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+
+%.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	mv $@-t $@
-
-virtlogd.8.in: logging/virtlogd.pod.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --name VIRTLOGD $< $@ \
-	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
-
-virtlogd.8: virtlogd.8.in
-	$(AM_V_GEN)sed \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
+		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+		< $< > $@-t && \
 	mv $@-t $@
 
 if WITH_LIBVIRTD
@@ -2603,14 +2595,14 @@ MAINTAINERCLEANFILES += virtlockd.8.in virtlogd.8.in
 EXTRA_DIST += \
         locking/virtlockd.service.in \
         locking/virtlockd.socket.in \
-        locking/virtlockd.pod.in \
+        locking/virtlockd.pod \
         virtlockd.8.in \
         locking/virtlockd.aug \
         locking/virtlockd.conf \
         locking/test_virtlockd.aug.in \
         logging/virtlogd.service.in \
         logging/virtlogd.socket.in \
-        logging/virtlogd.pod.in \
+        logging/virtlogd.pod \
         virtlogd.8.in \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
