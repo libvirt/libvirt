@@ -2565,22 +2565,22 @@ virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
-$(srcdir)/virtlockd.8.in: locking/virtlockd.pod.in $(top_srcdir)/configure.ac
+virtlockd.8.in: locking/virtlockd.pod.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRTLOCKD $< $@ \
 	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
-virtlockd.8: $(srcdir)/virtlockd.8.in
+virtlockd.8: virtlockd.8.in
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \
 	mv $@-t $@
 
-$(srcdir)/virtlogd.8.in: logging/virtlogd.pod.in $(top_srcdir)/configure.ac
+virtlogd.8.in: logging/virtlogd.pod.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name VIRTLOGD $< $@ \
 	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
-virtlogd.8: $(srcdir)/virtlogd.8.in
+virtlogd.8: virtlogd.8.in
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
@@ -2598,7 +2598,7 @@ endif WITH_LIBVIRTD
 
 CLEANFILES += test_virtlockd.aug virtlockd.8 \
 	      test_virtlogd.aug virtlogd.8
-MAINTAINERCLEANFILES += $(srcdir)/virtlockd.8.in $(srcdir)/virtlogd.8.in
+MAINTAINERCLEANFILES += virtlockd.8.in virtlogd.8.in
 
 EXTRA_DIST += \
         locking/virtlockd.service.in \

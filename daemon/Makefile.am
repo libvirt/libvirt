@@ -161,7 +161,7 @@ augeastests_DATA = test_libvirtd.aug
 
 CLEANFILES += test_libvirtd.aug
 
-libvirtd.8: $(srcdir)/libvirtd.8.in
+libvirtd.8: libvirtd.8.in
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
@@ -507,7 +507,7 @@ endif ! WITH_LIBVIRTD
 POD2MAN = pod2man -c "Virtualization Support" \
 			-r "$(PACKAGE)-$(VERSION)" -s 8
 
-$(srcdir)/libvirtd.8.in: libvirtd.pod.in $(top_srcdir)/configure.ac
+libvirtd.8.in: libvirtd.pod.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)$(POD2MAN) --name LIBVIRTD $< $@ \
 	    && if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
@@ -530,4 +530,4 @@ endif ! WITH_SASL
 
 CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-MAINTAINERCLEANFILES = $(srcdir)/libvirtd.8.in $(DAEMON_GENERATED)
+MAINTAINERCLEANFILES = libvirtd.8.in $(DAEMON_GENERATED)

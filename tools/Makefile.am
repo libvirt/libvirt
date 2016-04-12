@@ -267,14 +267,12 @@ virsh_win_icon.$(OBJEXT): virsh_win_icon.rc
 endif WITH_WIN_ICON
 
 %.1: %.pod $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) $< $(srcdir)/$@ \
-		&& if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
+	$(AM_V_GEN)$(POD2MAN) $< $@ \
+		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
 %.8: %.pod $(top_srcdir)/configure.ac
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $(srcdir)/$@ \
-		&& if grep 'POD ERROR' $(srcdir)/$@ ; then \
-		rm $(srcdir)/$@; exit 1; fi
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@ \
+		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
 
 install-data-local: install-init install-systemd
 
