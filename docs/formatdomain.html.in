@@ -6116,31 +6116,28 @@ qemu-kvm -net nic,model=? /dev/null
           to be used for the domain. The source model is configured using the
           <code>model</code> attribute. Supported source models are:
         </p>
-        <ul>
-          <li>'random' &mdash; /dev/random (default) or /dev/hwrng
-            device as source (for now, no other sources are permitted)</li>
-          <li>'egd' &mdash; a EGD protocol backend</li>
-        </ul>
+        <dl>
+          <dt><code>random</code></dt>
+          <dd>
+            <p>
+              This backend type expects a non-blocking character device as
+              input. The file name is specified as contents of the
+              <code>backend</code> element. When no file name is specified
+              the hypervisor default is used. For qemu, the default is
+              /dev/random
+            </p>
+          </dd>
+          <dt><code>egd</code></dt>
+          <dd>
+            <p>
+              This backend connects to a source using the EGD protocol.
+              The source is specified as a character device. Refer to
+              <a href='#elementsCharHostInterface'>character device host interface</a>
+              for more information.
+            </p>
+          </dd>
+        </dl>
       </dd>
-      <dt><code>backend model='random'</code></dt>
-      <dd>
-        <p>
-          This backend type expects a non-blocking character device as input.
-          The only accepted paths are /dev/random and /dev/hwrng. The file
-          name is specified as contents of the <code>backend</code> element.
-          When no file name is specified the hypervisor default is used.
-        </p>
-      </dd>
-      <dt><code>backend model='egd'</code></dt>
-      <dd>
-        <p>
-          This backend connects to a source using the EGD protocol.
-          The source is specified as a character device. Refer to
-          <a href='#elementsCharHostInterface'>character device host interface</a>
-          for more information.
-        </p>
-      </dd>
-
     </dl>
 
     <h4><a name="elementsTpm">TPM device</a></h4>

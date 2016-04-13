@@ -18,6 +18,6 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
--object rng-random,id=objrng0,filename=/dev/hwrng \
+-object rng-random,id=objrng0,filename=/dev/urandom \
 -device virtio-rng-pci,rng=objrng0,id=rng0,max-bytes=123,period=1234,bus=pci.0,\
 addr=0x4

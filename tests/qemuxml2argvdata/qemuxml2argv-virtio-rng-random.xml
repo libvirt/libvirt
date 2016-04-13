@@ -21,7 +21,7 @@
     <memballoon model='virtio'/>
     <rng model='virtio'>
       <rate bytes='123' period='1234'/>
-      <backend model='random'>/dev/hwrng</backend>
+      <backend model='random'>/dev/urandom</backend>
     </rng>
   </devices>
 </domain>
