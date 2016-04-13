@@ -293,6 +293,10 @@ virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
             goto error;
         }
 
+        if (virJSONValueObjectKeysNumber(dmn->srvObject) == 0) {
+            virJSONValueFree(dmn->srvObject);
+            dmn->srvObject = NULL;
+        }
     }
 
     srv = virNetServerNewPostExecRestart(object,
