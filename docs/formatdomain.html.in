@@ -991,6 +991,10 @@
     &lt;device&gt;
       &lt;path&gt;/dev/sdb&lt;/path&gt;
       &lt;weight&gt;500&lt;/weight&gt;
+      &lt;read_bytes_sec&gt;10000&lt;/read_bytes_sec&gt;
+      &lt;write_bytes_sec&gt;10000&lt;/write_bytes_sec&gt;
+      &lt;read_iops_sec&gt;20000&lt;/read_iops_sec&gt;
+      &lt;write_iops_sec&gt;20000&lt;/write_iops_sec&gt;
     &lt;/device&gt;
   &lt;/blkiotune&gt;
   ...
@@ -1025,8 +1029,22 @@
         absolute path of the device, and <code>weight</code> giving
         the relative weight of that device, in the range [100,
         1000]. After kernel 2.6.39, the value could be in the
-        range [10, 1000].<span class="since">Since 0.9.8</span></dd>
-    </dl>
+        range [10, 1000]. <span class="since">Since 0.9.8</span><br/>
+        Additionally, the following optional sub-elements can be used:
+        <dl>
+          <dt><code>read_bytes_sec</code></dt>
+          <dd>Read throughput limit in bytes per second.
+            <span class="since">Since 1.2.2</span></dd>
+          <dt><code>write_bytes_sec</code></dt>
+          <dd>Write throughput limit in bytes per second.
+            <span class="since">Since 1.2.2</span></dd>
+          <dt><code>read_iops_sec</code></dt>
+          <dd>Read I/O operations per second limit.
+            <span class="since">Since 1.2.2</span></dd>
+          <dt><code>write_iops_sec</code></dt>
+          <dd>Write I/O operations per second limit.
+            <span class="since">Since 1.2.2</span></dd>
+      </dl></dd></dl>
 
 
     <h3><a name="resPartition">Resource partitioning</a></h3>
