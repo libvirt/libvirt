@@ -18,27 +18,6 @@
 
 int run = 1;
 
-/* Prototypes */
-const char *eventToString(int event);
-int myEventAddHandleFunc  (int fd, int event,
-                           virEventHandleCallback cb,
-                           void *opaque,
-                           virFreeCallback ff);
-void myEventUpdateHandleFunc(int watch, int event);
-int  myEventRemoveHandleFunc(int watch);
-
-int myEventAddTimeoutFunc(int timeout,
-                          virEventTimeoutCallback cb,
-                          void *opaque,
-                          virFreeCallback ff);
-void myEventUpdateTimeoutFunc(int timer, int timout);
-int myEventRemoveTimeoutFunc(int timer);
-
-int myEventHandleTypeToPollEvent(virEventHandleType events);
-virEventHandleType myPollEventToEventHandleType(int events);
-
-void usage(const char *pname);
-
 /* Callback functions */
 
 
