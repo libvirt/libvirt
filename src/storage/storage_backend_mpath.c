@@ -114,12 +114,7 @@ virStorageBackendIsMultipath(const char *dev_name)
 
     dm_get_next_target(dmt, next, &start, &length, &target_type, &params);
 
-    if (target_type == NULL) {
-        ret = -1;
-        goto out;
-    }
-
-    if (STREQ(target_type, "multipath"))
+    if (STREQ_NULLABLE(target_type, "multipath"))
         ret = 1;
 
  out:
