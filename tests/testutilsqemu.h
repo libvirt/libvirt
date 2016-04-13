@@ -2,8 +2,8 @@
 
 # include "capabilities.h"
 # include "domain_conf.h"
-# include "qemu/qemu_command.h"
 # include "qemu/qemu_capabilities.h"
+# include "qemu/qemu_conf.h"
 
 virCapsPtr testQemuCapsInit(void);
 virDomainXMLOptionPtr testQemuXMLConfInit(void);
