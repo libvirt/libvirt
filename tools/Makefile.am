@@ -77,6 +77,7 @@ EXTRA_DIST = \
 
 CLEANFILES =
 DISTCLEANFILES =
+MAINTAINERCLEANFILES =
 
 confdir = $(sysconfdir)/libvirt
 conf_DATA =
@@ -499,3 +500,5 @@ CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 CLEANFILES += $(man1_MANS) $(man8_MANS)
 
 DISTCLEANFILES += $(BUILT_SOURCES)
+
+MAINTAINERCLEANFILES += $(MANINFILES)
