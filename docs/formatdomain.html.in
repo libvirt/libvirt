@@ -6244,10 +6244,10 @@ qemu-kvm -net nic,model=? /dev/null
           <dd>
             <p>
               This backend type expects a non-blocking character device as
-              input. The only accepted paths are /dev/random and /dev/hwrng.
-              The file name is specified as contents of the
+              input. The file name is specified as contents of the
               <code>backend</code> element. When no file name is specified
-              the hypervisor default is used.
+              the hypervisor default is used. For qemu, the default is
+              /dev/random
             </p>
           </dd>
           <dt><code>egd</code></dt>
