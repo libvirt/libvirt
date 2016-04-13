@@ -62,6 +62,7 @@ EXTRA_DIST = \
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
 	libvirt-guests.sysconf				\
+	virt-login-shell.conf				\
 	virsh-edit.c					\
 	virsh-domain.c					\
 	virsh-domain-monitor.c				\
@@ -101,10 +102,7 @@ if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 bin_PROGRAMS += virt-login-shell
 man1_MANS += virt-login-shell.1
-else ! WITH_LOGIN_SHELL
-EXTRA_DIST += \
-		virt-login-shell.conf
-endif ! WITH_LOGIN_SHELL
+endif WITH_LOGIN_SHELL
 
 if WITH_HOST_VALIDATE
 bin_PROGRAMS += virt-host-validate
