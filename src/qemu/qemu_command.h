@@ -42,18 +42,6 @@
 
 VIR_ENUM_DECL(qemuVideo)
 
-typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
-typedef qemuBuildCommandLineCallbacks *qemuBuildCommandLineCallbacksPtr;
-struct _qemuBuildCommandLineCallbacks {
-    char *(*qemuGetSCSIDeviceSgName) (const char *sysfs_prefix,
-                                      const char *adapter,
-                                      unsigned int bus,
-                                      unsigned int target,
-                                      unsigned long long unit);
-};
-
-extern qemuBuildCommandLineCallbacks buildCommandLineCallbacks;
-
 char *qemuBuildObjectCommandlineFromJSON(const char *type,
                                          const char *alias,
                                          virJSONValuePtr props);
@@ -68,7 +56,6 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    const char *migrateURI,
                                    virDomainSnapshotObjPtr snapshot,
                                    virNetDevVPortProfileOp vmop,
-                                   qemuBuildCommandLineCallbacksPtr callbacks,
                                    bool standalone,
                                    bool enableFips,
                                    virBitmapPtr nodeset,
@@ -182,9 +169,8 @@ char *qemuBuildUSBHostdevDevStr(const virDomainDef *def,
 
 char *qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
                                  virDomainHostdevDefPtr dev,
-                                 virQEMUCapsPtr qemuCaps,
-                                 qemuBuildCommandLineCallbacksPtr callbacks)
-    ATTRIBUTE_NONNULL(4);
+                                 virQEMUCapsPtr qemuCaps);
+
 char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                                  virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);

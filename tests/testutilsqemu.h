@@ -7,7 +7,6 @@
 
 virCapsPtr testQemuCapsInit(void);
 virDomainXMLOptionPtr testQemuXMLConfInit(void);
-extern qemuBuildCommandLineCallbacks testCallbacks;
 
 virQEMUCapsPtr qemuTestParseCapabilities(const char *capsFile);
 

@@ -448,25 +448,6 @@ virCapsPtr testQemuCapsInit(void)
 }
 
 
-static char *
-testSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                        const char *adapter ATTRIBUTE_UNUSED,
-                        unsigned int bus ATTRIBUTE_UNUSED,
-                        unsigned int target ATTRIBUTE_UNUSED,
-                        unsigned long long unit ATTRIBUTE_UNUSED)
-{
-    char *sg = NULL;
-
-    if (VIR_STRDUP(sg, "sg0") < 0)
-        return NULL;
-
-    return sg;
-}
-
-qemuBuildCommandLineCallbacks testCallbacks = {
-    .qemuGetSCSIDeviceSgName = testSCSIDeviceGetSgName,
-};
-
 virQEMUCapsPtr
 qemuTestParseCapabilities(const char *capsFile)
 {

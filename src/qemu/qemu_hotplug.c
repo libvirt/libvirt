@@ -1968,8 +1968,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, priv->qemuCaps,
-                                              &buildCommandLineCallbacks)))
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev, priv->qemuCaps)))
         goto cleanup;
 
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))

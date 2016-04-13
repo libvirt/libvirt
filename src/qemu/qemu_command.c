@@ -4417,20 +4417,16 @@ qemuBuildUSBHostdevUSBDevStr(virDomainHostdevDefPtr dev)
 }
 
 static char *
-qemuBuildSCSIHostHostdevDrvStr(virDomainHostdevDefPtr dev,
-                               virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
-                               qemuBuildCommandLineCallbacksPtr callbacks)
+qemuBuildSCSIHostHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-    char *sg = NULL;
 
-    sg = (callbacks->qemuGetSCSIDeviceSgName)(NULL,
-                                              scsihostsrc->adapter,
-                                              scsihostsrc->bus,
-                                              scsihostsrc->target,
-                                              scsihostsrc->unit);
-    return sg;
+    return virSCSIDeviceGetSgName(NULL,
+                                  scsihostsrc->adapter,
+                                  scsihostsrc->bus,
+                                  scsihostsrc->target,
+                                  scsihostsrc->unit);
 }
 
 static char *
@@ -4475,8 +4471,7 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virConnectPtr conn,
 char *
 qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
                            virDomainHostdevDefPtr dev,
-                           virQEMUCapsPtr qemuCaps,
-                           qemuBuildCommandLineCallbacksPtr callbacks)
+                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *source = NULL;
@@ -4487,8 +4482,7 @@ qemuBuildSCSIHostdevDrvStr(virConnectPtr conn,
             goto error;
         virBufferAsprintf(&buf, "file=%s,if=none,format=raw", source);
     } else {
-        if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev, qemuCaps,
-                                                      callbacks)))
+        if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev)))
             goto error;
         virBufferAsprintf(&buf, "file=/dev/%s,if=none", source);
     }
@@ -4785,7 +4779,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                             virConnectPtr conn,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps,
-                            qemuBuildCommandLineCallbacksPtr callbacks,
                             unsigned int *bootHostdevNet)
 {
     size_t i;
@@ -4933,7 +4926,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
                 virCommandAddArg(cmd, "-drive");
                 if (!(drvstr = qemuBuildSCSIHostdevDrvStr(conn, hostdev,
-                                                          qemuCaps, callbacks)))
+                                                          qemuCaps)))
                     return -1;
                 virCommandAddArg(cmd, drvstr);
                 VIR_FREE(drvstr);
@@ -9167,10 +9160,6 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
 }
 
 
-qemuBuildCommandLineCallbacks buildCommandLineCallbacks = {
-    .qemuGetSCSIDeviceSgName = virSCSIDeviceGetSgName,
-};
-
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -9189,7 +9178,6 @@ qemuBuildCommandLine(virConnectPtr conn,
                      const char *migrateURI,
                      virDomainSnapshotObjPtr snapshot,
                      virNetDevVPortProfileOp vmop,
-                     qemuBuildCommandLineCallbacksPtr callbacks,
                      bool standalone,
                      bool enableFips,
                      virBitmapPtr nodeset,
@@ -9375,8 +9363,7 @@ qemuBuildCommandLine(virConnectPtr conn,
     if (qemuBuildRedirdevCommandLine(logManager, cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildHostdevCommandLine(cmd, conn, def, qemuCaps, callbacks,
-                                    &bootHostdevNet) < 0)
+    if (qemuBuildHostdevCommandLine(cmd, conn, def, qemuCaps, &bootHostdevNet) < 0)
         goto error;
 
     if (migrateURI)
