@@ -5213,7 +5213,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         goto cleanup;
 
     VIR_DEBUG("Create domain masterKey");
-    if (qemuDomainMasterKeyCreate(priv) < 0)
+    if (qemuDomainMasterKeyCreate(driver, vm) < 0)
         goto cleanup;
 
     ret = 0;

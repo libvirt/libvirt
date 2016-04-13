@@ -504,11 +504,13 @@ qemuDomainGetMasterKeyFilePath(const char *libDir)
  * Returns 0 on success, -1 on failure with error message indicating failure
  */
 static int
-qemuDomainWriteMasterKeyFile(qemuDomainObjPrivatePtr priv)
+qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm)
 {
     char *path;
     int fd = -1;
     int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
         return -1;
@@ -524,6 +526,10 @@ qemuDomainWriteMasterKeyFile(qemuDomainObjPrivatePtr priv)
                        _("failed to write master key file for domain"));
         goto cleanup;
     }
+
+    if (virSecurityManagerDomainSetDirLabel(driver->securityManager,
+                                            vm->def, path) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -697,8 +703,11 @@ qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv)
  * Returns: 0 on success, -1 w/ error message on failure
  */
 int
-qemuDomainMasterKeyCreate(qemuDomainObjPrivatePtr priv)
+qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     /* If we don't have the capability, then do nothing. */
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
@@ -709,7 +718,7 @@ qemuDomainMasterKeyCreate(qemuDomainObjPrivatePtr priv)
 
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
 
-    if (qemuDomainWriteMasterKeyFile(priv) < 0)
+    if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
         goto error;
 
     return 0;

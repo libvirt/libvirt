@@ -584,7 +584,8 @@ char *qemuDomainGetMasterKeyFilePath(const char *libDir);
 
 int qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv);
 
-int qemuDomainMasterKeyCreate(qemuDomainObjPrivatePtr priv);
+int qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm);
 
 void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 
