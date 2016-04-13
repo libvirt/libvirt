@@ -17,6 +17,7 @@ xdr_admin_server_get_threadpool_parameters_ret;
 xdr_admin_server_set_threadpool_parameters_args;
 
 # datatypes.h
+virAdmClientClass;
 virAdmConnectClass;
 virAdmGetServer;
 virAdmServerClass;

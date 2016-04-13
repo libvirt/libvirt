@@ -72,6 +72,14 @@ struct admin_nonnull_server {
     admin_nonnull_string name;
 };
 
+/* A client which may NOT be NULL */
+struct admin_nonnull_client {
+    admin_nonnull_server srv;
+    unsigned hyper id;
+    hyper timestamp;
+    unsigned int transport;
+};
+
 /*----- Protocol. -----*/
 
 struct admin_connect_open_args {

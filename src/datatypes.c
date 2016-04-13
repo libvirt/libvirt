@@ -66,7 +66,9 @@ static void virAdmConnectDispose(void *obj);
 static void virAdmConnectCloseCallbackDataDispose(void *obj);
 
 virClassPtr virAdmServerClass;
+virClassPtr virAdmClientClass;
 static void virAdmServerDispose(void *obj);
+static void virAdmClientDispose(void *obj);
 
 static int
 virDataTypesOnceInit(void)
@@ -98,6 +100,7 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS_LOCKABLE(virAdmConnect);
     DECLARE_CLASS_LOCKABLE(virAdmConnectCloseCallbackData);
     DECLARE_CLASS(virAdmServer);
+    DECLARE_CLASS(virAdmClient);
 
 #undef DECLARE_CLASS_COMMON
 #undef DECLARE_CLASS_LOCKABLE
@@ -961,4 +964,36 @@ virAdmServerDispose(void *obj)
 
     VIR_FREE(srv->name);
     virObjectUnref(srv->conn);
+}
+
+virAdmClientPtr
+virAdmGetClient(virAdmServerPtr srv, const unsigned long long id,
+                unsigned long long timestamp, unsigned int transport)
+{
+    virAdmClientPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        goto error;
+
+    if (!(ret = virObjectNew(virAdmClientClass)))
+        goto error;
+
+    ret->id = id;
+    ret->timestamp = timestamp;
+    ret->transport = transport;
+    ret->srv = virObjectRef(srv);
+
+    return ret;
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+static void
+virAdmClientDispose(void *obj)
+{
+    virAdmClientPtr clt = obj;
+    VIR_DEBUG("release client clt=%p, id=%llu", clt, clt->id);
+
+    virObjectUnref(clt->srv);
 }

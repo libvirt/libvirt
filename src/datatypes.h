@@ -43,6 +43,7 @@ extern virClassPtr virStoragePoolClass;
 
 extern virClassPtr virAdmConnectClass;
 extern virClassPtr virAdmServerClass;
+extern virClassPtr virAdmClientClass;
 
 # define virCheckConnectReturn(obj, retval)                             \
     do {                                                                \
@@ -342,6 +343,32 @@ extern virClassPtr virAdmServerClass;
         }                                                               \
     } while (0);
 
+# define virCheckAdmClientReturn(obj, retval)                           \
+    do {                                                                \
+        virAdmClientPtr _clt = (obj);                                   \
+        if (!virObjectIsClass(_clt, virAdmClientClass) ||               \
+            !virObjectIsClass(_clt->srv, virAdmServerClass) ||          \
+            !virObjectIsClass(_clt->srv->conn, virAdmConnectClass)) {   \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            return retval;                                              \
+        }                                                               \
+    } while (0)
+# define virCheckAdmClientGoto(obj, label)                              \
+    do {                                                                \
+        virAdmClientPtr _clt = (obj);                                   \
+        if (!virObjectIsClass(_clt, virAdmClientClass) ||               \
+            !virObjectIsClass(_clt->srv, virAdmServerClass) ||          \
+            !virObjectIsClass(_clt->srv->conn, virAdmConnectClass)) {   \
+            virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INVALID_CONN,   \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0);
+
 /**
  * VIR_DOMAIN_DEBUG:
  * @dom: domain
@@ -450,6 +477,21 @@ struct _virAdmServer {
     char *name;                     /* the server external name */
 };
 
+/**
+ * _virAdmClient:
+ *
+ * Internal structure associated to a client connected to daemon
+ */
+struct _virAdmClient {
+    virObject object;
+    virAdmServerPtr srv;            /* pointer to the server client is
+                                     * connected to, which also holds a
+                                     * reference back to the admin connection
+                                     */
+    unsigned long long id;          /* client's ID */
+    long long timestamp;            /* connection timestamp */
+    unsigned int transport;         /* connection type as virClientTransport */
+};
 
 /**
 * _virDomain:
@@ -636,6 +678,11 @@ virAdmConnectPtr virAdmConnectNew(void);
 
 virAdmServerPtr virAdmGetServer(virAdmConnectPtr conn,
                                 const char *name);
+
+virAdmClientPtr virAdmGetClient(virAdmServerPtr srv,
+                                unsigned long long id,
+                                unsigned long long timestamp,
+                                unsigned int transport);
 
 virConnectCloseCallbackDataPtr virNewConnectCloseCallbackData(void);
 void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr close,

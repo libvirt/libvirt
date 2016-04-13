@@ -600,6 +600,96 @@ int virAdmServerFree(virAdmServerPtr srv)
 }
 
 /**
+ * virAdmClientGetID:
+ * @client: a client object
+ *
+ * Get client's unique numeric ID.
+ *
+ * Returns numeric value used for client's ID or -1 in case of an error.
+ */
+unsigned long long
+virAdmClientGetID(virAdmClientPtr client)
+{
+    VIR_DEBUG("client=%p", client);
+
+    virResetLastError();
+    virCheckAdmClientReturn(client, -1);
+    return client->id;
+}
+
+/**
+ * virAdmClientGetTimestamp:
+ * @client: a client object
+ *
+ * Get client's connection time.
+ * A situation may happen, that some clients had connected prior to the update
+ * to admin API, thus, libvirt assigns these clients epoch time to express that
+ * it doesn't know when the client connected.
+ *
+ * Returns client's connection timestamp (seconds from epoch in UTC) or 0
+ * (epoch time) if libvirt doesn't have any information about client's
+ * connection time, or -1 in case of an error.
+ */
+long long
+virAdmClientGetTimestamp(virAdmClientPtr client)
+{
+    VIR_DEBUG("client=%p", client);
+
+    virResetLastError();
+    virCheckAdmClientReturn(client, -1);
+    return client->timestamp;
+}
+
+/**
+ * virAdmClientGetTransport:
+ * @client: a client object
+ *
+ * Get client's connection transport type. This information can be helpful to
+ * differentiate between clients connected locally or remotely. An exception to
+ * this would be SSH which is one of libvirt's supported transports.
+ * Although SSH creates a channel between two (preferably) remote endpoints,
+ * the client process libvirt spawns automatically on the remote side will
+ * still connect to a UNIX socket, thus becoming indistinguishable from any
+ * other locally connected clients.
+ *
+ * Returns integer representation of the connection transport used by @client
+ * (this will be one of virClientTransport) or -1 in case of an error.
+ */
+int
+virAdmClientGetTransport(virAdmClientPtr client)
+{
+    VIR_DEBUG("client=%p", client);
+
+    virResetLastError();
+    virCheckAdmClientReturn(client, -1);
+    return client->transport;
+}
+
+/**
+ * virAdmClientFree:
+ * @client: a client object
+ *
+ * Release the client object. The running instance is kept alive. The data
+ * structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in success, -1 on failure.
+ */
+int virAdmClientFree(virAdmClientPtr client)
+{
+    VIR_DEBUG("client=%p", client);
+
+    virResetLastError();
+
+    if (!client)
+        return 0;
+
+    virCheckAdmClientReturn(client, -1);
+
+    virObjectUnref(client);
+    return 0;
+}
+
+/**
  * virAdmConnectListServers:
  * @conn: daemon connection reference
  * @servers: Pointer to a list to store an array containing objects or NULL

@@ -12,6 +12,10 @@
 #
 LIBVIRT_ADMIN_1.3.0 {
     global:
+        virAdmClientFree;
+        virAdmClientGetID;
+        virAdmClientGetTimestamp;
+        virAdmClientGetTransport;
         virAdmConnectOpen;
         virAdmConnectClose;
         virAdmConnectRef;

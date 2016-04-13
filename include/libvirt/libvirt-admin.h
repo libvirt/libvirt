@@ -51,6 +51,14 @@ typedef struct _virAdmConnect virAdmConnect;
 typedef struct _virAdmServer virAdmServer;
 
 /**
+ * virAdmClient:
+ *
+ * a virAdmClient is a private structure and client-side representation of
+ * a remote server's client object (as server sees clients connected to it)
+ */
+typedef struct _virAdmClient virAdmClient;
+
+/**
  * virAdmConnectPtr:
  *
  * a virAdmConnectPtr is pointer to a virAdmConnect private structure,
@@ -67,6 +75,15 @@ typedef virAdmConnect *virAdmConnectPtr;
  * remote server object throughout all the APIs.
  */
 typedef virAdmServer *virAdmServerPtr;
+
+/**
+ * virAdmClientPtr:
+ *
+ * a virAdmClientPtr is a pointer to a virAdmClient structure,
+ * this is the type used to reference client-side representation of a
+ * client object throughout all the APIs.
+ */
+typedef virAdmClient *virAdmClientPtr;
 
 virAdmConnectPtr virAdmConnectOpen(const char *name, unsigned int flags);
 int virAdmConnectClose(virAdmConnectPtr conn);
@@ -181,6 +198,12 @@ int virAdmServerSetThreadPoolParameters(virAdmServerPtr srv,
                                         virTypedParameterPtr params,
                                         int nparams,
                                         unsigned int flags);
+
+/* virAdmClient object accessors */
+unsigned long long virAdmClientGetID(virAdmClientPtr client);
+long long virAdmClientGetTimestamp(virAdmClientPtr client);
+int virAdmClientGetTransport(virAdmClientPtr client);
+int virAdmClientFree(virAdmClientPtr client);
 
 # ifdef __cplusplus
 }

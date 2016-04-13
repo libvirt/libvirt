@@ -27,6 +27,12 @@ struct admin_typed_param {
 struct admin_nonnull_server {
         admin_nonnull_string       name;
 };
+struct admin_nonnull_client {
+        admin_nonnull_server       srv;
+        uint64_t                   id;
+        int64_t                    timestamp;
+        u_int                      transport;
+};
 struct admin_connect_open_args {
         u_int                      flags;
 };
