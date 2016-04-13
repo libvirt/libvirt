@@ -4,8 +4,9 @@ virt-xml-validate - validate libvirt XML files against a schema
 
 =head1 SYNOPSIS
 
-  virt-xml-validate XML-FILE [SCHEMA-NAME]
-  virt-xml-validate OPTION
+B<virt-xml-validate> I<XML-FILE> [I<SCHEMA-NAME>]
+
+B<virt-xml-validate> I<OPTION>
 
 =head1 DESCRIPTION
 

@@ -4,7 +4,7 @@ virt-sanlock-cleanup - remove stale sanlock resource lease files
 
 =head1 SYNOPSIS
 
-  virt-sanlock-cleanup
+B<virt-sanlock-cleanup>
 
 =head1 DESCRIPTION
 

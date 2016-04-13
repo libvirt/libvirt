@@ -4,7 +4,7 @@ virt-host-validate - validate host virtualization setup
 
 =head1 SYNOPSIS
 
-  virt-host-validate [OPTIONS...] [HV-TYPE]
+B<virt-host-validate> [I<OPTIONS>...] [I<HV-TYPE>]
 
 =head1 DESCRIPTION
 

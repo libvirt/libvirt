@@ -4,9 +4,7 @@ virtlogd - libvirt log management daemon
 
 =head1 SYNOPSIS
 
-B<virtlogd> [ -dvV ] [-t timeout] [ -f config_file ] [ -p pid_file ]
-
-B<virtlogd> --version
+B<virtlogd> [I<OPTION>]...
 
 =head1 DESCRIPTION
 

@@ -4,9 +4,7 @@ libvirtd - libvirtd management daemon
 
 =head1 SYNOPSIS
 
-B<libvirtd> [ -dlv ] [ -f config_file ] [ -p pid_file ] [ -t timeout_seconds ]
-
-B<libvirtd> --version
+B<libvirtd> [I<OPTION>]...
 
 =head1 DESCRIPTION
 

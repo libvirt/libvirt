@@ -4,9 +4,7 @@ virtlockd - libvirt lock management daemon
 
 =head1 SYNOPSIS
 
-B<virtlockd> [ -dvV ] [ -t timeout] [ -f config_file ] [ -p pid_file ]
-
-B<virtlockd> --version
+B<virtlockd> [I<OPTION>]...
 
 =head1 DESCRIPTION
 

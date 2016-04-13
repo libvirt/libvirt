@@ -4,7 +4,7 @@ virt-pki-validate - validate libvirt PKI files are configured correctly
 
 =head1 SYNOPSIS
 
-  virt-pki-validate [OPTION]
+B<virt-pki-validate> [I<OPTION>]
 
 =head1 DESCRIPTION
 
