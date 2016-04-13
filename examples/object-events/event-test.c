@@ -437,11 +437,21 @@ myDomainEventControlErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static const char *
+diskChangeReasonToStr(int reason)
+{
+    switch ((virConnectDomainEventDiskChangeReason) reason) {
+    case VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START:
+        return "disk empty due to startupPolicy";
 
-const char *diskChangeReasonStrings[] = {
-    "startupPolicy", /* 0 */
-    /* add new reason here */
-};
+    case VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START:
+        return "disk dropped due to startupPolicy";
+    }
+
+    return "unknown";
+}
+
+
 static int
 myDomainEventDiskChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virDomainPtr dom,
@@ -454,13 +464,22 @@ myDomainEventDiskChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     printf("%s EVENT: Domain %s(%d) disk change oldSrcPath: %s newSrcPath: %s "
            "devAlias: %s reason: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
-           oldSrcPath, newSrcPath, devAlias, diskChangeReasonStrings[reason]);
+           oldSrcPath, newSrcPath, devAlias, diskChangeReasonToStr(reason));
     return 0;
 }
 
-const char *trayChangeReasonStrings[] = {
-    "open",
-    "close",
+static const char *
+trayChangeReasonToStr(int reason)
+{
+    switch ((virDomainEventTrayChangeReason) reason) {
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN:
+        return "open";
+
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE:
+        return "close";
+    }
+
+    return "unknown";
 };
 
 
@@ -474,7 +493,7 @@ myDomainEventTrayChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     printf("%s EVENT: Domain %s(%d) removable disk's tray change devAlias: %s "
            "reason: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
-           devAlias, trayChangeReasonStrings[reason]);
+           devAlias, trayChangeReasonToStr(reason));
     return 0;
 }
 
