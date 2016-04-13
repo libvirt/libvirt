@@ -311,12 +311,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     virQEMUCapsFilterByMachineType(extraFlags, vm->def->os.machine);
 
-    if (qemuDomainAssignAddresses(vm->def, extraFlags, NULL)) {
-        if (flags & FLAG_EXPECT_FAILURE)
-            goto ok;
-        goto out;
-    }
-
     log = virtTestLogContentAndReset();
     VIR_FREE(log);
     virResetLastError();
