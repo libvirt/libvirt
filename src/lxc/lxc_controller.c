@@ -65,7 +65,7 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "vircommand.h"
-#include "nodeinfo.h"
+#include "virhostcpu.h"
 #include "virrandom.h"
 #include "virprocess.h"
 #include "virnuma.h"

@@ -7,7 +7,7 @@
 
 #include "testutils.h"
 #include "internal.h"
-#include "nodeinfopriv.h"
+#include "virhostcpupriv.h"
 #include "virfile.h"
 #include "virstring.h"
 
@@ -153,26 +153,26 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 }
 
 
-struct linuxTestNodeInfoData {
+struct linuxTestHostCPUData {
     const char *testName;
     virArch arch;
 };
 
 static int
-linuxTestNodeInfo(const void *opaque)
+linuxTestHostCPU(const void *opaque)
 {
     int result = -1;
     char *cpuinfo = NULL;
     char *sysfs_prefix = NULL;
     char *output = NULL;
-    struct linuxTestNodeInfoData *data = (struct linuxTestNodeInfoData *) opaque;
+    struct linuxTestHostCPUData *data = (struct linuxTestHostCPUData *) opaque;
     const char *archStr = virArchToString(data->arch);
 
-    if (virAsprintf(&sysfs_prefix, "%s/nodeinfodata/linux-%s",
+    if (virAsprintf(&sysfs_prefix, "%s/virhostcpudata/linux-%s",
                     abs_srcdir, data->testName) < 0 ||
-        virAsprintf(&cpuinfo, "%s/nodeinfodata/linux-%s-%s.cpuinfo",
+        virAsprintf(&cpuinfo, "%s/virhostcpudata/linux-%s-%s.cpuinfo",
                     abs_srcdir, archStr, data->testName) < 0 ||
-        virAsprintf(&output, "%s/nodeinfodata/linux-%s-%s.expected",
+        virAsprintf(&output, "%s/virhostcpudata/linux-%s-%s.expected",
                     abs_srcdir, archStr, data->testName) < 0) {
         goto cleanup;
     }
@@ -202,9 +202,9 @@ linuxTestNodeCPUStats(const void *data)
     char *cpustatfile = NULL;
     char *outfile = NULL;
 
-    if (virAsprintf(&cpustatfile, "%s/nodeinfodata/linux-cpustat-%s.stat",
+    if (virAsprintf(&cpustatfile, "%s/virhostcpudata/linux-cpustat-%s.stat",
                     abs_srcdir, testData->name) < 0 ||
-        virAsprintf(&outfile, "%s/nodeinfodata/linux-cpustat-%s.out",
+        virAsprintf(&outfile, "%s/virhostcpudata/linux-cpustat-%s.out",
                     abs_srcdir, testData->name) < 0)
         goto fail;
 
@@ -223,7 +223,7 @@ mymain(void)
 {
     int ret = 0;
     size_t i;
-    const struct linuxTestNodeInfoData nodeData[] = {
+    const struct linuxTestHostCPUData nodeData[] = {
         {"test1", VIR_ARCH_X86_64},
         {"test1", VIR_ARCH_PPC},
         {"test2", VIR_ARCH_X86_64},
@@ -249,7 +249,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virTestRun(nodeData[i].testName, linuxTestNodeInfo, &nodeData[i]) != 0)
+      if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
         ret = -1;
 
 # define DO_TEST_CPU_STATS(name, ncpus) \
@@ -264,6 +264,6 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/nodeinfomock.so")
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virhostcpumock.so")
 
 #endif /* __linux__ */

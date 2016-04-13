@@ -1,7 +1,7 @@
 /*
- * nodeinfopriv.h: internal APIs for testing nodeinfo code
+ * virhostcpupriv.h: helper APIs for host CPU info
  *
- * Copyright (C) 2014 Red Hat, Inc.
+ * Copyright (C) 2014-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
  *
  */
 
-#ifndef __NODEINFO_PRIV_H__
-# define __NODEINFO_PRIV_H__
+#ifndef __VIR_HOSTCPU_PRIV_H__
+# define __VIR_HOSTCPU_PRIV_H__
 
-# include "nodeinfo.h"
+# include "virhostcpu.h"
 
 # ifdef __linux__
 void virHostCPUSetSysFSSystemPathLinux(const char *path);
@@ -42,4 +42,4 @@ int virHostCPUGetStatsLinux(FILE *procstat,
                             int *nparams);
 # endif
 
-#endif /* __NODEINFO_PRIV_H__ */
+#endif /* __VIR_HOSTCPU_PRIV_H__ */

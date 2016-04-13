@@ -19,8 +19,7 @@
 
 #include <config.h>
 
-#include "internal.h"
-#include "nodeinfo.h"
+#include "virhostcpu.h"
 
 int
 virHostCPUGetThreadsPerSubcore(virArch arch)

@@ -59,8 +59,7 @@
 #include "virstring.h"
 #include "virsystemd.h"
 #include "virtypedparam.h"
-
-#include "nodeinfo.h"
+#include "virhostcpu.h"
 
 VIR_LOG_INIT("util.cgroup");
 

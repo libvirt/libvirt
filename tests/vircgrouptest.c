@@ -34,7 +34,7 @@
 # include "virfile.h"
 # include "virbuffer.h"
 # include "testutilslxc.h"
-# include "nodeinfo.h"
+# include "virhostcpu.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

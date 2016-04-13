@@ -109,7 +109,7 @@ EXTRA_DIST =		\
 	networkxml2xmlupdatein \
 	networkxml2xmlupdateout \
 	nodedevschemadata \
-	nodeinfodata     \
+	virhostcpudata \
 	nssdata \
 	nwfilterxml2firewalldata \
 	nwfilterxml2xmlin \
@@ -159,7 +159,7 @@ EXTRA_DIST =		\
 
 test_helpers = commandhelper ssh virconftest
 test_programs = virshtest sockettest \
-	nodeinfotest virbuftest \
+	virhostcputest virbuftest \
 	commandtest seclabeltest \
 	virhashtest \
 	viratomictest \
@@ -404,7 +404,7 @@ test_libraries = libshunload.la \
 		virpcimock.la \
 		virnetdevmock.la \
 		virrandommock.la \
-		nodeinfomock.la \
+		virhostcpumock.la \
 		nssmock.la \
 		$(NULL)
 if WITH_QEMU
@@ -880,9 +880,9 @@ virconftest_SOURCES = \
 	virconftest.c
 virconftest_LDADD = $(LDADDS)
 
-nodeinfotest_SOURCES = \
-	nodeinfotest.c testutils.h testutils.c
-nodeinfotest_LDADD = $(LDADDS)
+virhostcputest_SOURCES = \
+	virhostcputest.c testutils.h testutils.c
+virhostcputest_LDADD = $(LDADDS)
 
 commandtest_SOURCES = \
 	commandtest.c testutils.h testutils.c
@@ -1093,11 +1093,11 @@ virrandommock_la_CFLAGS = $(AM_CFLAGS)
 virrandommock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virrandommock_la_LIBADD = $(MOCKLIBS_LIBS)
 
-nodeinfomock_la_SOURCES = \
-	nodeinfomock.c
-nodeinfomock_la_CFLAGS = $(AM_CFLAGS)
-nodeinfomock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-nodeinfomock_la_LIBADD = $(MOCKLIBS_LIBS)
+virhostcpumock_la_SOURCES = \
+	virhostcpumock.c
+virhostcpumock_la_CFLAGS = $(AM_CFLAGS)
+virhostcpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 nsstest_SOURCES = \
 	nsstest.c testutils.h testutils.c

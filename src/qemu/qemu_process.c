@@ -54,7 +54,7 @@
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "nodeinfo.h"
+#include "virhostcpu.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "locking/domain_lock.h"

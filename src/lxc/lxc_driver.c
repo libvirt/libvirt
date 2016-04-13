@@ -58,6 +58,7 @@
 #include "virnetdevveth.h"
 #include "virnetdevopenvswitch.h"
 #include "nodeinfo.h"
+#include "virhostcpu.h"
 #include "viruuid.h"
 #include "virstats.h"
 #include "virhook.h"

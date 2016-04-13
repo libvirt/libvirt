@@ -49,6 +49,7 @@
 #include "virbuffer.h"
 #include "openvz_conf.h"
 #include "nodeinfo.h"
+#include "virhostcpu.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virtypedparam.h"
