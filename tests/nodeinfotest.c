@@ -24,8 +24,7 @@ main(void)
 #else
 
 static int
-linuxTestCompareFiles(char *sysfs_prefix,
-                      const char *cpuinfofile,
+linuxTestCompareFiles(const char *cpuinfofile,
                       virArch arch,
                       const char *outputfile)
 {
@@ -42,7 +41,7 @@ linuxTestCompareFiles(char *sysfs_prefix,
     }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(sysfs_prefix, cpuinfo, arch, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(cpuinfo, arch, &nodeinfo) < 0) {
         if (virTestGetDebug()) {
             if (virGetLastError())
                 VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());
@@ -175,7 +174,9 @@ linuxTestNodeInfo(const void *opaque)
         goto cleanup;
     }
 
-    result = linuxTestCompareFiles(sysfs_prefix, cpuinfo, data->arch, output);
+    linuxNodeInfoSetSysFSSystemPath(sysfs_prefix);
+    result = linuxTestCompareFiles(cpuinfo, data->arch, output);
+    linuxNodeInfoSetSysFSSystemPath(NULL);
 
  cleanup:
     VIR_FREE(cpuinfo);

@@ -1013,7 +1013,7 @@ virQEMUCapsInitCPU(virCapsPtr caps,
 
     cpu->arch = arch;
 
-    if (nodeGetInfo(NULL, &nodeinfo))
+    if (nodeGetInfo(&nodeinfo))
         goto error;
 
     cpu->type = VIR_CPU_TYPE_HOST;
@@ -1076,7 +1076,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */
-    if (nodeCapsInitNUMA(NULL, caps) < 0) {
+    if (nodeCapsInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }

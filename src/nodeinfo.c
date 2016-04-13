@@ -65,7 +65,6 @@
 
 VIR_LOG_INIT("nodeinfo");
 
-#define SYSFS_SYSTEM_PATH "/sys/devices/system"
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
 static int
@@ -290,6 +289,7 @@ freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
 #endif /* __FreeBSD__ */
 
 #ifdef __linux__
+# define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
 # define MEMINFO_PATH "/proc/meminfo"
@@ -299,6 +299,16 @@ freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
 # define LINUX_NB_CPU_STATS 4
 # define LINUX_NB_MEMORY_STATS_ALL 4
 # define LINUX_NB_MEMORY_STATS_CELL 2
+
+static const char *sysfs_system_path = SYSFS_SYSTEM_PATH;
+
+void linuxNodeInfoSetSysFSSystemPath(const char *path)
+{
+    if (path)
+        sysfs_system_path = path;
+    else
+        sysfs_system_path = SYSFS_SYSTEM_PATH;
+}
 
 /* Return the positive decimal contents of the given
  * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
@@ -593,8 +603,7 @@ virNodeParseNode(const char *node,
  * A valid configuration is one where no secondary thread is online;
  * the primary thread in a subcore is always the first one */
 static bool
-nodeHasValidSubcoreConfiguration(const char *sysfs_prefix,
-                                 int threads_per_subcore)
+nodeHasValidSubcoreConfiguration(int threads_per_subcore)
 {
     virBitmapPtr online_cpus = NULL;
     int cpu = -1;
@@ -604,7 +613,7 @@ nodeHasValidSubcoreConfiguration(const char *sysfs_prefix,
     if (threads_per_subcore <= 0)
         goto cleanup;
 
-    if (!(online_cpus = nodeGetOnlineCPUBitmap(sysfs_prefix)))
+    if (!(online_cpus = nodeGetOnlineCPUBitmap()))
         goto cleanup;
 
     while ((cpu = virBitmapNextSetBit(online_cpus, cpu)) >= 0) {
@@ -624,12 +633,10 @@ nodeHasValidSubcoreConfiguration(const char *sysfs_prefix,
 }
 
 int
-linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
-                         FILE *cpuinfo,
+linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                          virArch arch,
                          virNodeInfoPtr nodeinfo)
 {
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     virBitmapPtr present_cpus_map = NULL;
     virBitmapPtr online_cpus_map = NULL;
     char line[1024];
@@ -726,17 +733,17 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
 
     /* Get information about what CPUs are present in the host and what
      * CPUs are online, so that we don't have to so for each node */
-    present_cpus_map = nodeGetPresentCPUBitmap(sysfs_prefix);
+    present_cpus_map = nodeGetPresentCPUBitmap();
     if (!present_cpus_map)
         goto cleanup;
-    online_cpus_map = nodeGetOnlineCPUBitmap(sysfs_prefix);
+    online_cpus_map = nodeGetOnlineCPUBitmap();
     if (!online_cpus_map)
         goto cleanup;
 
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
      * core, node, socket, thread and topology information from /sys
      */
-    if (virAsprintf(&sysfs_nodedir, "%s/node", prefix) < 0)
+    if (virAsprintf(&sysfs_nodedir, "%s/node", sysfs_system_path) < 0)
         goto cleanup;
 
     if (!(nodedir = opendir(sysfs_nodedir))) {
@@ -771,7 +778,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
 
     /* If the subcore configuration is not valid, just pretend subcores
      * are not in use and count threads one by one */
-    if (!nodeHasValidSubcoreConfiguration(sysfs_prefix, threads_per_subcore))
+    if (!nodeHasValidSubcoreConfiguration(threads_per_subcore))
         threads_per_subcore = 0;
 
     while ((direrr = virDirRead(nodedir, &nodedirent, sysfs_nodedir)) > 0) {
@@ -781,7 +788,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
         nodeinfo->nodes++;
 
         if (virAsprintf(&sysfs_cpudir, "%s/node/%s",
-                        prefix, nodedirent->d_name) < 0)
+                        sysfs_system_path, nodedirent->d_name) < 0)
             goto cleanup;
 
         if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
@@ -815,7 +822,7 @@ linuxNodeInfoCPUPopulate(const char *sysfs_prefix,
  fallback:
     VIR_FREE(sysfs_cpudir);
 
-    if (virAsprintf(&sysfs_cpudir, "%s/cpu", prefix) < 0)
+    if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_system_path) < 0)
         goto cleanup;
 
     if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
@@ -1079,28 +1086,26 @@ linuxNodeGetMemoryStats(FILE *meminfo,
 }
 
 static char *
-linuxGetCPUGlobalPath(const char *sysfs_prefix,
-                      const char *file)
+linuxGetCPUGlobalPath(const char *file)
 {
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char *path = NULL;
 
-    if (virAsprintf(&path, "%s/cpu/%s", prefix, file) < 0)
+    if (virAsprintf(&path, "%s/cpu/%s", sysfs_system_path, file) < 0)
         return NULL;
 
     return path;
 }
 
 static char *
-linuxGetCPUPresentPath(const char *sysfs_prefix)
+linuxGetCPUPresentPath(void)
 {
-    return linuxGetCPUGlobalPath(sysfs_prefix, "present");
+    return linuxGetCPUGlobalPath("present");
 }
 
 static char *
-linuxGetCPUOnlinePath(const char *sysfs_prefix)
+linuxGetCPUOnlinePath(void)
 {
-    return linuxGetCPUGlobalPath(sysfs_prefix, "online");
+    return linuxGetCPUGlobalPath("online");
 }
 
 /* Determine the number of CPUs (maximum CPU id + 1) from a file containing
@@ -1184,8 +1189,7 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
 #endif
 
 int
-nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-            virNodeInfoPtr nodeinfo)
+nodeGetInfo(virNodeInfoPtr nodeinfo)
 {
     virArch hostarch = virArchFromHost();
 
@@ -1205,8 +1209,7 @@ nodeGetInfo(const char *sysfs_prefix ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    ret = linuxNodeInfoCPUPopulate(sysfs_prefix, cpuinfo,
-                                   hostarch, nodeinfo);
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, hostarch, nodeinfo);
     if (ret < 0)
         goto cleanup;
 
@@ -1293,8 +1296,7 @@ nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                   int cellNum ATTRIBUTE_UNUSED,
+nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
                    virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
                    int *nparams ATTRIBUTE_UNUSED,
                    unsigned int flags)
@@ -1304,7 +1306,6 @@ nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 #ifdef __linux__
     {
         int ret;
-        const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
         char *meminfo_path = NULL;
         FILE *meminfo;
         int max_node;
@@ -1323,8 +1324,9 @@ nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                 return -1;
             }
 
-            if (virAsprintf(&meminfo_path, "%s/node/node%d/meminfo",
-                            prefix, cellNum) < 0)
+            if (virAsprintf(&meminfo_path,
+                            SYSFS_SYSTEM_PATH "/node/node%d/meminfo",
+                            cellNum) < 0)
                 return -1;
         }
         meminfo = fopen(meminfo_path, "r");
@@ -1351,7 +1353,7 @@ nodeGetMemoryStats(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
+nodeGetCPUCount(void)
 {
 #if defined(__linux__)
     /* To support older kernels that lack cpu/present, such as 2.6.18
@@ -1360,11 +1362,10 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
      * will be consecutive.
      */
     char *present_path = NULL;
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char *cpupath = NULL;
     int ncpu = -1;
 
-    if (!(present_path = linuxGetCPUPresentPath(sysfs_prefix)))
+    if (!(present_path = linuxGetCPUPresentPath()))
         return -1;
 
     if (virFileExists(present_path)) {
@@ -1372,7 +1373,7 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virAsprintf(&cpupath, "%s/cpu/cpu0", prefix) < 0)
+    if (virAsprintf(&cpupath, "%s/cpu/cpu0", sysfs_system_path) < 0)
         goto cleanup;
     if (virFileExists(cpupath)) {
         ncpu = 0;
@@ -1380,7 +1381,7 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
             ncpu++;
             VIR_FREE(cpupath);
             if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
-                            prefix, ncpu) < 0) {
+                            sysfs_system_path, ncpu) < 0) {
                 ncpu = -1;
                 goto cleanup;
             }
@@ -1405,17 +1406,17 @@ nodeGetCPUCount(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 }
 
 virBitmapPtr
-nodeGetPresentCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
+nodeGetPresentCPUBitmap(void)
 {
 #ifdef __linux__
     virBitmapPtr present_cpus = NULL;
     char *present_path = NULL;
     int npresent_cpus;
 
-    if ((npresent_cpus = nodeGetCPUCount(sysfs_prefix)) < 0)
+    if ((npresent_cpus = nodeGetCPUCount()) < 0)
         goto cleanup;
 
-    if (!(present_path = linuxGetCPUPresentPath(sysfs_prefix)))
+    if (!(present_path = linuxGetCPUPresentPath()))
         goto cleanup;
 
     /* If the cpu/present file is available, parse it and exit */
@@ -1443,20 +1444,19 @@ nodeGetPresentCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 }
 
 virBitmapPtr
-nodeGetOnlineCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
+nodeGetOnlineCPUBitmap(void)
 {
 #ifdef __linux__
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
     char *online_path = NULL;
     char *cpudir = NULL;
     virBitmapPtr cpumap;
     int present;
 
-    present = nodeGetCPUCount(sysfs_prefix);
+    present = nodeGetCPUCount();
     if (present < 0)
         return NULL;
 
-    if (!(online_path = linuxGetCPUOnlinePath(sysfs_prefix)))
+    if (!(online_path = linuxGetCPUOnlinePath()))
         return NULL;
     if (virFileExists(online_path)) {
         cpumap = linuxParseCPUmap(present, online_path);
@@ -1467,7 +1467,7 @@ nodeGetOnlineCPUBitmap(const char *sysfs_prefix ATTRIBUTE_UNUSED)
         if (!cpumap)
             goto cleanup;
 
-        if (virAsprintf(&cpudir, "%s/cpu", prefix) < 0)
+        if (virAsprintf(&cpudir, "%s/cpu", sysfs_system_path) < 0)
             goto cleanup;
 
         for (i = 0; i < present; i++) {
@@ -1796,8 +1796,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetCPUMap(const char *sysfs_prefix,
-              unsigned char **cpumap,
+nodeGetCPUMap(unsigned char **cpumap,
               unsigned int *online,
               unsigned int flags)
 {
@@ -1808,9 +1807,9 @@ nodeGetCPUMap(const char *sysfs_prefix,
     virCheckFlags(0, -1);
 
     if (!cpumap && !online)
-        return nodeGetCPUCount(sysfs_prefix);
+        return nodeGetCPUCount();
 
-    if (!(cpus = nodeGetOnlineCPUBitmap(sysfs_prefix)))
+    if (!(cpus = nodeGetOnlineCPUBitmap()))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)
@@ -1828,8 +1827,7 @@ nodeGetCPUMap(const char *sysfs_prefix,
 }
 
 static int
-nodeCapsInitNUMAFake(const char *sysfs_prefix,
-                     const char *cpupath ATTRIBUTE_UNUSED,
+nodeCapsInitNUMAFake(const char *cpupath ATTRIBUTE_UNUSED,
                      virCapsPtr caps ATTRIBUTE_UNUSED)
 {
     virNodeInfo nodeinfo;
@@ -1839,7 +1837,7 @@ nodeCapsInitNUMAFake(const char *sysfs_prefix,
     int id, cid;
     int onlinecpus ATTRIBUTE_UNUSED;
 
-    if (nodeGetInfo(sysfs_prefix, &nodeinfo) < 0)
+    if (nodeGetInfo(&nodeinfo) < 0)
         return -1;
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
@@ -2088,11 +2086,8 @@ virNodeCapsGetPagesInfo(int node,
 }
 
 int
-nodeCapsInitNUMA(const char *sysfs_prefix,
-                 virCapsPtr caps)
+nodeCapsInitNUMA(virCapsPtr caps)
 {
-    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_SYSTEM_PATH;
-    char *cpupath;
     int n;
     unsigned long long memory;
     virCapsHostNUMACellCPUPtr cpus = NULL;
@@ -2107,11 +2102,8 @@ nodeCapsInitNUMA(const char *sysfs_prefix,
     bool topology_failed = false;
     int max_node;
 
-    if (virAsprintf(&cpupath, "%s/cpu", prefix) < 0)
-        return -1;
-
     if (!virNumaIsAvailable()) {
-        ret = nodeCapsInitNUMAFake(sysfs_prefix, cpupath, caps);
+        ret = nodeCapsInitNUMAFake(SYSFS_SYSTEM_PATH "/cpu", caps);
         goto cleanup;
     }
 
@@ -2134,7 +2126,8 @@ nodeCapsInitNUMA(const char *sysfs_prefix,
 
         for (i = 0; i < virBitmapSize(cpumap); i++) {
             if (virBitmapIsBitSet(cpumap, i)) {
-                if (virNodeCapsFillCPUInfo(cpupath, i, cpus + cpu++) < 0) {
+                if (virNodeCapsFillCPUInfo(SYSFS_SYSTEM_PATH "/cpu",
+                                           i, cpus + cpu++) < 0) {
                     topology_failed = true;
                     virResetLastError();
                 }
@@ -2174,7 +2167,6 @@ nodeCapsInitNUMA(const char *sysfs_prefix,
     VIR_FREE(cpus);
     VIR_FREE(siblings);
     VIR_FREE(pageinfo);
-    VIR_FREE(cpupath);
     return ret;
 }
 

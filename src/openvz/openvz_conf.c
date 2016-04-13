@@ -165,7 +165,7 @@ virCapsPtr openvzCapsInit(void)
                                    false, false)) == NULL)
         goto no_memory;
 
-    if (nodeCapsInitNUMA(NULL, caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,
@@ -633,7 +633,7 @@ openvzGetNodeCPUs(void)
 {
     virNodeInfo nodeinfo;
 
-    if (nodeGetInfo(NULL, &nodeinfo) < 0)
+    if (nodeGetInfo(&nodeinfo) < 0)
         return 0;
 
     return nodeinfo.cpus;

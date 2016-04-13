@@ -5154,7 +5154,7 @@ lxcNodeGetInfo(virConnectPtr conn,
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetInfo(NULL, nodeinfo);
+    return nodeGetInfo(nodeinfo);
 }
 
 
@@ -5246,7 +5246,7 @@ lxcNodeGetMemoryStats(virConnectPtr conn,
     if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryStats(NULL, cellNum, params, nparams, flags);
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
 }
 
 
@@ -5313,7 +5313,7 @@ lxcNodeGetCPUMap(virConnectPtr conn,
     if (virNodeGetCPUMapEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCPUMap(NULL, cpumap, online, flags);
+    return nodeGetCPUMap(cpumap, online, flags);
 }
 
 

@@ -51,7 +51,7 @@ virBhyveCapsInitCPU(virCapsPtr caps,
 
     cpu->arch = arch;
 
-    if (nodeGetInfo(NULL, &nodeinfo))
+    if (nodeGetInfo(&nodeinfo))
         goto error;
 
     cpu->type = VIR_CPU_TYPE_HOST;

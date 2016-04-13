@@ -649,8 +649,8 @@ static int testCgroupGetPercpuStats(const void *args ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (nodeGetCPUCount(NULL) != EXPECTED_NCPUS) {
-        fprintf(stderr, "Unexpected: nodeGetCPUCount() yields: %d\n", nodeGetCPUCount(NULL));
+    if (nodeGetCPUCount() != EXPECTED_NCPUS) {
+        fprintf(stderr, "Unexpected: nodeGetCPUCount() yields: %d\n", nodeGetCPUCount());
         goto cleanup;
     }
 

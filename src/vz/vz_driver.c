@@ -115,7 +115,7 @@ vzBuildCapabilities(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if (nodeCapsInitNUMA(NULL, caps) < 0)
+    if (nodeCapsInitNUMA(caps) < 0)
         goto error;
 
     for (i = 0; i < 2; i++)
@@ -125,7 +125,7 @@ vzBuildCapabilities(void)
                                          emulators[k], virt_types[k]) < 0)
                     goto error;
 
-    if (nodeGetInfo(NULL, &nodeinfo))
+    if (nodeGetInfo(&nodeinfo))
         goto error;
 
     if (VIR_ALLOC(cpu) < 0)
@@ -832,7 +832,7 @@ static int
 vzNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
               virNodeInfoPtr nodeinfo)
 {
-    return nodeGetInfo(NULL, nodeinfo);
+    return nodeGetInfo(nodeinfo);
 }
 
 static int vzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
@@ -919,7 +919,7 @@ vzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
                 unsigned int *online,
                 unsigned int flags)
 {
-    return nodeGetCPUMap(NULL, cpumap, online, flags);
+    return nodeGetCPUMap(cpumap, online, flags);
 }
 
 static int
@@ -1487,7 +1487,7 @@ vzNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                      int *nparams,
                      unsigned int flags)
 {
-    return nodeGetMemoryStats(NULL, cellNum, params, nparams, flags);
+    return nodeGetMemoryStats(cellNum, params, nparams, flags);
 }
 
 static int
