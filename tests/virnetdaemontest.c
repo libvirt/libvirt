@@ -335,6 +335,7 @@ mymain(void)
     EXEC_RESTART_TEST("anon-clients", 1);
     EXEC_RESTART_TEST("admin-nomdns", 2);
     EXEC_RESTART_TEST("admin-server-names", 2);
+    EXEC_RESTART_TEST("no-keepalive-required", 2);
     EXEC_RESTART_TEST_FAIL("anon-clients", 2);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
