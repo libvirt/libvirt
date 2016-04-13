@@ -1,6 +1,6 @@
 =head1 NAME
 
-  virt-sanlock-cleanup - remove stale sanlock resource lease files
+virt-sanlock-cleanup - remove stale sanlock resource lease files
 
 =head1 SYNOPSIS
 

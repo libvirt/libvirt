@@ -1,6 +1,6 @@
 =head1 NAME
 
-  virt-xml-validate - validate libvirt XML files against a schema
+virt-xml-validate - validate libvirt XML files against a schema
 
 =head1 SYNOPSIS
 

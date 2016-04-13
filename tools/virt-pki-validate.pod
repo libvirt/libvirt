@@ -1,6 +1,6 @@
 =head1 NAME
 
-  virt-pki-validate - validate libvirt PKI files are configured correctly
+virt-pki-validate - validate libvirt PKI files are configured correctly
 
 =head1 SYNOPSIS
 

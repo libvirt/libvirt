@@ -1,6 +1,6 @@
 =head1 NAME
 
-  virt-host-validate - validate host virtualization setup
+virt-host-validate - validate host virtualization setup
 
 =head1 SYNOPSIS
 
