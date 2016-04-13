@@ -2565,12 +2565,24 @@ virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
 POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 
 virtlockd.8.in: locking/virtlockd.pod
-	$(AM_V_GEN)$(POD2MAN) --section 8 $< $@ \
-		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
+	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
+	sed \
+		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
+		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		< $@-t1 > $@-t2 && \
+	rm -f $@-t1 && \
+	mv $@-t2 $@
 
 virtlogd.8.in: logging/virtlogd.pod
-	$(AM_V_GEN)$(POD2MAN) --section 8 $< $@ \
-		&& if grep 'POD ERROR' $@ ; then rm $@; exit 1; fi
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
+	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
+	sed \
+		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
+		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		< $@-t1 > $@-t2 && \
+	rm -f $@-t1 && \
+	mv $@-t2 $@
 
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
