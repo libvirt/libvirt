@@ -18,6 +18,7 @@
       </domain>
     </arch>
     <features>
+      <cpuselection/>
       <deviceboot/>
       <disksnapshot default='off' toggle='no'/>
       <acpi default='on' toggle='yes'/>

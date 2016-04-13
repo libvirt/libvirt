@@ -928,9 +928,10 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     machines = NULL;
     nmachines = 0;
 
-    if (caps->host.cpu &&
-        caps->host.cpu->model &&
-        virQEMUCapsGetCPUDefinitions(qemubinCaps, NULL) > 0 &&
+    if ((virQEMUCapsGet(qemubinCaps, QEMU_CAPS_CPU_HOST) ||
+         (caps->host.cpu &&
+          caps->host.cpu->model &&
+          virQEMUCapsGetCPUDefinitions(qemubinCaps, NULL) > 0)) &&
         !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
         goto cleanup;
 
