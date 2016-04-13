@@ -242,11 +242,10 @@ static virStorageDriver fakeStorageDriver = {
 };
 
 typedef enum {
-    FLAG_EXPECT_ERROR       = 1 << 0,
-    FLAG_EXPECT_FAILURE     = 1 << 1,
-    FLAG_EXPECT_PARSE_ERROR = 1 << 2,
-    FLAG_JSON               = 1 << 3,
-    FLAG_FIPS               = 1 << 4,
+    FLAG_EXPECT_FAILURE     = 1 << 0,
+    FLAG_EXPECT_PARSE_ERROR = 1 << 1,
+    FLAG_JSON               = 1 << 2,
+    FLAG_FIPS               = 1 << 3,
 } virQemuXML2ArgvTestFlags;
 
 static int testCompareXMLToArgvFiles(const char *xml,
@@ -313,7 +312,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virQEMUCapsFilterByMachineType(extraFlags, vm->def->os.machine);
 
     if (qemuDomainAssignAddresses(vm->def, extraFlags, NULL)) {
-        if (flags & FLAG_EXPECT_ERROR)
+        if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
         goto out;
     }
@@ -354,20 +353,15 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  ok:
-    if (ret == 0 &&
-        ((flags & FLAG_EXPECT_ERROR) ||
-         (flags & FLAG_EXPECT_FAILURE))) {
+    if (ret == 0 && flags & FLAG_EXPECT_FAILURE) {
         ret = -1;
         VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
         goto out;
     }
     if (!virtTestOOMActive()) {
-        if (flags & FLAG_EXPECT_ERROR) {
+        if (flags & FLAG_EXPECT_FAILURE) {
             if ((log = virtTestLogContentAndReset()))
                 VIR_TEST_DEBUG("Got expected error: \n%s", log);
-        } else if (flags & FLAG_EXPECT_FAILURE) {
-            VIR_TEST_DEBUG("Got expected failure: %s\n",
-                           virGetLastErrorMessage());
         }
         virResetLastError();
         ret = 0;
@@ -533,20 +527,17 @@ mymain(void)
 # define DO_TEST(name, ...)                                             \
     DO_TEST_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
 
-# define DO_TEST_ERROR(name, ...)                                       \
-    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_ERROR, 0, __VA_ARGS__)
-
 # define DO_TEST_FAILURE(name, ...)                                     \
     DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, 0, __VA_ARGS__)
 
 # define DO_TEST_PARSE_ERROR(name, ...)                                 \
     DO_TEST_FULL(name, NULL, -1,                                        \
-                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
+                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
                  0, __VA_ARGS__)
 
 # define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...)               \
     DO_TEST_FULL(name, NULL, -1,                                        \
-                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_ERROR,           \
+                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
                  parseFlags, __VA_ARGS__)
 
 # define DO_TEST_LINUX(name, ...)                                       \
@@ -1389,7 +1380,7 @@ mymain(void)
             QEMU_CAPS_PCI_OHCI, QEMU_CAPS_PCI_MULTIFUNCTION);
     DO_TEST("pseries-vio-user-assigned",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
-    DO_TEST_ERROR("pseries-vio-address-clash",
+    DO_TEST_FAILURE("pseries-vio-address-clash",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-nvram", QEMU_CAPS_DEVICE_NVRAM);
     DO_TEST("pseries-usb-kbd", QEMU_CAPS_PCI_OHCI,
@@ -1552,7 +1543,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
 
-    DO_TEST_ERROR("pcie-root-port-too-many",
+    DO_TEST_FAILURE("pcie-root-port-too-many",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
