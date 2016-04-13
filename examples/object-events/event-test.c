@@ -579,12 +579,6 @@ static void myFreeFunc(void *opaque)
 
 /* main test functions */
 
-void usage(const char *pname)
-{
-    printf("%s uri\n", pname);
-}
-
-
 static void stop(int sig)
 {
     printf("Exiting on signal %d\n", sig);
@@ -622,7 +616,7 @@ int main(int argc, char **argv)
     action_stop.sa_handler = stop;
 
     if (argc > 1 && STREQ(argv[1], "--help")) {
-        usage(argv[0]);
+        printf("%s uri\n", argv[0]);
         goto cleanup;
     }
 
