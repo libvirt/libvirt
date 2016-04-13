@@ -35,26 +35,32 @@ ICON_FILES = \
 	libvirt_win_icon_64x64.ico \
 	virsh_win_icon.rc
 
+PODFILES = \
+	virt-admin.pod \
+	virt-host-validate.pod \
+	virt-login-shell.pod \
+	virt-pki-validate.pod \
+	virt-sanlock-cleanup.pod \
+	virt-xml-validate.pod \
+	virsh.pod \
+	$(NULL)
+
+MANINFILES = \
+	virt-admin.1.in \
+	virt-host-validate.1.in \
+	virt-login-shell.1.in \
+	virt-pki-validate.1.in \
+	virt-sanlock-cleanup.8.in \
+	virt-xml-validate.1.in \
+	virsh.1.in \
+	$(NULL)
+
 EXTRA_DIST = \
 	$(ICON_FILES)					\
 	$(conf_DATA)					\
 	virt-xml-validate.in				\
 	virt-pki-validate.in				\
 	virt-sanlock-cleanup.in				\
-	virt-admin.pod					\
-	virt-host-validate.pod				\
-	virt-login-shell.pod				\
-	virt-pki-validate.pod				\
-	virt-sanlock-cleanup.pod			\
-	virt-xml-validate.pod				\
-	virsh.pod					\
-	virt-admin.1.in					\
-	virt-host-validate.1.in				\
-	virt-login-shell.1.in				\
-	virt-pki-validate.1.in				\
-	virt-sanlock-cleanup.8.in			\
-	virt-xml-validate.1.in				\
-	virsh.1.in					\
 	libvirt-guests.sysconf				\
 	virsh-edit.c					\
 	virsh-domain.c					\
@@ -63,7 +69,10 @@ EXTRA_DIST = \
 	virsh-network.c virsh-nodedev.c			\
 	virsh-nwfilter.c virsh-pool.c			\
 	virsh-secret.c virsh-snapshot.c			\
-	virsh-volume.c
+	virsh-volume.c					\
+	$(PODFILES)					\
+	$(MANINFILES)					\
+	$(NULL)
 
 
 CLEANFILES =

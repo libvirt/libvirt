@@ -2588,25 +2588,32 @@ augeas_DATA += locking/virtlockd.aug logging/virtlogd.aug
 augeastest_DATA += test_virtlockd.aug test_virtlogd.aug
 endif WITH_LIBVIRTD
 
-CLEANFILES += test_virtlockd.aug virtlockd.8 \
-	      test_virtlogd.aug virtlogd.8
-MAINTAINERCLEANFILES += virtlockd.8.in virtlogd.8.in
+PODFILES = \
+	locking/virtlockd.pod \
+	logging/virtlogd.pod \
+	$(NULL)
+
+MANINFILES = \
+	virtlockd.8.in \
+	virtlogd.8.in \
+	$(NULL)
+
+CLEANFILES += test_virtlockd.aug test_virtlogd.aug $(man8_MANS)
+MAINTAINERCLEANFILES += $(MANINFILES)
 
 EXTRA_DIST += \
         locking/virtlockd.service.in \
         locking/virtlockd.socket.in \
-        locking/virtlockd.pod \
-        virtlockd.8.in \
         locking/virtlockd.aug \
         locking/virtlockd.conf \
         locking/test_virtlockd.aug.in \
         logging/virtlogd.service.in \
         logging/virtlogd.socket.in \
-        logging/virtlogd.pod \
-        virtlogd.8.in \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
+        $(PODFILES) \
+        $(MANINFILES) \
         $(NULL)
 
 

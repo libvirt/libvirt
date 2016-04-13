@@ -46,6 +46,14 @@ DAEMON_SOURCES =					\
 
 LIBVIRTD_CONF_SOURCES = libvirtd-config.c libvirtd-config.h
 
+PODFILES = \
+	libvirtd.pod \
+	$(NULL)
+
+MANINFILES = \
+	libvirtd.8.in \
+	$(NULL)
+
 DISTCLEANFILES =
 EXTRA_DIST =						\
 	remote_dispatch.h				\
@@ -69,8 +77,8 @@ EXTRA_DIST =						\
 	libvirtd.uml.logrotate.in                       \
 	test_libvirtd.aug.in                             \
 	THREADS.txt					\
-	libvirtd.pod					\
-	libvirtd.8.in					\
+	$(PODFILES)					\
+	$(MANINFILES)					\
 	$(DAEMON_SOURCES)				\
 	$(LIBVIRTD_CONF_SOURCES)			\
 	$(NULL)
@@ -529,4 +537,4 @@ endif ! WITH_SASL
 
 CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-MAINTAINERCLEANFILES = libvirtd.8.in $(DAEMON_GENERATED)
+MAINTAINERCLEANFILES = $(MANINFILES) $(DAEMON_GENERATED)
