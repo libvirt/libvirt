@@ -121,6 +121,7 @@ UTIL_SOURCES =							\
 		util/virhook.c util/virhook.h			\
 		util/virhostcpu.c util/virhostcpu.h util/virhostcpupriv.h \
 		util/virhostdev.c util/virhostdev.h		\
+		util/virhostmem.c util/virhostmem.h		\
 		util/viridentity.c util/viridentity.h		\
 		util/virinitctl.c util/virinitctl.h		\
 		util/viriptables.c util/viriptables.h		\

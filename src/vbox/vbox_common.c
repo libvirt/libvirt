@@ -30,6 +30,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "nodeinfo.h"
+#include "virhostmem.h"
 #include "virstring.h"
 #include "virfile.h"
 #include "virtime.h"

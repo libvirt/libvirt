@@ -198,6 +198,7 @@ src/util/virhash.c
 src/util/virhook.c
 src/util/virhostcpu.c
 src/util/virhostdev.c
+src/util/virhostmem.c
 src/util/viridentity.c
 src/util/virinitctl.c
 src/util/viriptables.c

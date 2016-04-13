@@ -45,7 +45,7 @@
 #include "virbitmap.h"
 #include "virstring.h"
 #include "virfile.h"
-#include "nodeinfo.h"
+#include "virhostmem.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
