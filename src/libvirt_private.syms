@@ -916,6 +916,11 @@ virCPUx86MakeData;
 
 # datatypes.h
 virConnectClass;
+virConnectCloseCallbackDataCall;
+virConnectCloseCallbackDataClass;
+virConnectCloseCallbackDataGetCallback;
+virConnectCloseCallbackDataRegister;
+virConnectCloseCallbackDataUnregister;
 virDomainClass;
 virDomainSnapshotClass;
 virGetConnect;
@@ -929,20 +934,15 @@ virGetSecret;
 virGetStoragePool;
 virGetStorageVol;
 virGetStream;
-virConnectCloseCallbackDataGetCallback;
-virNewConnectCloseCallbackData;
-virConnectCloseCallbackDataUnregister;
-virConnectCloseCallbackDataRegister;
-virConnectCloseCallbackDataCall;
 virInterfaceClass;
 virNetworkClass;
+virNewConnectCloseCallbackData;
 virNodeDeviceClass;
 virNWFilterClass;
 virSecretClass;
 virStoragePoolClass;
 virStorageVolClass;
 virStreamClass;
-virConnectCloseCallbackDataClass;
 
 
 # fdstream.h
