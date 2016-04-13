@@ -29,7 +29,12 @@ void linuxNodeInfoSetSysFSSystemPath(const char *path);
 
 int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                              virArch arch,
-                             virNodeInfoPtr nodeinfo);
+                             unsigned int *cpus,
+                             unsigned int *mhz,
+                             unsigned int *nodes,
+                             unsigned int *sockets,
+                             unsigned int *cores,
+                             unsigned int *threads);
 
 int linuxNodeGetCPUStats(FILE *procstat,
                          int cpuNum,

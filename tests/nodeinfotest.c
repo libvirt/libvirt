@@ -41,7 +41,10 @@ linuxTestCompareFiles(const char *cpuinfofile,
     }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(cpuinfo, arch, &nodeinfo) < 0) {
+    if (linuxNodeInfoCPUPopulate(cpuinfo, arch,
+                                 &nodeinfo.cpus, &nodeinfo.mhz,
+                                 &nodeinfo.nodes, &nodeinfo.sockets,
+                                 &nodeinfo.cores, &nodeinfo.threads) < 0) {
         if (virTestGetDebug()) {
             if (virGetLastError())
                 VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());

@@ -608,20 +608,28 @@ nodeHasValidSubcoreConfiguration(int threads_per_subcore)
 int
 linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                          virArch arch,
-                         virNodeInfoPtr nodeinfo)
+                         unsigned int *cpus,
+                         unsigned int *mhz,
+                         unsigned int *nodes,
+                         unsigned int *sockets,
+                         unsigned int *cores,
+                         unsigned int *threads)
 {
     virBitmapPtr present_cpus_map = NULL;
     virBitmapPtr online_cpus_map = NULL;
     char line[1024];
     DIR *nodedir = NULL;
     struct dirent *nodedirent = NULL;
-    int cpus, cores, socks, threads, offline = 0;
+    int nodecpus, nodecores, nodesockets, nodethreads, offline = 0;
     int threads_per_subcore = 0;
     unsigned int node;
     int ret = -1;
     char *sysfs_nodedir = NULL;
     char *sysfs_cpudir = NULL;
     int direrr;
+
+    *mhz = 0;
+    *cpus = *nodes = *sockets = *cores = *threads = 0;
 
     /* Start with parsing CPU clock speed from /proc/cpuinfo */
     while (fgets(line, sizeof(line), cpuinfo) != NULL) {
@@ -644,9 +652,8 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
                     /* Accept trailing fractional part.  */
                     (*p == '\0' || *p == '.' || c_isspace(*p)))
-                    nodeinfo->mhz = ui;
+                    *mhz = ui;
             }
-
         } else if (ARCH_IS_PPC(arch)) {
             char *buf = line;
             if (STRPREFIX(buf, "clock")) {
@@ -666,7 +673,7 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0 &&
                     /* Accept trailing fractional part.  */
                     (*p == '\0' || *p == '.' || c_isspace(*p)))
-                    nodeinfo->mhz = ui;
+                    *mhz = ui;
                 /* No other interesting infos are available in /proc/cpuinfo.
                  * However, there is a line identifying processor's version,
                  * identification and machine, but we don't want it to be caught
@@ -692,12 +699,12 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                 if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                     /* Accept trailing fractional part.  */
                     && (*p == '\0' || *p == '.' || c_isspace(*p)))
-                    nodeinfo->mhz = ui;
+                    *mhz = ui;
             }
         } else if (ARCH_IS_S390(arch)) {
             /* s390x has no realistic value for CPU speed,
              * assign a value of zero to signify this */
-            nodeinfo->mhz = 0;
+            *mhz = 0;
         } else {
             VIR_WARN("Parser for /proc/cpuinfo needs to be adapted for your architecture");
             break;
@@ -758,38 +765,38 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
         if (sscanf(nodedirent->d_name, "node%u", &node) != 1)
             continue;
 
-        nodeinfo->nodes++;
+        (*nodes)++;
 
         if (virAsprintf(&sysfs_cpudir, "%s/node/%s",
                         sysfs_system_path, nodedirent->d_name) < 0)
             goto cleanup;
 
-        if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
-                                     present_cpus_map,
-                                     online_cpus_map,
-                                     threads_per_subcore,
-                                     &socks, &cores,
-                                     &threads, &offline)) < 0)
+        if ((nodecpus = virNodeParseNode(sysfs_cpudir, arch,
+                                         present_cpus_map,
+                                         online_cpus_map,
+                                         threads_per_subcore,
+                                         &nodesockets, &nodecores,
+                                         &nodethreads, &offline)) < 0)
             goto cleanup;
 
         VIR_FREE(sysfs_cpudir);
 
-        nodeinfo->cpus += cpus;
+        *cpus += nodecpus;
 
-        if (socks > nodeinfo->sockets)
-            nodeinfo->sockets = socks;
+        if (nodesockets > *sockets)
+            *sockets = nodesockets;
 
-        if (cores > nodeinfo->cores)
-            nodeinfo->cores = cores;
+        if (nodecores > *cores)
+            *cores = nodecores;
 
-        if (threads > nodeinfo->threads)
-            nodeinfo->threads = threads;
+        if (nodethreads > *threads)
+            *threads = nodethreads;
     }
 
     if (direrr < 0)
         goto cleanup;
 
-    if (nodeinfo->cpus && nodeinfo->nodes)
+    if (*cpus && *nodes)
         goto done;
 
  fallback:
@@ -798,33 +805,33 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_system_path) < 0)
         goto cleanup;
 
-    if ((cpus = virNodeParseNode(sysfs_cpudir, arch,
-                                 present_cpus_map,
-                                 online_cpus_map,
-                                 threads_per_subcore,
-                                 &socks, &cores,
-                                 &threads, &offline)) < 0)
+    if ((nodecpus = virNodeParseNode(sysfs_cpudir, arch,
+                                     present_cpus_map,
+                                     online_cpus_map,
+                                     threads_per_subcore,
+                                     &nodesockets, &nodecores,
+                                     &nodethreads, &offline)) < 0)
         goto cleanup;
 
-    nodeinfo->nodes = 1;
-    nodeinfo->cpus = cpus;
-    nodeinfo->sockets = socks;
-    nodeinfo->cores = cores;
-    nodeinfo->threads = threads;
+    *nodes = 1;
+    *cpus = nodecpus;
+    *sockets = nodesockets;
+    *cores = nodecores;
+    *threads = nodethreads;
 
  done:
     /* There should always be at least one cpu, socket, node, and thread. */
-    if (nodeinfo->cpus == 0) {
+    if (*cpus == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no CPUs found"));
         goto cleanup;
     }
 
-    if (nodeinfo->sockets == 0) {
+    if (*sockets == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no sockets found"));
         goto cleanup;
     }
 
-    if (nodeinfo->threads == 0) {
+    if (*threads == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no threads found"));
         goto cleanup;
     }
@@ -836,14 +843,14 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
      * the nodeinfo structure isn't designed to carry the full topology so
      * we're going to lie about the detected topology to notify the user
      * to check the host capabilities for the actual topology. */
-    if ((nodeinfo->nodes *
-         nodeinfo->sockets *
-         nodeinfo->cores *
-         nodeinfo->threads) != (nodeinfo->cpus + offline)) {
-        nodeinfo->nodes = 1;
-        nodeinfo->sockets = 1;
-        nodeinfo->cores = nodeinfo->cpus + offline;
-        nodeinfo->threads = 1;
+    if ((*nodes *
+         *sockets *
+         *cores *
+         *threads) != (*cpus + offline)) {
+        *nodes = 1;
+        *sockets = 1;
+        *cores = *cpus + offline;
+        *threads = 1;
     }
 
     ret = 0;
@@ -1161,6 +1168,74 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
 }
 #endif
 
+
+static int
+nodeGetCPUInfo(virArch hostarch,
+               unsigned int *cpus,
+               unsigned int *mhz,
+               unsigned int *nodes,
+               unsigned int *sockets,
+               unsigned int *cores,
+               unsigned int *threads)
+{
+#ifdef __linux__
+    int ret = -1;
+    FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
+
+    if (!cpuinfo) {
+        virReportSystemError(errno,
+                             _("cannot open %s"), CPUINFO_PATH);
+        return -1;
+    }
+
+    ret = linuxNodeInfoCPUPopulate(cpuinfo, hostarch,
+                                   cpus, mhz, nodes,
+                                   sockets, cores, threads);
+    if (ret < 0)
+        goto cleanup;
+
+ cleanup:
+    VIR_FORCE_FCLOSE(cpuinfo);
+    return ret;
+#elif defined(__FreeBSD__) || defined(__APPLE__)
+    unsigned long cpu_freq;
+    size_t cpu_freq_len = sizeof(cpu_freq);
+
+    *cpus = appleFreebsdNodeGetCPUCount();
+    if (*cpus == -1)
+        return -1;
+
+    *nodes = 1;
+    *sockets = 1;
+    *cores = *cpus;
+    *threads = 1;
+
+# ifdef __FreeBSD__
+    if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+        return -1;
+    }
+
+    *mhz = cpu_freq;
+# else
+    if (sysctlbyname("hw.cpufrequency", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+        return -1;
+    }
+
+    *mhz = cpu_freq / 1000000;
+# endif
+
+    return 0;
+#else
+    /* XXX Solaris will need an impl later if they port QEMU driver */
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node info not implemented on this platform"));
+    return -1;
+#endif
+}
+
+
 int
 nodeGetInfo(virNodeInfoPtr nodeinfo)
 {
@@ -1176,64 +1251,13 @@ nodeGetInfo(virNodeInfoPtr nodeinfo)
         return -1;
     nodeinfo->memory = memorybytes / 1024;
 
-#ifdef __linux__
-    {
-    int ret = -1;
-    FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
-
-    if (!cpuinfo) {
-        virReportSystemError(errno,
-                             _("cannot open %s"), CPUINFO_PATH);
+    if (nodeGetCPUInfo(hostarch,
+                       &nodeinfo->cpus, &nodeinfo->mhz,
+                       &nodeinfo->nodes, &nodeinfo->sockets,
+                       &nodeinfo->cores, &nodeinfo->threads) < 0)
         return -1;
-    }
-
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, hostarch, nodeinfo);
-    if (ret < 0)
-        goto cleanup;
-
- cleanup:
-    VIR_FORCE_FCLOSE(cpuinfo);
-    return ret;
-    }
-#elif defined(__FreeBSD__) || defined(__APPLE__)
-    {
-    nodeinfo->nodes = 1;
-    nodeinfo->sockets = 1;
-    nodeinfo->threads = 1;
-
-    nodeinfo->cpus = appleFreebsdNodeGetCPUCount();
-    if (nodeinfo->cpus == -1)
-        return -1;
-
-    nodeinfo->cores = nodeinfo->cpus;
-
-    unsigned long cpu_freq;
-    size_t cpu_freq_len = sizeof(cpu_freq);
-
-# ifdef __FreeBSD__
-    if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
-        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
-        return -1;
-    }
-
-    nodeinfo->mhz = cpu_freq;
-# else
-    if (sysctlbyname("hw.cpufrequency", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
-        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
-        return -1;
-    }
-
-    nodeinfo->mhz = cpu_freq / 1000000;
-# endif
 
     return 0;
-    }
-#else
-    /* XXX Solaris will need an impl later if they port QEMU driver */
-    virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                   _("node info not implemented on this platform"));
-    return -1;
-#endif
 }
 
 int
