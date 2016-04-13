@@ -1193,7 +1193,6 @@ namespaces.
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
 Requires: %{name}-client = %{version}-%{release}
-Requires: %{name}-docs = %{version}-%{release}
 Requires: pkgconfig
 
 %description devel
@@ -1897,7 +1896,9 @@ exit 0
 
 %files docs
 %defattr(-, root, root)
-%doc AUTHORS ChangeLog.gz NEWS README TODO libvirt-docs/*
+%doc AUTHORS ChangeLog.gz NEWS README TODO
+%doc libvirt-docs/*
+%doc docs/*.html docs/html docs/*.gif
 
 # API docs
 %dir %{_datadir}/gtk-doc/html/libvirt/
@@ -1905,6 +1906,15 @@ exit 0
 %doc %{_datadir}/gtk-doc/html/libvirt/*.html
 %doc %{_datadir}/gtk-doc/html/libvirt/*.png
 %doc %{_datadir}/gtk-doc/html/libvirt/*.css
+%doc examples/hellolibvirt
+%doc examples/object-events
+%doc examples/dominfo
+%doc examples/domsuspend
+%doc examples/dommigrate
+%doc examples/openauth
+%doc examples/xml
+%doc examples/systemtap
+
 
 %if %{with_libvirtd}
 %files daemon
@@ -2317,18 +2327,8 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
-
-
-%doc docs/*.html docs/html docs/*.gif
+# Needed building python bindings
 %doc docs/libvirt-api.xml
-%doc examples/hellolibvirt
-%doc examples/object-events
-%doc examples/dominfo
-%doc examples/domsuspend
-%doc examples/dommigrate
-%doc examples/openauth
-%doc examples/xml
-%doc examples/systemtap
 
 %changelog
 * Wed Dec 23 2015 Cole Robinson <crobinso@redhat.com> - 1.2.18.2-1
