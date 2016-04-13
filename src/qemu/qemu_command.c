@@ -3354,6 +3354,7 @@ qemuBuildWatchdogCommandLine(virCommandPtr cmd,
     virDomainWatchdogDefPtr watchdog = def->watchdog;
     char *optstr;
     const char *action;
+    int actualAction;
 
     if (!def->watchdog)
         return 0;
@@ -3380,10 +3381,14 @@ qemuBuildWatchdogCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, optstr);
     VIR_FREE(optstr);
 
+    /* qemu doesn't have a 'dump' action; we tell qemu to 'pause', then
+       libvirt listens for the watchdog event, and we perform the dump
+       ourselves. so convert 'dump' to 'pause' for the qemu cli */
+    actualAction = watchdog->action;
     if (watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
-        watchdog->action = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
+        actualAction = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
 
-    action = virDomainWatchdogActionTypeToString(watchdog->action);
+    action = virDomainWatchdogActionTypeToString(actualAction);
     if (!action) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("invalid watchdog action"));
