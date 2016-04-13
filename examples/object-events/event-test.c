@@ -9,7 +9,6 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
-#define VIR_DEBUG(fmt) printf("%s:%d: " fmt "\n", __func__, __LINE__)
 #define STREQ(a, b) (strcmp(a, b) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
@@ -656,7 +655,7 @@ int main(int argc, char **argv)
     sigaction(SIGTERM, &action_stop, NULL);
     sigaction(SIGINT, &action_stop, NULL);
 
-    VIR_DEBUG("Registering event cbs");
+    printf("Registering event callbacks\n");
 
     /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
@@ -787,7 +786,7 @@ int main(int argc, char **argv)
         }
     }
 
-    VIR_DEBUG("Deregistering event handlers");
+    printf("Deregistering event callbacks\n");
     virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
     virConnectDomainEventDeregisterAny(dconn, callback2ret);
     virConnectDomainEventDeregisterAny(dconn, callback3ret);
@@ -816,9 +815,9 @@ int main(int argc, char **argv)
 
  cleanup:
     if (dconn) {
-        VIR_DEBUG("Closing connection");
+        printf("Closing connection: ");
         if (virConnectClose(dconn) < 0)
-            printf("error closing\n");
+            printf("failed\n");
         printf("done\n");
     }
 
