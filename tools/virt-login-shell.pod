@@ -71,7 +71,8 @@ shell; for example, if libvirtd is not running.
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the mailing
-list C<http://libvirt.org/contact.html> or bug tracker C<http://libvirt.org/bugs.html>.
+list L<http://libvirt.org/contact.html> or bug tracker
+L<http://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS

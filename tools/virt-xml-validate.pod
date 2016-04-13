@@ -88,7 +88,8 @@ Daniel P.Berrange
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the
-mailing list C<http://libvirt.org/contact.html> or bug tracker C<http://libvirt.org/bugs.html>.
+mailing list L<http://libvirt.org/contact.html> or bug tracker
+L<http://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 COPYRIGHT
@@ -105,6 +106,6 @@ PURPOSE
 
 =head1 SEE ALSO
 
-C<virsh(1)>, online XML format descriptions C<http://libvirt.org/format.html>
+L<virsh(1)>, online XML format descriptions L<http://libvirt.org/format.html>
 
 =cut
