@@ -314,8 +314,8 @@ qemuDomainExtractTLSSubject(const char *certdir)
 #endif
 
 static qemuMigrationCookieGraphicsPtr
-qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
-                                 virDomainGraphicsDefPtr def)
+qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
+                                      virDomainGraphicsDefPtr def)
 {
     qemuMigrationCookieGraphicsPtr mig = NULL;
     const char *listenAddr;
@@ -326,33 +326,20 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
         goto error;
 
     mig->type = def->type;
-    if (mig->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        mig->port = def->data.vnc.port;
+    mig->port = def->data.spice.port;
+    if (cfg->spiceTLS)
+        mig->tlsPort = def->data.spice.tlsPort;
+    else
+        mig->tlsPort = -1;
 
-        if (!gListen || !(listenAddr = gListen->address))
-            listenAddr = cfg->vncListen;
-
-#ifdef WITH_GNUTLS
-        if (cfg->vncTLS &&
-            !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->vncTLSx509certdir)))
-            goto error;
-#endif
-    } else {
-        mig->port = def->data.spice.port;
-        if (cfg->spiceTLS)
-            mig->tlsPort = def->data.spice.tlsPort;
-        else
-            mig->tlsPort = -1;
-
-        if (!gListen || !(listenAddr = gListen->address))
-            listenAddr = cfg->spiceListen;
+    if (!gListen || !(listenAddr = gListen->address))
+        listenAddr = cfg->spiceListen;
 
 #ifdef WITH_GNUTLS
-        if (cfg->spiceTLS &&
-            !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->spiceTLSx509certdir)))
-            goto error;
+    if (cfg->spiceTLS &&
+        !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->spiceTLSx509certdir)))
+        goto error;
 #endif
-    }
     if (VIR_STRDUP(mig->listen, listenAddr) < 0)
         goto error;
 
@@ -467,7 +454,8 @@ qemuMigrationCookieAddGraphics(qemuMigrationCookiePtr mig,
     for (i = 0; i < dom->def->ngraphics; i++) {
        if (dom->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
            if (!(mig->graphics =
-                 qemuMigrationCookieGraphicsAlloc(driver, dom->def->graphics[i])))
+                 qemuMigrationCookieGraphicsSpiceAlloc(driver,
+                                                       dom->def->graphics[i])))
                return -1;
            mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
            break;
