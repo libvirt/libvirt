@@ -105,6 +105,7 @@ virNetServerGetName;
 virNetServerHasClients;
 virNetServerNew;
 virNetServerNewPostExecRestart;
+virNetServerNextClientID;
 virNetServerPreExecRestart;
 virNetServerProcessClients;
 virNetServerStart;

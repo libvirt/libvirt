@@ -160,7 +160,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
         return NULL;
     }
 
-    if (!(srv = virNetServerNew("virtlockd",
+    if (!(srv = virNetServerNew("virtlockd", 1,
                                 1, 1, 0, config->max_clients,
                                 config->max_clients, -1, 0,
                                 NULL,

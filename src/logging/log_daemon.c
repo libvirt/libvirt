@@ -150,7 +150,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         return NULL;
     }
 
-    if (!(logd->srv = virNetServerNew("virtlogd",
+    if (!(logd->srv = virNetServerNew("virtlogd", 1,
                                       1, 1, 0, config->max_clients,
                                       config->max_clients, -1, 0,
                                       NULL,

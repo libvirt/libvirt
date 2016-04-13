@@ -52,7 +52,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     }
     sv[0] = -1;
 
-    if (!(client = virNetServerClientNew(sock, 0, false, 1,
+    if (!(client = virNetServerClientNew(1, sock, 0, false, 1,
 # ifdef WITH_GNUTLS
                                          NULL,
 # endif

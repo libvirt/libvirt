@@ -49,7 +49,8 @@ typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClientPtr 
 typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
                                            void *opaque);
 
-virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
+virNetServerClientPtr virNetServerClientNew(unsigned long long id,
+                                            virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
@@ -65,7 +66,8 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque);
+                                                           void *privOpaque,
+                                                           void *opaque);
 
 virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
 
@@ -79,6 +81,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
 int virNetServerClientGetAuth(virNetServerClientPtr client);
 void virNetServerClientSetAuth(virNetServerClientPtr client, int auth);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
+unsigned long long virNetServerClientGetID(virNetServerClientPtr client);
 
 # ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);

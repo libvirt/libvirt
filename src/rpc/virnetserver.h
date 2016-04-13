@@ -35,6 +35,7 @@
 
 
 virNetServerPtr virNetServerNew(const char *name,
+                                unsigned long long next_client_id,
                                 size_t min_workers,
                                 size_t max_workers,
                                 size_t priority_workers,
@@ -101,5 +102,7 @@ int virNetServerSetThreadPoolParameters(virNetServerPtr srv,
                                         long long int minWorkers,
                                         long long int maxWorkers,
                                         long long int prioWorkers);
+
+unsigned long long virNetServerNextClientID(virNetServerPtr srv);
 
 #endif /* __VIR_NET_SERVER_H__ */

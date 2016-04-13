@@ -8,7 +8,7 @@
             "max_anonymous_clients": 10,
             "keepaliveInterval": 120,
             "keepaliveCount": 5,
-            "next_client_id": 3,
+            "next_client_id": 5,
             "services": [
                 {
                     "auth": 0,
@@ -39,7 +39,7 @@
             ],
             "clients": [
                 {
-                    "id": 1,
+                    "id": 2,
                     "auth": 1,
                     "readonly": true,
                     "nrequests_max": 15,
@@ -51,7 +51,7 @@
                     }
                 },
                 {
-                    "id": 2,
+                    "id": 3,
                     "auth": 2,
                     "readonly": true,
                     "nrequests_max": 66,

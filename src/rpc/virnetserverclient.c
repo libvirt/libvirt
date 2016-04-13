@@ -28,6 +28,7 @@
 # include <sasl/sasl.h>
 #endif
 
+#include "virnetserver.h"
 #include "virnetserverclient.h"
 
 #include "virlog.h"
@@ -65,6 +66,7 @@ struct _virNetServerClient
 {
     virObjectLockable parent;
 
+    unsigned long long id;
     bool wantClose;
     bool delayedClose;
     virNetSocketPtr sock;
@@ -346,7 +348,8 @@ static void virNetServerClientSockTimerFunc(int timer,
 
 
 static virNetServerClientPtr
-virNetServerClientNewInternal(virNetSocketPtr sock,
+virNetServerClientNewInternal(unsigned long long id,
+                              virNetSocketPtr sock,
                               int auth,
 #ifdef WITH_GNUTLS
                               virNetTLSContextPtr tls,
@@ -362,6 +365,7 @@ virNetServerClientNewInternal(virNetSocketPtr sock,
     if (!(client = virObjectLockableNew(virNetServerClientClass)))
         return NULL;
 
+    client->id = id;
     client->sock = virObjectRef(sock);
     client->auth = auth;
     client->readonly = readonly;
@@ -395,7 +399,8 @@ virNetServerClientNewInternal(virNetSocketPtr sock,
 }
 
 
-virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
+virNetServerClientPtr virNetServerClientNew(unsigned long long id,
+                                            virNetSocketPtr sock,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
@@ -417,7 +422,7 @@ virNetServerClientPtr virNetServerClientNew(virNetSocketPtr sock,
 #endif
         );
 
-    if (!(client = virNetServerClientNewInternal(sock, auth,
+    if (!(client = virNetServerClientNewInternal(id, sock, auth,
 #ifdef WITH_GNUTLS
                                                  tls,
 #endif
@@ -441,7 +446,8 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque)
+                                                           void *privOpaque,
+                                                           void *opaque)
 {
     virJSONValuePtr child;
     virNetServerClientPtr client = NULL;
@@ -449,6 +455,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
     int auth;
     bool readonly;
     unsigned int nrequests_max;
+    unsigned long long id;
 
     if (virJSONValueObjectGetNumberInt(object, "auth", &auth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -473,12 +480,25 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
         return NULL;
     }
 
+    if (!virJSONValueObjectHasKey(object, "id")) {
+        /* no ID found in, a new one must be generated */
+        id = virNetServerNextClientID((virNetServerPtr) opaque);
+    } else {
+        if (virJSONValueObjectGetNumberUlong(object, "id",
+                                        (unsigned long long *) &id) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed id field in JSON state document"));
+        return NULL;
+        }
+    }
+
     if (!(sock = virNetSocketNewPostExecRestart(child))) {
         virObjectUnref(sock);
         return NULL;
     }
 
-    if (!(client = virNetServerClientNewInternal(sock,
+    if (!(client = virNetServerClientNewInternal(id,
+                                                 sock,
                                                  auth,
 #ifdef WITH_GNUTLS
                                                  NULL,
@@ -520,6 +540,10 @@ virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client)
         return NULL;
 
     virObjectLock(client);
+
+    if (virJSONValueObjectAppendNumberUlong(object, "id",
+                                            client->id) < 0)
+        goto error;
 
     if (virJSONValueObjectAppendNumberInt(object, "auth", client->auth) < 0)
         goto error;
@@ -581,6 +605,10 @@ bool virNetServerClientGetReadonly(virNetServerClientPtr client)
     return readonly;
 }
 
+unsigned long long virNetServerClientGetID(virNetServerClientPtr client)
+{
+    return client->id;
+}
 
 #ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client)
