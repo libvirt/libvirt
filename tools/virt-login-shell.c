@@ -355,6 +355,8 @@ main(int argc, char **argv)
         goto cleanup;
     if (virDomainLxcEnterSecurityLabel(secmodel, seclabel, NULL, 0) < 0)
         goto cleanup;
+    if (virDomainLxcEnterCGroup(dom, 0) < 0)
+        goto cleanup;
     if (nfdlist > 0 &&
         virDomainLxcEnterNamespace(dom, nfdlist, fdlist, NULL, NULL, 0) < 0)
         goto cleanup;
