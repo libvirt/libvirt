@@ -3370,3 +3370,32 @@ virNetDevGetFeatures(const char *ifname ATTRIBUTE_UNUSED,
     return 0;
 }
 #endif
+
+
+/**
+ * virNetDevRunEthernetScript:
+ * @ifname: the interface name
+ * @script: the script name
+ *
+ * This function executes script for new tap device created by libvirt.
+ * Returns 0 in case of success or -1 on failure
+ */
+int
+virNetDevRunEthernetScript(const char *ifname, const char *script)
+{
+    virCommandPtr cmd;
+    int ret;
+
+    cmd = virCommandNew(script);
+    virCommandAddArgFormat(cmd, "%s", ifname);
+    virCommandClearCaps(cmd);
+#ifdef CAP_NET_ADMIN
+    virCommandAllowCap(cmd, CAP_NET_ADMIN);
+#endif
+    virCommandAddEnvPassCommon(cmd);
+
+    ret = virCommandRun(cmd, NULL);
+
+    virCommandFree(cmd);
+    return ret;
+}
