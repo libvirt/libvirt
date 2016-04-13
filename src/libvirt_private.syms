@@ -1808,6 +1808,7 @@ virNetDevReplaceMacAddress;
 virNetDevReplaceNetConfig;
 virNetDevRestoreMacAddress;
 virNetDevRestoreNetConfig;
+virNetDevRunEthernetScript;
 virNetDevRxFilterFree;
 virNetDevRxFilterModeTypeFromString;
 virNetDevRxFilterModeTypeToString;

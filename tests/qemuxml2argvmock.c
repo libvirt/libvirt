@@ -132,12 +132,9 @@ virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
-virCommandRun(virCommandPtr cmd ATTRIBUTE_UNUSED,
-              int *exitstatus)
+virNetDevRunEthernetScript(const char *ifname ATTRIBUTE_UNUSED,
+                           const char *script ATTRIBUTE_UNUSED)
 {
-    if (exitstatus)
-        *exitstatus = 0;
-
     return 0;
 }
 
