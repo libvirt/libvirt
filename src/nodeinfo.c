@@ -187,7 +187,7 @@ freebsdNodeGetCPUStats(int cpuNum,
 }
 
 static int
-freebsdNodeGetMemoryStats(virNodeMemoryStatsPtr params,
+virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
                           int *nparams)
 {
     size_t i, j = 0;
@@ -960,7 +960,7 @@ linuxNodeGetCPUStats(FILE *procstat,
 }
 
 static int
-linuxNodeGetMemoryStats(FILE *meminfo,
+virHostMemGetStatsLinux(FILE *meminfo,
                         int cellNum,
                         virNodeMemoryStatsPtr params,
                         int *nparams)
@@ -1247,7 +1247,7 @@ nodeGetInfo(virNodeInfoPtr nodeinfo)
     if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) == NULL)
         return -1;
 
-    if (nodeGetMemory(&memorybytes, NULL) < 0)
+    if (virHostMemGetInfo(&memorybytes, NULL) < 0)
         return -1;
     nodeinfo->memory = memorybytes / 1024;
 
@@ -1292,7 +1292,7 @@ nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
+virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
                    virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
                    int *nparams ATTRIBUTE_UNUSED,
                    unsigned int flags)
@@ -1333,14 +1333,14 @@ nodeGetMemoryStats(int cellNum ATTRIBUTE_UNUSED,
             VIR_FREE(meminfo_path);
             return -1;
         }
-        ret = linuxNodeGetMemoryStats(meminfo, cellNum, params, nparams);
+        ret = virHostMemGetStatsLinux(meminfo, cellNum, params, nparams);
         VIR_FORCE_FCLOSE(meminfo);
         VIR_FREE(meminfo_path);
 
         return ret;
     }
 #elif defined(__FreeBSD__)
-    return freebsdNodeGetMemoryStats(params, nparams);
+    return virHostMemGetStatsFreeBSD(params, nparams);
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node memory stats not implemented on this platform"));
@@ -1491,7 +1491,7 @@ nodeGetOnlineCPUBitmap(void)
 
 #ifdef __linux__
 static int
-nodeSetMemoryParameterValue(virTypedParameterPtr param)
+virHostMemSetParameterValue(virTypedParameterPtr param)
 {
     char *path = NULL;
     char *strval = NULL;
@@ -1525,8 +1525,8 @@ nodeSetMemoryParameterValue(virTypedParameterPtr param)
 }
 
 static bool
-nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
-                                   int nparams)
+virHostMemParametersAreAllSupported(virTypedParameterPtr params,
+                                    int nparams)
 {
     char *path = NULL;
     size_t i;
@@ -1557,7 +1557,7 @@ nodeMemoryParametersIsAllSupported(virTypedParameterPtr params,
 #endif
 
 int
-nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
+virHostMemSetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
                         int nparams ATTRIBUTE_UNUSED,
                         unsigned int flags)
 {
@@ -1577,11 +1577,11 @@ nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
                                NULL) < 0)
         return -1;
 
-    if (!nodeMemoryParametersIsAllSupported(params, nparams))
+    if (!virHostMemParametersAreAllSupported(params, nparams))
         return -1;
 
     for (i = 0; i < nparams; i++) {
-        rc = nodeSetMemoryParameterValue(&params[i]);
+        rc = virHostMemSetParameterValue(&params[i]);
 
         if (rc < 0)
             return -1;
@@ -1598,7 +1598,7 @@ nodeSetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 
 #ifdef __linux__
 static int
-nodeGetMemoryParameterValue(const char *field,
+virHostMemGetParameterValue(const char *field,
                             void *value)
 {
     char *path = NULL;
@@ -1649,7 +1649,7 @@ nodeGetMemoryParameterValue(const char *field,
 
 #define NODE_MEMORY_PARAMETERS_NUM 8
 int
-nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
+virHostMemGetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
                         int *nparams ATTRIBUTE_UNUSED,
                         unsigned int flags)
 {
@@ -1677,7 +1677,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 
         switch (i) {
         case 0:
-            ret = nodeGetMemoryParameterValue("pages_to_scan", &pages_to_scan);
+            ret = virHostMemGetParameterValue("pages_to_scan", &pages_to_scan);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1690,7 +1690,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 1:
-            ret = nodeGetMemoryParameterValue("sleep_millisecs", &sleep_millisecs);
+            ret = virHostMemGetParameterValue("sleep_millisecs", &sleep_millisecs);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1703,7 +1703,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 2:
-            ret = nodeGetMemoryParameterValue("pages_shared", &pages_shared);
+            ret = virHostMemGetParameterValue("pages_shared", &pages_shared);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1716,7 +1716,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 3:
-            ret = nodeGetMemoryParameterValue("pages_sharing", &pages_sharing);
+            ret = virHostMemGetParameterValue("pages_sharing", &pages_sharing);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1729,7 +1729,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 4:
-            ret = nodeGetMemoryParameterValue("pages_unshared", &pages_unshared);
+            ret = virHostMemGetParameterValue("pages_unshared", &pages_unshared);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1742,7 +1742,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 5:
-            ret = nodeGetMemoryParameterValue("pages_volatile", &pages_volatile);
+            ret = virHostMemGetParameterValue("pages_volatile", &pages_volatile);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1755,7 +1755,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 6:
-            ret = nodeGetMemoryParameterValue("full_scans", &full_scans);
+            ret = virHostMemGetParameterValue("full_scans", &full_scans);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1768,7 +1768,7 @@ nodeGetMemoryParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
             break;
 
         case 7:
-            ret = nodeGetMemoryParameterValue("merge_across_nodes", &merge_across_nodes);
+            ret = virHostMemGetParameterValue("merge_across_nodes", &merge_across_nodes);
             if (ret == -2)
                 continue;
             else if (ret == -1)
@@ -1886,7 +1886,7 @@ nodeCapsInitNUMAFake(const char *cpupath ATTRIBUTE_UNUSED,
 }
 
 static int
-nodeGetCellsFreeMemoryFake(unsigned long long *freeMems,
+virHostMemGetCellsFreeFake(unsigned long long *freeMems,
                            int startCell,
                            int maxCells ATTRIBUTE_UNUSED)
 {
@@ -1911,8 +1911,8 @@ nodeGetCellsFreeMemoryFake(unsigned long long *freeMems,
 }
 
 static int
-nodeGetMemoryFake(unsigned long long *mem,
-                  unsigned long long *freeMem)
+virHostMemGetInfoFake(unsigned long long *mem,
+                      unsigned long long *freeMem)
 {
     int ret = -1;
 
@@ -2140,7 +2140,7 @@ nodeCapsInitNUMA(virCapsPtr caps)
 
 
 int
-nodeGetCellsFreeMemory(unsigned long long *freeMems,
+virHostMemGetCellsFree(unsigned long long *freeMems,
                        int startCell,
                        int maxCells)
 {
@@ -2150,7 +2150,7 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
     int maxCell;
 
     if (!virNumaIsAvailable())
-        return nodeGetCellsFreeMemoryFake(freeMems,
+        return virHostMemGetCellsFreeFake(freeMems,
                                           startCell, maxCells);
 
     if ((maxCell = virNumaGetMaxNode()) < 0)
@@ -2178,8 +2178,8 @@ nodeGetCellsFreeMemory(unsigned long long *freeMems,
 }
 
 int
-nodeGetMemory(unsigned long long *mem,
-              unsigned long long *freeMem)
+virHostMemGetInfo(unsigned long long *mem,
+                  unsigned long long *freeMem)
 {
     int max_node;
     int n;
@@ -2191,7 +2191,7 @@ nodeGetMemory(unsigned long long *mem,
         *freeMem = 0;
 
     if (!virNumaIsAvailable())
-        return nodeGetMemoryFake(mem, freeMem);
+        return virHostMemGetInfoFake(mem, freeMem);
 
     if ((max_node = virNumaGetMaxNode()) < 0)
         return -1;
@@ -2216,11 +2216,11 @@ nodeGetMemory(unsigned long long *mem,
 }
 
 int
-nodeGetFreePages(unsigned int npages,
-                 unsigned int *pages,
-                 int startCell,
-                 unsigned int cellCount,
-                 unsigned long long *counts)
+virHostMemGetFreePages(unsigned int npages,
+                       unsigned int *pages,
+                       int startCell,
+                       unsigned int cellCount,
+                       unsigned long long *counts)
 {
     int ret = -1;
     int cell, lastCell;
@@ -2262,12 +2262,12 @@ nodeGetFreePages(unsigned int npages,
 }
 
 int
-nodeAllocPages(unsigned int npages,
-               unsigned int *pageSizes,
-               unsigned long long *pageCounts,
-               int startCell,
-               unsigned int cellCount,
-               bool add)
+virHostMemAllocPages(unsigned int npages,
+                     unsigned int *pageSizes,
+                     unsigned long long *pageCounts,
+                     int startCell,
+                     unsigned int cellCount,
+                     bool add)
 {
     int ret = -1;
     int cell, lastCell;

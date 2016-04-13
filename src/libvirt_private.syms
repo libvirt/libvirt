@@ -1059,21 +1059,21 @@ virLogManagerNew;
 
 
 # nodeinfo.h
-nodeAllocPages;
 nodeCapsInitNUMA;
-nodeGetCellsFreeMemory;
 nodeGetCPUCount;
 nodeGetCPUMap;
 nodeGetCPUStats;
-nodeGetFreePages;
 nodeGetInfo;
-nodeGetMemory;
-nodeGetMemoryParameters;
-nodeGetMemoryStats;
 nodeGetOnlineCPUBitmap;
 nodeGetPresentCPUBitmap;
 nodeGetThreadsPerSubcore;
-nodeSetMemoryParameters;
+virHostMemAllocPages;
+virHostMemGetCellsFree;
+virHostMemGetFreePages;
+virHostMemGetInfo;
+virHostMemGetParameters;
+virHostMemGetStats;
+virHostMemSetParameters;
 
 
 # secret/secret_util.h

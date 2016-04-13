@@ -18109,7 +18109,7 @@ qemuNodeGetMemoryStats(virConnectPtr conn,
     if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+    return virHostMemGetStats(cellNum, params, nparams, flags);
 }
 
 
@@ -18122,7 +18122,7 @@ qemuNodeGetCellsFreeMemory(virConnectPtr conn,
     if (virNodeGetCellsFreeMemoryEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+    return virHostMemGetCellsFree(freeMems, startCell, maxCells);
 }
 
 
@@ -18134,7 +18134,7 @@ qemuNodeGetFreeMemory(virConnectPtr conn)
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
         return 0;
 
-    if (nodeGetMemory(NULL, &freeMem) < 0)
+    if (virHostMemGetInfo(NULL, &freeMem) < 0)
         return 0;
 
     return freeMem;
@@ -18150,7 +18150,7 @@ qemuNodeGetMemoryParameters(virConnectPtr conn,
     if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryParameters(params, nparams, flags);
+    return virHostMemGetParameters(params, nparams, flags);
 }
 
 
@@ -18163,7 +18163,7 @@ qemuNodeSetMemoryParameters(virConnectPtr conn,
     if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeSetMemoryParameters(params, nparams, flags);
+    return virHostMemSetParameters(params, nparams, flags);
 }
 
 
@@ -18434,7 +18434,7 @@ qemuNodeGetFreePages(virConnectPtr conn,
     if (virNodeGetFreePagesEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+    return virHostMemGetFreePages(npages, pages, startCell, cellCount, counts);
 }
 
 
@@ -19337,8 +19337,8 @@ qemuNodeAllocPages(virConnectPtr conn,
     if (virNodeAllocPagesEnsureACL(conn) < 0)
         return -1;
 
-    return nodeAllocPages(npages, pageSizes, pageCounts,
-                          startCell, cellCount, add);
+    return virHostMemAllocPages(npages, pageSizes, pageCounts,
+                                startCell, cellCount, add);
 }
 
 

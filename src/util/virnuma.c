@@ -659,7 +659,7 @@ virNumaGetPageInfo(int node,
         /* TODO: come up with better algorithm that takes huge pages into
          * account. The problem is huge pages cut off regular memory. */
         if (node == -1) {
-            if (nodeGetMemory(&memsize, &memfree) < 0)
+            if (virHostMemGetInfo(&memsize, &memfree) < 0)
                 goto cleanup;
         } else {
             if (virNumaGetNodeMemory(node, &memsize, &memfree) < 0)

@@ -7536,14 +7536,14 @@ vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                            int startCell,
                            int maxCells)
 {
-    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+    return virHostMemGetCellsFree(freeMems, startCell, maxCells);
 }
 
 static unsigned long long
 vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     unsigned long long freeMem;
-    if (nodeGetMemory(NULL, &freeMem) < 0)
+    if (virHostMemGetInfo(NULL, &freeMem) < 0)
         return 0;
     return freeMem;
 }
@@ -7559,7 +7559,7 @@ vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, -1);
 
-    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+    return virHostMemGetFreePages(npages, pages, startCell, cellCount, counts);
 }
 
 static int
@@ -7575,8 +7575,8 @@ vboxNodeAllocPages(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
 
-    return nodeAllocPages(npages, pageSizes, pageCounts,
-                          startCell, cellCount, add);
+    return virHostMemAllocPages(npages, pageSizes, pageCounts,
+                                startCell, cellCount, add);
 }
 
 static int

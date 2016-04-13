@@ -33,26 +33,26 @@ int nodeGetCPUStats(int cpuNum,
                     virNodeCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags);
-int nodeGetMemoryStats(int cellNum,
+int virHostMemGetStats(int cellNum,
                        virNodeMemoryStatsPtr params,
                        int *nparams,
                        unsigned int flags);
-int nodeGetCellsFreeMemory(unsigned long long *freeMems,
+int virHostMemGetCellsFree(unsigned long long *freeMems,
                            int startCell,
                            int maxCells);
-int nodeGetMemory(unsigned long long *mem,
-                  unsigned long long *freeMem);
+int virHostMemGetInfo(unsigned long long *mem,
+                      unsigned long long *freeMem);
 
 virBitmapPtr nodeGetPresentCPUBitmap(void);
 virBitmapPtr nodeGetOnlineCPUBitmap(void);
 int nodeGetCPUCount(void);
 int nodeGetThreadsPerSubcore(virArch arch);
 
-int nodeGetMemoryParameters(virTypedParameterPtr params,
+int virHostMemGetParameters(virTypedParameterPtr params,
                             int *nparams,
                             unsigned int flags);
 
-int nodeSetMemoryParameters(virTypedParameterPtr params,
+int virHostMemSetParameters(virTypedParameterPtr params,
                             int nparams,
                             unsigned int flags);
 
@@ -60,16 +60,17 @@ int nodeGetCPUMap(unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags);
 
-int nodeGetFreePages(unsigned int npages,
-                     unsigned int *pages,
-                     int startCell,
-                     unsigned int cellCount,
-                     unsigned long long *counts);
+int virHostMemGetFreePages(unsigned int npages,
+                           unsigned int *pages,
+                           int startCell,
+                           unsigned int cellCount,
+                           unsigned long long *counts);
 
-int nodeAllocPages(unsigned int npages,
-                   unsigned int *pageSizes,
-                   unsigned long long *pageCounts,
-                   int startCell,
-                   unsigned int cellCount,
-                   bool add);
+int virHostMemAllocPages(unsigned int npages,
+                         unsigned int *pageSizes,
+                         unsigned long long *pageCounts,
+                         int startCell,
+                         unsigned int cellCount,
+                         bool add);
+
 #endif /* __VIR_NODEINFO_H__*/

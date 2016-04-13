@@ -2564,7 +2564,7 @@ xenUnifiedNodeGetMemoryParameters(virConnectPtr conn,
     if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryParameters(params, nparams, flags);
+    return virHostMemGetParameters(params, nparams, flags);
 }
 
 
@@ -2577,7 +2577,7 @@ xenUnifiedNodeSetMemoryParameters(virConnectPtr conn,
     if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeSetMemoryParameters(params, nparams, flags);
+    return virHostMemSetParameters(params, nparams, flags);
 }
 
 

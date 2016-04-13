@@ -2179,7 +2179,7 @@ openvzNodeGetMemoryStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                          int *nparams,
                          unsigned int flags)
 {
-    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+    return virHostMemGetStats(cellNum, params, nparams, flags);
 }
 
 
@@ -2189,7 +2189,7 @@ openvzNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
                              int startCell,
                              int maxCells)
 {
-    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+    return virHostMemGetCellsFree(freeMems, startCell, maxCells);
 }
 
 
@@ -2197,7 +2197,7 @@ static unsigned long long
 openvzNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     unsigned long long freeMem;
-    if (nodeGetMemory(NULL, &freeMem) < 0)
+    if (virHostMemGetInfo(NULL, &freeMem) < 0)
         return 0;
     return freeMem;
 }

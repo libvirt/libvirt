@@ -2802,7 +2802,7 @@ umlNodeGetMemoryStats(virConnectPtr conn,
     if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryStats(cellNum, params, nparams, flags);
+    return virHostMemGetStats(cellNum, params, nparams, flags);
 }
 
 
@@ -2815,7 +2815,7 @@ umlNodeGetCellsFreeMemory(virConnectPtr conn,
     if (virNodeGetCellsFreeMemoryEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCellsFreeMemory(freeMems, startCell, maxCells);
+    return virHostMemGetCellsFree(freeMems, startCell, maxCells);
 }
 
 
@@ -2827,7 +2827,7 @@ umlNodeGetFreeMemory(virConnectPtr conn)
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
         return 0;
 
-    if (nodeGetMemory(NULL, &freeMem) < 0)
+    if (virHostMemGetInfo(NULL, &freeMem) < 0)
         return 0;
 
     return freeMem;
@@ -2843,7 +2843,7 @@ umlNodeGetMemoryParameters(virConnectPtr conn,
     if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetMemoryParameters(params, nparams, flags);
+    return virHostMemGetParameters(params, nparams, flags);
 }
 
 
@@ -2856,7 +2856,7 @@ umlNodeSetMemoryParameters(virConnectPtr conn,
     if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return nodeSetMemoryParameters(params, nparams, flags);
+    return virHostMemSetParameters(params, nparams, flags);
 }
 
 
@@ -2900,7 +2900,7 @@ umlNodeGetFreePages(virConnectPtr conn,
     if (virNodeGetFreePagesEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetFreePages(npages, pages, startCell, cellCount, counts);
+    return virHostMemGetFreePages(npages, pages, startCell, cellCount, counts);
 }
 
 
@@ -2920,8 +2920,8 @@ umlNodeAllocPages(virConnectPtr conn,
     if (virNodeAllocPagesEnsureACL(conn) < 0)
         return -1;
 
-    return nodeAllocPages(npages, pageSizes, pageCounts,
-                          startCell, cellCount, add);
+    return virHostMemAllocPages(npages, pageSizes, pageCounts,
+                                startCell, cellCount, add);
 }
 
 
