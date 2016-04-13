@@ -25,21 +25,21 @@
 # include "nodeinfo.h"
 
 # ifdef __linux__
-void linuxNodeInfoSetSysFSSystemPath(const char *path);
+void virHostCPUSetSysFSSystemPathLinux(const char *path);
 
-int linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                             virArch arch,
-                             unsigned int *cpus,
-                             unsigned int *mhz,
-                             unsigned int *nodes,
-                             unsigned int *sockets,
-                             unsigned int *cores,
-                             unsigned int *threads);
+int virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
+                                   virArch arch,
+                                   unsigned int *cpus,
+                                   unsigned int *mhz,
+                                   unsigned int *nodes,
+                                   unsigned int *sockets,
+                                   unsigned int *cores,
+                                   unsigned int *threads);
 
-int linuxNodeGetCPUStats(FILE *procstat,
-                         int cpuNum,
-                         virNodeCPUStatsPtr params,
-                         int *nparams);
+int virHostCPUGetStatsLinux(FILE *procstat,
+                            int cpuNum,
+                            virNodeCPUStatsPtr params,
+                            int *nparams);
 # endif
 
 #endif /* __NODEINFO_PRIV_H__ */

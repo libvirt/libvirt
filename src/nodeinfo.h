@@ -29,10 +29,10 @@
 int nodeGetInfo(virNodeInfoPtr nodeinfo);
 int nodeCapsInitNUMA(virCapsPtr caps);
 
-int nodeGetCPUStats(int cpuNum,
-                    virNodeCPUStatsPtr params,
-                    int *nparams,
-                    unsigned int flags);
+int virHostCPUGetStats(int cpuNum,
+                       virNodeCPUStatsPtr params,
+                       int *nparams,
+                       unsigned int flags);
 int virHostMemGetStats(int cellNum,
                        virNodeMemoryStatsPtr params,
                        int *nparams,
@@ -43,10 +43,10 @@ int virHostMemGetCellsFree(unsigned long long *freeMems,
 int virHostMemGetInfo(unsigned long long *mem,
                       unsigned long long *freeMem);
 
-virBitmapPtr nodeGetPresentCPUBitmap(void);
-virBitmapPtr nodeGetOnlineCPUBitmap(void);
-int nodeGetCPUCount(void);
-int nodeGetThreadsPerSubcore(virArch arch);
+virBitmapPtr virHostCPUGetPresentBitmap(void);
+virBitmapPtr virHostCPUGetOnlineBitmap(void);
+int virHostCPUGetCount(void);
+int virHostCPUGetThreadsPerSubcore(virArch arch);
 
 int virHostMemGetParameters(virTypedParameterPtr params,
                             int *nparams,
@@ -56,9 +56,9 @@ int virHostMemSetParameters(virTypedParameterPtr params,
                             int nparams,
                             unsigned int flags);
 
-int nodeGetCPUMap(unsigned char **cpumap,
-                  unsigned int *online,
-                  unsigned int flags);
+int virHostCPUGetMap(unsigned char **cpumap,
+                     unsigned int *online,
+                     unsigned int flags);
 
 int virHostMemGetFreePages(unsigned int npages,
                            unsigned int *pages,

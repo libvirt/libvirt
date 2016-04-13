@@ -68,7 +68,7 @@ VIR_LOG_INIT("nodeinfo");
 
 #if defined(__FreeBSD__) || defined(__APPLE__)
 static int
-appleFreebsdNodeGetCPUCount(void)
+virHostCPUGetCountAppleFreeBSD(void)
 {
     int ncpu_mib[2] = { CTL_HW, HW_NCPU };
     unsigned long ncpu;
@@ -90,9 +90,9 @@ appleFreebsdNodeGetCPUCount(void)
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / (stathz ? stathz : hz))
 
 static int
-freebsdNodeGetCPUStats(int cpuNum,
-                       virNodeCPUStatsPtr params,
-                       int *nparams)
+virHostCPUGetStatsFreebsd(int cpuNum,
+                          virNodeCPUStatsPtr params,
+                          int *nparams)
 {
     const char *sysctl_name;
     long *cpu_times;
@@ -139,7 +139,7 @@ freebsdNodeGetCPUStats(int cpuNum,
         offset = 0;
     } else {
         sysctl_name = "kern.cp_times";
-        cpu_times_num = appleFreebsdNodeGetCPUCount();
+        cpu_times_num = virHostCPUGetCountAppleFreeBSD();
 
         if (cpuNum >= cpu_times_num) {
             virReportInvalidArg(cpuNum,
@@ -275,7 +275,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
 
 static const char *sysfs_system_path = SYSFS_SYSTEM_PATH;
 
-void linuxNodeInfoSetSysFSSystemPath(const char *path)
+void virHostCPUSetSysFSSystemPathLinux(const char *path)
 {
     if (path)
         sysfs_system_path = path;
@@ -330,7 +330,7 @@ virNodeGetCpuValue(const char *dir, unsigned int cpu, const char *file,
 }
 
 static unsigned long
-virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
+virHostCPUCountThreadSiblings(const char *dir, unsigned int cpu)
 {
     unsigned long ret = 0;
     char *path;
@@ -363,9 +363,9 @@ virNodeCountThreadSiblings(const char *dir, unsigned int cpu)
 }
 
 static int
-virNodeParseSocket(const char *dir,
-                   virArch arch,
-                   unsigned int cpu)
+virHostCPUParseSocket(const char *dir,
+                      virArch arch,
+                      unsigned int cpu)
 {
     int ret = virNodeGetCpuValue(dir, cpu, "topology/physical_package_id", 0);
 
@@ -385,15 +385,15 @@ ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
 ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
 ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(8)
 ATTRIBUTE_NONNULL(9)
-virNodeParseNode(const char *node,
-                 virArch arch,
-                 virBitmapPtr present_cpus_map,
-                 virBitmapPtr online_cpus_map,
-                 int threads_per_subcore,
-                 int *sockets,
-                 int *cores,
-                 int *threads,
-                 int *offline)
+virHostCPUParseNode(const char *node,
+                    virArch arch,
+                    virBitmapPtr present_cpus_map,
+                    virBitmapPtr online_cpus_map,
+                    int threads_per_subcore,
+                    int *sockets,
+                    int *cores,
+                    int *threads,
+                    int *offline)
 {
     /* Biggest value we can expect to be used as either socket id
      * or core id. Bitmaps will need to be sized accordingly */
@@ -446,7 +446,7 @@ virNodeParseNode(const char *node,
             continue;
 
         /* Parse socket */
-        if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
+        if ((sock = virHostCPUParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
         if (sock > ID_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -501,7 +501,7 @@ virNodeParseNode(const char *node,
         processors++;
 
         /* Parse socket */
-        if ((sock = virNodeParseSocket(node, arch, cpu)) < 0)
+        if ((sock = virHostCPUParseSocket(node, arch, cpu)) < 0)
             goto cleanup;
         if (!virBitmapIsBitSet(sockets_map, sock)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -528,7 +528,7 @@ virNodeParseNode(const char *node,
         if (virBitmapSetBit(cores_maps[sock], core) < 0)
             goto cleanup;
 
-        if (!(siblings = virNodeCountThreadSiblings(node, cpu)))
+        if (!(siblings = virHostCPUCountThreadSiblings(node, cpu)))
             goto cleanup;
 
         if (siblings > *threads)
@@ -576,7 +576,7 @@ virNodeParseNode(const char *node,
  * A valid configuration is one where no secondary thread is online;
  * the primary thread in a subcore is always the first one */
 static bool
-nodeHasValidSubcoreConfiguration(int threads_per_subcore)
+virHostCPUHasValidSubcoreConfiguration(int threads_per_subcore)
 {
     virBitmapPtr online_cpus = NULL;
     int cpu = -1;
@@ -586,7 +586,7 @@ nodeHasValidSubcoreConfiguration(int threads_per_subcore)
     if (threads_per_subcore <= 0)
         goto cleanup;
 
-    if (!(online_cpus = nodeGetOnlineCPUBitmap()))
+    if (!(online_cpus = virHostCPUGetOnlineBitmap()))
         goto cleanup;
 
     while ((cpu = virBitmapNextSetBit(online_cpus, cpu)) >= 0) {
@@ -606,14 +606,14 @@ nodeHasValidSubcoreConfiguration(int threads_per_subcore)
 }
 
 int
-linuxNodeInfoCPUPopulate(FILE *cpuinfo,
-                         virArch arch,
-                         unsigned int *cpus,
-                         unsigned int *mhz,
-                         unsigned int *nodes,
-                         unsigned int *sockets,
-                         unsigned int *cores,
-                         unsigned int *threads)
+virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
+                               virArch arch,
+                               unsigned int *cpus,
+                               unsigned int *mhz,
+                               unsigned int *nodes,
+                               unsigned int *sockets,
+                               unsigned int *cores,
+                               unsigned int *threads)
 {
     virBitmapPtr present_cpus_map = NULL;
     virBitmapPtr online_cpus_map = NULL;
@@ -713,10 +713,10 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 
     /* Get information about what CPUs are present in the host and what
      * CPUs are online, so that we don't have to so for each node */
-    present_cpus_map = nodeGetPresentCPUBitmap();
+    present_cpus_map = virHostCPUGetPresentBitmap();
     if (!present_cpus_map)
         goto cleanup;
-    online_cpus_map = nodeGetOnlineCPUBitmap();
+    online_cpus_map = virHostCPUGetOnlineBitmap();
     if (!online_cpus_map)
         goto cleanup;
 
@@ -753,12 +753,12 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
      *    offline/online randomly.
      * On hosts other than POWER this will be 0, in which case a simpler
      * thread-counting logic will be used  */
-    if ((threads_per_subcore = nodeGetThreadsPerSubcore(arch)) < 0)
+    if ((threads_per_subcore = virHostCPUGetThreadsPerSubcore(arch)) < 0)
         goto cleanup;
 
     /* If the subcore configuration is not valid, just pretend subcores
      * are not in use and count threads one by one */
-    if (!nodeHasValidSubcoreConfiguration(threads_per_subcore))
+    if (!virHostCPUHasValidSubcoreConfiguration(threads_per_subcore))
         threads_per_subcore = 0;
 
     while ((direrr = virDirRead(nodedir, &nodedirent, sysfs_nodedir)) > 0) {
@@ -771,12 +771,12 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
                         sysfs_system_path, nodedirent->d_name) < 0)
             goto cleanup;
 
-        if ((nodecpus = virNodeParseNode(sysfs_cpudir, arch,
-                                         present_cpus_map,
-                                         online_cpus_map,
-                                         threads_per_subcore,
-                                         &nodesockets, &nodecores,
-                                         &nodethreads, &offline)) < 0)
+        if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
+                                            present_cpus_map,
+                                            online_cpus_map,
+                                            threads_per_subcore,
+                                            &nodesockets, &nodecores,
+                                            &nodethreads, &offline)) < 0)
             goto cleanup;
 
         VIR_FREE(sysfs_cpudir);
@@ -805,12 +805,12 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
     if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_system_path) < 0)
         goto cleanup;
 
-    if ((nodecpus = virNodeParseNode(sysfs_cpudir, arch,
-                                     present_cpus_map,
-                                     online_cpus_map,
-                                     threads_per_subcore,
-                                     &nodesockets, &nodecores,
-                                     &nodethreads, &offline)) < 0)
+    if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
+                                        present_cpus_map,
+                                        online_cpus_map,
+                                        threads_per_subcore,
+                                        &nodesockets, &nodecores,
+                                        &nodethreads, &offline)) < 0)
         goto cleanup;
 
     *nodes = 1;
@@ -870,7 +870,7 @@ linuxNodeInfoCPUPopulate(FILE *cpuinfo,
 }
 
 static int
-virNodeCPUStatsAssign(virNodeCPUStatsPtr param,
+virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                       const char *name,
                       unsigned long long value)
 {
@@ -887,10 +887,10 @@ virNodeCPUStatsAssign(virNodeCPUStatsPtr param,
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / sysconf(_SC_CLK_TCK))
 
 int
-linuxNodeGetCPUStats(FILE *procstat,
-                     int cpuNum,
-                     virNodeCPUStatsPtr params,
-                     int *nparams)
+virHostCPUGetStatsLinux(FILE *procstat,
+                        int cpuNum,
+                        virNodeCPUStatsPtr params,
+                        int *nparams)
 {
     int ret = -1;
     char line[1024];
@@ -930,19 +930,19 @@ linuxNodeGetCPUStats(FILE *procstat,
                 continue;
             }
 
-            if (virNodeCPUStatsAssign(&params[0], VIR_NODE_CPU_STATS_KERNEL,
+            if (virHostCPUStatsAssign(&params[0], VIR_NODE_CPU_STATS_KERNEL,
                                       (sys + irq + softirq) * TICK_TO_NSEC) < 0)
                 goto cleanup;
 
-            if (virNodeCPUStatsAssign(&params[1], VIR_NODE_CPU_STATS_USER,
+            if (virHostCPUStatsAssign(&params[1], VIR_NODE_CPU_STATS_USER,
                                       (usr + ni) * TICK_TO_NSEC) < 0)
                 goto cleanup;
 
-            if (virNodeCPUStatsAssign(&params[2], VIR_NODE_CPU_STATS_IDLE,
+            if (virHostCPUStatsAssign(&params[2], VIR_NODE_CPU_STATS_IDLE,
                                       idle * TICK_TO_NSEC) < 0)
                 goto cleanup;
 
-            if (virNodeCPUStatsAssign(&params[3], VIR_NODE_CPU_STATS_IOWAIT,
+            if (virHostCPUStatsAssign(&params[3], VIR_NODE_CPU_STATS_IOWAIT,
                                       iowait * TICK_TO_NSEC) < 0)
                 goto cleanup;
 
@@ -1066,7 +1066,7 @@ virHostMemGetStatsLinux(FILE *meminfo,
 }
 
 static char *
-linuxGetCPUGlobalPath(const char *file)
+virHostCPUGetGlobalPathLinux(const char *file)
 {
     char *path = NULL;
 
@@ -1077,21 +1077,21 @@ linuxGetCPUGlobalPath(const char *file)
 }
 
 static char *
-linuxGetCPUPresentPath(void)
+virHostCPUGetPresentPathLinux(void)
 {
-    return linuxGetCPUGlobalPath("present");
+    return virHostCPUGetGlobalPathLinux("present");
 }
 
 static char *
-linuxGetCPUOnlinePath(void)
+virHostCPUGetOnlinePathLinux(void)
 {
-    return linuxGetCPUGlobalPath("online");
+    return virHostCPUGetGlobalPathLinux("online");
 }
 
 /* Determine the number of CPUs (maximum CPU id + 1) from a file containing
  * a list of CPU ids, like the Linux sysfs cpu/present file */
 static int
-linuxParseCPUCount(const char *path)
+virHostCPUParseCountLinux(const char *path)
 {
     char *str = NULL;
     char *tmp;
@@ -1123,7 +1123,7 @@ linuxParseCPUCount(const char *path)
  * 0-4,6-7. This function parses it and returns cpumap.
  */
 static virBitmapPtr
-linuxParseCPUmap(int max_cpuid, const char *path)
+virHostCPUParseMapLinux(int max_cpuid, const char *path)
 {
     virBitmapPtr map = NULL;
     char *str = NULL;
@@ -1145,7 +1145,7 @@ linuxParseCPUmap(int max_cpuid, const char *path)
 
 
 static virBitmapPtr
-virNodeGetSiblingsList(const char *dir, int cpu_id)
+virNodeGetSiblingsListLinux(const char *dir, int cpu_id)
 {
     char *path = NULL;
     char *buf = NULL;
@@ -1170,13 +1170,13 @@ virNodeGetSiblingsList(const char *dir, int cpu_id)
 
 
 static int
-nodeGetCPUInfo(virArch hostarch,
-               unsigned int *cpus,
-               unsigned int *mhz,
-               unsigned int *nodes,
-               unsigned int *sockets,
-               unsigned int *cores,
-               unsigned int *threads)
+virHostCPUGetInfo(virArch hostarch,
+                  unsigned int *cpus,
+                  unsigned int *mhz,
+                  unsigned int *nodes,
+                  unsigned int *sockets,
+                  unsigned int *cores,
+                  unsigned int *threads)
 {
 #ifdef __linux__
     int ret = -1;
@@ -1188,9 +1188,9 @@ nodeGetCPUInfo(virArch hostarch,
         return -1;
     }
 
-    ret = linuxNodeInfoCPUPopulate(cpuinfo, hostarch,
-                                   cpus, mhz, nodes,
-                                   sockets, cores, threads);
+    ret = virHostCPUGetInfoPopulateLinux(cpuinfo, hostarch,
+                                         cpus, mhz, nodes,
+                                         sockets, cores, threads);
     if (ret < 0)
         goto cleanup;
 
@@ -1201,7 +1201,7 @@ nodeGetCPUInfo(virArch hostarch,
     unsigned long cpu_freq;
     size_t cpu_freq_len = sizeof(cpu_freq);
 
-    *cpus = appleFreebsdNodeGetCPUCount();
+    *cpus = virHostCPUGetCountAppleFreeBSD();
     if (*cpus == -1)
         return -1;
 
@@ -1251,20 +1251,20 @@ nodeGetInfo(virNodeInfoPtr nodeinfo)
         return -1;
     nodeinfo->memory = memorybytes / 1024;
 
-    if (nodeGetCPUInfo(hostarch,
-                       &nodeinfo->cpus, &nodeinfo->mhz,
-                       &nodeinfo->nodes, &nodeinfo->sockets,
-                       &nodeinfo->cores, &nodeinfo->threads) < 0)
+    if (virHostCPUGetInfo(hostarch,
+                          &nodeinfo->cpus, &nodeinfo->mhz,
+                          &nodeinfo->nodes, &nodeinfo->sockets,
+                          &nodeinfo->cores, &nodeinfo->threads) < 0)
         return -1;
 
     return 0;
 }
 
 int
-nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
-                virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
-                int *nparams ATTRIBUTE_UNUSED,
-                unsigned int flags)
+virHostCPUGetStats(int cpuNum ATTRIBUTE_UNUSED,
+                   virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
+                   int *nparams ATTRIBUTE_UNUSED,
+                   unsigned int flags)
 {
     virCheckFlags(0, -1);
 
@@ -1277,13 +1277,13 @@ nodeGetCPUStats(int cpuNum ATTRIBUTE_UNUSED,
                                  _("cannot open %s"), PROCSTAT_PATH);
             return -1;
         }
-        ret = linuxNodeGetCPUStats(procstat, cpuNum, params, nparams);
+        ret = virHostCPUGetStatsLinux(procstat, cpuNum, params, nparams);
         VIR_FORCE_FCLOSE(procstat);
 
         return ret;
     }
 #elif defined(__FreeBSD__)
-    return freebsdNodeGetCPUStats(cpuNum, params, nparams);
+    return virHostCPUGetStatsFreeBSD(cpuNum, params, nparams);
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node CPU stats not implemented on this platform"));
@@ -1349,7 +1349,7 @@ virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetCPUCount(void)
+virHostCPUGetCount(void)
 {
 #if defined(__linux__)
     /* To support older kernels that lack cpu/present, such as 2.6.18
@@ -1361,11 +1361,11 @@ nodeGetCPUCount(void)
     char *cpupath = NULL;
     int ncpu = -1;
 
-    if (!(present_path = linuxGetCPUPresentPath()))
+    if (!(present_path = virHostCPUGetPresentPathLinux()))
         return -1;
 
     if (virFileExists(present_path)) {
-        ncpu = linuxParseCPUCount(present_path);
+        ncpu = virHostCPUParseCountLinux(present_path);
         goto cleanup;
     }
 
@@ -1393,7 +1393,7 @@ nodeGetCPUCount(void)
     VIR_FREE(cpupath);
     return ncpu;
 #elif defined(__FreeBSD__) || defined(__APPLE__)
-    return appleFreebsdNodeGetCPUCount();
+    return virHostCPUGetCountAppleFreeBSD();
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("host cpu counting not implemented on this platform"));
@@ -1402,22 +1402,22 @@ nodeGetCPUCount(void)
 }
 
 virBitmapPtr
-nodeGetPresentCPUBitmap(void)
+virHostCPUGetPresentBitmap(void)
 {
 #ifdef __linux__
     virBitmapPtr present_cpus = NULL;
     char *present_path = NULL;
     int npresent_cpus;
 
-    if ((npresent_cpus = nodeGetCPUCount()) < 0)
+    if ((npresent_cpus = virHostCPUGetCount()) < 0)
         goto cleanup;
 
-    if (!(present_path = linuxGetCPUPresentPath()))
+    if (!(present_path = virHostCPUGetPresentPathLinux()))
         goto cleanup;
 
     /* If the cpu/present file is available, parse it and exit */
     if (virFileExists(present_path)) {
-        present_cpus = linuxParseCPUmap(npresent_cpus, present_path);
+        present_cpus = virHostCPUParseMapLinux(npresent_cpus, present_path);
         goto cleanup;
     }
 
@@ -1440,7 +1440,7 @@ nodeGetPresentCPUBitmap(void)
 }
 
 virBitmapPtr
-nodeGetOnlineCPUBitmap(void)
+virHostCPUGetOnlineBitmap(void)
 {
 #ifdef __linux__
     char *online_path = NULL;
@@ -1448,14 +1448,14 @@ nodeGetOnlineCPUBitmap(void)
     virBitmapPtr cpumap;
     int present;
 
-    present = nodeGetCPUCount();
+    present = virHostCPUGetCount();
     if (present < 0)
         return NULL;
 
-    if (!(online_path = linuxGetCPUOnlinePath()))
+    if (!(online_path = virHostCPUGetOnlinePathLinux()))
         return NULL;
     if (virFileExists(online_path)) {
-        cpumap = linuxParseCPUmap(present, online_path);
+        cpumap = virHostCPUParseMapLinux(present, online_path);
     } else {
         size_t i;
 
@@ -1792,9 +1792,9 @@ virHostMemGetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 }
 
 int
-nodeGetCPUMap(unsigned char **cpumap,
-              unsigned int *online,
-              unsigned int flags)
+virHostCPUGetMap(unsigned char **cpumap,
+                 unsigned int *online,
+                 unsigned int flags)
 {
     virBitmapPtr cpus = NULL;
     int ret = -1;
@@ -1803,9 +1803,9 @@ nodeGetCPUMap(unsigned char **cpumap,
     virCheckFlags(0, -1);
 
     if (!cpumap && !online)
-        return nodeGetCPUCount();
+        return virHostCPUGetCount();
 
-    if (!(cpus = nodeGetOnlineCPUBitmap()))
+    if (!(cpus = virHostCPUGetOnlineBitmap()))
         goto cleanup;
 
     if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)
@@ -1966,7 +1966,7 @@ virNodeCapsFillCPUInfo(const char *cpupath ATTRIBUTE_UNUSED,
 
     cpu->core_id = tmp;
 
-    if (!(cpu->siblings = virNodeGetSiblingsList(cpupath, cpu_id)))
+    if (!(cpu->siblings = virNodeGetSiblingsListLinux(cpupath, cpu_id)))
         return -1;
 
     return 0;
@@ -2312,7 +2312,7 @@ virHostMemAllocPages(unsigned int npages,
  * Returns the number of threads per subcore if subcores are in use, zero
  * if subcores are not in use, and a negative value on error */
 int
-nodeGetThreadsPerSubcore(virArch arch)
+virHostCPUGetThreadsPerSubcore(virArch arch)
 {
     int threads_per_subcore = 0;
     const char *kvmpath = "/dev/kvm";
@@ -2359,7 +2359,7 @@ nodeGetThreadsPerSubcore(virArch arch)
 /* Fallback for nodeGetThreadsPerSubcore() used when KVM headers
  * are not available on the system */
 int
-nodeGetThreadsPerSubcore(virArch arch ATTRIBUTE_UNUSED)
+virHostCPUGetThreadsPerSubcore(virArch arch ATTRIBUTE_UNUSED)
 {
     return 0;
 }

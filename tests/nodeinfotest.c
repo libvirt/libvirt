@@ -41,10 +41,10 @@ linuxTestCompareFiles(const char *cpuinfofile,
     }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
-    if (linuxNodeInfoCPUPopulate(cpuinfo, arch,
-                                 &nodeinfo.cpus, &nodeinfo.mhz,
-                                 &nodeinfo.nodes, &nodeinfo.sockets,
-                                 &nodeinfo.cores, &nodeinfo.threads) < 0) {
+    if (virHostCPUGetInfoPopulateLinux(cpuinfo, arch,
+                                       &nodeinfo.cpus, &nodeinfo.mhz,
+                                       &nodeinfo.nodes, &nodeinfo.sockets,
+                                       &nodeinfo.cores, &nodeinfo.threads) < 0) {
         if (virTestGetDebug()) {
             if (virGetLastError())
                 VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());
@@ -113,14 +113,14 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
         goto fail;
     }
 
-    if (linuxNodeGetCPUStats(NULL, 0, NULL, &nparams) < 0)
+    if (virHostCPUGetStatsLinux(NULL, 0, NULL, &nparams) < 0)
         goto fail;
 
     if (VIR_ALLOC_N(params, nparams) < 0)
         goto fail;
 
-    if (linuxNodeGetCPUStats(cpustat, VIR_NODE_CPU_STATS_ALL_CPUS, params,
-                             &nparams) < 0)
+    if (virHostCPUGetStatsLinux(cpustat, VIR_NODE_CPU_STATS_ALL_CPUS, params,
+                                &nparams) < 0)
         goto fail;
 
     if (linuxCPUStatsToBuf(&buf, VIR_NODE_CPU_STATS_ALL_CPUS,
@@ -128,7 +128,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
         goto fail;
 
     for (i = 0; i < ncpus; i++) {
-        if (linuxNodeGetCPUStats(cpustat, i, params, &nparams) < 0)
+        if (virHostCPUGetStatsLinux(cpustat, i, params, &nparams) < 0)
             goto fail;
         if (linuxCPUStatsToBuf(&buf, i, params, nparams) < 0)
             goto fail;
@@ -177,9 +177,9 @@ linuxTestNodeInfo(const void *opaque)
         goto cleanup;
     }
 
-    linuxNodeInfoSetSysFSSystemPath(sysfs_prefix);
+    virHostCPUSetSysFSSystemPathLinux(sysfs_prefix);
     result = linuxTestCompareFiles(cpuinfo, data->arch, output);
-    linuxNodeInfoSetSysFSSystemPath(NULL);
+    virHostCPUSetSysFSSystemPathLinux(NULL);
 
  cleanup:
     VIR_FREE(cpuinfo);

@@ -1060,13 +1060,13 @@ virLogManagerNew;
 
 # nodeinfo.h
 nodeCapsInitNUMA;
-nodeGetCPUCount;
-nodeGetCPUMap;
-nodeGetCPUStats;
 nodeGetInfo;
-nodeGetOnlineCPUBitmap;
-nodeGetPresentCPUBitmap;
-nodeGetThreadsPerSubcore;
+virHostCPUGetCount;
+virHostCPUGetMap;
+virHostCPUGetOnlineBitmap;
+virHostCPUGetPresentBitmap;
+virHostCPUGetStats;
+virHostCPUGetThreadsPerSubcore;
 virHostMemAllocPages;
 virHostMemGetCellsFree;
 virHostMemGetFreePages;

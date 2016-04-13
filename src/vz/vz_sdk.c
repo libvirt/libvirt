@@ -1151,7 +1151,7 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
     PRL_RESULT pret;
     int ret = -1;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = virHostCPUGetCount()) < 0)
         goto cleanup;
 
     /* get number of CPUs */

@@ -1162,7 +1162,7 @@ bhyveNodeGetCPUStats(virConnectPtr conn,
     if (virNodeGetCPUStatsEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+    return virHostCPUGetStats(cpuNum, params, nparams, flags);
 }
 
 static int
@@ -1361,7 +1361,7 @@ bhyveNodeGetCPUMap(virConnectPtr conn,
     if (virNodeGetCPUMapEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCPUMap(cpumap, online, flags);
+    return virHostCPUGetMap(cpumap, online, flags);
 }
 
 static int

@@ -23,7 +23,7 @@
 #include "nodeinfo.h"
 
 int
-nodeGetThreadsPerSubcore(virArch arch)
+virHostCPUGetThreadsPerSubcore(virArch arch)
 {
     int threads_per_subcore = 0;
 

@@ -730,7 +730,7 @@ static int virLXCControllerSetupCpuAffinity(virLXCControllerPtr ctrl)
 
     /* setaffinity fails if you set bits for CPUs which
      * aren't present, so we have to limit ourselves */
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = virHostCPUGetCount()) < 0)
         return -1;
 
     if (maxcpu > hostcpus)

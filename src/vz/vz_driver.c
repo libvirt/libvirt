@@ -919,7 +919,7 @@ vzNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
                 unsigned int *online,
                 unsigned int flags)
 {
-    return nodeGetCPUMap(cpumap, online, flags);
+    return virHostCPUGetMap(cpumap, online, flags);
 }
 
 static int
@@ -1477,7 +1477,7 @@ vzNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
                   int *nparams,
                   unsigned int flags)
 {
-    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+    return virHostCPUGetStats(cpuNum, params, nparams, flags);
 }
 
 static int

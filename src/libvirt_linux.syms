@@ -3,9 +3,9 @@
 #
 
 # nodeinfo.h
-linuxNodeGetCPUStats;
-linuxNodeInfoCPUPopulate;
-linuxNodeInfoSetSysFSSystemPath;
+virHostCPUGetInfoPopulateLinux;
+virHostCPUGetStatsLinux;
+virHostCPUSetSysFSSystemPathLinux;
 
 # Let emacs know we want case-insensitive sorting
 # Local Variables:

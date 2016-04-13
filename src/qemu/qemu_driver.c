@@ -5152,7 +5152,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     priv = vm->privateData;
 
     ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
-                                           nodeGetCPUCount(),
+                                           virHostCPUGetCount(),
                                            priv->autoCpuset);
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -5297,7 +5297,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = virHostCPUGetCount()) < 0)
         goto cleanup;
 
     priv = vm->privateData;
@@ -5545,7 +5545,7 @@ qemuDomainGetIOThreadsConfig(virDomainDefPtr targetDef,
     if (targetDef->niothreadids == 0)
         return 0;
 
-    if ((hostcpus = nodeGetCPUCount()) < 0)
+    if ((hostcpus = virHostCPUGetCount()) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(info_ret, targetDef->niothreadids) < 0)
@@ -18095,7 +18095,7 @@ qemuNodeGetCPUStats(virConnectPtr conn,
     if (virNodeGetCPUStatsEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCPUStats(cpuNum, params, nparams, flags);
+    return virHostCPUGetStats(cpuNum, params, nparams, flags);
 }
 
 
@@ -18176,7 +18176,7 @@ qemuNodeGetCPUMap(virConnectPtr conn,
     if (virNodeGetCPUMapEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetCPUMap(cpumap, online, flags);
+    return virHostCPUGetMap(cpumap, online, flags);
 }
 
 

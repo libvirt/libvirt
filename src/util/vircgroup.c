@@ -3147,7 +3147,7 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     }
 
     /* To parse account file, we need to know how many cpus are present.  */
-    if (!(cpumap = nodeGetPresentCPUBitmap()))
+    if (!(cpumap = virHostCPUGetPresentBitmap()))
         return -1;
 
     total_cpus = virBitmapSize(cpumap);
