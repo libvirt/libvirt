@@ -53,6 +53,7 @@ enum vir_net_message_type {
     VIR_NET_STREAM         = 3,
     VIR_NET_CALL_WITH_FDS  = 4,
     VIR_NET_REPLY_WITH_FDS = 5,
+    VIR_NET_STREAM_HOLE    = 6,
 };
 
 enum vir_net_message_status {
@@ -76,6 +77,7 @@ static const value_string type_strings[] = {
     { VIR_NET_STREAM,         "STREAM"         },
     { VIR_NET_CALL_WITH_FDS,  "CALL_WITH_FDS"  },
     { VIR_NET_REPLY_WITH_FDS, "REPLY_WITH_FDS" },
+    { VIR_NET_STREAM_HOLE,    "STREAM_HOLE"    },
     { -1, NULL }
 };
 

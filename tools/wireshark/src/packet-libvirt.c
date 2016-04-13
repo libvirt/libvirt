@@ -50,8 +50,12 @@ static int hf_libvirt_serial = -1;
 static int hf_libvirt_status = -1;
 static int hf_libvirt_stream = -1;
 static int hf_libvirt_num_of_fds = -1;
+static int hf_libvirt_stream_hole_length = -1;
+static int hf_libvirt_stream_hole_flags = -1;
+static int hf_libvirt_stream_hole = -1;
 int hf_libvirt_unknown = -1;
 static gint ett_libvirt = -1;
+static gint ett_libvirt_stream_hole = -1;
 
 #define XDR_PRIMITIVE_DISSECTOR(xtype, ctype, ftype)                    \
     static gboolean                                                     \
@@ -326,6 +330,33 @@ dissect_libvirt_payload_xdr_data(tvbuff_t *tvb, proto_tree *tree, gint payload_l
         dissect_libvirt_fds(tvb, start + payload_length, nfds);
 }
 
+static gboolean
+dissect_xdr_stream_hole(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
+{
+    goffset start;
+    proto_item *ti;
+
+    start = xdr_getpos(xdrs);
+    if (hf == -1) {
+        ti = proto_tree_add_item(tree, hf_libvirt_stream_hole, tvb, start, -1, ENC_NA);
+    } else {
+        header_field_info *hfinfo;
+        hfinfo = proto_registrar_get_nth(hf_libvirt_stream_hole);
+        ti = proto_tree_add_item(tree, hf, tvb, start, -1, ENC_NA);
+        proto_item_append_text(ti, " :: %s", hfinfo->name);
+    }
+    tree = proto_item_add_subtree(ti, ett_libvirt_stream_hole);
+
+    hf = hf_libvirt_stream_hole_length;
+    if (!dissect_xdr_hyper(tvb, tree, xdrs, hf)) return FALSE;
+
+    hf = hf_libvirt_stream_hole_flags;
+    if (!dissect_xdr_u_int(tvb, tree, xdrs, hf)) return FALSE;
+
+    proto_item_set_len(ti, xdr_getpos(xdrs) - start);
+    return TRUE;
+}
+
 static void
 dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
                         guint32 prog, guint32 proc, guint32 type, guint32 status)
@@ -346,6 +377,8 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
         dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, VIR_ERROR_MESSAGE_DISSECTOR);
     } else if (type == VIR_NET_STREAM) { /* implicitly, status == VIR_NET_CONTINUE */
         dissect_libvirt_stream(tvb, tree, payload_length);
+    } else if (type == VIR_NET_STREAM_HOLE) {
+        dissect_libvirt_payload_xdr_data(tvb, tree, payload_length, status, dissect_xdr_stream_hole);
     } else {
         goto unknown;
     }
@@ -525,6 +558,24 @@ proto_register_libvirt(void)
             NULL, 0x0,
             NULL, HFILL}
         },
+        { &hf_libvirt_stream_hole,
+          { "stream_hole", "libvirt.stream_hole",
+            FT_NONE, BASE_NONE,
+            NULL, 0x0,
+            NULL, HFILL}
+        },
+        { &hf_libvirt_stream_hole_length,
+          { "length", "libvirt.stream_hole.length",
+            FT_INT64, BASE_DEC,
+            NULL, 0x0,
+            NULL, HFILL}
+        },
+        { &hf_libvirt_stream_hole_flags,
+          { "flags", "libvirt.stream_hole.flags",
+            FT_UINT32, BASE_DEC,
+            NULL, 0x0,
+            NULL, HFILL}
+        },
         { &hf_libvirt_unknown,
           { "unknown", "libvirt.unknown",
             FT_BYTES, BASE_NONE,
@@ -535,6 +586,7 @@ proto_register_libvirt(void)
 
     static gint *ett[] = {
         VIR_DYNAMIC_ETTSET
+        &ett_libvirt_stream_hole,
         &ett_libvirt
     };
 
