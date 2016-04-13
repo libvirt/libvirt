@@ -23,6 +23,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "rpc/virnetprotocol.h"
 
 VIR_LOG_INIT("libvirt.stream");
 
@@ -330,7 +331,7 @@ virStreamSendAll(virStreamPtr stream,
                  void *opaque)
 {
     char *bytes = NULL;
-    int want = 1024*64;
+    size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     VIR_DEBUG("stream=%p, handler=%p, opaque=%p", stream, handler, opaque);
 
@@ -423,7 +424,7 @@ virStreamRecvAll(virStreamPtr stream,
                  void *opaque)
 {
     char *bytes = NULL;
-    int want = 1024*64;
+    size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     VIR_DEBUG("stream=%p, handler=%p, opaque=%p", stream, handler, opaque);
 
