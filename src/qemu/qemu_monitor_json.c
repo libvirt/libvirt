@@ -1483,17 +1483,6 @@ qemuMonitorJSONUpdateVideoMemorySize(qemuMonitorPtr mon,
         }
         video->vram = prop.val.ul / 1024;
 
-        if (video->vram64 != 0) {
-            if (qemuMonitorJSONGetObjectProperty(mon, path,
-                                                 "vram64_size_mb", &prop) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("QOM Object '%s' has no property 'vram64_size_mb'"),
-                               path);
-                return -1;
-            }
-            video->vram64 = prop.val.ul / 1024;
-        }
-
         if (qemuMonitorJSONGetObjectProperty(mon, path, "ram_size", &prop) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("QOM Object '%s' has no property 'ram_size'"),
@@ -1555,7 +1544,7 @@ qemuMonitorJSONUpdateVideoVram64Size(qemuMonitorPtr mon,
                                path);
                 return -1;
             }
-            video->vram64 = prop.val.ul / 1024;
+            video->vram64 = prop.val.ul * 1024;
         }
         break;
     case VIR_DOMAIN_VIDEO_TYPE_VGA:
