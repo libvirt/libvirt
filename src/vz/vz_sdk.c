@@ -2712,7 +2712,7 @@ static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
 static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     virDomainGraphicsDefPtr gr;
-    virDomainGraphicsListenDefPtr listen;
+    virDomainGraphicsListenDefPtr gListen;
     PRL_RESULT pret;
     int ret  = -1;
 
@@ -2735,10 +2735,10 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
-    if ((listen = virDomainGraphicsGetListen(gr, 0))) {
-        if (!listen->address)
+    if ((gListen = virDomainGraphicsGetListen(gr, 0))) {
+        if (!gListen->address)
             goto cleanup;
-        pret = PrlVmCfg_SetVNCHostName(sdkdom, listen->address);
+        pret = PrlVmCfg_SetVNCHostName(sdkdom, gListen->address);
         prlsdkCheckRetGoto(pret, cleanup);
     }
 

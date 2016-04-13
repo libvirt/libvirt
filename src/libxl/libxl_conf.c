@@ -1424,7 +1424,7 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
              libxl_device_vfb *x_vfb)
 {
     unsigned short port;
-    virDomainGraphicsListenDefPtr listen = NULL;
+    virDomainGraphicsListenDefPtr gListen = NULL;
 
     libxl_device_vfb_init(x_vfb);
 
@@ -1451,11 +1451,11 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
             }
             x_vfb->vnc.display = l_vfb->data.vnc.port - LIBXL_VNC_PORT_MIN;
 
-            if ((listen = virDomainGraphicsGetListen(l_vfb, 0)) &&
-                listen->address) {
+            if ((gListen = virDomainGraphicsGetListen(l_vfb, 0)) &&
+                gListen->address) {
                 /* libxl_device_vfb_init() does VIR_STRDUP("127.0.0.1") */
                 VIR_FREE(x_vfb->vnc.listen);
-                if (VIR_STRDUP(x_vfb->vnc.listen, listen->address) < 0)
+                if (VIR_STRDUP(x_vfb->vnc.listen, gListen->address) < 0)
                     return -1;
             }
             if (VIR_STRDUP(x_vfb->vnc.passwd, l_vfb->data.vnc.auth.passwd) < 0)
@@ -1539,7 +1539,7 @@ libxlMakeBuildInfoVfb(virPortAllocatorPtr graphicsports,
     for (i = 0; i < def->ngraphics; i++) {
         virDomainGraphicsDefPtr l_vfb = def->graphics[i];
         unsigned short port;
-        virDomainGraphicsListenDefPtr listen = NULL;
+        virDomainGraphicsListenDefPtr gListen = NULL;
 
         if (l_vfb->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
             continue;
@@ -1553,9 +1553,9 @@ libxlMakeBuildInfoVfb(virPortAllocatorPtr graphicsports,
         }
         b_info->u.hvm.spice.port = l_vfb->data.spice.port;
 
-        if ((listen = virDomainGraphicsGetListen(l_vfb, 0)) &&
-            listen->address &&
-            VIR_STRDUP(b_info->u.hvm.spice.host, listen->address) < 0)
+        if ((gListen = virDomainGraphicsGetListen(l_vfb, 0)) &&
+            gListen->address &&
+            VIR_STRDUP(b_info->u.hvm.spice.host, gListen->address) < 0)
             return -1;
 
         if (VIR_STRDUP(b_info->u.hvm.keymap, l_vfb->data.spice.keymap) < 0)

@@ -3403,7 +3403,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 int
 virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
 {
-    virDomainGraphicsListenDefPtr listen;
+    virDomainGraphicsListenDefPtr gListen;
 
     if (def->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -3425,10 +3425,10 @@ virVMXFormatVNC(virDomainGraphicsDefPtr def, virBufferPtr buffer)
                           def->data.vnc.port);
     }
 
-    if ((listen = virDomainGraphicsGetListen(def, 0)) &&
-        listen->address) {
+    if ((gListen = virDomainGraphicsGetListen(def, 0)) &&
+        gListen->address) {
         virBufferAsprintf(buffer, "RemoteDisplay.vnc.ip = \"%s\"\n",
-                          listen->address);
+                          gListen->address);
     }
 
     if (def->data.vnc.keymap != NULL) {

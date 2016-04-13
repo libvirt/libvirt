@@ -314,7 +314,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
 {
     qemuMigrationCookieGraphicsPtr mig = NULL;
     const char *listenAddr;
-    virDomainGraphicsListenDefPtr listen = virDomainGraphicsGetListen(def, 0);
+    virDomainGraphicsListenDefPtr gListen = virDomainGraphicsGetListen(def, 0);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_ALLOC(mig) < 0)
@@ -324,7 +324,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
     if (mig->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         mig->port = def->data.vnc.port;
 
-        if (!listen || !(listenAddr = listen->address))
+        if (!gListen || !(listenAddr = gListen->address))
             listenAddr = cfg->vncListen;
 
 #ifdef WITH_GNUTLS
@@ -339,7 +339,7 @@ qemuMigrationCookieGraphicsAlloc(virQEMUDriverPtr driver,
         else
             mig->tlsPort = -1;
 
-        if (!listen || !(listenAddr = listen->address))
+        if (!gListen || !(listenAddr = gListen->address))
             listenAddr = cfg->spiceListen;
 
 #ifdef WITH_GNUTLS
