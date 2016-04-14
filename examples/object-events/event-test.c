@@ -11,6 +11,7 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
+#define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 #define STREQ(a, b) (strcmp(a, b) == 0)
 
 #ifndef ATTRIBUTE_UNUSED
@@ -716,31 +717,51 @@ stop(int sig)
 }
 
 
+struct domainEventData {
+    int event;
+    int id;
+    virConnectDomainEventGenericCallback cb;
+    const char *name;
+};
+
+
+#define DOMAIN_EVENT(event, callback)                                          \
+    {event, -1, VIR_DOMAIN_EVENT_CALLBACK(callback), #event}
+
+struct domainEventData domainEvents[] = {
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_LIFECYCLE, myDomainEventCallback2),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_REBOOT, myDomainEventRebootCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_RTC_CHANGE, myDomainEventRTCChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_WATCHDOG, myDomainEventWatchdogCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_IO_ERROR, myDomainEventIOErrorCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR, myDomainEventControlErrorCallback),
+    /* VIR_DOMAIN_EVENT_ID_BLOCK_JOB */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DISK_CHANGE, myDomainEventDiskChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_TRAY_CHANGE, myDomainEventTrayChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_PMWAKEUP, myDomainEventPMWakeupCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_PMSUSPEND, myDomainEventPMSuspendCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE, myDomainEventBalloonChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK, myDomainEventPMSuspendDiskCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED, myDomainEventDeviceRemovedCallback),
+    /* VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_TUNABLE, myDomainEventTunableCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE, myDomainEventAgentLifecycleCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_ADDED, myDomainEventDeviceAddedCallback),
+    /* VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION */
+    /* VIR_DOMAIN_EVENT_ID_JOB_COMPLETED */
+    /* VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED */
+};
+
 int
 main(int argc, char **argv)
 {
     int ret = EXIT_FAILURE;
     virConnectPtr dconn = NULL;
     int callback1ret = -1;
-    int callback2ret = -1;
-    int callback3ret = -1;
-    int callback4ret = -1;
-    int callback5ret = -1;
-    int callback6ret = -1;
-    int callback7ret = -1;
-    int callback8ret = -1;
-    int callback9ret = -1;
-    int callback10ret = -1;
-    int callback11ret = -1;
-    int callback12ret = -1;
-    int callback13ret = -1;
-    int callback14ret = -1;
-    int callback15ret = -1;
     int callback16ret = -1;
-    int callback17ret = -1;
-    int callback18ret = -1;
-    int callback19ret = -1;
     struct sigaction action_stop;
+    size_t i;
 
     memset(&action_stop, 0, sizeof(action_stop));
 
@@ -782,118 +803,33 @@ main(int argc, char **argv)
 
     printf("Registering event callbacks\n");
 
-    /* Add 2 callbacks to prove this works with more than just one */
     callback1ret = virConnectDomainEventRegister(dconn, myDomainEventCallback1,
                                                  strdup("callback 1"), myFreeFunc);
-    callback2ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_LIFECYCLE,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventCallback2),
-                                                    strdup("callback 2"), myFreeFunc);
-    callback3ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_REBOOT,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventRebootCallback),
-                                                    strdup("callback reboot"), myFreeFunc);
-    callback4ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_RTC_CHANGE,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventRTCChangeCallback),
-                                                    strdup("callback rtcchange"), myFreeFunc);
-    callback5ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_WATCHDOG,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventWatchdogCallback),
-                                                    strdup("callback watchdog"), myFreeFunc);
-    callback6ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_IO_ERROR,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventIOErrorCallback),
-                                                    strdup("callback io error"), myFreeFunc);
-    callback7ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_GRAPHICS,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventGraphicsCallback),
-                                                    strdup("callback graphics"), myFreeFunc);
-    callback8ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_CONTROL_ERROR,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventControlErrorCallback),
-                                                    strdup("callback control error"), myFreeFunc);
-    callback9ret = virConnectDomainEventRegisterAny(dconn,
-                                                    NULL,
-                                                    VIR_DOMAIN_EVENT_ID_DISK_CHANGE,
-                                                    VIR_DOMAIN_EVENT_CALLBACK(myDomainEventDiskChangeCallback),
-                                                    strdup("disk change"), myFreeFunc);
-    callback10ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_TRAY_CHANGE,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventTrayChangeCallback),
-                                                     strdup("tray change"), myFreeFunc);
-    callback11ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_PMWAKEUP,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMWakeupCallback),
-                                                     strdup("pmwakeup"), myFreeFunc);
-    callback12ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_PMSUSPEND,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMSuspendCallback),
-                                                     strdup("pmsuspend"), myFreeFunc);
-    callback13ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventBalloonChangeCallback),
-                                                     strdup("callback balloonchange"), myFreeFunc);
-    callback14ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventPMSuspendDiskCallback),
-                                                     strdup("pmsuspend-disk"), myFreeFunc);
-    callback15ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventDeviceRemovedCallback),
-                                                     strdup("device removed"), myFreeFunc);
+
+    /* register common domain callbacks */
+    for (i = 0; i < ARRAY_CARDINALITY(domainEvents); i++) {
+        struct domainEventData *event = domainEvents + i;
+
+        event->id = virConnectDomainEventRegisterAny(dconn, NULL,
+                                                     event->event,
+                                                     event->cb,
+                                                     strdup(event->name),
+                                                     myFreeFunc);
+
+        if (event->id < 0) {
+            fprintf(stderr, "Failed to register event '%s'\n", event->name);
+            goto cleanup;
+        }
+    }
+
     callback16ret = virConnectNetworkEventRegisterAny(dconn,
                                                       NULL,
                                                       VIR_NETWORK_EVENT_ID_LIFECYCLE,
                                                       VIR_NETWORK_EVENT_CALLBACK(myNetworkEventCallback),
                                                       strdup("net callback"), myFreeFunc);
-    callback17ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_TUNABLE,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventTunableCallback),
-                                                     strdup("tunable"), myFreeFunc);
-    callback18ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventAgentLifecycleCallback),
-                                                     strdup("guest agent lifecycle"), myFreeFunc);
-    callback19ret = virConnectDomainEventRegisterAny(dconn,
-                                                     NULL,
-                                                     VIR_DOMAIN_EVENT_ID_DEVICE_ADDED,
-                                                     VIR_DOMAIN_EVENT_CALLBACK(myDomainEventDeviceAddedCallback),
-                                                     strdup("device added"), myFreeFunc);
 
     if ((callback1ret == -1) ||
-        (callback2ret == -1) ||
-        (callback3ret == -1) ||
-        (callback4ret == -1) ||
-        (callback5ret == -1) ||
-        (callback6ret == -1) ||
-        (callback7ret == -1) ||
-        (callback9ret == -1) ||
-        (callback10ret == -1) ||
-        (callback11ret == -1) ||
-        (callback12ret == -1) ||
-        (callback13ret == -1) ||
-        (callback14ret == -1) ||
-        (callback15ret == -1) ||
-        (callback16ret == -1) ||
-        (callback17ret == -1) ||
-        (callback18ret == -1) ||
-        (callback19ret == -1))
+        (callback16ret == -1))
         goto cleanup;
 
     if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
@@ -913,26 +849,14 @@ main(int argc, char **argv)
 
     printf("Deregistering event callbacks\n");
     virConnectDomainEventDeregister(dconn, myDomainEventCallback1);
-    virConnectDomainEventDeregisterAny(dconn, callback2ret);
-    virConnectDomainEventDeregisterAny(dconn, callback3ret);
-    virConnectDomainEventDeregisterAny(dconn, callback4ret);
-    virConnectDomainEventDeregisterAny(dconn, callback5ret);
-    virConnectDomainEventDeregisterAny(dconn, callback6ret);
-    virConnectDomainEventDeregisterAny(dconn, callback7ret);
-    virConnectDomainEventDeregisterAny(dconn, callback9ret);
-    virConnectDomainEventDeregisterAny(dconn, callback10ret);
-    virConnectDomainEventDeregisterAny(dconn, callback11ret);
-    virConnectDomainEventDeregisterAny(dconn, callback12ret);
-    virConnectDomainEventDeregisterAny(dconn, callback13ret);
-    virConnectDomainEventDeregisterAny(dconn, callback14ret);
-    virConnectDomainEventDeregisterAny(dconn, callback15ret);
     virConnectNetworkEventDeregisterAny(dconn, callback16ret);
-    virConnectDomainEventDeregisterAny(dconn, callback17ret);
-    virConnectDomainEventDeregisterAny(dconn, callback18ret);
-    virConnectDomainEventDeregisterAny(dconn, callback19ret);
 
-    if (callback8ret != -1)
-        virConnectDomainEventDeregisterAny(dconn, callback8ret);
+
+    printf("Deregistering domain event callbacks\n");
+    for (i = 0; i < ARRAY_CARDINALITY(domainEvents); i++) {
+        if (domainEvents[i].id > 0)
+            virConnectDomainEventDeregisterAny(dconn, domainEvents[i].id);
+    }
 
     virConnectUnregisterCloseCallback(dconn, connectClose);
     ret = EXIT_SUCCESS;
