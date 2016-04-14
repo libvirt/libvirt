@@ -4195,9 +4195,10 @@ omitted.
 Enter the namespace of I<domain> and execute the command C</path/to/binary>
 passing the requested args. The binary path is relative to the container
 root filesystem, not the host root filesystem. The binary will inherit the
-environment variables / console visible to virsh. This command only works
-when connected to the LXC hypervisor driver.  This command succeeds only
-if C</path/to/binary> has 0 exit status.
+environment variables / console visible to virsh. The command will be run
+with the same sVirt context and cgroups placement as processes within the
+container. This command only works when connected to the LXC hypervisor
+driver.  This command succeeds only if C</path/to/binary> has 0 exit status.
 
 By default the new process will run with the security label of the new
 parent container. Use the I<--noseclabel> option to instead have the

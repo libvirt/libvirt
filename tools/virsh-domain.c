@@ -9334,6 +9334,9 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
                                            0) < 0)
             _exit(EXIT_CANCELED);
 
+        if (virDomainLxcEnterCGroup(dom, 0) < 0)
+            _exit(EXIT_CANCELED);
+
         if (virDomainLxcEnterNamespace(dom,
                                        nfdlist,
                                        fdlist,
