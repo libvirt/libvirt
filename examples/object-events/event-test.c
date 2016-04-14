@@ -699,6 +699,73 @@ myDomainEventDeviceAddedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static const char *
+blockJobTypeToStr(int type)
+{
+    switch ((virDomainBlockJobType) type) {
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN:
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_LAST:
+        break;
+
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_PULL:
+        return "block pull";
+
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_COPY:
+        return "block copy";
+
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT:
+        return "block commit";
+
+    case VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT:
+        return "active layer block commit";
+    }
+
+    return "unknown";
+}
+
+
+static const char *
+blockJobStatusToStr(int status)
+{
+    switch ((virConnectDomainEventBlockJobStatus) status) {
+    case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
+        return "completed";
+
+    case VIR_DOMAIN_BLOCK_JOB_FAILED:
+        return "failed";
+
+    case VIR_DOMAIN_BLOCK_JOB_CANCELED:
+        return "cancelled";
+
+    case VIR_DOMAIN_BLOCK_JOB_READY:
+        return "ready";
+
+    case VIR_DOMAIN_BLOCK_JOB_LAST:
+        break;
+    }
+
+    return "unknown";
+}
+
+
+static int
+myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virDomainPtr dom,
+                              const char *disk,
+                              int type,
+                              int status,
+                              void *opaque)
+{
+    const char *eventName = opaque;
+
+    printf("%s EVENT: Domain %s(%d) block job callback '%s' disk '%s', "
+           "type '%s' status '%s'",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), eventName,
+           disk, blockJobTypeToStr(type), blockJobStatusToStr(status));
+    return 0;
+}
+
+
 static void
 myFreeFunc(void *opaque)
 {
@@ -736,7 +803,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_IO_ERROR, myDomainEventIOErrorCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR, myDomainEventControlErrorCallback),
-    /* VIR_DOMAIN_EVENT_ID_BLOCK_JOB */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_JOB, myDomainEventBlockJobCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DISK_CHANGE, myDomainEventDiskChangeCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_TRAY_CHANGE, myDomainEventTrayChangeCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_PMWAKEUP, myDomainEventPMWakeupCallback),
@@ -744,7 +811,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE, myDomainEventBalloonChangeCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK, myDomainEventPMSuspendDiskCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED, myDomainEventDeviceRemovedCallback),
-    /* VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2, myDomainEventBlockJobCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_TUNABLE, myDomainEventTunableCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE, myDomainEventAgentLifecycleCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_ADDED, myDomainEventDeviceAddedCallback),
