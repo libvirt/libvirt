@@ -60,6 +60,10 @@ typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
     VIR_MIGRATE_PARAM_DISKS_PORT,       VIR_TYPED_PARAM_INT,      \
     VIR_MIGRATE_PARAM_COMPRESSION,      VIR_TYPED_PARAM_STRING |  \
                                         VIR_TYPED_PARAM_MULTIPLE, \
+    VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL,         VIR_TYPED_PARAM_INT,    \
+    VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,       VIR_TYPED_PARAM_INT,    \
+    VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,      VIR_TYPED_PARAM_INT,    \
+    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,     VIR_TYPED_PARAM_ULLONG, \
     NULL
 
 
@@ -89,6 +93,11 @@ VIR_ENUM_DECL(qemuMigrationCompressMethod)
 
 struct _qemuMigrationCompression {
     unsigned long long methods;
+
+    qemuMonitorMigrationCompression params;
+
+    bool xbzrle_cache_set;
+    unsigned long long xbzrle_cache;
 };
 
 qemuMigrationCompressionPtr

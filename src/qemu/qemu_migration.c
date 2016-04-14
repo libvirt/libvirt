@@ -3424,6 +3424,10 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
                             qemuDomainAsyncJob job,
                             qemuMigrationCompressionPtr compression)
 {
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorMigrationCompressionPtr params = &compression->params;
+
     if (qemuMigrationSetOption(driver, vm,
                                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
                                compression->methods &
@@ -3438,7 +3442,25 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
                                job) < 0)
         return -1;
 
-    return 0;
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
+        return -1;
+
+    if ((params->level_set || params->threads_set || params->dthreads_set) &&
+        qemuMonitorSetMigrationCompression(priv->mon, params) < 0)
+        goto cleanup;
+
+    if (compression->xbzrle_cache_set &&
+        qemuMonitorSetMigrationCacheSize(priv->mon,
+                                         compression->xbzrle_cache) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    return ret;
 }
 
 static int
@@ -6621,6 +6643,7 @@ qemuMigrationCompressionParse(virTypedParameterPtr params,
 {
     size_t i;
     qemuMigrationCompressionPtr compression = NULL;
+    qemuMonitorMigrationCompressionPtr cparams;
 
     if (VIR_ALLOC(compression) < 0)
         return NULL;
@@ -6649,6 +6672,47 @@ qemuMigrationCompressionParse(virTypedParameterPtr params,
         compression->methods |= 1ULL << method;
     }
 
+#define GET_PARAM(PARAM, TYPE, PARENT, VALUE)                               \
+    do {                                                                    \
+        int rc;                                                             \
+                                                                            \
+        if ((rc = virTypedParamsGet ## TYPE(params, nparams,                \
+                                            PARAM, &PARENT->VALUE)) < 0)    \
+            goto error;                                                     \
+                                                                            \
+        if (rc == 1)                                                        \
+            PARENT->VALUE ## _set = true;                                   \
+    } while (0)
+
+    cparams = &compression->params;
+
+    if (params) {
+        GET_PARAM(VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL, Int,
+                  cparams, level);
+        GET_PARAM(VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS, Int,
+                  cparams, threads);
+        GET_PARAM(VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS, Int,
+                  cparams, dthreads);
+        GET_PARAM(VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE, ULLong,
+                  compression, xbzrle_cache);
+    }
+
+#undef GET_PARAM
+
+    if ((cparams->level_set || cparams->threads_set || cparams->dthreads_set) &&
+        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn multithread compression on to tune it"));
+        goto error;
+    }
+
+    if (compression->xbzrle_cache_set &&
+        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn xbzrle compression on to tune it"));
+        goto error;
+    }
+
     if (!compression->methods && (flags & VIR_MIGRATE_COMPRESSED))
         compression->methods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
 
@@ -6667,8 +6731,10 @@ qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
                              unsigned long *flags)
 {
     size_t i;
+    qemuMonitorMigrationCompressionPtr cparams = &compression->params;
 
-    if (compression->methods == 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE) {
+    if (compression->methods == 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE &&
+        !compression->xbzrle_cache_set) {
         *flags |= VIR_MIGRATE_COMPRESSED;
         return 0;
     }
@@ -6680,6 +6746,30 @@ qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
                                     qemuMigrationCompressMethodTypeToString(i)) < 0)
             return -1;
     }
+
+    if (cparams->level_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL,
+                             cparams->level) < 0)
+        return -1;
+
+    if (cparams->threads_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,
+                             cparams->threads) < 0)
+        return -1;
+
+    if (cparams->dthreads_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,
+                             cparams->dthreads) < 0)
+        return -1;
+
+    if (compression->xbzrle_cache_set &&
+        virTypedParamsAddULLong(params, nparams, maxparams,
+                                VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,
+                                compression->xbzrle_cache) < 0)
+        return -1;
 
     return 0;
 }

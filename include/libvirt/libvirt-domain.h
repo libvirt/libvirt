@@ -797,6 +797,39 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION    "compression"
 
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL:
+ *
+ * virDomainMigrate* params field: the level of compression for multithread
+ * compression as VIR_TYPED_PARAM_INT. Accepted values are in range 0-9.
+ * 0 is no compression, 1 is maximum speed and 9 is maximum compression.
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL    "compression.mt.level"
+
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS:
+ *
+ * virDomainMigrate* params field: the number of compression threads for
+ * multithread compression as VIR_TYPED_PARAM_INT.
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS "compression.mt.threads"
+
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS:
+ *
+ * virDomainMigrate* params field: the number of decompression threads for
+ * multithread compression as VIR_TYPED_PARAM_INT.
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS "compression.mt.dthreads"
+
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE:
+ *
+ * virDomainMigrate* params field: the size of page cache for xbzrle
+ * compression as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE "compression.xbzrle.cache"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
