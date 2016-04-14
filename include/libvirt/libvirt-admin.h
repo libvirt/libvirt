@@ -205,6 +205,16 @@ long long virAdmClientGetTimestamp(virAdmClientPtr client);
 int virAdmClientGetTransport(virAdmClientPtr client);
 int virAdmClientFree(virAdmClientPtr client);
 
+typedef enum {
+    VIR_CLIENT_TRANS_UNIX = 0, /* connection via UNIX socket */
+    VIR_CLIENT_TRANS_TCP,      /* connection via unencrypted TCP socket */
+    VIR_CLIENT_TRANS_TLS,      /* connection via encrypted TCP socket */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_CLIENT_TRANS_LAST
+# endif
+} virClientTransport;
+
 # ifdef __cplusplus
 }
 # endif
