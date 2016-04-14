@@ -565,7 +565,7 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetFriendlyName, prldisk)))
         goto cleanup;
 
-    if (virDomainDiskSetSource(disk, buf) < 0)
+    if (*buf != '\0' && virDomainDiskSetSource(disk, buf) < 0)
         goto cleanup;
 
     if (prlsdkGetDiskId(prldisk, isCt, &disk->bus, &disk->dst) < 0)
@@ -3183,6 +3183,7 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     PRL_DEVICE_TYPE devType;
     PRL_CLUSTERED_DEVICE_SUBTYPE scsiModel;
     char *dst = NULL;
+    const char *path = disk->src->path ? : "";
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
         devType = PDE_HARD_DISK;
@@ -3206,10 +3207,10 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     pret = PrlVmDev_SetEmulatedType(sdkdisk, emutype);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetSysName(sdkdisk, disk->src->path);
+    pret = PrlVmDev_SetSysName(sdkdisk, path);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetFriendlyName(sdkdisk, disk->src->path);
+    pret = PrlVmDev_SetFriendlyName(sdkdisk, path);
     prlsdkCheckRetGoto(pret, cleanup);
 
     drive = &disk->info.addr.drive;
