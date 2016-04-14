@@ -432,6 +432,24 @@ myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myDomainEventIOErrorReasonCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                   virDomainPtr dom,
+                                   const char *srcPath,
+                                   const char *devAlias,
+                                   int action,
+                                   const char *reason,
+                                   void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) io error (reason) path=%s alias=%s "
+           "action=%d reason=%s\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           srcPath, devAlias, action, reason);
+
+    return 0;
+}
+
+
 static const char *
 graphicsPhaseToStr(int phase)
 {
@@ -850,6 +868,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_WATCHDOG, myDomainEventWatchdogCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_IO_ERROR, myDomainEventIOErrorCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_GRAPHICS, myDomainEventGraphicsCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON, myDomainEventIOErrorReasonCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_CONTROL_ERROR, myDomainEventControlErrorCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_JOB, myDomainEventBlockJobCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DISK_CHANGE, myDomainEventDiskChangeCallback),
