@@ -500,6 +500,7 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
 {
     int ret = -1;
     virDomainGraphicsDefPtr vnc = NULL;
+    char *listenAddr = NULL;
     char *tmp;
 
     if (VIR_ALLOC(vnc) < 0)
@@ -612,6 +613,7 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
 
  cleanup:
     virDomainGraphicsDefFree(vnc);
+    VIR_FREE(listenAddr);
     return ret;
 }
 
