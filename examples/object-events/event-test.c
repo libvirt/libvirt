@@ -6,6 +6,8 @@
 #include <signal.h>
 #include <inttypes.h>
 
+#include <verify.h>
+
 #define VIR_ENUM_SENTINELS
 
 #include <libvirt/libvirt.h>
@@ -886,6 +888,9 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
 };
+
+/* make sure that the events are kept in sync */
+verify(ARRAY_CARDINALITY(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)
