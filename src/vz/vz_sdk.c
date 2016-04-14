@@ -486,6 +486,45 @@ prlsdkAddDomainVideoInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 }
 
 static int
+prlsdkGetDiskId(PRL_HANDLE disk, bool isCt, int *bus, char **dst)
+{
+    PRL_RESULT pret;
+    PRL_UINT32 pos, ifType;
+
+    pret = PrlVmDev_GetStackIndex(disk, &pos);
+    prlsdkCheckRetExit(pret, -1);
+
+    /* Let physical devices added to CT look like SATA disks */
+    if (isCt) {
+        ifType = PMS_SATA_DEVICE;
+    } else {
+        pret = PrlVmDev_GetIfaceType(disk, &ifType);
+        prlsdkCheckRetExit(pret, -1);
+    }
+
+    switch (ifType) {
+    case PMS_IDE_DEVICE:
+        *bus = VIR_DOMAIN_DISK_BUS_IDE;
+        *dst = virIndexToDiskName(pos, "hd");
+        break;
+    case PMS_SCSI_DEVICE:
+        *bus = VIR_DOMAIN_DISK_BUS_SCSI;
+        *dst = virIndexToDiskName(pos, "sd");
+        break;
+    case PMS_SATA_DEVICE:
+        *bus = VIR_DOMAIN_DISK_BUS_SATA;
+        *dst = virIndexToDiskName(pos, "sd");
+        break;
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown disk bus: %X"), ifType);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 prlsdkGetDiskInfo(vzDriverPtr driver,
                   PRL_HANDLE prldisk,
                   virDomainDiskDefPtr disk,
@@ -495,9 +534,8 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     char *buf = NULL;
     PRL_RESULT pret;
     PRL_UINT32 emulatedType;
-    PRL_UINT32 ifType;
-    PRL_UINT32 pos;
     virDomainDeviceDriveAddressPtr address;
+    int busIdx, devIdx;
     int ret = -1;
 
     pret = PrlVmDev_GetEmulatedType(prldisk, &emulatedType);
@@ -530,49 +568,16 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     if (virDomainDiskSetSource(disk, buf) < 0)
         goto cleanup;
 
-    /* Let physical devices added to CT look like SATA disks */
-    if (isCt) {
-        ifType = PMS_SATA_DEVICE;
-    } else {
-        pret = PrlVmDev_GetIfaceType(prldisk, &ifType);
-        prlsdkCheckRetGoto(pret, cleanup);
-    }
+    if (prlsdkGetDiskId(prldisk, isCt, &disk->bus, &disk->dst) < 0)
+        goto cleanup;
 
-    pret = PrlVmDev_GetStackIndex(prldisk, &pos);
-    prlsdkCheckRetGoto(pret, cleanup);
+    if (virDiskNameToBusDeviceIndex(disk, &busIdx, &devIdx) < 0)
+        goto cleanup;
 
     address = &disk->info.addr.drive;
-    switch (ifType) {
-    case PMS_IDE_DEVICE:
-        disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-        disk->dst = virIndexToDiskName(pos, "hd");
-        address->bus = pos / 2;
-        address->target = 0;
-        address->unit = pos % 2;
-        break;
-    case PMS_SCSI_DEVICE:
-        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-        disk->dst = virIndexToDiskName(pos, "sd");
-        address->bus = 0;
-        address->target = 0;
-        address->unit = pos;
-        break;
-    case PMS_SATA_DEVICE:
-        disk->bus = VIR_DOMAIN_DISK_BUS_SATA;
-        disk->dst = virIndexToDiskName(pos, "sd");
-        address->bus = 0;
-        address->target = 0;
-        address->unit = pos;
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown disk bus: %X"), ifType);
-        goto cleanup;
-        break;
-    }
-
-    if (!disk->dst)
-        goto cleanup;
+    address->bus = busIdx;
+    address->target = 0;
+    address->unit = devIdx;
 
     disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
