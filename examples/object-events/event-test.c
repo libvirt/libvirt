@@ -6,6 +6,8 @@
 #include <signal.h>
 #include <inttypes.h>
 
+#define VIR_ENUM_SENTINELS
+
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
@@ -41,6 +43,9 @@ connectClose(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_CONNECT_CLOSE_REASON_CLIENT:
         fprintf(stderr, "Connection closed due to client request\n");
         return;
+
+    case VIR_CONNECT_CLOSE_REASON_LAST:
+        break;
     };
 
     fprintf(stderr, "Connection closed due to unknown reason\n");
@@ -77,6 +82,9 @@ eventToString(int event)
 
         case VIR_DOMAIN_EVENT_CRASHED:
             return "Crashed";
+
+        case VIR_DOMAIN_EVENT_LAST:
+            break;
     }
 
     return "unknown";
@@ -101,6 +109,9 @@ eventDetailToString(int event,
 
             case  VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT:
                 return "Snapshot";
+
+            case VIR_DOMAIN_EVENT_DEFINED_LAST:
+                break;
             }
             break;
 
@@ -111,6 +122,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_UNDEFINED_RENAMED:
                 return "Renamed";
+
+            case VIR_DOMAIN_EVENT_UNDEFINED_LAST:
+                break;
             }
             break;
 
@@ -130,6 +144,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_STARTED_WAKEUP:
                 return "Event wakeup";
+
+            case VIR_DOMAIN_EVENT_STARTED_LAST:
+                break;
             }
             break;
 
@@ -161,6 +178,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED:
                 return "Post-copy Error";
+
+            case VIR_DOMAIN_EVENT_SUSPENDED_LAST:
+                break;
             }
             break;
 
@@ -177,6 +197,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_RESUMED_POSTCOPY:
                 return "Post-copy";
+
+            case VIR_DOMAIN_EVENT_RESUMED_LAST:
+                break;
             }
             break;
 
@@ -202,6 +225,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
                 return "Snapshot";
+
+            case VIR_DOMAIN_EVENT_STOPPED_LAST:
+                break;
             }
             break;
 
@@ -210,6 +236,8 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
                 return "Finished";
 
+            case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
+                break;
             }
             break;
 
@@ -220,6 +248,9 @@ eventDetailToString(int event,
 
             case VIR_DOMAIN_EVENT_PMSUSPENDED_DISK:
                 return "Disk";
+
+            case VIR_DOMAIN_EVENT_PMSUSPENDED_LAST:
+                break;
             }
             break;
 
@@ -227,7 +258,13 @@ eventDetailToString(int event,
            switch ((virDomainEventCrashedDetailType) detail) {
            case VIR_DOMAIN_EVENT_CRASHED_PANICKED:
                return "Panicked";
+
+           case VIR_DOMAIN_EVENT_CRASHED_LAST:
+               break;
            }
+           break;
+
+        case VIR_DOMAIN_EVENT_LAST:
            break;
     }
 
@@ -251,6 +288,8 @@ networkEventToString(int event)
         case VIR_NETWORK_EVENT_STOPPED:
             return "Stopped";
 
+        case VIR_NETWORK_EVENT_LAST:
+            break;
     }
 
     return "unknown";
@@ -266,6 +305,9 @@ guestAgentLifecycleEventStateToString(int event)
 
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED:
         return "Connected";
+
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST:
+        break;
     }
 
     return "unknown";
@@ -284,6 +326,9 @@ guestAgentLifecycleEventReasonToString(int event)
 
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL:
         return "Channel event";
+
+    case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST:
+        break;
     }
 
     return "unknown";
@@ -398,6 +443,9 @@ graphicsPhaseToStr(int phase)
 
     case VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT:
         return "disconnected";
+
+    case VIR_DOMAIN_EVENT_GRAPHICS_LAST:
+        break;
     }
 
     return "unknown";
@@ -457,6 +505,9 @@ diskChangeReasonToStr(int reason)
 
     case VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START:
         return "disk dropped due to startupPolicy";
+
+    case VIR_DOMAIN_EVENT_DISK_CHANGE_LAST:
+        break;
     }
 
     return "unknown";
@@ -488,6 +539,9 @@ trayChangeReasonToStr(int reason)
 
     case VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE:
         return "close";
+
+    case VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST:
+        break;
     }
 
     return "unknown";
