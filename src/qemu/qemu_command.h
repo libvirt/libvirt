@@ -63,8 +63,7 @@ virCommandPtr qemuBuildCommandLine(virConnectPtr conn,
                                    int **nicindexes,
                                    const char *domainLibDir,
                                    const char *domainChannelTargetDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11)
-    ATTRIBUTE_NONNULL(17) ATTRIBUTE_NONNULL(18);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(16) ATTRIBUTE_NONNULL(17);
 
 /* Generate '-device' string for chardev device */
 int
