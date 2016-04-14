@@ -943,3 +943,32 @@ virNetServerSetThreadPoolParameters(virNetServerPtr srv,
     virObjectUnlock(srv);
     return ret;
 }
+
+int
+virNetServerGetClients(virNetServerPtr srv,
+                       virNetServerClientPtr **clts)
+{
+    int ret = -1;
+    size_t i;
+    size_t nclients = 0;
+    virNetServerClientPtr *list = NULL;
+
+    virObjectLock(srv);
+
+    for (i = 0; i < srv->nclients; i++) {
+        virNetServerClientPtr client = virObjectRef(srv->clients[i]);
+        if (VIR_APPEND_ELEMENT(list, nclients, client) < 0) {
+            virObjectUnref(client);
+            goto cleanup;
+        }
+    }
+
+    *clts = list;
+    list = NULL;
+    ret = nclients;
+
+ cleanup:
+    virObjectListFreeCount(list, nclients);
+    virObjectUnlock(srv);
+    return ret;
+}

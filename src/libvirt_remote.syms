@@ -101,6 +101,7 @@ virNetServerAddClient;
 virNetServerAddProgram;
 virNetServerAddService;
 virNetServerClose;
+virNetServerGetClients;
 virNetServerGetName;
 virNetServerHasClients;
 virNetServerNew;
