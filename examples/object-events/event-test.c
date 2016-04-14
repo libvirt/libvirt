@@ -766,6 +766,18 @@ myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                        virDomainPtr dom,
+                                        int iteration,
+                                        void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) migration iteration '%d'\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), iteration);
+    return 0;
+}
+
+
 static void
 myFreeFunc(void *opaque)
 {
@@ -815,7 +827,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_TUNABLE, myDomainEventTunableCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE, myDomainEventAgentLifecycleCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_ADDED, myDomainEventDeviceAddedCallback),
-    /* VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION, myDomainEventMigrationIterationCallback),
     /* VIR_DOMAIN_EVENT_ID_JOB_COMPLETED */
     /* VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED */
 };
