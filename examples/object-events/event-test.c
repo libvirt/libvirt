@@ -91,20 +91,30 @@ eventDetailToString(int event,
     const char *ret = "";
     switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
-            if (detail == VIR_DOMAIN_EVENT_DEFINED_ADDED)
+            switch ((virDomainEventDefinedDetailType) detail) {
+            case VIR_DOMAIN_EVENT_DEFINED_ADDED:
                 ret = "Added";
-            else if (detail == VIR_DOMAIN_EVENT_DEFINED_UPDATED)
+                break;
+            case VIR_DOMAIN_EVENT_DEFINED_UPDATED:
                 ret = "Updated";
-            else if (detail == VIR_DOMAIN_EVENT_DEFINED_RENAMED)
+                break;
+            case VIR_DOMAIN_EVENT_DEFINED_RENAMED:
                 ret = "Renamed";
-            else if (detail == VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT)
+                break;
+            case  VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT:
                 ret = "Snapshot";
+                break;
+            }
             break;
         case VIR_DOMAIN_EVENT_UNDEFINED:
-            if (detail == VIR_DOMAIN_EVENT_UNDEFINED_REMOVED)
+            switch ((virDomainEventUndefinedDetailType) detail) {
+            case VIR_DOMAIN_EVENT_UNDEFINED_REMOVED:
                 ret = "Removed";
-            else if (detail == VIR_DOMAIN_EVENT_UNDEFINED_RENAMED)
+                break;
+            case VIR_DOMAIN_EVENT_UNDEFINED_RENAMED:
                 ret = "Renamed";
+                break;
+            }
             break;
         case VIR_DOMAIN_EVENT_STARTED:
             switch ((virDomainEventStartedDetailType) detail) {
