@@ -916,6 +916,10 @@ if test "$with_libxl" != "no" ; then
     fi
 fi
 
+# Until there is a need to use enhancements of libxl APIs such as
+# libxl_domain_create_restore and libxl_set_vcpuaffinity, stick with
+# the APIs as defined in libxl API version 4.2.0.
+LIBXL_CFLAGS="$LIBXL_CFLAGS -DLIBXL_API_VERSION=0x040200"
 LIBS="$old_LIBS"
 CFLAGS="$old_CFLAGS"
 
