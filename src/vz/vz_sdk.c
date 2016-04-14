@@ -1309,10 +1309,11 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
                      virDomainDefPtr def, int bootIndex)
 {
     char *sdkName = NULL;
-    const char *bootName;
     PRL_HANDLE dev = PRL_INVALID_HANDLE;
     virDomainDiskDefPtr disk;
     virDomainDiskDevice device;
+    int bus;
+    char *dst = NULL;
     int ret = -1;
 
     dev = prlsdkGetDevByDevIndex(sdkdom, sdkType, sdkIndex);
@@ -1326,9 +1327,6 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
     switch (sdkType) {
     case PDE_OPTICAL_DISK:
     case PDE_HARD_DISK:
-        if (!(sdkName = prlsdkGetStringParamVar(PrlVmDev_GetFriendlyName, dev)))
-            goto cleanup;
-
         switch (sdkType) {
         case PDE_OPTICAL_DISK:
             device = VIR_DOMAIN_DISK_DEVICE_CDROM;
@@ -1349,7 +1347,11 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
             goto cleanup;
         }
 
-        bootName = disk->src->path;
+        if (prlsdkGetDiskId(dev, false, &bus, &dst) < 0)
+            goto cleanup;
+
+        if (!(bus == disk->bus && STREQ(disk->dst, dst)))
+            VIR_WARN("Unrepresentable boot order configuration");
 
         break;
     case PDE_GENERIC_NETWORK_ADAPTER:
@@ -1364,7 +1366,8 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
             goto cleanup;
         }
 
-        bootName = def->nets[bootIndex]->ifname;
+        if (STRNEQ(sdkName, def->nets[bootIndex]->ifname))
+            VIR_WARN("Unrepresentable boot order configuration");
 
         break;
     default:
@@ -1373,15 +1376,13 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
         goto cleanup;
     }
 
-    if (STRNEQ(sdkName, bootName))
-        VIR_WARN("Unrepresentable boot order configuration");
-
     ret = 0;
 
  cleanup:
 
     VIR_FREE(sdkName);
     PrlHandle_Free(dev);
+    VIR_FREE(dst);
     return ret;
 }
 
