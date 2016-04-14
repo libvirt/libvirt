@@ -2327,8 +2327,10 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/viratomic.h		\
 		util/virbitmap.c		\
 		util/virbuffer.c		\
+		util/vircgroup.c		\
 		util/vircommand.c		\
 		util/virconf.c			\
+		util/virdbus.c			\
 		util/virerror.c			\
 		util/virevent.c			\
 		util/vireventpoll.c		\
@@ -2336,6 +2338,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virgettext.c		\
 		util/virhash.c			\
 		util/virhashcode.c		\
+		util/virhostcpu.c		\
 		util/virjson.c			\
 		util/virlog.c			\
 		util/virobject.c		\
@@ -2344,6 +2347,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virrandom.c		\
 		util/virsocketaddr.c		\
 		util/virstring.c		\
+		util/virsystemd.c		\
 		util/virtime.c			\
 		util/virthread.c		\
 		util/virthreadjob.c		\

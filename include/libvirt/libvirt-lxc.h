@@ -46,6 +46,8 @@ int virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                                    virSecurityLabelPtr label,
                                    virSecurityLabelPtr oldlabel,
                                    unsigned int flags);
+int virDomainLxcEnterCGroup(virDomainPtr domain,
+                            unsigned int flags);
 
 # ifdef __cplusplus
 }

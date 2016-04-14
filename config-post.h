@@ -32,6 +32,7 @@
 # undef HAVE_LIBSASL2
 # undef WITH_CAPNG
 # undef WITH_CURL
+# undef WITH_DBUS
 # undef WITH_DTRACE_PROBES
 # undef WITH_GNUTLS
 # undef WITH_GNUTLS_GCRYPT
@@ -39,6 +40,7 @@
 # undef WITH_NUMACTL
 # undef WITH_SASL
 # undef WITH_SSH2
+# undef WITH_SYSTEMD_DAEMON
 # undef WITH_VIRTUALPORT
 # undef WITH_YAJL
 # undef WITH_YAJL2

@@ -36,6 +36,7 @@
 #ifdef WITH_APPARMOR
 # include <sys/apparmor.h>
 #endif
+#include "vircgroup.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -267,5 +268,51 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
 
  error:
     virDispatchError(NULL);
+    return -1;
+}
+
+
+/**
+ * virDomainLxcEnterCGroup:
+ * @domain: a domain object
+ * @flags: currently unused, pass 0
+ *
+ * This API is LXC specific, so it will only work with hypervisor
+ * connections to the LXC driver.
+ *
+ * Attaches the process to the control cgroups associated
+ * with the container @domain.
+ *
+ * Returns 0 on success, -1 on error
+ */
+int virDomainLxcEnterCGroup(virDomainPtr domain,
+                            unsigned int flags)
+{
+    virConnectPtr conn;
+    virCgroupPtr cgroup = NULL;
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    virCheckFlagsGoto(0, error);
+
+    if (virCgroupNewDetect(domain->id, -1, &cgroup) < 0)
+        goto error;
+
+    if (virCgroupAddTask(cgroup, getpid()) < 0)
+        goto error;
+
+    virCgroupFree(&cgroup);
+
+    return 0;
+
+ error:
+    virDispatchError(NULL);
+    virCgroupFree(&cgroup);
     return -1;
 }
