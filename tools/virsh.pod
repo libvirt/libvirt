@@ -1537,11 +1537,14 @@ to the I<uri> namespace is displayed instead of being modified.
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
-[I<--compressed>] [I<--abort-on-error>] [I<--auto-converge>] [I<--postcopy>]
+[I<--abort-on-error>] [I<--auto-converge>] [I<--postcopy>]
 [I<--postcopy-after-precopy>] I<domain> I<desturi> [I<migrateuri>]
 [I<graphicsuri>] [I<listen-address>] [I<dname>]
 [I<--timeout> B<seconds> [I<--timeout-suspend> | I<--timeout-postcopy>]]
 [I<--xml> B<file>] [I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
+[I<--compressed>] [I<--comp-methods> B<method-list>]
+[I<--comp-mt-level>] [I<--comp-mt-threads>] [I<--comp-mt-dthreads>]
+[I<--comp-xbzrle-cache>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1564,8 +1567,7 @@ enforces that no incompatible configuration changes will be made to the domain
 while the migration is underway; this flag is implicitly enabled when supported
 by the hypervisor, but can be explicitly used to reject the migration if the
 hypervisor lacks change protection support.  I<--verbose> displays the progress
-of migration.  I<--compressed> activates compression of memory pages that have
-to be transferred repeatedly during live migration. I<--abort-on-error> cancels
+of migration.  I<--abort-on-error> cancels
 the migration if a soft error (for example I/O error) happens during the
 migration. I<--auto-converge> forces convergence during live migration.
 I<--postcopy> enables post-copy logic in migration, but does not
@@ -1601,6 +1603,16 @@ if no I<--timeout-*> option is specified on the command line.  When
 I<--timeout-postcopy> is used, virsh will switch migration from pre-copy
 to post-copy upon timeout; migration has to be started with I<--postcopy>
 option for this to work.
+
+I<--compressed> activates compression, the compression method is chosen
+with I<--comp-methods>. Supported methods are "mt" and "xbzrle" and
+can be used in any combination. When no methods are specified, a hypervisor
+default methods will be used. QEMU defaults to "xbzrle". Compression methods
+can be tuned further. I<--comp-mt-level> sets compression level.
+Values are in range from 0 to 9, where 1 is maximum speed and 9 is maximum
+compression. I<--comp-mt-threads> and I<--comp-mt-dthreads> set the number
+of compress threads on source and the number of decompress threads on target
+respectively. I<--comp-xbzrle-cache> sets size of page cache in bytes.
 
 Running migration can be canceled by interrupting virsh (usually using
 C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.

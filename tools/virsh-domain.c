@@ -9783,6 +9783,26 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("compress repeated pages during live migration")
     },
+    {.name = "comp-methods",
+     .type = VSH_OT_STRING,
+     .help = N_("comma separated list of compression methods to be used")
+    },
+    {.name = "comp-mt-level",
+     .type = VSH_OT_INT,
+     .help = N_("compress level for multithread compression")
+    },
+    {.name = "comp-mt-threads",
+     .type = VSH_OT_INT,
+     .help = N_("number of compession threads for multithread compression")
+    },
+    {.name = "comp-mt-dthreads",
+     .type = VSH_OT_INT,
+     .help = N_("number of decompession threads for multithread compression")
+    },
+    {.name = "comp-xbzrle-cache",
+     .type = VSH_OT_INT,
+     .help = N_("page cache size for xbzrle compression")
+    },
     {.name = "auto-converge",
      .type = VSH_OT_BOOL,
      .help = N_("force convergence during live migration")
@@ -9863,6 +9883,9 @@ doMigrate(void *opaque)
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
+    int intOpt = 0;
+    unsigned long long ullOpt = 0;
+    int rv;
     virConnectPtr dconn = data->dconn;
 
     sigemptyset(&sigmask);
@@ -9928,6 +9951,59 @@ doMigrate(void *opaque)
         }
 
         VIR_FREE(val);
+    }
+
+    if (vshCommandOptStringReq(ctl, cmd, "comp-methods", &opt) < 0)
+        goto out;
+    if (opt) {
+        char **val = virStringSplit(opt, ",", 0);
+
+        if (virTypedParamsAddStringList(&params,
+                                        &nparams,
+                                        &maxparams,
+                                        VIR_MIGRATE_PARAM_COMPRESSION,
+                                        (const char **)val) < 0) {
+            VIR_FREE(val);
+            goto save_error;
+        }
+
+        VIR_FREE(val);
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "comp-mt-level", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "comp-mt-threads", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "comp-mt-dthreads", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(ctl, cmd, "comp-xbzrle-cache", &ullOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,
+                                    ullOpt) < 0)
+            goto save_error;
     }
 
     if (vshCommandOptStringReq(ctl, cmd, "xml", &opt) < 0)
