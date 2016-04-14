@@ -1026,9 +1026,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
     libxlDriverConfigPtr cfg;
-#ifdef LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS
-    libxl_domain_restore_params params;
-#endif
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     libxl_asyncprogress_how aop_console_how;
 
@@ -1118,20 +1115,8 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         ret = libxl_domain_create_new(cfg->ctx, &d_config,
                                       &domid, NULL, &aop_console_how);
     } else {
-#if defined(LIBXL_HAVE_DOMAIN_CREATE_RESTORE_SEND_BACK_FD)
-        params.checkpointed_stream = 0;
-        ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
-                                          restore_fd, -1, &params, NULL,
-                                          &aop_console_how);
-#elif defined(LIBXL_HAVE_DOMAIN_CREATE_RESTORE_PARAMS)
-        params.checkpointed_stream = 0;
-        ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
-                                          restore_fd, &params, NULL,
-                                          &aop_console_how);
-#else
         ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
                                           restore_fd, NULL, &aop_console_how);
-#endif
     }
     virObjectLock(vm);
 

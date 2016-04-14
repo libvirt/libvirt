@@ -69,18 +69,6 @@
 # endif
 
 
-/* libxl interface for setting VCPU affinity changed in 4.5. In fact, a new
- * parameter has been added, representative of 'VCPU soft affinity'. If one
- * does not care about it (and that's libvirt case), passing NULL is the
- * right thing to do. To mark that change, LIBXL_HAVE_VCPUINFO_SOFT_AFFINITY
- * is defined. */
-# ifdef LIBXL_HAVE_VCPUINFO_SOFT_AFFINITY
-#  define libxl_set_vcpuaffinity(ctx, domid, vcpuid, map) \
-    libxl_set_vcpuaffinity((ctx), (domid), (vcpuid), (map), NULL)
-#  define libxl_set_vcpuaffinity_all(ctx, domid, max_vcpus, map) \
-    libxl_set_vcpuaffinity_all((ctx), (domid), (max_vcpus), (map), NULL)
-# endif
-
 typedef struct _libxlDriverPrivate libxlDriverPrivate;
 typedef libxlDriverPrivate *libxlDriverPrivatePtr;
 
