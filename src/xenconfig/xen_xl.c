@@ -240,6 +240,7 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
     return 0;
 
  cleanup:
+    VIR_FREE(listenAddr);
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
