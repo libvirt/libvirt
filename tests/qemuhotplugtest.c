@@ -78,9 +78,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
-    ret = qemuTestCapsCacheInsert(driver.qemuCapsCache, testname,
-                                  priv->qemuCaps);
-    if (ret < 0)
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, testname,
+                                priv->qemuCaps) < 0)
         goto cleanup;
 
     if (!((*vm)->def = virDomainDefParseString(domxml,

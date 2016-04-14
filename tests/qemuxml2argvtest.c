@@ -407,9 +407,8 @@ testCompareXMLToArgvHelper(const void *data)
     if (virQEMUCapsGet(info->extraFlags, QEMU_CAPS_ENABLE_FIPS))
         flags |= FLAG_FIPS;
 
-    result = qemuTestCapsCacheInsert(driver.qemuCapsCache, info->name,
-                                     info->extraFlags);
-    if (result < 0)
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->name,
+                                info->extraFlags) < 0)
         goto cleanup;
 
     result = testCompareXMLToArgvFiles(xml, args, info->extraFlags,
