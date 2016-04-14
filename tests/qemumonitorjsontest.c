@@ -1593,6 +1593,66 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
 }
 
 static int
+testQemuMonitorJSONqemuMonitorJSONGetMigrationCompression(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    qemuMonitorMigrationCompression compress;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-migrate-parameters",
+                               "{"
+                               "    \"return\": {"
+                               "        \"decompress-threads\": 2,"
+                               "        \"compress-threads\": 8,"
+                               "        \"compress-level\": 1"
+                               "    }"
+                               "}") < 0) {
+        goto cleanup;
+    }
+
+    if (qemuMonitorJSONGetMigrationCompression(qemuMonitorTestGetMonitor(test),
+                                               &compress) < 0)
+        goto cleanup;
+
+    if (!compress.level_set ||
+        !compress.threads_set ||
+        !compress.dthreads_set) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "One of level, threads or dthreads flags is not set");
+        return -1;
+    }
+
+    if (compress.level != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid decompress-threads: %d, expected 1",
+                       compress.level);
+        goto cleanup;
+    }
+    if (compress.threads != 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid decompress-threads: %d, expected 8",
+                       compress.threads);
+        goto cleanup;
+    }
+    if (compress.dthreads != 2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Invalid decompress-threads: %d, expected 2",
+                       compress.dthreads);
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+
+static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
@@ -2333,6 +2393,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
+    DO_TEST(qemuMonitorJSONGetMigrationCompression);
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
