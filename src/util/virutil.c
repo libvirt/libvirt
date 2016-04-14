@@ -36,6 +36,13 @@
 #include <poll.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef MAJOR_IN_MKDEV
+# include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+# include <sys/sysmacros.h>
+#endif
+
 #include <sys/ioctl.h>
 #include <string.h>
 #include <termios.h>

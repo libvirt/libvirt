@@ -35,6 +35,13 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef MAJOR_IN_MKDEV
+# include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+# include <sys/sysmacros.h>
+#endif
+
 #include <signal.h>
 #include <dirent.h>
 #include <unistd.h>

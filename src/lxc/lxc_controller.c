@@ -28,6 +28,13 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+
+#ifdef MAJOR_IN_MKDEV
+# include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+# include <sys/sysmacros.h>
+#endif
+
 #include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>
