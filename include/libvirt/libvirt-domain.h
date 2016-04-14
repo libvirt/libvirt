@@ -787,6 +787,16 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_DISKS_PORT    "disks_port"
 
+/**
+ * VIR_MIGRATE_PARAM_COMPRESSION:
+ *
+ * virDomainMigrate* params multiple field: name of the method used to
+ * compress migration traffic. Supported compression methods: xbzrle, mt.
+ * The parameter may be specified multiple times if more than one method
+ * should be used.
+ */
+# define VIR_MIGRATE_PARAM_COMPRESSION    "compression"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,

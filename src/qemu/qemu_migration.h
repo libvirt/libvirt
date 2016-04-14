@@ -25,6 +25,9 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
+typedef struct _qemuMigrationCompression qemuMigrationCompression;
+typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
+
 /* All supported qemu migration flags.  */
 # define QEMU_MIGRATION_FLAGS                   \
     (VIR_MIGRATE_LIVE |                         \
@@ -55,6 +58,8 @@
     VIR_MIGRATE_PARAM_MIGRATE_DISKS,    VIR_TYPED_PARAM_STRING |  \
                                         VIR_TYPED_PARAM_MULTIPLE, \
     VIR_MIGRATE_PARAM_DISKS_PORT,       VIR_TYPED_PARAM_INT,      \
+    VIR_MIGRATE_PARAM_COMPRESSION,      VIR_TYPED_PARAM_STRING |  \
+                                        VIR_TYPED_PARAM_MULTIPLE, \
     NULL
 
 
@@ -73,6 +78,28 @@ typedef enum {
     QEMU_MIGRATION_PHASE_LAST
 } qemuMigrationJobPhase;
 VIR_ENUM_DECL(qemuMigrationJobPhase)
+
+typedef enum {
+    QEMU_MIGRATION_COMPRESS_XBZRLE = 0,
+    QEMU_MIGRATION_COMPRESS_MT,
+
+    QEMU_MIGRATION_COMPRESS_LAST
+} qemuMigrationCompressMethod;
+VIR_ENUM_DECL(qemuMigrationCompressMethod)
+
+struct _qemuMigrationCompression {
+    unsigned long long methods;
+};
+
+qemuMigrationCompressionPtr
+qemuMigrationCompressionParse(virTypedParameterPtr params,
+                              int nparams,
+                              unsigned long flags);
+int qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
+                                 virTypedParameterPtr *params,
+                                 int *nparams,
+                                 int *maxparams,
+                                 unsigned long *flags);
 
 int qemuMigrationJobStart(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -137,6 +164,7 @@ int qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
                                int nbdPort,
+                               qemuMigrationCompressionPtr compression,
                                unsigned long flags);
 
 int qemuMigrationPerform(virQEMUDriverPtr driver,
@@ -150,6 +178,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          size_t nmigrate_disks,
                          const char **migrate_disks,
                          int nbdPort,
+                         qemuMigrationCompressionPtr compression,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,
