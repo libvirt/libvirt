@@ -801,6 +801,19 @@ myDomainEventJobCompletedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                         virDomainPtr dom,
+                                         const char *devAlias,
+                                         void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) device removal failed: %s\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), devAlias);
+    return 0;
+}
+
+
+
 static void
 myFreeFunc(void *opaque)
 {
@@ -852,7 +865,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_ADDED, myDomainEventDeviceAddedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION, myDomainEventMigrationIterationCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
-    /* VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
 };
 
 int
