@@ -624,18 +624,11 @@ myNetworkEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-
-static int
-myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             virDomainPtr dom,
-                             virTypedParameterPtr params,
-                             int nparams,
-                             void *opaque ATTRIBUTE_UNUSED)
+static void
+eventTypedParamsPrint(virTypedParameterPtr params,
+                      int nparams)
 {
     size_t i;
-
-    printf("%s EVENT: Domain %s(%d) tunable updated:\n",
-           __func__, virDomainGetName(dom), virDomainGetID(dom));
 
     for (i = 0; i < nparams; i++) {
         switch (params[i].type) {
@@ -666,6 +659,20 @@ myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
             printf("\t%s: unknown type\n", params[i].field);
         }
     }
+}
+
+
+static int
+myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                             virDomainPtr dom,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) tunable updated:\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom));
+
+    eventTypedParamsPrint(params, nparams);
 
     return 0;
 }
@@ -778,6 +785,22 @@ myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myDomainEventJobCompletedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virDomainPtr dom,
+                                  virTypedParameterPtr params,
+                                  int nparams,
+                                  void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) job completed:\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom));
+
+    eventTypedParamsPrint(params, nparams);
+
+    return 0;
+}
+
+
 static void
 myFreeFunc(void *opaque)
 {
@@ -828,7 +851,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE, myDomainEventAgentLifecycleCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_ADDED, myDomainEventDeviceAddedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION, myDomainEventMigrationIterationCallback),
-    /* VIR_DOMAIN_EVENT_ID_JOB_COMPLETED */
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
     /* VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED */
 };
 
