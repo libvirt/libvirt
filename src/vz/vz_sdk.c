@@ -3335,6 +3335,47 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     return ret;
 }
 
+static PRL_HANDLE
+prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
+{
+    PRL_RESULT pret;
+    PRL_UINT32 hddCount;
+    size_t i;
+    PRL_HANDLE hdd = PRL_INVALID_HANDLE;
+    int bus;
+    char *dst = NULL;
+
+    pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
+    prlsdkCheckRetGoto(pret, error);
+
+    for (i = 0; i < hddCount; ++i) {
+        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
+        prlsdkCheckRetGoto(pret, error);
+
+        if (prlsdkGetDiskId(hdd, isCt, &bus, &dst) < 0)
+            goto error;
+
+        if (disk->bus == bus && STREQ(disk->dst, dst)) {
+            VIR_FREE(dst);
+            return hdd;
+        }
+
+        PrlHandle_Free(hdd);
+        hdd = PRL_INVALID_HANDLE;
+        VIR_FREE(dst);
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("No disk with bus '%s' and target '%s'"),
+                   virDomainDiskBusTypeToString(disk->bus), disk->dst);
+    return PRL_INVALID_HANDLE;
+
+ error:
+    VIR_FREE(dst);
+    PrlHandle_Free(hdd);
+    return PRL_INVALID_HANDLE;
+}
+
 int
 prlsdkAttachVolume(vzDriverPtr driver,
                    virDomainObjPtr dom,
@@ -3361,70 +3402,35 @@ prlsdkAttachVolume(vzDriverPtr driver,
     return ret;
 }
 
-static int
-prlsdkGetDiskIndex(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
-{
-    int idx = -1;
-    char *buf = NULL;
-    PRL_RESULT pret;
-    PRL_UINT32 hddCount;
-    PRL_UINT32 i;
-    PRL_HANDLE hdd = PRL_INVALID_HANDLE;
-
-    pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    for (i = 0; i < hddCount; ++i) {
-
-        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
-        prlsdkCheckRetGoto(pret, cleanup);
-
-        if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetFriendlyName, hdd)))
-            goto cleanup;
-
-        if (STRNEQ(disk->src->path, buf)) {
-
-            PrlHandle_Free(hdd);
-            hdd = PRL_INVALID_HANDLE;
-            VIR_FREE(buf);
-            continue;
-        }
-
-        VIR_FREE(buf);
-        idx = i;
-        break;
-    }
-
- cleanup:
-    PrlHandle_Free(hdd);
-    return idx;
-}
-
 int
 prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 {
-    int ret = -1, idx;
+    int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
+    PRL_HANDLE sdkdisk;
+    PRL_RESULT pret;
 
-    idx = prlsdkGetDiskIndex(privdom->sdkdom, disk);
-    if (idx < 0)
+    sdkdisk = prlsdkGetDisk(privdom->sdkdom, disk, IS_CT(dom->def));
+    if (sdkdisk == PRL_INVALID_HANDLE)
         goto cleanup;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
-    ret = prlsdkDelDisk(privdom->sdkdom, idx);
-    if (ret == 0) {
-        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job))) {
-            ret = -1;
-            goto cleanup;
-        }
-    }
+    pret = PrlVmDev_Remove(sdkdisk);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
+
+    PrlHandle_Free(sdkdisk);
     return ret;
 }
 
