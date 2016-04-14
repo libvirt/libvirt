@@ -386,6 +386,24 @@ myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static const char *
+graphicsPhaseToStr(int phase)
+{
+    switch ((virDomainEventGraphicsPhase) phase) {
+    case VIR_DOMAIN_EVENT_GRAPHICS_CONNECT:
+        return "connected";
+
+    case VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE:
+        return "initialized";
+
+    case VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT:
+        return "disconnected";
+    }
+
+    return "unknown";
+}
+
+
 static int
 myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                               virDomainPtr dom,
@@ -400,17 +418,7 @@ myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     printf("%s EVENT: Domain %s(%d) graphics ", __func__, virDomainGetName(dom),
            virDomainGetID(dom));
 
-    switch (phase) {
-    case VIR_DOMAIN_EVENT_GRAPHICS_CONNECT:
-        printf("connected ");
-        break;
-    case VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE:
-        printf("initialized ");
-        break;
-    case VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT:
-        printf("disconnected ");
-        break;
-    }
+    printf("%s ", graphicsPhaseToStr(phase));
 
     printf("local: family=%d node=%s service=%s ",
            local->family, local->node, local->service);
