@@ -3228,8 +3228,12 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
  * The reason describing why this callback is called
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0, /* oldSrcPath is set */
+    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0,
+    /* removable media changed to empty according to startup policy as source
+     * was missing. oldSrcPath is set, newSrcPath is NULL */
     VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START = 1,
+    /* disk was dropped from domain as source file was missing.
+     * oldSrcPath is set, newSrcPath is NULL */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_DISK_CHANGE_LAST
