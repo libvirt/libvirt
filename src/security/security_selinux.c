@@ -2594,9 +2594,9 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecuritySELinuxDomainSetDirLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr def,
-                                    const char *path)
+virSecuritySELinuxDomainSetPathLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr def,
+                                     const char *path)
 {
     virSecurityLabelDefPtr seclabel;
 
@@ -2652,5 +2652,5 @@ virSecurityDriver virSecurityDriverSELinux = {
     .domainGetSecurityMountOptions      = virSecuritySELinuxGetSecurityMountOptions,
     .getBaseLabel                       = virSecuritySELinuxGetBaseLabel,
 
-    .domainSetDirLabel                  = virSecuritySELinuxDomainSetDirLabel,
+    .domainSetPathLabel                 = virSecuritySELinuxDomainSetPathLabel,
 };

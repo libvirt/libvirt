@@ -600,17 +600,17 @@ virSecurityStackRestoreImageLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecurityStackDomainSetDirLabel(virSecurityManagerPtr mgr,
-                                  virDomainDefPtr vm,
-                                  const char *path)
+virSecurityStackDomainSetPathLabel(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm,
+                                   const char *path)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerDomainSetDirLabel(item->securityManager,
-                                                vm, path) < 0)
+        if (virSecurityManagerDomainSetPathLabel(item->securityManager,
+                                                 vm, path) < 0)
             rc = -1;
     }
 
@@ -667,5 +667,5 @@ virSecurityDriver virSecurityDriverStack = {
 
     .getBaseLabel                       = virSecurityStackGetBaseLabel,
 
-    .domainSetDirLabel                  = virSecurityStackDomainSetDirLabel,
+    .domainSetPathLabel                 = virSecurityStackDomainSetPathLabel,
 };

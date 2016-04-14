@@ -987,14 +987,14 @@ virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
 
 
 int
-virSecurityManagerDomainSetDirLabel(virSecurityManagerPtr mgr,
-                                    virDomainDefPtr vm,
-                                    const char *path)
+virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     const char *path)
 {
-    if (mgr->drv->domainSetDirLabel) {
+    if (mgr->drv->domainSetPathLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetDirLabel(mgr, vm, path);
+        ret = mgr->drv->domainSetPathLabel(mgr, vm, path);
         virObjectUnlock(mgr);
         return ret;
     }
