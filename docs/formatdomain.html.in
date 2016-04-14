@@ -2565,6 +2565,18 @@
             <span class='since'>Since 1.0.6 (QEMU and KVM only)</span>
           </li>
           <li>
+            The optional <code>detect_zeroes</code> attribute controls whether
+            to detect zero write requests.  The value can be "off", "on" or
+            "unmap".  First two values turn the detection off and on,
+            respectively.  The third value ("unmap") turns the detection on
+            and additionally tries to discard such areas from the image based
+            on the value of <code>discard</code> above (it will act as "on"
+            if <code>discard</code> is set to "ignore").  NB enabling the
+            detection is a compute intensive operation, but can save file
+            space and/or time on slow media.
+            <span class='since'>Since 1.3.6</span>
+          </li>
+          <li>
             The optional <code>iothread</code> attribute assigns the
             disk to an IOThread as defined by the range for the domain
             <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>

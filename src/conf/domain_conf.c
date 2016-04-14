@@ -807,6 +807,12 @@ VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "unmap",
               "ignore")
 
+VIR_ENUM_IMPL(virDomainDiskDetectZeroes, VIR_DOMAIN_DISK_DETECT_ZEROES_LAST,
+              "default",
+              "off",
+              "on",
+              "unmap")
+
 VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "none",
               "yes",
@@ -7377,6 +7383,14 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
 
         VIR_FREE(tmp);
     }
+
+    if ((tmp = virXMLPropString(cur, "detect_zeroes")) &&
+        (def->detect_zeroes = virDomainDiskDetectZeroesTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown driver detect_zeroes value '%s'"), tmp);
+        goto cleanup;
+    }
+    VIR_FREE(tmp);
 
     ret = 0;
 
@@ -19631,6 +19645,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *copy_on_read = virTristateSwitchTypeToString(def->copy_on_read);
     const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
     const char *discard = virDomainDiskDiscardTypeToString(def->discard);
+    const char *detect_zeroes = virDomainDiskDetectZeroesTypeToString(def->detect_zeroes);
 
     if (!type || !def->src->type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -19685,7 +19700,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (def->src->driverName || def->src->format > 0 || def->cachemode ||
         def->error_policy || def->rerror_policy || def->iomode ||
         def->ioeventfd || def->event_idx || def->copy_on_read ||
-        def->discard || def->iothread) {
+        def->discard || def->iothread || def->detect_zeroes) {
         virBufferAddLit(buf, "<driver");
         virBufferEscapeString(buf, " name='%s'", def->src->driverName);
         if (def->src->format > 0)
@@ -19709,6 +19724,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " discard='%s'", discard);
         if (def->iothread)
             virBufferAsprintf(buf, " iothread='%u'", def->iothread);
+        if (def->detect_zeroes)
+            virBufferAsprintf(buf, " detect_zeroes='%s'", detect_zeroes);
         virBufferAddLit(buf, "/>\n");
     }
 

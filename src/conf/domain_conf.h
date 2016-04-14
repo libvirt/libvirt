@@ -528,6 +528,15 @@ typedef enum {
     VIR_DOMAIN_DISK_DISCARD_LAST
 } virDomainDiskDiscard;
 
+typedef enum {
+    VIR_DOMAIN_DISK_DETECT_ZEROES_DEFAULT = 0,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_OFF,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_ON,
+    VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP,
+
+    VIR_DOMAIN_DISK_DETECT_ZEROES_LAST
+} virDomainDiskDetectZeroes;
+
 typedef struct _virDomainBlockIoTuneInfo virDomainBlockIoTuneInfo;
 struct _virDomainBlockIoTuneInfo {
     unsigned long long total_bytes_sec;
@@ -606,6 +615,7 @@ struct _virDomainDiskDef {
     int sgio; /* enum virDomainDeviceSGIO */
     int discard; /* enum virDomainDiskDiscard */
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
+    int detect_zeroes; /* enum virDomainDiskDetectZeroes */
     char *domain_name; /* backend domain name */
 };
 
@@ -2937,6 +2947,7 @@ VIR_ENUM_DECL(virDomainDiskIo)
 VIR_ENUM_DECL(virDomainDeviceSGIO)
 VIR_ENUM_DECL(virDomainDiskTray)
 VIR_ENUM_DECL(virDomainDiskDiscard)
+VIR_ENUM_DECL(virDomainDiskDetectZeroes)
 VIR_ENUM_DECL(virDomainDiskMirrorState)
 VIR_ENUM_DECL(virDomainController)
 VIR_ENUM_DECL(virDomainControllerModelPCI)

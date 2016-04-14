@@ -566,6 +566,7 @@ mymain(void)
     DO_TEST("disk-source-pool-mode");
 
     DO_TEST("disk-drive-discard");
+    DO_TEST("disk-drive-detect-zeroes");
 
     DO_TEST("virtio-rng-random");
     DO_TEST("virtio-rng-egd");
