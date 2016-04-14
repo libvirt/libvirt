@@ -3169,25 +3169,6 @@ int prlsdkDetachNet(vzDriverPtr driver,
     return ret;
 }
 
-static int prlsdkDelDisk(PRL_HANDLE sdkdom, int idx)
-{
-    int ret = -1;
-    PRL_RESULT pret;
-    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
-
-    pret = PrlVmCfg_GetHardDisk(sdkdom, idx, &sdkdisk);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    pret = PrlVmDev_Remove(sdkdisk);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    ret = 0;
-
- cleanup:
-    PrlHandle_Free(sdkdisk);
-    return ret;
-}
-
 static int prlsdkAddDisk(vzDriverPtr driver,
                          PRL_HANDLE sdkdom,
                          virDomainDiskDefPtr disk)
@@ -3809,6 +3790,7 @@ prlsdkDetachDomainHardDisks(PRL_HANDLE sdkdom)
     PRL_UINT32 hddCount;
     PRL_UINT32 i;
     PRL_HANDLE job;
+    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
 
     job = PrlVm_BeginEdit(sdkdom);
     if (PRL_FAILED(waitJob(job)))
@@ -3818,17 +3800,24 @@ prlsdkDetachDomainHardDisks(PRL_HANDLE sdkdom)
     prlsdkCheckRetGoto(pret, cleanup);
 
     for (i = 0; i < hddCount; ++i) {
-        ret = prlsdkDelDisk(sdkdom, i);
-        if (ret)
-            goto cleanup;
+        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &sdkdisk);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        pret = PrlVmDev_Remove(sdkdisk);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        PrlHandle_Free(sdkdisk);
+        sdkdisk = PRL_INVALID_HANDLE;
     }
 
     job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
     if (PRL_FAILED(waitJob(job)))
-        ret = -1;
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
-
+    PrlHandle_Free(sdkdisk);
     return ret;
 }
 
