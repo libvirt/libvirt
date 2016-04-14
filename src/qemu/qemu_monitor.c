@@ -2177,6 +2177,28 @@ qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorGetMigrationCompression(qemuMonitorPtr mon,
+                                   qemuMonitorMigrationCompressionPtr compress)
+{
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONGetMigrationCompression(mon, compress);
+}
+
+int
+qemuMonitorSetMigrationCompression(qemuMonitorPtr mon,
+                                   qemuMonitorMigrationCompressionPtr compress)
+{
+    VIR_DEBUG("level=%d threads=%d dthreads=%d",
+              compress->level, compress->threads, compress->dthreads);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONSetMigrationCompression(mon, compress);
+}
+
+
+int
 qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
                              qemuMonitorMigrationStatsPtr stats)
 {

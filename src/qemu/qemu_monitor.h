@@ -487,6 +487,23 @@ int qemuMonitorGetMigrationCacheSize(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
                                      unsigned long long cacheSize);
 
+typedef struct _qemuMonitorMigrationCompression qemuMonitorMigrationCompression;
+typedef qemuMonitorMigrationCompression *qemuMonitorMigrationCompressionPtr;
+struct _qemuMonitorMigrationCompression {
+    bool level_set;
+    bool threads_set;
+    bool dthreads_set;
+
+    int level;
+    int threads;
+    int dthreads;
+};
+
+int qemuMonitorGetMigrationCompression(qemuMonitorPtr mon,
+                                       qemuMonitorMigrationCompressionPtr compress);
+int qemuMonitorSetMigrationCompression(qemuMonitorPtr mon,
+                                       qemuMonitorMigrationCompressionPtr compress);
+
 typedef enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,
     QEMU_MONITOR_MIGRATION_STATUS_SETUP,
