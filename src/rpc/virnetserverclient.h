@@ -145,5 +145,6 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
 
 bool virNetServerClientNeedAuth(virNetServerClientPtr client);
 
+int virNetServerClientGetTransport(virNetServerClientPtr client);
 
 #endif /* __VIR_NET_SERVER_CLIENT_H__ */

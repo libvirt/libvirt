@@ -1568,3 +1568,25 @@ virNetServerClientStartKeepAlive(virNetServerClientPtr client)
     virObjectUnlock(client);
     return ret;
 }
+
+int
+virNetServerClientGetTransport(virNetServerClientPtr client)
+{
+    int ret = -1;
+
+    virObjectLock(client);
+
+    if (client->sock && virNetSocketIsLocal(client->sock))
+        ret = VIR_CLIENT_TRANS_UNIX;
+    else
+        ret = VIR_CLIENT_TRANS_TCP;
+
+#ifdef WITH_GNUTLS
+    if (client->tls)
+        ret = VIR_CLIENT_TRANS_TLS;
+#endif
+
+    virObjectUnlock(client);
+
+    return ret;
+}

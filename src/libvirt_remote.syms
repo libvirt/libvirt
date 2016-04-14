@@ -125,6 +125,7 @@ virNetServerClientGetIdentity;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetSELinuxContext;
+virNetServerClientGetTransport;
 virNetServerClientGetUNIXIdentity;
 virNetServerClientImmediateClose;
 virNetServerClientInit;
