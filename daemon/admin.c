@@ -81,11 +81,26 @@ remoteAdmClientInitHook(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
 /* Helpers */
 
+static virNetServerPtr
+get_nonnull_server(virNetDaemonPtr dmn, admin_nonnull_server srv)
+{
+    return virNetDaemonGetServer(dmn, srv.name);
+}
+
 static void
 make_nonnull_server(admin_nonnull_server *srv_dst,
                     virNetServerPtr srv_src)
 {
     ignore_value(VIR_STRDUP_QUIET(srv_dst->name, virNetServerGetName(srv_src)));
+}
+
+static void
+make_nonnull_client(admin_nonnull_client *clt_dst,
+                    virNetServerClientPtr clt_src)
+{
+    clt_dst->id = virNetServerClientGetID(clt_src);
+    clt_dst->timestamp = virNetServerClientGetTimestamp(clt_src);
+    clt_dst->transport = virNetServerClientGetTransport(clt_src);
 }
 
 /* Functions */

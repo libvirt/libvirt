@@ -178,3 +178,26 @@ adminServerSetThreadPoolParameters(virNetServerPtr srv,
 
     return 0;
 }
+
+int
+adminServerListClients(virNetServerPtr srv,
+                       virNetServerClientPtr **clients,
+                       unsigned int flags)
+{
+    int ret = -1;
+    virNetServerClientPtr *clts;
+
+    virCheckFlags(0, -1);
+
+    if ((ret = virNetServerGetClients(srv, &clts)) < 0)
+        goto cleanup;
+
+    if (clients) {
+        *clients = clts;
+        clts = NULL;
+    }
+
+ cleanup:
+    virObjectListFreeCount(clts, ret);
+    return ret;
+}

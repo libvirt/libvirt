@@ -46,4 +46,8 @@ adminServerSetThreadPoolParameters(virNetServerPtr srv,
                                    int nparams,
                                    unsigned int flags);
 
+int adminServerListClients(virNetServerPtr srv,
+                           virNetServerClientPtr **clients,
+                           unsigned int flags);
+
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

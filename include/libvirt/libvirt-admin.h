@@ -215,6 +215,10 @@ typedef enum {
 # endif
 } virClientTransport;
 
+int virAdmServerListClients(virAdmServerPtr srv,
+                            virAdmClientPtr **clients,
+                            unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

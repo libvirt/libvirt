@@ -55,6 +55,12 @@ get_nonnull_server(virAdmConnectPtr conn, admin_nonnull_server server)
     return virAdmGetServer(conn, server.name);
 }
 
+static virAdmClientPtr
+get_nonnull_client(virAdmServerPtr srv, admin_nonnull_client client)
+{
+    return virAdmGetClient(srv, client.id, client.timestamp, client.transport);
+}
+
 static void
 make_nonnull_server(admin_nonnull_server *srv_dst, virAdmServerPtr srv_src)
 {

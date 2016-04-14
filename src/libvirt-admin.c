@@ -848,3 +848,44 @@ virAdmServerSetThreadPoolParameters(virAdmServerPtr srv,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmServerListClients:
+ * @srv: a valid server object reference
+ * @clients: pointer to a list to store an array containing objects or NULL
+ *           if the list is not required (number of clients only)
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Collect list of all clients connected to daemon on server @srv.
+ *
+ * Returns the number of clients connected to daemon on server @srv -1 in case
+ * of a failure, setting @clients to NULL. There is a guaranteed extra element
+ * set to NULL in the @clients list returned to make the iteration easier,
+ * excluding this extra element from the final count.
+ * Caller is responsible to call virAdmClientFree() on each list element,
+ * followed by freeing @clients.
+ */
+int
+virAdmServerListClients(virAdmServerPtr srv,
+                        virAdmClientPtr **clients,
+                        unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("srv=%p, clients=%p, flags=%x", srv, clients, flags);
+
+    virResetLastError();
+    virCheckFlagsGoto(0, error);
+
+    if (clients)
+        *clients = NULL;
+
+    virCheckAdmServerReturn(srv, -1);
+    if ((ret = remoteAdminServerListClients(srv, clients, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

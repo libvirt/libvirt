@@ -39,6 +39,9 @@ const ADMIN_SERVER_LIST_MAX = 16384;
 /* Upper limit on number of threadpool parameters */
 const ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX = 32;
 
+/* Upper limit on list of clients */
+const ADMIN_CLIENT_LIST_MAX = 16384;
+
 /* A long string, which may NOT be NULL. */
 typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 
@@ -124,6 +127,17 @@ struct admin_server_set_threadpool_parameters_args {
     unsigned int flags;
 };
 
+struct admin_server_list_clients_args {
+    admin_nonnull_server srv;
+    unsigned int need_results;
+    unsigned int flags;
+};
+
+struct admin_server_list_clients_ret { /* insert@1 */
+    admin_nonnull_client clients<ADMIN_CLIENT_LIST_MAX>;
+    unsigned int ret;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -179,5 +193,10 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_SERVER_SET_THREADPOOL_PARAMETERS = 7
+    ADMIN_PROC_SERVER_SET_THREADPOOL_PARAMETERS = 7,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_SERVER_LIST_CLIENTS = 8
 };
