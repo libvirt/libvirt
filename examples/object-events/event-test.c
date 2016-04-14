@@ -23,24 +23,27 @@ connectClose(virConnectPtr conn ATTRIBUTE_UNUSED,
              int reason,
              void *opaque ATTRIBUTE_UNUSED)
 {
-    switch (reason) {
+    run = 0;
+
+    switch ((virConnectCloseReason) reason) {
     case VIR_CONNECT_CLOSE_REASON_ERROR:
         fprintf(stderr, "Connection closed due to I/O error\n");
-        break;
+        return;
+
     case VIR_CONNECT_CLOSE_REASON_EOF:
         fprintf(stderr, "Connection closed due to end of file\n");
-        break;
+        return;
+
     case VIR_CONNECT_CLOSE_REASON_KEEPALIVE:
         fprintf(stderr, "Connection closed due to keepalive timeout\n");
-        break;
+        return;
+
     case VIR_CONNECT_CLOSE_REASON_CLIENT:
         fprintf(stderr, "Connection closed due to client request\n");
-        break;
-    default:
-        fprintf(stderr, "Connection closed due to unknown reason\n");
-        break;
+        return;
     };
-    run = 0;
+
+    fprintf(stderr, "Connection closed due to unknown reason\n");
 }
 
 
