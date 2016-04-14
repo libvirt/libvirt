@@ -50,37 +50,36 @@ connectClose(virConnectPtr conn ATTRIBUTE_UNUSED,
 static const char *
 eventToString(int event)
 {
-    const char *ret = "";
     switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
-            ret = "Defined";
-            break;
+            return "Defined";
+
         case VIR_DOMAIN_EVENT_UNDEFINED:
-            ret = "Undefined";
-            break;
+            return "Undefined";
+
         case VIR_DOMAIN_EVENT_STARTED:
-            ret = "Started";
-            break;
+            return "Started";
+
         case VIR_DOMAIN_EVENT_SUSPENDED:
-            ret = "Suspended";
-            break;
+            return "Suspended";
+
         case VIR_DOMAIN_EVENT_RESUMED:
-            ret = "Resumed";
-            break;
+            return "Resumed";
+
         case VIR_DOMAIN_EVENT_STOPPED:
-            ret = "Stopped";
-            break;
+            return "Stopped";
+
         case VIR_DOMAIN_EVENT_SHUTDOWN:
-            ret = "Shutdown";
-            break;
+            return "Shutdown";
+
         case VIR_DOMAIN_EVENT_PMSUSPENDED:
-            ret = "PMSuspended";
-            break;
+            return "PMSuspended";
+
         case VIR_DOMAIN_EVENT_CRASHED:
-            ret = "Crashed";
-            break;
+            return "Crashed";
     }
-    return ret;
+
+    return "unknown";
 }
 
 
@@ -88,215 +87,206 @@ static const char *
 eventDetailToString(int event,
                     int detail)
 {
-    const char *ret = "";
     switch ((virDomainEventType) event) {
         case VIR_DOMAIN_EVENT_DEFINED:
             switch ((virDomainEventDefinedDetailType) detail) {
             case VIR_DOMAIN_EVENT_DEFINED_ADDED:
-                ret = "Added";
-                break;
+                return "Added";
+
             case VIR_DOMAIN_EVENT_DEFINED_UPDATED:
-                ret = "Updated";
-                break;
+                return "Updated";
+
             case VIR_DOMAIN_EVENT_DEFINED_RENAMED:
-                ret = "Renamed";
-                break;
+                return "Renamed";
+
             case  VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT:
-                ret = "Snapshot";
-                break;
+                return "Snapshot";
             }
             break;
+
         case VIR_DOMAIN_EVENT_UNDEFINED:
             switch ((virDomainEventUndefinedDetailType) detail) {
             case VIR_DOMAIN_EVENT_UNDEFINED_REMOVED:
-                ret = "Removed";
-                break;
+                return "Removed";
+
             case VIR_DOMAIN_EVENT_UNDEFINED_RENAMED:
-                ret = "Renamed";
-                break;
+                return "Renamed";
             }
             break;
+
         case VIR_DOMAIN_EVENT_STARTED:
             switch ((virDomainEventStartedDetailType) detail) {
             case VIR_DOMAIN_EVENT_STARTED_BOOTED:
-                ret = "Booted";
-                break;
+                return "Booted";
+
             case VIR_DOMAIN_EVENT_STARTED_MIGRATED:
-                ret = "Migrated";
-                break;
+                return "Migrated";
+
             case VIR_DOMAIN_EVENT_STARTED_RESTORED:
-                ret = "Restored";
-                break;
+                return "Restored";
+
             case VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT:
-                ret = "Snapshot";
-                break;
+                return "Snapshot";
+
             case VIR_DOMAIN_EVENT_STARTED_WAKEUP:
-                ret = "Event wakeup";
-                break;
+                return "Event wakeup";
             }
             break;
+
         case VIR_DOMAIN_EVENT_SUSPENDED:
             switch ((virDomainEventSuspendedDetailType) detail) {
             case VIR_DOMAIN_EVENT_SUSPENDED_PAUSED:
-                ret = "Paused";
-                break;
+                return "Paused";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED:
-                ret = "Migrated";
-                break;
+                return "Migrated";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_IOERROR:
-                ret = "I/O Error";
-                break;
+                return "I/O Error";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG:
-                ret = "Watchdog";
-                break;
+                return "Watchdog";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_RESTORED:
-                ret = "Restored";
-                break;
+                return "Restored";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT:
-                ret = "Snapshot";
-                break;
+                return "Snapshot";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR:
-                ret = "API error";
-                break;
+                return "API error";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY:
-                ret = "Post-copy";
-                break;
+                return "Post-copy";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED:
-                ret = "Post-copy Error";
-                break;
+                return "Post-copy Error";
             }
             break;
+
         case VIR_DOMAIN_EVENT_RESUMED:
             switch ((virDomainEventResumedDetailType) detail) {
             case VIR_DOMAIN_EVENT_RESUMED_UNPAUSED:
-                ret = "Unpaused";
-                break;
+                return "Unpaused";
+
             case VIR_DOMAIN_EVENT_RESUMED_MIGRATED:
-                ret = "Migrated";
-                break;
+                return "Migrated";
+
             case VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT:
-                ret = "Snapshot";
-                break;
+                return "Snapshot";
+
             case VIR_DOMAIN_EVENT_RESUMED_POSTCOPY:
-                ret = "Post-copy";
-                break;
+                return "Post-copy";
             }
             break;
+
         case VIR_DOMAIN_EVENT_STOPPED:
             switch ((virDomainEventStoppedDetailType) detail) {
             case VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN:
-                ret = "Shutdown";
-                break;
+                return "Shutdown";
+
             case VIR_DOMAIN_EVENT_STOPPED_DESTROYED:
-                ret = "Destroyed";
-                break;
+                return "Destroyed";
+
             case VIR_DOMAIN_EVENT_STOPPED_CRASHED:
-                ret = "Crashed";
-                break;
+                return "Crashed";
+
             case VIR_DOMAIN_EVENT_STOPPED_MIGRATED:
-                ret = "Migrated";
-                break;
+                return "Migrated";
+
             case VIR_DOMAIN_EVENT_STOPPED_SAVED:
-                ret = "Saved";
-                break;
+                return "Saved";
+
             case VIR_DOMAIN_EVENT_STOPPED_FAILED:
-                ret = "Failed";
-                break;
+                return "Failed";
+
             case VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT:
-                ret = "Snapshot";
-                break;
+                return "Snapshot";
             }
             break;
+
         case VIR_DOMAIN_EVENT_SHUTDOWN:
             switch ((virDomainEventShutdownDetailType) detail) {
             case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
-                ret = "Finished";
-                break;
+                return "Finished";
+
             }
             break;
+
         case VIR_DOMAIN_EVENT_PMSUSPENDED:
             switch ((virDomainEventPMSuspendedDetailType) detail) {
             case VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY:
-                ret = "Memory";
-                break;
+                return "Memory";
+
             case VIR_DOMAIN_EVENT_PMSUSPENDED_DISK:
-                ret = "Disk";
-                break;
+                return "Disk";
             }
             break;
+
         case VIR_DOMAIN_EVENT_CRASHED:
            switch ((virDomainEventCrashedDetailType) detail) {
            case VIR_DOMAIN_EVENT_CRASHED_PANICKED:
-               ret = "Panicked";
-               break;
+               return "Panicked";
            }
            break;
     }
-    return ret;
+
+    return "unknown";
 }
 
 
 static const char *
 networkEventToString(int event)
 {
-    const char *ret = "";
     switch ((virNetworkEventLifecycleType) event) {
         case VIR_NETWORK_EVENT_DEFINED:
-            ret = "Defined";
-            break;
+            return "Defined";
+
         case VIR_NETWORK_EVENT_UNDEFINED:
-            ret = "Undefined";
-            break;
+            return "Undefined";
+
         case VIR_NETWORK_EVENT_STARTED:
-            ret = "Started";
-            break;
+            return "Started";
+
         case VIR_NETWORK_EVENT_STOPPED:
-            ret = "Stopped";
-            break;
+            return "Stopped";
+
     }
-    return ret;
+
+    return "unknown";
 }
 
 
 static const char *
 guestAgentLifecycleEventStateToString(int event)
 {
-    const char *ret = "";
-
     switch ((virConnectDomainEventAgentLifecycleState) event) {
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED:
-        ret = "Disconnected";
-        break;
+        return "Disconnected";
 
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED:
-        ret = "Connected";
-        break;
+        return "Connected";
     }
 
-    return ret;
+    return "unknown";
 }
 
 
 static const char *
 guestAgentLifecycleEventReasonToString(int event)
 {
-    const char *ret = "";
-
     switch ((virConnectDomainEventAgentLifecycleReason) event) {
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN:
-        ret = "Unknown";
-        break;
+        return "Unknown";
 
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED:
-        ret = "Domain started";
-        break;
+        return "Domain started";
 
     case VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL:
-        ret = "Channel event";
-        break;
+        return "Channel event";
     }
 
-    return ret;
+    return "unknown";
 }
 
 
