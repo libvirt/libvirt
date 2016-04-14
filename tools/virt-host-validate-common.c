@@ -194,13 +194,13 @@ int virHostValidateNamespace(const char *hvname,
 virBitmapPtr virHostValidateGetCPUFlags(void)
 {
     FILE *fp;
-    virBitmapPtr flags;
+    virBitmapPtr flags = NULL;
 
     if (!(fp = fopen("/proc/cpuinfo", "r")))
         return NULL;
 
     if (!(flags = virBitmapNewQuiet(VIR_HOST_VALIDATE_CPU_FLAG_LAST)))
-        return NULL;
+        goto cleanup;
 
     do {
         char line[1024];
@@ -246,6 +246,7 @@ virBitmapPtr virHostValidateGetCPUFlags(void)
         virStringFreeListCount(tokens, ntokens);
     } while (1);
 
+ cleanup:
     VIR_FORCE_FCLOSE(fp);
 
     return flags;
