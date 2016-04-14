@@ -1696,10 +1696,10 @@ vzRegister(void)
     parallelsHypervisorDriver.name = "Parallels";
     parallelsConnectDriver = vzConnectDriver;
     parallelsConnectDriver.hypervisorDriver = &parallelsHypervisorDriver;
-    if (virRegisterConnectDriver(&parallelsConnectDriver, false) < 0)
+    if (virRegisterConnectDriver(&parallelsConnectDriver, true) < 0)
         return -1;
 
-    if (virRegisterConnectDriver(&vzConnectDriver, false) < 0)
+    if (virRegisterConnectDriver(&vzConnectDriver, true) < 0)
         return -1;
 
     if (virRegisterStateDriver(&vzStateDriver) < 0)
