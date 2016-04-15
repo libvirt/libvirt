@@ -1209,7 +1209,7 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
 
 /**
  * Allocate a new file as a volume. This is either done directly
- * for raw/sparse files, or by calling qemu-img/qcow-create for
+ * for raw/sparse files, or by calling qemu-img for
  * special kinds of files
  */
 static int

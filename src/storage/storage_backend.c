@@ -154,7 +154,6 @@ static virStorageFileBackendPtr fileBackends[] = {
 enum {
     TOOL_QEMU_IMG,
     TOOL_KVM_IMG,
-    TOOL_QCOW_CREATE,
 };
 
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
@@ -1263,69 +1262,6 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     return ret;
 }
 
-/*
- * Xen removed the fully-functional qemu-img, and replaced it
- * with a partially functional qcow-create. Go figure ??!?
- */
-static int
-virStorageBackendCreateQcowCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool,
-                                  virStorageVolDefPtr vol,
-                                  virStorageVolDefPtr inputvol,
-                                  unsigned int flags)
-{
-    int ret;
-    char *size;
-    virCommandPtr cmd;
-
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
-
-    if (flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("metadata preallocation is not supported with "
-                         "qcow-create"));
-        return -1;
-    }
-
-    if (inputvol) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot copy from volume with qcow-create"));
-        return -1;
-    }
-
-    if (vol->target.format != VIR_STORAGE_FILE_QCOW2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported storage vol type %d"),
-                       vol->target.format);
-        return -1;
-    }
-    if (vol->target.backingStore != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("copy-on-write image not supported with "
-                         "qcow-create"));
-        return -1;
-    }
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("encrypted volumes not supported with "
-                               "qcow-create"));
-        return -1;
-    }
-
-    /* Size in MB - yes different units to qemu-img :-( */
-    if (virAsprintf(&size, "%llu",
-                    VIR_DIV_UP(vol->target.capacity, (1024 * 1024))) < 0)
-        return -1;
-
-    cmd = virCommandNewArgList("qcow-create", size, vol->target.path, NULL);
-
-    ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
-    virCommandFree(cmd);
-    VIR_FREE(size);
-
-    return ret;
-}
-
 virStorageBackendBuildVolFrom
 virStorageBackendFSImageToolTypeToFunc(int tool_type)
 {
@@ -1333,8 +1269,6 @@ virStorageBackendFSImageToolTypeToFunc(int tool_type)
     case TOOL_KVM_IMG:
     case TOOL_QEMU_IMG:
         return virStorageBackendCreateQemuImg;
-    case TOOL_QCOW_CREATE:
-        return virStorageBackendCreateQcowCreate;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown file create tool type '%d'."),
@@ -1354,8 +1288,6 @@ virStorageBackendFindFSImageTool(char **tool)
         tool_type = TOOL_KVM_IMG;
     } else if ((tmp = virFindFileInPath("qemu-img")) != NULL) {
         tool_type = TOOL_QEMU_IMG;
-    } else if ((tmp = virFindFileInPath("qcow-create")) != NULL) {
-        tool_type = TOOL_QCOW_CREATE;
     }
 
     if (tool)
