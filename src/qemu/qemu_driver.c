@@ -718,9 +718,7 @@ qemuStateInitialize(bool privileged,
         goto error;
     }
 
-    qemu_driver->qemuImgBinary = virFindFileInPath("kvm-img");
-    if (!qemu_driver->qemuImgBinary)
-        qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
+    qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
 
     if (!(qemu_driver->lockManager =
           virLockManagerPluginNew(cfg->lockManagerName ?

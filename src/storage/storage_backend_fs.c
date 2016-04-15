@@ -1343,14 +1343,10 @@ virStorageBackendFilesystemResizeQemuImg(const char *path,
     char *img_tool;
     virCommandPtr cmd = NULL;
 
-    /* KVM is usually ahead of qemu on features, so try that first */
-    img_tool = virFindFileInPath("kvm-img");
-    if (!img_tool)
-        img_tool = virFindFileInPath("qemu-img");
-
+    img_tool = virFindFileInPath("qemu-img");
     if (!img_tool) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find kvm-img or qemu-img"));
+                       "%s", _("unable to find qemu-img"));
         return -1;
     }
 

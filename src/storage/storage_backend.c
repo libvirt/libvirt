@@ -153,7 +153,6 @@ static virStorageFileBackendPtr fileBackends[] = {
 
 enum {
     TOOL_QEMU_IMG,
-    TOOL_KVM_IMG,
 };
 
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
@@ -1234,14 +1233,10 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
 
-    /* KVM is usually ahead of qemu on features, so try that first */
-    create_tool = virFindFileInPath("kvm-img");
-    if (!create_tool)
-        create_tool = virFindFileInPath("qemu-img");
-
+    create_tool = virFindFileInPath("qemu-img");
     if (!create_tool) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find kvm-img or qemu-img"));
+                       "%s", _("unable to find qemu-img"));
         return -1;
     }
 
@@ -1266,7 +1261,6 @@ virStorageBackendBuildVolFrom
 virStorageBackendFSImageToolTypeToFunc(int tool_type)
 {
     switch (tool_type) {
-    case TOOL_KVM_IMG:
     case TOOL_QEMU_IMG:
         return virStorageBackendCreateQemuImg;
     default:
@@ -1284,11 +1278,8 @@ virStorageBackendFindFSImageTool(char **tool)
     int tool_type = -1;
     char *tmp = NULL;
 
-    if ((tmp = virFindFileInPath("kvm-img")) != NULL) {
-        tool_type = TOOL_KVM_IMG;
-    } else if ((tmp = virFindFileInPath("qemu-img")) != NULL) {
+    if ((tmp = virFindFileInPath("qemu-img")) != NULL)
         tool_type = TOOL_QEMU_IMG;
-    }
 
     if (tool)
         *tool = tmp;

@@ -3072,7 +3072,7 @@ qemuFindQemuImgBinary(virQEMUDriverPtr driver)
 {
     if (!driver->qemuImgBinary)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find kvm-img or qemu-img"));
+                       "%s", _("unable to find qemu-img"));
 
     return driver->qemuImgBinary;
 }

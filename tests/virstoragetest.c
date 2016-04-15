@@ -137,9 +137,7 @@ testPrepImages(void)
     char *buf = NULL;
     bool compat = false;
 
-    qemuimg = virFindFileInPath("kvm-img");
-    if (!qemuimg)
-        qemuimg = virFindFileInPath("qemu-img");
+    qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
         goto skip;
 
