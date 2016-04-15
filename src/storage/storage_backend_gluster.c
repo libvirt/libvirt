@@ -435,6 +435,7 @@ virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
     case VIR_STORAGE_VOL_FILE:
     case VIR_STORAGE_VOL_DIR:
     case VIR_STORAGE_VOL_BLOCK:
+    case VIR_STORAGE_VOL_PLOOP:
     case VIR_STORAGE_VOL_LAST:
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("removing of '%s' volumes is not supported "
