@@ -4909,6 +4909,46 @@ qemu-kvm -net nic,model=? /dev/null
       <code>&lt;model&gt;</code> element is mandatory.
     </p>
 
+    <h5><a name="elementNwfilter">Traffic filtering with NWFilter</a></h5>
+
+    <p>
+    <span class="since">Since 0.8.0</span> an <code>nwfilter</code> profile
+    can be assigned to a domain interface, which allows configuring
+    traffic filter rules for the virtual machine.
+
+    See the <a href="formatnwfilter.html">nwfilter</a> documentation for more
+    complete details.
+    </p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface ...&gt;
+      ...
+      &lt;filterref filter='clean-traffic'/&gt;
+    &lt;/interface&gt;
+    &lt;interface ...&gt;
+      ...
+      &lt;filterref filter='myfilter'&gt;
+        &lt;parameter name='IP' value='104.207.129.11'/&gt;
+        &lt;parameter name='IP6_ADDR' value='2001:19f0:300:2102::'/&gt;
+        &lt;parameter name='IP6_MASK' value='64'/&gt;
+        ...
+      &lt;/filterref&gt;
+    &lt;/interface&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
+    <p>
+      The <code>filter</code> attribute specifies the name of the nwfilter
+      to use. Optional <code>&lt;parameter&gt;</code> elements may be
+      specified for passing additional info to the nwfilter via the
+      <code>name</code> and <code>value</code> attributes. See
+      the <a href="formatnwfilter.html#nwfconceptsvars">nwfilter</a>
+      docs for info on parameters.
+    </p>
+
+
     <h4><a name="elementsInput">Input devices</a></h4>
 
     <p>
