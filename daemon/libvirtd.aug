@@ -13,7 +13,7 @@ module Libvirtd =
 
    let str_val = del /\"/ "\"" . store /[^\"]*/ . del /\"/ "\""
    let bool_val = store /0|1/
-   let int_val = store /[0-9]+/
+   let int_val = store /-?[0-9]+/
    let str_array_element = [ seq "el" . str_val ] . del /[ \t\n]*/ ""
    let str_array_val = counter "el" . array_start . ( str_array_element . ( array_sep . str_array_element ) * ) ? . array_end
 
