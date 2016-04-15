@@ -1170,7 +1170,6 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                      unsigned int flags)
 {
     virStorageBackendBuildVolFrom create_func;
-    int tool_type;
 
     if (inputvol) {
         if (vol->target.encryption != NULL) {
@@ -1190,16 +1189,8 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
         create_func = createFileDir;
     } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         create_func = virStorageBackendCreatePloop;
-    } else if ((tool_type = virStorageBackendFindFSImageTool(NULL)) != -1) {
-        create_func = virStorageBackendFSImageToolTypeToFunc(tool_type);
-
-        if (!create_func)
-            return -1;
     } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("creation of non-raw images "
-                               "is not supported without qemu-img"));
-        return -1;
+        create_func = virStorageBackendCreateQemuImg;
     }
 
     if (create_func(conn, pool, vol, inputvol, flags) < 0)

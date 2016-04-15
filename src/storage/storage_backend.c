@@ -151,10 +151,6 @@ static virStorageFileBackendPtr fileBackends[] = {
 };
 
 
-enum {
-    TOOL_QEMU_IMG,
-};
-
 #define READ_BLOCK_SIZE_DEFAULT  (1024 * 1024)
 #define WRITE_BLOCK_SIZE_DEFAULT (4 * 1024)
 
@@ -1219,7 +1215,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     return cmd;
 }
 
-static int
+int
 virStorageBackendCreateQemuImg(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol,
@@ -1235,8 +1231,9 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 
     create_tool = virFindFileInPath("qemu-img");
     if (!create_tool) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find qemu-img"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("creation of non-raw file images is "
+                         "not supported without qemu-img."));
         return -1;
     }
 
@@ -1258,43 +1255,9 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
 }
 
 virStorageBackendBuildVolFrom
-virStorageBackendFSImageToolTypeToFunc(int tool_type)
-{
-    switch (tool_type) {
-    case TOOL_QEMU_IMG:
-        return virStorageBackendCreateQemuImg;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown file create tool type '%d'."),
-                       tool_type);
-    }
-
-    return NULL;
-}
-
-int
-virStorageBackendFindFSImageTool(char **tool)
-{
-    int tool_type = -1;
-    char *tmp = NULL;
-
-    if ((tmp = virFindFileInPath("qemu-img")) != NULL)
-        tool_type = TOOL_QEMU_IMG;
-
-    if (tool)
-        *tool = tmp;
-    else
-        VIR_FREE(tmp);
-
-    return tool_type;
-}
-
-virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol)
 {
-    int tool_type;
-
     if (!inputvol)
         return NULL;
 
@@ -1305,15 +1268,7 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
          vol->target.format != VIR_STORAGE_FILE_RAW) ||
         (inputvol->type == VIR_STORAGE_VOL_FILE &&
          inputvol->target.format != VIR_STORAGE_FILE_RAW)) {
-
-        if ((tool_type = virStorageBackendFindFSImageTool(NULL)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("creation of non-raw file images is "
-                             "not supported without qemu-img."));
-            return NULL;
-        }
-
-        return virStorageBackendFSImageToolTypeToFunc(tool_type);
+        return virStorageBackendCreateQemuImg;
     }
 
     if (vol->type == VIR_STORAGE_VOL_PLOOP)
