@@ -7357,6 +7357,13 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
     /* get number of cpus on the node */
     if ((max_id = virDomainGetCPUStats(dom, NULL, 0, 0, 0, 0)) < 0)
         goto failed_stats;
+
+    if (cpu >= max_id) {
+        vshError(ctl, "Start CPU %d is out of range (min: 0, max: %d)",
+                 cpu, max_id - 1);
+        goto cleanup;
+    }
+
     if (show_count < 0 || show_count > max_id) {
         if (show_count > max_id)
             vshPrint(ctl, _("Only %d CPUs available to show\n"), max_id);
