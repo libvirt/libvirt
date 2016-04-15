@@ -26,8 +26,8 @@
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='sdb' bus='scsi'/>
       <readonly/>
-      <vendor>SEAGATE</vendor>
-      <product>ST3567807GD</product>
+      <vendor>SEA GATE</vendor>
+      <product>ST67 807GD</product>
       <address type='drive' controller='1' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'>
