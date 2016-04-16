@@ -928,6 +928,35 @@ virConnectGetDefaultURI(virConfPtr conf,
 }
 
 
+/*
+ * Check to see if an invalid URI like qemu://system (missing /) was passed,
+ * offer the suggested fix.
+ */
+static int
+virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
+{
+    /* To avoid false positives, only check drivers that mandate
+       a path component in the URI, like /system or /session */
+    if (STRNEQ(uri->scheme, "qemu") &&
+        STRNEQ(uri->scheme, "vbox") &&
+        STRNEQ(uri->scheme, "vz"))
+        return 0;
+
+    if (uri->path != NULL)
+        return 0;
+
+    if (STREQ(uri->server, "session") ||
+        STREQ(uri->server, "system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid URI %s (maybe you want %s:///%s)"),
+                       uristr, uri->scheme, uri->server);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static virConnectPtr
 do_open(const char *name,
         virConnectAuthPtr auth,
@@ -994,6 +1023,12 @@ do_open(const char *name,
                   NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,
                   NULLSTR(ret->uri->path));
+
+        if (virConnectCheckURIMissingSlash(alias ? alias : name,
+                                           ret->uri) < 0) {
+            VIR_FREE(alias);
+            goto failed;
+        }
 
         VIR_FREE(alias);
     } else {
