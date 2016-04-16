@@ -38,6 +38,7 @@
 #include "virstring.h"
 #include "virthread.h"
 #include "virgettext.h"
+#include "virtime.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -46,10 +47,63 @@
 
 #define VIRT_ADMIN_PROMPT "virt-admin # "
 
+/* we don't need precision to milliseconds in this module */
+#define VIRT_ADMIN_TIME_BUFLEN VIR_TIME_STRING_BUFLEN - 3
+
 static char *progname;
 
 static const vshCmdGrp cmdGroups[];
 static const vshClientHooks hooks;
+
+VIR_ENUM_DECL(virClientTransport)
+VIR_ENUM_IMPL(virClientTransport,
+              VIR_CLIENT_TRANS_LAST,
+              N_("unix"),
+              N_("tcp"),
+              N_("tls"))
+
+static const char *
+vshAdmClientTransportToString(int transport)
+{
+    const char *str = virClientTransportTypeToString(transport);
+    return str ? _(str) : _("unknown");
+}
+
+/*
+ * vshAdmGetTimeStr:
+ *
+ * Produces string representation (local time) of @then
+ * (seconds since epoch UTC) using format 'YYYY-MM-DD HH:MM:SS+ZZZZ'.
+ *
+ * Returns 0 if conversion finished successfully, -1 in case of an error.
+ * Caller is responsible for freeing the string returned.
+ */
+static int
+vshAdmGetTimeStr(vshControl *ctl, time_t then, char **result)
+{
+
+    char *tmp = NULL;
+    struct tm timeinfo;
+
+    if (!localtime_r(&then, &timeinfo))
+        goto error;
+
+    if (VIR_ALLOC_N(tmp, VIRT_ADMIN_TIME_BUFLEN) < 0)
+        goto error;
+
+    if (strftime(tmp, VIRT_ADMIN_TIME_BUFLEN, "%Y-%m-%d %H:%M:%S%z",
+                 &timeinfo) == 0) {
+        VIR_FREE(tmp);
+        goto error;
+    }
+
+    *result = tmp;
+    return 0;
+
+ error:
+    vshError(ctl, "%s", _("Timestamp string conversion failed"));
+    return -1;
+}
 
 /*
  * vshAdmCatchDisconnect:
@@ -522,6 +576,87 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
+/* ------------------------
+ * Command srv-clients-list
+ * ------------------------
+ */
+
+static const vshCmdInfo info_srv_clients_list[] = {
+    {.name = "help",
+     .data = N_("list clients connected to <server>")
+    },
+    {.name = "desc",
+     .data = N_("List all manageable clients connected to <server>.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_srv_clients_list[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("server which to list connected clients from"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
+{
+    int nclts = 0;
+    size_t i;
+    bool ret = false;
+    const char *srvname = NULL;
+    unsigned long long id;
+    virClientTransport transport;
+    char *timestr = NULL;
+    virAdmServerPtr srv = NULL;
+    virAdmClientPtr *clts = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    /* Obtain a list of clients connected to server @srv */
+    if ((nclts = virAdmServerListClients(srv, &clts, 0)) < 0) {
+        vshError(ctl, _("failed to obtain list of connected clients "
+                        "from server '%s'"), virAdmServerGetName(srv));
+        goto cleanup;
+    }
+
+    vshPrintExtra(ctl, " %-5s %-15s %-15s\n%s\n", _("Id"), _("Transport"),
+                  _("Connected since"),
+                  "-------------------------"
+                  "-------------------------");
+
+    for (i = 0; i < nclts; i++) {
+        virAdmClientPtr client = clts[i];
+        id = virAdmClientGetID(client);
+        transport = virAdmClientGetTransport(client);
+        if (vshAdmGetTimeStr(ctl, virAdmClientGetTimestamp(client),
+                             &timestr) < 0)
+            goto cleanup;
+
+        vshPrint(ctl, " %-5llu %-15s %-15s\n",
+                 id, vshAdmClientTransportToString(transport), timestr);
+        VIR_FREE(timestr);
+    }
+
+    ret = true;
+
+ cleanup:
+    if (clts) {
+        for (i = 0; i < nclts; i++)
+            virAdmClientFree(clts[i]);
+        VIR_FREE(clts);
+    }
+    virAdmServerFree(srv);
+    return ret;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -825,6 +960,12 @@ static const vshCmdDef monitoringCmds[] = {
      .handler = cmdSrvThreadpoolInfo,
      .opts = opts_srv_threadpool_info,
      .info = info_srv_threadpool_info,
+     .flags = 0
+    },
+    {.name = "srv-clients-list",
+     .handler = cmdSrvClientsList,
+     .opts = opts_srv_clients_list,
+     .info = info_srv_clients_list,
      .flags = 0
     },
     {.name = NULL}

@@ -220,6 +220,13 @@ The current number of active priority workers in a threadpool.
 
 =back
 
+=item B<srv-clients-list> I<server>
+
+Print a table showing the list of clients connected to <server>, also providing
+information about transport type used on client's connection (supported
+transports include B<unix>, B<tcp>, and B<tls>), as well as providing
+information about client's connection time (system local time is used).
+
 =back
 
 =head1 ENVIRONMENT
