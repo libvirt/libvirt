@@ -17,9 +17,9 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:\
-6000/iqn.1992-01.com.example,format=raw,if=virtio \
--drive file=iscsi://example.org:6000/iqn.1992-01.com.example/1,format=raw,\
-if=virtio \
+6000/iqn.1992-01.com.example%3Astorage/1,format=raw,if=virtio \
+-drive file=iscsi://example.org:6000/iqn.1992-01.com.example%3Astorage/2,\
+format=raw,if=virtio \
 -net none \
 -serial none \
 -parallel none

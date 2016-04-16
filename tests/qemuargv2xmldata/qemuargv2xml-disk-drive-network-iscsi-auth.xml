@@ -19,14 +19,14 @@
       <auth username='myname'>
         <secret type='iscsi' usage='qemuargv2xml_usage'/>
       </auth>
-      <source protocol='iscsi' name='iqn.1992-01.com.example'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/1'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='iscsi' name='iqn.1992-01.com.example/1'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:storage/2'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vdb' bus='virtio'/>
