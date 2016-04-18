@@ -1497,7 +1497,8 @@
       All features are listed within the <code>features</code>
       element, omitting a togglable feature tag turns it off.
       The available features can be found by asking
-      for the <a href="formatcaps.html">capabilities XML</a>,
+      for the <a href="formatcaps.html">capabilities XML</a> and
+      <a href="formatdomaincaps.html">domain capabilities XML</a>,
       but a common set for fully virtualized domains are:
     </p>
 

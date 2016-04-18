@@ -145,7 +145,7 @@
     <h3><a name="elementsDevices">Devices</a></h3>
 
     <p>
-      The final set of XML elements describe the supported devices and their
+      Another set of XML elements describe the supported devices and their
       capabilities. All devices occur as children of the main
       <code>devices</code> element.
     </p>
@@ -277,5 +277,46 @@
       <dd>Options for the <code>name</code> attribute of the &lt;driver/&gt;
       element.</dd>
     </dl>
+
+    <h3><a name="elementsFeatures">Features</a></h3>
+
+    <p>One more set of XML elements describe the supported features and
+    their capabilities. All features occur as children of the main
+    <code>features</code> element.</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;features&gt;
+    &lt;gic supported='yes'&gt;
+      &lt;enum name='version'&gt;
+        &lt;value&gt;2&lt;/value&gt;
+        &lt;value&gt;3&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/gic&gt;
+  &lt;/features&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <p>Reported capabilities are expressed as an enumerated list of
+    possible values for each of the elements or attributes. For example, the
+    <code>gic</code> element has an attribute <code>version</code> which can
+    support the values <code>2</code> or <code>3</code>.</p>
+
+    <p>For information about the purpose of each feature, see the
+    <a href="formatdomain.html#elementsFeatures">relevant section</a> in
+    the domain XML documentation.
+    </p>
+
+    <h4><a name="elementsGIC">GIC capabilities</a></h4>
+
+    <p>GIC capabilities are exposed under the <code>gic</code> element.</p>
+
+    <dl>
+      <dt>version</dt>
+      <dd>Options for the <code>version</code> attribute of the
+      <code>gic</code> element.</dd>
+    </dl>
+
   </body>
 </html>
