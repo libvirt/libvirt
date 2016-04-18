@@ -1468,12 +1468,29 @@ qemuCheckIOThreads(const virDomainDef *def,
                    virDomainDiskDefPtr disk)
 {
     /* Right "type" of disk" */
-    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO ||
-        (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-         disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads only available for virtio pci and "
-                         "virtio ccw disk"));
+    switch ((virDomainDiskBus)disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("IOThreads only available for virtio pci and "
+                              "virtio ccw disk"));
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+    case VIR_DOMAIN_DISK_BUS_FDC:
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SATA:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("IOThreads not available for bus %s target %s"),
+                       virDomainDiskBusTypeToString(disk->bus), disk->dst);
         return false;
     }
 
