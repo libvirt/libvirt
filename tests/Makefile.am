@@ -18,7 +18,9 @@
 
 # old automake does not provide abs_{src,build}dir variables
 abs_builddir = $(shell pwd)
+abs_topbuilddir = $(shell cd .. && pwd)
 abs_srcdir = $(shell cd $(srcdir) && pwd)
+abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
 
 SHELL = $(PREFERABLY_POSIX_SHELL)
 
@@ -33,7 +35,9 @@ INCLUDES = \
 
 AM_CFLAGS = \
 	-Dabs_builddir="\"$(abs_builddir)\"" \
+	-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \
 	-Dabs_srcdir="\"$(abs_srcdir)\"" \
+	-Dabs_topsrcdir="\"$(abs_topsrcdir)\"" \
 	$(LIBXML_CFLAGS) \
 	$(LIBNL_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
@@ -1147,7 +1151,9 @@ virtestmock_la_SOURCES = \
 	virtestmock.c
 virtestmock_la_CFLAGS = $(AM_CFLAGS)
 virtestmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-virtestmock_la_LIBADD = $(MOCKLIBS_LIBS)
+virtestmock_la_LIBADD = \
+	$(MOCKLIBS_LIBS) \
+	../src/libvirt_util.la
 else ! WITH_LINUX
 	EXTRA_DIST += virusbtest.c virusbmock.c \
 		virnetdevbandwidthtest.c virnetdevbandwidthmock.c \

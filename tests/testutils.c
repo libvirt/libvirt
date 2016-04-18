@@ -156,6 +156,11 @@ virtTestRun(const char *title,
 {
     int ret = 0;
 
+    /* Some test are fragile about environ settings.  If that's
+     * the case, don't poison it. */
+    if (getenv("VIR_TEST_MOCK_PROGNAME"))
+        setenv("VIR_TEST_MOCK_TESTNAME", title, 1);
+
     if (testCounter == 0 && !virTestGetVerbose())
         fprintf(stderr, "      ");
 
@@ -280,6 +285,7 @@ virtTestRun(const char *title,
     }
 #endif /* TEST_OOM */
 
+    unsetenv("VIR_TEST_MOCK_TESTNAME");
     return ret;
 }
 
@@ -832,8 +838,11 @@ virTestSetEnvPath(void)
     return ret;
 }
 
+#define TEST_MOCK (abs_builddir "/.libs/virtestmock.so")
+
 int virtTestMain(int argc,
                  char **argv,
+                 const char *lib,
                  int (*func)(void))
 {
     int ret;
@@ -841,6 +850,18 @@ int virtTestMain(int argc,
 #ifdef TEST_OOM
     char *oomstr;
 #endif
+
+    if (getenv("VIR_TEST_FILE_ACCESS"))
+        VIRT_TEST_PRELOAD(TEST_MOCK);
+
+    if (lib)
+        VIRT_TEST_PRELOAD(lib);
+
+    progname = last_component(argv[0]);
+    if (STRPREFIX(progname, "lt-"))
+        progname += 3;
+
+    setenv("VIR_TEST_MOCK_PROGNAME", progname, 1);
 
     virFileActivateDirOverride(argv[0]);
 
@@ -850,9 +871,6 @@ int virtTestMain(int argc,
     if (!virFileExists(abs_srcdir))
         return EXIT_AM_HARDFAIL;
 
-    progname = last_component(argv[0]);
-    if (STRPREFIX(progname, "lt-"))
-        progname += 3;
     if (argc > 1) {
         fprintf(stderr, "Usage: %s\n", argv[0]);
         fputs("effective environment variables:\n"

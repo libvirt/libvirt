@@ -169,6 +169,7 @@
 /tests/objectlocking.cm[ix]
 /tests/reconnect
 /tests/ssh
+/tests/test_file_access.txt
 /tests/test_conf
 /tools/libvirt-guests.sh
 /tools/virt-login-shell

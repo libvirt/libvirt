@@ -189,6 +189,19 @@
           under gdb or Valgrind.
         </p>
 
+        <p>When running our test suite it may happen that the test result is
+        nondeterministic because of the test suite relying on a particular file
+        in the system being accessible or having some specific value. To catch
+        this kind of errors, the test suite has a module for that prints any
+        path touched that fulfils constraints described above
+        into a file. To enable it just set
+        <code>VIR_TEST_FILE_ACCESS</code> environment variable.
+        Then <code>VIR_TEST_FILE_ACCESS_OUTPUT</code> environment
+        variable can alter location where the file is stored.</p>
+<pre>
+  VIR_TEST_FILE_ACCESS=1 VIR_TEST_FILE_ACCESS_OUTPUT="/tmp/file_access.txt" ./qemuxml2argvtest
+</pre>
+
       </li>
       <li><p>The Valgrind test should produce similar output to
           <code>make check</code>. If the output has traces within libvirt
