@@ -9143,7 +9143,6 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
 
         if (virMemoryLimitIsSet(def->mem.hard_limit) ||
             virMemoryLimitIsSet(def->mem.soft_limit) ||
-            def->mem.min_guarantee ||
             virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory tuning is not available in session mode"));
