@@ -1,7 +1,7 @@
 /*
  * network_conf.c: network XML handling
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1799,7 +1799,7 @@ virNetworkForwardDefParseXML(const char *networkName,
                              xmlXPathContextPtr ctxt,
                              virNetworkForwardDefPtr def)
 {
-    size_t i;
+    size_t i, j;
     int ret = -1;
     xmlNodePtr *forwardIfNodes = NULL;
     xmlNodePtr *forwardPfNodes = NULL;
@@ -1936,6 +1936,16 @@ virNetworkForwardDefParseXML(const char *networkName,
                 continue;
             }
 
+            for (j = 0; j < i; j++) {
+                if (STREQ_NULLABLE(def->ifs[j].device.dev, forwardDev)) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("interface '%s' can only be "
+                                     "listed once in network %s"),
+                                   forwardDev, networkName);
+                    goto cleanup;
+                }
+            }
+
             def->ifs[i].device.dev = forwardDev;
             forwardDev = NULL;
             def->ifs[i].type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
@@ -1963,12 +1973,25 @@ virNetworkForwardDefParseXML(const char *networkName,
 
             switch (def->ifs[i].type) {
             case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
-                if (virDevicePCIAddressParseXML(forwardAddrNodes[i],
-                                                &def->ifs[i].device.pci) < 0) {
+            {
+                virDevicePCIAddressPtr addr = &def->ifs[i].device.pci;
+
+                if (virDevicePCIAddressParseXML(forwardAddrNodes[i], addr) < 0)
                     goto cleanup;
+
+                for (j = 0; j < i; j++) {
+                    if (virDevicePCIAddressEqual(addr, &def->ifs[j].device.pci)) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("PCI device '%04x:%02x:%02x.%x' can "
+                                         "only be listed once in network %s"),
+                                       addr->domain, addr->bus,
+                                       addr->slot, addr->function,
+                                       networkName);
+                        goto cleanup;
+                    }
                 }
                 break;
-
+            }
             /* Add USB case here if we ever find a reason to support it */
 
             default:

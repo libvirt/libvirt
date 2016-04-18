@@ -1,0 +1,10 @@
+<network>
+  <name>passthrough-duplicate</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8b</uuid>
+  <forward mode="passthrough">
+    <interface dev="eth1"/>
+    <interface dev="eth2"/>
+    <interface dev="eth3"/>
+    <interface dev="eth3"/>
+  </forward>
+</network>

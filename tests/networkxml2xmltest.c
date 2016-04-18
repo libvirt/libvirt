@@ -151,6 +151,8 @@ mymain(void)
     DO_TEST("passthrough-address-crash");
     DO_TEST("nat-network-explicit-flood");
     DO_TEST("host-bridge-no-flood");
+    DO_TEST_PARSE_ERROR("hostdev-duplicate");
+    DO_TEST_PARSE_ERROR("passthrough-duplicate");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
