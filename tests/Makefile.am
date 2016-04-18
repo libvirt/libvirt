@@ -451,6 +451,19 @@ test_libraries += virusbmock.la \
 		$(NULL)
 endif WITH_LINUX
 
+if WITH_LINUX
+check-access: file-access-clean
+	VIR_TEST_FILE_ACCESS=1 $(MAKE) $(AM_MAKEFLAGS) check
+	$(PERL) check-file-access.pl | sort -u
+
+file-access-clean:
+	> test_file_access.txt
+endif WITH_LINUX
+
+EXTRA_DIST += \
+	check-file-access.pl \
+	file_access_whitelist.txt
+
 if WITH_TESTS
 noinst_PROGRAMS = $(test_programs) $(test_helpers)
 noinst_LTLIBRARIES = $(test_libraries)

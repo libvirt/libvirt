@@ -1,0 +1,23 @@
+# This is a whitelist that allows accesses to files not in our
+# build directory nor source directory. The records are in the
+# following format:
+#
+#  $path: $progname: $testname
+#
+# All these three are evaluated as perl RE. So to allow /dev/sda
+# and /dev/sdb, you can just '/dev/sd[a-b]', or to allow
+# /proc/$pid/status you can '/proc/\d+/status' and so on.
+# Moreover, $progname and $testname can be empty, in which which
+# case $path is allowed for all tests.
+
+/bin/cat: sysinfotest
+/bin/dirname: sysinfotest: x86 sysinfo
+/bin/sleep: commandtest
+/bin/true: commandtest
+/dev/null
+/dev/urandom
+/etc/hosts
+/proc/\d+/status
+
+# This is just a dummy example, DO NOT USE IT LIKE THAT!
+.*: nonexistent-test-touching-everything

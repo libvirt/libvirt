@@ -67,6 +67,9 @@ rpm: clean
 
 check-local: all tests
 
+check-access:
+	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
+
 cov: clean-cov
 	$(MKDIR_P) $(top_builddir)/coverage
 	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
