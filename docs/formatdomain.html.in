@@ -277,6 +277,9 @@
     &lt;initrd&gt;/root/f8-i386-initrd&lt;/initrd&gt;
     &lt;cmdline&gt;console=ttyS0 ks=http://example.com/f8-i386/os/&lt;/cmdline&gt;
     &lt;dtb&gt;/root/ppc.dtb&lt;/dtb&gt;
+    &lt;acpi&gt;
+      &lt;table type='slic'&gt;/path/to/slic.dat&lt;/table&gt;
+    &lt;/acpi&gt;
   &lt;/os&gt;
   ...</pre>
 
@@ -302,6 +305,11 @@
       <dd>The contents of this element specify the fully-qualified path
         to the (optional) device tree binary (dtb) image in the host OS.
         <span class="since">Since 1.0.4</span></dd>
+      <dt><code>acpi</code></dt>
+      <dd>The <code>table</code> element contains a fully-qualified path
+        to the ACPI table. The <code>type</code> attribute contains the
+        ACPI table type (currently only <code>slic</code> is supported)
+        <span class="since">Since 1.3.5 (QEMU only)</span></dd>
     </dl>
 
     <h4><a name="elementsOSContainer">Container boot</a></h4>

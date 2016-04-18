@@ -806,6 +806,9 @@ mymain(void)
     DO_TEST("virtio-input-passthrough");
 
     virObjectUnref(cfg);
+
+    DO_TEST("acpi-table");
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

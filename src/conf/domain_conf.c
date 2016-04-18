@@ -2619,6 +2619,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.cmdline);
     VIR_FREE(def->os.dtb);
     VIR_FREE(def->os.root);
+    VIR_FREE(def->os.slic_table);
     virDomainLoaderDefFree(def->os.loader);
     VIR_FREE(def->os.bootloader);
     VIR_FREE(def->os.bootloaderArgs);
@@ -15115,6 +15116,8 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                              virHashTablePtr *bootHash)
 {
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr oldnode;
+    char *tmp = NULL;
     int ret = -1;
     size_t i;
     int n;
@@ -15175,6 +15178,40 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
     }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+        if ((n = virXPathNodeSet("./os/acpi/table", ctxt, &nodes)) < 0)
+            goto error;
+
+        if (n > 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Only one acpi table is supported"));
+            goto error;
+        }
+
+        if (n == 1) {
+            oldnode = ctxt->node;
+            ctxt->node = nodes[0];
+            tmp = virXPathString("string(./@type)", ctxt);
+
+            if (!tmp) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Missing acpi table type"));
+                goto error;
+            }
+
+            if (STREQ_NULLABLE(tmp, "slic")) {
+                VIR_FREE(tmp);
+                tmp = virXPathString("string(.)", ctxt);
+                def->os.slic_table = virFileSanitizePath(tmp);
+                VIR_FREE(tmp);
+            } else {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Unknown acpi table type: %s"),
+                               tmp);
+                goto error;
+            }
+            ctxt->node = oldnode;
+        }
+
         if (virDomainDefParseBootXML(ctxt, def) < 0)
             goto error;
         if (!(*bootHash = virHashCreate(5, NULL)))
@@ -15185,6 +15222,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
 
  error:
     VIR_FREE(nodes);
+    VIR_FREE(tmp);
     return ret;
 }
 
@@ -22516,6 +22554,14 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                           def->os.dtb);
     virBufferEscapeString(buf, "<root>%s</root>\n",
                           def->os.root);
+    if (def->os.slic_table) {
+        virBufferAddLit(buf, "<acpi>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<table type='slic'>%s</table>\n",
+                              def->os.slic_table);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</acpi>\n");
+    }
 
     if (!def->os.bootloader) {
         for (n = 0; n < def->os.nBootDevs; n++) {

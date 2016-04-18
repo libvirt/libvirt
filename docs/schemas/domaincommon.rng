@@ -306,6 +306,9 @@
         <optional>
           <ref name="bios"/>
         </optional>
+        <optional>
+          <ref name="acpiTable"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -4503,6 +4506,21 @@
     <data type="string">
       <param name='pattern'>[a-zA-Z0-9/\-_\. \(\)]+</param>
     </data>
+  </define>
+
+  <define name="acpiTable">
+    <element name="acpi">
+      <zeroOrMore>
+        <element name="table">
+          <attribute name="type">
+            <choice>
+              <value>slic</value>
+            </choice>
+          </attribute>
+          <ref name="absFilePath"/>
+        </element>
+      </zeroOrMore>
+    </element>
   </define>
 
   <define name="smbios">

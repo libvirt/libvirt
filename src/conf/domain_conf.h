@@ -1746,6 +1746,7 @@ struct _virDomainOSDef {
     char *cmdline;
     char *dtb;
     char *root;
+    char *slic_table;
     virDomainLoaderDefPtr loader;
     char *bootloader;
     char *bootloaderArgs;
