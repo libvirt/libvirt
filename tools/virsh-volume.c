@@ -546,7 +546,7 @@ static const vshCmdInfo info_vol_clone[] = {
      .data = N_("clone a volume.")
     },
     {.name = "desc",
-     .data = N_("Clone an existing volume.")
+     .data = N_("Clone an existing volume within the parent pool.")
     },
     {.name = NULL}
 };
