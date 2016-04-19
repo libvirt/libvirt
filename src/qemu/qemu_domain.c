@@ -1742,6 +1742,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 {
     bool addDefaultUSB = true;
     int usbModel = -1; /* "default for machinetype" */
+    int pciRoot;       /* index within def->controllers */
     bool addImplicitSATA = false;
     bool addPCIRoot = false;
     bool addPCIeRoot = false;
@@ -1833,14 +1834,26 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
             def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
         goto cleanup;
 
+    pciRoot = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
+
     /* NB: any machine that sets addPCIRoot to true must also return
      * true from the function qemuDomainSupportsPCI().
      */
-    if (addPCIRoot &&
-        virDomainDefMaybeAddController(
-            def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-            VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
-        goto cleanup;
+    if (addPCIRoot) {
+        if (pciRoot >= 0) {
+            if (def->controllers[pciRoot]->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("The PCI controller with index='0' must be "
+                                 "model='pci-root' for this machine type, "
+                                 "but model='%s' was found instead"),
+                               virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
+                goto cleanup;
+            }
+        } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                                              VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)) {
+            goto cleanup;
+        }
+    }
 
     /* When a machine has a pcie-root, make sure that there is always
      * a dmi-to-pci-bridge controller added as bus 1, and a pci-bridge
@@ -1850,15 +1863,25 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
      * true from the function qemuDomainSupportsPCI().
      */
     if (addPCIeRoot) {
+        if (pciRoot >= 0) {
+            if (def->controllers[pciRoot]->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("The PCI controller with index='0' must be "
+                                 "model='pcie-root' for this machine type, "
+                                 "but model='%s' was found instead"),
+                               virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
+                goto cleanup;
+            }
+        } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
+                                             VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
+            goto cleanup;
+        }
         if (virDomainDefMaybeAddController(
-                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
-                VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) < 0 ||
+               def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
+               VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0 ||
             virDomainDefMaybeAddController(
-                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
-                VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0 ||
-            virDomainDefMaybeAddController(
-                def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
-                VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE) < 0) {
+               def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
+               VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE) < 0) {
             goto cleanup;
         }
     }
