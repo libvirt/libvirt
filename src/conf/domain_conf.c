@@ -14612,7 +14612,7 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 }
 
 
-static virDomainControllerDefPtr
+virDomainControllerDefPtr
 virDomainDefAddController(virDomainDefPtr def, int type, int idx, int model)
 {
     virDomainControllerDefPtr cont;

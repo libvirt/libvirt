@@ -3108,6 +3108,8 @@ VIR_ENUM_DECL(virDomainCpuPlacementMode)
 
 VIR_ENUM_DECL(virDomainStartupPolicy)
 
+virDomainControllerDefPtr
+virDomainDefAddController(virDomainDefPtr def, int type, int idx, int model);
 int
 virDomainDefAddUSBController(virDomainDefPtr def, int idx, int model);
 int
