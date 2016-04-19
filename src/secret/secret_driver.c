@@ -567,26 +567,6 @@ secretConnectListSecrets(virConnectPtr conn,
     return -1;
 }
 
-static const char *
-secretUsageIDForDef(virSecretDefPtr def)
-{
-    switch (def->usage_type) {
-    case VIR_SECRET_USAGE_TYPE_NONE:
-        return "";
-
-    case VIR_SECRET_USAGE_TYPE_VOLUME:
-        return def->usage.volume;
-
-    case VIR_SECRET_USAGE_TYPE_CEPH:
-        return def->usage.ceph;
-
-    case VIR_SECRET_USAGE_TYPE_ISCSI:
-        return def->usage.target;
-
-    default:
-        return NULL;
-    }
-}
 
 #define MATCH(FLAG) (flags & (FLAG))
 static int
@@ -640,7 +620,7 @@ secretConnectListAllSecrets(virConnectPtr conn,
                   virGetSecret(conn,
                                secret->def->uuid,
                                secret->def->usage_type,
-                               secretUsageIDForDef(secret->def))))
+                               virSecretUsageIDForDef(secret->def))))
                 goto cleanup;
         }
         ret_nsecrets++;
@@ -691,7 +671,7 @@ secretLookupByUUID(virConnectPtr conn,
     ret = virGetSecret(conn,
                        secret->def->uuid,
                        secret->def->usage_type,
-                       secretUsageIDForDef(secret->def));
+                       virSecretUsageIDForDef(secret->def));
 
  cleanup:
     secretDriverUnlock();
@@ -721,7 +701,7 @@ secretLookupByUsage(virConnectPtr conn,
     ret = virGetSecret(conn,
                        secret->def->uuid,
                        secret->def->usage_type,
-                       secretUsageIDForDef(secret->def));
+                       virSecretUsageIDForDef(secret->def));
 
  cleanup:
     secretDriverUnlock();
@@ -752,7 +732,7 @@ secretDefineXML(virConnectPtr conn,
     if (!(secret = secretFindByUUID(new_attrs->uuid))) {
         /* No existing secret with same UUID,
          * try look for matching usage instead */
-        const char *usageID = secretUsageIDForDef(new_attrs);
+        const char *usageID = virSecretUsageIDForDef(new_attrs);
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         if ((secret = secretFindByUsage(new_attrs->usage_type, usageID))) {
@@ -785,8 +765,8 @@ secretDefineXML(virConnectPtr conn,
             goto cleanup;
         }
     } else {
-        const char *newUsageID = secretUsageIDForDef(new_attrs);
-        const char *oldUsageID = secretUsageIDForDef(secret->def);
+        const char *newUsageID = virSecretUsageIDForDef(new_attrs);
+        const char *oldUsageID = virSecretUsageIDForDef(secret->def);
         if (STRNEQ(oldUsageID, newUsageID)) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(secret->def->uuid, uuidstr);
@@ -831,7 +811,7 @@ secretDefineXML(virConnectPtr conn,
     ret = virGetSecret(conn,
                        secret->def->uuid,
                        secret->def->usage_type,
-                       secretUsageIDForDef(secret->def));
+                       virSecretUsageIDForDef(secret->def));
     goto cleanup;
 
  restore_backup:

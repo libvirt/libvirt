@@ -1,7 +1,7 @@
 /*
  * secret_conf.h: internal <secret> XML handling API
  *
- * Copyright (C) 2009-2010, 2013-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2010, 2013-2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,6 +42,8 @@ struct _virSecretDef {
         char *target;
     } usage;
 };
+
+const char *virSecretUsageIDForDef(virSecretDefPtr def);
 
 void virSecretDefFree(virSecretDefPtr def);
 virSecretDefPtr virSecretDefParseString(const char *xml);

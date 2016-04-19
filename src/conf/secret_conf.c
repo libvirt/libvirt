@@ -1,7 +1,7 @@
 /*
  * secret_conf.c: internal <secret> XML handling
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +38,28 @@ VIR_LOG_INIT("conf.secret_conf");
 
 VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
               "none", "volume", "ceph", "iscsi")
+
+const char *
+virSecretUsageIDForDef(virSecretDefPtr def)
+{
+    switch (def->usage_type) {
+    case VIR_SECRET_USAGE_TYPE_NONE:
+        return "";
+
+    case VIR_SECRET_USAGE_TYPE_VOLUME:
+        return def->usage.volume;
+
+    case VIR_SECRET_USAGE_TYPE_CEPH:
+        return def->usage.ceph;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        return def->usage.target;
+
+    default:
+        return NULL;
+    }
+}
+
 
 void
 virSecretDefFree(virSecretDefPtr def)
