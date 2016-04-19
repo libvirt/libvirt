@@ -1951,14 +1951,18 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                              VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
             goto cleanup;
         }
-        if (virDomainDefMaybeAddController(
-               def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
-               VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0 ||
-            virDomainDefMaybeAddController(
-               def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
-               VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE) < 0) {
+        /* add a dmi-to-pci-bridge and a pci-bridge if there are no pci controllers
+         * other than the pcie-root. This is so that there will be hot-pluggable
+         * PCI slots available
+         */
+        if (virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1) < 0 &&
+            !virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
+                                      VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE))
             goto cleanup;
-        }
+        if (virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2) < 0 &&
+            !virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 2,
+                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE))
+            goto cleanup;
     }
 
     if (addDefaultMemballoon && !def->memballoon) {
