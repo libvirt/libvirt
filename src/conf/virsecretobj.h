@@ -60,4 +60,17 @@ virSecretObjPtr virSecretObjListFindByUsage(virSecretObjListPtr secrets,
                                             int usageType,
                                             const char *usageID);
 
+void virSecretObjListRemove(virSecretObjListPtr secrets,
+                            virSecretObjPtr secret);
+
+virSecretObjPtr virSecretObjListAddLocked(virSecretObjListPtr secrets,
+                                          virSecretDefPtr def,
+                                          const char *configDir,
+                                          virSecretDefPtr *oldDef);
+
+virSecretObjPtr virSecretObjListAdd(virSecretObjListPtr secrets,
+                                    virSecretDefPtr def,
+                                    const char *configDir,
+                                    virSecretDefPtr *oldDef);
+
 #endif /* __VIRSECRETOBJ_H__ */
