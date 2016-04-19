@@ -3530,10 +3530,10 @@ only slightly higher initial disk space usage.
 =item B<vol-clone> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
 I<name> [I<--prealloc-metadata>] [I<--reflink>]
 
-Clone an existing volume.  Less powerful, but easier to type, version of
-B<vol-create-from>.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool to create
-the volume in.
+Clone an existing volume within the parent pool.  Less powerful,
+but easier to type, version of B<vol-create-from>.
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool
+that contains the source volume, and will contain the new volume.
 I<vol-name-or-key-or-path> is the name or key or path of the source volume.
 I<name> is the name of the new volume.
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
