@@ -90,5 +90,5 @@ uninstall-local::
 	for f in $(FILTERS); do \
 		rm -f "$(NWFILTER_DIR)/`basename $$f`"; \
 	done
-	-test -z $(shell ls $(NWFILTER_DIR)) || rmdir $(NWFILTER_DIR)
+	-test -z "$(shell ls $(NWFILTER_DIR))" || rmdir $(NWFILTER_DIR)
 endif WITH_NWFILTER
