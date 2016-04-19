@@ -257,7 +257,7 @@ virConnectAuthPtr virConnectAuthPtrDefault = &virConnectAuthDefault;
 
 #if HAVE_WINSOCK2_H
 static int
-winsock_init(void)
+virWinsockInit(void)
 {
     WORD winsock_version, err;
     WSADATA winsock_data;
@@ -386,7 +386,7 @@ virGlobalInit(void)
     VIR_DEBUG("register drivers");
 
 #if HAVE_WINSOCK2_H
-    if (winsock_init() == -1)
+    if (virWinsockInit() == -1)
         goto error;
 #endif
 
@@ -958,9 +958,9 @@ virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
 
 
 static virConnectPtr
-do_open(const char *name,
-        virConnectAuthPtr auth,
-        unsigned int flags)
+virConnectOpenInternal(const char *name,
+                       virConnectAuthPtr auth,
+                       unsigned int flags)
 {
     size_t i;
     int res;
@@ -1161,7 +1161,7 @@ virConnectOpen(const char *name)
 
     VIR_DEBUG("name=%s", NULLSTR(name));
     virResetLastError();
-    ret = do_open(name, NULL, 0);
+    ret = virConnectOpenInternal(name, NULL, 0);
     if (!ret)
         goto error;
     return ret;
@@ -1197,7 +1197,7 @@ virConnectOpenReadOnly(const char *name)
 
     VIR_DEBUG("name=%s", NULLSTR(name));
     virResetLastError();
-    ret = do_open(name, NULL, VIR_CONNECT_RO);
+    ret = virConnectOpenInternal(name, NULL, VIR_CONNECT_RO);
     if (!ret)
         goto error;
     return ret;
@@ -1237,7 +1237,7 @@ virConnectOpenAuth(const char *name,
 
     VIR_DEBUG("name=%s, auth=%p, flags=%x", NULLSTR(name), auth, flags);
     virResetLastError();
-    ret = do_open(name, auth, flags);
+    ret = virConnectOpenInternal(name, auth, flags);
     if (!ret)
         goto error;
     return ret;
