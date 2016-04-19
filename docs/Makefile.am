@@ -368,3 +368,4 @@ uninstall-local:
 	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	  rm -f $(DESTDIR)$(DEVHELP_DIR)/$$(basename $$f); \
 	done
+	rm -f $(DESTDIR)$(pkgdatadir)/libvirtLogo.png
