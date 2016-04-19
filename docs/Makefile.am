@@ -363,8 +363,14 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/libvirtLogo.png $(DESTDIR)$(pkgdatadir)
 
 uninstall-local:
+	for f in $(css) $(dot_html) $(gif) $(png); do \
+	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
+	done
 	for h in $(apihtml); do rm -f $(DESTDIR)$(HTML_DIR)/$$h; done
 	for p in $(apipng); do rm -f $(DESTDIR)$(HTML_DIR)/$$p; done
+	for f in $(internals_html); do \
+	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
+	done
 	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	  rm -f $(DESTDIR)$(DEVHELP_DIR)/$$(basename $$f); \
 	done
