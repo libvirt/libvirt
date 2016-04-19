@@ -3399,14 +3399,14 @@ void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
 static void
 virNetworkDefUpdateNoSupport(virNetworkDefPtr def, const char *section)
 {
-    virReportError(VIR_ERR_NO_SUPPORT,
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                    _("can't update '%s' section of network '%s'"),
                    section, def->name);
 }
 static void
 virNetworkDefUpdateUnknownCommand(unsigned int command)
 {
-    virReportError(VIR_ERR_NO_SUPPORT,
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                    _("unrecognized network update command code %d"), command);
 }
 
@@ -3689,7 +3689,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
     /* parse the xml into a virSocketAddrRange */
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
 
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("dhcp ranges cannot be modified, "
                          "only added or deleted"));
         goto cleanup;
@@ -3795,7 +3795,7 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
         goto cleanup;
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("forward interface entries cannot be modified, "
                          "only added or deleted"));
         goto cleanup;
@@ -3996,7 +3996,7 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
     memset(&host, 0, sizeof(host));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("DNS HOST records cannot be modified, "
                          "only added or deleted"));
         goto cleanup;
@@ -4090,7 +4090,7 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
     memset(&srv, 0, sizeof(srv));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("DNS SRV records cannot be modified, "
                          "only added or deleted"));
         goto cleanup;
@@ -4174,7 +4174,7 @@ virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
     memset(&txt, 0, sizeof(txt));
 
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("DNS TXT records cannot be modified, "
                          "only added or deleted"));
         goto cleanup;
@@ -4291,7 +4291,7 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
         ret = virNetworkDefUpdateDNSSrv(def, command, parentIndex, ctxt, flags);
         break;
     default:
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("can't update unrecognized section of network"));
         break;
     }
