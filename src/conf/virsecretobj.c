@@ -136,3 +136,143 @@ virSecretObjListDispose(void *obj)
 
     virHashFree(secrets->objs);
 }
+
+
+/**
+ * virSecretObjFindByUUIDLocked:
+ * @secrets: list of secret objects
+ * @uuid: secret uuid to find
+ *
+ * This functions requires @secrets to be locked already!
+ *
+ * Returns: not locked, but ref'd secret object.
+ */
+virSecretObjPtr
+virSecretObjListFindByUUIDLocked(virSecretObjListPtr secrets,
+                                 const unsigned char *uuid)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(uuid, uuidstr);
+
+    return virObjectRef(virHashLookup(secrets->objs, uuidstr));
+}
+
+
+/**
+ * virSecretObjFindByUUID:
+ * @secrets: list of secret objects
+ * @uuid: secret uuid to find
+ *
+ * This function locks @secrets and finds the secret object which
+ * corresponds to @uuid.
+ *
+ * Returns: locked and ref'd secret object.
+ */
+virSecretObjPtr
+virSecretObjListFindByUUID(virSecretObjListPtr secrets,
+                           const unsigned char *uuid)
+{
+    virSecretObjPtr ret;
+
+    virObjectLock(secrets);
+    ret = virSecretObjListFindByUUIDLocked(secrets, uuid);
+    virObjectUnlock(secrets);
+    if (ret)
+        virObjectLock(ret);
+    return ret;
+}
+
+
+static int
+virSecretObjSearchName(const void *payload,
+                       const void *name ATTRIBUTE_UNUSED,
+                       const void *opaque)
+{
+    virSecretObjPtr secret = (virSecretObjPtr) payload;
+    struct virSecretSearchData *data = (struct virSecretSearchData *) opaque;
+    int found = 0;
+
+    virObjectLock(secret);
+
+    if (secret->def->usage_type != data->usageType)
+        goto cleanup;
+
+    switch (data->usageType) {
+    case VIR_SECRET_USAGE_TYPE_NONE:
+    /* never match this */
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_VOLUME:
+        if (STREQ(secret->def->usage.volume, data->usageID))
+            found = 1;
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_CEPH:
+        if (STREQ(secret->def->usage.ceph, data->usageID))
+            found = 1;
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_ISCSI:
+        if (STREQ(secret->def->usage.target, data->usageID))
+            found = 1;
+        break;
+    }
+
+ cleanup:
+    virObjectUnlock(secret);
+    return found;
+}
+
+
+/**
+ * virSecretObjFindByUsageLocked:
+ * @secrets: list of secret objects
+ * @usageType: secret usageType to find
+ * @usageID: secret usage string
+ *
+ * This functions requires @secrets to be locked already!
+ *
+ * Returns: not locked, but ref'd secret object.
+ */
+virSecretObjPtr
+virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
+                                  int usageType,
+                                  const char *usageID)
+{
+    virSecretObjPtr ret = NULL;
+    struct virSecretSearchData data = { .usageType = usageType,
+                                        .usageID = usageID };
+
+    ret = virHashSearch(secrets->objs, virSecretObjSearchName, &data);
+    if (ret)
+        virObjectRef(ret);
+    return ret;
+}
+
+
+/**
+ * virSecretObjFindByUsage:
+ * @secrets: list of secret objects
+ * @usageType: secret usageType to find
+ * @usageID: secret usage string
+ *
+ * This function locks @secrets and finds the secret object which
+ * corresponds to @usageID of @usageType.
+ *
+ * Returns: locked and ref'd secret object.
+ */
+virSecretObjPtr
+virSecretObjListFindByUsage(virSecretObjListPtr secrets,
+                            int usageType,
+                            const char *usageID)
+{
+    virSecretObjPtr ret;
+
+    virObjectLock(secrets);
+    ret = virSecretObjListFindByUsageLocked(secrets, usageType, usageID);
+    virObjectUnlock(secrets);
+    if (ret)
+        virObjectLock(ret);
+    return ret;
+}

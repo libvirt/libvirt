@@ -46,4 +46,18 @@ typedef virSecretObjList *virSecretObjListPtr;
 
 virSecretObjListPtr virSecretObjListNew(void);
 
+virSecretObjPtr virSecretObjListFindByUUIDLocked(virSecretObjListPtr secrets,
+                                                 const unsigned char *uuid);
+
+virSecretObjPtr virSecretObjListFindByUUID(virSecretObjListPtr secrets,
+                                           const unsigned char *uuid);
+
+virSecretObjPtr virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
+                                                  int usageType,
+                                                  const char *usageID);
+
+virSecretObjPtr virSecretObjListFindByUsage(virSecretObjListPtr secrets,
+                                            int usageType,
+                                            const char *usageID);
+
 #endif /* __VIRSECRETOBJ_H__ */
