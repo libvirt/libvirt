@@ -1609,10 +1609,9 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
                     idx <= addr->bus) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("failed to create PCI bridge "
-                                     "on bus %d: too many devices with fixed "
-                                     "addresses"),
-                                   addr->bus);
+                                   _("PCI controller at index %d (0x%02x) has "
+                                     "bus='0x%02x', but bus must be <= index"),
+                                   idx, idx, addr->bus);
                     goto cleanup;
                 }
             }
