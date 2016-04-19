@@ -427,7 +427,7 @@ install-exec-hook:
 	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER)
 
 uninstall-local:
-	rm $(DESTDIR)$(libdir)/libnss_libvirt.so.$(NSS_SO_VER)
+	-rm -f $(DESTDIR)$(libdir)/nss_libvirt.so.$(NSS_SO_VER)
 else ! WITH_BSD_NSS
 LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss.syms
