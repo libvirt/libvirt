@@ -428,6 +428,7 @@ AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
 AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
 AC_PATH_PROG([AUGPARSE], [augparse], [/usr/bin/augparse])
 AC_PROG_MKDIR_P
+AC_PROG_LN_S
 
 dnl External programs that we can use if they are available.
 dnl We will hard-code paths to these programs unless we cannot
