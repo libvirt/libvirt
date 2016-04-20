@@ -6894,6 +6894,27 @@ virDomainDiskDefGeometryParse(virDomainDiskDefPtr def,
 }
 
 
+static int
+virDomainDiskDefValidate(const virDomainDiskDef *def)
+{
+    if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        if (def->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk event_idx mode supported only for virtio bus"));
+            return -1;
+        }
+
+        if (def->ioeventfd != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk ioeventfd mode supported only for virtio bus"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -7365,13 +7386,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (ioeventfd) {
         int val;
 
-        if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk ioeventfd mode supported "
-                             "only for virtio bus"));
-            goto error;
-        }
-
         if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk ioeventfd mode '%s'"),
@@ -7382,13 +7396,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (event_idx) {
-        if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk event_idx mode supported "
-                             "only for virtio bus"));
-            goto error;
-        }
-
         int idx;
         if ((idx = virTristateSwitchTypeFromString(event_idx)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -7505,6 +7512,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (virDomainDiskBackingStoreParse(ctxt, def->src) < 0)
             goto error;
     }
+
+    if (virDomainDiskDefValidate(def) < 0)
+        goto error;
 
  cleanup:
     VIR_FREE(bus);
