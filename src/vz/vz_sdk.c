@@ -2064,6 +2064,8 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     PRL_VM_TYPE vmType;
     PRL_RESULT pret;
     virDomainNumatuneMemMode memMode;
+    int bus = IS_CT(def) ? VIR_DOMAIN_INPUT_BUS_PARALLELS :
+                           VIR_DOMAIN_INPUT_BUS_PS2;
 
     if (def->title) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2254,17 +2256,24 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    /* there may be one auto-input */
-    if (def->ninputs != 0 &&
-        (def->ninputs != 2 &&
-         def->inputs[0]->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
-         def->inputs[0]->bus != VIR_DOMAIN_INPUT_BUS_PS2 &&
-         def->inputs[1]->type != VIR_DOMAIN_INPUT_TYPE_KBD &&
-         def->inputs[1]->bus != VIR_DOMAIN_INPUT_BUS_PS2)) {
+    /* check we have only default input devices */
+    if (def->ngraphics > 0) {
+        if (def->ninputs != 2 ||
+            def->inputs[0]->bus != bus ||
+            def->inputs[1]->bus != bus ||
+            !((def->inputs[0]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+               def->inputs[1]->type == VIR_DOMAIN_INPUT_TYPE_KBD) ||
+              (def->inputs[0]->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
+               def->inputs[1]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE))
+           ) {
 
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported input device configuration"));
+            return -1;
+        }
+    } else if (def->ninputs != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("changing input devices parameters is not supported "
-                         "by vz driver"));
+                       _("input devices without vnc are not supported"));
         return -1;
     }
 
