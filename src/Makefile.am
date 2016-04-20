@@ -3078,8 +3078,7 @@ if WITH_NETWORK
 	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
 	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
 	    rm $(DESTDIR)$(confdir)/qemu/networks/default.xml.t; }
-	test -e $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml || \
-	   $(LN_S) ../default.xml \
+	$(LN_S) -f ../default.xml \
 	    $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
 endif WITH_NETWORK
 
