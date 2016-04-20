@@ -474,7 +474,33 @@ prlsdkDomObjFreePrivate(void *p)
 };
 
 static int
-prlsdkAddDomainVideoInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkAddDomainVideoInfoCt(virDomainDefPtr def)
+{
+    virDomainVideoDefPtr video = NULL;
+    int ret = -1;
+
+    if (def->ngraphics == 0)
+        return 0;
+
+    if (VIR_ALLOC(video) < 0)
+        goto cleanup;
+
+    video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
+    video->vram = 0;
+    video->heads = 1;
+
+    if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDomainVideoDefFree(video);
+
+    return ret;
+}
+
+static int
+prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     virDomainVideoDefPtr video = NULL;
     virDomainVideoAccelDefPtr accel = NULL;
@@ -1119,9 +1145,13 @@ prlsdkAddSerialInfo(PRL_HANDLE sdkdom,
 static int
 prlsdkAddDomainHardware(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
-    if (!IS_CT(def))
-        if (prlsdkAddDomainVideoInfo(sdkdom, def) < 0)
+    if (IS_CT(def)) {
+        if (prlsdkAddDomainVideoInfoCt(def) < 0)
             goto error;
+    } else {
+        if (prlsdkAddDomainVideoInfoVm(sdkdom, def) < 0)
+            goto error;
+    }
 
     if (prlsdkAddDomainHardDisksInfo(driver, sdkdom, def) < 0)
         goto error;
@@ -1185,25 +1215,6 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     if (VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, gr) < 0)
         goto error;
 
-    if (IS_CT(def)) {
-        virDomainVideoDefPtr video;
-        if (VIR_ALLOC(video) < 0)
-            goto error;
-        video->type = virDomainVideoDefaultType(def);
-        if (video->type < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot determine default video type"));
-            VIR_FREE(video);
-            goto error;
-        }
-        video->vram = virDomainVideoDefaultRAM(def, video->type);
-        video->heads = 1;
-        if (VIR_ALLOC_N(def->videos, 1) < 0) {
-            virDomainVideoDefFree(video);
-            goto error;
-        }
-        def->videos[def->nvideos++] = video;
-    }
     return 0;
 
  error:
@@ -1697,14 +1708,15 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     if (prlsdkConvertDomainType(sdkdom, def) < 0)
         goto error;
 
+    if (prlsdkAddVNCInfo(sdkdom, def) < 0)
+        goto error;
+
+    /* depends on prlsdkAddVNCInfo */
     if (prlsdkAddDomainHardware(driver, sdkdom, def) < 0)
         goto error;
 
     /* depends on prlsdkAddDomainHardware */
     if (prlsdkConvertBootOrder(sdkdom, def) < 0)
-        goto error;
-
-    if (prlsdkAddVNCInfo(sdkdom, def) < 0)
         goto error;
 
     pret = PrlVmCfg_GetEnvId(sdkdom, &envId);
