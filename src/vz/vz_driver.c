@@ -227,13 +227,37 @@ vzConnectGetCapabilities(virConnectPtr conn)
     xml = virCapabilitiesFormatXML(privconn->driver->caps);
     return xml;
 }
+static int
+vzDomainDefAddDefaultInputDevices(virDomainDefPtr def)
+{
+    if (def->ngraphics == 0)
+        return 0;
+
+    int bus = IS_CT(def) ? VIR_DOMAIN_INPUT_BUS_PARALLELS :
+                           VIR_DOMAIN_INPUT_BUS_PS2;
+
+    if (virDomainDefMaybeAddInput(def,
+                                  VIR_DOMAIN_INPUT_TYPE_MOUSE,
+                                  bus) < 0)
+        return -1;
+
+    if (virDomainDefMaybeAddInput(def,
+                                  VIR_DOMAIN_INPUT_TYPE_KBD,
+                                  bus) < 0)
+        return -1;
+
+    return 0;
+}
 
 static int
-vzDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
+vzDomainDefPostParse(virDomainDefPtr def,
                      virCapsPtr caps ATTRIBUTE_UNUSED,
                      unsigned int parseFlags ATTRIBUTE_UNUSED,
                      void *opaque)
 {
+    if (vzDomainDefAddDefaultInputDevices(def) < 0)
+        return -1;
+
     if (vzCheckUnsupportedDisks(def, opaque) < 0)
         return -1;
 
