@@ -7407,9 +7407,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            _("removable is only valid for usb disks"));
             goto error;
         }
-    } else {
-        if (def->bus == VIR_DOMAIN_DISK_BUS_USB)
-            def->removable = VIR_TRISTATE_SWITCH_ABSENT;
     }
 
     if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
