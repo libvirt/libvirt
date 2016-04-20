@@ -4546,6 +4546,36 @@ qemuProcessStartWarnShmem(virDomainObjPtr vm)
     }
 }
 
+static int
+qemuProcessStartValidateXML(virDomainObjPtr vm,
+                            virQEMUCapsPtr qemuCaps,
+                            bool migration,
+                            bool snapshot)
+{
+    /* The bits we validate here are XML configs that we previously
+     * accepted. We reject them at VM startup time rather than parse
+     * time so that pre-existing VMs aren't rejected and dropped from
+     * the VM list when libvirt is updated.
+     *
+     * If back compat isn't a concern, XML validation should probably
+     * be done at parse time.
+     */
+    if (qemuValidateCpuCount(vm->def, qemuCaps) < 0)
+        return -1;
+
+    if (!migration && !snapshot &&
+        virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
+        return -1;
+
+    if (vm->def->mem.min_guarantee) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parameter 'min_guarantee' "
+                         "not supported by QEMU."));
+        return -1;
+    }
+
+    return 0;
+}
 
 /**
  * qemuProcessStartValidate:
@@ -4590,19 +4620,8 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuValidateCpuCount(vm->def, qemuCaps) < 0)
+    if (qemuProcessStartValidateXML(vm, qemuCaps, migration, snapshot) < 0)
         return -1;
-
-    if (!migration && !snapshot &&
-        virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
-        return -1;
-
-    if (vm->def->mem.min_guarantee) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parameter 'min_guarantee' "
-                         "not supported by QEMU."));
-        return -1;
-    }
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
 
