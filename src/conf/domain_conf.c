@@ -7042,8 +7042,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     xmlNodePtr sourceNode = NULL;
     xmlNodePtr cur;
     xmlNodePtr save_ctxt = ctxt->node;
-    char *type = NULL;
-    char *device = NULL;
+    char *tmp = NULL;
     char *snapshot = NULL;
     char *rawio = NULL;
     char *sgio = NULL;
@@ -7071,16 +7070,25 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     ctxt->node = node;
 
-    type = virXMLPropString(node, "type");
-    if (type) {
-        if ((def->src->type = virStorageTypeFromString(type)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk type '%s'"), type);
-            goto error;
-        }
-    } else {
-        def->src->type = VIR_STORAGE_TYPE_FILE;
+    /* defaults */
+    def->src->type = VIR_STORAGE_TYPE_FILE;
+    def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
+
+    if ((tmp = virXMLPropString(node, "type")) &&
+        (def->src->type = virStorageTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk type '%s'"), tmp);
+        goto error;
     }
+    VIR_FREE(tmp);
+
+    if ((tmp = virXMLPropString(node, "device")) &&
+        (def->device = virDomainDiskDeviceTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk device '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
 
     snapshot = virXMLPropString(node, "snapshot");
 
@@ -7245,16 +7253,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    device = virXMLPropString(node, "device");
-    if (device) {
-        if ((def->device = virDomainDiskDeviceTypeFromString(device)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk device '%s'"), device);
-            goto error;
-        }
-    } else {
-        def->device = VIR_DOMAIN_DISK_DEVICE_DISK;
-    }
 
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present. LUN is for raw access CD-ROMs
@@ -7283,7 +7281,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->src->srcpool) {
-            char *tmp;
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
                 def->src->srcpool->pool, def->src->srcpool->volume) < 0)
                 goto error;
@@ -7502,15 +7499,14 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
 
  cleanup:
+    VIR_FREE(tmp);
     VIR_FREE(bus);
-    VIR_FREE(type);
     VIR_FREE(snapshot);
     VIR_FREE(rawio);
     VIR_FREE(sgio);
     VIR_FREE(target);
     VIR_FREE(tray);
     VIR_FREE(removable);
-    VIR_FREE(device);
     virStorageAuthDefFree(authdef);
     VIR_FREE(devaddr);
     VIR_FREE(serial);
