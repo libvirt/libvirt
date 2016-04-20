@@ -2936,6 +2936,87 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
     return macstr;
 }
 
+static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
+{
+    int ret = -1;
+    size_t i;
+    virNetworkRouteDefPtr route4 = NULL, route6 = NULL;
+    char *gw4 = NULL, *gw6 = NULL;
+    PRL_RESULT pret;
+
+    for (i = 0; i < net->nroutes; i++) {
+        virSocketAddrPtr addrdst, gateway;
+        virSocketAddr zero;
+
+        addrdst = virNetworkRouteDefGetAddress(net->routes[i]);
+        gateway = virNetworkRouteDefGetGateway(net->routes[i]);
+
+        ignore_value(virSocketAddrParse(&zero,
+                                (VIR_SOCKET_ADDR_IS_FAMILY(addrdst, AF_INET)
+                                 ? VIR_SOCKET_ADDR_IPV4_ALL
+                                 : VIR_SOCKET_ADDR_IPV6_ALL),
+                                VIR_SOCKET_ADDR_FAMILY(addrdst)));
+
+        if (!virSocketAddrEqual(addrdst, &zero)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Support only default gateway"));
+            return -1;
+        }
+
+        switch (VIR_SOCKET_ADDR_FAMILY(gateway)) {
+        case AF_INET:
+            if (route4) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Support only one IPv4 default gateway"));
+                return -1;
+            }
+
+            route4 = net->routes[i];
+
+            break;
+        case AF_INET6:
+            if (route6) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Support only one IPv6 default gateway"));
+                return -1;
+            }
+
+            route6 = net->routes[i];
+
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported address family %d "
+                             "Only IPv4 or IPv6 default gateway"),
+                           VIR_SOCKET_ADDR_FAMILY(gateway));
+
+            return -1;
+        }
+    }
+
+    if (route4 &&
+        !(gw4 = virSocketAddrFormat(virNetworkRouteDefGetGateway(route4))))
+        goto cleanup;
+
+    pret = PrlVmDevNet_SetDefaultGateway(sdknet, gw4 ? : "");
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (route6 &&
+        !(gw6 = virSocketAddrFormat(virNetworkRouteDefGetGateway(route6))))
+        goto cleanup;
+
+    pret = PrlVmDevNet_SetDefaultGatewayIPv6(sdknet, gw6 ? : "");
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(gw4);
+    VIR_FREE(gw6);
+
+    return ret;
+}
+
 static int prlsdkConfigureNet(vzDriverPtr driver,
                               PRL_HANDLE sdkdom,
                               virDomainNetDefPtr net,
@@ -3024,82 +3105,8 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
     pret = PrlVmDevNet_SetAutoApply(sdknet, true);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (net->nroutes) {
-        bool alreadySetIPv4Gateway = false;
-        bool alreadySetIPv6Gateway = false;
-
-        for (i = 0; i < net->nroutes; i++) {
-            virSocketAddrPtr addrdst, gateway;
-            virSocketAddr zero;
-
-            addrdst = virNetworkRouteDefGetAddress(net->routes[i]);
-            gateway = virNetworkRouteDefGetGateway(net->routes[i]);
-
-            ignore_value(virSocketAddrParse(&zero,
-                                    (VIR_SOCKET_ADDR_IS_FAMILY(addrdst, AF_INET)
-                                     ? VIR_SOCKET_ADDR_IPV4_ALL
-                                     : VIR_SOCKET_ADDR_IPV6_ALL),
-                                    VIR_SOCKET_ADDR_FAMILY(addrdst)));
-
-            if (!virSocketAddrEqual(addrdst, &zero)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Support only default gateway"));
-                goto cleanup;
-            }
-
-            switch (VIR_SOCKET_ADDR_FAMILY(gateway)) {
-            case AF_INET:
-
-                if (!ipv4present)
-                    continue;
-
-                if (alreadySetIPv4Gateway) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Support only one IPv4 default gateway"));
-                    goto cleanup;
-                }
-
-                if (!(addrstr = virSocketAddrFormat(gateway)))
-                    goto cleanup;
-
-                pret = PrlVmDevNet_SetDefaultGateway(sdknet, addrstr);
-                prlsdkCheckRetGoto(pret, cleanup);
-
-                alreadySetIPv4Gateway = true;
-                break;
-
-            case AF_INET6:
-
-                if (!ipv6present)
-                    continue;
-
-                if (alreadySetIPv6Gateway) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Support only one IPv6 default gateway"));
-                    goto cleanup;
-                }
-
-                if (!(addrstr = virSocketAddrFormat(gateway)))
-                    goto cleanup;
-
-                pret = PrlVmDevNet_SetDefaultGatewayIPv6(sdknet, addrstr);
-                prlsdkCheckRetGoto(pret, cleanup);
-
-                alreadySetIPv6Gateway = true;
-                break;
-
-            default:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unsupported address family %d "
-                                 "Only IPv4 or IPv6 default gateway"),
-                               VIR_SOCKET_ADDR_FAMILY(gateway));
-
-                goto cleanup;
-            }
-
-            VIR_FREE(addrstr);
-        }
-    }
+    if (prlsdkConfigureGateways(sdknet, net))
+        goto cleanup;
 
     if (isCt) {
         if (net->model)
