@@ -1180,6 +1180,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     PRL_VM_REMOTE_DISPLAY_MODE vncMode;
     PRL_UINT32 port;
     PRL_RESULT pret;
+    char *passwd = NULL;
 
     pret = PrlVmCfg_GetVNCMode(sdkdom, &vncMode);
     prlsdkCheckRetGoto(pret, error);
@@ -1189,6 +1190,14 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     if (VIR_ALLOC(gr) < 0)
         goto error;
+
+    if (!(passwd = prlsdkGetStringParamVar(PrlVmCfg_GetVNCPassword, sdkdom)))
+        goto error;
+
+    if (*passwd != '\0') {
+        gr->data.vnc.auth.passwd = passwd;
+        passwd = NULL;
+    }
 
     pret = PrlVmCfg_GetVNCPort(sdkdom, &port);
     prlsdkCheckRetGoto(pret, error);
@@ -1215,6 +1224,7 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
  error:
     virDomainGraphicsDefFree(gr);
+    VIR_FREE(passwd);
     return -1;
 }
 
@@ -2747,6 +2757,9 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
         prlsdkCheckRetExit(pret, -1);
     }
+
+    pret = PrlVmCfg_SetVNCPassword(sdkdom, gr->data.vnc.auth.passwd ? : "");
+    prlsdkCheckRetExit(pret, -1);
 
     if (gr->data.vnc.autoport) {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_AUTO);
