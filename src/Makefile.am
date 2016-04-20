@@ -3078,8 +3078,8 @@ if WITH_NETWORK
 	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
 	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
 	    rm $(DESTDIR)$(confdir)/qemu/networks/default.xml.t; }
-	$(LN_S) -f ../default.xml \
-	    $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
+	( cd $(DESTDIR)$(confdir)/qemu/networks/autostart && \
+	    $(LN_S) -f ../default.xml default.xml )
 endif WITH_NETWORK
 
 uninstall-local:: uninstall-init uninstall-systemd
