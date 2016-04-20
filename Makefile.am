@@ -83,9 +83,6 @@ clean-cov:
 
 MAINTAINERCLEANFILES = .git-module-status
 
-# disable this check
-distuninstallcheck:
-
 dist-hook: gen-ChangeLog gen-AUTHORS
 
 # Generate the ChangeLog file (with all entries since the switch to git)
