@@ -60,7 +60,7 @@ virNetworkRouteDefFree(virNetworkRouteDefPtr def)
 
 virNetworkRouteDefPtr
 virNetworkRouteDefCreate(const char *errorDetail,
-                         char *family,
+                         const char *family,
                          const char *address,
                          const char *netmask,
                          const char *gateway,

@@ -833,6 +833,50 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
 }
 
 static int
+prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDefPtr net)
+{
+    int ret = -1;
+    char *gw = NULL;
+    char *gw6 = NULL;
+    virNetworkRouteDefPtr route = NULL;
+
+    if (!(gw = prlsdkGetStringParamVar(PrlVmDevNet_GetDefaultGateway, sdknet)))
+        goto cleanup;
+
+    if (!(gw6 = prlsdkGetStringParamVar(PrlVmDevNet_GetDefaultGatewayIPv6, sdknet)))
+        goto cleanup;
+
+    if (*gw != '\0') {
+        if (!(route = virNetworkRouteDefCreate(_("Domain interface"),
+                                               "ipv4", VIR_SOCKET_ADDR_IPV4_ALL,
+                                               NULL, gw, 0, true, 0, false)))
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(net->routes, net->nroutes, route) < 0)
+            goto cleanup;
+    }
+
+    if (*gw6 != '\0') {
+        if (!(route = virNetworkRouteDefCreate(_("Domain interface"),
+                                               "ipv6", VIR_SOCKET_ADDR_IPV6_ALL,
+                                               NULL, gw6, 0, true, 0, false)))
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(net->routes, net->nroutes, route) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(route);
+    VIR_FREE(gw);
+    VIR_FREE(gw6);
+
+    return ret;
+}
+
+static int
 prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 {
     char macstr[VIR_MAC_STRING_BUFLEN];
@@ -872,6 +916,9 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         goto cleanup;
 
     if (prlsdkGetNetAddresses(netAdapter, net) < 0)
+        goto cleanup;
+
+    if (prlsdkGetRoutes(netAdapter, net) < 0)
         goto cleanup;
 
     pret = PrlVmDev_GetEmulatedType(netAdapter, &emulatedType);

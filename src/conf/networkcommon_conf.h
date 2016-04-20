@@ -40,7 +40,7 @@ virNetworkRouteDefFree(virNetworkRouteDefPtr def);
 
 virNetworkRouteDefPtr
 virNetworkRouteDefCreate(const char *networkName,
-                         char *family,
+                         const char *family,
                          const char *address,
                          const char *netmask,
                          const char *gateway,
