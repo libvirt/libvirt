@@ -2772,12 +2772,10 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
-    if ((glisten = virDomainGraphicsGetListen(gr, 0))) {
-        if (!glisten->address)
-            goto cleanup;
-        pret = PrlVmCfg_SetVNCHostName(sdkdom, glisten->address);
-        prlsdkCheckRetGoto(pret, cleanup);
-    }
+    glisten = virDomainGraphicsGetListen(gr, 0);
+    pret = PrlVmCfg_SetVNCHostName(sdkdom, glisten && glisten->address ?
+                                           glisten->address : "");
+    prlsdkCheckRetGoto(pret, cleanup);
 
     ret = 0;
  cleanup:
