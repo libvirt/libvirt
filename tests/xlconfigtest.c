@@ -43,12 +43,33 @@
 static virCapsPtr caps;
 static virDomainXMLOptionPtr xmlopt;
 
+
+/*
+ * This function provides a mechanism to replace variables in test
+ * data files whose values are discovered at built time.
+ */
+static char *
+testReplaceVarsXML(const char *xml)
+{
+    char *xmlcfgData;
+    char *replacedXML;
+
+    if (virTestLoadFile(xml, &xmlcfgData) < 0)
+        return NULL;
+
+    replacedXML = virStringReplace(xmlcfgData, "/LIBXL_FIRMWARE_DIR",
+                                   LIBXL_FIRMWARE_DIR);
+
+    VIR_FREE(xmlcfgData);
+    return replacedXML;
+}
+
 /*
  * Parses domXML to virDomainDef object, which is then converted to xl.cfg(5)
  * config and compared with expected config.
  */
 static int
-testCompareParseXML(const char *xlcfg, const char *xml)
+testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     char *gotxlcfgData = NULL;
     virConfPtr conf = NULL;
@@ -56,6 +77,7 @@ testCompareParseXML(const char *xlcfg, const char *xml)
     int wrote = 4096;
     int ret = -1;
     virDomainDefPtr def = NULL;
+    char *replacedXML = NULL;
 
     if (VIR_ALLOC_N(gotxlcfgData, wrote) < 0)
         goto fail;
@@ -63,9 +85,17 @@ testCompareParseXML(const char *xlcfg, const char *xml)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
-                                      VIR_DOMAIN_XML_INACTIVE)))
-        goto fail;
+    if (replaceVars) {
+        if (!(replacedXML = testReplaceVarsXML(xml)))
+            goto fail;
+        if (!(def = virDomainDefParseString(replacedXML, caps, xmlopt,
+                                            VIR_DOMAIN_XML_INACTIVE)))
+            goto fail;
+    } else {
+        if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
+                                          VIR_DOMAIN_XML_INACTIVE)))
+            goto fail;
+    }
 
     if (!virDomainDefCheckABIStability(def, def)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
@@ -85,6 +115,7 @@ testCompareParseXML(const char *xlcfg, const char *xml)
     ret = 0;
 
  fail:
+    VIR_FREE(replacedXML);
     VIR_FREE(gotxlcfgData);
     if (conf)
         virConfFree(conf);
@@ -99,7 +130,7 @@ testCompareParseXML(const char *xlcfg, const char *xml)
  * domXML and compared to expected XML.
  */
 static int
-testCompareFormatXML(const char *xlcfg, const char *xml)
+testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     char *xlcfgData = NULL;
     char *gotxml = NULL;
@@ -107,6 +138,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml)
     int ret = -1;
     virConnectPtr conn;
     virDomainDefPtr def = NULL;
+    char *replacedXML = NULL;
 
     conn = virGetConnect();
     if (!conn) goto fail;
@@ -124,14 +156,22 @@ testCompareFormatXML(const char *xlcfg, const char *xml)
                                       VIR_DOMAIN_XML_SECURE)))
         goto fail;
 
-    if (virTestCompareToFile(gotxml, xml) < 0)
-        goto fail;
+    if (replaceVars) {
+        if (!(replacedXML = testReplaceVarsXML(xml)))
+            goto fail;
+        if (virTestCompareToString(gotxml, replacedXML) < 0)
+            goto fail;
+    } else {
+        if (virTestCompareToFile(gotxml, xml) < 0)
+            goto fail;
+    }
 
     ret = 0;
 
  fail:
     if (conf)
         virConfFree(conf);
+    VIR_FREE(replacedXML);
     VIR_FREE(xlcfgData);
     VIR_FREE(gotxml);
     virDomainDefFree(def);
@@ -144,6 +184,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml)
 struct testInfo {
     const char *name;
     int mode;
+    bool replaceVars;
 };
 
 static int
@@ -161,9 +202,9 @@ testCompareHelper(const void *data)
         goto cleanup;
 
     if (info->mode == 0)
-        result = testCompareParseXML(cfg, xml);
+        result = testCompareParseXML(cfg, xml, info->replaceVars);
     else
-        result = testCompareFormatXML(cfg, xml);
+        result = testCompareFormatXML(cfg, xml, info->replaceVars);
 
  cleanup:
     VIR_FREE(xml);
@@ -184,17 +225,17 @@ mymain(void)
     if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
-#define DO_TEST_PARSE(name)                                             \
+#define DO_TEST_PARSE(name, replace)                                    \
     do {                                                                \
-        struct testInfo info0 = { name, 0 };                            \
+        struct testInfo info0 = { name, 0, replace };                   \
         if (virTestRun("Xen XL-2-XML Parse  " name,                     \
                        testCompareHelper, &info0) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 
-#define DO_TEST_FORMAT(name)                                            \
+#define DO_TEST_FORMAT(name, replace)                                   \
     do {                                                                \
-        struct testInfo info1 = { name, 1 };                            \
+        struct testInfo info1 = { name, 1, replace };                   \
         if (virTestRun("Xen XL-2-XML Format " name,                     \
                        testCompareHelper, &info1) < 0)                  \
             ret = -1;                                                   \
@@ -202,22 +243,29 @@ mymain(void)
 
 #define DO_TEST(name)                                                   \
     do {                                                                \
-        DO_TEST_PARSE(name);                                            \
-        DO_TEST_FORMAT(name);                                           \
+        DO_TEST_PARSE(name, false);                                     \
+        DO_TEST_FORMAT(name, false);                                    \
     } while (0)
 
+#define DO_TEST_REPLACE_VARS(name)                                      \
+    do {                                                                \
+        DO_TEST_PARSE(name, true);                                      \
+        DO_TEST_FORMAT(name, true);                                     \
+    } while (0)
+
+    DO_TEST_REPLACE_VARS("fullvirt-ovmf");
     DO_TEST("paravirt-maxvcpus");
     DO_TEST("new-disk");
-    DO_TEST_FORMAT("disk-positional-parms-full");
-    DO_TEST_FORMAT("disk-positional-parms-partial");
+    DO_TEST_FORMAT("disk-positional-parms-full", false);
+    DO_TEST_FORMAT("disk-positional-parms-partial", false);
     DO_TEST("spice");
     DO_TEST("spice-features");
     DO_TEST("vif-rate");
     DO_TEST("fullvirt-nohap");
 
     DO_TEST("paravirt-cmdline");
-    DO_TEST_FORMAT("paravirt-cmdline-extra-root");
-    DO_TEST_FORMAT("paravirt-cmdline-bogus-extra-root");
+    DO_TEST_FORMAT("paravirt-cmdline-extra-root", false);
+    DO_TEST_FORMAT("paravirt-cmdline-bogus-extra-root", false);
     DO_TEST("rbd-multihost-noauth");
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
@@ -225,8 +273,8 @@ mymain(void)
 #endif
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
     DO_TEST("fullvirt-direct-kernel-boot");
-    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra");
-    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra");
+    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra", false);
+    DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra", false);
 #endif
     DO_TEST("vif-typename");
 

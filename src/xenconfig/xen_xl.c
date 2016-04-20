@@ -33,6 +33,7 @@
 #include "virstring.h"
 #include "virstoragefile.h"
 #include "xen_xl.h"
+#include "libxl_capabilities.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXL
 
@@ -103,15 +104,31 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     size_t i;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+        const char *bios;
         const char *boot;
 
-        for (i = 0; i < caps->nguests; i++) {
-            if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
-                caps->guests[i]->arch.id == def->os.arch) {
-                if (VIR_ALLOC(def->os.loader) < 0 ||
-                    VIR_STRDUP(def->os.loader->path,
-                               caps->guests[i]->arch.defaultInfo.loader) < 0)
-                    return -1;
+        if (xenConfigGetString(conf, "bios", &bios, NULL) < 0)
+            return -1;
+
+        if (bios && STREQ(bios, "ovmf")) {
+            if (VIR_ALLOC(def->os.loader) < 0)
+                return -1;
+
+            def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+            def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
+
+            if (VIR_STRDUP(def->os.loader->path,
+                           LIBXL_FIRMWARE_DIR "/ovmf.bin") < 0)
+                return -1;
+        } else {
+            for (i = 0; i < caps->nguests; i++) {
+                if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
+                    caps->guests[i]->arch.id == def->os.arch) {
+                    if (VIR_ALLOC(def->os.loader) < 0 ||
+                        VIR_STRDUP(def->os.loader->path,
+                                   caps->guests[i]->arch.defaultInfo.loader) < 0)
+                        return -1;
+                }
             }
         }
 
@@ -534,6 +551,12 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
         char boot[VIR_DOMAIN_BOOT_LAST+1];
         if (xenConfigSetString(conf, "builder", "hvm") < 0)
             return -1;
+
+        if (def->os.loader &&
+            def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+            if (xenConfigSetString(conf, "bios", "ovmf") < 0)
+                return -1;
+        }
 
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         if (def->os.kernel &&

@@ -1151,7 +1151,7 @@ noinst_LTLIBRARIES += libvirt_xenconfig.la
 libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
 libvirt_xenconfig_la_LIBADD = $(LIBXL_LIBS)
 libvirt_xenconfig_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
+		-I$(srcdir)/conf -I$(srcdir)/libxl $(AM_CFLAGS)
 libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
 endif WITH_XENCONFIG
 

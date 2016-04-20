@@ -718,6 +718,22 @@ virTestCompareToFile(const char *strcontent,
     return ret;
 }
 
+/*
+ * @param strcontent: String input content
+ * @param strsrc: String source to compare strcontent against
+ */
+int
+virTestCompareToString(const char *strcontent,
+                       const char *strsrc)
+{
+    if (STRNEQ_NULLABLE(strcontent, strsrc)) {
+        virTestDifference(stderr, strcontent, strsrc);
+        return -1;
+    }
+
+    return 0;
+}
+
 static void
 virTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
                       virErrorPtr err ATTRIBUTE_UNUSED)
