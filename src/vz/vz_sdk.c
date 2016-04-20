@@ -886,9 +886,6 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     PRL_BOOL isConnected;
     int ret = -1;
 
-    net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-
-
     /* use device name, shown by prlctl as target device
      * for identifying network adapter in virDomainDefineXML */
     if (!(net->ifname = prlsdkGetStringParamVar(PrlVmDevNet_GetHostInterfaceName,
@@ -929,7 +926,9 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
                        PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
             goto cleanup;
     } else {
-        if (!(net->data.network.name =
+        char *netid = NULL;
+
+        if (!(netid =
               prlsdkGetStringParamVar(PrlVmDevNet_GetVirtualNetworkId,
                                       netAdapter)))
             goto cleanup;
@@ -940,8 +939,13 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
          * predefined ones such as PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME
          * and PARALLELS_DONAIN_ROUTED_NETWORK_NAME
          */
-        if (STRNEQ(net->data.network.name, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME))
+        if (STRNEQ(netid, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME)) {
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+            net->data.network.name = netid;
+        } else {
+            net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+            net->data.bridge.brname = netid;
+        }
 
     }
 
@@ -3148,7 +3152,7 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
         pret = PrlVirtNet_Create(&vnet);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        pret = PrlVirtNet_SetNetworkId(vnet, net->data.network.name);
+        pret = PrlVirtNet_SetNetworkId(vnet, net->data.bridge.brname);
         prlsdkCheckRetGoto(pret, cleanup);
 
         pret = PrlVirtNet_SetNetworkType(vnet, PVN_BRIDGED_ETHERNET);
@@ -3163,7 +3167,7 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
         pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
+        pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.bridge.brname);
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
