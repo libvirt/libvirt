@@ -1196,10 +1196,6 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     gr->data.vnc.autoport = (vncMode == PRD_AUTO);
     gr->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
     gr->data.vnc.port = port;
-    gr->data.vnc.keymap = NULL;
-    gr->data.vnc.auth.passwd = NULL;
-    gr->data.vnc.auth.expires = false;
-    gr->data.vnc.auth.connected = 0;
 
     if (VIR_ALLOC(gr->listens) < 0)
         goto error;
