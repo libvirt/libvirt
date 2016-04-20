@@ -68,7 +68,7 @@ rpm: clean
 check-local: all tests
 
 cov: clean-cov
-	mkdir $(top_builddir)/coverage
+	$(MKDIR_P) $(top_builddir)/coverage
 	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
 	  -d $(top_builddir)/src  -d $(top_builddir)/daemon \
 	  -d $(top_builddir)/tests
