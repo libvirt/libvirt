@@ -1292,7 +1292,21 @@
 }
 
 {
-    "id": "libvirt-11",
+    "return": [
+        {
+            "name": "ioeventfd",
+            "type": "on/off"
+        },
+        {
+            "name": "vectors",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-11"
+}
+
+{
+    "id": "libvirt-12",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-blk-ccw' not found"
@@ -1300,7 +1314,7 @@
 }
 
 {
-    "id": "libvirt-12",
+    "id": "libvirt-13",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-net-ccw' not found"
@@ -1308,7 +1322,15 @@
 }
 
 {
-    "id": "libvirt-13",
+    "id": "libvirt-14",
+    "error": {
+        "class": "DeviceNotFound",
+        "desc": "Device 'virtio-scsi-ccw' not found"
+    }
+}
+
+{
+    "id": "libvirt-15",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-blk-s390' not found"
@@ -1316,7 +1338,7 @@
 }
 
 {
-    "id": "libvirt-14",
+    "id": "libvirt-16",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-net-s390' not found"
@@ -1324,7 +1346,7 @@
 }
 
 {
-    "id": "libvirt-15",
+    "id": "libvirt-17",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'pci-assign' not found"
@@ -1374,7 +1396,7 @@
             "type": "pci-host-devaddr"
         }
     ],
-    "id": "libvirt-16"
+    "id": "libvirt-18"
 }
 
 {
@@ -1416,7 +1438,7 @@
             "type": "pci-host-devaddr"
         }
     ],
-    "id": "libvirt-17"
+    "id": "libvirt-19"
 }
 
 {
@@ -1490,7 +1512,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-18"
+    "id": "libvirt-20"
 }
 
 {
@@ -1544,7 +1566,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-19"
+    "id": "libvirt-21"
 }
 
 {
@@ -1586,11 +1608,11 @@
             "type": "uint32"
         }
     ],
-    "id": "libvirt-20"
+    "id": "libvirt-22"
 }
 
 {
-    "id": "libvirt-21",
+    "id": "libvirt-23",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'usb-redir' not found"
@@ -1598,7 +1620,7 @@
 }
 
 {
-    "id": "libvirt-22",
+    "id": "libvirt-24",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'usb-host' not found"
@@ -1628,7 +1650,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-23"
+    "id": "libvirt-25"
 }
 
 {
@@ -1638,7 +1660,7 @@
             "type": "size"
         }
     ],
-    "id": "libvirt-24"
+    "id": "libvirt-26"
 }
 
 {
@@ -1652,7 +1674,7 @@
             "type": "uint64"
         }
     ],
-    "id": "libvirt-25"
+    "id": "libvirt-27"
 }
 
 {
@@ -1702,7 +1724,7 @@
             "type": "drive"
         }
     ],
-    "id": "libvirt-26"
+    "id": "libvirt-28"
 }
 
 {
@@ -1716,7 +1738,7 @@
             "type": "hex32"
         }
     ],
-    "id": "libvirt-27"
+    "id": "libvirt-29"
 }
 
 {
@@ -1750,106 +1772,6 @@
             "type": "uint32"
         }
     ],
-    "id": "libvirt-28"
-}
-
-{
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-29"
-}
-
-{
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "surfaces",
-            "type": "int32"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram64_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "cmdlog",
-            "type": "uint32"
-        },
-        {
-            "name": "guestdebug",
-            "type": "uint32"
-        },
-        {
-            "name": "debug",
-            "type": "uint32"
-        },
-        {
-            "name": "revision",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size",
-            "type": "uint32"
-        }
-    ],
     "id": "libvirt-30"
 }
 
@@ -1876,6 +1798,36 @@
             "type": "pci-devfn"
         },
         {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-31"
+}
+
+{
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
             "name": "surfaces",
             "type": "int32"
         },
@@ -1920,11 +1872,81 @@
             "type": "uint32"
         }
     ],
-    "id": "libvirt-31"
+    "id": "libvirt-32"
 }
 
 {
-    "id": "libvirt-32",
+    "return": [
+        {
+            "name": "command_serr_enable",
+            "type": "on/off"
+        },
+        {
+            "name": "multifunction",
+            "type": "on/off"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "string"
+        },
+        {
+            "name": "addr",
+            "type": "pci-devfn"
+        },
+        {
+            "name": "surfaces",
+            "type": "int32"
+        },
+        {
+            "name": "vgamem_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram64_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size_mb",
+            "type": "uint32"
+        },
+        {
+            "name": "cmdlog",
+            "type": "uint32"
+        },
+        {
+            "name": "guestdebug",
+            "type": "uint32"
+        },
+        {
+            "name": "debug",
+            "type": "uint32"
+        },
+        {
+            "name": "revision",
+            "type": "uint32"
+        },
+        {
+            "name": "vram_size",
+            "type": "uint32"
+        },
+        {
+            "name": "ram_size",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-33"
+}
+
+{
+    "id": "libvirt-34",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-gpu-pci' not found"
@@ -1932,7 +1954,7 @@
 }
 
 {
-    "id": "libvirt-33",
+    "id": "libvirt-35",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'ICH9-LPC' not found"
@@ -1974,11 +1996,11 @@
             "type": "on/off"
         }
     ],
-    "id": "libvirt-34"
+    "id": "libvirt-36"
 }
 
 {
-    "id": "libvirt-35",
+    "id": "libvirt-37",
     "error": {
         "class": "DeviceNotFound",
         "desc": "Device 'virtio-balloon-ccw' not found"
@@ -1988,7 +2010,7 @@
 {
     "return": [
     ],
-    "id": "libvirt-36"
+    "id": "libvirt-38"
 }
 
 {
@@ -2114,7 +2136,7 @@
             "cpu-max": 1
         }
     ],
-    "id": "libvirt-37"
+    "id": "libvirt-39"
 }
 
 {
@@ -2192,7 +2214,7 @@
             "name": "qemu64"
         }
     ],
-    "id": "libvirt-38"
+    "id": "libvirt-40"
 }
 
 {
@@ -2200,19 +2222,19 @@
         "enabled": false,
         "present": true
     },
-    "id": "libvirt-39"
-}
-
-{
-    "return": [
-    ],
-    "id": "libvirt-40"
-}
-
-{
-    "return": [
-    ],
     "id": "libvirt-41"
+}
+
+{
+    "return": [
+    ],
+    "id": "libvirt-42"
+}
+
+{
+    "return": [
+    ],
+    "id": "libvirt-43"
 }
 
 {
@@ -2800,7 +2822,7 @@
             "option": "drive"
         }
     ],
-    "id": "libvirt-42"
+    "id": "libvirt-44"
 }
 
 {
@@ -2822,5 +2844,5 @@
             "state": false
         }
     ],
-    "id": "libvirt-43"
+    "id": "libvirt-45"
 }

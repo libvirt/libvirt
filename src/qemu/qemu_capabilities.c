@@ -327,6 +327,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "pxb-pcie", /* 220 */
               "device-tray-moved-event",
               "nec-usb-xhci-ports",
+              "virtio-scsi-pci.iothread",
     );
 
 
@@ -1606,6 +1607,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
     { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioSCSI[] = {
+    { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD },
+};
+
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPCIAssign[] = {
     { "rombar", QEMU_CAPS_PCI_ROMBAR },
     { "configfd", QEMU_CAPS_PCI_CONFIGFD },
@@ -1701,10 +1706,14 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
     { "virtio-net-pci", virQEMUCapsObjectPropsVirtioNet,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet) },
+    { "virtio-scsi-pci", virQEMUCapsObjectPropsVirtioSCSI,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioSCSI) },
     { "virtio-blk-ccw", virQEMUCapsObjectPropsVirtioBlk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
     { "virtio-net-ccw", virQEMUCapsObjectPropsVirtioNet,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet) },
+    { "virtio-scsi-ccw", virQEMUCapsObjectPropsVirtioSCSI,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioSCSI) },
     { "virtio-blk-s390", virQEMUCapsObjectPropsVirtioBlk,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk) },
     { "virtio-net-s390", virQEMUCapsObjectPropsVirtioNet,

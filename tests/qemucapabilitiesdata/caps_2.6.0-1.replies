@@ -1806,7 +1806,125 @@
 }
 
 {
-  "id": "libvirt-11",
+    "return": [
+        {
+            "name": "disable-modern",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "ioeventfd",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "virtio-pci-bus-master-bug-migration",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "event_idx",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "cmd_per_lun",
+            "type": "uint32"
+        },
+        {
+            "name": "indirect_desc",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "param_change",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "iothread",
+            "type": "link<iothread>"
+        },
+        {
+            "name": "multifunction",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "migrate-extra",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "notify_on_empty",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "hotplug",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "modern-pio-notify",
+            "description": "on/off",
+            "type":"bool"
+        },
+        {
+            "name": "num_queues",
+            "type": "uint32"
+        },
+        {
+            "name": "romfile",
+            "type": "str"
+        },
+        {
+            "name": "virtio-backend",
+            "type": "child<virtio-scsi-device>"
+        },
+        {
+            "name": "disable-legacy",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "command_serr_enable",
+            "description":"on/off",
+            "type": "bool"
+        },
+        {
+            "name": "vectors",
+            "type": "uint32"
+        },
+        {
+            "name": "x-disable-pcie",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "addr",
+            "description": "Slot and optional function number, example: 06.0 or 06",
+            "type": "int32"
+        },
+        {
+            "name": "any_layout",
+            "description": "on/off",
+            "type": "bool"
+        },
+        {
+            "name": "max_sectors",
+            "type": "uint32"
+        },
+        {
+            "name": "rombar",
+            "type": "uint32"
+        }
+    ],
+    "id": "libvirt-11"
+}
+
+{
+  "id": "libvirt-12",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-ccw' not found"
@@ -1814,7 +1932,7 @@
 }
 
 {
-  "id": "libvirt-12",
+  "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-ccw' not found"
@@ -1822,7 +1940,15 @@
 }
 
 {
-  "id": "libvirt-13",
+  "id": "libvirt-14",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-scsi-ccw' not found"
+  }
+}
+
+{
+  "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-s390' not found"
@@ -1830,7 +1956,7 @@
 }
 
 {
-  "id": "libvirt-14",
+  "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-s390' not found"
@@ -1838,7 +1964,7 @@
 }
 
 {
-  "id": "libvirt-15",
+  "id": "libvirt-17",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'pci-assign' not found"
@@ -1894,7 +2020,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-16"
+  "id": "libvirt-18"
 }
 
 {
@@ -1950,7 +2076,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-17"
+  "id": "libvirt-19"
 }
 
 {
@@ -2045,7 +2171,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-18"
+  "id": "libvirt-20"
 }
 
 {
@@ -2102,7 +2228,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-21"
 }
 
 {
@@ -2155,7 +2281,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-22"
 }
 
 {
@@ -2196,7 +2322,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-23"
 }
 
 {
@@ -2261,7 +2387,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-24"
 }
 
 {
@@ -2288,7 +2414,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-25"
 }
 
 {
@@ -2326,7 +2452,7 @@
       "type": "size"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-26"
 }
 
 {
@@ -2380,7 +2506,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-27"
 }
 
 {
@@ -2440,7 +2566,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-28"
 }
 
 {
@@ -2454,7 +2580,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-29"
 }
 
 {
@@ -2501,112 +2627,6 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-28"
-}
-
-{
-  "return": [
-    {
-      "name": "command_serr_enable",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "name": "romfile",
-      "type": "str"
-    },
-    {
-      "name": "addr",
-      "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
-    },
-    {
-      "name": "vgamem_mb",
-      "type": "uint32"
-    }
-  ],
-  "id": "libvirt-29"
-}
-
-{
-  "return": [
-    {
-      "name": "command_serr_enable",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "name": "romfile",
-      "type": "str"
-    },
-    {
-      "name": "addr",
-      "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
-    },
-    {
-      "name": "surfaces",
-      "type": "int32"
-    },
-    {
-      "name": "vgamem_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "vram64_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "cmdlog",
-      "type": "uint32"
-    },
-    {
-      "name": "guestdebug",
-      "type": "uint32"
-    },
-    {
-      "name": "debug",
-      "type": "uint32"
-    },
-    {
-      "name": "revision",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size",
-      "type": "uint32"
-    }
-  ],
   "id": "libvirt-30"
 }
 
@@ -2636,6 +2656,39 @@
       "type": "int32"
     },
     {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-31"
+}
+
+{
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
       "name": "surfaces",
       "type": "int32"
     },
@@ -2680,7 +2733,80 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "surfaces",
+      "type": "int32"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram64_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "cmdlog",
+      "type": "uint32"
+    },
+    {
+      "name": "guestdebug",
+      "type": "uint32"
+    },
+    {
+      "name": "debug",
+      "type": "uint32"
+    },
+    {
+      "name": "revision",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-33"
 }
 
 {
@@ -2766,7 +2892,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-34"
 }
 
 {
@@ -2843,7 +2969,7 @@
       "name": "gpe0_blk"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 
@@ -2944,11 +3070,11 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-35",
+  "id": "libvirt-37",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -2991,7 +3117,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -3161,7 +3287,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -3251,7 +3377,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -3259,21 +3385,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-43"
 }
 
 {
@@ -4285,7 +4411,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-44"
 }
 
 {
@@ -4315,5 +4441,5 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-45"
 }

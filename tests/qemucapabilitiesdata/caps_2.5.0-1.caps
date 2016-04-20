@@ -177,4 +177,5 @@
     <flag name='pxb'/>
     <flag name='device-tray-moved-event'/>
     <flag name='nec-usb-xhci-ports'/>
+    <flag name='virtio-scsi-pci.iothread'/>
   </qemuCaps>
