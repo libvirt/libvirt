@@ -395,6 +395,19 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             return -1;
 #endif
 
+        /*
+         * Currently libxl only allows specifying the type of BIOS.
+         * If the type is PFLASH, we assume OVMF and set libxl_bios_type
+         * to LIBXL_BIOS_TYPE_OVMF. The path to the OVMF firmware is
+         * configured when building Xen using '--with-system-ovmf='. If
+         * not specified, LIBXL_FIRMWARE_DIR/ovmf.bin is used. In the
+         * future, Xen will support a user-specified firmware path. See
+         * http://lists.xenproject.org/archives/html/xen-devel/2016-03/msg01628.html
+         */
+        if (def->os.loader &&
+            def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH)
+            b_info->u.hvm.bios = LIBXL_BIOS_TYPE_OVMF;
+
         if (def->emulator) {
             if (!virFileExists(def->emulator)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
