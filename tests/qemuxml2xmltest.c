@@ -512,6 +512,13 @@ mymain(void)
     DO_TEST("iothreads-disk");
     DO_TEST_FULL("iothreads-disk-virtio-ccw", WHEN_ACTIVE,
                  QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_FULL("iothreads-virtio-scsi-pci", WHEN_ACTIVE,
+                 QEMU_CAPS_NODEFCONFIG,
+                 QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_FULL("iothreads-virtio-scsi-ccw", WHEN_ACTIVE,
+                 QEMU_CAPS_VIRTIO_SCSI,
+                 QEMU_CAPS_VIRTIO_CCW,
+                 QEMU_CAPS_VIRTIO_S390);
     DO_TEST("lease");
     DO_TEST("event_idx");
     DO_TEST("vhost_queues");

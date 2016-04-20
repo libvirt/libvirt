@@ -4250,6 +4250,20 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
             }
         }
     }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
+        virDomainControllerDefPtr cdev = dev->data.controller;
+
+        if (cdev->iothread &&
+            cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("'iothread' attribute only supported for "
+                             "controller model '%s'"),
+                           virDomainControllerModelSCSITypeToString(VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -7857,6 +7871,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *ioeventfd = NULL;
     char *portsStr = NULL;
     int ports = -1;
+    char *iothread = NULL;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7901,6 +7916,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
                 max_sectors = virXMLPropString(cur, "max_sectors");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
+                iothread = virXMLPropString(cur, "iothread");
             } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
                 if (processedModel) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -7960,6 +7976,14 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         virReportError(VIR_ERR_XML_ERROR,
                        _("Malformed 'ioeventfd' value %s'"), ioeventfd);
         goto error;
+    }
+
+    if (iothread) {
+        if (virStrToLong_uip(iothread, NULL, 10, &def->iothread) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid 'iothread' value '%s'"), iothread);
+            goto error;
+        }
     }
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
@@ -8147,6 +8171,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(busNr);
     VIR_FREE(ioeventfd);
     VIR_FREE(portsStr);
+    VIR_FREE(iothread);
 
     return def;
 
@@ -19490,6 +19515,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
 
     if (pciModel || pciTarget ||
         def->queues || def->cmd_per_lun || def->max_sectors || def->ioeventfd ||
+        def->iothread ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
@@ -19532,7 +19558,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
         }
 
         if (def->queues || def->cmd_per_lun ||
-            def->max_sectors || def->ioeventfd) {
+            def->max_sectors || def->ioeventfd || def->iothread) {
             virBufferAddLit(buf, "<driver");
             if (def->queues)
                 virBufferAsprintf(buf, " queues='%u'", def->queues);
@@ -19547,6 +19573,10 @@ virDomainControllerDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " ioeventfd='%s'",
                                   virTristateSwitchTypeToString(def->ioeventfd));
             }
+
+            if (def->iothread)
+                virBufferAsprintf(buf, " iothread='%u'", def->iothread);
+
             virBufferAddLit(buf, "/>\n");
         }
 

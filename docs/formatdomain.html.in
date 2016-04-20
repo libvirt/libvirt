@@ -3005,6 +3005,10 @@
     &lt;controller type='virtio-serial' index='1'&gt;
       &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/&gt;
     &lt;/controller&gt;
+    &lt;controller type='scsi' index='0' model='virtio-scsi'&gt;
+      &lt;driver iothread='4'&gt;
+      &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/&gt;
+    &lt;/controller&gt;
     ...
   &lt;/devices&gt;
   ...</pre>
@@ -3091,6 +3095,23 @@
         <a href='https://patchwork.kernel.org/patch/43390/'>
         I/O asynchronous handling</a> or not.  Accepted values are
         "on" and "off". <span class="since">Since 1.2.18</span>
+      </dd>
+      <dt><code>iothread</code></dt>
+      <dd>
+        Supported for controller type <code>scsi</code> using model
+        <code>virtio-scsi</code> for <code>address</code> types
+        <code>pci</code> and <code>ccw</code>
+        <span class="since">since 1.3.5 (QEMU 2.4)</span>.
+
+        The optional <code>iothread</code> attribute assigns the controller
+        to an IOThread as defined by the range for the domain
+        <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
+        value. Each SCSI <code>disk</code> assigned to use the specified
+        <code>controller</code> will utilize the same IOThread. If a specific
+        IOThread is desired for a specific SCSI <code>disk</code>, then
+        multiple controllers must be defined each having a specific
+        <code>iothread</code> value. The <code>iothread</code> value
+        must be within the range 1 to the domain iothreads value.
       </dd>
     </dl>
     <p>
