@@ -6948,6 +6948,25 @@ virDomainDiskDefValidate(const virDomainDiskDef *def)
         return -1;
     }
 
+    if (def->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
+        if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Setting disk %s is not allowed for "
+                             "disk of network type"),
+                           virDomainStartupPolicyTypeToString(def->startupPolicy));
+            return -1;
+        }
+
+        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            def->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Setting disk 'requisite' is allowed only for "
+                             "cdrom or floppy"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -7454,23 +7473,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown startupPolicy value '%s'"),
                            startupPolicy);
-            goto error;
-        }
-
-        if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Setting disk %s is not allowed for "
-                             "disk of network type"),
-                           startupPolicy);
-            goto error;
-        }
-
-        if (def->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            val == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Setting disk 'requisite' is allowed only for "
-                             "cdrom or floppy"));
             goto error;
         }
         def->startupPolicy = val;
