@@ -6920,110 +6920,84 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
                                xmlNodePtr cur)
 {
     char *tmp = NULL;
-    char *cachetag = NULL;
-    char *error_policy = NULL;
-    char *rerror_policy = NULL;
-    char *iotag = NULL;
-    char *ioeventfd = NULL;
-    char *event_idx = NULL;
-    char *copy_on_read = NULL;
-    char *discard = NULL;
-    char *driverIOThread = NULL;
     int ret = -1;
 
     def->src->driverName = virXMLPropString(cur, "name");
-    cachetag = virXMLPropString(cur, "cache");
-    error_policy = virXMLPropString(cur, "error_policy");
-    rerror_policy = virXMLPropString(cur, "rerror_policy");
-    iotag = virXMLPropString(cur, "io");
-    ioeventfd = virXMLPropString(cur, "ioeventfd");
-    event_idx = virXMLPropString(cur, "event_idx");
-    copy_on_read = virXMLPropString(cur, "copy_on_read");
-    discard = virXMLPropString(cur, "discard");
-    driverIOThread = virXMLPropString(cur, "iothread");
 
-    if (cachetag &&
-        (def->cachemode = virDomainDiskCacheTypeFromString(cachetag)) < 0) {
+    if ((tmp = virXMLPropString(cur, "cache")) &&
+        (def->cachemode = virDomainDiskCacheTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk cache mode '%s'"), cachetag);
+                       _("unknown disk cache mode '%s'"), tmp);
         goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (error_policy &&
-        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(error_policy)) <= 0) {
+    if ((tmp = virXMLPropString(cur, "error_policy")) &&
+        (def->error_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk error policy '%s'"), error_policy);
+                       _("unknown disk error policy '%s'"), tmp);
         goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (rerror_policy &&
-        (((def->rerror_policy
-           = virDomainDiskErrorPolicyTypeFromString(rerror_policy)) <= 0) ||
+    if ((tmp = virXMLPropString(cur, "rerror_policy")) &&
+        (((def->rerror_policy = virDomainDiskErrorPolicyTypeFromString(tmp)) <= 0) ||
          (def->rerror_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk read error policy '%s'"),
-                       rerror_policy);
+                       _("unknown disk read error policy '%s'"), tmp);
         goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (iotag) {
-        if ((def->iomode = virDomainDiskIoTypeFromString(iotag)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk io mode '%s'"), iotag);
-            goto cleanup;
-        }
+    if ((tmp = virXMLPropString(cur, "io")) &&
+        (def->iomode = virDomainDiskIoTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk io mode '%s'"), tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (ioeventfd) {
-        int val;
-        if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk ioeventfd mode '%s'"),
-                           ioeventfd);
-            goto cleanup;
-        }
-        def->ioeventfd = val;
+    if ((tmp = virXMLPropString(cur, "ioeventfd")) &&
+        (def->ioeventfd = virTristateSwitchTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk ioeventfd mode '%s'"), tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (event_idx) {
-        int idx;
-        if ((idx = virTristateSwitchTypeFromString(event_idx)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk event_idx mode '%s'"),
-                           event_idx);
-            goto cleanup;
-        }
-        def->event_idx = idx;
+    if ((tmp = virXMLPropString(cur, "event_idx")) &&
+        (def->event_idx = virTristateSwitchTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk event_idx mode '%s'"), tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (copy_on_read) {
-        int cor;
-        if ((cor = virTristateSwitchTypeFromString(copy_on_read)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk copy_on_read mode '%s'"),
-                           copy_on_read);
-            goto cleanup;
-        }
-        def->copy_on_read = cor;
+    if ((tmp = virXMLPropString(cur, "copy_on_read")) &&
+        (def->copy_on_read = virTristateSwitchTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk copy_on_read mode '%s'"), tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (discard) {
-        if ((def->discard = virDomainDiskDiscardTypeFromString(discard)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk discard mode '%s'"), discard);
-            goto cleanup;
-        }
+    if ((tmp = virXMLPropString(cur, "discard")) &&
+        (def->discard = virDomainDiskDiscardTypeFromString(tmp)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown disk discard mode '%s'"), tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
-    if (driverIOThread) {
-        if (virStrToLong_uip(driverIOThread, NULL, 10, &def->iothread) < 0 ||
-            def->iothread == 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid iothread attribute in disk driver "
-                             "element: %s"), driverIOThread);
-            goto cleanup;
-        }
+    if ((tmp = virXMLPropString(cur, "iothread")) &&
+        (virStrToLong_uip(tmp, NULL, 10, &def->iothread) < 0 ||
+         def->iothread == 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid iothread attribute in disk driver element: %s"),
+                       tmp);
+        goto cleanup;
     }
+    VIR_FREE(tmp);
 
     if ((tmp = virXMLPropString(cur, "type"))) {
         if (STREQ(tmp, "aio")) {
@@ -7044,15 +7018,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
 
  cleanup:
     VIR_FREE(tmp);
-    VIR_FREE(cachetag);
-    VIR_FREE(error_policy);
-    VIR_FREE(rerror_policy);
-    VIR_FREE(iotag);
-    VIR_FREE(ioeventfd);
-    VIR_FREE(event_idx);
-    VIR_FREE(copy_on_read);
-    VIR_FREE(discard);
-    VIR_FREE(driverIOThread);
 
     return ret;
 }
