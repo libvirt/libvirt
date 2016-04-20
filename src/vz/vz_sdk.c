@@ -3114,7 +3114,6 @@ static int prlsdkConfigureDisk(vzDriverPtr driver,
     virDomainDeviceDriveAddressPtr drive;
     PRL_DEVICE_TYPE devType;
     PRL_CLUSTERED_DEVICE_SUBTYPE scsiModel;
-    char *dst = NULL;
     const char *path = disk->src->path ? : "";
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
@@ -3152,69 +3151,24 @@ static int prlsdkConfigureDisk(vzDriverPtr driver,
     prlsdkCheckRetGoto(pret, cleanup);
 
     drive = &disk->info.addr.drive;
-    if (drive->controller > 0) {
-        /* We have only one controller of each type */
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                     "address of disk %s, vz driver supports "
-                                                     "only one controller."), disk->dst);
-        goto cleanup;
-    }
-
-    if (drive->target > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                     "address of disk %s, vz driver supports "
-                                                     "only target 0."), disk->dst);
-        goto cleanup;
-    }
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
-        if (drive->unit > 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                         "address of disk %s, vz driver supports "
-                                                         "only units 0-1 for IDE bus."), disk->dst);
-            goto cleanup;
-        }
         sdkbus = PMS_IDE_DEVICE;
         idx = 2 * drive->bus + drive->unit;
-        dst = virIndexToDiskName(idx, "hd");
         break;
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        if (drive->bus > 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                         "address of disk %s, vz driver supports "
-                                                         "only bus 0 for SCSI bus."), disk->dst);
-            goto cleanup;
-        }
         sdkbus = PMS_SCSI_DEVICE;
         idx = drive->unit;
-        dst = virIndexToDiskName(idx, "sd");
         break;
     case VIR_DOMAIN_DISK_BUS_SATA:
-        if (drive->bus > 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                         "address of disk %s, vz driver supports "
-                                                         "only bus 0 for SATA bus."), disk->dst);
-            goto cleanup;
-        }
         sdkbus = PMS_SATA_DEVICE;
         idx = drive->unit;
-        dst = virIndexToDiskName(idx, "sd");
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified disk bus is not "
                          "supported by vz driver."));
-        goto cleanup;
-    }
-
-    if (!dst)
-        goto cleanup;
-
-    if (STRNEQ(dst, disk->dst)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Invalid drive "
-                                                     "address of disk %s, vz driver supports "
-                                                     "only defaults address to logical device name."), disk->dst);
         goto cleanup;
     }
 
@@ -3234,7 +3188,6 @@ static int prlsdkConfigureDisk(vzDriverPtr driver,
     return 0;
  cleanup:
     PrlHandle_Free(sdkdisk);
-    VIR_FREE(dst);
     return ret;
 }
 

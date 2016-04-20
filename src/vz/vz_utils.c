@@ -257,6 +257,71 @@ vzInitVersion(vzDriverPtr driver)
 }
 
 static int
+vzCheckDiskAddressDriveUnsupportedParams(virDomainDiskDefPtr disk)
+{
+    virDomainDeviceDriveAddressPtr drive = &disk->info.addr.drive;
+    int devIdx, busIdx;
+
+    if (drive->controller > 0) {
+        /* We have only one controller of each type */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid drive address of disk %s, vz driver "
+                         "supports only one controller."), disk->dst);
+        return -1;
+    }
+
+    if (drive->target > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid drive address of disk %s, vz driver "
+                         "supports only target 0."), disk->dst);
+        return -1;
+    }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        if (drive->unit > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid drive address of disk %s, vz driver "
+                             "supports only units 0-1 for IDE bus."),
+                           disk->dst);
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        if (drive->bus > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid drive address of disk %s, vz driver "
+                             "supports only bus 0 for SATA and SCSI bus."),
+                           disk->dst);
+            return -1;
+        }
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Specified disk bus is not supported by vz driver."));
+        return -1;
+    }
+
+    if (virDiskNameToBusDeviceIndex(disk, &busIdx, &devIdx) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot convert disk '%s' to bus/device index"),
+                       disk->dst);
+        return -1;
+    }
+
+    if (busIdx != drive->bus || devIdx != drive->unit) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid drive address of disk %s, vz driver "
+                         "does not support non default name mappings."),
+                       disk->dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 {
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK &&
@@ -374,6 +439,9 @@ vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
         return -1;
 
     }
+
+    if (vzCheckDiskAddressDriveUnsupportedParams(disk) < 0)
+        return -1;
 
     return 0;
 }
