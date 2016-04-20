@@ -311,9 +311,9 @@ POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 		< $< > $@-t && \
 	mv $@-t $@
 
-install-data-local: install-init install-systemd
+install-data-local: install-init install-systemd install-nss
 
-uninstall-local: uninstall-init uninstall-systemd
+uninstall-local: uninstall-init uninstall-systemd uninstall-nss
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
@@ -446,17 +446,20 @@ LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss_bsd.syms
 NSS_SO_VER = 1
 
-install-exec-hook:
+install-nss:
 	( cd $(DESTDIR)$(libdir) && \
 	  rm -f nss_libvirt.so.$(NSS_SO_VER) && \
 	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) )
 
-uninstall-local:
+uninstall-nss:
 	-rm -f $(DESTDIR)$(libdir)/nss_libvirt.so.$(NSS_SO_VER)
 else ! WITH_BSD_NSS
 LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss.syms
 NSS_SO_VER = 2
+
+install-nss:
+uninstall-nss:
 endif ! WITH_BSD_NSS
 
 LIBVIRT_NSS_SOURCES = \
