@@ -3073,6 +3073,7 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
     PRL_HANDLE adapter = PRL_INVALID_HANDLE;
     char adapterMac[PRL_MAC_STRING_BUFNAME];
     char expectedMac[PRL_MAC_STRING_BUFNAME];
+    char virMac[VIR_MAC_STRING_BUFLEN];
 
     prlsdkFormatMac(mac, expectedMac);
 
@@ -3093,6 +3094,9 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
         PrlHandle_Free(adapter);
         adapter = PRL_INVALID_HANDLE;
     }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("No net with mac '%s'"), virMacAddrFormat(mac, virMac));
 
  cleanup:
     PrlHandle_Free(adapter);
