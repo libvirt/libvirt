@@ -6919,7 +6919,6 @@ static int
 virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
                                xmlNodePtr cur)
 {
-    char *driverName = NULL;
     char *driverType = NULL;
     char *cachetag = NULL;
     char *error_policy = NULL;
@@ -6932,7 +6931,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
     char *driverIOThread = NULL;
     int ret = -1;
 
-    driverName = virXMLPropString(cur, "name");
+    def->src->driverName = virXMLPropString(cur, "name");
     driverType = virXMLPropString(cur, "type");
     if (STREQ_NULLABLE(driverType, "aio")) {
         /* In-place conversion to "raw", for Xen back-compat */
@@ -6949,9 +6948,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
     copy_on_read = virXMLPropString(cur, "copy_on_read");
     discard = virXMLPropString(cur, "discard");
     driverIOThread = virXMLPropString(cur, "iothread");
-
-    def->src->driverName = driverName;
-    driverName = NULL;
 
     if (cachetag &&
         (def->cachemode = virDomainDiskCacheTypeFromString(cachetag)) < 0) {
@@ -7051,7 +7047,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
 
  cleanup:
     VIR_FREE(driverType);
-    VIR_FREE(driverName);
     VIR_FREE(cachetag);
     VIR_FREE(error_policy);
     VIR_FREE(rerror_policy);
