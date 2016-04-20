@@ -17526,10 +17526,10 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
-        if (param->value.ul > LLONG_MAX) {
-            virReportError(VIR_ERR_OVERFLOW,
+        if (param->value.ul > QEMU_BLOCK_IOTUNE_MAX) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("block I/O throttle limit value must"
-                             " be less than %llu"), LLONG_MAX);
+                             " be less than %llu"), QEMU_BLOCK_IOTUNE_MAX);
             goto endjob;
         }
 

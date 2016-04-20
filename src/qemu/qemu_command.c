@@ -1394,22 +1394,22 @@ qemuBuildDriveStr(virConnectPtr conn,
         goto error;
     }
 
-    if (disk->blkdeviotune.total_bytes_sec > LLONG_MAX ||
-        disk->blkdeviotune.read_bytes_sec > LLONG_MAX ||
-        disk->blkdeviotune.write_bytes_sec > LLONG_MAX ||
-        disk->blkdeviotune.total_iops_sec > LLONG_MAX ||
-        disk->blkdeviotune.read_iops_sec > LLONG_MAX ||
-        disk->blkdeviotune.write_iops_sec > LLONG_MAX ||
-        disk->blkdeviotune.total_bytes_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.read_bytes_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.write_bytes_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.total_iops_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.read_iops_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.write_iops_sec_max > LLONG_MAX ||
-        disk->blkdeviotune.size_iops_sec > LLONG_MAX) {
-        virReportError(VIR_ERR_OVERFLOW,
+    if (disk->blkdeviotune.total_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.read_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.write_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.total_iops_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.read_iops_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.write_iops_sec > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.total_bytes_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.read_bytes_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.write_bytes_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.total_iops_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.read_iops_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.write_iops_sec_max > QEMU_BLOCK_IOTUNE_MAX ||
+        disk->blkdeviotune.size_iops_sec > QEMU_BLOCK_IOTUNE_MAX) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                       _("block I/O throttle limit must "
-                        "be less than %llu using QEMU"), LLONG_MAX);
+                        "be less than %llu using QEMU"), QEMU_BLOCK_IOTUNE_MAX);
         goto error;
     }
 
