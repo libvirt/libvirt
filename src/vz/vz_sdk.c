@@ -3053,34 +3053,6 @@ prlsdkCleanupBridgedNet(vzDriverPtr driver, virDomainNetDefPtr net)
     PrlHandle_Free(vnet);
 }
 
-int prlsdkAttachNet(vzDriverPtr driver,
-                    virDomainObjPtr dom,
-                    virDomainNetDefPtr net)
-{
-    int ret = -1;
-    vzDomObjPtr privdom = dom->privateData;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    if (!IS_CT(dom->def)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("network device cannot be attached"));
-        return ret;
-    }
-
-    job = PrlVm_BeginEdit(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job)))
-        return ret;
-
-    ret = prlsdkAddNet(driver, privdom->sdkdom, net, IS_CT(dom->def));
-    if (ret == 0) {
-        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job)))
-            return -1;
-    }
-
-    return ret;
-}
-
 static PRL_HANDLE
 prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
 {
@@ -3114,46 +3086,6 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
  cleanup:
     PrlHandle_Free(adapter);
     return adapter;
-}
-
-int prlsdkDetachNet(vzDriverPtr driver,
-                    virDomainObjPtr dom,
-                    virDomainNetDefPtr net)
-{
-    int ret = -1;
-    vzDomObjPtr privdom = dom->privateData;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-    PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
-    PRL_RESULT pret;
-
-    if (!IS_CT(dom->def)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("network device cannot be detached"));
-        goto cleanup;
-    }
-
-    job = PrlVm_BeginEdit(privdom->sdkdom);
-    if (PRL_FAILED(waitJob(job)))
-        goto cleanup;
-
-    sdknet = prlsdkFindNetByMAC(privdom->sdkdom, &net->mac);
-    if (sdknet == PRL_INVALID_HANDLE)
-        goto cleanup;
-
-    prlsdkCleanupBridgedNet(driver, net);
-
-    pret = PrlVmDev_Remove(sdknet);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-    if (PRL_FAILED(waitJob(job)))
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    PrlHandle_Free(sdknet);
-    return ret;
 }
 
 static int prlsdkAddDisk(vzDriverPtr driver,
@@ -3335,50 +3267,96 @@ prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
 }
 
 int
-prlsdkAttachVolume(vzDriverPtr driver,
+prlsdkAttachDevice(vzDriverPtr driver,
                    virDomainObjPtr dom,
-                   virDomainDiskDefPtr disk)
+                   virDomainDeviceDefPtr dev)
 {
-    int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
-        goto cleanup;
+        return -1;
 
-    ret = prlsdkAddDisk(driver, privdom->sdkdom, disk);
-    if (ret == 0) {
-        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
-        if (PRL_FAILED(waitJob(job))) {
-            ret = -1;
-            goto cleanup;
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (prlsdkAddDisk(driver, privdom->sdkdom, dev->data.disk) < 0)
+            return -1;
+
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        if (!IS_CT(dom->def)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("attaching network device to VM is unsupported"));
+            return -1;
         }
+
+        if (prlsdkAddNet(driver, privdom->sdkdom, dev->data.net, IS_CT(dom->def)) < 0)
+            return -1;
+
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("attaching device type '%s' is unsupported"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
     }
 
- cleanup:
-    return ret;
+    job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    return 0;
 }
 
 int
-prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
+prlsdkDetachDevice(vzDriverPtr driver,
+                   virDomainObjPtr dom,
+                   virDomainDeviceDefPtr dev)
 {
     int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
-    PRL_HANDLE sdkdisk;
+    PRL_HANDLE sdkdev = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
-
-    sdkdisk = prlsdkGetDisk(privdom->sdkdom, disk, IS_CT(dom->def));
-    if (sdkdisk == PRL_INVALID_HANDLE)
-        goto cleanup;
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
         goto cleanup;
 
-    pret = PrlVmDev_Remove(sdkdisk);
-    prlsdkCheckRetGoto(pret, cleanup);
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        sdkdev = prlsdkGetDisk(privdom->sdkdom, dev->data.disk, IS_CT(dom->def));
+        if (sdkdev == PRL_INVALID_HANDLE)
+            goto cleanup;
+
+        pret = PrlVmDev_Remove(sdkdev);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        if (!IS_CT(dom->def)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("detaching network device from VM is unsupported"));
+            goto cleanup;
+        }
+
+        sdkdev = prlsdkFindNetByMAC(privdom->sdkdom, &dev->data.net->mac);
+        if (sdkdev == PRL_INVALID_HANDLE)
+            goto cleanup;
+
+        prlsdkCleanupBridgedNet(driver, dev->data.net);
+
+        pret = PrlVmDev_Remove(sdkdev);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("detaching device type '%s' is unsupported"),
+                       virDomainDeviceTypeToString(dev->type));
+        goto cleanup;
+    }
 
     job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
     if (PRL_FAILED(waitJob(job)))
@@ -3388,7 +3366,7 @@ prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk)
 
  cleanup:
 
-    PrlHandle_Free(sdkdisk);
+    PrlHandle_Free(sdkdev);
     return ret;
 }
 

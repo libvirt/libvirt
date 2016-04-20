@@ -63,15 +63,11 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
 int
 prlsdkDomainManagedSaveRemove(virDomainObjPtr dom);
 int
-prlsdkAttachVolume(vzDriverPtr driver, virDomainObjPtr dom, virDomainDiskDefPtr disk);
+prlsdkAttachDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
 int
-prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
+prlsdkDetachDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
 int
 prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);
-int
-prlsdkAttachNet(vzDriverPtr driver, virDomainObjPtr dom, virDomainNetDefPtr net);
-int
-prlsdkDetachNet(vzDriverPtr driver, virDomainObjPtr dom, virDomainNetDefPtr net);
 int
 prlsdkGetNetStats(PRL_HANDLE sdkstas, PRL_HANDLE sdkdom, const char *path, virDomainInterfaceStatsPtr stats);
 int

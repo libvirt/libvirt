@@ -1150,6 +1150,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     vzConnPtr privconn = domain->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr dom = NULL;
+    vzDriverPtr driver = privconn->driver;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -1160,34 +1161,13 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, dom->def, privconn->driver->caps,
-                                  privconn->driver->xmlopt, VIR_DOMAIN_XML_INACTIVE);
+    dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
+                                  driver->xmlopt, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
-    switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkAttachVolume(privconn->driver, dom, dev->data.disk);
-        if (ret) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("disk attach failed"));
-            goto cleanup;
-        }
-        break;
-    case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkAttachNet(privconn->driver, dom, dev->data.net);
-        if (ret) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("network attach failed"));
-            goto cleanup;
-        }
-        break;
-    default:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("device type '%s' cannot be attached"),
-                       virDomainDeviceTypeToString(dev->type));
-        break;
-    }
+    if (prlsdkAttachDevice(driver, dom, dev) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
@@ -1208,6 +1188,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     vzConnPtr privconn = domain->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr dom = NULL;
+    vzDriverPtr driver = privconn->driver;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -1219,36 +1200,15 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, dom->def, privconn->driver->caps,
-                                  privconn->driver->xmlopt,
+    dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
+                                  driver->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
         goto cleanup;
 
-    switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkDetachVolume(dom, dev->data.disk);
-        if (ret) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("disk detach failed"));
-            goto cleanup;
-        }
-        break;
-    case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkDetachNet(privconn->driver, dom, dev->data.net);
-        if (ret) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("network detach failed"));
-            goto cleanup;
-        }
-        break;
-    default:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("device type '%s' cannot be detached"),
-                       virDomainDeviceTypeToString(dev->type));
-        break;
-    }
+    if (prlsdkDetachDevice(driver, dom, dev) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
