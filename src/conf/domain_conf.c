@@ -6941,6 +6941,13 @@ virDomainDiskDefValidate(const virDomainDiskDef *def)
         return -1;
     }
 
+    if (def->removable != VIR_TRISTATE_SWITCH_ABSENT &&
+        def->bus != VIR_DOMAIN_DISK_BUS_USB) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("removable is only valid for usb disks"));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -7421,12 +7428,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if ((def->removable = virTristateSwitchTypeFromString(removable)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk removable status '%s'"), removable);
-            goto error;
-        }
-
-        if (def->bus != VIR_DOMAIN_DISK_BUS_USB) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("removable is only valid for usb disks"));
             goto error;
         }
     }
