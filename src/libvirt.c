@@ -935,14 +935,14 @@ virConnectGetDefaultURI(virConfPtr conf,
 static int
 virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
 {
+    if (!uri->scheme || !uri->path || !uri->server)
+        return 0;
+
     /* To avoid false positives, only check drivers that mandate
        a path component in the URI, like /system or /session */
     if (STRNEQ(uri->scheme, "qemu") &&
         STRNEQ(uri->scheme, "vbox") &&
         STRNEQ(uri->scheme, "vz"))
-        return 0;
-
-    if (uri->path != NULL)
         return 0;
 
     if (STREQ(uri->server, "session") ||
