@@ -376,17 +376,17 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
         }
         if (opt->flags & VSH_OFLAG_REQ_OPT) {
             if (opt->flags & VSH_OFLAG_REQ)
-                *opts_required |= 1 << i;
+                *opts_required |= 1ULL << i;
             else
                 optional = true;
             continue;
         }
 
-        *opts_need_arg |= 1 << i;
+        *opts_need_arg |= 1ULL << i;
         if (opt->flags & VSH_OFLAG_REQ) {
             if (optional && opt->type != VSH_OT_ARGV)
                 return -1; /* mandatory options must be listed first */
-            *opts_required |= 1 << i;
+            *opts_required |= 1ULL << i;
         } else {
             optional = true;
         }
@@ -440,11 +440,11 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                 }
                 continue;
             }
-            if ((*opts_seen & (1 << i)) && opt->type != VSH_OT_ARGV) {
+            if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
                 vshError(ctl, _("option --%s already seen"), name);
                 goto cleanup;
             }
-            *opts_seen |= 1 << i;
+            *opts_seen |= 1ULL << i;
             *opt_index = i;
             ret = opt;
             goto cleanup;
@@ -474,8 +474,8 @@ vshCmddefGetData(const vshCmdDef *cmd, uint64_t *opts_need_arg,
     i = ffsl(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
     if (opt->type != VSH_OT_ARGV)
-        *opts_need_arg &= ~(1 << i);
-    *opts_seen |= 1 << i;
+        *opts_need_arg &= ~(1ULL << i);
+    *opts_seen |= 1ULL << i;
     return opt;
 }
 
@@ -494,7 +494,7 @@ vshCommandCheckOpts(vshControl *ctl, const vshCmd *cmd, uint64_t opts_required,
         return 0;
 
     for (i = 0; def->opts[i].name; i++) {
-        if (opts_required & (1 << i)) {
+        if (opts_required & (1ULL << i)) {
             const vshCmdOptDef *opt = &def->opts[i];
 
             vshError(ctl,
@@ -1419,7 +1419,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                         goto syntaxError;
                     }
                     if (opt->type != VSH_OT_ARGV)
-                        opts_need_arg &= ~(1 << opt_index);
+                        opts_need_arg &= ~(1ULL << opt_index);
                 } else {
                     tkdata = NULL;
                     if (optstr) {
