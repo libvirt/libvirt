@@ -747,6 +747,91 @@ prlsdkAddDomainOpticalDisksInfo(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomain
     return -1;
 }
 
+static virDomainNetIpDefPtr
+prlsdkParseNetAddress(char *addr)
+{
+    char *maskstr = NULL;
+    int nbits;
+    virSocketAddr mask;
+    virDomainNetIpDefPtr ip = NULL, ret = NULL;
+
+    if (!(maskstr = strchr(addr, '/')))
+        goto cleanup;
+
+    *maskstr = '\0';
+    ++maskstr;
+
+    if (VIR_ALLOC(ip) < 0)
+        goto cleanup;
+
+    if (virSocketAddrParse(&ip->address, addr, AF_UNSPEC) < 0)
+        goto cleanup;
+
+    if (virSocketAddrParse(&mask, maskstr, AF_UNSPEC) < 0)
+        goto cleanup;
+
+    if ((nbits = virSocketAddrGetNumNetmaskBits(&mask)) < 0)
+        goto cleanup;
+    ip->prefix = nbits;
+
+    ret = ip;
+    ip = NULL;
+
+ cleanup:
+    if (!ret)
+        VIR_WARN("cannot parse network address '%s'", addr);
+
+    VIR_FREE(ip);
+    VIR_FREE(addr);
+
+    return ret;
+}
+
+static int
+prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
+{
+    int ret = -1;
+    PRL_HANDLE addrlist = PRL_INVALID_HANDLE;
+    PRL_UINT32 num;
+    size_t i;
+    PRL_RESULT pret;
+
+    pret = PrlVmDevNet_GetNetAddresses(sdknet, &addrlist);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    PrlStrList_GetItemsCount(addrlist, &num);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    for (i = 0; i < num; ++i) {
+        virDomainNetIpDefPtr ip = NULL;
+        PRL_UINT32 buflen = 0;
+        char *addr;
+
+        pret = PrlStrList_GetItem(addrlist, i, NULL, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (VIR_ALLOC_N(addr, buflen) < 0)
+            goto cleanup;
+
+        pret = PrlStrList_GetItem(addrlist, i, addr, &buflen);
+        prlsdkCheckRetGoto(pret, cleanup);
+
+        if (!(ip = prlsdkParseNetAddress(addr)))
+            continue;
+
+        if (VIR_APPEND_ELEMENT(net->ips, net->nips, ip) < 0) {
+            VIR_FREE(ip);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+
+    PrlHandle_Free(addrlist);
+    return ret;
+}
+
 static int
 prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 {
@@ -784,6 +869,9 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (virMacAddrParse(macstr, &net->mac) < 0)
+        goto cleanup;
+
+    if (prlsdkGetNetAddresses(netAdapter, net) < 0)
         goto cleanup;
 
     pret = PrlVmDev_GetEmulatedType(netAdapter, &emulatedType);

@@ -2257,6 +2257,7 @@ virSocketAddrEqual;
 virSocketAddrFormat;
 virSocketAddrFormatFull;
 virSocketAddrGetIpPrefix;
+virSocketAddrGetNumNetmaskBits;
 virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;
