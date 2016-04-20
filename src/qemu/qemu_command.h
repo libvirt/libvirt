@@ -40,6 +40,8 @@
 # define QEMU_DRIVE_HOST_PREFIX "drive-"
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
+# define QEMU_BLOCK_IOTUNE_MAX 1000000000000000LL
+
 VIR_ENUM_DECL(qemuVideo)
 
 typedef struct _qemuBuildCommandLineCallbacks qemuBuildCommandLineCallbacks;
