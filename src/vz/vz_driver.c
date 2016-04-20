@@ -1167,6 +1167,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
 
     ret = 0;
  cleanup:
+    virDomainDeviceDefFree(dev);
     virObjectUnlock(dom);
     return ret;
 }
@@ -1208,6 +1209,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
 
     ret = 0;
  cleanup:
+    virDomainDeviceDefFree(dev);
     virObjectUnlock(dom);
 
     return ret;
