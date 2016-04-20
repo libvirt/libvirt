@@ -43,6 +43,11 @@ prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid);
 
 VIR_LOG_INIT("parallels.sdk");
 
+static PRL_HANDLE
+prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac);
+static PRL_HANDLE
+prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt);
+
 /*
  * Log error description
  */
@@ -2796,10 +2801,10 @@ static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
     return macstr;
 }
 
-static int prlsdkAddNet(vzDriverPtr driver,
-                        PRL_HANDLE sdkdom,
-                        virDomainNetDefPtr net,
-                        bool isCt)
+static int prlsdkConfigureNet(vzDriverPtr driver,
+                              PRL_HANDLE sdkdom,
+                              virDomainNetDefPtr net,
+                              bool isCt, bool create)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
@@ -2816,8 +2821,14 @@ static int prlsdkAddNet(vzDriverPtr driver,
     if (prlsdkCheckNetUnsupportedParams(net) < 0)
         return -1;
 
-    pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_GENERIC_NETWORK_ADAPTER, &sdknet);
-    prlsdkCheckRetGoto(pret, cleanup);
+    if (create) {
+        pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_GENERIC_NETWORK_ADAPTER, &sdknet);
+        prlsdkCheckRetGoto(pret, cleanup);
+    } else {
+        sdknet = prlsdkFindNetByMAC(sdkdom, &net->mac);
+        if (sdknet == PRL_INVALID_HANDLE)
+            return -1;
+    }
 
     pret = PrlVmDev_SetEnabled(sdknet, 1);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -3088,9 +3099,11 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
     return adapter;
 }
 
-static int prlsdkAddDisk(vzDriverPtr driver,
-                         PRL_HANDLE sdkdom,
-                         virDomainDiskDefPtr disk)
+static int prlsdkConfigureDisk(vzDriverPtr driver,
+                               PRL_HANDLE sdkdom,
+                               virDomainDiskDefPtr disk,
+                               bool isCt,
+                               bool create)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
@@ -3109,8 +3122,14 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     else
         devType = PDE_OPTICAL_DISK;
 
-    pret = PrlVmCfg_CreateVmDev(sdkdom, devType, &sdkdisk);
-    prlsdkCheckRetGoto(pret, cleanup);
+    if (create) {
+        pret = PrlVmCfg_CreateVmDev(sdkdom, devType, &sdkdisk);
+        prlsdkCheckRetGoto(pret, cleanup);
+    } else {
+        sdkdisk = prlsdkGetDisk(sdkdom, disk, isCt);
+        if (sdkdisk == PRL_INVALID_HANDLE)
+            return -1;
+    }
 
     pret = PrlVmDev_SetEnabled(sdkdisk, 1);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -3280,7 +3299,8 @@ prlsdkAttachDevice(vzDriverPtr driver,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        if (prlsdkAddDisk(driver, privdom->sdkdom, dev->data.disk) < 0)
+        if (prlsdkConfigureDisk(driver, privdom->sdkdom,
+                                dev->data.disk, IS_CT(dom->def), true) < 0)
             return -1;
 
         break;
@@ -3291,7 +3311,8 @@ prlsdkAttachDevice(vzDriverPtr driver,
             return -1;
         }
 
-        if (prlsdkAddNet(driver, privdom->sdkdom, dev->data.net, IS_CT(dom->def)) < 0)
+        if (prlsdkConfigureNet(driver, privdom->sdkdom, dev->data.net,
+                               IS_CT(dom->def), true) < 0)
             return -1;
 
         break;
@@ -3368,6 +3389,45 @@ prlsdkDetachDevice(vzDriverPtr driver,
 
     PrlHandle_Free(sdkdev);
     return ret;
+}
+
+int
+prlsdkUpdateDevice(vzDriverPtr driver,
+                   virDomainObjPtr dom,
+                   virDomainDeviceDefPtr dev)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (prlsdkConfigureDisk(driver, privdom->sdkdom, dev->data.disk,
+                                IS_CT(dom->def), false) < 0)
+            return -1;
+
+        break;
+    case VIR_DOMAIN_DEVICE_NET:
+        if (prlsdkConfigureNet(driver, privdom->sdkdom, dev->data.net,
+                               IS_CT(dom->def), false) < 0)
+            return -1;
+
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("updating device type '%s' is unsupported"),
+                       virDomainDeviceTypeToString(dev->type));
+        return -1;
+    }
+
+    job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    return 0;
 }
 
 static int
@@ -3588,7 +3648,8 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (prlsdkAddNet(driver, sdkdom, def->nets[i], IS_CT(def)) < 0)
+        if (prlsdkConfigureNet(driver, sdkdom, def->nets[i],
+                               IS_CT(def), true) < 0)
             goto error;
     }
 
@@ -3609,7 +3670,8 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        if (prlsdkAddDisk(driver, sdkdom, def->disks[i]) < 0)
+        if (prlsdkConfigureDisk(driver, sdkdom, def->disks[i],
+                                IS_CT(def), true) < 0)
             goto error;
     }
 

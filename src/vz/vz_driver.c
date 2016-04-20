@@ -1242,6 +1242,42 @@ vzDomainSetUserPassword(virDomainPtr domain,
     return ret;
 }
 
+static int vzDomainUpdateDeviceFlags(virDomainPtr dom,
+                                     const char *xml,
+                                     unsigned int flags)
+{
+    int ret = -1;
+    vzConnPtr privconn = dom->conn->privateData;
+    virDomainObjPtr privdom = NULL;
+    virDomainDeviceDefPtr dev = NULL;
+    vzDriverPtr driver = privconn->driver;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(privdom = vzDomObjFromDomain(dom)))
+        return -1;
+
+    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
+        goto cleanup;
+
+    if (!(dev = virDomainDeviceDefParse(xml, privdom->def, driver->caps,
+                                        driver->xmlopt,
+                                        VIR_DOMAIN_XML_INACTIVE)))
+        goto cleanup;
+
+    if (prlsdkUpdateDevice(driver, privdom, dev) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+
+    virDomainDeviceDefFree(dev);
+    virObjectUnlock(privdom);
+    return ret;
+}
+
+
 static unsigned long long
 vzDomainGetMaxMemory(virDomainPtr domain)
 {
@@ -2756,6 +2792,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainMigratePerform3Params = vzDomainMigratePerform3Params, /* 1.3.5 */
     .domainMigrateFinish3Params = vzDomainMigrateFinish3Params, /* 1.3.5 */
     .domainMigrateConfirm3Params = vzDomainMigrateConfirm3Params, /* 1.3.5 */
+    .domainUpdateDeviceFlags = vzDomainUpdateDeviceFlags, /* 2.0.0 */
 };
 
 static virConnectDriver vzConnectDriver = {
