@@ -263,9 +263,6 @@ vzDomainDefPostParse(virDomainDefPtr def,
     if (vzDomainDefAddDefaultInputDevices(def) < 0)
         return -1;
 
-    if (vzCheckUnsupportedDisks(def, opaque) < 0)
-        return -1;
-
     if (vzCheckUnsupportedControllers(def, opaque) < 0)
         return -1;
 
@@ -279,19 +276,18 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                            unsigned int parseFlags ATTRIBUTE_UNUSED,
                            void *opaque ATTRIBUTE_UNUSED)
 {
-    int ret = -1;
-
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) &&
         !dev->data.net->model &&
         def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
         VIR_STRDUP(dev->data.net->model, "e1000") < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+        return vzCheckUnsupportedDisk(def, dev->data.disk, opaque);
+
+    return 0;
 }
 
 

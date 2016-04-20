@@ -379,51 +379,49 @@ vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
 }
 
 int
-vzCheckUnsupportedDisks(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
+vzCheckUnsupportedDisk(const virDomainDef *def,
+                       virDomainDiskDefPtr disk,
+                       vzCapabilitiesPtr vzCaps)
 {
-    size_t i, j;
-    virDomainDiskDefPtr disk;
+    size_t i;
     virStorageFileFormat diskFormat;
 
-    for (i = 0; i < def->ndisks; i++) {
-        disk = def->disks[i];
+    if (vzCheckDiskUnsupportedParams(disk) < 0)
+        return -1;
 
-        if (vzCheckDiskUnsupportedParams(disk) < 0)
-            return -1;
-
-        if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (IS_CT(def))
-                    diskFormat = vzCaps->ctDiskFormat;
-                else
-                    diskFormat = vzCaps->vmDiskFormat;
-            } else {
-                diskFormat = VIR_STORAGE_FILE_RAW;
-            }
+    if (disk->src->type == VIR_STORAGE_TYPE_FILE) {
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (IS_CT(def))
+                diskFormat = vzCaps->ctDiskFormat;
+            else
+                diskFormat = vzCaps->vmDiskFormat;
         } else {
             diskFormat = VIR_STORAGE_FILE_RAW;
         }
-
-        if (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_NONE &&
-            virDomainDiskGetFormat(disk) != diskFormat) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported format of disk %s"),
-                           disk->src->path);
-            return -1;
-        }
-
-        for (j = 0; vzCaps->diskBuses[j] != VIR_DOMAIN_DISK_BUS_LAST; j++) {
-            if (disk->bus == vzCaps->diskBuses[j])
-                break;
-        }
-
-        if (vzCaps->diskBuses[j] == VIR_DOMAIN_DISK_BUS_LAST) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported disk bus type %s"),
-                           virDomainDiskBusTypeToString(disk->bus));
-            return -1;
-        }
+    } else {
+        diskFormat = VIR_STORAGE_FILE_RAW;
     }
+
+    if (virDomainDiskGetFormat(disk) != VIR_STORAGE_FILE_NONE &&
+        virDomainDiskGetFormat(disk) != diskFormat) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported format of disk %s"),
+                       disk->src->path);
+        return -1;
+    }
+
+    for (i = 0; vzCaps->diskBuses[i] != VIR_DOMAIN_DISK_BUS_LAST; i++) {
+        if (disk->bus == vzCaps->diskBuses[i])
+            break;
+    }
+
+    if (vzCaps->diskBuses[i] == VIR_DOMAIN_DISK_BUS_LAST) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported disk bus type %s"),
+                       virDomainDiskBusTypeToString(disk->bus));
+        return -1;
+    }
+
     return 0;
 }
 

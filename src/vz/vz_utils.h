@@ -121,8 +121,9 @@ vzNewDomain(vzDriverPtr driver,
 int
 vzInitVersion(vzDriverPtr driver);
 int
-vzCheckUnsupportedDisks(virDomainDefPtr def,
-                        vzCapabilitiesPtr vzCaps);
+vzCheckUnsupportedDisk(const virDomainDef *def,
+                       virDomainDiskDefPtr disk,
+                       vzCapabilitiesPtr vzCaps);
 int
 vzCheckUnsupportedControllers(virDomainDefPtr def,
                               vzCapabilitiesPtr vzCaps);
