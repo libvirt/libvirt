@@ -622,7 +622,7 @@ typedef enum {
 } virDomainDiskGeometryTrans;
 
 typedef enum {
-    VIR_DOMAIN_DISK_IO_DEFAULT,
+    VIR_DOMAIN_DISK_IO_DEFAULT = 0,
     VIR_DOMAIN_DISK_IO_NATIVE,
     VIR_DOMAIN_DISK_IO_THREADS,
 

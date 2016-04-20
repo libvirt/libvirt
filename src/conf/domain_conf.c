@@ -6967,8 +6967,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
     }
 
     if (iotag) {
-        if ((def->iomode = virDomainDiskIoTypeFromString(iotag)) < 0 ||
-            def->iomode == VIR_DOMAIN_DISK_IO_DEFAULT) {
+        if ((def->iomode = virDomainDiskIoTypeFromString(iotag)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk io mode '%s'"), iotag);
             goto cleanup;
