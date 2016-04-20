@@ -7393,10 +7393,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            _("tray is only valid for cdrom and floppy"));
             goto error;
         }
-    } else {
-        if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
-            def->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-            def->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
     }
 
     if (removable) {
