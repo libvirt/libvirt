@@ -6925,6 +6925,22 @@ virDomainDiskDefValidate(const virDomainDiskDef *def)
         }
     }
 
+    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        def->bus != VIR_DOMAIN_DISK_BUS_FDC) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid bus type '%s' for floppy disk"),
+                       virDomainDiskBusTypeToString(def->bus));
+        return -1;
+    }
+
+    if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        def->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid bus type '%s' for disk"),
+                       virDomainDiskBusTypeToString(def->bus));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -7413,19 +7429,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                            _("removable is only valid for usb disks"));
             goto error;
         }
-    }
-
-    if (def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        def->bus != VIR_DOMAIN_DISK_BUS_FDC) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid bus type '%s' for floppy disk"), bus);
-        goto error;
-    }
-    if (def->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        def->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid bus type '%s' for disk"), bus);
-        goto error;
     }
 
     if (devaddr) {
