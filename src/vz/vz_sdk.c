@@ -3280,24 +3280,6 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     pret = PrlVmDev_SetStackIndex(sdkdisk, idx);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    switch (disk->cachemode) {
-    case VIR_DOMAIN_DISK_CACHE_DISABLE:
-        pret = PrlVmCfg_SetDiskCacheWriteBack(sdkdom, PRL_FALSE);
-        prlsdkCheckRetGoto(pret, cleanup);
-        break;
-    case VIR_DOMAIN_DISK_CACHE_WRITEBACK:
-        pret = PrlVmCfg_SetDiskCacheWriteBack(sdkdom, PRL_TRUE);
-        prlsdkCheckRetGoto(pret, cleanup);
-        break;
-    case VIR_DOMAIN_DISK_CACHE_DEFAULT:
-        break;
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Specified disk cache mode is not "
-                         "supported by vz driver."));
-        goto cleanup;
-    }
-
     return 0;
  cleanup:
     PrlHandle_Free(sdkdisk);
