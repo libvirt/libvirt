@@ -883,7 +883,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     PRL_UINT32 netAdapterIndex;
     PRL_UINT32 emulatedType;
     PRL_RESULT pret;
-    PRL_BOOL isConnected;
+    PRL_BOOL isConnected, isMacFilter;
     int ret = -1;
 
     /* use device name, shown by prlctl as target device
@@ -981,6 +981,12 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
     else
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
+
+    pret = PrlVmDevNet_IsPktFilterPreventMacSpoof(netAdapter, &isMacFilter);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    net->trustGuestRxFilters = isMacFilter ? VIR_TRISTATE_BOOL_YES :
+                                             VIR_TRISTATE_BOOL_NO;
 
     ret = 0;
  cleanup:
@@ -3171,10 +3177,8 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
         prlsdkCheckRetGoto(pret, cleanup);
     }
 
-    if (net->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES)
-        pret = PrlVmDevNet_SetPktFilterPreventMacSpoof(sdknet, 0);
-    else if (net->trustGuestRxFilters == VIR_TRISTATE_BOOL_NO)
-        pret = PrlVmDevNet_SetPktFilterPreventMacSpoof(sdknet, 1);
+    pret = PrlVmDevNet_SetPktFilterPreventMacSpoof(sdknet,
+                net->trustGuestRxFilters == VIR_TRISTATE_BOOL_YES);
     prlsdkCheckRetGoto(pret, cleanup);
 
     ret = 0;
