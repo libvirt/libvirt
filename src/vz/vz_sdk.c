@@ -3291,29 +3291,35 @@ static PRL_HANDLE
 prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
 {
     PRL_RESULT pret;
-    PRL_UINT32 hddCount;
+    PRL_UINT32 num;
     size_t i;
-    PRL_HANDLE hdd = PRL_INVALID_HANDLE;
+    PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
     int bus;
     char *dst = NULL;
+    PRL_DEVICE_TYPE devType;
 
-    pret = PrlVmCfg_GetHardDisksCount(sdkdom, &hddCount);
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
+        devType = PDE_HARD_DISK;
+    else
+        devType = PDE_OPTICAL_DISK;
+
+    pret = PrlVmCfg_GetDevsCountByType(sdkdom, devType, &num);
     prlsdkCheckRetGoto(pret, error);
 
-    for (i = 0; i < hddCount; ++i) {
-        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &hdd);
+    for (i = 0; i < num; ++i) {
+        pret = PrlVmCfg_GetDevByType(sdkdom, devType, i, &sdkdisk);
         prlsdkCheckRetGoto(pret, error);
 
-        if (prlsdkGetDiskId(hdd, isCt, &bus, &dst) < 0)
+        if (prlsdkGetDiskId(sdkdisk, isCt, &bus, &dst) < 0)
             goto error;
 
         if (disk->bus == bus && STREQ(disk->dst, dst)) {
             VIR_FREE(dst);
-            return hdd;
+            return sdkdisk;
         }
 
-        PrlHandle_Free(hdd);
-        hdd = PRL_INVALID_HANDLE;
+        PrlHandle_Free(sdkdisk);
+        sdkdisk = PRL_INVALID_HANDLE;
         VIR_FREE(dst);
     }
 
@@ -3324,7 +3330,7 @@ prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
 
  error:
     VIR_FREE(dst);
-    PrlHandle_Free(hdd);
+    PrlHandle_Free(sdkdisk);
     return PRL_INVALID_HANDLE;
 }
 
