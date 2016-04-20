@@ -6911,6 +6911,20 @@ virDomainDiskDefValidate(const virDomainDiskDef *def)
         }
     }
 
+    if (def->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
+        if (def->rawio != VIR_TRISTATE_BOOL_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("rawio can be used only with device='lun'"));
+            return -1;
+        }
+
+        if (def->sgio != VIR_DOMAIN_DEVICE_SGIO_DEFAULT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("sgio can be used only with device='lun'"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -7328,14 +7342,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else if (def->src->readonly) {
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
-    }
-
-    if ((rawio || sgio) &&
-        (def->device != VIR_DOMAIN_DISK_DEVICE_LUN)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("rawio or sgio can be used only with "
-                         "device='lun'"));
-        goto error;
     }
 
     if (rawio) {
