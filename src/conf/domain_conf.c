@@ -6919,7 +6919,7 @@ static int
 virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
                                xmlNodePtr cur)
 {
-    char *driverType = NULL;
+    char *tmp = NULL;
     char *cachetag = NULL;
     char *error_policy = NULL;
     char *rerror_policy = NULL;
@@ -6932,13 +6932,6 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
     int ret = -1;
 
     def->src->driverName = virXMLPropString(cur, "name");
-    driverType = virXMLPropString(cur, "type");
-    if (STREQ_NULLABLE(driverType, "aio")) {
-        /* In-place conversion to "raw", for Xen back-compat */
-        driverType[0] = 'r';
-        driverType[1] = 'a';
-        driverType[2] = 'w';
-    }
     cachetag = virXMLPropString(cur, "cache");
     error_policy = virXMLPropString(cur, "error_policy");
     rerror_policy = virXMLPropString(cur, "rerror_policy");
@@ -7033,20 +7026,25 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
         }
     }
 
-    if (driverType) {
-        def->src->format = virStorageFileFormatTypeFromString(driverType);
-        if (def->src->format <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown driver format value '%s'"),
-                           driverType);
-            goto cleanup;
+    if ((tmp = virXMLPropString(cur, "type"))) {
+        if (STREQ(tmp, "aio")) {
+            /* Xen back-compat */
+            def->src->format = VIR_STORAGE_FILE_RAW;
+        } else {
+            if ((def->src->format = virStorageFileFormatTypeFromString(tmp)) <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown driver format value '%s'"), tmp);
+                goto cleanup;
+            }
         }
+
+        VIR_FREE(tmp);
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(driverType);
+    VIR_FREE(tmp);
     VIR_FREE(cachetag);
     VIR_FREE(error_policy);
     VIR_FREE(rerror_policy);
