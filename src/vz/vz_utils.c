@@ -547,3 +547,66 @@ int vzGetDefaultSCSIModel(vzDriverPtr driver,
     }
     return 0;
 }
+
+int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr)
+{
+    if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver supports only "
+                         "VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.websocket != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver doesn't support "
+                         "websockets for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.keymap != 0 &&
+        STRNEQ(gr->data.vnc.keymap, "en-us")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver supports only "
+                         "\"en-us\" keymap for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.sharePolicy == VIR_DOMAIN_GRAPHICS_VNC_SHARE_ALLOW_EXCLUSIVE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver doesn't support "
+                         "exclusive share policy for VNC graphics."));
+        return -1;
+    }
+
+    if (gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL ||
+        gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver doesn't support "
+                         "given action in case of password change."));
+        return -1;
+    }
+
+    if (gr->data.vnc.auth.expires) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver doesn't support "
+                         "setting password expire time."));
+        return -1;
+    }
+
+    if (gr->nListens > 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("vz driver doesn't support more than "
+                         "one listening VNC server per domain"));
+        return -1;
+    }
+
+    if (gr->nListens == 1 &&
+        gr->listens[0].type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("vz driver supports only address-based VNC listening"));
+        return -1;
+    }
+
+    return 0;
+}

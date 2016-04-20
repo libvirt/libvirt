@@ -131,6 +131,8 @@ int
 vzGetDefaultSCSIModel(vzDriverPtr driver,
                       PRL_CLUSTERED_DEVICE_SUBTYPE *scsiModel);
 
+int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
+
 # define PARALLELS_BLOCK_STATS_FOREACH(OP)                              \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests")        \
     OP(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES, "read_total")       \

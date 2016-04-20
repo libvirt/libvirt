@@ -2435,9 +2435,6 @@ static int prlsdkClearDevices(PRL_HANDLE sdkdom)
     PRL_HANDLE dev;
     int ret = -1;
 
-    pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
-    prlsdkCheckRetGoto(pret, cleanup);
-
     pret = PrlVmCfg_GetAllDevices(sdkdom, &devList);
     prlsdkCheckRetGoto(pret, cleanup);
 
@@ -2519,83 +2516,6 @@ prlsdkAddDeviceToBootList(PRL_HANDLE sdkdom,
         PrlBootDev_Remove(bootDev);
 
     return -1;
-}
-
-static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
-{
-    virDomainGraphicsDefPtr gr;
-
-    if (def->ngraphics == 0)
-        return 0;
-
-    if (def->ngraphics > 1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver supports only "
-                         "one VNC per domain."));
-        return -1;
-    }
-
-    gr = def->graphics[0];
-
-    if (gr->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver supports only "
-                         "VNC graphics."));
-        return -1;
-    }
-
-    if (gr->data.vnc.websocket != 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "websockets for VNC graphics."));
-        return -1;
-    }
-
-    if (gr->data.vnc.keymap != 0 &&
-        STRNEQ(gr->data.vnc.keymap, "en-us")) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver supports only "
-                         "\"en-us\" keymap for VNC graphics."));
-        return -1;
-    }
-
-    if (gr->data.vnc.sharePolicy == VIR_DOMAIN_GRAPHICS_VNC_SHARE_ALLOW_EXCLUSIVE) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "exclusive share policy for VNC graphics."));
-        return -1;
-    }
-
-    if (gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_FAIL ||
-        gr->data.vnc.auth.connected == VIR_DOMAIN_GRAPHICS_AUTH_CONNECTED_KEEP) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "given action in case of password change."));
-        return -1;
-    }
-
-    if (gr->data.vnc.auth.expires) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "setting password expire time."));
-        return -1;
-    }
-
-    if (gr->nListens > 1) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("vz driver doesn't support more than "
-                         "one listening VNC server per domain"));
-        return -1;
-    }
-
-    if (gr->nListens == 1 &&
-        gr->listens[0].type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("vz driver supports only address-based VNC listening"));
-        return -1;
-    }
-
-    return 0;
 }
 
 static int prlsdkCheckVideoUnsupportedParams(virDomainDefPtr def)
@@ -2820,20 +2740,17 @@ static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
     return 0;
 }
 
-static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
+static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
+                                     virDomainGraphicsDefPtr gr)
 {
-    virDomainGraphicsDefPtr gr;
     virDomainGraphicsListenDefPtr glisten;
     PRL_RESULT pret;
     int ret  = -1;
 
-    if (prlsdkCheckGraphicsUnsupportedParams(def))
-        return -1;
-
-    if (def->ngraphics == 0)
-        return 0;
-
-    gr = def->graphics[0];
+    if (!gr) {
+        pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
+        prlsdkCheckRetExit(pret, -1);
+    }
 
     if (gr->data.vnc.autoport) {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_AUTO);
@@ -3435,6 +3352,17 @@ prlsdkAttachDevice(vzDriverPtr driver,
             return -1;
 
         break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        if (dom->def->ngraphics > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("domain already has VNC graphics"));
+            return -1;
+        }
+
+        if (prlsdkApplyGraphicsParams(privdom->sdkdom, dev->data.graphics) < 0)
+            return -1;
+
+        break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("attaching device type '%s' is unsupported"),
@@ -3491,6 +3419,17 @@ prlsdkDetachDevice(vzDriverPtr driver,
         prlsdkCheckRetGoto(pret, cleanup);
 
         break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        if (dom->def->ngraphics < 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot find VNC graphics device"));
+            goto cleanup;
+        }
+
+        if (prlsdkApplyGraphicsParams(privdom->sdkdom, NULL) < 0)
+            goto cleanup;
+
+        break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("detaching device type '%s' is unsupported"),
@@ -3532,6 +3471,17 @@ prlsdkUpdateDevice(vzDriverPtr driver,
     case VIR_DOMAIN_DEVICE_NET:
         if (prlsdkConfigureNet(driver, privdom->sdkdom, dev->data.net,
                                IS_CT(dom->def), false) < 0)
+            return -1;
+
+        break;
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+        if (dom->def->ngraphics < 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot find VNC graphics device"));
+            return -1;
+        }
+
+        if (prlsdkApplyGraphicsParams(privdom->sdkdom, dev->data.graphics) < 0)
             return -1;
 
         break;
@@ -3772,7 +3722,14 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
             goto error;
     }
 
-    if (prlsdkApplyGraphicsParams(sdkdom, def) < 0)
+    if (def->ngraphics > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vz driver supports only VNC graphics"));
+        goto error;
+    }
+
+    if (prlsdkApplyGraphicsParams(sdkdom,
+                                  def->ngraphics == 1 ? def->graphics[0] : NULL) < 0)
         goto error;
 
     if (prlsdkApplyVideoParams(sdkdom, def) < 0)

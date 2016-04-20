@@ -286,6 +286,8 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return vzCheckUnsupportedDisk(def, dev->data.disk, opaque);
+    else if (dev->type == VIR_DOMAIN_DEVICE_GRAPHICS)
+        return vzCheckUnsupportedGraphics(dev->data.graphics);
 
     return 0;
 }
