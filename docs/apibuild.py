@@ -111,6 +111,12 @@ ignored_macros = {
   "_virMemoryParameter": "backward compatibility macro for virTypedParameter",
 }
 
+# macros that should be completely skipped
+hidden_macros = {
+  "VIR_DEPRECATED", # internal macro to mark deprecated apis
+  "VIR_EXPORT_VAR", # internal macro to mark exported vars
+}
+
 def escape(raw):
     raw = string.replace(raw, '&', '&amp;')
     raw = string.replace(raw, '<', '&lt;')
@@ -1034,6 +1040,11 @@ class CParser:
                     name = string.split(name, '(') [0]
                 except:
                     pass
+
+                # skip hidden macros
+                if name in hidden_macros:
+                    return token
+
                 strValue = None
                 if len(lst) == 1 and lst[0][0] == '"' and lst[0][-1] == '"':
                     strValue = lst[0][1:-1]
