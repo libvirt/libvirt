@@ -27,6 +27,10 @@ dt {
   margin-right: 2em;
 }
 
+dt code {
+  font-weight: bold;
+}
+
 dl dd {
   margin-left: 2em;
   margin-right: 2em;
