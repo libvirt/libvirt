@@ -423,10 +423,12 @@ virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps);
 unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps);
 const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps);
 unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps);
-int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
-                                const char *name);
-size_t virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                    char ***names);
+int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                 const char **name,
+                                 size_t count);
+int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                 char ***names,
+                                 size_t *count);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name);
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,

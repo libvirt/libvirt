@@ -378,8 +378,7 @@ struct _virQEMUCaps {
 
     virArch arch;
 
-    size_t ncpuDefinitions;
-    char **cpuDefinitions;
+    virDomainCapsCPUModelsPtr cpuDefinitions;
 
     size_t nmachineTypes;
     struct virQEMUCapsMachineType *machineTypes;
@@ -618,7 +617,10 @@ virQEMUCapsParseX86Models(const char *output,
 {
     const char *p = output;
     const char *next;
-    int ret = -1;
+    virDomainCapsCPUModelsPtr cpus;
+
+    if (!(cpus = virDomainCapsCPUModelsNew(0)))
+        return -1;
 
     do {
         const char *t;
@@ -640,9 +642,6 @@ virQEMUCapsParseX86Models(const char *output,
         if (*p == '\0' || *p == '\n')
             continue;
 
-        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0)
-            goto cleanup;
-
         if (next)
             len = next - p - 1;
         else
@@ -653,14 +652,16 @@ virQEMUCapsParseX86Models(const char *output,
             len -= 2;
         }
 
-        if (VIR_STRNDUP(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1], p, len) < 0)
-            goto cleanup;
+        if (virDomainCapsCPUModelsAdd(cpus, p, len) < 0)
+            goto error;
     } while ((p = next));
 
-    ret = 0;
+    qemuCaps->cpuDefinitions = cpus;
+    return 0;
 
- cleanup:
-    return ret;
+ error:
+    virObjectUnref(cpus);
+    return -1;
 }
 
 /* ppc64 parser.
@@ -672,11 +673,13 @@ virQEMUCapsParsePPCModels(const char *output,
 {
     const char *p = output;
     const char *next;
-    int ret = -1;
+    virDomainCapsCPUModelsPtr cpus;
+
+    if (!(cpus = virDomainCapsCPUModelsNew(0)))
+        return -1;
 
     do {
         const char *t;
-        size_t len;
 
         if ((next = strchr(p, '\n')))
             next++;
@@ -697,19 +700,16 @@ virQEMUCapsParsePPCModels(const char *output,
         if (*p == '\n')
             continue;
 
-        if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0)
-            goto cleanup;
-
-        len = t - p - 1;
-
-        if (VIR_STRNDUP(qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions - 1], p, len) < 0)
-            goto cleanup;
+        if (virDomainCapsCPUModelsAdd(cpus, p, t - p - 1) < 0)
+            goto error;
     } while ((p = next));
 
-    ret = 0;
+    qemuCaps->cpuDefinitions = cpus;
+    return 0;
 
- cleanup:
-    return ret;
+ error:
+    virObjectUnref(cpus);
+    return -1;
 }
 
 static int
@@ -2094,11 +2094,9 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->arch = qemuCaps->arch;
 
-    if (VIR_ALLOC_N(ret->cpuDefinitions, qemuCaps->ncpuDefinitions) < 0)
-        goto error;
-    ret->ncpuDefinitions = qemuCaps->ncpuDefinitions;
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
-        if (VIR_STRDUP(ret->cpuDefinitions[i], qemuCaps->cpuDefinitions[i]) < 0)
+    if (qemuCaps->cpuDefinitions) {
+        ret->cpuDefinitions = virDomainCapsCPUModelsCopy(qemuCaps->cpuDefinitions);
+        if (!ret->cpuDefinitions)
             goto error;
     }
 
@@ -2138,9 +2136,7 @@ void virQEMUCapsDispose(void *obj)
     }
     VIR_FREE(qemuCaps->machineTypes);
 
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++)
-        VIR_FREE(qemuCaps->cpuDefinitions[i]);
-    VIR_FREE(qemuCaps->cpuDefinitions);
+    virObjectUnref(qemuCaps->cpuDefinitions);
 
     virBitmapFree(qemuCaps->flags);
 
@@ -2278,28 +2274,58 @@ const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps)
 }
 
 
-int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
-                                const char *name)
+int
+virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                             const char **name,
+                             size_t count)
 {
-    char *tmp;
+    size_t i;
 
-    if (VIR_STRDUP(tmp, name) < 0)
+    if (!qemuCaps->cpuDefinitions &&
+        !(qemuCaps->cpuDefinitions = virDomainCapsCPUModelsNew(count)))
         return -1;
-    if (VIR_EXPAND_N(qemuCaps->cpuDefinitions, qemuCaps->ncpuDefinitions, 1) < 0) {
-        VIR_FREE(tmp);
-        return -1;
+
+    for (i = 0; i < count; i++) {
+        if (virDomainCapsCPUModelsAdd(qemuCaps->cpuDefinitions, name[i], -1) < 0)
+            return -1;
     }
-    qemuCaps->cpuDefinitions[qemuCaps->ncpuDefinitions-1] = tmp;
+
     return 0;
 }
 
 
-size_t virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                    char ***names)
+int
+virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                             char ***names,
+                             size_t *count)
 {
+    size_t i;
+    char **models = NULL;
+
+    *count = 0;
     if (names)
-        *names = qemuCaps->cpuDefinitions;
-    return qemuCaps->ncpuDefinitions;
+        *names = NULL;
+
+    if (!qemuCaps->cpuDefinitions)
+        return 0;
+
+    if (names && VIR_ALLOC_N(models, qemuCaps->cpuDefinitions->nmodels) < 0)
+        return -1;
+
+    for (i = 0; i < qemuCaps->cpuDefinitions->nmodels; i++) {
+        virDomainCapsCPUModelPtr cpu = qemuCaps->cpuDefinitions->models + i;
+        if (models && VIR_STRDUP(models[i], cpu->name) < 0)
+            goto error;
+    }
+
+    if (names)
+        *names = models;
+    *count = qemuCaps->cpuDefinitions->nmodels;
+    return 0;
+
+ error:
+    virStringFreeListCount(models, i);
+    return -1;
 }
 
 
@@ -2615,16 +2641,30 @@ static int
 virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                   qemuMonitorPtr mon)
 {
-    int ncpuDefinitions;
-    char **cpuDefinitions;
+    qemuMonitorCPUDefInfoPtr *cpus;
+    int ncpus;
+    int ret = -1;
+    size_t i;
 
-    if ((ncpuDefinitions = qemuMonitorGetCPUDefinitions(mon, &cpuDefinitions)) < 0)
+    if ((ncpus = qemuMonitorGetCPUDefinitions(mon, &cpus)) < 0)
         return -1;
 
-    qemuCaps->ncpuDefinitions = ncpuDefinitions;
-    qemuCaps->cpuDefinitions = cpuDefinitions;
+    if (!(qemuCaps->cpuDefinitions = virDomainCapsCPUModelsNew(ncpus)))
+        goto cleanup;
 
-    return 0;
+    for (i = 0; i < ncpus; i++) {
+        if (virDomainCapsCPUModelsAddSteal(qemuCaps->cpuDefinitions,
+                                           &cpus[i]->name) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < ncpus; i++)
+        qemuMonitorCPUDefInfoFree(cpus[i]);
+    VIR_FREE(cpus);
+    return ret;
 }
 
 struct tpmTypeToCaps {
@@ -2970,17 +3010,19 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
         goto cleanup;
     }
     if (n > 0) {
-        qemuCaps->ncpuDefinitions = n;
-        if (VIR_ALLOC_N(qemuCaps->cpuDefinitions,
-                        qemuCaps->ncpuDefinitions) < 0)
+        if (!(qemuCaps->cpuDefinitions = virDomainCapsCPUModelsNew(n)))
             goto cleanup;
 
         for (i = 0; i < n; i++) {
-            if (!(qemuCaps->cpuDefinitions[i] = virXMLPropString(nodes[i], "name"))) {
+            if (!(str = virXMLPropString(nodes[i], "name"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing cpu name in QEMU capabilities cache"));
                 goto cleanup;
             }
+
+            if (virDomainCapsCPUModelsAddSteal(qemuCaps->cpuDefinitions,
+                                               &str) < 0)
+                goto cleanup;
         }
     }
     VIR_FREE(nodes);
@@ -3139,9 +3181,11 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++) {
-        virBufferEscapeString(&buf, "<cpu name='%s'/>\n",
-                              qemuCaps->cpuDefinitions[i]);
+    if (qemuCaps->cpuDefinitions) {
+        for (i = 0; i < qemuCaps->cpuDefinitions->nmodels; i++) {
+            virDomainCapsCPUModelPtr cpu = qemuCaps->cpuDefinitions->models + i;
+            virBufferEscapeString(&buf, "<cpu name='%s'/>\n", cpu->name);
+        }
     }
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
@@ -3259,10 +3303,8 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
     qemuCaps->arch = VIR_ARCH_NONE;
     qemuCaps->usedQMP = false;
 
-    for (i = 0; i < qemuCaps->ncpuDefinitions; i++)
-        VIR_FREE(qemuCaps->cpuDefinitions[i]);
-    VIR_FREE(qemuCaps->cpuDefinitions);
-    qemuCaps->ncpuDefinitions = 0;
+    virObjectUnref(qemuCaps->cpuDefinitions);
+    qemuCaps->cpuDefinitions = NULL;
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         VIR_FREE(qemuCaps->machineTypes[i].name);

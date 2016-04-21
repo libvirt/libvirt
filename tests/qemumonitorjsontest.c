@@ -412,7 +412,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
-    char **cpus = NULL;
+    qemuMonitorCPUDefInfoPtr *cpus = NULL;
     int ncpus = 0;
     size_t i;
 
@@ -447,10 +447,10 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
 
 #define CHECK(i, wantname)                                              \
     do {                                                                \
-        if (STRNEQ(cpus[i], (wantname))) {                              \
+        if (STRNEQ(cpus[i]->name, (wantname))) {                        \
             virReportError(VIR_ERR_INTERNAL_ERROR,                      \
                            "name %s is not %s",                         \
-                           cpus[i], (wantname));                        \
+                           cpus[i]->name, (wantname));                  \
             goto cleanup;                                               \
         }                                                               \
     } while (0)
@@ -466,7 +466,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
  cleanup:
     qemuMonitorTestFree(test);
     for (i = 0; i < ncpus; i++)
-        VIR_FREE(cpus[i]);
+        qemuMonitorCPUDefInfoFree(cpus[i]);
     VIR_FREE(cpus);
     return ret;
 }

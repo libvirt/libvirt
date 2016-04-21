@@ -6566,9 +6566,10 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
     host = caps->host.cpu;
 
-    if (!host ||
-        !host->model ||
-        (ncpus = virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus)) == 0) {
+    if (virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus, &ncpus) < 0)
+        goto cleanup;
+
+    if (!host || !host->model || ncpus == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("CPU specification not supported by hypervisor"));
         goto cleanup;
@@ -6722,6 +6723,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     cpuDataFree(hostData);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
+    virStringFreeListCount(cpus, ncpus);
     return ret;
 }
 

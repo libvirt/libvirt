@@ -452,18 +452,18 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
         "486", "coreduo", "kvm32", "qemu32", "kvm64",
         "core2duo", "phenom", "qemu64",
     };
-    size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(newModels); i++) {
-        if (virQEMUCapsAddCPUDefinition(caps, newModels[i]) < 0)
-            return -1;
-    }
+    if (virQEMUCapsAddCPUDefinitions(caps, newModels,
+                                     ARRAY_CARDINALITY(newModels)) < 0)
+        return -1;
+
     if (skipLegacy)
         return 0;
-    for (i = 0; i < ARRAY_CARDINALITY(legacyModels); i++) {
-        if (virQEMUCapsAddCPUDefinition(caps, legacyModels[i]) < 0)
-            return -1;
-    }
+
+    if (virQEMUCapsAddCPUDefinitions(caps, legacyModels,
+                                     ARRAY_CARDINALITY(legacyModels)) < 0)
+        return -1;
+
     return 0;
 }
 

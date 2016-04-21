@@ -3587,13 +3587,23 @@ qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
 
 int
 qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
-                             char ***cpus)
+                             qemuMonitorCPUDefInfoPtr **cpus)
 {
     VIR_DEBUG("cpus=%p", cpus);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
     return qemuMonitorJSONGetCPUDefinitions(mon, cpus);
+}
+
+
+void
+qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
+{
+    if (!cpu)
+        return;
+    VIR_FREE(cpu->name);
+    VIR_FREE(cpu);
 }
 
 
