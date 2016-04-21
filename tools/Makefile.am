@@ -424,7 +424,8 @@ NSS_SO_VER = 1
 
 install-exec-hook:
 	( cd $(DESTDIR)$(libdir) && \
-	  $(LN_S) -f libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) )
+	  rm -f nss_libvirt.so.$(NSS_SO_VER) && \
+	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) )
 
 uninstall-local:
 	-rm -f $(DESTDIR)$(libdir)/nss_libvirt.so.$(NSS_SO_VER)
