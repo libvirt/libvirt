@@ -243,7 +243,7 @@ ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_XEN
 test_programs += xml2sexprtest sexpr2xmltest \
-	xmconfigtest xencapstest statstest reconnect
+	xmconfigtest xencapstest
 endif WITH_XEN
 
 if WITH_LIBXL
@@ -504,17 +504,9 @@ xencapstest_SOURCES = \
 	xencapstest.c testutils.h testutils.c
 xencapstest_LDADD = $(xen_LDADDS)
 
-reconnect_SOURCES = \
-	reconnect.c testutils.h testutils.c
-reconnect_LDADD = $(LDADDS)
-
-statstest_SOURCES = \
-	statstest.c testutils.h testutils.c
-statstest_LDADD = $(xen_LDADDS)
-
 else ! WITH_XEN
 EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
-	xencapstest.c reconnect.c \
+	xencapstest.c \
 	testutilsxen.c testutilsxen.h
 endif ! WITH_XEN
 
