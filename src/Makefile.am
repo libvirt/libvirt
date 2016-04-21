@@ -3072,8 +3072,9 @@ if WITH_NETWORK
 	$(INSTALL_DATA) $(srcdir)/network/default.xml \
 	  $(DESTDIR)$(confdir)/qemu/networks/default.xml
 	test -z "$(UUID)" || \
-	  { sed -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml > \
+	  { sed -e "s,</name>,</name>;  <uuid>$(UUID)</uuid>," \
+	      $(DESTDIR)$(confdir)/qemu/networks/default.xml | \
+	      tr ";" "\n" > \
 	      $(DESTDIR)$(confdir)/qemu/networks/default.xml.t && \
 	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
 	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
