@@ -3011,29 +3011,43 @@
 
     <p>
       Each controller has a mandatory attribute <code>type</code>,
-      which must be one of "ide", "fdc", "scsi", "sata", "usb",
-      "ccid", "virtio-serial" or "pci", and a mandatory
+      which must be one of 'ide', 'fdc', 'scsi', 'sata', 'usb',
+      'ccid', 'virtio-serial' or 'pci', and a mandatory
       attribute <code>index</code> which is the decimal integer
       describing in which order the bus controller is encountered (for
-      use in <code>controller</code> attributes
-      of <code>&lt;address&gt;</code> elements).  The "virtio-serial"
-      controller has two additional optional
-      attributes <code>ports</code> and <code>vectors</code>, which
-      control how many devices can be connected through the
-      controller.  A "scsi" controller has an optional
-      attribute <code>model</code>, which is one of "auto", "buslogic",
-      "ibmvscsi", "lsilogic", "lsisas1068", "lsisas1078", "virtio-scsi" or
-      "vmpvscsi".  A "usb" controller has an optional attribute
-      <code>model</code>, which is one of "piix3-uhci", "piix4-uhci", "ehci",
-      "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3", "vt82c686b-uhci",
-      "pci-ohci" or "nec-xhci".  Additionally,
-      <span class="since">since 0.10.0</span>, if the USB bus needs to be
-      explicitly disabled for the guest, <code>model='none'</code> may be
-      used.  <span class="since">Since 1.0.5</span>, no default USB controller
-      will be built on S390.  <span class="since">Since 1.3.5</span>, USB
-      controllers accept a <code>ports</code> attribute to configure how
-      many devices can be connected to the controller. The PowerPC64
-      "spapr-vio" addresses do not have an associated controller.
+      use in <code>controller</code> attributes of
+      <code>&lt;address&gt;</code> elements). Some controller types
+      have additional attributes that control specific features, such as:
+    </p>
+
+      <dl>
+        <dt><code>virtio-serial</code></dt>
+        <dd>The <code>virtio-serial</code> controller has two additional
+        optional attributes <code>ports</code> and <code>vectors</code>,
+        which control how many devices can be connected through the
+        controller.</dd>
+        <dt><code>scsi</code></dt>
+        <dd>A <code>scsi</code> controller has an optional attribute
+        <code>model</code>, which is one of 'auto', 'buslogic', 'ibmvscsi',
+        'lsilogic', 'lsisas1068', 'lsisas1078', 'virtio-scsi' or
+        'vmpvscsi'.</dd>
+        <dt><code>usb</code></dt>
+        <dd>A <code>usb</code> controller has an optional attribute
+        <code>model</code>, which is one of "piix3-uhci", "piix4-uhci",
+        "ehci", "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",
+        "vt82c686b-uhci", "pci-ohci" or "nec-xhci".  Additionally,
+         <span class="since">since 0.10.0</span>, if the USB bus needs to
+         be explicitly disabled for the guest, <code>model='none'</code>
+         may be used.  <span class="since">Since 1.0.5</span>, no default
+         USB controller will be built on s390.
+         <span class="since">Since 1.3.5</span>, USB controllers accept a
+         <code>ports</code> attribute to configure how many devices can be
+         connected to the controller.</dd>
+      </dl>
+
+    <p>
+      Note: The PowerPC64 "spapr-vio" addresses do not have an
+      associated controller.
     </p>
 
     <p>
