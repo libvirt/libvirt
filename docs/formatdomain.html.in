@@ -566,7 +566,7 @@
       <dd>
         The content of this optional element defines the number
         of IOThreads to be assigned to the domain for use by
-        virtio-blk-pci and virtio-blk-ccw target storage devices. There
+        supported target storage devices. There
         should be only 1 or 2 IOThreads per host CPU. There may be more
         than one supported device assigned to each IOThread.
         <span class="since">Since 1.2.8</span>
@@ -2560,9 +2560,11 @@
             The optional <code>iothread</code> attribute assigns the
             disk to an IOThread as defined by the range for the domain
             <a href="#elementsIOThreadsAllocation"><code>iothreads</code></a>
-            value. Multiple devices may be assigned to the same IOThread and
-            are numbered from 1 to the domain iothreads value.
-            <span class='since'>Since 1.2.8 (QEMU only)</span>
+            value. Multiple disks may be assigned to the same IOThread and
+            are numbered from 1 to the domain iothreads value. Available
+            for a disk device <code>target</code> configured to use "virtio"
+            <code>bus</code> and "pci" or "ccw" <code>address</code> types.
+            <span class='since'>Since 1.2.8 (QEMU 2.1)</span>
           </li>
         </ul>
       </dd>
