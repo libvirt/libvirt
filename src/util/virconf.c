@@ -765,7 +765,7 @@ virConfReadFile(const char *filename, unsigned int flags)
 {
     char *content;
     int len;
-    virConfPtr conf;
+    virConfPtr conf = NULL;
 
     VIR_DEBUG("filename=%s", NULLSTR(filename));
 
@@ -777,8 +777,17 @@ virConfReadFile(const char *filename, unsigned int flags)
     if ((len = virFileReadAll(filename, MAX_CONFIG_FILE_SIZE, &content)) < 0)
         return NULL;
 
+    if (len && len < MAX_CONFIG_FILE_SIZE && content[len - 1] != '\n') {
+        VIR_DEBUG("appending newline to busted config file %s", filename);
+        if (VIR_REALLOC_N(content, len + 1) < 0)
+            goto cleanup;
+        content[len++] = '\n';
+        content[len] = '\0';
+    }
+
     conf = virConfParse(filename, content, len, flags);
 
+ cleanup:
     VIR_FREE(content);
 
     return conf;
