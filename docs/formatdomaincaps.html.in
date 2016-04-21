@@ -61,18 +61,18 @@
 &lt;/domainCapabilities&gt;
 </pre>
     <dl>
-      <dt>path</dt>
+      <dt><code>path</code></dt>
       <dd>The full path to the emulator binary.</dd>
 
-      <dt>domain</dt>
+      <dt><code>domain</code></dt>
       <dd>Describes the <a href="formatdomain.html#elements">virtualization
           type</a> (or so called domain type).</dd>
 
-      <dt>machine</dt>
+      <dt><code>machine</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">machine
           type</a>.</dd>
 
-      <dt>arch</dt>
+      <dt><code>arch</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">
           architecture</a>.</dd>
 
@@ -92,7 +92,7 @@
 </pre>
 
     <dl>
-      <dt>vcpu</dt>
+      <dt><code>vcpu</code></dt>
       <dd>The maximum number of supported virtual CPUs</dd>
     </dl>
 
@@ -126,18 +126,18 @@
     <p>For the <code>loader</code> element, the following can occur:</p>
 
     <dl>
-      <dt>value</dt>
+      <dt><code>value</code></dt>
       <dd>List of known loader paths. Currently this is only used
       to advertise known locations of OVMF binaries for qemu. Binaries
       will only be listed if they actually exist on disk.</dd>
 
-      <dt>type</dt>
+      <dt><code>type</code></dt>
       <dd>Whether loader is a typical BIOS (<code>rom</code>) or
       an UEFI binary (<code>pflash</code>). This refers to
       <code>type</code> attribute of the &lt;loader/&gt;
       element.</dd>
 
-      <dt>readonly</dt>
+      <dt><code>readonly</code></dt>
       <dd>Options for the <code>readonly</code> attribute of the
       &lt;loader/&gt; element.</dd>
     </dl>
@@ -207,11 +207,11 @@
 </pre>
 
     <dl>
-      <dt>diskDevice</dt>
+      <dt><code>diskDevice</code></dt>
       <dd>Options for the <code>device</code> attribute of the &lt;disk/&gt;
       element.</dd>
 
-      <dt>bus</dt>
+      <dt><code>bus</code></dt>
       <dd>Options for the <code>bus</code> attribute of the &lt;target/&gt;
       element for a &lt;disk/&gt;.</dd>
     </dl>
@@ -257,23 +257,23 @@
 </pre>
 
     <dl>
-      <dt>mode</dt>
+      <dt><code>mode</code></dt>
       <dd>Options for the <code>mode</code> attribute of the &lt;hostdev/&gt;
       element.</dd>
 
-      <dt>startupPolicy</dt>
+      <dt><code>startupPolicy</code></dt>
       <dd>Options for the <code>startupPolicy</code> attribute of the
       &lt;hostdev/&gt; element.</dd>
 
-      <dt>subsysType</dt>
+      <dt><code>subsysType</code></dt>
       <dd>Options for the <code>type</code> attribute of the &lt;hostdev/&gt;
       element in case of <code>mode="subsystem"</code>.</dd>
 
-      <dt>capsType</dt>
+      <dt><code>capsType</code></dt>
       <dd>Options for the <code>type</code> attribute of the &lt;hostdev/&gt;
       element in case of <code>mode="capabilities"</code>.</dd>
 
-      <dt>pciBackend</dt>
+      <dt><code>pciBackend</code></dt>
       <dd>Options for the <code>name</code> attribute of the &lt;driver/&gt;
       element.</dd>
     </dl>
@@ -313,7 +313,7 @@
     <p>GIC capabilities are exposed under the <code>gic</code> element.</p>
 
     <dl>
-      <dt>version</dt>
+      <dt><code>version</code></dt>
       <dd>Options for the <code>version</code> attribute of the
       <code>gic</code> element.</dd>
     </dl>

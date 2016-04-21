@@ -23,19 +23,19 @@
     </p>
 
     <dl>
-      <dt>nop</dt>
+      <dt><code>nop</code></dt>
       <dd>This is a "no op" implementation which does absolutely
         nothing. This can be used if mutual exclusion between
         virtual machines is not required, or if it is being
         solved at another level in the management stack.</dd>
-      <dt><a href="locking-lockd.html">lockd</a></dt>
+      <dt><code><a href="locking-lockd.html">lockd</a></code></dt>
       <dd>This is the current preferred implementation shipped
         with libvirt. It uses the <code>virtlockd</code> daemon
         to manage locks using the POSIX fcntl() advisory locking
         capability. As such it requires a shared filesystem of
         some kind be accessible to all hosts which share the
         same image storage.</dd>
-      <dt><a href="locking-sanlock.html">sanlock</a></dt>
+      <dt><code><a href="locking-sanlock.html">sanlock</a></code></dt>
       <dd>This is an alternative implementation preferred by
         the oVirt project. It uses a disk paxos algorithm for
         maintaining continuously renewed leases. In the default

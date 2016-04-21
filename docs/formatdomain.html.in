@@ -3331,17 +3331,17 @@
   ...</pre>
 
     <dl>
-      <dt>lockspace</dt>
+      <dt><code>lockspace</code></dt>
       <dd>This is an arbitrary string, identifying the lockspace
         within which the key is held. Lock managers may impose
         extra restrictions on the format, or length of the lockspace
         name.</dd>
-      <dt>key</dt>
+      <dt><code>key</code></dt>
       <dd>This is an arbitrary string, uniquely identifying the
         lease to be acquired. Lock managers may impose extra
         restrictions on the format, or length of the key.
       </dd>
-      <dt>target</dt>
+      <dt><code>target</code></dt>
       <dd>This is the fully qualified path of the file associated
         with the lockspace. The offset specifies where the lease
         is stored within the file. If the lock manager does not
@@ -3429,12 +3429,12 @@
         "subsystem" and the <code>type</code> is one of the following values
         with additional attributes noted.
         <dl>
-          <dt>usb</dt>
+          <dt><code>usb</code></dt>
           <dd>USB devices are detached from the host on guest startup
             and reattached after the guest exits or the device is
             hot-unplugged.
           </dd>
-          <dt>pci</dt>
+          <dt><code>pci</code></dt>
           <dd>For PCI devices, when <code>managed</code> is "yes" it is
             detached from the host before being passed on to the guest
             and reattached to the host after the guest exits. If
@@ -3445,7 +3445,7 @@
             (or <code>virsh nodedev-reattach</code>) after hot-unplug or
             stopping the guest.
           </dd>
-          <dt>scsi</dt>
+          <dt><code>scsi</code></dt>
           <dd>For SCSI devices, user is responsible to make sure the device
             is not used by host. If supported by the hypervisor and OS, the
             optional <code>sgio</code> (<span class="since">since 1.0.6</span>)
@@ -3472,7 +3472,7 @@
       <dd>The source element describes the device as seen from the host using
         the following mechanism to describe:
         <dl>
-          <dt>usb</dt>
+          <dt><code>usb</code></dt>
           <dd>The USB device can either be addressed by vendor / product id
             using the <code>vendor</code> and <code>product</code> elements
             or by the device's address on the host using the
@@ -3500,10 +3500,10 @@
               </tr>
             </table>
           </dd>
-          <dt>pci</dt>
+          <dt><code>pci</code></dt>
           <dd>PCI devices can only be described by their <code>address</code>.
           </dd>
-          <dt>scsi</dt>
+          <dt><code>scsi</code></dt>
           <dd>SCSI devices are described by both the <code>adapter</code>
             and <code>address</code> elements. The <code>address</code>
             element includes a <code>bus</code> attribute (a 2-digit bus

@@ -80,15 +80,15 @@ to be provided by all container technologies on Linux.
 </p>
 
 <dl>
-<dt>container</dt>
+<dt><code>container</code></dt>
 <dd>The fixed string <code>libvirt-lxc</code> to identify libvirt as the creator</dd>
-<dt>container_uuid</dt>
+<dt><code>container_uuid</code></dt>
 <dd>The UUID assigned to the container by libvirt</dd>
-<dt>PATH</dt>
+<dt><code>PATH</code></dt>
 <dd>The fixed string <code>/bin:/usr/bin</code></dd>
-<dt>TERM</dt>
+<dt><code>TERM</code></dt>
 <dd>The fixed string <code>linux</code></dd>
-<dt>HOME</dt>
+<dt><code>HOME</code></dt>
 <dd>The fixed string <code>/</code></dd>
 </dl>
 
@@ -98,11 +98,11 @@ environment variables are also provided
 </p>
 
 <dl>
-<dt>LIBVIRT_LXC_NAME</dt>
+<dt><code>LIBVIRT_LXC_NAME</code></dt>
 <dd>The name assigned to the container by libvirt</dd>
-<dt>LIBVIRT_LXC_UUID</dt>
+<dt><code>LIBVIRT_LXC_UUID</code></dt>
 <dd>The UUID assigned to the container by libvirt</dd>
-<dt>LIBVIRT_LXC_CMDLINE</dt>
+<dt><code>LIBVIRT_LXC_CMDLINE</code></dt>
 <dd>The unparsed command line arguments specified in the container configuration.
 Use of this is discouraged, in favour of passing arguments directly to the
 container init process via the <code>initarg</code> config element.</dd>

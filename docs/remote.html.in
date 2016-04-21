@@ -102,7 +102,7 @@ much slower than, say, direct hypervisor calls. </li>
 Remote libvirt supports a range of transports:
 </p>
     <dl>
-      <dt> tls </dt>
+      <dt><code>tls</code></dt>
       <dd><a href="http://en.wikipedia.org/wiki/Transport_Layer_Security" title="Transport Layer Security">TLS</a>
  1.0 (SSL 3.1) authenticated and encrypted TCP/IP socket, usually
  listening on a public port number.  To use this you will need to
@@ -110,7 +110,7 @@ Remote libvirt supports a range of transports:
  server certificates</a>.
  The standard port is 16514.
  </dd>
-      <dt> unix </dt>
+      <dt><code>unix</code></dt>
       <dd> Unix domain socket.  Since this is only accessible on the
  local machine, it is not encrypted, and uses Unix permissions or
  SELinux for authentication.
@@ -119,7 +119,7 @@ Remote libvirt supports a range of transports:
  <code>/var/run/libvirt/libvirt-sock-ro</code> (the latter
  for read-only connections).
  </dd>
-      <dt> ssh </dt>
+      <dt><code>ssh</code></dt>
       <dd> Transported over an ordinary
  <a href="http://www.openssh.com/" title="OpenSSH homepage">ssh
  (secure shell)</a> connection.
@@ -130,15 +130,15 @@ Remote libvirt supports a range of transports:
  <a href="http://mah.everybody.org/docs/ssh" title="Using ssh-agent with ssh">ssh-agent</a>)
  otherwise programs which use
  this transport will stop to ask for a password. </dd>
-      <dt> ext </dt>
+      <dt><code>ext</code></dt>
       <dd> Any external program which can make a connection to the
  remote machine by means outside the scope of libvirt. </dd>
-      <dt> tcp </dt>
+      <dt><code>tcp</code></dt>
       <dd> Unencrypted TCP/IP socket.  Not recommended for production
  use, this is normally disabled, but an administrator can enable
  it for testing or use over a trusted network.
  The standard port is 16509. </dd>
-      <dt> libssh2 </dt>
+      <dt><code>libssh2</code></dt>
       <dd> Transport over the SSH protocol using
       <a href="http://libssh2.org/" title="libssh2 homepage">libssh2</a> instead
 of the OpenSSH binary. This transport uses the libvirt authentication callback for
