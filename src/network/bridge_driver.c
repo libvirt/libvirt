@@ -1180,6 +1180,15 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     ipdef = ipv4def ? ipv4def : ipv6def;
 
     while (ipdef) {
+        int prefix;
+
+        prefix = virNetworkIpDefPrefix(ipdef);
+        if (prefix < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("bridge '%s' has an invalid prefix"),
+                           network->def->bridge);
+            goto cleanup;
+        }
         for (r = 0; r < ipdef->nranges; r++) {
             int thisRange;
 
@@ -1187,8 +1196,12 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                 !(eaddr = virSocketAddrFormat(&ipdef->ranges[r].end)))
                 goto cleanup;
 
-            virBufferAsprintf(&configbuf, "dhcp-range=%s,%s\n",
+            virBufferAsprintf(&configbuf, "dhcp-range=%s,%s",
                               saddr, eaddr);
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
+               virBufferAsprintf(&configbuf, ",%d", prefix);
+            virBufferAddLit(&configbuf, "\n");
+
             VIR_FREE(saddr);
             VIR_FREE(eaddr);
             thisRange = virSocketAddrGetRange(&ipdef->ranges[r].start,
@@ -1210,7 +1223,11 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
             if (!bridgeaddr)
                 goto cleanup;
-            virBufferAsprintf(&configbuf, "dhcp-range=%s,static\n", bridgeaddr);
+            virBufferAsprintf(&configbuf, "dhcp-range=%s,static",
+                              bridgeaddr);
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
+               virBufferAsprintf(&configbuf, ",%d", prefix);
+            virBufferAddLit(&configbuf, "\n");
             VIR_FREE(bridgeaddr);
         }
 
