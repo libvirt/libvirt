@@ -21,6 +21,7 @@ debugsym=None
 # C parser analysis code
 #
 included_files = {
+  "libvirt-common.h": "header with general libvirt API definitions",
   "libvirt-domain.h": "header with general libvirt API definitions",
   "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
   "libvirt-event.h": "header with general libvirt API definitions",

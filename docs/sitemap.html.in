@@ -305,6 +305,10 @@
             -->
             <ul>
               <li>
+                <a href="html/libvirt-libvirt-common.html">Common</a>
+                <span>common APIs for the libvirt library</span>
+              </li>
+              <li>
                 <a href="html/libvirt-libvirt-domain.html">Domain</a>
                 <span>domain APIs for the libvirt library</span>
               </li>

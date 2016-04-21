@@ -28,6 +28,7 @@ apihtml =					\
   $(apihtml_generated)
 
 apihtml_generated = \
+  html/libvirt-libvirt-common.html		\
   html/libvirt-libvirt-domain.html		\
   html/libvirt-libvirt-domain-snapshot.html	\
   html/libvirt-libvirt-event.html		\
