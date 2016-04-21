@@ -200,66 +200,66 @@
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0-rc1-dirty)</package>
   <arch>x86_64</arch>
-  <cpu type='kvm' name='host'/>
-  <cpu type='kvm' name='qemu64'/>
-  <cpu type='kvm' name='qemu32'/>
-  <cpu type='kvm' name='phenom'/>
-  <cpu type='kvm' name='pentium3'/>
-  <cpu type='kvm' name='pentium2'/>
-  <cpu type='kvm' name='pentium'/>
-  <cpu type='kvm' name='n270'/>
-  <cpu type='kvm' name='kvm64'/>
-  <cpu type='kvm' name='kvm32'/>
-  <cpu type='kvm' name='coreduo'/>
-  <cpu type='kvm' name='core2duo'/>
-  <cpu type='kvm' name='athlon'/>
-  <cpu type='kvm' name='Westmere'/>
-  <cpu type='kvm' name='Skylake-Client'/>
-  <cpu type='kvm' name='SandyBridge'/>
-  <cpu type='kvm' name='Penryn'/>
-  <cpu type='kvm' name='Opteron_G5'/>
-  <cpu type='kvm' name='Opteron_G4'/>
-  <cpu type='kvm' name='Opteron_G3'/>
-  <cpu type='kvm' name='Opteron_G2'/>
-  <cpu type='kvm' name='Opteron_G1'/>
-  <cpu type='kvm' name='Nehalem'/>
-  <cpu type='kvm' name='IvyBridge'/>
-  <cpu type='kvm' name='Haswell'/>
-  <cpu type='kvm' name='Haswell-noTSX'/>
-  <cpu type='kvm' name='Conroe'/>
-  <cpu type='kvm' name='Broadwell'/>
-  <cpu type='kvm' name='Broadwell-noTSX'/>
-  <cpu type='kvm' name='486'/>
-  <cpu type='tcg' name='host'/>
-  <cpu type='tcg' name='qemu64'/>
-  <cpu type='tcg' name='qemu32'/>
-  <cpu type='tcg' name='phenom'/>
-  <cpu type='tcg' name='pentium3'/>
-  <cpu type='tcg' name='pentium2'/>
-  <cpu type='tcg' name='pentium'/>
-  <cpu type='tcg' name='n270'/>
-  <cpu type='tcg' name='kvm64'/>
-  <cpu type='tcg' name='kvm32'/>
-  <cpu type='tcg' name='coreduo'/>
-  <cpu type='tcg' name='core2duo'/>
-  <cpu type='tcg' name='athlon'/>
-  <cpu type='tcg' name='Westmere'/>
-  <cpu type='tcg' name='Skylake-Client'/>
-  <cpu type='tcg' name='SandyBridge'/>
-  <cpu type='tcg' name='Penryn'/>
-  <cpu type='tcg' name='Opteron_G5'/>
-  <cpu type='tcg' name='Opteron_G4'/>
-  <cpu type='tcg' name='Opteron_G3'/>
-  <cpu type='tcg' name='Opteron_G2'/>
-  <cpu type='tcg' name='Opteron_G1'/>
-  <cpu type='tcg' name='Nehalem'/>
-  <cpu type='tcg' name='IvyBridge'/>
-  <cpu type='tcg' name='Haswell'/>
-  <cpu type='tcg' name='Haswell-noTSX'/>
-  <cpu type='tcg' name='Conroe'/>
-  <cpu type='tcg' name='Broadwell'/>
-  <cpu type='tcg' name='Broadwell-noTSX'/>
-  <cpu type='tcg' name='486'/>
+  <cpu type='kvm' name='host' usable='yes'/>
+  <cpu type='kvm' name='qemu64' usable='yes'/>
+  <cpu type='kvm' name='qemu32' usable='yes'/>
+  <cpu type='kvm' name='phenom' usable='no'/>
+  <cpu type='kvm' name='pentium3' usable='yes'/>
+  <cpu type='kvm' name='pentium2' usable='yes'/>
+  <cpu type='kvm' name='pentium' usable='yes'/>
+  <cpu type='kvm' name='n270' usable='yes'/>
+  <cpu type='kvm' name='kvm64' usable='yes'/>
+  <cpu type='kvm' name='kvm32' usable='yes'/>
+  <cpu type='kvm' name='coreduo' usable='yes'/>
+  <cpu type='kvm' name='core2duo' usable='yes'/>
+  <cpu type='kvm' name='athlon' usable='no'/>
+  <cpu type='kvm' name='Westmere' usable='yes'/>
+  <cpu type='kvm' name='Skylake-Client' usable='yes'/>
+  <cpu type='kvm' name='SandyBridge' usable='yes'/>
+  <cpu type='kvm' name='Penryn' usable='yes'/>
+  <cpu type='kvm' name='Opteron_G5' usable='no'/>
+  <cpu type='kvm' name='Opteron_G4' usable='no'/>
+  <cpu type='kvm' name='Opteron_G3' usable='no'/>
+  <cpu type='kvm' name='Opteron_G2' usable='yes'/>
+  <cpu type='kvm' name='Opteron_G1' usable='yes'/>
+  <cpu type='kvm' name='Nehalem' usable='yes'/>
+  <cpu type='kvm' name='IvyBridge' usable='yes'/>
+  <cpu type='kvm' name='Haswell' usable='yes'/>
+  <cpu type='kvm' name='Haswell-noTSX' usable='yes'/>
+  <cpu type='kvm' name='Conroe' usable='yes'/>
+  <cpu type='kvm' name='Broadwell' usable='yes'/>
+  <cpu type='kvm' name='Broadwell-noTSX' usable='yes'/>
+  <cpu type='kvm' name='486' usable='yes'/>
+  <cpu type='tcg' name='host' usable='no'/>
+  <cpu type='tcg' name='qemu64' usable='yes'/>
+  <cpu type='tcg' name='qemu32' usable='yes'/>
+  <cpu type='tcg' name='phenom' usable='no'/>
+  <cpu type='tcg' name='pentium3' usable='yes'/>
+  <cpu type='tcg' name='pentium2' usable='yes'/>
+  <cpu type='tcg' name='pentium' usable='yes'/>
+  <cpu type='tcg' name='n270' usable='yes'/>
+  <cpu type='tcg' name='kvm64' usable='yes'/>
+  <cpu type='tcg' name='kvm32' usable='yes'/>
+  <cpu type='tcg' name='coreduo' usable='yes'/>
+  <cpu type='tcg' name='core2duo' usable='yes'/>
+  <cpu type='tcg' name='athlon' usable='yes'/>
+  <cpu type='tcg' name='Westmere' usable='yes'/>
+  <cpu type='tcg' name='Skylake-Client' usable='no'/>
+  <cpu type='tcg' name='SandyBridge' usable='no'/>
+  <cpu type='tcg' name='Penryn' usable='yes'/>
+  <cpu type='tcg' name='Opteron_G5' usable='no'/>
+  <cpu type='tcg' name='Opteron_G4' usable='no'/>
+  <cpu type='tcg' name='Opteron_G3' usable='no'/>
+  <cpu type='tcg' name='Opteron_G2' usable='yes'/>
+  <cpu type='tcg' name='Opteron_G1' usable='yes'/>
+  <cpu type='tcg' name='Nehalem' usable='yes'/>
+  <cpu type='tcg' name='IvyBridge' usable='no'/>
+  <cpu type='tcg' name='Haswell' usable='no'/>
+  <cpu type='tcg' name='Haswell-noTSX' usable='no'/>
+  <cpu type='tcg' name='Conroe' usable='yes'/>
+  <cpu type='tcg' name='Broadwell' usable='no'/>
+  <cpu type='tcg' name='Broadwell-noTSX' usable='no'/>
+  <cpu type='tcg' name='486' usable='yes'/>
   <machine name='pc-i440fx-2.8' alias='pc' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>

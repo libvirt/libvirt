@@ -433,7 +433,8 @@ unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainVirtType type,
                                  const char **name,
-                                 size_t count);
+                                 size_t count,
+                                 virDomainCapsCPUUsable usable);
 int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainVirtType type,
                                  char ***names,

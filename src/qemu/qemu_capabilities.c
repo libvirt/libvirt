@@ -2348,7 +2348,8 @@ int
 virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                              virDomainVirtType type,
                              const char **name,
-                             size_t count)
+                             size_t count,
+                             virDomainCapsCPUUsable usable)
 {
     size_t i;
     virDomainCapsCPUModelsPtr cpus = NULL;
@@ -2369,8 +2370,7 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
     }
 
     for (i = 0; i < count; i++) {
-        if (virDomainCapsCPUModelsAdd(cpus, name[i], -1,
-                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+        if (virDomainCapsCPUModelsAdd(cpus, name[i], -1, usable) < 0)
             return -1;
     }
 
@@ -2786,9 +2786,14 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
         qemuCaps->kvmCPUModels = models;
 
     for (i = 0; i < ncpus; i++) {
-        if (virDomainCapsCPUModelsAddSteal(models,
-                                           &cpus[i]->name,
-                                           VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+        virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+
+        if (cpus[i]->usable == VIR_TRISTATE_BOOL_YES)
+            usable = VIR_DOMCAPS_CPU_USABLE_YES;
+        else if (cpus[i]->usable == VIR_TRISTATE_BOOL_NO)
+            usable = VIR_DOMCAPS_CPU_USABLE_NO;
+
+        if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable) < 0)
             goto cleanup;
     }
 
@@ -3099,14 +3104,23 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
         qemuCaps->tcgCPUModels = cpus;
 
     for (i = 0; i < n; i++) {
+        int usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+
+        if ((str = virXMLPropString(nodes[i], "usable")) &&
+            (usable = virDomainCapsCPUUsableTypeFromString(str)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown value '%s' in attribute 'usable'"), str);
+            goto cleanup;
+        }
+        VIR_FREE(str);
+
         if (!(str = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing cpu name in QEMU capabilities cache"));
             goto cleanup;
         }
 
-        if (virDomainCapsCPUModelsAddSteal(cpus, &str,
-                                           VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable) < 0)
             goto cleanup;
     }
 
@@ -3385,8 +3399,15 @@ virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
         return;
 
     for (i = 0; i < cpus->nmodels; i++) {
+        virDomainCapsCPUModelPtr cpu = cpus->models + i;
+
         virBufferAsprintf(buf, "<cpu type='%s' ", typeStr);
-        virBufferEscapeString(buf, "name='%s'/>\n", cpus->models[i].name);
+        virBufferEscapeString(buf, "name='%s'", cpu->name);
+        if (cpu->usable) {
+            virBufferAsprintf(buf, " usable='%s'",
+                              virDomainCapsCPUUsableTypeToString(cpu->usable));
+        }
+        virBufferAddLit(buf, "/>\n");
     }
 }
 

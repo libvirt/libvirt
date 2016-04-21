@@ -432,10 +432,12 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
                                "     \"name\": \"qemu64\" "
                                "   }, "
                                "   { "
-                               "     \"name\": \"Opteron_G4\" "
+                               "     \"name\": \"Opteron_G4\", "
+                               "     \"unavailable-features\": [\"vme\"]"
                                "   }, "
                                "   { "
-                               "     \"name\": \"Westmere\" "
+                               "     \"name\": \"Westmere\", "
+                               "     \"unavailable-features\": []"
                                "   } "
                                "  ]"
                                "}") < 0)
@@ -451,7 +453,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname)                                              \
+#define CHECK_FULL(i, wantname, Usable)                                 \
     do {                                                                \
         if (STRNEQ(cpus[i]->name, (wantname))) {                        \
             virReportError(VIR_ERR_INTERNAL_ERROR,                      \
@@ -459,13 +461,28 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
                            cpus[i]->name, (wantname));                  \
             goto cleanup;                                               \
         }                                                               \
+        if (cpus[i]->usable != (Usable)) {                              \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+                           "%s: expecting usable flag %d, got %d",      \
+                           cpus[i]->name, Usable, cpus[i]->usable);     \
+            goto cleanup;                                               \
+        }                                                               \
     } while (0)
 
+#define CHECK(i, wantname)                                              \
+    CHECK_FULL(i, wantname, VIR_TRISTATE_BOOL_ABSENT)
+
+#define CHECK_USABLE(i, wantname, usable)                               \
+    CHECK_FULL(i, wantname,                                             \
+               usable ? VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO)
+
     CHECK(0, "qemu64");
-    CHECK(1, "Opteron_G4");
-    CHECK(2, "Westmere");
+    CHECK_USABLE(1, "Opteron_G4", false);
+    CHECK_USABLE(2, "Westmere", true);
 
 #undef CHECK
+#undef CHECK_USABLE
+#undef CHECK_FULL
 
     ret = 0;
 
