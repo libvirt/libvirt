@@ -1,8 +1,9 @@
-/* -*- c -*-
+/*
  * libvirt-common.h
  * Summary: common macros and enums for the libvirt and libvirt-admin library
  * Description: Provides common macros and enums needed by both libvirt and
  *              libvirt-admin libraries
+ * Author: Erik Skultety <eskultet@redhat.com>
  *
  * Copyright (C) 2015 Red Hat, Inc.
  *
@@ -19,8 +20,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Erik Skultety <eskultet@redhat.com>
  */
 
 #if !defined __VIR_LIBVIRT_H_INCLUDES__ && !defined __VIR_ADMIN_H_INCLUDES__
