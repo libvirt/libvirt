@@ -81,7 +81,6 @@ EXTRA_DIST =		\
 	capabilityschemadata \
 	capabilityschematest \
 	commanddata \
-	confdata \
 	cputestdata \
 	domaincapsschemadata \
 	domaincapsschematest \
@@ -142,6 +141,7 @@ EXTRA_DIST =		\
 	vboxsnapshotxmldata \
 	vircaps2xmldata \
 	vircgroupdata \
+	virconfdata \
 	virfiledata \
 	virmock.h \
 	virnetdaemondata \
@@ -158,7 +158,7 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata
 
-test_helpers = commandhelper ssh test_conf
+test_helpers = commandhelper ssh virconftest
 test_programs = virshtest sockettest \
 	nodeinfotest virbuftest \
 	commandtest seclabeltest \
@@ -370,7 +370,7 @@ test_scripts = \
 libvirtd_test_scripts =		\
 	libvirtd-fail			\
 	libvirtd-pool			\
-	test_conf.sh			\
+	virconftest.sh			\
 	virsh-all			\
 	virsh-cpuset			\
 	virsh-define-dev-segfault	\
@@ -857,9 +857,9 @@ virshtest_SOURCES = \
 	testutils.c testutils.h
 virshtest_LDADD = $(LDADDS)
 
-test_conf_SOURCES = \
-	test_conf.c
-test_conf_LDADD = $(LDADDS)
+virconftest_SOURCES = \
+	virconftest.c
+virconftest_LDADD = $(LDADDS)
 
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c
