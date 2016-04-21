@@ -8623,11 +8623,11 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
     if (vshCommandOptStringReq(ctl, cmd, "enable", &enable) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "disable", &disable) < 0)
+        return false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     if (enable && virshParseEventStr(enable, true, &params,
