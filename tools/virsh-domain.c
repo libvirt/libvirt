@@ -8652,8 +8652,10 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
             }
         }
     } else {
-        if (virDomainSetPerfEvents(dom, params, nparams, flags) != 0)
-            goto error;
+        if (virDomainSetPerfEvents(dom, params, nparams, flags) != 0) {
+            vshError(ctl, "%s", _("Unable to enable/disable perf events"));
+            goto cleanup;
+        }
     }
 
     ret = true;
@@ -8661,10 +8663,6 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     virTypedParamsFree(params, nparams);
     virDomainFree(dom);
     return ret;
-
- error:
-    vshError(ctl, "%s", _("Unable to enable/disable perf events"));
-    goto cleanup;
 }
 
 
