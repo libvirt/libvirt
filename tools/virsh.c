@@ -962,13 +962,15 @@ main(int argc, char **argv)
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);
 
-    ctl->connname = vshStrdup(ctl, virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"));
-
     if (!virshParseArgv(ctl, argc, argv) ||
         !virshInit(ctl)) {
         virshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
+
+    if (!ctl->connname)
+        ctl->connname = vshStrdup(ctl,
+                                  virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"));
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);
