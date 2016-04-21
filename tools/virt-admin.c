@@ -291,8 +291,10 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
-    VIR_FREE(ctl->connname);
-    ctl->connname = vshStrdup(ctl, name);
+    if (name) {
+        VIR_FREE(ctl->connname);
+        ctl->connname = vshStrdup(ctl, name);
+    }
 
     vshAdmReconnect(ctl);
     if (!connected)

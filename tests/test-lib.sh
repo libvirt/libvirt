@@ -232,6 +232,12 @@ if test -n "$VIR_TEST_DEBUG" || test -n "$VIR_TEST_VERBOSE" ; then
   verbose=1
 fi
 
+debug() { :; }
+
+if test "$VIR_TEST_DEBUG" = "2"; then
+  debug() { echo "$@"; }
+fi
+
 # This is a stub function that is run upon trap (upon regular exit and
 # interrupt).  Override it with a per-test function, e.g., to unmount
 # a partition, or to undo any other global state changes.

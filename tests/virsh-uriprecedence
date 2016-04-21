@@ -7,7 +7,8 @@
 test_intro "virsh-uriprecedence"
 
 virsh_bin="$abs_top_builddir/tools/virsh"
-counter=1
+virsh_cmd="$virsh_bin"
+counter=0
 ret=0
 
 cleanup_() { rm -rf "$tmphome"; }
@@ -22,16 +23,44 @@ mkdir -p "$XDG_CONFIG_HOME/libvirt" "$XDG_CONFIG_HOME/virsh"
 mkdir -p "$XDG_CACHE_HOME/libvirt" "$XDG_CACHE_HOME/virsh"
 mkdir -p "$XDG_RUNTIME_HOME/libvirt" "$XDG_RUNTIME_HOME/virsh"
 
-# Main function checking for the proper uri being returned
+is_uri_good()
+{
+    echo "$1" | grep -q -F "$good_uri"
+}
+
+test_uri_internal()
+{
+    test_name=$1
+    test_cmd="$virsh_cmd \"$2\""
+    result=0
+
+    debug "Running '$test_cmd'"
+    out="$($virsh_cmd "$2")"
+
+    if ! is_uri_good "$out"; then
+        debug "Invalid output: '$out'"
+        result=1
+        ret=1
+    fi
+
+    counter="$((counter+1))"
+    test_result "$counter" "$1" "$result"
+}
+
+test_uri_connect()
+{
+    test_uri_internal "$1" "connect; uri"
+}
+
+test_uri_noconnect()
+{
+    test_uri_internal "$1" "uri"
+}
+
 test_uri()
 {
-  result=0
-  if [ "$($virsh_bin uri)" != "$good_uri" ]; then
-      result=1
-      ret=1
-  fi
-  test_result "$counter" "$1" "$result"
-  counter="$((counter+1))"
+    test_uri_connect "$1"
+    test_uri_noconnect "$1"
 }
 
 # Precedence is the following (lowest priority first):
@@ -56,6 +85,7 @@ good_uri="test:///default?good_uri"
 
 printf "uri_default=\"%s\"\n" "$good_uri" >"$XDG_CONFIG_HOME/libvirt/libvirt.conf"
 if uid_is_privileged_; then
+    counter="$((counter+1))"
     test_skip_case "$counter" "User config file" "must not be run as root"
 else
     test_uri "User config file"
@@ -70,10 +100,8 @@ export VIRSH_DEFAULT_CONNECT_URI="$good_uri"
 test_uri "VIRSH_DEFAULT_CONNECT_URI"
 
 export VIRSH_DEFAULT_CONNECT_URI="$bad_uri"
-virsh_bin="$virsh_bin --connect $good_uri"
+virsh_cmd="$virsh_bin --connect $good_uri"
 test_uri "Parameter"
 
-# test_uri() increases $counter even for the last test, so we must
-# decrement it
-test_final "$((counter-1))" "$ret"
+test_final "$counter" "$ret"
 (exit "$ret"); exit "$ret"

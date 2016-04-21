@@ -211,10 +211,11 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
  *
  */
 static void
-virshReconnect(vshControl *ctl)
+virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 {
     bool connected = false;
     virshControlPtr priv = ctl->privData;
+    bool ro = name ? readonly : priv->readonly;
 
     if (priv->conn) {
         int ret;
@@ -229,7 +230,7 @@ virshReconnect(vshControl *ctl)
                                   "disconnect from the hypervisor"));
     }
 
-    priv->conn = virshConnect(ctl, ctl->connname, priv->readonly);
+    priv->conn = virshConnect(ctl, name ? name : ctl->connname, ro);
 
     if (!priv->conn) {
         if (disconnected)
@@ -237,10 +238,15 @@ virshReconnect(vshControl *ctl)
         else
             vshError(ctl, "%s", _("failed to connect to the hypervisor"));
     } else {
+        if (name) {
+            VIR_FREE(ctl->connname);
+            ctl->connname = vshStrdup(ctl, name);
+            priv->readonly = readonly;
+        }
         if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
                                             ctl, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
-        if (connected)
+        if (connected && !force)
             vshError(ctl, "%s", _("Reconnected to the hypervisor"));
     }
     disconnected = 0;
@@ -291,43 +297,11 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 {
     bool ro = vshCommandOptBool(cmd, "readonly");
     const char *name = NULL;
-    virshControlPtr priv = ctl->privData;
-    virConnectPtr conn;
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
-    conn = virshConnect(ctl, name, ro);
-
-    if (!conn) {
-        vshError(ctl, "%s", _("Failed to connect to the hypervisor"));
-        return false;
-    }
-
-    if (priv->conn) {
-        int ret;
-
-        virConnectUnregisterCloseCallback(priv->conn, virshCatchDisconnect);
-        ret = virConnectClose(priv->conn);
-        if (ret < 0)
-            vshError(ctl, "%s", _("Failed to disconnect from the hypervisor"));
-        else if (ret > 0)
-            vshError(ctl, "%s", _("One or more references were leaked after "
-                                  "disconnect from the hypervisor"));
-    }
-    priv->conn = conn;
-
-    VIR_FREE(ctl->connname);
-    ctl->connname = vshStrdup(ctl, name);
-
-    priv->useGetInfo = false;
-    priv->useSnapshotOld = false;
-    priv->blockJobNoBytes = false;
-    priv->readonly = ro;
-
-    if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
-                                        ctl, NULL) < 0)
-        vshError(ctl, "%s", _("Unable to register disconnect callback"));
+    virshReconnect(ctl, name, ro, true);
 
     return true;
 }
@@ -360,7 +334,7 @@ virshConnectionHandler(vshControl *ctl)
     virshControlPtr priv = ctl->privData;
 
     if (!priv->conn || disconnected)
-        virshReconnect(ctl);
+        virshReconnect(ctl, NULL, false, false);
 
     if (virshConnectionUsability(ctl, priv->conn))
         return priv->conn;
@@ -431,7 +405,7 @@ virshInit(vshControl *ctl)
         return false;
 
     if (ctl->connname) {
-        virshReconnect(ctl);
+        virshReconnect(ctl, NULL, false, false);
         /* Connecting to a named connection must succeed, but we delay
          * connecting to the default connection until we need it
          * (since the first command might be 'connect' which allows a
