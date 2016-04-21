@@ -17,9 +17,7 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-: ${srcdir=$(pwd)}
-: ${abs_top_srcdir=$(pwd)/..}
-: ${abs_top_builddir=$(pwd)/..}
+. "$(dirname $0)/test-lib.sh"
 
 # If $abs_top_builddir/tools is not early in $PATH, put it there,
 # so that we can safely invoke "virsh" simply with its name.
@@ -33,8 +31,6 @@ if test "$VERBOSE" = yes; then
   set -x
   virsh --version
 fi
-
-. "$srcdir/test-lib.sh"
 
 printf 'Scheduler      : fair\n\n' > exp-out || framework_failure
 printf 'error: invalid scheduler option: j\n' > exp-err || framework_failure

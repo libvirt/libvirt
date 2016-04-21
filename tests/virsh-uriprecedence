@@ -1,7 +1,6 @@
 #!/bin/sh
 
-: ${srcdir=.}
-. $srcdir/test-lib.sh
+. "$(dirname $0)/test-lib.sh"
 
 # This test checks if virsh obeys the proper precedence of different
 # URI settings

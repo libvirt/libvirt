@@ -1,7 +1,6 @@
 #!/bin/sh
 
-: ${srcdir=$(dirname $0)}
-. $srcdir/test-lib.sh
+. "$(dirname $0)/test-lib.sh"
 . $abs_srcdir/schematestutils.sh
 
 DIRS="storagepoolxml2xmlin storagepoolxml2xmlout storagepoolschemadata"

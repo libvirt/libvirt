@@ -1,8 +1,6 @@
 #!/bin/sh
 
-test -z "$srcdir" && srcdir=$(pwd)
-
-. "$srcdir/test-lib.sh"
+. "$(dirname $0)/test-lib.sh"
 
 test_intro $this_test
 
