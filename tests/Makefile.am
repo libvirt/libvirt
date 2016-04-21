@@ -368,22 +368,22 @@ test_scripts = \
 	secretschematest
 
 libvirtd_test_scripts =		\
-	test_conf.sh			\
-	cpuset				\
-	define-dev-segfault		\
-	int-overflow			\
 	libvirtd-fail			\
 	libvirtd-pool			\
-	read-bufsiz			\
-	read-non-seekable		\
-	start				\
-	virsh-uriprecedence		\
-	vcpupin				\
+	test_conf.sh			\
 	virsh-all			\
+	virsh-cpuset			\
+	virsh-define-dev-segfault	\
+	virsh-int-overflow		\
 	virsh-optparse			\
+	virsh-read-bufsiz		\
+	virsh-read-non-seekable		\
 	virsh-schedinfo			\
+	virsh-start			\
 	virsh-synopsis			\
 	virsh-undefine			\
+	virsh-uriprecedence		\
+	virsh-vcpupin			\
 	$(NULL)
 
 if WITH_LIBVIRTD
