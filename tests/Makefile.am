@@ -367,8 +367,7 @@ test_scripts = \
 	domainsnapshotschematest \
 	secretschematest
 
-if WITH_LIBVIRTD
-test_scripts +=				\
+libvirtd_test_scripts =		\
 	test_conf.sh			\
 	cpuset				\
 	define-dev-segfault		\
@@ -387,27 +386,14 @@ test_scripts +=				\
 	virsh-undefine			\
 	$(NULL)
 
+if WITH_LIBVIRTD
+test_scripts += $(libvirtd_test_scripts)
+
 test_programs += 			\
 	eventtest			\
 	libvirtdconftest
 else ! WITH_LIBVIRTD
-EXTRA_DIST += 				\
-	test_conf.sh			\
-	cpuset				\
-	define-dev-segfault		\
-	int-overflow			\
-	libvirtd-fail			\
-	libvirtd-pool			\
-	read-bufsiz			\
-	read-non-seekable		\
-	start				\
-	vcpupin				\
-	virsh-all			\
-	virsh-optparse			\
-	virsh-schedinfo			\
-	virsh-synopsis			\
-	virsh-undefine			\
-	$(NULL)
+EXTRA_DIST += $(libvirtd_test_scripts)
 endif ! WITH_LIBVIRTD
 
 test_programs += objecteventtest
