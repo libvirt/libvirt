@@ -7813,6 +7813,22 @@ virDomainControllerModelTypeFromString(const virDomainControllerDef *def,
     return -1;
 }
 
+
+static const char *
+virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
+                                     int model)
+{
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+        return virDomainControllerModelSCSITypeToString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+        return virDomainControllerModelUSBTypeToString(model);
+    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+        return virDomainControllerModelPCITypeToString(model);
+
+    return NULL;
+}
+
+
 /* Parse the XML definition for a controller
  * @param node XML nodeset to parse for controller definition
  */
@@ -19402,19 +19418,6 @@ virDomainDiskDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static const char *
-virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
-                                     int model)
-{
-    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
-        return virDomainControllerModelSCSITypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
-        return virDomainControllerModelUSBTypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
-        return virDomainControllerModelPCITypeToString(model);
-
-    return NULL;
-}
 
 static int
 virDomainControllerDefFormat(virBufferPtr buf,
