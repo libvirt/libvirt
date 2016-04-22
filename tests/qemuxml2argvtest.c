@@ -1902,6 +1902,8 @@ mymain(void)
                               VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
                               NONE);
 
+    DO_TEST("name-escape", QEMU_CAPS_NAME_DEBUG_THREADS,
+            QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_CHARDEV);
     DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
