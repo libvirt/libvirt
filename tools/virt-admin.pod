@@ -229,6 +229,49 @@ information about client's connection time (system local time is used).
 
 =back
 
+=head1 CLIENT COMMANDS
+
+Following commands provide management and monitoring of clients connected to
+one of daemon's available servers. Clients are specified by their numeric ID
+which is obtained by listing all clients connected to a specified server
+(see command B<srv-clients-list>).
+
+=over 4
+
+=item B<client-info> I<server> I<client>
+
+Retrieve identity information about I<client> from I<server>. The attributes
+returned may vary depending on the connection transport used.
+Transport-dependent attributes include local client process's pid, uid,
+user name, and group name, as well as socket address of the remote peer, see
+B<Examples> below.
+
+On the other hand, transport-independent attributes include client's SELinux
+context (if enabled on the host) and SASL username (if SASL authentication is
+enabled within daemon).
+
+B<Examples>
+
+ # virt-admin client-info libvirtd 1
+ id             : 1
+ connection_time: 2016-05-03 13:27:04+0200
+ transport      : unix
+ readonly       : yes
+ unix_user_id   : 0
+ unix_user_name : root
+ unix_group_id  : 0
+ unix_group_name: root
+ unix_process_id: 10201
+
+ # virt-admin client-info libvirtd 2
+ id             : 2
+ connection_time: 2016-05-03 13:30:33+0200
+ transport      : tcp
+ readonly       : no
+ sock_addr      : 127.0.0.1:57060
+
+=back
+
 =head1 ENVIRONMENT
 
 The following environment variables can be set to alter the behaviour

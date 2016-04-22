@@ -657,6 +657,91 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/* -------------------
+ * Command client-info
+ * -------------------
+ */
+
+static const vshCmdInfo info_client_info[] = {
+    {.name = "help",
+     .data = N_("retrieve client's identity info from server")
+    },
+    {.name = "desc",
+     .data = N_("Retrieve identity details about <client> from <server>")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_client_info[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("server to which <client> is connected to"),
+    },
+    {.name = "client",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("client which to retrieve identity information for"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    size_t i;
+    unsigned long long id;
+    const char *srvname = NULL;
+    char *timestr = NULL;
+    virAdmServerPtr srv = NULL;
+    virAdmClientPtr clnt = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptULongLong(ctl, cmd, "client", &id) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)) ||
+        !(clnt = virAdmServerLookupClient(srv, id, 0)))
+        goto cleanup;
+
+    /* Retrieve client identity info */
+    if (virAdmClientGetInfo(clnt, &params, &nparams, 0) < 0) {
+        vshError(ctl, _("failed to retrieve client identity information for "
+                        "client '%llu' connected to server '%s'"),
+                        id, virAdmServerGetName(srv));
+        goto cleanup;
+    }
+
+    if (vshAdmGetTimeStr(ctl, virAdmClientGetTimestamp(clnt), &timestr) < 0)
+        goto cleanup;
+
+    /* this info is provided by the client object itself */
+    vshPrint(ctl, "%-15s: %llu\n", "id", virAdmClientGetID(clnt));
+    vshPrint(ctl, "%-15s: %s\n", "connection_time", timestr);
+    vshPrint(ctl, "%-15s: %s\n", "transport",
+             vshAdmClientTransportToString(virAdmClientGetTransport(clnt)));
+
+    for (i = 0; i < nparams; i++) {
+        char *str = vshGetTypedParamValue(ctl, &params[i]);
+        vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+        VIR_FREE(str);
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virAdmServerFree(srv);
+    virAdmClientFree(clnt);
+    VIR_FREE(timestr);
+    return ret;
+}
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -966,6 +1051,12 @@ static const vshCmdDef monitoringCmds[] = {
      .handler = cmdSrvClientsList,
      .opts = opts_srv_clients_list,
      .info = info_srv_clients_list,
+     .flags = 0
+    },
+    {.name = "client-info",
+     .handler = cmdClientInfo,
+     .opts = opts_client_info,
+     .info = info_client_info,
      .flags = 0
     },
     {.name = NULL}
