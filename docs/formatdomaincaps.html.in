@@ -142,6 +142,50 @@
       &lt;loader/&gt; element.</dd>
     </dl>
 
+    <h3><a name="elementsCPU">CPU configuration</a></h3>
+
+    <p>
+      The <code>cpu</code> element exposes options usable for configuring
+      <a href="formatdomain.html#elementsCPU">guest CPUs</a>.
+    </p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;cpu&gt;
+    &lt;mode name='host-passthrough' supported='yes'/&gt;
+    &lt;mode name='host-model' supported='yes'/&gt;
+    &lt;mode name='custom' supported='yes'&gt;
+      &lt;model&gt;Broadwell&lt;/model&gt;
+      &lt;model&gt;Broadwell-noTSX&lt;/model&gt;
+      &lt;model&gt;Haswell&lt;/model&gt;
+      ...
+    &lt;/mode&gt;
+  &lt;/cpu&gt;
+  ...
+&lt;domainCapabilities&gt;
+</pre>
+
+    <p>
+      Each CPU mode understood by libvirt is described with a
+      <code>mode</code> element which tells whether the particular mode
+      is supported and provides (when applicable) more details about it:
+    </p>
+
+    <dl>
+      <dt><code>host-passthrough</code></dt>
+      <dd>No mode specific details are provided.</dd>
+
+      <dt><code>host-model</code></dt>
+      <dd>No mode specific details are provided yet.</dd>
+
+      <dt><code>custom</code></dt>
+      <dd>
+        The <code>mode</code> element contains a list of supported CPU
+        models, each described by a dedicated <code>model</code> element.
+      </dd>
+    </dl>
+
     <h3><a name="elementsDevices">Devices</a></h3>
 
     <p>

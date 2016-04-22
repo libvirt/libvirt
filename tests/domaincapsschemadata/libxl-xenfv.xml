@@ -17,6 +17,11 @@
       </enum>
     </loader>
   </os>
+  <cpu>
+    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
   <devices>
     <disk supported='yes'>
       <enum name='diskDevice'>

@@ -30,8 +30,10 @@
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
 static virClassPtr virDomainCapsClass;
+static virClassPtr virDomainCapsCPUModelsClass;
 
 static void virDomainCapsDispose(void *obj);
+static void virDomainCapsCPUModelsDispose(void *obj);
 
 static int virDomainCapsOnceInit(void)
 {
@@ -40,6 +42,14 @@ static int virDomainCapsOnceInit(void)
                                            sizeof(virDomainCaps),
                                            virDomainCapsDispose)))
         return -1;
+
+    virDomainCapsCPUModelsClass = virClassNew(virClassForObject(),
+                                              "virDomainCapsCPUModelsClass",
+                                              sizeof(virDomainCapsCPUModels),
+                                              virDomainCapsCPUModelsDispose);
+    if (!virDomainCapsCPUModelsClass)
+        return -1;
+
     return 0;
 }
 
@@ -68,8 +78,22 @@ virDomainCapsDispose(void *obj)
 
     VIR_FREE(caps->path);
     VIR_FREE(caps->machine);
+    virObjectUnref(caps->cpu.custom);
 
     virDomainCapsStringValuesFree(&caps->os.loader.values);
+}
+
+
+static void
+virDomainCapsCPUModelsDispose(void *obj)
+{
+    virDomainCapsCPUModelsPtr cpuModels = obj;
+    size_t i;
+
+    for (i = 0; i < cpuModels->nmodels; i++)
+        VIR_FREE(cpuModels->models[i].name);
+
+    VIR_FREE(cpuModels->models);
 }
 
 
@@ -97,6 +121,85 @@ virDomainCapsNew(const char *path,
  error:
     virObjectUnref(caps);
     return NULL;
+}
+
+
+virDomainCapsCPUModelsPtr
+virDomainCapsCPUModelsNew(size_t nmodels)
+{
+    virDomainCapsCPUModelsPtr cpuModels = NULL;
+
+    if (virDomainCapsInitialize() < 0)
+        return NULL;
+
+    if (!(cpuModels = virObjectNew(virDomainCapsCPUModelsClass)))
+        return NULL;
+
+    if (VIR_ALLOC_N(cpuModels->models, nmodels) < 0)
+        goto error;
+    cpuModels->nmodels_max = nmodels;
+
+    return cpuModels;
+
+ error:
+    virObjectUnref(cpuModels);
+    return NULL;
+}
+
+
+virDomainCapsCPUModelsPtr
+virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
+{
+    virDomainCapsCPUModelsPtr cpuModels;
+    size_t i;
+
+    if (!(cpuModels = virDomainCapsCPUModelsNew(old->nmodels)))
+        return NULL;
+
+    for (i = 0; i < old->nmodels; i++) {
+        if (virDomainCapsCPUModelsAdd(cpuModels, old->models[i].name, -1) < 0)
+            goto error;
+    }
+
+    return cpuModels;
+
+ error:
+    virObjectUnref(cpuModels);
+    return NULL;
+}
+
+
+int
+virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
+                               char **name)
+{
+    if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
+                     cpuModels->nmodels, 1) < 0)
+        return -1;
+
+    VIR_STEAL_PTR(cpuModels->models[cpuModels->nmodels++].name, *name);
+    return 0;
+}
+
+
+int
+virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
+                          const char *name,
+                          ssize_t nameLen)
+{
+    char *copy = NULL;
+
+    if (VIR_STRNDUP(copy, name, nameLen) < 0)
+        goto error;
+
+    if (virDomainCapsCPUModelsAddSteal(cpuModels, &copy) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    VIR_FREE(copy);
+    return -1;
 }
 
 
@@ -234,6 +337,51 @@ virDomainCapsOSFormat(virBufferPtr buf,
 }
 
 static void
+virDomainCapsCPUCustomFormat(virBufferPtr buf,
+                             virDomainCapsCPUModelsPtr custom)
+{
+    size_t i;
+
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < custom->nmodels; i++) {
+        virBufferAsprintf(buf, "<model>%s</model>\n",
+                          custom->models[i].name);
+    }
+
+    virBufferAdjustIndent(buf, -2);
+}
+
+static void
+virDomainCapsCPUFormat(virBufferPtr buf,
+                       virDomainCapsCPUPtr cpu)
+{
+    virBufferAddLit(buf, "<cpu>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAsprintf(buf, "<mode name='%s' supported='%s'/>\n",
+                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
+                      cpu->hostPassthrough ? "yes" : "no");
+
+    virBufferAsprintf(buf, "<mode name='%s' supported='%s'/>\n",
+                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL),
+                      cpu->hostModel ? "yes" : "no");
+
+    virBufferAsprintf(buf, "<mode name='%s' ",
+                      virCPUModeTypeToString(VIR_CPU_MODE_CUSTOM));
+    if (cpu->custom && cpu->custom->nmodels) {
+        virBufferAddLit(buf, "supported='yes'>\n");
+        virDomainCapsCPUCustomFormat(buf, cpu->custom);
+        virBufferAddLit(buf, "</mode>\n");
+    } else {
+        virBufferAddLit(buf, "supported='no'/>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</cpu>\n");
+}
+
+static void
 virDomainCapsDeviceDiskFormat(virBufferPtr buf,
                               virDomainCapsDeviceDiskPtr const disk)
 {
@@ -333,6 +481,7 @@ virDomainCapsFormatInternal(virBufferPtr buf,
         virBufferAsprintf(buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
     virDomainCapsOSFormat(buf, &caps->os);
+    virDomainCapsCPUFormat(buf, &caps->cpu);
 
     virBufferAddLit(buf, "<devices>\n");
     virBufferAdjustIndent(buf, 2);

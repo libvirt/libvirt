@@ -60,6 +60,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
 {
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsLoaderPtr loader = &os->loader;
+    virDomainCapsCPUPtr cpu = &domCaps->cpu;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
     virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
@@ -75,6 +76,14 @@ fillAllCaps(virDomainCapsPtr domCaps)
                          "/foo/bar",
                          "/tmp/my_path",
                          NULL) < 0)
+        return -1;
+
+    cpu->hostPassthrough = true;
+    cpu->hostModel = true;
+    if (!(cpu->custom = virDomainCapsCPUModelsNew(3)) ||
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model1", -1) < 0 ||
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model2", -1) < 0 ||
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model3", -1) < 0)
         return -1;
 
     disk->supported = true;

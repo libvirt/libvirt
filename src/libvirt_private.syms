@@ -153,6 +153,10 @@ virDomainAuditVcpu;
 
 
 # conf/domain_capabilities.h
+virDomainCapsCPUModelsAdd;
+virDomainCapsCPUModelsAddSteal;
+virDomainCapsCPUModelsCopy;
+virDomainCapsCPUModelsNew;
 virDomainCapsEnumClear;
 virDomainCapsEnumSet;
 virDomainCapsFormat;

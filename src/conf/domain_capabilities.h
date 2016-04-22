@@ -102,6 +102,30 @@ struct _virDomainCapsFeatureGIC {
     virDomainCapsEnum version; /* Info about virGICVersion */
 };
 
+typedef struct _virDomainCapsCPUModel virDomainCapsCPUModel;
+typedef virDomainCapsCPUModel *virDomainCapsCPUModelPtr;
+struct _virDomainCapsCPUModel {
+    char *name;
+};
+
+typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
+typedef virDomainCapsCPUModels *virDomainCapsCPUModelsPtr;
+struct _virDomainCapsCPUModels {
+    virObject parent;
+
+    size_t nmodels_max;
+    size_t nmodels;
+    virDomainCapsCPUModelPtr models;
+};
+
+typedef struct _virDomainCapsCPU virDomainCapsCPU;
+typedef virDomainCapsCPU *virDomainCapsCPUPtr;
+struct _virDomainCapsCPU {
+    bool hostPassthrough;
+    bool hostModel;
+    virDomainCapsCPUModelsPtr custom;
+};
+
 struct _virDomainCaps {
     virObjectLockable parent;
 
@@ -114,6 +138,7 @@ struct _virDomainCaps {
     int maxvcpus;
 
     virDomainCapsOS os;
+    virDomainCapsCPU cpu;
     virDomainCapsDeviceDisk disk;
     virDomainCapsDeviceGraphics graphics;
     virDomainCapsDeviceVideo video;
@@ -128,6 +153,14 @@ virDomainCapsPtr virDomainCapsNew(const char *path,
                                   const char *machine,
                                   virArch arch,
                                   virDomainVirtType virttype);
+
+virDomainCapsCPUModelsPtr virDomainCapsCPUModelsNew(size_t nmodels);
+virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old);
+int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
+                                   char **name);
+int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
+                              const char *name,
+                              ssize_t nameLen);
 
 # define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
     do {                                                    \

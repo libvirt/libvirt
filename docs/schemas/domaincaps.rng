@@ -29,6 +29,9 @@
           <ref name='os'/>
         </optional>
         <optional>
+          <ref name='cpu'/>
+        </optional>
+        <optional>
           <ref name='devices'/>
         </optional>
         <optional>
@@ -65,6 +68,46 @@
           <ref name='loader'/>
         </optional>
       </interleave>
+    </element>
+  </define>
+
+  <define name='cpu'>
+    <element name='cpu'>
+      <ref name='cpuHost'/>
+      <ref name='cpuHostModel'/>
+      <ref name='cpuCustom'/>
+    </element>
+  </define>
+
+  <define name='cpuHost'>
+    <element name='mode'>
+      <attribute name='name'>
+        <value>host-passthrough</value>
+      </attribute>
+      <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='cpuHostModel'>
+    <element name='mode'>
+      <attribute name='name'>
+        <value>host-model</value>
+      </attribute>
+      <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='cpuCustom'>
+    <element name='mode'>
+      <attribute name='name'>
+        <value>custom</value>
+      </attribute>
+      <ref name='supported'/>
+      <zeroOrMore>
+        <element name='model'>
+          <text/>
+        </element>
+      </zeroOrMore>
     </element>
   </define>
 

@@ -4,6 +4,11 @@
   <machine>my-machine-type</machine>
   <arch>x86_64</arch>
   <os supported='no'/>
+  <cpu>
+    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
   <devices>
     <disk supported='no'/>
     <graphics supported='no'/>
