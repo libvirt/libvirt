@@ -925,3 +925,53 @@ virAdmServerLookupClient(virAdmServerPtr srv,
     virDispatchError(NULL);
     return NULL;
 }
+
+/**
+ * virAdmClientGetInfo:
+ * @client: a client object reference
+ * @params: pointer to a list of typed parameters which will be allocated
+ *          to store all returned parameters
+ * @nparams: pointer which will hold the number of params returned in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Extract identity information about a client. Attributes returned in @params
+ * are mostly transport-dependent, i.e. some attributes including client
+ * process's pid, gid, uid, or remote side's socket address are only available
+ * for a specific connection type - local vs remote.
+ * Other identity attributes like authentication method used
+ * (if authentication is enabled on the remote host), SELinux context, or
+ * an indicator whether client is connected via a read-only connection are
+ * independent of the connection transport.
+ *
+ * Note that the read-only connection indicator returns false for TCP/TLS
+ * clients because libvirt treats such connections as read-write by default,
+ * even though a TCP client is able to restrict access to certain APIs for
+ * itself.
+ *
+ * Returns 0 if the information has been successfully retrieved or -1 in case
+ * of an error.
+ */
+int
+virAdmClientGetInfo(virAdmClientPtr client,
+                    virTypedParameterPtr *params,
+                    int *nparams,
+                    unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("client=%p, params=%p, nparams=%p, flags=%x",
+              client, params, nparams, flags);
+
+    virResetLastError();
+    virCheckAdmClientReturn(client, -1);
+    virCheckNonNullArgGoto(params, error);
+    virCheckFlagsGoto(0, error);
+
+    if ((ret = remoteAdminClientGetInfo(client, params, nparams, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

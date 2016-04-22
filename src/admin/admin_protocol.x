@@ -42,6 +42,9 @@ const ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX = 32;
 /* Upper limit on list of clients */
 const ADMIN_CLIENT_LIST_MAX = 16384;
 
+/* Upper limit on number of client info parameters */
+const ADMIN_CLIENT_INFO_PARAMETERS_MAX = 64;
+
 /* A long string, which may NOT be NULL. */
 typedef string admin_nonnull_string<ADMIN_STRING_MAX>;
 
@@ -148,6 +151,15 @@ struct admin_server_lookup_client_ret {
     admin_nonnull_client clnt;
 };
 
+struct admin_client_get_info_args {
+    admin_nonnull_client clnt;
+    unsigned int flags;
+};
+
+struct admin_client_get_info_ret { /* insert@1 */
+    admin_typed_param params<ADMIN_CLIENT_INFO_PARAMETERS_MAX>;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -213,5 +225,10 @@ enum admin_procedure {
     /**
      * @generate: both
      */
-    ADMIN_PROC_SERVER_LOOKUP_CLIENT = 9
+    ADMIN_PROC_SERVER_LOOKUP_CLIENT = 9,
+
+    /**
+     * @generate: none
+     */
+    ADMIN_PROC_CLIENT_GET_INFO = 10
 };

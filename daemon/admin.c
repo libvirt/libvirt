@@ -236,4 +236,63 @@ adminDispatchServerSetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUS
     virObjectUnref(srv);
     return rv;
 }
+
+static int
+adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                           virNetServerClientPtr client,
+                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                           virNetMessageErrorPtr rerr,
+                           struct admin_client_get_info_args *args,
+                           struct admin_client_get_info_ret *ret)
+{
+    int rv = -1;
+    virNetServerPtr srv = NULL;
+    virNetServerClientPtr clnt = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    struct daemonAdmClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!(srv = virNetDaemonGetServer(priv->dmn, args->clnt.srv.name))) {
+        virReportError(VIR_ERR_NO_SERVER,
+                       _("no server with matching name '%s' found"),
+                       args->clnt.srv.name);
+        goto cleanup;
+    }
+
+    if (!(clnt = virNetServerGetClient(srv, args->clnt.id))) {
+        virReportError(VIR_ERR_NO_CLIENT,
+                      _("no client with matching id '%lu' found"),
+                      args->clnt.id);
+        goto cleanup;
+    }
+
+    if (adminClientGetInfo(clnt, &params, &nparams, args->flags) < 0)
+        goto cleanup;
+
+    if (nparams > ADMIN_CLIENT_INFO_PARAMETERS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Number of client info parameters %d exceeds max "
+                         "allowed limit: %d"), nparams,
+                       ADMIN_CLIENT_INFO_PARAMETERS_MAX);
+        goto cleanup;
+    }
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &ret->params.params_val,
+                                &ret->params.params_len,
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(clnt);
+    virObjectUnref(srv);
+    return rv;
+}
 #include "admin_dispatch.h"

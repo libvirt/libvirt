@@ -27,6 +27,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "viridentity.h"
 #include "virlog.h"
 #include "virnetdaemon.h"
 #include "virnetserver.h"
@@ -210,4 +211,95 @@ adminServerLookupClient(virNetServerPtr srv,
     virCheckFlags(0, NULL);
 
     return virNetServerGetClient(srv, id);
+}
+
+int
+adminClientGetInfo(virNetServerClientPtr client,
+                   virTypedParameterPtr *params,
+                   int *nparams,
+                   unsigned int flags)
+{
+    int ret = -1;
+    int maxparams = 0;
+    bool readonly;
+    const char *sock_addr = NULL;
+    const char *attr = NULL;
+    virTypedParameterPtr tmpparams = NULL;
+    virIdentityPtr identity = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (virNetServerClientGetInfo(client, &readonly,
+                                  &sock_addr, &identity) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddBoolean(&tmpparams, nparams, &maxparams,
+                                 VIR_CLIENT_INFO_READONLY,
+                                 readonly) < 0)
+        goto cleanup;
+
+    if (!virNetServerClientIsLocal(client)) {
+        if (virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                    VIR_CLIENT_INFO_SOCKET_ADDR,
+                                    sock_addr) < 0)
+            goto cleanup;
+
+        if (virIdentityGetSASLUserName(identity, &attr) < 0 ||
+            (attr &&
+             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                     VIR_CLIENT_INFO_SASL_USER_NAME,
+                                     attr) < 0))
+            goto cleanup;
+
+        if (virIdentityGetX509DName(identity, &attr) < 0 ||
+            (attr &&
+             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                     VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME,
+                                     attr) < 0))
+            goto cleanup;
+    } else {
+        pid_t pid;
+        uid_t uid;
+        gid_t gid;
+        if (virIdentityGetUNIXUserID(identity, &uid) < 0 ||
+            virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
+                                 VIR_CLIENT_INFO_UNIX_USER_ID, uid) < 0)
+            goto cleanup;
+
+        if (virIdentityGetUNIXUserName(identity, &attr) < 0 ||
+            virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                    VIR_CLIENT_INFO_UNIX_USER_NAME,
+                                    attr) < 0)
+            goto cleanup;
+
+        if (virIdentityGetUNIXGroupID(identity, &gid) < 0 ||
+            virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
+                                 VIR_CLIENT_INFO_UNIX_GROUP_ID, gid) < 0)
+            goto cleanup;
+
+        if (virIdentityGetUNIXGroupName(identity, &attr) < 0 ||
+            virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                    VIR_CLIENT_INFO_UNIX_GROUP_NAME,
+                                    attr) < 0)
+            goto cleanup;
+
+        if (virIdentityGetUNIXProcessID(identity, &pid) < 0 ||
+            virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
+                                 VIR_CLIENT_INFO_UNIX_PROCESS_ID, pid) < 0)
+            goto cleanup;
+    }
+
+    if (virIdentityGetSELinuxContext(identity, &attr) < 0 ||
+        (attr &&
+         virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                VIR_CLIENT_INFO_SELINUX_CONTEXT, attr) < 0))
+        goto cleanup;
+
+    *params = tmpparams;
+    tmpparams = NULL;
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(identity);
+    return ret;
 }

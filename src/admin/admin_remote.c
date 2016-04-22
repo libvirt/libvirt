@@ -67,6 +67,16 @@ make_nonnull_server(admin_nonnull_server *srv_dst, virAdmServerPtr srv_src)
     srv_dst->name = srv_src->name;
 }
 
+static void
+make_nonnull_client(admin_nonnull_client *client_dst,
+                    virAdmClientPtr client_src)
+{
+    client_dst->id = client_src->id;
+    client_dst->transport = client_src->transport;
+    client_dst->timestamp = client_src->timestamp;
+    make_nonnull_server(&client_dst->srv, client_src->srv);
+}
+
 static int
 callFull(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
          remoteAdminPrivPtr priv,
@@ -305,6 +315,43 @@ remoteAdminServerSetThreadPoolParameters(virAdmServerPtr srv,
  cleanup:
     virTypedParamsRemoteFree((virTypedParameterRemotePtr) args.params.params_val,
                              args.params.params_len);
+    virObjectUnlock(priv);
+    return rv;
+}
+
+static int
+remoteAdminClientGetInfo(virAdmClientPtr client,
+                         virTypedParameterPtr *params,
+                         int *nparams,
+                         unsigned int flags)
+{
+    int rv = -1;
+    remoteAdminPrivPtr priv = client->srv->conn->privateData;
+    admin_client_get_info_args args;
+    admin_client_get_info_ret ret;
+
+    args.flags = flags;
+    make_nonnull_client(&args.clnt, client);
+
+    memset(&ret, 0, sizeof(ret));
+    virObjectLock(priv);
+
+    if (call(client->srv->conn, 0, ADMIN_PROC_CLIENT_GET_INFO,
+             (xdrproc_t)xdr_admin_client_get_info_args, (char *) &args,
+             (xdrproc_t)xdr_admin_client_get_info_ret, (char *) &ret) == -1)
+        goto cleanup;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  ADMIN_CLIENT_INFO_PARAMETERS_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+    xdr_free((xdrproc_t)xdr_admin_client_get_info_ret, (char *) &ret);
+
+ cleanup:
     virObjectUnlock(priv);
     return rv;
 }

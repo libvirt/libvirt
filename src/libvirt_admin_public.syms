@@ -33,4 +33,5 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmConnectLookupServer;
         virAdmServerSetThreadPoolParameters;
         virAdmServerListClients;
+        virAdmClientGetInfo;
 };

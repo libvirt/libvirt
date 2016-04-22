@@ -344,6 +344,11 @@ virAdmServerLookupClient(virAdmServerPtr srv,
 
 # define VIR_CLIENT_INFO_SELINUX_CONTEXT "selinux_context"
 
+int virAdmClientGetInfo(virAdmClientPtr client,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif
