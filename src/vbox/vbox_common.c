@@ -7856,7 +7856,11 @@ virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion)
     /* Install gVBoxAPI according to the vbox API version. */
     int result = 0;
     installUniformedAPI(gVBoxAPI, result);
-    if (result < 0) return NULL;
+    if (result < 0) {
+        VIR_WARN("Libvirt doesn't support VirtualBox API version %u",
+                 uVersion);
+        return NULL;
+    }
     updateDriver();
     return &vboxCommonDriver;
 }
