@@ -2584,13 +2584,18 @@ def rebuild(name):
         self.warning("rebuild() failed, unknown module %s") % name
         return None
     builder = None
-    srcdir = os.environ["srcdir"]
+    srcdir = os.path.abspath((os.environ["srcdir"]))
+    builddir = os.path.abspath((os.environ["builddir"]))
+    if srcdir == builddir:
+        builddir = None
     if glob.glob(srcdir + "/../src/libvirt.c") != [] :
         if not quiet:
             print "Rebuilding API description for %s" % name
         dirs = [srcdir + "/../src",
                 srcdir + "/../src/util",
                 srcdir + "/../include/libvirt"]
+        if builddir:
+            dirs.append(builddir + "/../include/libvirt")
         if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
             dirs.append("../include/libvirt")
         builder = docBuilder(name, srcdir, dirs, [])
