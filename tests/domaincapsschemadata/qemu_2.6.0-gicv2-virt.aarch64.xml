@@ -19,9 +19,40 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='no'/>
-    <mode name='host-model' supported='no'/>
-    <mode name='custom' supported='no'/>
+    <mode name='host-passthrough' supported='yes'/>
+    <mode name='host-model' supported='yes'/>
+    <mode name='custom' supported='yes'>
+      <model>pxa262</model>
+      <model>pxa270-a0</model>
+      <model>arm1136</model>
+      <model>cortex-a15</model>
+      <model>pxa260</model>
+      <model>arm1136-r2</model>
+      <model>pxa261</model>
+      <model>pxa255</model>
+      <model>arm926</model>
+      <model>arm11mpcore</model>
+      <model>pxa250</model>
+      <model>ti925t</model>
+      <model>cortex-a57</model>
+      <model>sa1110</model>
+      <model>arm1176</model>
+      <model>cortex-a53</model>
+      <model>sa1100</model>
+      <model>pxa270-c5</model>
+      <model>cortex-a9</model>
+      <model>cortex-a8</model>
+      <model>pxa270-c0</model>
+      <model>arm1026</model>
+      <model>pxa270-b1</model>
+      <model>cortex-m3</model>
+      <model>cortex-m4</model>
+      <model>pxa270-b0</model>
+      <model>arm946</model>
+      <model>cortex-r5</model>
+      <model>pxa270-a1</model>
+      <model>pxa270</model>
+    </mode>
   </cpu>
   <devices>
     <disk supported='yes'>

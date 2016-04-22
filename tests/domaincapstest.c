@@ -109,6 +109,54 @@ fillAllCaps(virDomainCapsPtr domCaps)
 #if WITH_QEMU
 # include "testutilsqemu.h"
 
+static virCPUDef aarch64Cpu = {
+    0, 0, 0, 0, NULL, NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+};
+
+static virCPUDef ppc64leCpu = {
+    VIR_CPU_TYPE_HOST, 0, 0,
+    VIR_ARCH_PPC64LE, (char *) "POWER8",
+    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+};
+
+static virCPUDef x86Cpu = {
+    VIR_CPU_TYPE_HOST, 0, 0,
+    VIR_ARCH_X86_64, (char *) "Broadwell",
+    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+};
+
+static int
+fakeHostCPU(virCapsPtr caps,
+            virArch arch)
+{
+    virCPUDefPtr cpu;
+
+    switch (arch) {
+    case VIR_ARCH_AARCH64:
+        cpu = &aarch64Cpu;
+        break;
+
+    case VIR_ARCH_PPC64LE:
+        cpu = &ppc64leCpu;
+        break;
+
+    case VIR_ARCH_X86_64:
+        cpu = &x86Cpu;
+        break;
+
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "cannot fake host CPU for arch %s",
+                       virArchToString(arch));
+        return -1;
+    }
+
+    if (!(caps->host.cpu = virCPUDefCopy(cpu)))
+        return -1;
+
+    return 0;
+}
+
 static int
 fillQemuCaps(virDomainCapsPtr domCaps,
              const char *name,
@@ -118,6 +166,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 {
     int ret = -1;
     char *path = NULL;
+    virCapsPtr caps = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
@@ -136,7 +185,11 @@ fillQemuCaps(virDomainCapsPtr domCaps,
                    virQEMUCapsGetDefaultMachine(qemuCaps)) < 0)
         goto cleanup;
 
-    if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
+    if (!(caps = virCapabilitiesNew(domCaps->arch, false, false)) ||
+        fakeHostCPU(caps, domCaps->arch) < 0)
+        goto cleanup;
+
+    if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
                                   cfg->firmwares,
                                   cfg->nfirmwares) < 0)
         goto cleanup;
@@ -164,6 +217,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     ret = 0;
  cleanup:
+    virObjectUnref(caps);
     virObjectUnref(qemuCaps);
     VIR_FREE(path);
     return ret;

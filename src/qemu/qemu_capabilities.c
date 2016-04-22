@@ -4284,6 +4284,26 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
 
 
 static int
+virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
+                             virQEMUCapsPtr qemuCaps,
+                             virDomainCapsPtr domCaps)
+{
+
+    if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
+        virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
+        domCaps->cpu.hostPassthrough = true;
+
+    if (qemuCaps->cpuDefinitions && caps->host.cpu)
+        domCaps->cpu.hostModel = virQEMUCapsGuestIsNative(caps->host.arch,
+                                                          qemuCaps->arch);
+
+    domCaps->cpu.custom = virObjectRef(qemuCaps->cpuDefinitions);
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     const char *machine,
                                     virDomainCapsDeviceDiskPtr disk)
@@ -4490,7 +4510,8 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
 
 
 int
-virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
+virQEMUCapsFillDomainCaps(virCapsPtr caps,
+                          virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
                           virFirmwarePtr *firmwares,
                           size_t nfirmwares)
@@ -4513,6 +4534,7 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
     }
 
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
+        virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
                                             domCaps->machine, disk) < 0 ||
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||

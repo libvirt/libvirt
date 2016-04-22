@@ -501,7 +501,8 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    virQEMUCapsPtr kvmbinCaps,
                                    virArch guestarch);
 
-int virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
+int virQEMUCapsFillDomainCaps(virCapsPtr caps,
+                              virDomainCapsPtr domCaps,
                               virQEMUCapsPtr qemuCaps,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
