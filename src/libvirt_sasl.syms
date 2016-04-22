@@ -27,6 +27,7 @@ virNetSASLSessionServerStep;
 
 # rpc/virnetserverclient.h
 virNetServerClientGetSASLSession;
+virNetServerClientHasSASLSession;
 virNetServerClientSetSASLSession;
 
 

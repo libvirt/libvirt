@@ -91,6 +91,7 @@ int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
 # endif
 
 # ifdef WITH_SASL
+bool virNetServerClientHasSASLSession(virNetServerClientPtr client);
 void virNetServerClientSetSASLSession(virNetServerClientPtr client,
                                       virNetSASLSessionPtr sasl);
 virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr client);

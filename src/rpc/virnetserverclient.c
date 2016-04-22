@@ -863,6 +863,15 @@ virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr clie
     virObjectUnlock(client);
     return sasl;
 }
+
+bool virNetServerClientHasSASLSession(virNetServerClientPtr client)
+{
+    bool has = false;
+    virObjectLock(client);
+    has = !!client->sasl;
+    virObjectUnlock(client);
+    return has;
+}
 #endif
 
 
