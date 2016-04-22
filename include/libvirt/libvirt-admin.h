@@ -224,6 +224,126 @@ virAdmServerLookupClient(virAdmServerPtr srv,
                          unsigned long long id,
                          unsigned int flags);
 
+/* Client identity info */
+
+/**
+ * VIR_CLIENT_INFO_READONLY:
+ * Macro represents client's connection permission, whether the client is
+ * connected in read-only mode or just the opposite - read-write,
+ * as VIR_TYPED_PARAM_BOOLEAN.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_READONLY "readonly"
+
+/**
+ * VIR_CLIENT_INFO_SOCKET_ADDR:
+ * Macro represents clients network socket address in a standard URI format:
+ * (IPv4|[IPv6]):port, as VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_SOCKET_ADDR "sock_addr"
+
+/**
+ * VIR_CLIENT_INFO_SASL_USER_NAME:
+ * Macro represents client's SASL user name, if SASL authentication is enabled
+ * on the remote host, as VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_SASL_USER_NAME "sasl_user_name"
+
+/**
+ * VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME:
+ * Macro represents the 'distinguished name' field in X509 certificate the
+ * client used to establish a TLS session with remote host, as
+ * VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME "tls_x509_dname"
+
+/**
+ * VIR_CLIENT_INFO_UNIX_USER_ID:
+ * Macro represents UNIX UID the client process is running with. Only relevant
+ * for clients connected locally, i.e. via a UNIX socket,
+ * as VIR_TYPED_PARAM_INT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_UNIX_USER_ID "unix_user_id"
+
+/**
+ * VIR_CLIENT_INFO_UNIX_USER_NAME:
+ * Macro represents the user name that is bound to the client process's UID it
+ * is running with. Only relevant for clients connected locally, i.e. via a
+ * UNIX socket, as VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_UNIX_USER_NAME "unix_user_name"
+
+/**
+ * VIR_CLIENT_INFO_UNIX_GROUP_ID:
+ * Macro represents UNIX GID the client process is running with. Only relevant
+ * for clients connected locally, i.e. via a UNIX socket,
+ * as VIR_TYPED_PARAM_INT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_UNIX_GROUP_ID "unix_group_id"
+
+/**
+ * VIR_CLIENT_INFO_UNIX_GROUP_NAME:
+ * Macro represents the group name that is bound to the client process's GID it
+ * is running with. Only relevant for clients connected locally, i.e. via a
+ * UNIX socket, as VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_UNIX_GROUP_NAME "unix_group_name"
+
+/**
+ * VIR_CLIENT_INFO_UNIX_PROCESS_ID:
+ * Macro represents the client process's pid it is running with. Only relevant
+ * for clients connected locally, i.e. via a UNIX socket,
+ * as VIR_TYPED_PARAM_INT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_UNIX_PROCESS_ID "unix_process_id"
+
+/**
+ * VIR_CLIENT_INFO_SELINUX_CONTEXT:
+ * Macro represents the client's (peer's) SELinux context and this can either
+ * be at socket layer or at transport layer, depending on the connection type,
+ * as VIR_TYPED_PARAM_STRING.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_CLIENT_INFO_SELINUX_CONTEXT "selinux_context"
+
 # ifdef __cplusplus
 }
 # endif
