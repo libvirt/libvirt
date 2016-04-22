@@ -6869,6 +6869,10 @@ qemuBuildNameCommandLine(virCommandPtr cmd,
 
     virCommandAddArg(cmd, "-name");
 
+    /* The 'guest' option let's us handle a name with '=' embedded in it */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_GUEST))
+        virBufferAddLit(&buf, "guest=");
+
     qemuBufferEscapeComma(&buf, def->name);
 
     if (cfg->setProcessName &&

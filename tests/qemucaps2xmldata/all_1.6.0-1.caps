@@ -125,4 +125,5 @@
     <flag name='pvpanic'/>
     <flag name='reboot-timeout'/>
     <flag name='enable-fips'/>
+    <flag name='name-guest'/>
   </qemuCaps>

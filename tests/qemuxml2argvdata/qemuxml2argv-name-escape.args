@@ -5,16 +5,16 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
--name foo,,bar,debug-threads=on \
+-name guest=foo=1,,bar=2,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo,,\
-bar/master-key.aes \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo=1,,\
+bar=2/master-key.aes \
 -M pc \
 -m 214 \
 -smp 1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-foo,,bar/monitor.sock,\
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-foo=1,,bar=2/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \

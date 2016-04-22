@@ -168,6 +168,7 @@
   <flag name='debug-threads'/>
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
+  <flag name='name-guest'/>
   <version>2001001</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
