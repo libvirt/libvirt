@@ -4912,11 +4912,10 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(&buf,
-                          "socket,id=char%s,path=%s%s",
-                          alias,
-                          dev->data.nix.path,
-                          dev->data.nix.listen ? ",server,nowait" : "");
+        virBufferAsprintf(&buf, "socket,id=char%s,path=", alias);
+        qemuBufferEscapeComma(&buf, dev->data.nix.path);
+        if (dev->data.nix.listen)
+            virBufferAddLit(&buf, ",server,nowait");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
