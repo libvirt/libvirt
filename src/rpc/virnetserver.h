@@ -105,6 +105,9 @@ int virNetServerSetThreadPoolParameters(virNetServerPtr srv,
 
 unsigned long long virNetServerNextClientID(virNetServerPtr srv);
 
+virNetServerClientPtr virNetServerGetClient(virNetServerPtr srv,
+                                            unsigned long long id);
+
 int virNetServerGetClients(virNetServerPtr srv,
                            virNetServerClientPtr **clients);
 

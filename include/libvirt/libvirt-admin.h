@@ -219,6 +219,11 @@ int virAdmServerListClients(virAdmServerPtr srv,
                             virAdmClientPtr **clients,
                             unsigned int flags);
 
+virAdmClientPtr
+virAdmServerLookupClient(virAdmServerPtr srv,
+                         unsigned long long id,
+                         unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

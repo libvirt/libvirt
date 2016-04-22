@@ -1388,6 +1388,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Server not found: %s");
             break;
+        case VIR_ERR_NO_CLIENT:
+            if (info == NULL)
+                errmsg = _("Client not found");
+            else
+                errmsg = _("Client not found: %s");
+            break;
     }
     return errmsg;
 }

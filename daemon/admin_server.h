@@ -50,4 +50,8 @@ int adminServerListClients(virNetServerPtr srv,
                            virNetServerClientPtr **clients,
                            unsigned int flags);
 
+virNetServerClientPtr adminServerLookupClient(virNetServerPtr srv,
+                                              unsigned long long id,
+                                              unsigned int flags);
+
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

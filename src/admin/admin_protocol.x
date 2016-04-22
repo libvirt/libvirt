@@ -138,6 +138,16 @@ struct admin_server_list_clients_ret { /* insert@1 */
     unsigned int ret;
 };
 
+struct admin_server_lookup_client_args {
+    admin_nonnull_server srv;
+    unsigned hyper id;
+    unsigned int flags;
+};
+
+struct admin_server_lookup_client_ret {
+    admin_nonnull_client clnt;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -198,5 +208,10 @@ enum admin_procedure {
     /**
      * @generate: both
      */
-    ADMIN_PROC_SERVER_LIST_CLIENTS = 8
+    ADMIN_PROC_SERVER_LIST_CLIENTS = 8,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_SERVER_LOOKUP_CLIENT = 9
 };

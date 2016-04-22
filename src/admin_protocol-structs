@@ -87,6 +87,14 @@ struct admin_server_list_clients_ret {
         } clients;
         u_int                      ret;
 };
+struct admin_server_lookup_client_args {
+        admin_nonnull_server       srv;
+        uint64_t                   id;
+        u_int                      flags;
+};
+struct admin_server_lookup_client_ret {
+        admin_nonnull_client       clnt;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -96,4 +104,5 @@ enum admin_procedure {
         ADMIN_PROC_SERVER_GET_THREADPOOL_PARAMETERS = 6,
         ADMIN_PROC_SERVER_SET_THREADPOOL_PARAMETERS = 7,
         ADMIN_PROC_SERVER_LIST_CLIENTS = 8,
+        ADMIN_PROC_SERVER_LOOKUP_CLIENT = 9,
 };

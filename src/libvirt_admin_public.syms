@@ -29,6 +29,7 @@ LIBVIRT_ADMIN_1.3.0 {
         virAdmServerGetName;
         virAdmServerGetThreadPoolParameters;
         virAdmServerFree;
+        virAdmServerLookupClient;
         virAdmConnectLookupServer;
         virAdmServerSetThreadPoolParameters;
         virAdmServerListClients;

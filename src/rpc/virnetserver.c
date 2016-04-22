@@ -972,3 +972,26 @@ virNetServerGetClients(virNetServerPtr srv,
     virObjectUnlock(srv);
     return ret;
 }
+
+virNetServerClientPtr
+virNetServerGetClient(virNetServerPtr srv,
+                      unsigned long long id)
+{
+    size_t i;
+    virNetServerClientPtr ret = NULL;
+
+    virObjectLock(srv);
+
+    for (i = 0; i < srv->nclients; i++) {
+        virNetServerClientPtr client = srv->clients[i];
+        if (virNetServerClientGetID(client) == id)
+            ret = virObjectRef(client);
+    }
+
+    virObjectUnlock(srv);
+
+    if (!ret)
+        virReportError(VIR_ERR_NO_CLIENT,
+                       _("No client with matching ID '%llu'"), id);
+    return ret;
+}

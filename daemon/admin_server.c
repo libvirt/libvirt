@@ -201,3 +201,13 @@ adminServerListClients(virNetServerPtr srv,
     virObjectListFreeCount(clts, ret);
     return ret;
 }
+
+virNetServerClientPtr
+adminServerLookupClient(virNetServerPtr srv,
+                        unsigned long long id,
+                        unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return virNetServerGetClient(srv, id);
+}

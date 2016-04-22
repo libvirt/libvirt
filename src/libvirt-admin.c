@@ -889,3 +889,39 @@ virAdmServerListClients(virAdmServerPtr srv,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmServerLookupClient:
+ * @srv: a valid server object reference
+ * @id: ID of the client to lookup on server @srv
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Try to lookup a client on the given server based on @id.
+ *
+ * virAdmClientFree() should be used to free the resources after the
+ * client object is no longer needed.
+ *
+ * Returns the requested client or NULL in case of failure.  If the
+ * client could not be found, then VIR_ERR_NO_CLIENT error is raised.
+ */
+virAdmClientPtr
+virAdmServerLookupClient(virAdmServerPtr srv,
+                         unsigned long long id,
+                         unsigned int flags)
+{
+    virAdmClientPtr ret = NULL;
+
+    VIR_DEBUG("srv=%p, id=%llu, flags=%x", srv, id, flags);
+    virResetLastError();
+
+    virCheckAdmServerGoto(srv, error);
+    virCheckFlagsGoto(0, error);
+
+    if (!(ret = remoteAdminServerLookupClient(srv, id, flags)))
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return NULL;
+}

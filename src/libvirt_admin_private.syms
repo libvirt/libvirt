@@ -16,6 +16,8 @@ xdr_admin_server_get_threadpool_parameters_args;
 xdr_admin_server_get_threadpool_parameters_ret;
 xdr_admin_server_list_clients_args;
 xdr_admin_server_list_clients_ret;
+xdr_admin_server_lookup_client_args;
+xdr_admin_server_lookup_client_ret;
 xdr_admin_server_set_threadpool_parameters_args;
 
 # datatypes.h
