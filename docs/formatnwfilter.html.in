@@ -1779,7 +1779,7 @@
       <br/><br/>
     </p>
 
-    <h5><a name="nwfelemsRulesProtoMiscv6">IGMP, ESP, AH, UDPLITE, 'ALL' over IPv6</a></h5>
+    <h5><a name="nwfelemsRulesProtoMiscv6">ESP, AH, UDPLITE, 'ALL' over IPv6</a></h5>
     <p>
       Protocol ID: <code>esp-ipv6</code>, <code>ah-ipv6</code>, <code>udplite-ipv6</code>, <code>all-ipv6</code>
       <br/>
