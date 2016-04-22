@@ -1612,3 +1612,33 @@ virNetServerClientGetTransport(virNetServerClientPtr client)
 
     return ret;
 }
+
+int
+virNetServerClientGetInfo(virNetServerClientPtr client,
+                          bool *readonly, const char **sock_addr,
+                          virIdentityPtr *identity)
+{
+    int ret = -1;
+
+    virObjectLock(client);
+    *readonly = client->readonly;
+
+    if (!(*sock_addr = virNetServerClientRemoteAddrString(client))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No network socket associated with client"));
+        goto cleanup;
+    }
+
+    if (!client->identity) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No identity information available for client"));
+        goto cleanup;
+    }
+
+    *identity = virObjectRef(client->identity);
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(client);
+    return ret;
+}

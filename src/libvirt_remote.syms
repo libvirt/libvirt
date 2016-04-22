@@ -122,6 +122,7 @@ virNetServerClientDelayedClose;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
 virNetServerClientGetIdentity;
+virNetServerClientGetInfo;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetSELinuxContext;
