@@ -196,6 +196,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
     int ret = -1;
     char *alias = NULL;
     char *path = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     /* If the -object secret does not exist, then just return. This just
      * means the domain won't be able to use a secret master key and is
@@ -218,12 +219,14 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
         goto cleanup;
 
     virCommandAddArg(cmd, "-object");
-    virCommandAddArgFormat(cmd, "secret,id=%s,format=raw,file=%s",
-                           alias, path);
+    virBufferAsprintf(&buf, "secret,id=%s,format=raw,file=", alias);
+    qemuBufferEscapeComma(&buf, path);
+    virCommandAddArgBuffer(cmd, &buf);
 
     ret = 0;
 
  cleanup:
+    virBufferFreeAndReset(&buf);
     VIR_FREE(alias);
     VIR_FREE(path);
     return ret;

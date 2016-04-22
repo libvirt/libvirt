@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu \
 -name foo,,bar,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo,\
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo,,\
 bar/master-key.aes \
 -M pc \
 -m 214 \
