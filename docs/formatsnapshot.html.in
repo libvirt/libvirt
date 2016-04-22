@@ -12,7 +12,7 @@
       There are several types of snapshots:
     </p>
     <dl>
-      <dt>disk snapshot</dt>
+      <dt>disk snapshot</dt> <!-- exempt from syntax-check -->
       <dd>Contents of disks (whether a subset or all disks associated
         with the domain) are saved at a given point of time, and can
         be restored back to that state.  On a running guest, a disk
@@ -26,14 +26,14 @@
         since the snapshot in a single file) and external (the
         snapshot is one file, and the changes since the snapshot are
         in another file).</dd>
-      <dt>memory state (or VM state)</dt>
+      <dt>memory state (or VM state)</dt> <!-- exempt from syntax-check -->
       <dd>Tracks only the state of RAM and all other resources in use
         by the VM.  If the disks are unmodified between the time a VM
         state snapshot is taken and restored, then the guest will
         resume in a consistent state; but if the disks are modified
         externally in the meantime, this is likely to lead to data
         corruption.</dd>
-      <dt>system checkpoint</dt>
+      <dt>system checkpoint</dt> <!-- exempt from syntax-check -->
       <dd>A combination of disk snapshots for all disks as well as VM
         memory state, which can be used to resume the guest from where it
         left off with symptoms similar to hibernation (that is, TCP

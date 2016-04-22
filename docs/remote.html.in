@@ -712,7 +712,7 @@ cp clientcert.pem /etc/pki/libvirt/clientcert.pem
       <a name="Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
     </h4>
     <dl>
-      <dt> failed to verify client's certificate </dt>
+      <dt>failed to verify client's certificate</dt> <!-- exempt from syntax-check -->
       <dd>
         <p>
 On the server side, run the libvirtd server with

@@ -1046,6 +1046,17 @@ sc_gettext_init:
 	halt='the above files do not call virGettextInitialize'		\
 	  $(_sc_search_regexp)
 
+# <dt> is mostly used to document symbols, in which case it should contain
+# a <code> element. The regular expression below trades speed and readability
+# for accuracy, and won't catch someone trying to stick a <canvas> inside a
+# <dt>, but that's what code reviews are for :)
+sc_prohibit_dt_without_code:
+	@prohibit='<dt>([^<]|<[^c])' \
+	exclude='exempt from syntax-check' \
+	in_vc_files='docs/.*$$' \
+	halt='Use <code> inside <dt> when documenting symbols' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
@@ -1282,3 +1293,6 @@ exclude_file_name_regexp--sc_prohibit_not_streq = \
 
 exclude_file_name_regexp--sc_prohibit_not_strneq = \
   ^tests/.*\.[ch]$$
+
+exclude_file_name_regexp--sc_prohibit_dt_without_code = \
+  ^docs/(newapi\.xsl|(apps|contact)\.html\.in)$$
