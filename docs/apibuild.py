@@ -114,8 +114,8 @@ ignored_macros = {
 
 # macros that should be completely skipped
 hidden_macros = {
-  "VIR_DEPRECATED", # internal macro to mark deprecated apis
-  "VIR_EXPORT_VAR", # internal macro to mark exported vars
+  "VIR_DEPRECATED": "internal macro to mark deprecated apis",
+  "VIR_EXPORT_VAR": "internal macro to mark exported vars",
 }
 
 def escape(raw):
