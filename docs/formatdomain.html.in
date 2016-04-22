@@ -2013,20 +2013,19 @@
 
     <dl>
       <dt><code>disk</code></dt>
-      <dd>The <code>disk</code> element is the main container for describing
-      disks (<span class="since">since 0.0.3</span>).
+      <dd>The <code>disk</code> element is the main container for
+      describing disks and supports the following attributes:
         <dl>
-          <dt><code>type</code> attribute
-          <span class="since">since 0.0.3</span></dt>
+          <dt><code>type</code></dt>
             <dd>
             Valid values are "file", "block",
             "dir" (<span class="since">since 0.7.5</span>),
             "network" (<span class="since">since 0.8.7</span>), or
             "volume" (<span class="since">since 1.0.5</span>)
             and refer to the underlying source for the disk.
+            <span class="since">Since 0.0.3</span>
             </dd>
-          <dt><code>device</code> attribute
-          <span class="since">since 0.1.4</span></dt>
+          <dt><code>device</code></dt>
             <dd>
             Indicates how the disk is to be exposed to the guest OS. Possible
             values for this attribute are "floppy", "disk", "cdrom", and "lun",
@@ -2046,10 +2045,10 @@
             but never for individual partitions or LVM partitions (in those
             cases, the kernel will reject the generic SCSI commands, making
             it identical to device='disk').
+            <span class="since">Since 0.1.4</span>
             </p>
             </dd>
-          <dt><code>rawio</code> attribute
-          <span class="since">since 0.9.10</span></dt>
+          <dt><code>rawio</code></dt>
             <dd>
             Indicates whether the disk needs rawio capability. Valid
             settings are "yes" or "no" (default is "no"). If any one disk
@@ -2063,17 +2062,17 @@
             To confine the capability as much as possible for QEMU driver
             as this stage, <code>sgio</code> is recommended, it's more
             secure than <code>rawio</code>.
+            <span class="since">Since 0.9.10</span>
             </dd>
-          <dt><code>sgio</code> attribute
-          <span class="since">since 1.0.2</span></dt>
+          <dt><code>sgio</code></dt>
             <dd>
             If supported by the hypervisor and OS, indicates whether
             unprivileged SG_IO commands are filtered for the disk. Valid
             settings are "filtered" or "unfiltered" where the default is
             "filtered". Only available when the <code>device</code> is 'lun'.
+            <span class="since">Since 1.0.2</span>
             </dd>
-          <dt><code>snapshot</code> attribute
-          <span class="since">since 0.9.5</span></dt>
+          <dt><code>snapshot</code></dt>
             <dd>
             Indicates the default behavior of the disk during disk snapshots:
             "internal" requires a file format such as qcow2 that can store
@@ -2087,6 +2086,7 @@
             Not all snapshot modes are supported; for example,
             <code>snapshot='yes'</code> with a transient disk generally
             does not make sense.
+            <span class="since">Since 0.9.5</span>
             </dd>
         </dl>
       </dd>
@@ -2094,26 +2094,25 @@
       <dd>Representation of the disk <code>source</code> depends on the
       disk <code>type</code> attribute value as follows:
           <dl>
-            <dt><code>type='file'</code>
-            <span class="since">since 0.0.3</span></dt>
+            <dt><code>file</code></dt>
               <dd>
               The <code>file</code> attribute specifies the fully-qualified
               path to the file holding the disk.
+              <span class="since">Since 0.0.3</span>
               </dd>
-            <dt><code>type='block'</code>
-            <span class="since">since 0.0.3</span></dt>
+            <dt><code>block</code></dt>
               <dd>
               The <code>dev</code> attribute specifies the fully-qualified path
               to the host device to serve as the disk.
+              <span class="since">Since 0.0.3</span>
               </dd>
-            <dt><code>type='dir'</code>
-            <span class="since">since 0.7.5</span></dt>
+            <dt><code>dir</code></dt>
               <dd>
               The <code>dir</code> attribute specifies the fully-qualified path
               to the directory to use as the disk.
+              <span class="since">Since 0.7.5</span>
               </dd>
-            <dt><code>type='network'</code>
-            <span class="since">since 0.8.7</span></dt>
+            <dt><code>network</code></dt>
               <dd>
               The <code>protocol</code> attribute specifies the protocol to
               access to the requested image. Possible values are "nbd",
@@ -2127,9 +2126,9 @@
               target's name by a slash (e.g.,
               <code>iqn.2013-07.com.example:iscsi-pool/1</code>). If not
               specified, the default LUN is zero.
+              <span class="since">Since 0.8.7</span>
               </dd>
-            <dt><code>type='volume'</code>
-            <span class="since">since 1.0.5</span></dt>
+            <dt><code>volume</code></dt>
               <dd>
               The underlying disk source is represented by attributes
               <code>pool</code> and <code>volume</code>. Attribute
@@ -2163,6 +2162,7 @@
               of 'lun' with respect to how the LUN is presented to and
               may used by the guest.
 
+              <span class="since">Since 1.0.5</span>
               </p>
               </dd>
           </dl>
@@ -2303,16 +2303,16 @@
         each file of the chain (files created by libvirt satisfy this
         property, but using existing external files for snapshot or
         block copy operations requires the end user to pre-create the
-        file correctly). The following attributes and sub-elements are
+        file correctly). The following attributes are
         supported in <code>backingStore</code>:
         <dl>
-          <dt><code>type</code> attribute</dt>
+          <dt><code>type</code></dt>
           <dd>
             The <code>type</code> attribute represents the type of disk used
             by the backing store, see disk type attribute above for more
             details and possible values.
           </dd>
-          <dt><code>index</code> attribute</dt>
+          <dt><code>index</code></dt>
           <dd>
             This attribute is only valid in output (and ignored on input) and
             it can be used to refer to a specific part of the disk chain when
@@ -2321,20 +2321,23 @@
             <code>vda[2]</code> refers to the backing store with
             <code>index='2'</code> of the disk with <code>vda</code> target.
           </dd>
-          <dt><code>format</code> sub-element</dt>
+        </dl>
+        Moreover, <code>backingStore</code> supports the following sub-elements:
+        <dl>
+          <dt><code>format</code></dt>
           <dd>
             The <code>format</code> element contains <code>type</code>
             attribute which specifies the internal format of the backing
             store, such as <code>raw</code> or <code>qcow2</code>.
           </dd>
-          <dt><code>source</code> sub-element</dt>
+          <dt><code>source</code></dt>
           <dd>
             This element has the same structure as the <code>source</code>
             element in <code>disk</code>. It specifies which file, device,
             or network location contains the data of the described backing
             store.
           </dd>
-          <dt><code>backingStore</code> sub-element</dt>
+          <dt><code>backingStore</code></dt>
           <dd>
             If the backing store is not self-contained, the next element
             in the chain is described by nested <code>backingStore</code>
@@ -2745,7 +2748,7 @@
       <code>source</code>. The possible values are:
 
         <dl>
-        <dt><code>type='mount'</code></dt>
+        <dt><code>mount</code></dt>
         <dd>
         A host directory to mount in the guest. Used by LXC,
         OpenVZ <span class="since">(since 0.6.2)</span>
@@ -2762,23 +2765,23 @@
         is immediately triggered for all pages touched during a guest file
         write operation <span class="since">(since 0.9.10)</span>.
         </dd>
-        <dt><code>type='template'</code></dt>
+        <dt><code>template</code></dt>
         <dd>
         OpenVZ filesystem template. Only used by OpenVZ driver.
         </dd>
-        <dt><code>type='file'</code></dt>
+        <dt><code>file</code></dt>
         <dd>
         A host file will be treated as an image and mounted in
         the guest. The filesystem format will be autodetected.
         Only used by LXC driver.
         </dd>
-        <dt><code>type='block'</code></dt>
+        <dt><code>block</code></dt>
         <dd>
         A host block device to mount in the guest. The filesystem
         format will be autodetected. Only used by LXC driver
         <span class="since">(since 0.9.5)</span>.
         </dd>
-        <dt><code>type='ram'</code></dt>
+        <dt><code>ram</code></dt>
         <dd>
           An in-memory filesystem, using memory from the host OS.
           The source element has a single attribute <code>usage</code>
@@ -2786,7 +2789,7 @@
           are specified by the <code>units</code> attribute. Only used
           by LXC driver.
           <span class="since"> (since 0.9.13)</span></dd>
-        <dt><code>type='bind'</code></dt>
+        <dt><code>bind</code></dt>
         <dd>
           A directory inside the guest will be bound to another
           directory inside the guest. Only used by LXC driver
@@ -2800,20 +2803,20 @@
       values are:
 
         <dl>
-        <dt><code>accessmode='passthrough'</code></dt>
+        <dt><code>passthrough</code></dt>
         <dd>
         The <code>source</code> is accessed with the permissions of the
         user inside the guest. This is the default <code>accessmode</code> if
         one is not specified.
         <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
         </dd>
-        <dt><code>accessmode='mapped'</code></dt>
+        <dt><code>mapped</code></dt>
         <dd>
         The <code>source</code> is accessed with the permissions of the
         hypervisor (QEMU process).
         <a href="http://lists.gnu.org/archive/html/qemu-devel/2010-05/msg02673.html">More info</a>
         </dd>
-        <dt><code>accessmode='squash'</code></dt>
+        <dt><code>squash</code></dt>
         <dd>
         Similar to 'passthrough', the exception is that failure of
         privileged operations like 'chown' are ignored. This makes a
@@ -2912,7 +2915,7 @@
     </p>
 
     <dl>
-      <dt><code>type='pci'</code></dt>
+      <dt><code>pci</code></dt>
       <dd>PCI addresses have the following additional
         attributes: <code>domain</code> (a 2-byte hex integer, not
         currently used by qemu), <code>bus</code> (a hex value between
@@ -2927,32 +2930,32 @@
         but should be set to 'on' for function 0 of a slot that will
         have multiple functions used.
       </dd>
-      <dt><code>type='drive'</code></dt>
+      <dt><code>drive</code></dt>
       <dd>Drive addresses have the following additional
         attributes: <code>controller</code> (a 2-digit controller
         number), <code>bus</code> (a 2-digit bus number),
         <code>target</code> (a 2-digit target number),
         and <code>unit</code> (a 2-digit unit number on the bus).
       </dd>
-      <dt><code>type='virtio-serial'</code></dt>
+      <dt><code>virtio-serial</code></dt>
       <dd>Each virtio-serial address has the following additional
         attributes: <code>controller</code> (a 2-digit controller
         number), <code>bus</code> (a 2-digit bus number),
         and <code>slot</code> (a 2-digit slot within the bus).
       </dd>
-      <dt><code>type='ccid'</code></dt>
+      <dt><code>ccid</code></dt>
       <dd>A CCID address, for smart-cards, has the following
         additional attributes: <code>bus</code> (a 2-digit bus
         number), and <code>slot</code> attribute (a 2-digit slot
         within the bus).  <span class="since">Since 0.8.8.</span>
       </dd>
-      <dt><code>type='usb'</code></dt>
+      <dt><code>usb</code></dt>
       <dd>USB addresses have the following additional
         attributes: <code>bus</code> (a hex value between 0 and 0xfff,
         inclusive), and <code>port</code> (a dotted notation of up to
         four octets, such as 1.2 or 2.1.3.1).
       </dd>
-      <dt><code>type='spapr-vio'</code></dt>
+      <dt><code>spapr-vio</code></dt>
       <dd>On PowerPC pseries guests, devices can be assigned to the
         SPAPR-VIO bus.  It has a flat 64-bit address space; by
         convention, devices are generally assigned at a non-zero
@@ -2962,7 +2965,7 @@
         of the starting register).  <span class="since">Since
         0.9.9.</span>
       </dd>
-      <dt><code>type='ccw'</code></dt>
+      <dt><code>ccw</code></dt>
       <dd>s390 guests with a <code>machine</code> value of
         s390-ccw-virtio use the native CCW bus for I/O devices.
         CCW bus addresses have the following additional attributes:
@@ -2975,7 +2978,7 @@
         set to 0xfe.
         <span class="since">Since 1.0.4</span>
       </dd>
-      <dt><code>type='isa'</code></dt>
+      <dt><code>isa</code></dt>
       <dd>ISA addresses have the following additional
         attributes: <code>iobase</code> and <code>irq</code>.
         <span class="since">Since 1.2.1</span>
@@ -3210,7 +3213,7 @@
           downstream-port).
         </p>
       </dd>
-      <dt><code>&lt;node&gt;</code></dt>
+      <dt><code>node</code></dt>
       <dd>
         pci-expander-bus controllers can have an
         optional <code>&lt;node&gt;</code> subelement within
@@ -3772,14 +3775,14 @@
     </p>
 
     <dl>
-      <dt><code>mode='host'</code></dt>
+      <dt><code>host</code></dt>
       <dd>The simplest operation, where the hypervisor relays all
       requests from the guest into direct access to the host's
       smartcard via NSS.  No other attributes or sub-elements are
       required.  See below about the use of an
       optional <code>&lt;address&gt;</code> sub-element.</dd>
 
-      <dt><code>mode='host-certificates'</code></dt>
+      <dt><code>host-certificates</code></dt>
       <dd>Rather than requiring a smartcard to be plugged into the
       host, it is possible to provide three NSS certificate names
       residing in a database on the host.  These certificates can be
@@ -3793,7 +3796,7 @@
       when creating the certificates); if not present, it defaults to
       /etc/pki/nssdb.</dd>
 
-      <dt><code>mode='passthrough'</code></dt>
+      <dt><code>passthrough</code></dt>
       <dd>Rather than having the hypervisor directly communicate with
       the host, it is possible to tunnel all requests through a
       secondary character device to a third-party provider (which may
@@ -4557,7 +4560,13 @@ qemu-kvm -net nic,model=? /dev/null
         <span class="since">virtio-net since 1.0.6 (QEMU and KVM only)</span>
         <span class="since">vhost-user since 1.2.17 (QEMU and KVM only)</span>
       </dd>
-      <dt><code>host</code> offloading options</dt>
+    </dl>
+    <p>
+      Offloading options for the host and guest can be configured using
+      the following sub-elements:
+    </p>
+    <dl>
+      <dt><code>host</code></dt>
       <dd>
         The <code>csum</code>, <code>gso</code>, <code>tso4</code>,
         <code>tso6</code>, <code>ecn</code> and <code>ufo</code>
@@ -4570,7 +4579,7 @@ qemu-kvm -net nic,model=? /dev/null
         <code>on</code> (default) and <code>off</code>.
         <span class="since">Since 1.2.13 (QEMU only)</span>
       </dd>
-      <dt><code>guest</code> offloading options</dt>
+      <dt><code>guest</code></dt>
       <dd>
         The <code>csum</code>, <code>tso4</code>,
         <code>tso6</code>, <code>ecn</code> and <code>ufo</code>
@@ -5059,7 +5068,7 @@ qemu-kvm -net nic,model=? /dev/null
           <code>spice</code>, <code>rdp</code> or <code>desktop</code>:
         </p>
         <dl>
-          <dt><code>"sdl"</code></dt>
+          <dt><code>sdl</code></dt>
           <dd>
             <p>
               This displays a window on the host desktop, it can take 3 optional
@@ -5069,7 +5078,7 @@ qemu-kvm -net nic,model=? /dev/null
               <code>yes</code> or <code>no</code>.
             </p>
           </dd>
-          <dt><code>"vnc"</code></dt>
+          <dt><code>vnc</code></dt>
           <dd>
             <p>
               Starts a VNC server. The <code>port</code> attribute specifies
@@ -5110,7 +5119,7 @@ qemu-kvm -net nic,model=? /dev/null
               security reasons) <span class="since">Since 1.0.6</span>.
             </p>
           </dd>
-          <dt><code>"spice"</code> <span class="since">Since 0.8.6</span></dt>
+          <dt><code>spice</code> <span class="since">Since 0.8.6</span></dt>
           <dd>
             <p>
               Starts a SPICE server. The <code>port</code> attribute specifies
@@ -5216,7 +5225,7 @@ qemu-kvm -net nic,model=? /dev/null
               property. (QEMU only, <span class="since">since 1.3.2</span>).
             </p>
           </dd>
-          <dt><code>"rdp"</code></dt>
+          <dt><code>rdp</code></dt>
           <dd>
             <p>
               Starts a RDP server. The <code>port</code> attribute specifies the
@@ -5231,7 +5240,7 @@ qemu-kvm -net nic,model=? /dev/null
               single connection mode.
             </p>
           </dd>
-          <dt><code>"desktop"</code></dt>
+          <dt><code>desktop</code></dt>
           <dd>
             <p>
               This value is reserved for VirtualBox domains for the moment. It
@@ -6230,29 +6239,27 @@ qemu-kvm -net nic,model=? /dev/null
           to be used for the domain. The source model is configured using the
           <code>model</code> attribute. Supported source models are:
         </p>
-        <ul>
-          <li>'random' &mdash; /dev/random (default) or /dev/hwrng
-            device as source (for now, no other sources are permitted)</li>
-          <li>'egd' &mdash; a EGD protocol backend</li>
-        </ul>
-      </dd>
-      <dt><code>backend model='random'</code></dt>
-      <dd>
-        <p>
-          This backend type expects a non-blocking character device as input.
-          The only accepted paths are /dev/random and /dev/hwrng. The file
-          name is specified as contents of the <code>backend</code> element.
-          When no file name is specified the hypervisor default is used.
-        </p>
-      </dd>
-      <dt><code>backend model='egd'</code></dt>
-      <dd>
-        <p>
-          This backend connects to a source using the EGD protocol.
-          The source is specified as a character device. Refer to
-          <a href='#elementsCharHostInterface'>character device host interface</a>
-          for more information.
-        </p>
+        <dl>
+          <dt><code>random</code></dt>
+          <dd>
+            <p>
+              This backend type expects a non-blocking character device as
+              input. The only accepted paths are /dev/random and /dev/hwrng.
+              The file name is specified as contents of the
+              <code>backend</code> element. When no file name is specified
+              the hypervisor default is used.
+            </p>
+          </dd>
+          <dt><code>egd</code></dt>
+          <dd>
+            <p>
+              This backend connects to a source using the EGD protocol.
+              The source is specified as a character device. Refer to
+              <a href='#elementsCharHostInterface'>character device host interface</a>
+              for more information.
+            </p>
+          </dd>
+        </dl>
       </dd>
 
     </dl>
@@ -6299,19 +6306,21 @@ qemu-kvm -net nic,model=? /dev/null
           The <code>backend</code> element specifies the type of
           TPM device. The following types are supported:
         </p>
-        <ul>
-          <li>'passthrough' &mdash; use the host's TPM device.</li>
-        </ul>
-      </dd>
-      <dt><code>backend type='passthrough'</code></dt>
-      <dd>
-        <p>
-          This backend type requires exclusive access to a TPM device on
-          the host.
-          An example for such a device is /dev/tpm0. The fully qualified file
-          name is specified by path attribute of the <code>source</code> element.
-          If no file name is specified then /dev/tpm0 is automatically used.
-        </p>
+        <dl>
+          <dt><code>passthrough</code></dt>
+          <dd>
+            <p>
+              Use the host's TPM device.
+            </p>
+            <p>
+              This backend type requires exclusive access to a TPM device on
+              the host. An example for such a device is /dev/tpm0. The fully
+              qualified file name is specified by path attribute of the
+              <code>source</code> element. If no file name is specified then
+              /dev/tpm0 is automatically used.
+            </p>
+          </dd>
+        </dl>
       </dd>
     </dl>
 

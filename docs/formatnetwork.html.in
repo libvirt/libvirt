@@ -54,13 +54,14 @@
         The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new network, a random
         UUID is generated. <span class="since">Since 0.3.0</span></dd>
-      <dt><code>ipv6='yes'</code></dt>
-      <dd>The new, optional parameter <code>ipv6='yes'</code> enables
+      <dt><code>ipv6</code></dt>
+      <dd>When set to <code>yes</code>, the optional parameter
+        <code>ipv6</code> enables
         a network definition with no IPv6 gateway addresses specified
         to have guest-to-guest communications.  For further information,
         see the example below for the example with no gateway addresses.
         <span class="since">Since 1.0.1</span></dd>
-      <dt><code>trustGuestRxFilters='yes'</code></dt>
+      <dt><code>trustGuestRxFilters</code></dt>
       <dd>The optional parameter <code>trustGuestRxFilters</code> can
         be used to set that attribute of the same name for each domain
         interface connected to this network (<span class="since">since
