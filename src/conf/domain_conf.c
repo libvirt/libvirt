@@ -18748,7 +18748,8 @@ virDomainEventActionDefFormat(virBufferPtr buf,
 
 static void
 virSecurityLabelDefFormat(virBufferPtr buf,
-                          virSecurityLabelDefPtr def)
+                          virSecurityLabelDefPtr def,
+                          unsigned int flags)
 {
     const char *sectype = virDomainSeclabelTypeToString(def->type);
 
@@ -18758,11 +18759,13 @@ virSecurityLabelDefFormat(virBufferPtr buf,
     if (def->type == VIR_DOMAIN_SECLABEL_DEFAULT)
         return;
 
-    /* To avoid backward compatibility issues, suppress DAC and 'none' labels
-     * that are automatically generated.
+    /* libvirt versions prior to 0.10.0 support just a single seclabel element
+     * in the XML, and that would typically be filled with type=selinux.
+     * Don't format it in the MIGRATABLE case, for backwards compatibility
      */
     if ((STREQ_NULLABLE(def->model, "dac") ||
-         STREQ_NULLABLE(def->model, "none")) && def->implicit)
+         STREQ_NULLABLE(def->model, "none")) && def->implicit &&
+         (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
         return;
 
     virBufferAsprintf(buf, "<seclabel type='%s'",
@@ -22897,7 +22900,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virBufferAddLit(buf, "</devices>\n");
 
     for (n = 0; n < def->nseclabels; n++)
-        virSecurityLabelDefFormat(buf, def->seclabels[n]);
+        virSecurityLabelDefFormat(buf, def->seclabels[n], flags);
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
