@@ -1,0 +1,22 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 214 \
+-smp 1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c \
+-device nec-usb-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x3

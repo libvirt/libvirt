@@ -1743,7 +1743,8 @@
               </attribute>
             </optional>
           </group>
-          <!-- usb has an optional attribute "model", and optional subelement "master" -->
+          <!-- usb has an optional attribute "model",
+               and optional subelements "master" and "ports" -->
           <group>
             <attribute name="type">
               <value>usb</value>
@@ -1767,6 +1768,11 @@
             </optional>
             <optional>
               <ref name="usbmaster"/>
+            </optional>
+            <optional>
+              <attribute name="ports">
+                <ref name="unsignedInt"/>
+              </attribute>
             </optional>
           </group>
           <!-- pci has an optional attribute "model" -->

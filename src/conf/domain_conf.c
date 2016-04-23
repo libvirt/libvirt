@@ -1655,6 +1655,9 @@ virDomainControllerDefNew(virDomainControllerType type)
         def->opts.vioserial.ports = -1;
         def->opts.vioserial.vectors = -1;
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+        def->opts.usbopts.ports = -1;
+        break;
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         def->opts.pciopts.chassisNr = -1;
         def->opts.pciopts.chassis = -1;
@@ -1667,7 +1670,6 @@ virDomainControllerDefNew(virDomainControllerType type)
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
-    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
@@ -7837,6 +7839,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *busNr = NULL;
     int numaNode = -1;
     char *ioeventfd = NULL;
+    char *portsStr = NULL;
+    int ports = -1;
     xmlNodePtr saved = ctxt->node;
     int rc;
 
@@ -7949,20 +7953,19 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         goto error;
     }
 
+    portsStr = virXMLPropString(node, "ports");
+    if (portsStr) {
+        int r = virStrToLong_i(portsStr, NULL, 10, &ports);
+        if (r != 0 || ports < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid ports: %s"), portsStr);
+            goto error;
+        }
+    }
+
     switch (def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL: {
-        char *ports = virXMLPropString(node, "ports");
-        if (ports) {
-            int r = virStrToLong_i(ports, NULL, 10,
-                                   &def->opts.vioserial.ports);
-            if (r != 0 || def->opts.vioserial.ports < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid ports: %s"), ports);
-                VIR_FREE(ports);
-                goto error;
-            }
-        }
-        VIR_FREE(ports);
+        def->opts.vioserial.ports = ports;
 
         char *vectors = virXMLPropString(node, "vectors");
         if (vectors) {
@@ -7998,6 +8001,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
             def->info.mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
             def->info.master.usb.startport = masterPort;
         }
+
+        def->opts.usbopts.ports = ports;
         break;
     }
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
@@ -8125,6 +8130,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(port);
     VIR_FREE(busNr);
     VIR_FREE(ioeventfd);
+    VIR_FREE(portsStr);
 
     return def;
 
@@ -17219,6 +17225,13 @@ virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
                            dst->opts.vioserial.vectors, src->opts.vioserial.vectors);
             return false;
         }
+    } else if (src->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+        if (src->opts.usbopts.ports != dst->opts.usbopts.ports) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target controller ports %d does not match source %d"),
+                           dst->opts.usbopts.ports, src->opts.usbopts.ports);
+            return false;
+        }
     }
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
@@ -19445,6 +19458,13 @@ virDomainControllerDefFormat(virBufferPtr buf,
         if (def->opts.vioserial.vectors != -1) {
             virBufferAsprintf(buf, " vectors='%d'",
                               def->opts.vioserial.vectors);
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+        if (def->opts.usbopts.ports != -1) {
+            virBufferAsprintf(buf, " ports='%d'",
+                              def->opts.usbopts.ports);
         }
         break;
 

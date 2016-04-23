@@ -2152,6 +2152,19 @@ qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
 
     virBufferAsprintf(buf, "%s", smodel);
 
+    if (def->opts.usbopts.ports != -1) {
+        if (model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI_PORTS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("usb controller type %s doesn't support 'ports' "
+                             "with this QEMU binary"), smodel);
+            return -1;
+        }
+
+        virBufferAsprintf(buf, ",p2=%d,p3=%d",
+                          def->opts.usbopts.ports, def->opts.usbopts.ports);
+    }
+
     if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB)
         virBufferAsprintf(buf, ",masterbus=%s.0,firstport=%d",
                           def->info.alias, def->info.master.usb.startport);

@@ -846,6 +846,12 @@ struct _virDomainPCIControllerOpts {
     int numaNode;
 };
 
+typedef struct _virDomainUSBControllerOpts virDomainUSBControllerOpts;
+typedef virDomainUSBControllerOpts *virDomainUSBControllerOptsPtr;
+struct _virDomainUSBControllerOpts {
+    int ports;   /* -1 == undef */
+};
+
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
     int type;
@@ -858,6 +864,7 @@ struct _virDomainControllerDef {
     union {
         virDomainVirtioSerialOpts vioserial;
         virDomainPCIControllerOpts pciopts;
+        virDomainUSBControllerOpts usbopts;
     } opts;
     virDomainDeviceInfo info;
 };
