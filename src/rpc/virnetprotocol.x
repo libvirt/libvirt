@@ -104,7 +104,9 @@ const VIR_NET_MESSAGE_NUM_FDS_MAX = 32;
  *  - type == VIR_NET_STREAM
  *     * VIR_NET_CONTINUE if more data is following
  *     * VIR_NET_OK if stream is complete
- *     * VIR_NET_ERROR if stream had an error
+ *     * VIR_NET_ERROR
+ *         server message: stream had an error
+ *         client message: client aborted the stream
  *
  * Payload varies according to type and status:
  *
@@ -125,7 +127,8 @@ const VIR_NET_MESSAGE_NUM_FDS_MAX = 32;
  *     * status == VIR_NET_CONTINUE
  *          byte[]       raw stream data
  *     * status == VIR_NET_ERROR
- *          remote_error error information
+ *          server message: remote_error error information
+ *          client message: <empty>
  *     * status == VIR_NET_OK
  *          <empty>
  *
