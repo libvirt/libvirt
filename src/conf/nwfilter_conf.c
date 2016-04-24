@@ -3156,30 +3156,38 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
 
 
 static virNWFilterObjPtr
-virNWFilterObjLoad(virNWFilterObjListPtr nwfilters,
-                   const char *file,
-                   const char *path)
+virNWFilterLoadConfig(virNWFilterObjListPtr nwfilters,
+                      const char *configDir,
+                      const char *name)
 {
-    virNWFilterDefPtr def;
+    virNWFilterDefPtr def = NULL;
     virNWFilterObjPtr nwfilter;
+    char *configFile = NULL;
 
-    if (!(def = virNWFilterDefParseFile(path)))
-        return NULL;
+    if (!(configFile = virFileBuildPath(configDir, name, ".xml")))
+        goto error;
 
-    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
+    if (!(def = virNWFilterDefParseFile(configFile)))
+        goto error;
+
+    if (STRNEQ(name, def->name)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("network filter config filename '%s' does not match name '%s'"),
-                       path, def->name);
-        virNWFilterDefFree(def);
-        return NULL;
+                       _("network filter config filename '%s' "
+                         "does not match name '%s'"),
+                       configFile, def->name);
+        goto error;
     }
 
-    if (!(nwfilter = virNWFilterObjAssignDef(nwfilters, def))) {
-        virNWFilterDefFree(def);
-        return NULL;
-    }
+    if (!(nwfilter = virNWFilterObjAssignDef(nwfilters, def)))
+        goto error;
 
+    VIR_FREE(configFile);
     return nwfilter;
+
+ error:
+    VIR_FREE(configFile);
+    virNWFilterDefFree(def);
+    return NULL;
 }
 
 
@@ -3200,23 +3208,17 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
     }
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
-        char *path;
         virNWFilterObjPtr nwfilter;
 
         if (entry->d_name[0] == '.')
             continue;
 
-        if (!virFileHasSuffix(entry->d_name, ".xml"))
+        if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL)))
-            continue;
-
-        nwfilter = virNWFilterObjLoad(nwfilters, entry->d_name, path);
+        nwfilter = virNWFilterLoadConfig(nwfilters, configDir, entry->d_name);
         if (nwfilter)
             virNWFilterObjUnlock(nwfilter);
-
-        VIR_FREE(path);
     }
 
     closedir(dir);
