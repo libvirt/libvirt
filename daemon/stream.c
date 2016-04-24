@@ -611,29 +611,40 @@ daemonStreamHandleAbort(virNetServerClientPtr client,
 {
     VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%u",
               client, stream, msg->header.proc, msg->header.serial);
-    virNetMessageError rerr;
-
-    memset(&rerr, 0, sizeof(rerr));
+    int ret;
+    bool raise_error = false;
 
     stream->closed = true;
     virStreamEventRemoveCallback(stream->st);
-    virStreamAbort(stream->st);
+    ret = virStreamAbort(stream->st);
 
     if (msg->header.status == VIR_NET_ERROR) {
-        virReportError(VIR_ERR_RPC,
-                       "%s", _("stream aborted at client request"));
+        VIR_INFO("stream aborted at client request");
+        raise_error = (ret < 0);
     } else {
-        VIR_WARN("unexpected stream status %d", msg->header.status);
         virReportError(VIR_ERR_RPC,
                        _("stream aborted with unexpected status %d"),
                        msg->header.status);
+        raise_error = true;
     }
 
-    return virNetServerProgramSendReplyError(remoteProgram,
-                                             client,
-                                             msg,
-                                             &rerr,
-                                             &msg->header);
+    if (raise_error) {
+        virNetMessageError rerr;
+        memset(&rerr, 0, sizeof(rerr));
+        return virNetServerProgramSendReplyError(remoteProgram,
+                                                 client,
+                                                 msg,
+                                                 &rerr,
+                                                 &msg->header);
+    } else {
+        /* Send zero-length confirm */
+        return virNetServerProgramSendStreamData(stream->prog,
+                                                 client,
+                                                 msg,
+                                                 stream->procedure,
+                                                 stream->serial,
+                                                 NULL, 0);
+    }
 }
 
 
