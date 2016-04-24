@@ -536,6 +536,7 @@ typedef virNWFilterDef *virNWFilterDefPtr;
 struct _virNWFilterDef {
     char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
+    bool uuid_specified;
 
     char *chainsuffix;
     virNWFilterChainPriority chainPriority;

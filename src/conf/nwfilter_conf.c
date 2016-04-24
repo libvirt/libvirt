@@ -2658,6 +2658,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     uuid = virXPathString("string(./uuid)", ctxt);
+    ret->uuid_specified = (uuid != NULL);
     if (uuid == NULL) {
         if (virUUIDGenerate(ret->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3177,6 +3178,11 @@ virNWFilterLoadConfig(virNWFilterObjListPtr nwfilters,
                        configFile, def->name);
         goto error;
     }
+
+    /* We generated a UUID, make it permanent by saving the config to disk */
+    if (!def->uuid_specified &&
+        virNWFilterSaveConfig(configDir, def) < 0)
+        goto error;
 
     if (!(nwfilter = virNWFilterObjAssignDef(nwfilters, def)))
         goto error;
