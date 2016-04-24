@@ -769,7 +769,7 @@ networkStateReload(void)
     networkRefreshDaemons(network_driver);
     virNetworkObjListForEach(network_driver->networks,
                              networkAutostartConfig,
-                             NULL);
+                             network_driver);
     return 0;
 }
 
