@@ -2563,6 +2563,8 @@ virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
+virDomainControllerDefPtr
+virDomainControllerDefNew(virDomainControllerType type);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);

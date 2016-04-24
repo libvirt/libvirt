@@ -1638,7 +1638,7 @@ virDomainDiskSetFormat(virDomainDiskDefPtr def, int format)
 }
 
 
-static virDomainControllerDefPtr
+virDomainControllerDefPtr
 virDomainControllerDefNew(virDomainControllerType type)
 {
     virDomainControllerDefPtr def;

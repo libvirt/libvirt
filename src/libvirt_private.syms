@@ -186,6 +186,7 @@ virDomainClockOffsetTypeToString;
 virDomainConfigFile;
 virDomainControllerAliasFind;
 virDomainControllerDefFree;
+virDomainControllerDefNew;
 virDomainControllerFind;
 virDomainControllerFindByType;
 virDomainControllerInsert;

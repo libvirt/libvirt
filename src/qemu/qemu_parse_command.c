@@ -2351,13 +2351,11 @@ qemuParseCommandLine(virCapsPtr caps,
             /* ignore, generted on the fly */
         } else if (STREQ(arg, "-usb")) {
             virDomainControllerDefPtr ctldef;
-            if (VIR_ALLOC(ctldef) < 0)
+            ctldef = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB);
+            if (!ctldef)
                 goto error;
-            ctldef->type = VIR_DOMAIN_CONTROLLER_TYPE_USB;
-            ctldef->idx = 0;
-            ctldef->model = -1;
             if (virDomainControllerInsert(def, ctldef) < 0) {
-                VIR_FREE(ctldef);
+                virDomainControllerDefFree(ctldef);
                 goto error;
             }
         } else if (STREQ(arg, "-pidfile")) {
